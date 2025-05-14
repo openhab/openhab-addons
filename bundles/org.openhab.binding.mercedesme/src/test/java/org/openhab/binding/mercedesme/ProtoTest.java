@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,36 @@ class ProtoTest {
             try (FileOutputStream outputStream = new FileOutputStream("src/test/resources/proto-blob/anon.blob")) {
                 pmAnon.writeTo(outputStream);
             }
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testProtoDecoding() {
+        try {
+            FileInputStream fis = new FileInputStream("src/test/resources/proto-blob/proto-1.blob");
+            byte[] data = fis.readAllBytes();
+            boolean success = false;
+            String previousMessage = "";
+            for (int i = 0; i < data.length && !success; i++) {
+                int newLength = data.length - i;
+                byte[] dataOffset = new byte[newLength];
+                System.arraycopy(data, i, dataOffset, 0, newLength);
+                try {
+                    PushMessage pm = VehicleEvents.PushMessage.parseFrom(dataOffset);
+                    success = true;
+                    assertTrue(VehicleEvents.PushMessage.MsgCase.VEPUPDATES.equals(pm.getMsgCase()));
+                    break;
+                } catch (IOException f) {
+                    String message = f.getMessage();
+                    assertNotNull(message);
+                    if (!previousMessage.equals(message)) {
+                        previousMessage = message;
+                    }
+                }
+            }
+            fis.close();
         } catch (IOException e) {
             fail();
         }

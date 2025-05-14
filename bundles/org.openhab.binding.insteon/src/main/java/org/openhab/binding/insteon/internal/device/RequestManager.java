@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,7 +181,7 @@ public class RequestManager {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("request queue thread interrupted!");
+                logger.trace("request queue thread interrupted!");
             }
             logger.debug("exiting request queue thread!");
         }

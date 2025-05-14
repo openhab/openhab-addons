@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,10 +32,10 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.jablotron.internal.config.JablotronBridgeConfig;
 import org.openhab.binding.jablotron.internal.discovery.JablotronDiscoveryService;
+import org.openhab.binding.jablotron.internal.model.JablotronAccessTokenResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronDiscoveredService;
-import org.openhab.binding.jablotron.internal.model.JablotronGetEventHistoryResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronGetServiceResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
 import org.openhab.binding.jablotron.internal.model.JablotronLoginResponse;
@@ -54,6 +54,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -70,6 +73,8 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     private final Gson gson = new Gson();
 
     final HttpClient httpClient;
+
+    private String accessToken = "";
 
     private @Nullable ScheduledFuture<?> future = null;
 
@@ -169,14 +174,47 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return sendMessage(url, urlParameters, classOfT, WWW_FORM_URLENCODED, true);
     }
 
+    private @Nullable String sendGQLMessage(String url, String urlParameters) {
+        String line = "";
+        try {
+            logger.trace("Request: {} with data: {}", url, urlParameters);
+            ContentResponse resp = createGQLRequest(url)
+                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
+
+            line = resp.getContentAsString();
+            logger.trace("Response: {}", line);
+            return line;
+        } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Timeout during calling url: " + url);
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Interrupt during calling url: " + url);
+            Thread.currentThread().interrupt();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Invalid JSON received: {}", line);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Syntax error during calling url: " + url);
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+                return null;
+            }
+            logger.debug("Error during calling url: {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error during calling url: " + url);
+        }
+        return null;
+    }
+
     private @Nullable <T> T sendMessage(String url, String urlParameters, Class<T> classOfT, String encoding,
             boolean relogin) {
         String line = "";
         try {
+            logger.trace("Request: {} with data: {}", url, urlParameters);
             ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters), encoding)
                     .send();
 
-            logger.trace("Request: {} with data: {}", url, urlParameters);
             line = resp.getContentAsString();
             logger.trace("Response: {}", line);
             return gson.fromJson(line, classOfT);
@@ -212,13 +250,31 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         JablotronLoginResponse response = sendJsonMessage(url, urlParameters, JablotronLoginResponse.class, false);
 
         if (response == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Null login response");
             return;
         }
 
         if (response.getHttpCode() != 200) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Http error: " + response.getHttpCode());
+                    "Login http error: " + response.getHttpCode());
+            return;
+        }
+
+        url = JABLOTRON_API_URL + "accessTokenGet.json";
+        urlParameters = "{ \"force-renew\": true }";
+        JablotronAccessTokenResponse token_response = sendJsonMessage(url, urlParameters,
+                JablotronAccessTokenResponse.class, false);
+
+        if (token_response == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Null get access token response");
+            return;
+        }
+
+        if (token_response.getHttpCode() != 200) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Get access token http error: " + response.getHttpCode());
         } else {
+            accessToken = token_response.getData().getAccessToken();
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -287,8 +343,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return response;
     }
 
-    protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(Thing th, String alarm) {
-        String url = JABLOTRON_API_URL + alarm + "/eventHistoryGet.json";
+    protected @Nullable JablotronHistoryDataEvent sendGetEventHistory(Thing th, String alarm) {
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -296,18 +351,84 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        String urlParameters = "{\"limit\":1, \"service-id\":" + handler.thingConfig.getServiceId() + "}";
-        JablotronGetEventHistoryResponse response = sendJsonMessage(url, urlParameters,
-                JablotronGetEventHistoryResponse.class);
+        String urlParameters = "{\"operationName\":\"GetEvents\",\"query\":\"query GetEvents($cloudEntityIds: [CloudEntityID!]!, $pagination: Pagination, $lang: String!, $filter: EventsFilter, $eventIds: [ID!]!) { forEndUser { __typename events { __typename events(sources: $cloudEntityIds, pagination: $pagination, filter: $filter) { __typename edges { __typename node { __typename ...EventsFragment } } pageInfo { __typename hasNextPage endCursor startCursor } } batchEvents(sources: $cloudEntityIds, eventIds: $eventIds) { __typename ...EventsFragment } } } }\\nfragment EventsAttachementFragment on EventsAttachment { __typename files { __typename name mimeType downloadUrl } images { __typename name mimeType downloadUrl available widthPx heightPx } videos { __typename name mimeType downloadUrl duration } id type occurredAt }\\nfragment EventsEventFragment on EventsEvent { __typename id name { __typename translation(lang: $lang) } type occurredAt sources { __typename cloudEntityId } invokers { __typename ...EventsInvokerFragment } subjects { __typename ...EventsSubjectFragment } icon }\\nfragment EventsFragment on EventsEvent { __typename ...EventsEventFragment attachments { __typename ...EventsAttachementFragment } childEvents { __typename id name { __typename translation(lang: $lang) } type occurredAt sources { __typename cloudEntityId } invokers { __typename ...EventsInvokerFragment } subjects { __typename ...EventsSubjectFragment } icon attachments { __typename ...EventsAttachementFragment } } }\\nfragment EventsInvokerFragment on EventsInvoker { __typename cloudEntityId defaultName { __typename translation(lang: $lang) } name }\\nfragment EventsSubjectFragment on EventsSubject { __typename name cloudEntityId defaultName { __typename translation(lang: $lang) } }\",\"variables\":{\"cloudEntityIds\":[\"SERVICE_"
+                + alarm + ":" + handler.thingConfig.getServiceId() + "\"],\"eventIds\":[],\"lang\":\""
+                + bridgeConfig.getLang() + "\",\"pagination\":{\"first\":1}}}";
 
+        String response = sendGQLMessage(JABLOTRON_GQL_URL, urlParameters);
         if (response == null) {
+            logger.debug("Null response while getting event history");
             return null;
         }
 
-        if (200 != response.getHttpCode()) {
-            logger.debug("Got error while getting history with http code: {}", response.getHttpCode());
+        return parseEventHistoryResponse(response);
+    }
+
+    private @Nullable JablotronHistoryDataEvent parseEventHistoryResponse(String response) {
+        JablotronHistoryDataEvent event = new JablotronHistoryDataEvent();
+        JsonObject jsonObject;
+
+        try {
+            jsonObject = JsonParser.parseString(response).getAsJsonObject();
+        } catch (JsonSyntaxException ex) {
+            logger.debug("Invalid JSON received: {}", response);
+            return null;
         }
-        return response.getData().getEvents();
+
+        JsonObject data = jsonObject.has("data") ? jsonObject.getAsJsonObject("data") : null;
+        JsonObject forEndUser = (data != null && data.has("forEndUser")) ? data.getAsJsonObject("forEndUser") : null;
+        JsonObject events = (forEndUser != null && forEndUser.has("events")) ? forEndUser.getAsJsonObject("events")
+                : null;
+        JsonObject eventsInner = (events != null && events.has("events")) ? events.getAsJsonObject("events") : null;
+        JsonArray edges = (eventsInner != null && eventsInner.has("edges")) ? eventsInner.getAsJsonArray("edges")
+                : null;
+
+        if (edges != null && !edges.isEmpty()) {
+            JsonObject edge = edges.get(0).isJsonNull() ? null : edges.get(0).getAsJsonObject();
+
+            if (edge != null) {
+                JsonObject node = edge.has("node") ? edge.getAsJsonObject("node") : null;
+
+                if (node != null) {
+                    JsonArray invokers = node.has("invokers") ? node.getAsJsonArray("invokers") : null;
+                    JsonArray subjects = node.has("subjects") ? node.getAsJsonArray("subjects") : null;
+
+                    JsonObject invoker = (invokers != null && !invokers.isEmpty() && !invokers.get(0).isJsonNull())
+                            ? invokers.get(0).getAsJsonObject()
+                            : null;
+                    JsonObject subject = (subjects != null && !subjects.isEmpty() && !subjects.get(0).isJsonNull())
+                            ? subjects.get(0).getAsJsonObject()
+                            : null;
+
+                    event.setIconType(
+                            node.has("icon") && !node.get("icon").isJsonNull() ? node.get("icon").getAsString() : "");
+                    event.setEventText(node.has("name") && node.getAsJsonObject("name").has("translation")
+                            && !node.getAsJsonObject("name").get("translation").isJsonNull()
+                                    ? node.getAsJsonObject("name").get("translation").getAsString()
+                                    : "");
+                    event.setDate(node.has("occurredAt") && !node.get("occurredAt").isJsonNull()
+                            ? node.get("occurredAt").getAsString()
+                            : "");
+
+                    if (subject != null && subject.has("defaultName")
+                            && subject.getAsJsonObject("defaultName").has("translation")) {
+                        event.setSectionName(!subject.getAsJsonObject("defaultName").get("translation").isJsonNull()
+                                ? subject.getAsJsonObject("defaultName").get("translation").getAsString()
+                                : "");
+                    }
+
+                    if (invoker != null && invoker.has("defaultName")
+                            && invoker.getAsJsonObject("defaultName").has("translation")) {
+                        event.setInvokerName(!invoker.getAsJsonObject("defaultName").get("translation").isJsonNull()
+                                ? invoker.getAsJsonObject("defaultName").get("translation").getAsString()
+                                : "");
+                    }
+                }
+            }
+        } else {
+            logger.debug("JSON edges member is null or empty");
+        }
+        return event;
     }
 
     protected @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
@@ -399,8 +520,16 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     private Request createRequest(String url) {
         return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.ACCEPT, APPLICATION_JSON)
                 .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang()).header(HttpHeader.ACCEPT_ENCODING, "*")
-                .header("x-vendor-id", VENDOR).header("x-client-version", CLIENT_VERSION)
-                .header("x-client-device", CLIENT_DEVICE).agent(AGENT).timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
+                .header("x-vendor-id", VENDOR).header("x-client-version", CLIENT_VERSION).agent(AGENT)
+                .timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
+    }
+
+    private Request createGQLRequest(String url) {
+        return httpClient.newRequest(url).method(HttpMethod.POST).accept(MULTIPART_MIXED, APPLICATION_JSON)
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang())
+                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br").agent(AGENT)
+                .timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     private void relogin() {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -312,6 +312,7 @@ public enum MiIoDevices {
             "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)",
             THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
+    XIAOMI_VACUUM_C102GL("xiaomi.vacuum.c102gl", "Xiaomi Robot Vacuum X20+", THING_TYPE_BASIC),
     XIAOMI_WIFISPEAKER_V1("xiaomi.wifispeaker.v1", "Mi Network Speaker", THING_TYPE_UNSUPPORTED),
     XJX_TOILET_PRO("xjx.toilet.pro", "Uclean Smart Toilet Seat", THING_TYPE_BASIC),
     XJX_TOILET_PURE("xjx.toilet.pure", "Uclean Smart Toilet pure", THING_TYPE_BASIC),
@@ -409,6 +410,7 @@ public enum MiIoDevices {
     ZHIMI_AIRP_CPA4("zhimi.airp.cpa4", "Xiaomi Smart Air Purifier 4 Compact", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB4A("zhimi.airp.mb4a", "Mi Air Purifier 3C", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB5("zhimi.airp.mb5", "Xiaomi Smart Air Purifier 4", THING_TYPE_BASIC),
+    ZHIMI_AIRP_RMB1("zhimi.airp.rmb1", "Xiaomi Smart Air Purifier 4 Lite", THING_TYPE_BASIC),
     ZHIMI_AIRP_VB4("zhimi.airp.vb4", "Xiaomi Smart Air Purifier 4 Pro", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M1("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M2("zhimi.airpurifier.m2", "Mi Air Purifier 2", THING_TYPE_BASIC),

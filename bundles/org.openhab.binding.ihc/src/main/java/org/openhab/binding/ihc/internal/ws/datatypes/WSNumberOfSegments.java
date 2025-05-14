@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class WSNumberOfSegments {
             setNumberOfSegments(Integer.parseInt(value));
             return this;
         } catch (IOException | XPathExpressionException | NumberFormatException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 }

@@ -8,6 +8,7 @@
 	<thing-type id="p5">
 		<label>P5 Stereo Preamplifier</label>
 		<description>Connection to the Rotel Michi P5 stereo preamplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

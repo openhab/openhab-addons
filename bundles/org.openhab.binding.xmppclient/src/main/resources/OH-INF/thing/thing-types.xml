@@ -12,6 +12,11 @@
 				<label>Username</label>
 				<description>The XMPP Username (the left side of JID, e.g. user for JID user@example.com)</description>
 			</parameter>
+			<parameter name="nickname" type="text" required="false">
+				<label>Nickname</label>
+				<description>The XMPP Nickname to use in multi user chats. (Defaults to Username)</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="domain" type="text" required="true">
 				<label>Domain</label>
 				<description>The XMPP Domain (the right side of JID, e.g. example.com for JID user@example.com)</description>

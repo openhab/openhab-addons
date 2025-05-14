@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,12 @@ public class TeslascopeWebTargets {
     public void sendCommand(String publicID, String apiKey, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
+        return;
+    }
+
+    public void sendCommand(String publicID, String apiKey, String command, String params)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params);
         return;
     }
 

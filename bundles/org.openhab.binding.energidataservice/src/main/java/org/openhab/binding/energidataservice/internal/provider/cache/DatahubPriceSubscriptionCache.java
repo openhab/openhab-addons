@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.energidataservice.internal.provider.cache;
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -45,7 +46,7 @@ public class DatahubPriceSubscriptionCache
     }
 
     public DatahubPriceSubscriptionCache(Clock clock) {
-        super(clock, MAX_CACHE_SIZE);
+        super(clock, Duration.ofHours(1));
     }
 
     /**

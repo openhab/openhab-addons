@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>A Pulseaudio Sink-input</label>
 		<description>represents a pulseaudio sink-input</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="volume" typeId="volume"/>

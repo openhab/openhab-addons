@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -354,7 +354,7 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
-        Instant now = Instant.now(Utils.getClock());
+        Instant now = Utils.now();
         assertEquals(24, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));

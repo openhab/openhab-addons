@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,7 +116,8 @@ public class GreeDeviceFinder {
                     if ("gree".equalsIgnoreCase(scanResponseGson.packJson.brand)) {
                         // Create a new GreeDevice
                         logger.debug("Discovered device at {}:{}", remoteAddress.getHostAddress(), remotePort);
-                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson);
+                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson,
+                                encryptionTypeConfig);
                         addDevice(newDevice);
                     } else {
                         logger.debug("Unit discovered, but brand is not GREE");

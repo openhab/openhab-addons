@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ public class TACmiBindingConstants {
     public static final ThingTypeUID THING_TYPE_CMI = new ThingTypeUID(BINDING_ID, "cmi");
     public static final ThingTypeUID THING_TYPE_COE_BRIDGE = new ThingTypeUID(BINDING_ID, "coe-bridge");
     public static final ThingTypeUID THING_TYPE_CMI_SCHEMA = new ThingTypeUID(BINDING_ID, "cmiSchema");
+    public static final ThingTypeUID THING_TYPE_CMI_JSON = new ThingTypeUID(BINDING_ID, "cmiJSON");
 
     public static final String CONFIG_DESCRIPTION_API_SCHEMA_DEFAULTS = "channel-type:tacmi:schemaApiDefaults";
 

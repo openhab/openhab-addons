@@ -12,7 +12,7 @@
 
 		<label>Energy Meter</label>
 		<description>An OpenWebNet BUS/SCS Energy Meter. BTicino models: F52x</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="energyToday" typeId="energyToday"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LinkManager implements PortListener {
     private static final int LINKING_TIMEOUT = 30000; // in milliseconds
-    private static final int DEFAULT_CONTROLLER_GROUP = 0;
     private static final int DEFAULT_RESPONDER_GROUP = 1;
 
     private final Logger logger = LoggerFactory.getLogger(LinkManager.class);
@@ -93,7 +92,7 @@ public class LinkManager implements PortListener {
 
     public void link(@Nullable InsteonAddress address) {
         addLinkingRequest(LinkMode.RESPONDER, DEFAULT_RESPONDER_GROUP);
-        addLinkingRequest(LinkMode.CONTROLLER, DEFAULT_CONTROLLER_GROUP);
+        addLinkingRequest(LinkMode.CONTROLLER, modem.getDB().getDefaultControllerGroup());
         start(address);
     }
 

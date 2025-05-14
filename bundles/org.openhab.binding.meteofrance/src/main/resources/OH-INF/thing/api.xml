@@ -10,6 +10,7 @@
 			Bridge to the Météo-France API Portal. In order to receive the data, you must register an account on
 			https://portail-api.meteofrance.fr/devportal/apis and get your API token.
 		</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="apikey" type="text" required="true">
 				<label>API Key</label>

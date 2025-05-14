@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,8 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         jellyApiClient.setBaseUrl(getServerUrl());
         if (config.token.isBlank() || config.userId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Navigate to <your local openhab url>/jellyfin/" + this.getThing().getUID().getId() + " to login.");
+                    "Navigate to http(s)://<YOUROPENHAB>:<YOURPORT>/jellyfin/" + this.getThing().getUID().getId()
+                            + " to login.");
             return;
         }
         jellyApiClient.setAccessToken(config.token);

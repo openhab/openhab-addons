@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.InsteonBindingConstants;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
@@ -73,12 +75,12 @@ public class LegacyPort {
 
     private IOStream ioStream;
     private String name;
-    private Modem modem;
-    private IOStreamReader reader;
-    private IOStreamWriter writer;
-    private final int readSize = 1024; // read buffer size
-    private @Nullable Thread readThread = null;
-    private @Nullable Thread writeThread = null;
+    private Modem modem = new Modem();
+    private ScheduledExecutorService scheduler;
+    private IOStreamReader reader = new IOStreamReader();
+    private IOStreamWriter writer = new IOStreamWriter();
+    private @Nullable ScheduledFuture<?> readJob;
+    private @Nullable ScheduledFuture<?> writeJob;
     private boolean running = false;
     private boolean modemDBComplete = false;
     private MsgFactory msgFactory = new MsgFactory();
@@ -93,18 +95,16 @@ public class LegacyPort {
      *
      * @param config the network bridge config
      * @param driver the driver that manages this port
-     * @param serialPortManager the serial port manager
+     * @param httpClient the http client
      * @param scheduler the scheduler
+     * @param serialPortManager the serial port manager
      */
-    public LegacyPort(InsteonLegacyNetworkConfiguration config, LegacyDriver driver,
-            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+    public LegacyPort(InsteonLegacyNetworkConfiguration config, LegacyDriver driver, HttpClient httpClient,
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         this.name = config.getRedactedPort();
         this.driver = driver;
-        this.modem = new Modem();
-        addListener(modem);
-        this.ioStream = IOStream.create(config.parse(), scheduler, serialPortManager);
-        this.reader = new IOStreamReader();
-        this.writer = new IOStreamWriter();
+        this.scheduler = scheduler;
+        this.ioStream = IOStream.create(config.parse(), httpClient, scheduler, serialPortManager);
         this.mdbb = new LegacyModemDBBuilder(this, scheduler);
     }
 
@@ -113,7 +113,7 @@ public class LegacyPort {
     }
 
     public synchronized boolean isModemDBComplete() {
-        return (modemDBComplete);
+        return modemDBComplete;
     }
 
     public boolean isRunning() {
@@ -178,10 +178,8 @@ public class LegacyPort {
             return;
         }
 
-        readThread = new Thread(reader);
-        setParamsAndStart(readThread, "OH-binding-" + InsteonBindingConstants.BINDING_ID + "-LegacyReader");
-        writeThread = new Thread(writer);
-        setParamsAndStart(writeThread, "OH-binding-" + InsteonBindingConstants.BINDING_ID + "-LegacyWriter");
+        readJob = scheduler.schedule(reader, 0, TimeUnit.SECONDS);
+        writeJob = scheduler.schedule(writer, 0, TimeUnit.SECONDS);
 
         if (!mdbb.isComplete()) {
             modem.initialize();
@@ -190,14 +188,6 @@ public class LegacyPort {
 
         running = true;
         disconnected.set(false);
-    }
-
-    private void setParamsAndStart(@Nullable Thread thread, String type) {
-        if (thread != null) {
-            thread.setName("OH-binding-Insteon " + name + " " + type);
-            thread.setDaemon(true);
-            thread.start();
-        }
     }
 
     /**
@@ -215,36 +205,19 @@ public class LegacyPort {
             mdbb.stop();
         }
 
-        if (ioStream.isOpen()) {
-            ioStream.close();
+        ioStream.close();
+
+        ScheduledFuture<?> readJob = this.readJob;
+        if (readJob != null) {
+            readJob.cancel(true);
+            this.readJob = null;
         }
 
-        Thread readThread = this.readThread;
-        if (readThread != null) {
-            readThread.interrupt();
+        ScheduledFuture<?> writeJob = this.writeJob;
+        if (writeJob != null) {
+            writeJob.cancel(true);
+            this.writeJob = null;
         }
-        Thread writeThread = this.writeThread;
-        if (writeThread != null) {
-            writeThread.interrupt();
-        }
-        logger.debug("waiting for read thread to exit for port {}", name);
-        try {
-            if (readThread != null) {
-                readThread.join();
-            }
-        } catch (InterruptedException e) {
-            logger.debug("got interrupted waiting for read thread to exit.");
-        }
-        logger.debug("waiting for write thread to exit for port {}", name);
-        try {
-            if (writeThread != null) {
-                writeThread.join();
-            }
-        } catch (InterruptedException e) {
-            logger.debug("got interrupted waiting for write thread to exit.");
-        }
-        this.readThread = null;
-        this.writeThread = null;
 
         logger.debug("all threads for port {} stopped.", name);
     }
@@ -296,6 +269,7 @@ public class LegacyPort {
      * @author Bernd Pfrommer - Initial contribution
      */
     class IOStreamReader implements Runnable {
+        private static final int READ_BUFFER_SIZE = 1024;
 
         private ReplyType reply = ReplyType.GOT_ACK;
         private Object replyLock = new Object();
@@ -311,20 +285,25 @@ public class LegacyPort {
 
         @Override
         public void run() {
-            logger.debug("starting reader...");
-            byte[] buffer = new byte[readSize];
+            logger.debug("starting reader thread");
+            byte[] buffer = new byte[READ_BUFFER_SIZE];
             try {
-                for (int len = -1; (len = ioStream.read(buffer)) > 0;) {
-                    msgFactory.addData(buffer, len);
-                    processMessages();
+                while (!Thread.interrupted()) {
+                    logger.trace("reader checking for input data");
+                    // this call blocks until input data is available
+                    int len = ioStream.read(buffer);
+                    if (len > 0) {
+                        msgFactory.addData(buffer, len);
+                        processMessages();
+                    }
                 }
             } catch (InterruptedException e) {
-                logger.debug("reader thread got interrupted!");
+                logger.trace("reader thread got interrupted!");
             } catch (IOException e) {
-                logger.debug("got an io exception in the reader thread");
+                logger.trace("reader thread got an io exception", e);
                 disconnected();
             }
-            logger.debug("reader thread exiting!");
+            logger.debug("exiting reader thread!");
         }
 
         private void processMessages() {
@@ -389,28 +368,22 @@ public class LegacyPort {
          * Called by IOStreamWriter for flow control.
          *
          * @return true if retransmission is necessary
+         * @throws InterruptedException
          */
-        public boolean waitForReply() {
+        public boolean waitForReply() throws InterruptedException {
             reply = ReplyType.WAITING_FOR_ACK;
-            while (reply == ReplyType.WAITING_FOR_ACK) {
-                try {
-                    logger.trace("writer waiting for ack.");
-                    // There have been cases observed, in particular for
-                    // the Hub, where we get no ack or nack back, causing the binding
-                    // to hang in the wait() below, because unsolicited messages
-                    // do not trigger a notify(). For this reason we request retransmission
-                    // if the wait() times out.
-                    getRequestReplyLock().wait(30000); // be patient for 30 msec
-                    if (reply == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
-                        logger.trace("writer timeout expired, asking for retransmit!");
-                        reply = ReplyType.GOT_NACK;
-                        break;
-                    } else {
-                        logger.trace("writer got ack: {}", (reply == ReplyType.GOT_ACK));
-                    }
-                } catch (InterruptedException e) {
-                    break; // done for the day...
-                }
+            logger.trace("writer waiting for ack.");
+            // There have been cases observed, in particular for
+            // the Hub, where we get no ack or nack back, causing the binding
+            // to hang in the wait() below, because unsolicited messages
+            // do not trigger a notify(). For this reason we request retransmission
+            // if the wait() times out.
+            getRequestReplyLock().wait(30000); // be patient for 30 msec
+            if (reply == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
+                logger.trace("writer timeout expired, asking for retransmit!");
+                reply = ReplyType.GOT_NACK;
+            } else {
+                logger.trace("writer got ack: {}", (reply == ReplyType.GOT_ACK));
             }
             return reply == ReplyType.GOT_NACK;
         }
@@ -427,9 +400,9 @@ public class LegacyPort {
 
         @Override
         public void run() {
-            logger.debug("starting writer...");
-            while (true) {
-                try {
+            logger.debug("starting writer thread");
+            try {
+                while (!Thread.interrupted()) {
                     // this call blocks until the lock on the queue is released
                     logger.trace("writer checking message queue");
                     Msg msg = writeQueue.take();
@@ -450,16 +423,14 @@ public class LegacyPort {
                     if (msg.getQuietTime() > 0) {
                         Thread.sleep(msg.getQuietTime());
                     }
-                } catch (InterruptedException e) {
-                    logger.debug("got interrupted exception in write thread");
-                    break;
-                } catch (IOException e) {
-                    logger.debug("got an io exception in the write thread");
-                    disconnected();
-                    break;
                 }
+            } catch (InterruptedException e) {
+                logger.trace("writer thread got interrupted!");
+            } catch (IOException e) {
+                logger.trace("writer thread got an io exception", e);
+                disconnected();
             }
-            logger.debug("writer thread exiting!");
+            logger.debug("exiting writer thread!");
         }
     }
 
@@ -521,6 +492,7 @@ public class LegacyPort {
         public void initialize() {
             try {
                 Msg msg = Msg.makeMessage("GetIMInfo");
+                addListener(this);
                 writeMessage(msg);
             } catch (IOException e) {
                 logger.warn("modem init failed!", e);

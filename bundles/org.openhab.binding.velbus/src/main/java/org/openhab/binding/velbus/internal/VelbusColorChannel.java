@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,23 +26,53 @@ import org.openhab.core.util.ColorUtil;
  */
 @NonNullByDefault
 public class VelbusColorChannel {
-    protected final int BRIGHTNESS_MIN_VALUE = 0;
-    protected final int BRIGHTNESS_MAX_VALUE = 100;
+    protected static final int BRIGHTNESS_MIN_VALUE = 0;
+    protected static final int BRIGHTNESS_MAX_VALUE = 100;
 
-    protected final int COLOR_MIN_VALUE = 0;
-    protected final int COLOR_MAX_VALUE = 255;
+    protected static final int[] BRIGHTNESS_CURVE_VALUES = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8,
+            8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 17,
+            18, 18, 19, 19, 20, 21, 21, 22, 22, 23, 24, 24, 25, 25, 26, 27, 28, 29, 30, 30, 31, 32, 33, 33, 35, 36, 37,
+            38, 39, 40, 41, 42, 44, 45, 46, 47, 49, 50, 51, 53, 54, 56, 57, 59, 61, 62, 64, 66, 68, 70, 72, 74, 76, 78,
+            80, 82, 84, 87, 89, 92, 94, 97, 100 };
 
-    protected final int WHITE_MIN_VALUE = 0;
-    protected final int WHITE_MAX_VALUE = 100;
+    protected static final int[] BRIGHTNESS_CURVE_MISSING_VALUES = { 34, 43, 48, 52, 55, 58, 60, 63, 65, 67, 69, 71, 73,
+            75, 77, 79, 81, 83, 85, 86, 88, 90, 91, 93, 95, 96, 98, 99 };
+    protected static final int[] BRIGHTNESS_CURVE_SUBSTITUTION_VALUES = { 33, 44, 49, 51, 56, 59, 61, 64, 66, 68, 70,
+            72, 74, 76, 78, 80, 82, 84, 84, 87, 89, 89, 92, 94, 94, 97, 97 };
+
+    protected static final int COLOR_MIN_VALUE = 0;
+    protected static final int COLOR_MAX_VALUE = 255;
+
+    protected static final int WHITE_MIN_VALUE = 0;
+    protected static final int WHITE_MAX_VALUE = 100;
 
     private int brightness = 100;
     private int[] color = { 255, 255, 255 };
     private int white = 100;
+    private byte curveType = CURVE_TYPE_LINEAR;
+
+    public VelbusColorChannel() {
+        this.curveType = CURVE_TYPE_LINEAR;
+    }
+
+    /**
+     * @param curveType the curve type used by the module (linear or exponential)
+     */
+    public VelbusColorChannel(byte curveType) {
+        this.curveType = curveType;
+    }
 
     /**
      * @param brightness the brightness to set
      */
     public void setBrightness(int brightness) {
+        if (this.curveType == CURVE_TYPE_EXPONENTIAL) {
+            brightness = adaptBrightnessValue(brightness);
+        }
         this.brightness = (brightness < BRIGHTNESS_MIN_VALUE) ? BRIGHTNESS_MIN_VALUE : brightness;
         this.brightness = (brightness > BRIGHTNESS_MAX_VALUE) ? BRIGHTNESS_MAX_VALUE : brightness;
     }
@@ -66,8 +96,12 @@ public class VelbusColorChannel {
      */
     public void setBrightness(byte brightness) {
         if (brightness != VALUE_UNCHANGED) {
-            this.brightness = convertFromVelbus(Byte.toUnsignedInt(brightness), Byte.toUnsignedInt(DALI_MAX_VALUE),
-                    BRIGHTNESS_MAX_VALUE);
+            if (this.curveType == CURVE_TYPE_LINEAR) {
+                this.brightness = convertFromVelbus(Byte.toUnsignedInt(brightness), Byte.toUnsignedInt(DALI_MAX_VALUE),
+                        BRIGHTNESS_MAX_VALUE);
+            } else {
+                this.brightness = BRIGHTNESS_CURVE_VALUES[Byte.toUnsignedInt(brightness)];
+            }
         }
     }
 
@@ -89,7 +123,45 @@ public class VelbusColorChannel {
      * @return the brightness for velbus packet
      */
     public byte getBrightnessVelbus() {
-        return convertToVelbus(this.brightness, BRIGHTNESS_MAX_VALUE, Byte.toUnsignedInt(DALI_MAX_VALUE));
+        if (this.curveType == CURVE_TYPE_LINEAR) {
+            return convertToVelbus(getBrightness(), BRIGHTNESS_MAX_VALUE, Byte.toUnsignedInt(DALI_MAX_VALUE));
+        } else {
+            return convertToVelbusBrightnessCurve(getBrightness());
+        }
+    }
+
+    /**
+     * @param value the value to adapt
+     * @return the value adapted to the exponential curve implemented in modules
+     */
+    private int adaptBrightnessValue(int value) {
+        int brightVal = value;
+
+        for (int index = 0; index < BRIGHTNESS_CURVE_MISSING_VALUES.length; index++) {
+            if (BRIGHTNESS_CURVE_MISSING_VALUES[index] == value) {
+                brightVal = BRIGHTNESS_CURVE_SUBSTITUTION_VALUES[index];
+                break;
+            }
+        }
+
+        return brightVal;
+    }
+
+    /**
+     * @param value the value to convert
+     * @return the value converted for the velbus packet
+     */
+    private byte convertToVelbusBrightnessCurve(int value) {
+        byte brightnessCurve = (byte) 0xFE;
+
+        for (int index = 0; index < BRIGHTNESS_CURVE_VALUES.length; index++) {
+            if (BRIGHTNESS_CURVE_VALUES[index] == value) {
+                brightnessCurve = Integer.valueOf(index).byteValue();
+                break;
+            }
+        }
+
+        return brightnessCurve;
     }
 
     /**

@@ -7,6 +7,7 @@
 	<bridge-type id="rio">
 		<label>Russound RIO Device</label>
 		<description>Ethernet access point to Russound RIO control system (usually the main controller)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lang" typeId="sysLang"/>
@@ -50,6 +51,7 @@
 
 		<label>Russound Controller</label>
 		<description>Controller of Zones, Sources, etc</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="zones" typeId="ctlZones"/>
@@ -70,6 +72,7 @@
 
 		<label>Russound Zone</label>
 		<description>Zone within a Controller</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="zoneName"/>
@@ -122,6 +125,7 @@
 
 		<label>Russound Source</label>
 		<description>Source (tuner, streamer, etc) within the Russound System</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="srcName"/>

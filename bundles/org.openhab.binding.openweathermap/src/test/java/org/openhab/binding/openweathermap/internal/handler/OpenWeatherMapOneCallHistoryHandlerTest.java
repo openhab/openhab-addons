@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import static org.openhab.binding.openweathermap.internal.TestObjectsUtil.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +35,6 @@ import org.openhab.binding.openweathermap.internal.TestObjectsUtil;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallHistAPIData;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -93,10 +91,7 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
 
     private static OpenWeatherMapOneCallHistoryHandler createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
-        TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
-        when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.of("UTC"));
-        final OpenWeatherMapOneCallHistoryHandler handler = spy(
-                new OpenWeatherMapOneCallHistoryHandler(thing, timeZoneProvider));
+        final OpenWeatherMapOneCallHistoryHandler handler = spy(new OpenWeatherMapOneCallHistoryHandler(thing));
 
         when(callback.isChannelLinked(any())).thenReturn(true);
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,7 +39,6 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SCHEDULE);
     private final CronScheduler scheduler;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
@@ -48,10 +46,8 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Activate
-    public AhaWasteCollectionHandlerFactory(final @Reference CronScheduler scheduler,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+    public AhaWasteCollectionHandlerFactory(final @Reference CronScheduler scheduler) {
         this.scheduler = scheduler;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -59,8 +55,7 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SCHEDULE.equals(thingTypeUID)) {
-            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider,
-                    AhaCollectionScheduleImpl::new, null);
+            return new AhaWasteCollectionHandler(thing, this.scheduler, AhaCollectionScheduleImpl::new, null);
         }
         return null;
     }
