@@ -85,6 +85,7 @@
 		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
