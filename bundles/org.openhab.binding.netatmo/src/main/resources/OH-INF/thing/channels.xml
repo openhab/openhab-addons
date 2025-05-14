@@ -164,7 +164,7 @@
 		<description>Default duration of manual setpoint changes.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="720" step="5" readOnly="true"/>
@@ -588,7 +588,7 @@
 		<description>Apparent computed temperature (based on temperature and humidity).</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
