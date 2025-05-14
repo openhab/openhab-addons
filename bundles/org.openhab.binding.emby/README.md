@@ -40,7 +40,7 @@ The following Configuration Parameter Keys are available:
 | port            | Integer | Port in which EMBY is listening for communication.      | 8096    | No       | No       |
 | discovery       | Boolean | Enable or disable automatic device discovery.           | true    | No       | Yes      |
 
-## `device` Thing Configuration
+### `device` Thing Configuration
 
 The following Configuration Parameter Key is available:
 
