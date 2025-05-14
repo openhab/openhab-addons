@@ -128,7 +128,6 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_MINIG4_1 = "S4SW-001X8EU";
     public static final String SHELLYDT_MINIG4_PM = "S4EM-001PXCEU16";
     public static final String SHELLYDT_MINIG4_1PM = "S4SW-001P8EU";
-
     
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
