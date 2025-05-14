@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
 import java.time.Instant;
@@ -77,8 +76,10 @@ public class OpenhabGraalJSScriptEngine
     private static final Source GLOBAL_SOURCE;
     static {
         try {
-            GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
-                    "@jsscripting-globals.js").cached(true).build();
+            GLOBAL_SOURCE = Source
+                    .newBuilder("js", getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@jsscripting-globals.js"),
+                            "@jsscripting-globals.js")
+                    .cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @jsscripting-globals.js", e);
         }
@@ -88,7 +89,8 @@ public class OpenhabGraalJSScriptEngine
     static {
         try {
             OPENHAB_JS_SOURCE = Source
-                    .newBuilder("js", getFileAsReader("node_modules/@openhab-globals.js"), "@openhab-globals.js")
+                    .newBuilder("js", getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@openhab-globals.js"),
+                            "@openhab-globals.js")
                     .cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @openhab-globals.js", e);
@@ -97,8 +99,6 @@ public class OpenhabGraalJSScriptEngine
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
-    /** Final CommonJS search path for our library */
-    private static final Path NODE_DIR = Paths.get("node_modules");
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
@@ -163,8 +163,8 @@ public class OpenhabGraalJSScriptEngine
                         .option("js.nashorn-compat", "true") // Enable Nashorn compat mode as openhab-js relies on
                                                              // accessors, see
                                                              // https://github.com/oracle/graaljs/blob/master/docs/user/NashornMigrationGuide.md#accessors
-                        .option("js.ecmascript-version", "2022") // If Nashorn compat is enabled, it will enforce ES5
-                                                                 // compatibility, we want ECMA2022
+                        .option("js.ecmascript-version", "2024") // If Nashorn compat is enabled, it will enforce ES5
+                                                                 // compatibility, we want ECMA2024
                         .option("js.commonjs-require", "true") // Enable CommonJS module support
                         .hostClassLoader(getClass().getClassLoader())
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
@@ -325,7 +325,7 @@ public class OpenhabGraalJSScriptEngine
      * @return whether the given path is a node root directory
      */
     private static boolean isRootNodePath(Path path) {
-        return path.startsWith(path.getRoot().resolve(NODE_DIR));
+        return path.startsWith(path.getRoot().resolve(GraalJSScriptEngineFactory.NODE_DIR));
     }
 
     /**

@@ -157,6 +157,13 @@
 				<type>openweathermap:moon-phase</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="visbility" groupIds="forecastHourly"/>
+			<remove-channel id="visibility" groupIds="forecastHourly"/>
+			<add-channel id="visibility" groupIds="forecastHourly">
+				<type>openweathermap:visibility</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

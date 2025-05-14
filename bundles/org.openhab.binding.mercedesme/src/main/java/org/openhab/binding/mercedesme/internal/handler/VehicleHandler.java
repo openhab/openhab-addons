@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -215,7 +216,7 @@ public class VehicleHandler extends BaseThingHandler {
         var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
-        String pin = accountHandler.get().config.get().pin;
+        String pin = accountHandler.get().config.pin;
         if (group == null) {
             logger.trace("No command {} found for {}", command, channel);
             return;
@@ -954,7 +955,7 @@ public class VehicleHandler extends BaseThingHandler {
                 if (vas != null && !Utils.isNil(vas)) {
                     // proto weekday starts with MONDAY=0, java ZonedDateTime starts with MONDAY=1
                     long estimatedWeekday = Utils.getInt(vas) + 1;
-                    ZonedDateTime storedZdt = endDateTimeType.getZonedDateTime();
+                    ZonedDateTime storedZdt = endDateTimeType.getZonedDateTime(ZoneId.systemDefault());
                     long storedWeekday = storedZdt.getDayOfWeek().getValue();
                     // check if estimated weekday is smaller than stored
                     // estimation Monday=1 vs. stored Saturday=6 => (7+1)-6=2 days ahead

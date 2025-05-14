@@ -7,7 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Weatherunderground Bridge</label>
 		<description>The Weather Underground bridge represents a connection to the Weather Underground service</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="apikey" type="text" required="true">
 				<context>password</context>

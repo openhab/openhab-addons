@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.tellstick.internal.handler;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.tellstick.device.TellstickException;
@@ -24,6 +26,7 @@ import org.tellstick.device.iface.Device;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public interface TelldusDeviceController {
 
     /**
@@ -43,6 +46,7 @@ public interface TelldusDeviceController {
      * @param dev
      * @return
      */
+    @Nullable
     State calcState(Device dev);
 
     /**

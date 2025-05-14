@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.livisismarthome.internal.LivisiBindingConstants;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.StatusResponseDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ActionDTO;
+import org.openhab.binding.livisismarthome.internal.client.api.entity.action.RestartActionDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionDTO;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.ShutterActionType;
 import org.openhab.binding.livisismarthome.internal.client.api.entity.action.StateActionSetterDTO;
@@ -263,6 +264,15 @@ public class LivisiClient {
     public void setRollerShutterAction(final String capabilityId, final ShutterActionType rollerShutterAction)
             throws IOException {
         executePost(createActionURL(), new ShutterActionDTO(capabilityId, rollerShutterAction));
+    }
+
+    /**
+     * Restarts the SHC (bridge) device
+     */
+    public void setRestartAction(@Nullable final String bridgeDeviceId) throws IOException {
+        if (bridgeDeviceId != null) {
+            executePost(createActionURL(), new RestartActionDTO(bridgeDeviceId));
+        }
     }
 
     /**

@@ -11,6 +11,7 @@
 
 		<label>Caddx Alarm Keypad</label>
 		<description>Represents any of the keypads of the Caddx Alarm System.</description>
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 
 		<channels>
 			<channel id="keypad_key_pressed" typeId="keypad_button_press">

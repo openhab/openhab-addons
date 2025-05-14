@@ -1,0 +1,42 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+device schema (converted)
+* License: MIT License
+* Project: https://github.com/Apollon77/ioBroker.tuya
+* Source:  https://github.com/Apollon77/ioBroker.tuya
+
+TuyAPI (inspiration for the local protocol)
+* License: MIT License
+* Project: https://github.com/codetheweb/tuyapi
+* Source:  https://github.com/codetheweb/tuyapi
+
+Parts of this code have been forked from https://github.com/smarthomej/addons
+
+Original license header of forked files was
+
+/*
+ * Copyright (c) 2021-2023 Contributors to the SmartHome/J project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */

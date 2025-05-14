@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class JettyAdminService implements AdminService {
     @Override
     public void enableBlocking() throws PiHoleException {
         logger.debug("Enabling blocking");
-        var url = baseUrl.resolve("/admin/api.php?disable&auth=%s".formatted(token));
+        var url = baseUrl.resolve("/admin/api.php?enable&auth=%s".formatted(token));
         var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
         send(request);
     }

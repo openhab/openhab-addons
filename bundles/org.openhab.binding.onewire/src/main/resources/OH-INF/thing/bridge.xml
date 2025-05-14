@@ -6,6 +6,7 @@
 	<bridge-type id="owserver" extensible="owfs-string,owfs-number">
 		<label>OW Server</label>
 		<description>An owserver instance</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="network-address" type="text" required="true">
 				<context>network_address</context>

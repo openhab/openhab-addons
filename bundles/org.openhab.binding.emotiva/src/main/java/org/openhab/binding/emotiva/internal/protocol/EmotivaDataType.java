@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ public enum EmotivaDataType {
     DIMENSIONLESS_DECIBEL("decibel"),
     DIMENSIONLESS_PERCENT("percent"),
     FREQUENCY_HERTZ("hertz"),
+    KEEP_ALIVE("keep_alive"),
     NUMBER("number"),
     NUMBER_TIME("number_time"),
     GOODBYE("goodbye"),

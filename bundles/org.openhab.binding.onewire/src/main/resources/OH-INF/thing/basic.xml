@@ -8,6 +8,7 @@
 			<bridge-type-ref id="owserver"/>
 		</supported-bridge-type-refs>
 		<label>Basic 1 Wire Sensor</label>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:onewire:basethingconfig"/>
 	</thing-type>
 </thing:thing-descriptions>

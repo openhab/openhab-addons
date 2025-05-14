@@ -7,6 +7,7 @@
 	<bridge-type id="ip">
 		<label>IP Connection</label>
 		<description>This bridge represents the IP connection to the alarm system.</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="system_status" typeId="system_status"/>

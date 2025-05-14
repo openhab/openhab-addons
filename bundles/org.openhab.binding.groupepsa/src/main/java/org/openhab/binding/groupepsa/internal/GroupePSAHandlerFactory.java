@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.groupepsa.internal.bridge.GroupePSABridgeHandler;
 import org.openhab.binding.groupepsa.internal.things.GroupePSAHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -48,15 +47,12 @@ public class GroupePSAHandlerFactory extends BaseThingHandlerFactory {
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public GroupePSAHandlerFactory(final @Reference OAuthFactory oAuthFactory, //
-            final @Reference HttpClientFactory httpClientFactory, //
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference HttpClientFactory httpClientFactory) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -69,7 +65,7 @@ public class GroupePSAHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new GroupePSAHandler(thing, timeZoneProvider);
+            return new GroupePSAHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new GroupePSABridgeHandler((Bridge) thing, oAuthFactory, httpClient);
         }

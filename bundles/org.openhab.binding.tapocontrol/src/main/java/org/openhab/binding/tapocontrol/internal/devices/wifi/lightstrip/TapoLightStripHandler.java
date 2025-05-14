@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -43,7 +44,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Constructor
-     * 
+     *
      * @param thing Thing object representing device
      */
     public TapoLightStripHandler(Thing thing) {
@@ -53,7 +54,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     /**
      * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
      * received
-     * 
+     *
      * @param queryCommand command where new data belong to
      */
     @Override
@@ -71,7 +72,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * handle command sent to device
-     * 
+     *
      * @param channelUID channelUID command is sent to
      * @param command command to be sent
      */
@@ -118,18 +119,32 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
             setBrightness(percent.intValue()); // 0..100% = 0..100
         } else if (command instanceof DecimalType decimalCommand) {
             setBrightness(decimalCommand.intValue());
+        } else if (command instanceof OnOffType onOffCommand) {
+            handleOnOffCommand(onOffCommand);
         }
     }
 
     private void handleColorCommand(Command command) {
         if (command instanceof HSBType hsbCommand) {
             setColor(hsbCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
+            handleOnOffCommand(onOffCommand);
+        } else if (command instanceof DecimalType decimalCommand) {
+            handleBrightnessCommand(decimalCommand);
+        } else if (command instanceof PercentType percentCommand) {
+            handleBrightnessCommand(percentCommand);
         }
     }
 
     private void handleColorTempCommand(Command command) {
-        if (command instanceof DecimalType decimalCommand) {
-            setColorTemp(decimalCommand.intValue());
+        QuantityType<?> kelvinQuantity = null;
+        if (command instanceof QuantityType<?> genericQuantity) {
+            kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+        } else if (command instanceof DecimalType decimal) {
+            kelvinQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN);
+        }
+        if (kelvinQuantity != null) {
+            setColorTemp(kelvinQuantity.intValue());
         }
     }
 
@@ -164,7 +179,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Switch device On or Off
-     * 
+     *
      * @param on if true device will switch on. Otherwise switch off
      */
     protected void switchOnOff(boolean on) {
@@ -174,7 +189,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set Britghtness of device
-     * 
+     *
      * @param newBrightness percentage 0-100 of new brightness
      */
     protected void setBrightness(Integer newBrightness) {
@@ -190,20 +205,24 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set Color of Device
-     * 
+     *
      * @param command HSBType
      */
     protected void setColor(HSBType command) {
-        lightStripData.switchOn();
-        lightStripData.setHue(command.getHue().intValue());
-        lightStripData.setSaturation(command.getSaturation().intValue());
-        lightStripData.setBrightness(command.getBrightness().intValue());
+        if (PercentType.ZERO.equals(command.getBrightness())) {
+            lightStripData.switchOff();
+        } else {
+            lightStripData.switchOn();
+            lightStripData.setHue(command.getHue().intValue());
+            lightStripData.setSaturation(command.getSaturation().intValue());
+            lightStripData.setBrightness(command.getBrightness().intValue());
+        }
         connector.sendCommandAndQuery(lightStripData, true);
     }
 
     /**
      * Set ColorTemp
-     * 
+     *
      * @param colorTemp (Integer) in Kelvin
      */
     protected void setColorTemp(Integer colorTemp) {
@@ -214,7 +233,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set light effect
-     * 
+     *
      * @param lightEffect TapoLightEffect
      */
     protected void setLightEffect(TapoLightEffect lightEffect) {

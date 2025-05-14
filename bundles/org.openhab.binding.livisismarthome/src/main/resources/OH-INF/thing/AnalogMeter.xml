@@ -11,7 +11,7 @@
 
 		<label>Analog Meter</label>
 		<description>The Analog Meter from the LIVISI EnergyControl product.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="absoluteEnergyConsumption" typeId="absoluteEnergyConsumption"/>
 			<channel id="energyConsumptionDayKwh" typeId="energyConsumptionDayKwh"/>

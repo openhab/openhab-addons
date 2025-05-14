@@ -1,0 +1,52 @@
+{
+  "status": 1,
+  "account": {
+    "userID": "%s",
+    "userNo": "BR2005200239023",
+    "userIDType": "LGE",
+    "displayUserID": "faker",
+    "userIDList": [
+      {
+        "lgeIDList": [
+          {
+            "lgeIDType": "LGE",
+            "userID": "%s"
+          }
+        ]
+      }
+    ],
+    "dateOfBirth": "05-05-1978",
+    "country": "BR",
+    "countryName": "Brazil",
+    "blacklist": "N",
+    "age": "45",
+    "isSubscribe": "N",
+    "changePw": "N",
+    "toEmailId": "N",
+    "periodPW": "N",
+    "lgAccount": "Y",
+    "isService": "Y",
+    "userNickName": "faker",
+    "authUser": "N",
+    "serviceList": [
+      {
+        "isService": "Y",
+        "svcName": "LG ThinQ",
+        "svcCode": "SVC202",
+        "joinDate": "29-05-2018"
+      },
+      {
+        "isService": "Y",
+        "svcName": "LG Developer",
+        "svcCode": "SVC609",
+        "joinDate": "29-05-2018"
+      },
+      {
+        "isService": "Y",
+        "svcName": "MC OAuth",
+        "svcCode": "SVC710",
+        "joinDate": "29-05-2018"
+      }
+    ]
+  }
+}
