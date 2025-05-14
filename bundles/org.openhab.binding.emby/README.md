@@ -151,7 +151,7 @@ then
 end
 ```
 
-# Example Rule (JavaScript)
+### Example Rule (JavaScript)
 
 ```javascript
 // inside a JS Scripting rule
