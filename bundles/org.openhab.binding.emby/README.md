@@ -73,7 +73,7 @@ The following Channel IDs are available for a `device` Thing:
 | `imageUrlPercentPlayed` | Boolean | false   | If true, adds an overlay indicating the percent played (e.g., 47%).                                                                                                |
 
 
-# Full Example
+## Full Example
 
 ## `emby.things` Example
 
