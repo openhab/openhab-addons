@@ -68,8 +68,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("tablePrimaryValueNow", "strftime(" + datetimeFormat + " , 'now', 'localtime')");
-        sqlTypes.put("tablePrimaryValueFormated", "strftime(" + datetimeFormat + " , ?, 'unixepoch', 'localtime')");
+        sqlTypes.put("tablePrimaryValue", "strftime(" + datetimeFormat + " , 'now', 'localtime')");
     }
 
     /**
@@ -118,7 +117,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
-                        sqlTypes.get("tablePrimaryValueNow") });
+                        sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -134,7 +133,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
-                        sqlTypes.get("tablePrimaryValueFormated") });
+                        "strftime(" + datetimeFormat + " , ?, 'unixepoch', 'localtime')" });
 
         double epochSecondsWithMillis = date.toInstant().toEpochMilli() / 1_000.0;
         Object[] params = { epochSecondsWithMillis, storedVO.getValue() };
