@@ -13,7 +13,6 @@
 package org.openhab.persistence.jdbc.internal.db;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +42,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
+    private static final String datetimeFormat = "'%Y-%m-%d %H:%M:%f'";
+
     /********
      * INIT *
      ********/
@@ -67,9 +68,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("tablePrimaryValue", "strftime('%Y-%m-%d %H:%M:%f' , 'now' , 'localtime')");
-        sqlTypes.put("tablePrimaryValueFormated",
-                "strftime('%Y-%m-%d %H:%M:%S' , ?, 'unixepoch', 'localtime') || '.' || ?");
+        sqlTypes.put("tablePrimaryValueNow", "strftime(" + datetimeFormat + " , 'now', 'localtime')");
+        sqlTypes.put("tablePrimaryValueFormated", "strftime(" + datetimeFormat + " , ?, 'unixepoch', 'localtime')");
     }
 
     /**
@@ -118,7 +118,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
-                        sqlTypes.get("tablePrimaryValue") });
+                        sqlTypes.get("tablePrimaryValueNow") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -136,11 +136,9 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
                 new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
                         sqlTypes.get("tablePrimaryValueFormated") });
 
-        java.time.Instant dateInstant = date.toInstant();
-        long epochSecond = dateInstant.getEpochSecond();
-        int millis = dateInstant.get(ChronoField.MILLI_OF_SECOND);
-        Object[] params = { epochSecond, millis, storedVO.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} seconds={} millis={} value='{}'", sql, epochSecond, millis,
+        double epochSecondsWithMillis = date.toInstant().toEpochMilli() / 1_000.0;
+        Object[] params = { epochSecondsWithMillis, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} epochSecondsWithMillis={} value='{}'", sql, epochSecondsWithMillis,
                 storedVO.getValue());
         try {
             Yank.execute(sql, params);
