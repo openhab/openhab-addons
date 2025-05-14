@@ -105,7 +105,7 @@ String      Emby_MediaType   "Media Type [%s]"   { channel="emby:device:myEmbySe
 String      Emby_ImageURL    "Artwork URL [%s]"  { channel="emby:device:myEmbyServer:myClientDevice:image-url" }
 ```
 
-## `emby.sitemap` Configuration Example
+### `emby.sitemap` Configuration Example
 
 ```perl
 sitemap emby label="Emby Control"
