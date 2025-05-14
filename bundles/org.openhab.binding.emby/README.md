@@ -21,7 +21,7 @@ This binding defines the following Thing Type IDs:
 
 The binding supports automatic discovery for both servers (`controller`) and clients (`device`).
 
-# Binding Configuration
+## Binding Configuration
 
 There is no global binding-level configuration required or supported.
 
