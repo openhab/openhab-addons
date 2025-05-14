@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,11 +36,11 @@ public class PlaystateRequest {
 
     public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> seekPositionTicks = JsonNullable.<Long> undefined();
+    private Long seekPositionTicks;
 
     public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
     @javax.annotation.Nullable
-    private JsonNullable<String> controllingUserId = JsonNullable.<String> undefined();
+    private String controllingUserId;
 
     public PlaystateRequest() {
     }
@@ -75,8 +71,8 @@ public class PlaystateRequest {
     }
 
     public PlaystateRequest seekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
-        this.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
 
+        this.seekPositionTicks = seekPositionTicks;
         return this;
     }
 
@@ -86,31 +82,22 @@ public class PlaystateRequest {
      * @return seekPositionTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getSeekPositionTicks() {
-        return seekPositionTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getSeekPositionTicks_JsonNullable() {
+    public Long getSeekPositionTicks() {
         return seekPositionTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
-    public void setSeekPositionTicks_JsonNullable(JsonNullable<Long> seekPositionTicks) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSeekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
         this.seekPositionTicks = seekPositionTicks;
     }
 
-    public void setSeekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
-        this.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
-    }
-
     public PlaystateRequest controllingUserId(@javax.annotation.Nullable String controllingUserId) {
-        this.controllingUserId = JsonNullable.<String> of(controllingUserId);
 
+        this.controllingUserId = controllingUserId;
         return this;
     }
 
@@ -120,26 +107,17 @@ public class PlaystateRequest {
      * @return controllingUserId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getControllingUserId() {
-        return controllingUserId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getControllingUserId_JsonNullable() {
+    public String getControllingUserId() {
         return controllingUserId;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
-    public void setControllingUserId_JsonNullable(JsonNullable<String> controllingUserId) {
-        this.controllingUserId = controllingUserId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setControllingUserId(@javax.annotation.Nullable String controllingUserId) {
-        this.controllingUserId = JsonNullable.<String> of(controllingUserId);
+        this.controllingUserId = controllingUserId;
     }
 
     @Override
@@ -152,25 +130,13 @@ public class PlaystateRequest {
         }
         PlaystateRequest playstateRequest = (PlaystateRequest) o;
         return Objects.equals(this.command, playstateRequest.command)
-                && equalsNullable(this.seekPositionTicks, playstateRequest.seekPositionTicks)
-                && equalsNullable(this.controllingUserId, playstateRequest.controllingUserId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.seekPositionTicks, playstateRequest.seekPositionTicks)
+                && Objects.equals(this.controllingUserId, playstateRequest.controllingUserId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(command, hashCodeNullable(seekPositionTicks), hashCodeNullable(controllingUserId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(command, seekPositionTicks, controllingUserId);
     }
 
     @Override
@@ -213,21 +179,11 @@ public class PlaystateRequest {
         }
 
         public PlaystateRequest.Builder seekPositionTicks(Long seekPositionTicks) {
-            this.instance.seekPositionTicks = JsonNullable.<Long> of(seekPositionTicks);
-            return this;
-        }
-
-        public PlaystateRequest.Builder seekPositionTicks(JsonNullable<Long> seekPositionTicks) {
             this.instance.seekPositionTicks = seekPositionTicks;
             return this;
         }
 
         public PlaystateRequest.Builder controllingUserId(String controllingUserId) {
-            this.instance.controllingUserId = JsonNullable.<String> of(controllingUserId);
-            return this;
-        }
-
-        public PlaystateRequest.Builder controllingUserId(JsonNullable<String> controllingUserId) {
             this.instance.controllingUserId = controllingUserId;
             return this;
         }

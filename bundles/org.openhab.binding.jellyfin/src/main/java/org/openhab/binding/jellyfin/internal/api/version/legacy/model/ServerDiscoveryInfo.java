@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -48,7 +44,7 @@ public class ServerDiscoveryInfo {
 
     public static final String JSON_PROPERTY_ENDPOINT_ADDRESS = "EndpointAddress";
     @javax.annotation.Nullable
-    private JsonNullable<String> endpointAddress = JsonNullable.<String> undefined();
+    private String endpointAddress;
 
     public ServerDiscoveryInfo() {
     }
@@ -129,8 +125,8 @@ public class ServerDiscoveryInfo {
     }
 
     public ServerDiscoveryInfo endpointAddress(@javax.annotation.Nullable String endpointAddress) {
-        this.endpointAddress = JsonNullable.<String> of(endpointAddress);
 
+        this.endpointAddress = endpointAddress;
         return this;
     }
 
@@ -140,26 +136,17 @@ public class ServerDiscoveryInfo {
      * @return endpointAddress
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getEndpointAddress() {
-        return endpointAddress.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENDPOINT_ADDRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getEndpointAddress_JsonNullable() {
+    public String getEndpointAddress() {
         return endpointAddress;
     }
 
     @JsonProperty(JSON_PROPERTY_ENDPOINT_ADDRESS)
-    public void setEndpointAddress_JsonNullable(JsonNullable<String> endpointAddress) {
-        this.endpointAddress = endpointAddress;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndpointAddress(@javax.annotation.Nullable String endpointAddress) {
-        this.endpointAddress = JsonNullable.<String> of(endpointAddress);
+        this.endpointAddress = endpointAddress;
     }
 
     @Override
@@ -174,24 +161,12 @@ public class ServerDiscoveryInfo {
         return Objects.equals(this.address, serverDiscoveryInfo.address)
                 && Objects.equals(this.id, serverDiscoveryInfo.id)
                 && Objects.equals(this.name, serverDiscoveryInfo.name)
-                && equalsNullable(this.endpointAddress, serverDiscoveryInfo.endpointAddress);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.endpointAddress, serverDiscoveryInfo.endpointAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, id, name, hashCodeNullable(endpointAddress));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(address, id, name, endpointAddress);
     }
 
     @Override
@@ -245,11 +220,6 @@ public class ServerDiscoveryInfo {
         }
 
         public ServerDiscoveryInfo.Builder endpointAddress(String endpointAddress) {
-            this.instance.endpointAddress = JsonNullable.<String> of(endpointAddress);
-            return this;
-        }
-
-        public ServerDiscoveryInfo.Builder endpointAddress(JsonNullable<String> endpointAddress) {
             this.instance.endpointAddress = endpointAddress;
             return this;
         }

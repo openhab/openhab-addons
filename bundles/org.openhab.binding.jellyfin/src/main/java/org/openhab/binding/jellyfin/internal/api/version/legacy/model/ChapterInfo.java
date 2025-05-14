@@ -18,12 +18,8 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,11 +38,11 @@ public class ChapterInfo {
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_IMAGE_PATH = "ImagePath";
     @javax.annotation.Nullable
-    private JsonNullable<String> imagePath = JsonNullable.<String> undefined();
+    private String imagePath;
 
     public static final String JSON_PROPERTY_IMAGE_DATE_MODIFIED = "ImageDateModified";
     @javax.annotation.Nullable
@@ -54,7 +50,7 @@ public class ChapterInfo {
 
     public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> imageTag = JsonNullable.<String> undefined();
+    private String imageTag;
 
     public ChapterInfo() {
     }
@@ -85,8 +81,8 @@ public class ChapterInfo {
     }
 
     public ChapterInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -96,31 +92,22 @@ public class ChapterInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public ChapterInfo imagePath(@javax.annotation.Nullable String imagePath) {
-        this.imagePath = JsonNullable.<String> of(imagePath);
 
+        this.imagePath = imagePath;
         return this;
     }
 
@@ -130,26 +117,17 @@ public class ChapterInfo {
      * @return imagePath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getImagePath() {
-        return imagePath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getImagePath_JsonNullable() {
+    public String getImagePath() {
         return imagePath;
     }
 
     @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
-    public void setImagePath_JsonNullable(JsonNullable<String> imagePath) {
-        this.imagePath = imagePath;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImagePath(@javax.annotation.Nullable String imagePath) {
-        this.imagePath = JsonNullable.<String> of(imagePath);
+        this.imagePath = imagePath;
     }
 
     public ChapterInfo imageDateModified(@javax.annotation.Nullable OffsetDateTime imageDateModified) {
@@ -178,8 +156,8 @@ public class ChapterInfo {
     }
 
     public ChapterInfo imageTag(@javax.annotation.Nullable String imageTag) {
-        this.imageTag = JsonNullable.<String> of(imageTag);
 
+        this.imageTag = imageTag;
         return this;
     }
 
@@ -189,26 +167,17 @@ public class ChapterInfo {
      * @return imageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getImageTag() {
-        return imageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getImageTag_JsonNullable() {
+    public String getImageTag() {
         return imageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
-    public void setImageTag_JsonNullable(JsonNullable<String> imageTag) {
-        this.imageTag = imageTag;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageTag(@javax.annotation.Nullable String imageTag) {
-        this.imageTag = JsonNullable.<String> of(imageTag);
+        this.imageTag = imageTag;
     }
 
     @Override
@@ -221,27 +190,14 @@ public class ChapterInfo {
         }
         ChapterInfo chapterInfo = (ChapterInfo) o;
         return Objects.equals(this.startPositionTicks, chapterInfo.startPositionTicks)
-                && equalsNullable(this.name, chapterInfo.name) && equalsNullable(this.imagePath, chapterInfo.imagePath)
+                && Objects.equals(this.name, chapterInfo.name) && Objects.equals(this.imagePath, chapterInfo.imagePath)
                 && Objects.equals(this.imageDateModified, chapterInfo.imageDateModified)
-                && equalsNullable(this.imageTag, chapterInfo.imageTag);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.imageTag, chapterInfo.imageTag);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startPositionTicks, hashCodeNullable(name), hashCodeNullable(imagePath), imageDateModified,
-                hashCodeNullable(imageTag));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(startPositionTicks, name, imagePath, imageDateModified, imageTag);
     }
 
     @Override
@@ -286,21 +242,11 @@ public class ChapterInfo {
         }
 
         public ChapterInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public ChapterInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public ChapterInfo.Builder imagePath(String imagePath) {
-            this.instance.imagePath = JsonNullable.<String> of(imagePath);
-            return this;
-        }
-
-        public ChapterInfo.Builder imagePath(JsonNullable<String> imagePath) {
             this.instance.imagePath = imagePath;
             return this;
         }
@@ -311,11 +257,6 @@ public class ChapterInfo {
         }
 
         public ChapterInfo.Builder imageTag(String imageTag) {
-            this.instance.imageTag = JsonNullable.<String> of(imageTag);
-            return this;
-        }
-
-        public ChapterInfo.Builder imageTag(JsonNullable<String> imageTag) {
             this.instance.imageTag = imageTag;
             return this;
         }

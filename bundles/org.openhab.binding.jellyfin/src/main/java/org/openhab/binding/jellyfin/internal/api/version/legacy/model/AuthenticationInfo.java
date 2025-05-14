@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -46,23 +42,23 @@ public class AuthenticationInfo {
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
     @javax.annotation.Nullable
-    private JsonNullable<String> accessToken = JsonNullable.<String> undefined();
+    private String accessToken;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
+    private String deviceId;
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
     @javax.annotation.Nullable
-    private JsonNullable<String> appName = JsonNullable.<String> undefined();
+    private String appName;
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
     @javax.annotation.Nullable
-    private JsonNullable<String> appVersion = JsonNullable.<String> undefined();
+    private String appVersion;
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceName = JsonNullable.<String> undefined();
+    private String deviceName;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @javax.annotation.Nullable
@@ -78,7 +74,7 @@ public class AuthenticationInfo {
 
     public static final String JSON_PROPERTY_DATE_REVOKED = "DateRevoked";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> dateRevoked = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime dateRevoked;
 
     public static final String JSON_PROPERTY_DATE_LAST_ACTIVITY = "DateLastActivity";
     @javax.annotation.Nullable
@@ -86,7 +82,7 @@ public class AuthenticationInfo {
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
     @javax.annotation.Nullable
-    private JsonNullable<String> userName = JsonNullable.<String> undefined();
+    private String userName;
 
     public AuthenticationInfo() {
     }
@@ -117,8 +113,8 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo accessToken(@javax.annotation.Nullable String accessToken) {
-        this.accessToken = JsonNullable.<String> of(accessToken);
 
+        this.accessToken = accessToken;
         return this;
     }
 
@@ -128,31 +124,22 @@ public class AuthenticationInfo {
      * @return accessToken
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAccessToken() {
-        return accessToken.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAccessToken_JsonNullable() {
+    public String getAccessToken() {
         return accessToken;
     }
 
     @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
-    public void setAccessToken_JsonNullable(JsonNullable<String> accessToken) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAccessToken(@javax.annotation.Nullable String accessToken) {
         this.accessToken = accessToken;
     }
 
-    public void setAccessToken(@javax.annotation.Nullable String accessToken) {
-        this.accessToken = JsonNullable.<String> of(accessToken);
-    }
-
     public AuthenticationInfo deviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
 
+        this.deviceId = deviceId;
         return this;
     }
 
@@ -162,31 +149,22 @@ public class AuthenticationInfo {
      * @return deviceId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceId() {
-        return deviceId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceId_JsonNullable() {
+    public String getDeviceId() {
         return deviceId;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = deviceId;
     }
 
-    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
-    }
-
     public AuthenticationInfo appName(@javax.annotation.Nullable String appName) {
-        this.appName = JsonNullable.<String> of(appName);
 
+        this.appName = appName;
         return this;
     }
 
@@ -196,31 +174,22 @@ public class AuthenticationInfo {
      * @return appName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppName() {
-        return appName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAppName_JsonNullable() {
+    public String getAppName() {
         return appName;
     }
 
     @JsonProperty(JSON_PROPERTY_APP_NAME)
-    public void setAppName_JsonNullable(JsonNullable<String> appName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAppName(@javax.annotation.Nullable String appName) {
         this.appName = appName;
     }
 
-    public void setAppName(@javax.annotation.Nullable String appName) {
-        this.appName = JsonNullable.<String> of(appName);
-    }
-
     public AuthenticationInfo appVersion(@javax.annotation.Nullable String appVersion) {
-        this.appVersion = JsonNullable.<String> of(appVersion);
 
+        this.appVersion = appVersion;
         return this;
     }
 
@@ -230,31 +199,22 @@ public class AuthenticationInfo {
      * @return appVersion
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppVersion() {
-        return appVersion.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAppVersion_JsonNullable() {
+    public String getAppVersion() {
         return appVersion;
     }
 
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
-    public void setAppVersion_JsonNullable(JsonNullable<String> appVersion) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAppVersion(@javax.annotation.Nullable String appVersion) {
         this.appVersion = appVersion;
     }
 
-    public void setAppVersion(@javax.annotation.Nullable String appVersion) {
-        this.appVersion = JsonNullable.<String> of(appVersion);
-    }
-
     public AuthenticationInfo deviceName(@javax.annotation.Nullable String deviceName) {
-        this.deviceName = JsonNullable.<String> of(deviceName);
 
+        this.deviceName = deviceName;
         return this;
     }
 
@@ -264,26 +224,17 @@ public class AuthenticationInfo {
      * @return deviceName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceName() {
-        return deviceName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceName_JsonNullable() {
+    public String getDeviceName() {
         return deviceName;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
-    public void setDeviceName_JsonNullable(JsonNullable<String> deviceName) {
-        this.deviceName = deviceName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceName(@javax.annotation.Nullable String deviceName) {
-        this.deviceName = JsonNullable.<String> of(deviceName);
+        this.deviceName = deviceName;
     }
 
     public AuthenticationInfo userId(@javax.annotation.Nullable UUID userId) {
@@ -362,8 +313,8 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo dateRevoked(@javax.annotation.Nullable OffsetDateTime dateRevoked) {
-        this.dateRevoked = JsonNullable.<OffsetDateTime> of(dateRevoked);
 
+        this.dateRevoked = dateRevoked;
         return this;
     }
 
@@ -373,26 +324,17 @@ public class AuthenticationInfo {
      * @return dateRevoked
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getDateRevoked() {
-        return dateRevoked.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATE_REVOKED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getDateRevoked_JsonNullable() {
+    public OffsetDateTime getDateRevoked() {
         return dateRevoked;
     }
 
     @JsonProperty(JSON_PROPERTY_DATE_REVOKED)
-    public void setDateRevoked_JsonNullable(JsonNullable<OffsetDateTime> dateRevoked) {
-        this.dateRevoked = dateRevoked;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateRevoked(@javax.annotation.Nullable OffsetDateTime dateRevoked) {
-        this.dateRevoked = JsonNullable.<OffsetDateTime> of(dateRevoked);
+        this.dateRevoked = dateRevoked;
     }
 
     public AuthenticationInfo dateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
@@ -421,8 +363,8 @@ public class AuthenticationInfo {
     }
 
     public AuthenticationInfo userName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
 
+        this.userName = userName;
         return this;
     }
 
@@ -432,26 +374,17 @@ public class AuthenticationInfo {
      * @return userName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserName() {
-        return userName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserName_JsonNullable() {
+    public String getUserName() {
         return userName;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_NAME)
-    public void setUserName_JsonNullable(JsonNullable<String> userName) {
-        this.userName = userName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
+        this.userName = userName;
     }
 
     @Override
@@ -464,36 +397,23 @@ public class AuthenticationInfo {
         }
         AuthenticationInfo authenticationInfo = (AuthenticationInfo) o;
         return Objects.equals(this.id, authenticationInfo.id)
-                && equalsNullable(this.accessToken, authenticationInfo.accessToken)
-                && equalsNullable(this.deviceId, authenticationInfo.deviceId)
-                && equalsNullable(this.appName, authenticationInfo.appName)
-                && equalsNullable(this.appVersion, authenticationInfo.appVersion)
-                && equalsNullable(this.deviceName, authenticationInfo.deviceName)
+                && Objects.equals(this.accessToken, authenticationInfo.accessToken)
+                && Objects.equals(this.deviceId, authenticationInfo.deviceId)
+                && Objects.equals(this.appName, authenticationInfo.appName)
+                && Objects.equals(this.appVersion, authenticationInfo.appVersion)
+                && Objects.equals(this.deviceName, authenticationInfo.deviceName)
                 && Objects.equals(this.userId, authenticationInfo.userId)
                 && Objects.equals(this.isActive, authenticationInfo.isActive)
                 && Objects.equals(this.dateCreated, authenticationInfo.dateCreated)
-                && equalsNullable(this.dateRevoked, authenticationInfo.dateRevoked)
+                && Objects.equals(this.dateRevoked, authenticationInfo.dateRevoked)
                 && Objects.equals(this.dateLastActivity, authenticationInfo.dateLastActivity)
-                && equalsNullable(this.userName, authenticationInfo.userName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.userName, authenticationInfo.userName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(accessToken), hashCodeNullable(deviceId), hashCodeNullable(appName),
-                hashCodeNullable(appVersion), hashCodeNullable(deviceName), userId, isActive, dateCreated,
-                hashCodeNullable(dateRevoked), dateLastActivity, hashCodeNullable(userName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, accessToken, deviceId, appName, appVersion, deviceName, userId, isActive, dateCreated,
+                dateRevoked, dateLastActivity, userName);
     }
 
     @Override
@@ -545,51 +465,26 @@ public class AuthenticationInfo {
         }
 
         public AuthenticationInfo.Builder accessToken(String accessToken) {
-            this.instance.accessToken = JsonNullable.<String> of(accessToken);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder accessToken(JsonNullable<String> accessToken) {
             this.instance.accessToken = accessToken;
             return this;
         }
 
         public AuthenticationInfo.Builder deviceId(String deviceId) {
-            this.instance.deviceId = JsonNullable.<String> of(deviceId);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder deviceId(JsonNullable<String> deviceId) {
             this.instance.deviceId = deviceId;
             return this;
         }
 
         public AuthenticationInfo.Builder appName(String appName) {
-            this.instance.appName = JsonNullable.<String> of(appName);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder appName(JsonNullable<String> appName) {
             this.instance.appName = appName;
             return this;
         }
 
         public AuthenticationInfo.Builder appVersion(String appVersion) {
-            this.instance.appVersion = JsonNullable.<String> of(appVersion);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder appVersion(JsonNullable<String> appVersion) {
             this.instance.appVersion = appVersion;
             return this;
         }
 
         public AuthenticationInfo.Builder deviceName(String deviceName) {
-            this.instance.deviceName = JsonNullable.<String> of(deviceName);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder deviceName(JsonNullable<String> deviceName) {
             this.instance.deviceName = deviceName;
             return this;
         }
@@ -610,11 +505,6 @@ public class AuthenticationInfo {
         }
 
         public AuthenticationInfo.Builder dateRevoked(OffsetDateTime dateRevoked) {
-            this.instance.dateRevoked = JsonNullable.<OffsetDateTime> of(dateRevoked);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder dateRevoked(JsonNullable<OffsetDateTime> dateRevoked) {
             this.instance.dateRevoked = dateRevoked;
             return this;
         }
@@ -625,11 +515,6 @@ public class AuthenticationInfo {
         }
 
         public AuthenticationInfo.Builder userName(String userName) {
-            this.instance.userName = JsonNullable.<String> of(userName);
-            return this;
-        }
-
-        public AuthenticationInfo.Builder userName(JsonNullable<String> userName) {
             this.instance.userName = userName;
             return this;
         }

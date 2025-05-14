@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class XbmcMetadataOptions {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @javax.annotation.Nullable
-    private JsonNullable<String> userId = JsonNullable.<String> undefined();
+    private String userId;
 
     public static final String JSON_PROPERTY_RELEASE_DATE_FORMAT = "ReleaseDateFormat";
     @javax.annotation.Nullable
@@ -60,8 +56,8 @@ public class XbmcMetadataOptions {
     }
 
     public XbmcMetadataOptions userId(@javax.annotation.Nullable String userId) {
-        this.userId = JsonNullable.<String> of(userId);
 
+        this.userId = userId;
         return this;
     }
 
@@ -71,26 +67,17 @@ public class XbmcMetadataOptions {
      * @return userId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserId() {
-        return userId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserId_JsonNullable() {
+    public String getUserId() {
         return userId;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_ID)
-    public void setUserId_JsonNullable(JsonNullable<String> userId) {
-        this.userId = userId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@javax.annotation.Nullable String userId) {
-        this.userId = JsonNullable.<String> of(userId);
+        this.userId = userId;
     }
 
     public XbmcMetadataOptions releaseDateFormat(@javax.annotation.Nullable String releaseDateFormat) {
@@ -203,29 +190,17 @@ public class XbmcMetadataOptions {
             return false;
         }
         XbmcMetadataOptions xbmcMetadataOptions = (XbmcMetadataOptions) o;
-        return equalsNullable(this.userId, xbmcMetadataOptions.userId)
+        return Objects.equals(this.userId, xbmcMetadataOptions.userId)
                 && Objects.equals(this.releaseDateFormat, xbmcMetadataOptions.releaseDateFormat)
                 && Objects.equals(this.saveImagePathsInNfo, xbmcMetadataOptions.saveImagePathsInNfo)
                 && Objects.equals(this.enablePathSubstitution, xbmcMetadataOptions.enablePathSubstitution)
                 && Objects.equals(this.enableExtraThumbsDuplication, xbmcMetadataOptions.enableExtraThumbsDuplication);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(userId), releaseDateFormat, saveImagePathsInNfo, enablePathSubstitution,
+        return Objects.hash(userId, releaseDateFormat, saveImagePathsInNfo, enablePathSubstitution,
                 enableExtraThumbsDuplication);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
@@ -266,11 +241,6 @@ public class XbmcMetadataOptions {
         }
 
         public XbmcMetadataOptions.Builder userId(String userId) {
-            this.instance.userId = JsonNullable.<String> of(userId);
-            return this;
-        }
-
-        public XbmcMetadataOptions.Builder userId(JsonNullable<String> userId) {
             this.instance.userId = userId;
             return this;
         }

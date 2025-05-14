@@ -17,14 +17,10 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -77,7 +73,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class WebSocketMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<UserDto> data = JsonNullable.<UserDto> undefined();
+    private UserDto data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @javax.annotation.Nullable
@@ -100,8 +96,8 @@ public class WebSocketMessage {
     }
 
     public WebSocketMessage data(@javax.annotation.Nullable UserDto data) {
-        this.data = JsonNullable.<UserDto> of(data);
 
+        this.data = data;
         return this;
     }
 
@@ -111,26 +107,17 @@ public class WebSocketMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UserDto getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UserDto> getData_JsonNullable() {
+    public UserDto getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<UserDto> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable UserDto data) {
-        this.data = JsonNullable.<UserDto> of(data);
+        this.data = data;
     }
 
     public WebSocketMessage messageId(@javax.annotation.Nullable UUID messageId) {
@@ -180,26 +167,14 @@ public class WebSocketMessage {
             return false;
         }
         WebSocketMessage webSocketMessage = (WebSocketMessage) o;
-        return equalsNullable(this.data, webSocketMessage.data)
+        return Objects.equals(this.data, webSocketMessage.data)
                 && Objects.equals(this.messageId, webSocketMessage.messageId)
                 && Objects.equals(this.messageType, webSocketMessage.messageType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageId, messageType);
     }
 
     @Override
@@ -237,11 +212,6 @@ public class WebSocketMessage {
         }
 
         public WebSocketMessage.Builder data(UserDto data) {
-            this.instance.data = JsonNullable.<UserDto> of(data);
-            return this;
-        }
-
-        public WebSocketMessage.Builder data(JsonNullable<UserDto> data) {
             this.instance.data = data;
             return this;
         }

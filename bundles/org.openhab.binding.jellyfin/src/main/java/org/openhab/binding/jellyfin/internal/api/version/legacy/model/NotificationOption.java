@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class NotificationOption {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+    private String type;
 
     public static final String JSON_PROPERTY_DISABLED_MONITOR_USERS = "DisabledMonitorUsers";
     @javax.annotation.Nullable
@@ -65,8 +61,8 @@ public class NotificationOption {
     }
 
     public NotificationOption type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
 
+        this.type = type;
         return this;
     }
 
@@ -76,26 +72,17 @@ public class NotificationOption {
      * @return type
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
-        return type.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
+    public String getType() {
         return type;
     }
 
     @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
-        this.type = type;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
+        this.type = type;
     }
 
     public NotificationOption disabledMonitorUsers(@javax.annotation.Nullable List<String> disabledMonitorUsers) {
@@ -256,7 +243,7 @@ public class NotificationOption {
             return false;
         }
         NotificationOption notificationOption = (NotificationOption) o;
-        return equalsNullable(this.type, notificationOption.type)
+        return Objects.equals(this.type, notificationOption.type)
                 && Objects.equals(this.disabledMonitorUsers, notificationOption.disabledMonitorUsers)
                 && Objects.equals(this.sendToUsers, notificationOption.sendToUsers)
                 && Objects.equals(this.enabled, notificationOption.enabled)
@@ -264,22 +251,9 @@ public class NotificationOption {
                 && Objects.equals(this.sendToUserMode, notificationOption.sendToUserMode);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(type), disabledMonitorUsers, sendToUsers, enabled, disabledServices,
-                sendToUserMode);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, disabledMonitorUsers, sendToUsers, enabled, disabledServices, sendToUserMode);
     }
 
     @Override
@@ -320,11 +294,6 @@ public class NotificationOption {
         }
 
         public NotificationOption.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public NotificationOption.Builder type(JsonNullable<String> type) {
             this.instance.type = type;
             return this;
         }

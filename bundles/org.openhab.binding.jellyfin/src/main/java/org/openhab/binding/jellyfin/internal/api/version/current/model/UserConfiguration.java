@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -49,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserConfiguration {
     public static final String JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
     @javax.annotation.Nullable
-    private JsonNullable<String> audioLanguagePreference = JsonNullable.<String> undefined();
+    private String audioLanguagePreference;
 
     public static final String JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK = "PlayDefaultAudioTrack";
     @javax.annotation.Nullable
@@ -57,7 +53,7 @@ public class UserConfiguration {
 
     public static final String JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE = "SubtitleLanguagePreference";
     @javax.annotation.Nullable
-    private JsonNullable<String> subtitleLanguagePreference = JsonNullable.<String> undefined();
+    private String subtitleLanguagePreference;
 
     public static final String JSON_PROPERTY_DISPLAY_MISSING_EPISODES = "DisplayMissingEpisodes";
     @javax.annotation.Nullable
@@ -109,14 +105,14 @@ public class UserConfiguration {
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_ID = "CastReceiverId";
     @javax.annotation.Nullable
-    private JsonNullable<String> castReceiverId = JsonNullable.<String> undefined();
+    private String castReceiverId;
 
     public UserConfiguration() {
     }
 
     public UserConfiguration audioLanguagePreference(@javax.annotation.Nullable String audioLanguagePreference) {
-        this.audioLanguagePreference = JsonNullable.<String> of(audioLanguagePreference);
 
+        this.audioLanguagePreference = audioLanguagePreference;
         return this;
     }
 
@@ -126,26 +122,17 @@ public class UserConfiguration {
      * @return audioLanguagePreference
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAudioLanguagePreference() {
-        return audioLanguagePreference.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAudioLanguagePreference_JsonNullable() {
+    public String getAudioLanguagePreference() {
         return audioLanguagePreference;
     }
 
     @JsonProperty(JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE)
-    public void setAudioLanguagePreference_JsonNullable(JsonNullable<String> audioLanguagePreference) {
-        this.audioLanguagePreference = audioLanguagePreference;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioLanguagePreference(@javax.annotation.Nullable String audioLanguagePreference) {
-        this.audioLanguagePreference = JsonNullable.<String> of(audioLanguagePreference);
+        this.audioLanguagePreference = audioLanguagePreference;
     }
 
     public UserConfiguration playDefaultAudioTrack(@javax.annotation.Nullable Boolean playDefaultAudioTrack) {
@@ -174,8 +161,8 @@ public class UserConfiguration {
     }
 
     public UserConfiguration subtitleLanguagePreference(@javax.annotation.Nullable String subtitleLanguagePreference) {
-        this.subtitleLanguagePreference = JsonNullable.<String> of(subtitleLanguagePreference);
 
+        this.subtitleLanguagePreference = subtitleLanguagePreference;
         return this;
     }
 
@@ -185,26 +172,17 @@ public class UserConfiguration {
      * @return subtitleLanguagePreference
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSubtitleLanguagePreference() {
-        return subtitleLanguagePreference.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSubtitleLanguagePreference_JsonNullable() {
+    public String getSubtitleLanguagePreference() {
         return subtitleLanguagePreference;
     }
 
     @JsonProperty(JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE)
-    public void setSubtitleLanguagePreference_JsonNullable(JsonNullable<String> subtitleLanguagePreference) {
-        this.subtitleLanguagePreference = subtitleLanguagePreference;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleLanguagePreference(@javax.annotation.Nullable String subtitleLanguagePreference) {
-        this.subtitleLanguagePreference = JsonNullable.<String> of(subtitleLanguagePreference);
+        this.subtitleLanguagePreference = subtitleLanguagePreference;
     }
 
     public UserConfiguration displayMissingEpisodes(@javax.annotation.Nullable Boolean displayMissingEpisodes) {
@@ -540,8 +518,8 @@ public class UserConfiguration {
     }
 
     public UserConfiguration castReceiverId(@javax.annotation.Nullable String castReceiverId) {
-        this.castReceiverId = JsonNullable.<String> of(castReceiverId);
 
+        this.castReceiverId = castReceiverId;
         return this;
     }
 
@@ -551,26 +529,17 @@ public class UserConfiguration {
      * @return castReceiverId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCastReceiverId() {
-        return castReceiverId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCastReceiverId_JsonNullable() {
+    public String getCastReceiverId() {
         return castReceiverId;
     }
 
     @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_ID)
-    public void setCastReceiverId_JsonNullable(JsonNullable<String> castReceiverId) {
-        this.castReceiverId = castReceiverId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCastReceiverId(@javax.annotation.Nullable String castReceiverId) {
-        this.castReceiverId = JsonNullable.<String> of(castReceiverId);
+        this.castReceiverId = castReceiverId;
     }
 
     @Override
@@ -582,9 +551,9 @@ public class UserConfiguration {
             return false;
         }
         UserConfiguration userConfiguration = (UserConfiguration) o;
-        return equalsNullable(this.audioLanguagePreference, userConfiguration.audioLanguagePreference)
+        return Objects.equals(this.audioLanguagePreference, userConfiguration.audioLanguagePreference)
                 && Objects.equals(this.playDefaultAudioTrack, userConfiguration.playDefaultAudioTrack)
-                && equalsNullable(this.subtitleLanguagePreference, userConfiguration.subtitleLanguagePreference)
+                && Objects.equals(this.subtitleLanguagePreference, userConfiguration.subtitleLanguagePreference)
                 && Objects.equals(this.displayMissingEpisodes, userConfiguration.displayMissingEpisodes)
                 && Objects.equals(this.groupedFolders, userConfiguration.groupedFolders)
                 && Objects.equals(this.subtitleMode, userConfiguration.subtitleMode)
@@ -597,28 +566,15 @@ public class UserConfiguration {
                 && Objects.equals(this.rememberAudioSelections, userConfiguration.rememberAudioSelections)
                 && Objects.equals(this.rememberSubtitleSelections, userConfiguration.rememberSubtitleSelections)
                 && Objects.equals(this.enableNextEpisodeAutoPlay, userConfiguration.enableNextEpisodeAutoPlay)
-                && equalsNullable(this.castReceiverId, userConfiguration.castReceiverId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.castReceiverId, userConfiguration.castReceiverId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(audioLanguagePreference), playDefaultAudioTrack,
-                hashCodeNullable(subtitleLanguagePreference), displayMissingEpisodes, groupedFolders, subtitleMode,
-                displayCollectionsView, enableLocalPassword, orderedViews, latestItemsExcludes, myMediaExcludes,
-                hidePlayedInLatest, rememberAudioSelections, rememberSubtitleSelections, enableNextEpisodeAutoPlay,
-                hashCodeNullable(castReceiverId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(audioLanguagePreference, playDefaultAudioTrack, subtitleLanguagePreference,
+                displayMissingEpisodes, groupedFolders, subtitleMode, displayCollectionsView, enableLocalPassword,
+                orderedViews, latestItemsExcludes, myMediaExcludes, hidePlayedInLatest, rememberAudioSelections,
+                rememberSubtitleSelections, enableNextEpisodeAutoPlay, castReceiverId);
     }
 
     @Override
@@ -669,11 +625,6 @@ public class UserConfiguration {
         }
 
         public UserConfiguration.Builder audioLanguagePreference(String audioLanguagePreference) {
-            this.instance.audioLanguagePreference = JsonNullable.<String> of(audioLanguagePreference);
-            return this;
-        }
-
-        public UserConfiguration.Builder audioLanguagePreference(JsonNullable<String> audioLanguagePreference) {
             this.instance.audioLanguagePreference = audioLanguagePreference;
             return this;
         }
@@ -684,11 +635,6 @@ public class UserConfiguration {
         }
 
         public UserConfiguration.Builder subtitleLanguagePreference(String subtitleLanguagePreference) {
-            this.instance.subtitleLanguagePreference = JsonNullable.<String> of(subtitleLanguagePreference);
-            return this;
-        }
-
-        public UserConfiguration.Builder subtitleLanguagePreference(JsonNullable<String> subtitleLanguagePreference) {
             this.instance.subtitleLanguagePreference = subtitleLanguagePreference;
             return this;
         }
@@ -754,11 +700,6 @@ public class UserConfiguration {
         }
 
         public UserConfiguration.Builder castReceiverId(String castReceiverId) {
-            this.instance.castReceiverId = JsonNullable.<String> of(castReceiverId);
-            return this;
-        }
-
-        public UserConfiguration.Builder castReceiverId(JsonNullable<String> castReceiverId) {
             this.instance.castReceiverId = castReceiverId;
             return this;
         }

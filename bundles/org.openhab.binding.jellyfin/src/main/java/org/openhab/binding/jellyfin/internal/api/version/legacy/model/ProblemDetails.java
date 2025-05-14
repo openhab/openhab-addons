@@ -17,16 +17,12 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,30 +37,30 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
     @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+    private String type;
 
     public static final String JSON_PROPERTY_TITLE = "title";
     @javax.annotation.Nullable
-    private JsonNullable<String> title = JsonNullable.<String> undefined();
+    private String title;
 
     public static final String JSON_PROPERTY_STATUS = "status";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> status = JsonNullable.<Integer> undefined();
+    private Integer status;
 
     public static final String JSON_PROPERTY_DETAIL = "detail";
     @javax.annotation.Nullable
-    private JsonNullable<String> detail = JsonNullable.<String> undefined();
+    private String detail;
 
     public static final String JSON_PROPERTY_INSTANCE = "instance";
     @javax.annotation.Nullable
-    private JsonNullable<String> instance = JsonNullable.<String> undefined();
+    private String instance;
 
     public ProblemDetails() {
     }
 
     public ProblemDetails type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
 
+        this.type = type;
         return this;
     }
 
@@ -74,31 +70,22 @@ public class ProblemDetails {
      * @return type
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
-        return type.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
+    public String getType() {
         return type;
     }
 
     @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable String type) {
         this.type = type;
     }
 
-    public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
-    }
-
     public ProblemDetails title(@javax.annotation.Nullable String title) {
-        this.title = JsonNullable.<String> of(title);
 
+        this.title = title;
         return this;
     }
 
@@ -108,31 +95,22 @@ public class ProblemDetails {
      * @return title
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTitle() {
-        return title.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTitle_JsonNullable() {
+    public String getTitle() {
         return title;
     }
 
     @JsonProperty(JSON_PROPERTY_TITLE)
-    public void setTitle_JsonNullable(JsonNullable<String> title) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTitle(@javax.annotation.Nullable String title) {
         this.title = title;
     }
 
-    public void setTitle(@javax.annotation.Nullable String title) {
-        this.title = JsonNullable.<String> of(title);
-    }
-
     public ProblemDetails status(@javax.annotation.Nullable Integer status) {
-        this.status = JsonNullable.<Integer> of(status);
 
+        this.status = status;
         return this;
     }
 
@@ -142,31 +120,22 @@ public class ProblemDetails {
      * @return status
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getStatus() {
-        return status.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getStatus_JsonNullable() {
+    public Integer getStatus() {
         return status;
     }
 
     @JsonProperty(JSON_PROPERTY_STATUS)
-    public void setStatus_JsonNullable(JsonNullable<Integer> status) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStatus(@javax.annotation.Nullable Integer status) {
         this.status = status;
     }
 
-    public void setStatus(@javax.annotation.Nullable Integer status) {
-        this.status = JsonNullable.<Integer> of(status);
-    }
-
     public ProblemDetails detail(@javax.annotation.Nullable String detail) {
-        this.detail = JsonNullable.<String> of(detail);
 
+        this.detail = detail;
         return this;
     }
 
@@ -176,31 +145,22 @@ public class ProblemDetails {
      * @return detail
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDetail() {
-        return detail.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DETAIL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDetail_JsonNullable() {
+    public String getDetail() {
         return detail;
     }
 
     @JsonProperty(JSON_PROPERTY_DETAIL)
-    public void setDetail_JsonNullable(JsonNullable<String> detail) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDetail(@javax.annotation.Nullable String detail) {
         this.detail = detail;
     }
 
-    public void setDetail(@javax.annotation.Nullable String detail) {
-        this.detail = JsonNullable.<String> of(detail);
-    }
-
     public ProblemDetails instance(@javax.annotation.Nullable String instance) {
-        this.instance = JsonNullable.<String> of(instance);
 
+        this.instance = instance;
         return this;
     }
 
@@ -210,26 +170,17 @@ public class ProblemDetails {
      * @return instance
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getInstance() {
-        return instance.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_INSTANCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getInstance_JsonNullable() {
+    public String getInstance() {
         return instance;
     }
 
     @JsonProperty(JSON_PROPERTY_INSTANCE)
-    public void setInstance_JsonNullable(JsonNullable<String> instance) {
-        this.instance = instance;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setInstance(@javax.annotation.Nullable String instance) {
-        this.instance = JsonNullable.<String> of(instance);
+        this.instance = instance;
     }
 
     /**
@@ -288,29 +239,16 @@ public class ProblemDetails {
             return false;
         }
         ProblemDetails problemDetails = (ProblemDetails) o;
-        return equalsNullable(this.type, problemDetails.type) && equalsNullable(this.title, problemDetails.title)
-                && equalsNullable(this.status, problemDetails.status)
-                && equalsNullable(this.detail, problemDetails.detail)
-                && equalsNullable(this.instance, problemDetails.instance)
+        return Objects.equals(this.type, problemDetails.type) && Objects.equals(this.title, problemDetails.title)
+                && Objects.equals(this.status, problemDetails.status)
+                && Objects.equals(this.detail, problemDetails.detail)
+                && Objects.equals(this.instance, problemDetails.instance)
                 && Objects.equals(this.additionalProperties, problemDetails.additionalProperties);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(type), hashCodeNullable(title), hashCodeNullable(status),
-                hashCodeNullable(detail), hashCodeNullable(instance), additionalProperties);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, title, status, detail, instance, additionalProperties);
     }
 
     @Override
@@ -351,51 +289,26 @@ public class ProblemDetails {
         }
 
         public ProblemDetails.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public ProblemDetails.Builder type(JsonNullable<String> type) {
             this.instance.type = type;
             return this;
         }
 
         public ProblemDetails.Builder title(String title) {
-            this.instance.title = JsonNullable.<String> of(title);
-            return this;
-        }
-
-        public ProblemDetails.Builder title(JsonNullable<String> title) {
             this.instance.title = title;
             return this;
         }
 
         public ProblemDetails.Builder status(Integer status) {
-            this.instance.status = JsonNullable.<Integer> of(status);
-            return this;
-        }
-
-        public ProblemDetails.Builder status(JsonNullable<Integer> status) {
             this.instance.status = status;
             return this;
         }
 
         public ProblemDetails.Builder detail(String detail) {
-            this.instance.detail = JsonNullable.<String> of(detail);
-            return this;
-        }
-
-        public ProblemDetails.Builder detail(JsonNullable<String> detail) {
             this.instance.detail = detail;
             return this;
         }
 
         public ProblemDetails.Builder instance(String instance) {
-            this.instance.instance = JsonNullable.<String> of(instance);
-            return this;
-        }
-
-        public ProblemDetails.Builder instance(JsonNullable<String> instance) {
             this.instance.instance = instance;
             return this;
         }

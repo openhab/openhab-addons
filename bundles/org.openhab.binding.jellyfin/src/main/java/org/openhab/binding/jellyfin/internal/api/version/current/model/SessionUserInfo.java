@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +36,7 @@ public class SessionUserInfo {
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
     @javax.annotation.Nullable
-    private JsonNullable<String> userName = JsonNullable.<String> undefined();
+    private String userName;
 
     public SessionUserInfo() {
     }
@@ -71,8 +67,8 @@ public class SessionUserInfo {
     }
 
     public SessionUserInfo userName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
 
+        this.userName = userName;
         return this;
     }
 
@@ -82,26 +78,17 @@ public class SessionUserInfo {
      * @return userName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserName() {
-        return userName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserName_JsonNullable() {
+    public String getUserName() {
         return userName;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_NAME)
-    public void setUserName_JsonNullable(JsonNullable<String> userName) {
-        this.userName = userName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
+        this.userName = userName;
     }
 
     @Override
@@ -114,24 +101,12 @@ public class SessionUserInfo {
         }
         SessionUserInfo sessionUserInfo = (SessionUserInfo) o;
         return Objects.equals(this.userId, sessionUserInfo.userId)
-                && equalsNullable(this.userName, sessionUserInfo.userName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.userName, sessionUserInfo.userName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, hashCodeNullable(userName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(userId, userName);
     }
 
     @Override
@@ -173,11 +148,6 @@ public class SessionUserInfo {
         }
 
         public SessionUserInfo.Builder userName(String userName) {
-            this.instance.userName = JsonNullable.<String> of(userName);
-            return this;
-        }
-
-        public SessionUserInfo.Builder userName(JsonNullable<String> userName) {
             this.instance.userName = userName;
             return this;
         }

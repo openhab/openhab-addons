@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -51,7 +47,7 @@ public class SubtitleOptions {
 
     public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> downloadLanguages = JsonNullable.<List<String>> undefined();
+    private List<String> downloadLanguages;
 
     public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
     @javax.annotation.Nullable
@@ -63,11 +59,11 @@ public class SubtitleOptions {
 
     public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
     @javax.annotation.Nullable
-    private JsonNullable<String> openSubtitlesUsername = JsonNullable.<String> undefined();
+    private String openSubtitlesUsername;
 
     public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
     @javax.annotation.Nullable
-    private JsonNullable<String> openSubtitlesPasswordHash = JsonNullable.<String> undefined();
+    private String openSubtitlesPasswordHash;
 
     public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
     @javax.annotation.Nullable
@@ -132,20 +128,16 @@ public class SubtitleOptions {
     }
 
     public SubtitleOptions downloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
-        this.downloadLanguages = JsonNullable.<List<String>> of(downloadLanguages);
 
+        this.downloadLanguages = downloadLanguages;
         return this;
     }
 
     public SubtitleOptions addDownloadLanguagesItem(String downloadLanguagesItem) {
-        if (this.downloadLanguages == null || !this.downloadLanguages.isPresent()) {
-            this.downloadLanguages = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.downloadLanguages == null) {
+            this.downloadLanguages = new ArrayList<>();
         }
-        try {
-            this.downloadLanguages.get().add(downloadLanguagesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.downloadLanguages.add(downloadLanguagesItem);
         return this;
     }
 
@@ -155,26 +147,17 @@ public class SubtitleOptions {
      * @return downloadLanguages
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getDownloadLanguages() {
-        return downloadLanguages.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getDownloadLanguages_JsonNullable() {
+    public List<String> getDownloadLanguages() {
         return downloadLanguages;
     }
 
     @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
-    public void setDownloadLanguages_JsonNullable(JsonNullable<List<String>> downloadLanguages) {
-        this.downloadLanguages = downloadLanguages;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDownloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
-        this.downloadLanguages = JsonNullable.<List<String>> of(downloadLanguages);
+        this.downloadLanguages = downloadLanguages;
     }
 
     public SubtitleOptions downloadMovieSubtitles(@javax.annotation.Nullable Boolean downloadMovieSubtitles) {
@@ -228,8 +211,8 @@ public class SubtitleOptions {
     }
 
     public SubtitleOptions openSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
-        this.openSubtitlesUsername = JsonNullable.<String> of(openSubtitlesUsername);
 
+        this.openSubtitlesUsername = openSubtitlesUsername;
         return this;
     }
 
@@ -239,31 +222,22 @@ public class SubtitleOptions {
      * @return openSubtitlesUsername
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOpenSubtitlesUsername() {
-        return openSubtitlesUsername.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOpenSubtitlesUsername_JsonNullable() {
+    public String getOpenSubtitlesUsername() {
         return openSubtitlesUsername;
     }
 
     @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
-    public void setOpenSubtitlesUsername_JsonNullable(JsonNullable<String> openSubtitlesUsername) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOpenSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
         this.openSubtitlesUsername = openSubtitlesUsername;
     }
 
-    public void setOpenSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
-        this.openSubtitlesUsername = JsonNullable.<String> of(openSubtitlesUsername);
-    }
-
     public SubtitleOptions openSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
-        this.openSubtitlesPasswordHash = JsonNullable.<String> of(openSubtitlesPasswordHash);
 
+        this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
         return this;
     }
 
@@ -273,26 +247,17 @@ public class SubtitleOptions {
      * @return openSubtitlesPasswordHash
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOpenSubtitlesPasswordHash() {
-        return openSubtitlesPasswordHash.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOpenSubtitlesPasswordHash_JsonNullable() {
+    public String getOpenSubtitlesPasswordHash() {
         return openSubtitlesPasswordHash;
     }
 
     @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
-    public void setOpenSubtitlesPasswordHash_JsonNullable(JsonNullable<String> openSubtitlesPasswordHash) {
-        this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOpenSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
-        this.openSubtitlesPasswordHash = JsonNullable.<String> of(openSubtitlesPasswordHash);
+        this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
     }
 
     public SubtitleOptions isOpenSubtitleVipAccount(@javax.annotation.Nullable Boolean isOpenSubtitleVipAccount) {
@@ -356,33 +321,20 @@ public class SubtitleOptions {
         SubtitleOptions subtitleOptions = (SubtitleOptions) o;
         return Objects.equals(this.skipIfEmbeddedSubtitlesPresent, subtitleOptions.skipIfEmbeddedSubtitlesPresent)
                 && Objects.equals(this.skipIfAudioTrackMatches, subtitleOptions.skipIfAudioTrackMatches)
-                && equalsNullable(this.downloadLanguages, subtitleOptions.downloadLanguages)
+                && Objects.equals(this.downloadLanguages, subtitleOptions.downloadLanguages)
                 && Objects.equals(this.downloadMovieSubtitles, subtitleOptions.downloadMovieSubtitles)
                 && Objects.equals(this.downloadEpisodeSubtitles, subtitleOptions.downloadEpisodeSubtitles)
-                && equalsNullable(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername)
-                && equalsNullable(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash)
+                && Objects.equals(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername)
+                && Objects.equals(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash)
                 && Objects.equals(this.isOpenSubtitleVipAccount, subtitleOptions.isOpenSubtitleVipAccount)
                 && Objects.equals(this.requirePerfectMatch, subtitleOptions.requirePerfectMatch);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches,
-                hashCodeNullable(downloadLanguages), downloadMovieSubtitles, downloadEpisodeSubtitles,
-                hashCodeNullable(openSubtitlesUsername), hashCodeNullable(openSubtitlesPasswordHash),
+        return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches, downloadLanguages,
+                downloadMovieSubtitles, downloadEpisodeSubtitles, openSubtitlesUsername, openSubtitlesPasswordHash,
                 isOpenSubtitleVipAccount, requirePerfectMatch);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
@@ -437,11 +389,6 @@ public class SubtitleOptions {
         }
 
         public SubtitleOptions.Builder downloadLanguages(List<String> downloadLanguages) {
-            this.instance.downloadLanguages = JsonNullable.<List<String>> of(downloadLanguages);
-            return this;
-        }
-
-        public SubtitleOptions.Builder downloadLanguages(JsonNullable<List<String>> downloadLanguages) {
             this.instance.downloadLanguages = downloadLanguages;
             return this;
         }
@@ -457,21 +404,11 @@ public class SubtitleOptions {
         }
 
         public SubtitleOptions.Builder openSubtitlesUsername(String openSubtitlesUsername) {
-            this.instance.openSubtitlesUsername = JsonNullable.<String> of(openSubtitlesUsername);
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesUsername(JsonNullable<String> openSubtitlesUsername) {
             this.instance.openSubtitlesUsername = openSubtitlesUsername;
             return this;
         }
 
         public SubtitleOptions.Builder openSubtitlesPasswordHash(String openSubtitlesPasswordHash) {
-            this.instance.openSubtitlesPasswordHash = JsonNullable.<String> of(openSubtitlesPasswordHash);
-            return this;
-        }
-
-        public SubtitleOptions.Builder openSubtitlesPasswordHash(JsonNullable<String> openSubtitlesPasswordHash) {
             this.instance.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
             return this;
         }

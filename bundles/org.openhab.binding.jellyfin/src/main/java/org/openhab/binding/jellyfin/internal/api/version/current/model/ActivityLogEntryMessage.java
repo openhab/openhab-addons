@@ -18,15 +18,11 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ActivityLogEntryMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<List<ActivityLogEntry>> data = JsonNullable.<List<ActivityLogEntry>> undefined();
+    private List<ActivityLogEntry> data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @javax.annotation.Nullable
@@ -63,20 +59,16 @@ public class ActivityLogEntryMessage {
     }
 
     public ActivityLogEntryMessage data(@javax.annotation.Nullable List<ActivityLogEntry> data) {
-        this.data = JsonNullable.<List<ActivityLogEntry>> of(data);
 
+        this.data = data;
         return this;
     }
 
     public ActivityLogEntryMessage addDataItem(ActivityLogEntry dataItem) {
-        if (this.data == null || !this.data.isPresent()) {
-            this.data = JsonNullable.<List<ActivityLogEntry>> of(new ArrayList<>());
+        if (this.data == null) {
+            this.data = new ArrayList<>();
         }
-        try {
-            this.data.get().add(dataItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.data.add(dataItem);
         return this;
     }
 
@@ -86,26 +78,17 @@ public class ActivityLogEntryMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ActivityLogEntry> getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<ActivityLogEntry>> getData_JsonNullable() {
+    public List<ActivityLogEntry> getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<List<ActivityLogEntry>> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable List<ActivityLogEntry> data) {
-        this.data = JsonNullable.<List<ActivityLogEntry>> of(data);
+        this.data = data;
     }
 
     public ActivityLogEntryMessage messageId(@javax.annotation.Nullable UUID messageId) {
@@ -155,26 +138,14 @@ public class ActivityLogEntryMessage {
             return false;
         }
         ActivityLogEntryMessage activityLogEntryMessage = (ActivityLogEntryMessage) o;
-        return equalsNullable(this.data, activityLogEntryMessage.data)
+        return Objects.equals(this.data, activityLogEntryMessage.data)
                 && Objects.equals(this.messageId, activityLogEntryMessage.messageId)
                 && Objects.equals(this.messageType, activityLogEntryMessage.messageType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageId, messageType);
     }
 
     @Override
@@ -212,11 +183,6 @@ public class ActivityLogEntryMessage {
         }
 
         public ActivityLogEntryMessage.Builder data(List<ActivityLogEntry> data) {
-            this.instance.data = JsonNullable.<List<ActivityLogEntry>> of(data);
-            return this;
-        }
-
-        public ActivityLogEntryMessage.Builder data(JsonNullable<List<ActivityLogEntry>> data) {
             this.instance.data = data;
             return this;
         }

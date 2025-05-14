@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -43,19 +39,19 @@ public class CodecProfile {
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
     @javax.annotation.Nullable
-    private JsonNullable<List<ProfileCondition>> conditions = JsonNullable.<List<ProfileCondition>> undefined();
+    private List<ProfileCondition> conditions;
 
     public static final String JSON_PROPERTY_APPLY_CONDITIONS = "ApplyConditions";
     @javax.annotation.Nullable
-    private JsonNullable<List<ProfileCondition>> applyConditions = JsonNullable.<List<ProfileCondition>> undefined();
+    private List<ProfileCondition> applyConditions;
 
     public static final String JSON_PROPERTY_CODEC = "Codec";
     @javax.annotation.Nullable
-    private JsonNullable<String> codec = JsonNullable.<String> undefined();
+    private String codec;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+    private String container;
 
     public CodecProfile() {
     }
@@ -86,20 +82,16 @@ public class CodecProfile {
     }
 
     public CodecProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
 
+        this.conditions = conditions;
         return this;
     }
 
     public CodecProfile addConditionsItem(ProfileCondition conditionsItem) {
-        if (this.conditions == null || !this.conditions.isPresent()) {
-            this.conditions = JsonNullable.<List<ProfileCondition>> of(new ArrayList<>());
+        if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
         }
-        try {
-            this.conditions.get().add(conditionsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.conditions.add(conditionsItem);
         return this;
     }
 
@@ -109,43 +101,30 @@ public class CodecProfile {
      * @return conditions
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ProfileCondition> getConditions() {
-        return conditions.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<ProfileCondition>> getConditions_JsonNullable() {
+    public List<ProfileCondition> getConditions() {
         return conditions;
     }
 
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
-    public void setConditions_JsonNullable(JsonNullable<List<ProfileCondition>> conditions) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
         this.conditions = conditions;
     }
 
-    public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
-    }
-
     public CodecProfile applyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
-        this.applyConditions = JsonNullable.<List<ProfileCondition>> of(applyConditions);
 
+        this.applyConditions = applyConditions;
         return this;
     }
 
     public CodecProfile addApplyConditionsItem(ProfileCondition applyConditionsItem) {
-        if (this.applyConditions == null || !this.applyConditions.isPresent()) {
-            this.applyConditions = JsonNullable.<List<ProfileCondition>> of(new ArrayList<>());
+        if (this.applyConditions == null) {
+            this.applyConditions = new ArrayList<>();
         }
-        try {
-            this.applyConditions.get().add(applyConditionsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.applyConditions.add(applyConditionsItem);
         return this;
     }
 
@@ -155,31 +134,22 @@ public class CodecProfile {
      * @return applyConditions
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ProfileCondition> getApplyConditions() {
-        return applyConditions.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<ProfileCondition>> getApplyConditions_JsonNullable() {
+    public List<ProfileCondition> getApplyConditions() {
         return applyConditions;
     }
 
     @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
-    public void setApplyConditions_JsonNullable(JsonNullable<List<ProfileCondition>> applyConditions) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setApplyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
         this.applyConditions = applyConditions;
     }
 
-    public void setApplyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
-        this.applyConditions = JsonNullable.<List<ProfileCondition>> of(applyConditions);
-    }
-
     public CodecProfile codec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
 
+        this.codec = codec;
         return this;
     }
 
@@ -189,31 +159,22 @@ public class CodecProfile {
      * @return codec
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCodec() {
-        return codec.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCodec_JsonNullable() {
+    public String getCodec() {
         return codec;
     }
 
     @JsonProperty(JSON_PROPERTY_CODEC)
-    public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCodec(@javax.annotation.Nullable String codec) {
         this.codec = codec;
     }
 
-    public void setCodec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
-    }
-
     public CodecProfile container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
 
+        this.container = container;
         return this;
     }
 
@@ -223,26 +184,17 @@ public class CodecProfile {
      * @return container
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
+    public String getContainer() {
         return container;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
-        this.container = container;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
+        this.container = container;
     }
 
     @Override
@@ -254,28 +206,15 @@ public class CodecProfile {
             return false;
         }
         CodecProfile codecProfile = (CodecProfile) o;
-        return Objects.equals(this.type, codecProfile.type) && equalsNullable(this.conditions, codecProfile.conditions)
-                && equalsNullable(this.applyConditions, codecProfile.applyConditions)
-                && equalsNullable(this.codec, codecProfile.codec)
-                && equalsNullable(this.container, codecProfile.container);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.type, codecProfile.type) && Objects.equals(this.conditions, codecProfile.conditions)
+                && Objects.equals(this.applyConditions, codecProfile.applyConditions)
+                && Objects.equals(this.codec, codecProfile.codec)
+                && Objects.equals(this.container, codecProfile.container);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, hashCodeNullable(conditions), hashCodeNullable(applyConditions),
-                hashCodeNullable(codec), hashCodeNullable(container));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, conditions, applyConditions, codec, container);
     }
 
     @Override
@@ -320,41 +259,21 @@ public class CodecProfile {
         }
 
         public CodecProfile.Builder conditions(List<ProfileCondition> conditions) {
-            this.instance.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
-            return this;
-        }
-
-        public CodecProfile.Builder conditions(JsonNullable<List<ProfileCondition>> conditions) {
             this.instance.conditions = conditions;
             return this;
         }
 
         public CodecProfile.Builder applyConditions(List<ProfileCondition> applyConditions) {
-            this.instance.applyConditions = JsonNullable.<List<ProfileCondition>> of(applyConditions);
-            return this;
-        }
-
-        public CodecProfile.Builder applyConditions(JsonNullable<List<ProfileCondition>> applyConditions) {
             this.instance.applyConditions = applyConditions;
             return this;
         }
 
         public CodecProfile.Builder codec(String codec) {
-            this.instance.codec = JsonNullable.<String> of(codec);
-            return this;
-        }
-
-        public CodecProfile.Builder codec(JsonNullable<String> codec) {
             this.instance.codec = codec;
             return this;
         }
 
         public CodecProfile.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public CodecProfile.Builder container(JsonNullable<String> container) {
             this.instance.container = container;
             return this;
         }

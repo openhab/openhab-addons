@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,7 +40,7 @@ public class ProfileCondition {
 
     public static final String JSON_PROPERTY_VALUE = "Value";
     @javax.annotation.Nullable
-    private JsonNullable<String> value = JsonNullable.<String> undefined();
+    private String value;
 
     public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
     @javax.annotation.Nullable
@@ -104,8 +100,8 @@ public class ProfileCondition {
     }
 
     public ProfileCondition value(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
 
+        this.value = value;
         return this;
     }
 
@@ -115,26 +111,17 @@ public class ProfileCondition {
      * @return value
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getValue() {
-        return value.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VALUE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getValue_JsonNullable() {
+    public String getValue() {
         return value;
     }
 
     @JsonProperty(JSON_PROPERTY_VALUE)
-    public void setValue_JsonNullable(JsonNullable<String> value) {
-        this.value = value;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setValue(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
+        this.value = value;
     }
 
     public ProfileCondition isRequired(@javax.annotation.Nullable Boolean isRequired) {
@@ -173,25 +160,13 @@ public class ProfileCondition {
         ProfileCondition profileCondition = (ProfileCondition) o;
         return Objects.equals(this.condition, profileCondition.condition)
                 && Objects.equals(this.property, profileCondition.property)
-                && equalsNullable(this.value, profileCondition.value)
+                && Objects.equals(this.value, profileCondition.value)
                 && Objects.equals(this.isRequired, profileCondition.isRequired);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(condition, property, hashCodeNullable(value), isRequired);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(condition, property, value, isRequired);
     }
 
     @Override
@@ -240,11 +215,6 @@ public class ProfileCondition {
         }
 
         public ProfileCondition.Builder value(String value) {
-            this.instance.value = JsonNullable.<String> of(value);
-            return this;
-        }
-
-        public ProfileCondition.Builder value(JsonNullable<String> value) {
             this.instance.value = value;
             return this;
         }

@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ThemeMediaResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @javax.annotation.Nullable
-    private JsonNullable<List<BaseItemDto>> items = JsonNullable.<List<BaseItemDto>> undefined();
+    private List<BaseItemDto> items;
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @javax.annotation.Nullable
@@ -57,20 +53,16 @@ public class ThemeMediaResult {
     }
 
     public ThemeMediaResult items(@javax.annotation.Nullable List<BaseItemDto> items) {
-        this.items = JsonNullable.<List<BaseItemDto>> of(items);
 
+        this.items = items;
         return this;
     }
 
     public ThemeMediaResult addItemsItem(BaseItemDto itemsItem) {
-        if (this.items == null || !this.items.isPresent()) {
-            this.items = JsonNullable.<List<BaseItemDto>> of(new ArrayList<>());
+        if (this.items == null) {
+            this.items = new ArrayList<>();
         }
-        try {
-            this.items.get().add(itemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.items.add(itemsItem);
         return this;
     }
 
@@ -80,26 +72,17 @@ public class ThemeMediaResult {
      * @return items
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<BaseItemDto> getItems() {
-        return items.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<BaseItemDto>> getItems_JsonNullable() {
+    public List<BaseItemDto> getItems() {
         return items;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEMS)
-    public void setItems_JsonNullable(JsonNullable<List<BaseItemDto>> items) {
-        this.items = items;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItems(@javax.annotation.Nullable List<BaseItemDto> items) {
-        this.items = JsonNullable.<List<BaseItemDto>> of(items);
+        this.items = items;
     }
 
     public ThemeMediaResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
@@ -186,27 +169,15 @@ public class ThemeMediaResult {
             return false;
         }
         ThemeMediaResult themeMediaResult = (ThemeMediaResult) o;
-        return equalsNullable(this.items, themeMediaResult.items)
+        return Objects.equals(this.items, themeMediaResult.items)
                 && Objects.equals(this.totalRecordCount, themeMediaResult.totalRecordCount)
                 && Objects.equals(this.startIndex, themeMediaResult.startIndex)
                 && Objects.equals(this.ownerId, themeMediaResult.ownerId);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(items), totalRecordCount, startIndex, ownerId);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(items, totalRecordCount, startIndex, ownerId);
     }
 
     @Override
@@ -245,11 +216,6 @@ public class ThemeMediaResult {
         }
 
         public ThemeMediaResult.Builder items(List<BaseItemDto> items) {
-            this.instance.items = JsonNullable.<List<BaseItemDto>> of(items);
-            return this;
-        }
-
-        public ThemeMediaResult.Builder items(JsonNullable<List<BaseItemDto>> items) {
             this.instance.items = items;
             return this;
         }

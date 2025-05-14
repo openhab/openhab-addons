@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -47,7 +43,7 @@ public class PluginInfo {
 
     public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
     @javax.annotation.Nullable
-    private JsonNullable<String> configurationFileName = JsonNullable.<String> undefined();
+    private String configurationFileName;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
     @javax.annotation.Nullable
@@ -123,8 +119,8 @@ public class PluginInfo {
     }
 
     public PluginInfo configurationFileName(@javax.annotation.Nullable String configurationFileName) {
-        this.configurationFileName = JsonNullable.<String> of(configurationFileName);
 
+        this.configurationFileName = configurationFileName;
         return this;
     }
 
@@ -134,26 +130,17 @@ public class PluginInfo {
      * @return configurationFileName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getConfigurationFileName() {
-        return configurationFileName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getConfigurationFileName_JsonNullable() {
+    public String getConfigurationFileName() {
         return configurationFileName;
     }
 
     @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
-    public void setConfigurationFileName_JsonNullable(JsonNullable<String> configurationFileName) {
-        this.configurationFileName = configurationFileName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConfigurationFileName(@javax.annotation.Nullable String configurationFileName) {
-        this.configurationFileName = JsonNullable.<String> of(configurationFileName);
+        this.configurationFileName = configurationFileName;
     }
 
     public PluginInfo description(@javax.annotation.Nullable String description) {
@@ -291,28 +278,15 @@ public class PluginInfo {
         }
         PluginInfo pluginInfo = (PluginInfo) o;
         return Objects.equals(this.name, pluginInfo.name) && Objects.equals(this.version, pluginInfo.version)
-                && equalsNullable(this.configurationFileName, pluginInfo.configurationFileName)
+                && Objects.equals(this.configurationFileName, pluginInfo.configurationFileName)
                 && Objects.equals(this.description, pluginInfo.description) && Objects.equals(this.id, pluginInfo.id)
                 && Objects.equals(this.canUninstall, pluginInfo.canUninstall)
                 && Objects.equals(this.hasImage, pluginInfo.hasImage) && Objects.equals(this.status, pluginInfo.status);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(name, version, hashCodeNullable(configurationFileName), description, id, canUninstall,
-                hasImage, status);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, version, configurationFileName, description, id, canUninstall, hasImage, status);
     }
 
     @Override
@@ -365,11 +339,6 @@ public class PluginInfo {
         }
 
         public PluginInfo.Builder configurationFileName(String configurationFileName) {
-            this.instance.configurationFileName = JsonNullable.<String> of(configurationFileName);
-            return this;
-        }
-
-        public PluginInfo.Builder configurationFileName(JsonNullable<String> configurationFileName) {
             this.instance.configurationFileName = configurationFileName;
             return this;
         }

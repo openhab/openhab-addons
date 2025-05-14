@@ -28,12 +28,12 @@ function checkEnvironment() {
 checkEnvironment
 
 DOCKER_IMAGE_OPENAPI=openapitools/openapi-generator-cli:v7.12.0
-DOCKER_IMAGE_KIOTA=mcr.microsoft.com/openapi/kiota:1.25.1
+# DOCKER_IMAGE_KIOTA=mcr.microsoft.com/openapi/kiota:1.25.1
 
 echo "ℹ️ - Get openAPI builder docker image(s)"
 echo ""
 docker pull $DOCKER_IMAGE_OPENAPI
-docker pull $DOCKER_IMAGE_KIOTA
+# docker pull $DOCKER_IMAGE_KIOTA
 echo ""
 
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)

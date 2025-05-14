@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -90,7 +86,7 @@ public class TranscodingProfile {
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
     @javax.annotation.Nullable
-    private JsonNullable<String> maxAudioChannels = JsonNullable.<String> undefined();
+    private String maxAudioChannels;
 
     public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
     @javax.annotation.Nullable
@@ -391,8 +387,8 @@ public class TranscodingProfile {
     }
 
     public TranscodingProfile maxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
-        this.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
 
+        this.maxAudioChannels = maxAudioChannels;
         return this;
     }
 
@@ -402,26 +398,17 @@ public class TranscodingProfile {
      * @return maxAudioChannels
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMaxAudioChannels() {
-        return maxAudioChannels.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMaxAudioChannels_JsonNullable() {
+    public String getMaxAudioChannels() {
         return maxAudioChannels;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
-    public void setMaxAudioChannels_JsonNullable(JsonNullable<String> maxAudioChannels) {
-        this.maxAudioChannels = maxAudioChannels;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
-        this.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
+        this.maxAudioChannels = maxAudioChannels;
     }
 
     public TranscodingProfile minSegments(@javax.annotation.Nullable Integer minSegments) {
@@ -577,7 +564,7 @@ public class TranscodingProfile {
                 && Objects.equals(this.copyTimestamps, transcodingProfile.copyTimestamps)
                 && Objects.equals(this.context, transcodingProfile.context)
                 && Objects.equals(this.enableSubtitlesInManifest, transcodingProfile.enableSubtitlesInManifest)
-                && equalsNullable(this.maxAudioChannels, transcodingProfile.maxAudioChannels)
+                && Objects.equals(this.maxAudioChannels, transcodingProfile.maxAudioChannels)
                 && Objects.equals(this.minSegments, transcodingProfile.minSegments)
                 && Objects.equals(this.segmentLength, transcodingProfile.segmentLength)
                 && Objects.equals(this.breakOnNonKeyFrames, transcodingProfile.breakOnNonKeyFrames)
@@ -585,24 +572,11 @@ public class TranscodingProfile {
                 && Objects.equals(this.enableAudioVbrEncoding, transcodingProfile.enableAudioVbrEncoding);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(container, type, videoCodec, audioCodec, protocol, estimateContentLength,
                 enableMpegtsM2TsMode, transcodeSeekInfo, copyTimestamps, context, enableSubtitlesInManifest,
-                hashCodeNullable(maxAudioChannels), minSegments, segmentLength, breakOnNonKeyFrames, conditions,
-                enableAudioVbrEncoding);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+                maxAudioChannels, minSegments, segmentLength, breakOnNonKeyFrames, conditions, enableAudioVbrEncoding);
     }
 
     @Override
@@ -709,11 +683,6 @@ public class TranscodingProfile {
         }
 
         public TranscodingProfile.Builder maxAudioChannels(String maxAudioChannels) {
-            this.instance.maxAudioChannels = JsonNullable.<String> of(maxAudioChannels);
-            return this;
-        }
-
-        public TranscodingProfile.Builder maxAudioChannels(JsonNullable<String> maxAudioChannels) {
             this.instance.maxAudioChannels = maxAudioChannels;
             return this;
         }

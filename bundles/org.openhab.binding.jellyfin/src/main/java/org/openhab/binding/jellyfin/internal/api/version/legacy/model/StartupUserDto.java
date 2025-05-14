@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,18 +31,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class StartupUserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
     @javax.annotation.Nullable
-    private JsonNullable<String> password = JsonNullable.<String> undefined();
+    private String password;
 
     public StartupUserDto() {
     }
 
     public StartupUserDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -56,31 +52,22 @@ public class StartupUserDto {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public StartupUserDto password(@javax.annotation.Nullable String password) {
-        this.password = JsonNullable.<String> of(password);
 
+        this.password = password;
         return this;
     }
 
@@ -90,26 +77,17 @@ public class StartupUserDto {
      * @return password
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPassword() {
-        return password.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPassword_JsonNullable() {
+    public String getPassword() {
         return password;
     }
 
     @JsonProperty(JSON_PROPERTY_PASSWORD)
-    public void setPassword_JsonNullable(JsonNullable<String> password) {
-        this.password = password;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPassword(@javax.annotation.Nullable String password) {
-        this.password = JsonNullable.<String> of(password);
+        this.password = password;
     }
 
     @Override
@@ -121,24 +99,12 @@ public class StartupUserDto {
             return false;
         }
         StartupUserDto startupUserDto = (StartupUserDto) o;
-        return equalsNullable(this.name, startupUserDto.name) && equalsNullable(this.password, startupUserDto.password);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, startupUserDto.name) && Objects.equals(this.password, startupUserDto.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(password));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, password);
     }
 
     @Override
@@ -175,21 +141,11 @@ public class StartupUserDto {
         }
 
         public StartupUserDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public StartupUserDto.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public StartupUserDto.Builder password(String password) {
-            this.instance.password = JsonNullable.<String> of(password);
-            return this;
-        }
-
-        public StartupUserDto.Builder password(JsonNullable<String> password) {
             this.instance.password = password;
             return this;
         }

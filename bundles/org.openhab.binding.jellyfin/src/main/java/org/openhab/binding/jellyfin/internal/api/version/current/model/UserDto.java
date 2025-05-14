@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,15 +38,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @javax.annotation.Nullable
-    private JsonNullable<String> serverId = JsonNullable.<String> undefined();
+    private String serverId;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @javax.annotation.Nullable
-    private JsonNullable<String> serverName = JsonNullable.<String> undefined();
+    private String serverName;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
@@ -58,7 +54,7 @@ public class UserDto {
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> primaryImageTag = JsonNullable.<String> undefined();
+    private String primaryImageTag;
 
     public static final String JSON_PROPERTY_HAS_PASSWORD = "HasPassword";
     @javax.annotation.Nullable
@@ -74,34 +70,34 @@ public class UserDto {
 
     public static final String JSON_PROPERTY_ENABLE_AUTO_LOGIN = "EnableAutoLogin";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableAutoLogin = JsonNullable.<Boolean> undefined();
+    private Boolean enableAutoLogin;
 
     public static final String JSON_PROPERTY_LAST_LOGIN_DATE = "LastLoginDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> lastLoginDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime lastLoginDate;
 
     public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> lastActivityDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime lastActivityDate;
 
     public static final String JSON_PROPERTY_CONFIGURATION = "Configuration";
     @javax.annotation.Nullable
-    private JsonNullable<UserConfiguration> _configuration = JsonNullable.<UserConfiguration> undefined();
+    private UserConfiguration _configuration;
 
     public static final String JSON_PROPERTY_POLICY = "Policy";
     @javax.annotation.Nullable
-    private JsonNullable<UserPolicy> policy = JsonNullable.<UserPolicy> undefined();
+    private UserPolicy policy;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
     @javax.annotation.Nullable
-    private JsonNullable<Double> primaryImageAspectRatio = JsonNullable.<Double> undefined();
+    private Double primaryImageAspectRatio;
 
     public UserDto() {
     }
 
     public UserDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -111,31 +107,22 @@ public class UserDto {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public UserDto serverId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
 
+        this.serverId = serverId;
         return this;
     }
 
@@ -145,31 +132,22 @@ public class UserDto {
      * @return serverId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerId() {
-        return serverId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerId_JsonNullable() {
+    public String getServerId() {
         return serverId;
     }
 
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setServerId(@javax.annotation.Nullable String serverId) {
         this.serverId = serverId;
     }
 
-    public void setServerId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
-    }
-
     public UserDto serverName(@javax.annotation.Nullable String serverName) {
-        this.serverName = JsonNullable.<String> of(serverName);
 
+        this.serverName = serverName;
         return this;
     }
 
@@ -179,26 +157,17 @@ public class UserDto {
      * @return serverName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerName() {
-        return serverName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerName_JsonNullable() {
+    public String getServerName() {
         return serverName;
     }
 
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
-    public void setServerName_JsonNullable(JsonNullable<String> serverName) {
-        this.serverName = serverName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerName(@javax.annotation.Nullable String serverName) {
-        this.serverName = JsonNullable.<String> of(serverName);
+        this.serverName = serverName;
     }
 
     public UserDto id(@javax.annotation.Nullable UUID id) {
@@ -227,8 +196,8 @@ public class UserDto {
     }
 
     public UserDto primaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-        this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
 
+        this.primaryImageTag = primaryImageTag;
         return this;
     }
 
@@ -238,26 +207,17 @@ public class UserDto {
      * @return primaryImageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPrimaryImageTag() {
-        return primaryImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPrimaryImageTag_JsonNullable() {
+    public String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
-    public void setPrimaryImageTag_JsonNullable(JsonNullable<String> primaryImageTag) {
-        this.primaryImageTag = primaryImageTag;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-        this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
+        this.primaryImageTag = primaryImageTag;
     }
 
     public UserDto hasPassword(@javax.annotation.Nullable Boolean hasPassword) {
@@ -338,8 +298,8 @@ public class UserDto {
     }
 
     public UserDto enableAutoLogin(@javax.annotation.Nullable Boolean enableAutoLogin) {
-        this.enableAutoLogin = JsonNullable.<Boolean> of(enableAutoLogin);
 
+        this.enableAutoLogin = enableAutoLogin;
         return this;
     }
 
@@ -349,31 +309,22 @@ public class UserDto {
      * @return enableAutoLogin
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableAutoLogin() {
-        return enableAutoLogin.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableAutoLogin_JsonNullable() {
+    public Boolean getEnableAutoLogin() {
         return enableAutoLogin;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
-    public void setEnableAutoLogin_JsonNullable(JsonNullable<Boolean> enableAutoLogin) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableAutoLogin(@javax.annotation.Nullable Boolean enableAutoLogin) {
         this.enableAutoLogin = enableAutoLogin;
     }
 
-    public void setEnableAutoLogin(@javax.annotation.Nullable Boolean enableAutoLogin) {
-        this.enableAutoLogin = JsonNullable.<Boolean> of(enableAutoLogin);
-    }
-
     public UserDto lastLoginDate(@javax.annotation.Nullable OffsetDateTime lastLoginDate) {
-        this.lastLoginDate = JsonNullable.<OffsetDateTime> of(lastLoginDate);
 
+        this.lastLoginDate = lastLoginDate;
         return this;
     }
 
@@ -383,31 +334,22 @@ public class UserDto {
      * @return lastLoginDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getLastLoginDate() {
-        return lastLoginDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getLastLoginDate_JsonNullable() {
+    public OffsetDateTime getLastLoginDate() {
         return lastLoginDate;
     }
 
     @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
-    public void setLastLoginDate_JsonNullable(JsonNullable<OffsetDateTime> lastLoginDate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLastLoginDate(@javax.annotation.Nullable OffsetDateTime lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
     }
 
-    public void setLastLoginDate(@javax.annotation.Nullable OffsetDateTime lastLoginDate) {
-        this.lastLoginDate = JsonNullable.<OffsetDateTime> of(lastLoginDate);
-    }
-
     public UserDto lastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
-        this.lastActivityDate = JsonNullable.<OffsetDateTime> of(lastActivityDate);
 
+        this.lastActivityDate = lastActivityDate;
         return this;
     }
 
@@ -417,31 +359,22 @@ public class UserDto {
      * @return lastActivityDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getLastActivityDate() {
-        return lastActivityDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getLastActivityDate_JsonNullable() {
+    public OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
 
     @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
-    public void setLastActivityDate_JsonNullable(JsonNullable<OffsetDateTime> lastActivityDate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
         this.lastActivityDate = lastActivityDate;
     }
 
-    public void setLastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
-        this.lastActivityDate = JsonNullable.<OffsetDateTime> of(lastActivityDate);
-    }
-
     public UserDto _configuration(@javax.annotation.Nullable UserConfiguration _configuration) {
-        this._configuration = JsonNullable.<UserConfiguration> of(_configuration);
 
+        this._configuration = _configuration;
         return this;
     }
 
@@ -451,31 +384,22 @@ public class UserDto {
      * @return _configuration
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UserConfiguration getConfiguration() {
-        return _configuration.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONFIGURATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UserConfiguration> getConfiguration_JsonNullable() {
+    public UserConfiguration getConfiguration() {
         return _configuration;
     }
 
     @JsonProperty(JSON_PROPERTY_CONFIGURATION)
-    public void setConfiguration_JsonNullable(JsonNullable<UserConfiguration> _configuration) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setConfiguration(@javax.annotation.Nullable UserConfiguration _configuration) {
         this._configuration = _configuration;
     }
 
-    public void setConfiguration(@javax.annotation.Nullable UserConfiguration _configuration) {
-        this._configuration = JsonNullable.<UserConfiguration> of(_configuration);
-    }
-
     public UserDto policy(@javax.annotation.Nullable UserPolicy policy) {
-        this.policy = JsonNullable.<UserPolicy> of(policy);
 
+        this.policy = policy;
         return this;
     }
 
@@ -485,31 +409,22 @@ public class UserDto {
      * @return policy
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UserPolicy getPolicy() {
-        return policy.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_POLICY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UserPolicy> getPolicy_JsonNullable() {
+    public UserPolicy getPolicy() {
         return policy;
     }
 
     @JsonProperty(JSON_PROPERTY_POLICY)
-    public void setPolicy_JsonNullable(JsonNullable<UserPolicy> policy) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPolicy(@javax.annotation.Nullable UserPolicy policy) {
         this.policy = policy;
     }
 
-    public void setPolicy(@javax.annotation.Nullable UserPolicy policy) {
-        this.policy = JsonNullable.<UserPolicy> of(policy);
-    }
-
     public UserDto primaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
 
+        this.primaryImageAspectRatio = primaryImageAspectRatio;
         return this;
     }
 
@@ -519,26 +434,17 @@ public class UserDto {
      * @return primaryImageAspectRatio
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getPrimaryImageAspectRatio() {
-        return primaryImageAspectRatio.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getPrimaryImageAspectRatio_JsonNullable() {
+    public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
 
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
-    public void setPrimaryImageAspectRatio_JsonNullable(JsonNullable<Double> primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = primaryImageAspectRatio;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
+        this.primaryImageAspectRatio = primaryImageAspectRatio;
     }
 
     @Override
@@ -550,38 +456,25 @@ public class UserDto {
             return false;
         }
         UserDto userDto = (UserDto) o;
-        return equalsNullable(this.name, userDto.name) && equalsNullable(this.serverId, userDto.serverId)
-                && equalsNullable(this.serverName, userDto.serverName) && Objects.equals(this.id, userDto.id)
-                && equalsNullable(this.primaryImageTag, userDto.primaryImageTag)
+        return Objects.equals(this.name, userDto.name) && Objects.equals(this.serverId, userDto.serverId)
+                && Objects.equals(this.serverName, userDto.serverName) && Objects.equals(this.id, userDto.id)
+                && Objects.equals(this.primaryImageTag, userDto.primaryImageTag)
                 && Objects.equals(this.hasPassword, userDto.hasPassword)
                 && Objects.equals(this.hasConfiguredPassword, userDto.hasConfiguredPassword)
                 && Objects.equals(this.hasConfiguredEasyPassword, userDto.hasConfiguredEasyPassword)
-                && equalsNullable(this.enableAutoLogin, userDto.enableAutoLogin)
-                && equalsNullable(this.lastLoginDate, userDto.lastLoginDate)
-                && equalsNullable(this.lastActivityDate, userDto.lastActivityDate)
-                && equalsNullable(this._configuration, userDto._configuration)
-                && equalsNullable(this.policy, userDto.policy)
-                && equalsNullable(this.primaryImageAspectRatio, userDto.primaryImageAspectRatio);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.enableAutoLogin, userDto.enableAutoLogin)
+                && Objects.equals(this.lastLoginDate, userDto.lastLoginDate)
+                && Objects.equals(this.lastActivityDate, userDto.lastActivityDate)
+                && Objects.equals(this._configuration, userDto._configuration)
+                && Objects.equals(this.policy, userDto.policy)
+                && Objects.equals(this.primaryImageAspectRatio, userDto.primaryImageAspectRatio);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(serverId), hashCodeNullable(serverName), id,
-                hashCodeNullable(primaryImageTag), hasPassword, hasConfiguredPassword, hasConfiguredEasyPassword,
-                hashCodeNullable(enableAutoLogin), hashCodeNullable(lastLoginDate), hashCodeNullable(lastActivityDate),
-                hashCodeNullable(_configuration), hashCodeNullable(policy), hashCodeNullable(primaryImageAspectRatio));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, serverId, serverName, id, primaryImageTag, hasPassword, hasConfiguredPassword,
+                hasConfiguredEasyPassword, enableAutoLogin, lastLoginDate, lastActivityDate, _configuration, policy,
+                primaryImageAspectRatio);
     }
 
     @Override
@@ -630,31 +523,16 @@ public class UserDto {
         }
 
         public UserDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public UserDto.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public UserDto.Builder serverId(String serverId) {
-            this.instance.serverId = JsonNullable.<String> of(serverId);
-            return this;
-        }
-
-        public UserDto.Builder serverId(JsonNullable<String> serverId) {
             this.instance.serverId = serverId;
             return this;
         }
 
         public UserDto.Builder serverName(String serverName) {
-            this.instance.serverName = JsonNullable.<String> of(serverName);
-            return this;
-        }
-
-        public UserDto.Builder serverName(JsonNullable<String> serverName) {
             this.instance.serverName = serverName;
             return this;
         }
@@ -665,11 +543,6 @@ public class UserDto {
         }
 
         public UserDto.Builder primaryImageTag(String primaryImageTag) {
-            this.instance.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
-            return this;
-        }
-
-        public UserDto.Builder primaryImageTag(JsonNullable<String> primaryImageTag) {
             this.instance.primaryImageTag = primaryImageTag;
             return this;
         }
@@ -690,61 +563,31 @@ public class UserDto {
         }
 
         public UserDto.Builder enableAutoLogin(Boolean enableAutoLogin) {
-            this.instance.enableAutoLogin = JsonNullable.<Boolean> of(enableAutoLogin);
-            return this;
-        }
-
-        public UserDto.Builder enableAutoLogin(JsonNullable<Boolean> enableAutoLogin) {
             this.instance.enableAutoLogin = enableAutoLogin;
             return this;
         }
 
         public UserDto.Builder lastLoginDate(OffsetDateTime lastLoginDate) {
-            this.instance.lastLoginDate = JsonNullable.<OffsetDateTime> of(lastLoginDate);
-            return this;
-        }
-
-        public UserDto.Builder lastLoginDate(JsonNullable<OffsetDateTime> lastLoginDate) {
             this.instance.lastLoginDate = lastLoginDate;
             return this;
         }
 
         public UserDto.Builder lastActivityDate(OffsetDateTime lastActivityDate) {
-            this.instance.lastActivityDate = JsonNullable.<OffsetDateTime> of(lastActivityDate);
-            return this;
-        }
-
-        public UserDto.Builder lastActivityDate(JsonNullable<OffsetDateTime> lastActivityDate) {
             this.instance.lastActivityDate = lastActivityDate;
             return this;
         }
 
         public UserDto.Builder _configuration(UserConfiguration _configuration) {
-            this.instance._configuration = JsonNullable.<UserConfiguration> of(_configuration);
-            return this;
-        }
-
-        public UserDto.Builder _configuration(JsonNullable<UserConfiguration> _configuration) {
             this.instance._configuration = _configuration;
             return this;
         }
 
         public UserDto.Builder policy(UserPolicy policy) {
-            this.instance.policy = JsonNullable.<UserPolicy> of(policy);
-            return this;
-        }
-
-        public UserDto.Builder policy(JsonNullable<UserPolicy> policy) {
             this.instance.policy = policy;
             return this;
         }
 
         public UserDto.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
-            return this;
-        }
-
-        public UserDto.Builder primaryImageAspectRatio(JsonNullable<Double> primaryImageAspectRatio) {
             this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
             return this;
         }

@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,15 +32,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdateUserPassword {
     public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
     @javax.annotation.Nullable
-    private JsonNullable<String> currentPassword = JsonNullable.<String> undefined();
+    private String currentPassword;
 
     public static final String JSON_PROPERTY_CURRENT_PW = "CurrentPw";
     @javax.annotation.Nullable
-    private JsonNullable<String> currentPw = JsonNullable.<String> undefined();
+    private String currentPw;
 
     public static final String JSON_PROPERTY_NEW_PW = "NewPw";
     @javax.annotation.Nullable
-    private JsonNullable<String> newPw = JsonNullable.<String> undefined();
+    private String newPw;
 
     public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
     @javax.annotation.Nullable
@@ -54,8 +50,8 @@ public class UpdateUserPassword {
     }
 
     public UpdateUserPassword currentPassword(@javax.annotation.Nullable String currentPassword) {
-        this.currentPassword = JsonNullable.<String> of(currentPassword);
 
+        this.currentPassword = currentPassword;
         return this;
     }
 
@@ -65,31 +61,22 @@ public class UpdateUserPassword {
      * @return currentPassword
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCurrentPassword() {
-        return currentPassword.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCurrentPassword_JsonNullable() {
+    public String getCurrentPassword() {
         return currentPassword;
     }
 
     @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
-    public void setCurrentPassword_JsonNullable(JsonNullable<String> currentPassword) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCurrentPassword(@javax.annotation.Nullable String currentPassword) {
         this.currentPassword = currentPassword;
     }
 
-    public void setCurrentPassword(@javax.annotation.Nullable String currentPassword) {
-        this.currentPassword = JsonNullable.<String> of(currentPassword);
-    }
-
     public UpdateUserPassword currentPw(@javax.annotation.Nullable String currentPw) {
-        this.currentPw = JsonNullable.<String> of(currentPw);
 
+        this.currentPw = currentPw;
         return this;
     }
 
@@ -99,31 +86,22 @@ public class UpdateUserPassword {
      * @return currentPw
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCurrentPw() {
-        return currentPw.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CURRENT_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCurrentPw_JsonNullable() {
+    public String getCurrentPw() {
         return currentPw;
     }
 
     @JsonProperty(JSON_PROPERTY_CURRENT_PW)
-    public void setCurrentPw_JsonNullable(JsonNullable<String> currentPw) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCurrentPw(@javax.annotation.Nullable String currentPw) {
         this.currentPw = currentPw;
     }
 
-    public void setCurrentPw(@javax.annotation.Nullable String currentPw) {
-        this.currentPw = JsonNullable.<String> of(currentPw);
-    }
-
     public UpdateUserPassword newPw(@javax.annotation.Nullable String newPw) {
-        this.newPw = JsonNullable.<String> of(newPw);
 
+        this.newPw = newPw;
         return this;
     }
 
@@ -133,26 +111,17 @@ public class UpdateUserPassword {
      * @return newPw
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getNewPw() {
-        return newPw.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NEW_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getNewPw_JsonNullable() {
+    public String getNewPw() {
         return newPw;
     }
 
     @JsonProperty(JSON_PROPERTY_NEW_PW)
-    public void setNewPw_JsonNullable(JsonNullable<String> newPw) {
-        this.newPw = newPw;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNewPw(@javax.annotation.Nullable String newPw) {
-        this.newPw = JsonNullable.<String> of(newPw);
+        this.newPw = newPw;
     }
 
     public UpdateUserPassword resetPassword(@javax.annotation.Nullable Boolean resetPassword) {
@@ -189,28 +158,15 @@ public class UpdateUserPassword {
             return false;
         }
         UpdateUserPassword updateUserPassword = (UpdateUserPassword) o;
-        return equalsNullable(this.currentPassword, updateUserPassword.currentPassword)
-                && equalsNullable(this.currentPw, updateUserPassword.currentPw)
-                && equalsNullable(this.newPw, updateUserPassword.newPw)
+        return Objects.equals(this.currentPassword, updateUserPassword.currentPassword)
+                && Objects.equals(this.currentPw, updateUserPassword.currentPw)
+                && Objects.equals(this.newPw, updateUserPassword.newPw)
                 && Objects.equals(this.resetPassword, updateUserPassword.resetPassword);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(currentPassword), hashCodeNullable(currentPw), hashCodeNullable(newPw),
-                resetPassword);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(currentPassword, currentPw, newPw, resetPassword);
     }
 
     @Override
@@ -249,31 +205,16 @@ public class UpdateUserPassword {
         }
 
         public UpdateUserPassword.Builder currentPassword(String currentPassword) {
-            this.instance.currentPassword = JsonNullable.<String> of(currentPassword);
-            return this;
-        }
-
-        public UpdateUserPassword.Builder currentPassword(JsonNullable<String> currentPassword) {
             this.instance.currentPassword = currentPassword;
             return this;
         }
 
         public UpdateUserPassword.Builder currentPw(String currentPw) {
-            this.instance.currentPw = JsonNullable.<String> of(currentPw);
-            return this;
-        }
-
-        public UpdateUserPassword.Builder currentPw(JsonNullable<String> currentPw) {
             this.instance.currentPw = currentPw;
             return this;
         }
 
         public UpdateUserPassword.Builder newPw(String newPw) {
-            this.instance.newPw = JsonNullable.<String> of(newPw);
-            return this;
-        }
-
-        public UpdateUserPassword.Builder newPw(JsonNullable<String> newPw) {
             this.instance.newPw = newPw;
             return this;
         }

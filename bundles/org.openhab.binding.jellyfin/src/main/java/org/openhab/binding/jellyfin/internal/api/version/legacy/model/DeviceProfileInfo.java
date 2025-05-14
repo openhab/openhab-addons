@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,11 +32,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceProfileInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -50,8 +46,8 @@ public class DeviceProfileInfo {
     }
 
     public DeviceProfileInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -61,31 +57,22 @@ public class DeviceProfileInfo {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public DeviceProfileInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -95,26 +82,17 @@ public class DeviceProfileInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+        this.name = name;
     }
 
     public DeviceProfileInfo type(@javax.annotation.Nullable DeviceProfileType type) {
@@ -151,25 +129,13 @@ public class DeviceProfileInfo {
             return false;
         }
         DeviceProfileInfo deviceProfileInfo = (DeviceProfileInfo) o;
-        return equalsNullable(this.id, deviceProfileInfo.id) && equalsNullable(this.name, deviceProfileInfo.name)
+        return Objects.equals(this.id, deviceProfileInfo.id) && Objects.equals(this.name, deviceProfileInfo.name)
                 && Objects.equals(this.type, deviceProfileInfo.type);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(id), hashCodeNullable(name), type);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, name, type);
     }
 
     @Override
@@ -207,21 +173,11 @@ public class DeviceProfileInfo {
         }
 
         public DeviceProfileInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public DeviceProfileInfo.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public DeviceProfileInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public DeviceProfileInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }

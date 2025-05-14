@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -48,11 +44,11 @@ public class CreatePlaylistDto {
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> userId = JsonNullable.<UUID> undefined();
+    private UUID userId;
 
     public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
     @javax.annotation.Nullable
-    private JsonNullable<MediaType> mediaType = JsonNullable.<MediaType> undefined();
+    private MediaType mediaType;
 
     public static final String JSON_PROPERTY_USERS = "Users";
     @javax.annotation.Nullable
@@ -124,8 +120,8 @@ public class CreatePlaylistDto {
     }
 
     public CreatePlaylistDto userId(@javax.annotation.Nullable UUID userId) {
-        this.userId = JsonNullable.<UUID> of(userId);
 
+        this.userId = userId;
         return this;
     }
 
@@ -135,31 +131,22 @@ public class CreatePlaylistDto {
      * @return userId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getUserId() {
-        return userId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getUserId_JsonNullable() {
+    public UUID getUserId() {
         return userId;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_ID)
-    public void setUserId_JsonNullable(JsonNullable<UUID> userId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserId(@javax.annotation.Nullable UUID userId) {
         this.userId = userId;
     }
 
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = JsonNullable.<UUID> of(userId);
-    }
-
     public CreatePlaylistDto mediaType(@javax.annotation.Nullable MediaType mediaType) {
-        this.mediaType = JsonNullable.<MediaType> of(mediaType);
 
+        this.mediaType = mediaType;
         return this;
     }
 
@@ -169,26 +156,17 @@ public class CreatePlaylistDto {
      * @return mediaType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public MediaType getMediaType() {
-        return mediaType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<MediaType> getMediaType_JsonNullable() {
+    public MediaType getMediaType() {
         return mediaType;
     }
 
     @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
-    public void setMediaType_JsonNullable(JsonNullable<MediaType> mediaType) {
-        this.mediaType = mediaType;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaType(@javax.annotation.Nullable MediaType mediaType) {
-        this.mediaType = JsonNullable.<MediaType> of(mediaType);
+        this.mediaType = mediaType;
     }
 
     public CreatePlaylistDto users(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
@@ -259,27 +237,15 @@ public class CreatePlaylistDto {
         }
         CreatePlaylistDto createPlaylistDto = (CreatePlaylistDto) o;
         return Objects.equals(this.name, createPlaylistDto.name) && Objects.equals(this.ids, createPlaylistDto.ids)
-                && equalsNullable(this.userId, createPlaylistDto.userId)
-                && equalsNullable(this.mediaType, createPlaylistDto.mediaType)
+                && Objects.equals(this.userId, createPlaylistDto.userId)
+                && Objects.equals(this.mediaType, createPlaylistDto.mediaType)
                 && Objects.equals(this.users, createPlaylistDto.users)
                 && Objects.equals(this.isPublic, createPlaylistDto.isPublic);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(name, ids, hashCodeNullable(userId), hashCodeNullable(mediaType), users, isPublic);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, ids, userId, mediaType, users, isPublic);
     }
 
     @Override
@@ -330,21 +296,11 @@ public class CreatePlaylistDto {
         }
 
         public CreatePlaylistDto.Builder userId(UUID userId) {
-            this.instance.userId = JsonNullable.<UUID> of(userId);
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder userId(JsonNullable<UUID> userId) {
             this.instance.userId = userId;
             return this;
         }
 
         public CreatePlaylistDto.Builder mediaType(MediaType mediaType) {
-            this.instance.mediaType = JsonNullable.<MediaType> of(mediaType);
-            return this;
-        }
-
-        public CreatePlaylistDto.Builder mediaType(JsonNullable<MediaType> mediaType) {
             this.instance.mediaType = mediaType;
             return this;
         }

@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,11 +36,11 @@ public class ValidatePathDto {
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+    private String path;
 
     public static final String JSON_PROPERTY_IS_FILE = "IsFile";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> isFile = JsonNullable.<Boolean> undefined();
+    private Boolean isFile;
 
     public ValidatePathDto() {
     }
@@ -75,8 +71,8 @@ public class ValidatePathDto {
     }
 
     public ValidatePathDto path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
 
+        this.path = path;
         return this;
     }
 
@@ -86,31 +82,22 @@ public class ValidatePathDto {
      * @return path
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
+    public String getPath() {
         return path;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPath(@javax.annotation.Nullable String path) {
         this.path = path;
     }
 
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
-
     public ValidatePathDto isFile(@javax.annotation.Nullable Boolean isFile) {
-        this.isFile = JsonNullable.<Boolean> of(isFile);
 
+        this.isFile = isFile;
         return this;
     }
 
@@ -120,26 +107,17 @@ public class ValidatePathDto {
      * @return isFile
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsFile() {
-        return isFile.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IS_FILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsFile_JsonNullable() {
+    public Boolean getIsFile() {
         return isFile;
     }
 
     @JsonProperty(JSON_PROPERTY_IS_FILE)
-    public void setIsFile_JsonNullable(JsonNullable<Boolean> isFile) {
-        this.isFile = isFile;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsFile(@javax.annotation.Nullable Boolean isFile) {
-        this.isFile = JsonNullable.<Boolean> of(isFile);
+        this.isFile = isFile;
     }
 
     @Override
@@ -152,25 +130,13 @@ public class ValidatePathDto {
         }
         ValidatePathDto validatePathDto = (ValidatePathDto) o;
         return Objects.equals(this.validateWritable, validatePathDto.validateWritable)
-                && equalsNullable(this.path, validatePathDto.path)
-                && equalsNullable(this.isFile, validatePathDto.isFile);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.path, validatePathDto.path)
+                && Objects.equals(this.isFile, validatePathDto.isFile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(validateWritable, hashCodeNullable(path), hashCodeNullable(isFile));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(validateWritable, path, isFile);
     }
 
     @Override
@@ -213,21 +179,11 @@ public class ValidatePathDto {
         }
 
         public ValidatePathDto.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public ValidatePathDto.Builder path(JsonNullable<String> path) {
             this.instance.path = path;
             return this;
         }
 
         public ValidatePathDto.Builder isFile(Boolean isFile) {
-            this.instance.isFile = JsonNullable.<Boolean> of(isFile);
-            return this;
-        }
-
-        public ValidatePathDto.Builder isFile(JsonNullable<Boolean> isFile) {
             this.instance.isFile = isFile;
             return this;
         }

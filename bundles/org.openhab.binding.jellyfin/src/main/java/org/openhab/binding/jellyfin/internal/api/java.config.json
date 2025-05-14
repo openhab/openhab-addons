@@ -1,14 +1,16 @@
 {
-  "library": "webclient",
+  "annotationLibrary": "none",
+  "dateLibrary": "java8",
+  "developerEmail": "patrik.gfeller@gmail.com",
+  "developerName": "Patrik Gfeller",
   "developerOrganization": "openHAB project",
   "developerOrganizationUrl": "https://www.openhab.org",
-  "dateLibrary": "java8",
   "documentationProvider": "none",
-  "ignoreAnyOfInEnum": true,
-  "hideGenerationTimestamp": true,
+  "failOnUnknownProperties": false,
   "generateBuilders": true,
-  "openApiNullable": true,
-  "developerName": "Patrik Gfeller",
-  "developerEmail": "patrik.gfeller@gmail.com",
+  "hideGenerationTimestamp": true,
+  "ignoreAnyOfInEnum": true,
+  "library": "webclient",
+  "openApiNullable": false,
   "templateDir": "src/main/java/org/openhab/binding/jellyfin/internal/api/templates"
 }

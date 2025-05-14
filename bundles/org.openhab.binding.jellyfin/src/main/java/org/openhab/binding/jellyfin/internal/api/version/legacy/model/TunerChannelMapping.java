@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,26 +32,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TunerChannelMapping {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_NAME = "ProviderChannelName";
     @javax.annotation.Nullable
-    private JsonNullable<String> providerChannelName = JsonNullable.<String> undefined();
+    private String providerChannelName;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
     @javax.annotation.Nullable
-    private JsonNullable<String> providerChannelId = JsonNullable.<String> undefined();
+    private String providerChannelId;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public TunerChannelMapping() {
     }
 
     public TunerChannelMapping name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -65,31 +61,22 @@ public class TunerChannelMapping {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public TunerChannelMapping providerChannelName(@javax.annotation.Nullable String providerChannelName) {
-        this.providerChannelName = JsonNullable.<String> of(providerChannelName);
 
+        this.providerChannelName = providerChannelName;
         return this;
     }
 
@@ -99,31 +86,22 @@ public class TunerChannelMapping {
      * @return providerChannelName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProviderChannelName() {
-        return providerChannelName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProviderChannelName_JsonNullable() {
+    public String getProviderChannelName() {
         return providerChannelName;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
-    public void setProviderChannelName_JsonNullable(JsonNullable<String> providerChannelName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProviderChannelName(@javax.annotation.Nullable String providerChannelName) {
         this.providerChannelName = providerChannelName;
     }
 
-    public void setProviderChannelName(@javax.annotation.Nullable String providerChannelName) {
-        this.providerChannelName = JsonNullable.<String> of(providerChannelName);
-    }
-
     public TunerChannelMapping providerChannelId(@javax.annotation.Nullable String providerChannelId) {
-        this.providerChannelId = JsonNullable.<String> of(providerChannelId);
 
+        this.providerChannelId = providerChannelId;
         return this;
     }
 
@@ -133,31 +111,22 @@ public class TunerChannelMapping {
      * @return providerChannelId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProviderChannelId() {
-        return providerChannelId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProviderChannelId_JsonNullable() {
+    public String getProviderChannelId() {
         return providerChannelId;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
-    public void setProviderChannelId_JsonNullable(JsonNullable<String> providerChannelId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProviderChannelId(@javax.annotation.Nullable String providerChannelId) {
         this.providerChannelId = providerChannelId;
     }
 
-    public void setProviderChannelId(@javax.annotation.Nullable String providerChannelId) {
-        this.providerChannelId = JsonNullable.<String> of(providerChannelId);
-    }
-
     public TunerChannelMapping id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -167,26 +136,17 @@ public class TunerChannelMapping {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
+        this.id = id;
     }
 
     @Override
@@ -198,28 +158,15 @@ public class TunerChannelMapping {
             return false;
         }
         TunerChannelMapping tunerChannelMapping = (TunerChannelMapping) o;
-        return equalsNullable(this.name, tunerChannelMapping.name)
-                && equalsNullable(this.providerChannelName, tunerChannelMapping.providerChannelName)
-                && equalsNullable(this.providerChannelId, tunerChannelMapping.providerChannelId)
-                && equalsNullable(this.id, tunerChannelMapping.id);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, tunerChannelMapping.name)
+                && Objects.equals(this.providerChannelName, tunerChannelMapping.providerChannelName)
+                && Objects.equals(this.providerChannelId, tunerChannelMapping.providerChannelId)
+                && Objects.equals(this.id, tunerChannelMapping.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(providerChannelName),
-                hashCodeNullable(providerChannelId), hashCodeNullable(id));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, providerChannelName, providerChannelId, id);
     }
 
     @Override
@@ -258,41 +205,21 @@ public class TunerChannelMapping {
         }
 
         public TunerChannelMapping.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public TunerChannelMapping.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public TunerChannelMapping.Builder providerChannelName(String providerChannelName) {
-            this.instance.providerChannelName = JsonNullable.<String> of(providerChannelName);
-            return this;
-        }
-
-        public TunerChannelMapping.Builder providerChannelName(JsonNullable<String> providerChannelName) {
             this.instance.providerChannelName = providerChannelName;
             return this;
         }
 
         public TunerChannelMapping.Builder providerChannelId(String providerChannelId) {
-            this.instance.providerChannelId = JsonNullable.<String> of(providerChannelId);
-            return this;
-        }
-
-        public TunerChannelMapping.Builder providerChannelId(JsonNullable<String> providerChannelId) {
             this.instance.providerChannelId = providerChannelId;
             return this;
         }
 
         public TunerChannelMapping.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public TunerChannelMapping.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }

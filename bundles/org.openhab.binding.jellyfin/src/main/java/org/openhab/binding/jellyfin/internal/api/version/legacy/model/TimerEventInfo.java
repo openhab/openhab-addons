@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +36,7 @@ public class TimerEventInfo {
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> programId = JsonNullable.<UUID> undefined();
+    private UUID programId;
 
     public TimerEventInfo() {
     }
@@ -71,8 +67,8 @@ public class TimerEventInfo {
     }
 
     public TimerEventInfo programId(@javax.annotation.Nullable UUID programId) {
-        this.programId = JsonNullable.<UUID> of(programId);
 
+        this.programId = programId;
         return this;
     }
 
@@ -82,26 +78,17 @@ public class TimerEventInfo {
      * @return programId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getProgramId() {
-        return programId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getProgramId_JsonNullable() {
+    public UUID getProgramId() {
         return programId;
     }
 
     @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
-    public void setProgramId_JsonNullable(JsonNullable<UUID> programId) {
-        this.programId = programId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramId(@javax.annotation.Nullable UUID programId) {
-        this.programId = JsonNullable.<UUID> of(programId);
+        this.programId = programId;
     }
 
     @Override
@@ -113,24 +100,12 @@ public class TimerEventInfo {
             return false;
         }
         TimerEventInfo timerEventInfo = (TimerEventInfo) o;
-        return Objects.equals(this.id, timerEventInfo.id) && equalsNullable(this.programId, timerEventInfo.programId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.id, timerEventInfo.id) && Objects.equals(this.programId, timerEventInfo.programId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(programId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, programId);
     }
 
     @Override
@@ -172,11 +147,6 @@ public class TimerEventInfo {
         }
 
         public TimerEventInfo.Builder programId(UUID programId) {
-            this.instance.programId = JsonNullable.<UUID> of(programId);
-            return this;
-        }
-
-        public TimerEventInfo.Builder programId(JsonNullable<UUID> programId) {
             this.instance.programId = programId;
             return this;
         }

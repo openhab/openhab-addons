@@ -17,14 +17,10 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -43,19 +39,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DisplayPreferencesDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_VIEW_TYPE = "ViewType";
     @javax.annotation.Nullable
-    private JsonNullable<String> viewType = JsonNullable.<String> undefined();
+    private String viewType;
 
     public static final String JSON_PROPERTY_SORT_BY = "SortBy";
     @javax.annotation.Nullable
-    private JsonNullable<String> sortBy = JsonNullable.<String> undefined();
+    private String sortBy;
 
     public static final String JSON_PROPERTY_INDEX_BY = "IndexBy";
     @javax.annotation.Nullable
-    private JsonNullable<String> indexBy = JsonNullable.<String> undefined();
+    private String indexBy;
 
     public static final String JSON_PROPERTY_REMEMBER_INDEXING = "RememberIndexing";
     @javax.annotation.Nullable
@@ -95,14 +91,14 @@ public class DisplayPreferencesDto {
 
     public static final String JSON_PROPERTY_CLIENT = "Client";
     @javax.annotation.Nullable
-    private JsonNullable<String> client = JsonNullable.<String> undefined();
+    private String client;
 
     public DisplayPreferencesDto() {
     }
 
     public DisplayPreferencesDto id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -112,31 +108,22 @@ public class DisplayPreferencesDto {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public DisplayPreferencesDto viewType(@javax.annotation.Nullable String viewType) {
-        this.viewType = JsonNullable.<String> of(viewType);
 
+        this.viewType = viewType;
         return this;
     }
 
@@ -146,31 +133,22 @@ public class DisplayPreferencesDto {
      * @return viewType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getViewType() {
-        return viewType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getViewType_JsonNullable() {
+    public String getViewType() {
         return viewType;
     }
 
     @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
-    public void setViewType_JsonNullable(JsonNullable<String> viewType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setViewType(@javax.annotation.Nullable String viewType) {
         this.viewType = viewType;
     }
 
-    public void setViewType(@javax.annotation.Nullable String viewType) {
-        this.viewType = JsonNullable.<String> of(viewType);
-    }
-
     public DisplayPreferencesDto sortBy(@javax.annotation.Nullable String sortBy) {
-        this.sortBy = JsonNullable.<String> of(sortBy);
 
+        this.sortBy = sortBy;
         return this;
     }
 
@@ -180,31 +158,22 @@ public class DisplayPreferencesDto {
      * @return sortBy
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSortBy() {
-        return sortBy.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SORT_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSortBy_JsonNullable() {
+    public String getSortBy() {
         return sortBy;
     }
 
     @JsonProperty(JSON_PROPERTY_SORT_BY)
-    public void setSortBy_JsonNullable(JsonNullable<String> sortBy) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSortBy(@javax.annotation.Nullable String sortBy) {
         this.sortBy = sortBy;
     }
 
-    public void setSortBy(@javax.annotation.Nullable String sortBy) {
-        this.sortBy = JsonNullable.<String> of(sortBy);
-    }
-
     public DisplayPreferencesDto indexBy(@javax.annotation.Nullable String indexBy) {
-        this.indexBy = JsonNullable.<String> of(indexBy);
 
+        this.indexBy = indexBy;
         return this;
     }
 
@@ -214,26 +183,17 @@ public class DisplayPreferencesDto {
      * @return indexBy
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getIndexBy() {
-        return indexBy.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_INDEX_BY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getIndexBy_JsonNullable() {
+    public String getIndexBy() {
         return indexBy;
     }
 
     @JsonProperty(JSON_PROPERTY_INDEX_BY)
-    public void setIndexBy_JsonNullable(JsonNullable<String> indexBy) {
-        this.indexBy = indexBy;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndexBy(@javax.annotation.Nullable String indexBy) {
-        this.indexBy = JsonNullable.<String> of(indexBy);
+        this.indexBy = indexBy;
     }
 
     public DisplayPreferencesDto rememberIndexing(@javax.annotation.Nullable Boolean rememberIndexing) {
@@ -470,8 +430,8 @@ public class DisplayPreferencesDto {
     }
 
     public DisplayPreferencesDto client(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
 
+        this.client = client;
         return this;
     }
 
@@ -481,26 +441,17 @@ public class DisplayPreferencesDto {
      * @return client
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getClient() {
-        return client.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CLIENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getClient_JsonNullable() {
+    public String getClient() {
         return client;
     }
 
     @JsonProperty(JSON_PROPERTY_CLIENT)
-    public void setClient_JsonNullable(JsonNullable<String> client) {
-        this.client = client;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setClient(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
+        this.client = client;
     }
 
     @Override
@@ -512,10 +463,10 @@ public class DisplayPreferencesDto {
             return false;
         }
         DisplayPreferencesDto displayPreferencesDto = (DisplayPreferencesDto) o;
-        return equalsNullable(this.id, displayPreferencesDto.id)
-                && equalsNullable(this.viewType, displayPreferencesDto.viewType)
-                && equalsNullable(this.sortBy, displayPreferencesDto.sortBy)
-                && equalsNullable(this.indexBy, displayPreferencesDto.indexBy)
+        return Objects.equals(this.id, displayPreferencesDto.id)
+                && Objects.equals(this.viewType, displayPreferencesDto.viewType)
+                && Objects.equals(this.sortBy, displayPreferencesDto.sortBy)
+                && Objects.equals(this.indexBy, displayPreferencesDto.indexBy)
                 && Objects.equals(this.rememberIndexing, displayPreferencesDto.rememberIndexing)
                 && Objects.equals(this.primaryImageHeight, displayPreferencesDto.primaryImageHeight)
                 && Objects.equals(this.primaryImageWidth, displayPreferencesDto.primaryImageWidth)
@@ -525,26 +476,13 @@ public class DisplayPreferencesDto {
                 && Objects.equals(this.rememberSorting, displayPreferencesDto.rememberSorting)
                 && Objects.equals(this.sortOrder, displayPreferencesDto.sortOrder)
                 && Objects.equals(this.showSidebar, displayPreferencesDto.showSidebar)
-                && equalsNullable(this.client, displayPreferencesDto.client);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.client, displayPreferencesDto.client);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(id), hashCodeNullable(viewType), hashCodeNullable(sortBy),
-                hashCodeNullable(indexBy), rememberIndexing, primaryImageHeight, primaryImageWidth, customPrefs,
-                scrollDirection, showBackdrop, rememberSorting, sortOrder, showSidebar, hashCodeNullable(client));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, viewType, sortBy, indexBy, rememberIndexing, primaryImageHeight, primaryImageWidth,
+                customPrefs, scrollDirection, showBackdrop, rememberSorting, sortOrder, showSidebar, client);
     }
 
     @Override
@@ -593,41 +531,21 @@ public class DisplayPreferencesDto {
         }
 
         public DisplayPreferencesDto.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public DisplayPreferencesDto.Builder viewType(String viewType) {
-            this.instance.viewType = JsonNullable.<String> of(viewType);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder viewType(JsonNullable<String> viewType) {
             this.instance.viewType = viewType;
             return this;
         }
 
         public DisplayPreferencesDto.Builder sortBy(String sortBy) {
-            this.instance.sortBy = JsonNullable.<String> of(sortBy);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder sortBy(JsonNullable<String> sortBy) {
             this.instance.sortBy = sortBy;
             return this;
         }
 
         public DisplayPreferencesDto.Builder indexBy(String indexBy) {
-            this.instance.indexBy = JsonNullable.<String> of(indexBy);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder indexBy(JsonNullable<String> indexBy) {
             this.instance.indexBy = indexBy;
             return this;
         }
@@ -678,11 +596,6 @@ public class DisplayPreferencesDto {
         }
 
         public DisplayPreferencesDto.Builder client(String client) {
-            this.instance.client = JsonNullable.<String> of(client);
-            return this;
-        }
-
-        public DisplayPreferencesDto.Builder client(JsonNullable<String> client) {
             this.instance.client = client;
             return this;
         }

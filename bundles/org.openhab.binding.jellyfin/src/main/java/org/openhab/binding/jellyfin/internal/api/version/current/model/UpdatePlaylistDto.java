@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,27 +35,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdatePlaylistDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_IDS = "Ids";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> ids = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> ids;
 
     public static final String JSON_PROPERTY_USERS = "Users";
     @javax.annotation.Nullable
-    private JsonNullable<List<PlaylistUserPermissions>> users = JsonNullable
-            .<List<PlaylistUserPermissions>> undefined();
+    private List<PlaylistUserPermissions> users;
 
     public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> isPublic = JsonNullable.<Boolean> undefined();
+    private Boolean isPublic;
 
     public UpdatePlaylistDto() {
     }
 
     public UpdatePlaylistDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -69,43 +64,30 @@ public class UpdatePlaylistDto {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public UpdatePlaylistDto ids(@javax.annotation.Nullable List<UUID> ids) {
-        this.ids = JsonNullable.<List<UUID>> of(ids);
 
+        this.ids = ids;
         return this;
     }
 
     public UpdatePlaylistDto addIdsItem(UUID idsItem) {
-        if (this.ids == null || !this.ids.isPresent()) {
-            this.ids = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.ids == null) {
+            this.ids = new ArrayList<>();
         }
-        try {
-            this.ids.get().add(idsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.ids.add(idsItem);
         return this;
     }
 
@@ -115,43 +97,30 @@ public class UpdatePlaylistDto {
      * @return ids
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getIds() {
-        return ids.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getIds_JsonNullable() {
+    public List<UUID> getIds() {
         return ids;
     }
 
     @JsonProperty(JSON_PROPERTY_IDS)
-    public void setIds_JsonNullable(JsonNullable<List<UUID>> ids) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIds(@javax.annotation.Nullable List<UUID> ids) {
         this.ids = ids;
     }
 
-    public void setIds(@javax.annotation.Nullable List<UUID> ids) {
-        this.ids = JsonNullable.<List<UUID>> of(ids);
-    }
-
     public UpdatePlaylistDto users(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
-        this.users = JsonNullable.<List<PlaylistUserPermissions>> of(users);
 
+        this.users = users;
         return this;
     }
 
     public UpdatePlaylistDto addUsersItem(PlaylistUserPermissions usersItem) {
-        if (this.users == null || !this.users.isPresent()) {
-            this.users = JsonNullable.<List<PlaylistUserPermissions>> of(new ArrayList<>());
+        if (this.users == null) {
+            this.users = new ArrayList<>();
         }
-        try {
-            this.users.get().add(usersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.users.add(usersItem);
         return this;
     }
 
@@ -161,31 +130,22 @@ public class UpdatePlaylistDto {
      * @return users
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<PlaylistUserPermissions> getUsers() {
-        return users.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<PlaylistUserPermissions>> getUsers_JsonNullable() {
+    public List<PlaylistUserPermissions> getUsers() {
         return users;
     }
 
     @JsonProperty(JSON_PROPERTY_USERS)
-    public void setUsers_JsonNullable(JsonNullable<List<PlaylistUserPermissions>> users) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUsers(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
         this.users = users;
     }
 
-    public void setUsers(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
-        this.users = JsonNullable.<List<PlaylistUserPermissions>> of(users);
-    }
-
     public UpdatePlaylistDto isPublic(@javax.annotation.Nullable Boolean isPublic) {
-        this.isPublic = JsonNullable.<Boolean> of(isPublic);
 
+        this.isPublic = isPublic;
         return this;
     }
 
@@ -195,26 +155,17 @@ public class UpdatePlaylistDto {
      * @return isPublic
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsPublic() {
-        return isPublic.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsPublic_JsonNullable() {
+    public Boolean getIsPublic() {
         return isPublic;
     }
 
     @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
-    public void setIsPublic_JsonNullable(JsonNullable<Boolean> isPublic) {
-        this.isPublic = isPublic;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPublic(@javax.annotation.Nullable Boolean isPublic) {
-        this.isPublic = JsonNullable.<Boolean> of(isPublic);
+        this.isPublic = isPublic;
     }
 
     @Override
@@ -226,27 +177,14 @@ public class UpdatePlaylistDto {
             return false;
         }
         UpdatePlaylistDto updatePlaylistDto = (UpdatePlaylistDto) o;
-        return equalsNullable(this.name, updatePlaylistDto.name) && equalsNullable(this.ids, updatePlaylistDto.ids)
-                && equalsNullable(this.users, updatePlaylistDto.users)
-                && equalsNullable(this.isPublic, updatePlaylistDto.isPublic);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, updatePlaylistDto.name) && Objects.equals(this.ids, updatePlaylistDto.ids)
+                && Objects.equals(this.users, updatePlaylistDto.users)
+                && Objects.equals(this.isPublic, updatePlaylistDto.isPublic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(ids), hashCodeNullable(users),
-                hashCodeNullable(isPublic));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, ids, users, isPublic);
     }
 
     @Override
@@ -285,41 +223,21 @@ public class UpdatePlaylistDto {
         }
 
         public UpdatePlaylistDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public UpdatePlaylistDto.Builder ids(List<UUID> ids) {
-            this.instance.ids = JsonNullable.<List<UUID>> of(ids);
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder ids(JsonNullable<List<UUID>> ids) {
             this.instance.ids = ids;
             return this;
         }
 
         public UpdatePlaylistDto.Builder users(List<PlaylistUserPermissions> users) {
-            this.instance.users = JsonNullable.<List<PlaylistUserPermissions>> of(users);
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder users(JsonNullable<List<PlaylistUserPermissions>> users) {
             this.instance.users = users;
             return this;
         }
 
         public UpdatePlaylistDto.Builder isPublic(Boolean isPublic) {
-            this.instance.isPublic = JsonNullable.<Boolean> of(isPublic);
-            return this;
-        }
-
-        public UpdatePlaylistDto.Builder isPublic(JsonNullable<Boolean> isPublic) {
             this.instance.isPublic = isPublic;
             return this;
         }

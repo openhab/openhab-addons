@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,30 +33,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class QueryFilters {
     public static final String JSON_PROPERTY_GENRES = "Genres";
     @javax.annotation.Nullable
-    private JsonNullable<List<NameGuidPair>> genres = JsonNullable.<List<NameGuidPair>> undefined();
+    private List<NameGuidPair> genres;
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> tags = JsonNullable.<List<String>> undefined();
+    private List<String> tags;
 
     public QueryFilters() {
     }
 
     public QueryFilters genres(@javax.annotation.Nullable List<NameGuidPair> genres) {
-        this.genres = JsonNullable.<List<NameGuidPair>> of(genres);
 
+        this.genres = genres;
         return this;
     }
 
     public QueryFilters addGenresItem(NameGuidPair genresItem) {
-        if (this.genres == null || !this.genres.isPresent()) {
-            this.genres = JsonNullable.<List<NameGuidPair>> of(new ArrayList<>());
+        if (this.genres == null) {
+            this.genres = new ArrayList<>();
         }
-        try {
-            this.genres.get().add(genresItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.genres.add(genresItem);
         return this;
     }
 
@@ -70,43 +62,30 @@ public class QueryFilters {
      * @return genres
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<NameGuidPair> getGenres() {
-        return genres.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_GENRES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<NameGuidPair>> getGenres_JsonNullable() {
+    public List<NameGuidPair> getGenres() {
         return genres;
     }
 
     @JsonProperty(JSON_PROPERTY_GENRES)
-    public void setGenres_JsonNullable(JsonNullable<List<NameGuidPair>> genres) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setGenres(@javax.annotation.Nullable List<NameGuidPair> genres) {
         this.genres = genres;
     }
 
-    public void setGenres(@javax.annotation.Nullable List<NameGuidPair> genres) {
-        this.genres = JsonNullable.<List<NameGuidPair>> of(genres);
-    }
-
     public QueryFilters tags(@javax.annotation.Nullable List<String> tags) {
-        this.tags = JsonNullable.<List<String>> of(tags);
 
+        this.tags = tags;
         return this;
     }
 
     public QueryFilters addTagsItem(String tagsItem) {
-        if (this.tags == null || !this.tags.isPresent()) {
-            this.tags = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.tags == null) {
+            this.tags = new ArrayList<>();
         }
-        try {
-            this.tags.get().add(tagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.tags.add(tagsItem);
         return this;
     }
 
@@ -116,26 +95,17 @@ public class QueryFilters {
      * @return tags
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getTags() {
-        return tags.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getTags_JsonNullable() {
+    public List<String> getTags() {
         return tags;
     }
 
     @JsonProperty(JSON_PROPERTY_TAGS)
-    public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
-        this.tags = tags;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTags(@javax.annotation.Nullable List<String> tags) {
-        this.tags = JsonNullable.<List<String>> of(tags);
+        this.tags = tags;
     }
 
     @Override
@@ -147,24 +117,12 @@ public class QueryFilters {
             return false;
         }
         QueryFilters queryFilters = (QueryFilters) o;
-        return equalsNullable(this.genres, queryFilters.genres) && equalsNullable(this.tags, queryFilters.tags);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.genres, queryFilters.genres) && Objects.equals(this.tags, queryFilters.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(genres), hashCodeNullable(tags));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(genres, tags);
     }
 
     @Override
@@ -201,21 +159,11 @@ public class QueryFilters {
         }
 
         public QueryFilters.Builder genres(List<NameGuidPair> genres) {
-            this.instance.genres = JsonNullable.<List<NameGuidPair>> of(genres);
-            return this;
-        }
-
-        public QueryFilters.Builder genres(JsonNullable<List<NameGuidPair>> genres) {
             this.instance.genres = genres;
             return this;
         }
 
         public QueryFilters.Builder tags(List<String> tags) {
-            this.instance.tags = JsonNullable.<List<String>> of(tags);
-            return this;
-        }
-
-        public QueryFilters.Builder tags(JsonNullable<List<String>> tags) {
             this.instance.tags = tags;
             return this;
         }

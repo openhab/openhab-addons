@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,11 +32,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BrandingOptions {
     public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
     @javax.annotation.Nullable
-    private JsonNullable<String> loginDisclaimer = JsonNullable.<String> undefined();
+    private String loginDisclaimer;
 
     public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
     @javax.annotation.Nullable
-    private JsonNullable<String> customCss = JsonNullable.<String> undefined();
+    private String customCss;
 
     public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
     @javax.annotation.Nullable
@@ -50,8 +46,8 @@ public class BrandingOptions {
     }
 
     public BrandingOptions loginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
-        this.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
 
+        this.loginDisclaimer = loginDisclaimer;
         return this;
     }
 
@@ -61,31 +57,22 @@ public class BrandingOptions {
      * @return loginDisclaimer
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLoginDisclaimer() {
-        return loginDisclaimer.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLoginDisclaimer_JsonNullable() {
+    public String getLoginDisclaimer() {
         return loginDisclaimer;
     }
 
     @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
-    public void setLoginDisclaimer_JsonNullable(JsonNullable<String> loginDisclaimer) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLoginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
         this.loginDisclaimer = loginDisclaimer;
     }
 
-    public void setLoginDisclaimer(@javax.annotation.Nullable String loginDisclaimer) {
-        this.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
-    }
-
     public BrandingOptions customCss(@javax.annotation.Nullable String customCss) {
-        this.customCss = JsonNullable.<String> of(customCss);
 
+        this.customCss = customCss;
         return this;
     }
 
@@ -95,26 +82,17 @@ public class BrandingOptions {
      * @return customCss
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCustomCss() {
-        return customCss.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCustomCss_JsonNullable() {
+    public String getCustomCss() {
         return customCss;
     }
 
     @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
-    public void setCustomCss_JsonNullable(JsonNullable<String> customCss) {
-        this.customCss = customCss;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomCss(@javax.annotation.Nullable String customCss) {
-        this.customCss = JsonNullable.<String> of(customCss);
+        this.customCss = customCss;
     }
 
     public BrandingOptions splashscreenEnabled(@javax.annotation.Nullable Boolean splashscreenEnabled) {
@@ -151,26 +129,14 @@ public class BrandingOptions {
             return false;
         }
         BrandingOptions brandingOptions = (BrandingOptions) o;
-        return equalsNullable(this.loginDisclaimer, brandingOptions.loginDisclaimer)
-                && equalsNullable(this.customCss, brandingOptions.customCss)
+        return Objects.equals(this.loginDisclaimer, brandingOptions.loginDisclaimer)
+                && Objects.equals(this.customCss, brandingOptions.customCss)
                 && Objects.equals(this.splashscreenEnabled, brandingOptions.splashscreenEnabled);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(loginDisclaimer), hashCodeNullable(customCss), splashscreenEnabled);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(loginDisclaimer, customCss, splashscreenEnabled);
     }
 
     @Override
@@ -208,21 +174,11 @@ public class BrandingOptions {
         }
 
         public BrandingOptions.Builder loginDisclaimer(String loginDisclaimer) {
-            this.instance.loginDisclaimer = JsonNullable.<String> of(loginDisclaimer);
-            return this;
-        }
-
-        public BrandingOptions.Builder loginDisclaimer(JsonNullable<String> loginDisclaimer) {
             this.instance.loginDisclaimer = loginDisclaimer;
             return this;
         }
 
         public BrandingOptions.Builder customCss(String customCss) {
-            this.instance.customCss = JsonNullable.<String> of(customCss);
-            return this;
-        }
-
-        public BrandingOptions.Builder customCss(JsonNullable<String> customCss) {
             this.instance.customCss = customCss;
             return this;
         }

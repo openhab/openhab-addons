@@ -18,13 +18,11 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
+import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -49,39 +47,39 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
     @javax.annotation.Nullable
-    private JsonNullable<String> localAddress = JsonNullable.<String> undefined();
+    private String localAddress;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @javax.annotation.Nullable
-    private JsonNullable<String> serverName = JsonNullable.<String> undefined();
+    private String serverName;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @javax.annotation.Nullable
-    private JsonNullable<String> version = JsonNullable.<String> undefined();
+    private String version;
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
     @javax.annotation.Nullable
-    private JsonNullable<String> productName = JsonNullable.<String> undefined();
+    private String productName;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
     @javax.annotation.Nullable
-    private JsonNullable<String> operatingSystem = JsonNullable.<String> undefined();
+    private String operatingSystem;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> startupWizardCompleted = JsonNullable.<Boolean> undefined();
+    private Boolean startupWizardCompleted;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME = "OperatingSystemDisplayName";
     @javax.annotation.Nullable
-    private JsonNullable<String> operatingSystemDisplayName = JsonNullable.<String> undefined();
+    private String operatingSystemDisplayName;
 
     public static final String JSON_PROPERTY_PACKAGE_NAME = "PackageName";
     @javax.annotation.Nullable
-    private JsonNullable<String> packageName = JsonNullable.<String> undefined();
+    private String packageName;
 
     public static final String JSON_PROPERTY_HAS_PENDING_RESTART = "HasPendingRestart";
     @javax.annotation.Nullable
@@ -101,8 +99,7 @@ public class SystemInfo {
 
     public static final String JSON_PROPERTY_COMPLETED_INSTALLATIONS = "CompletedInstallations";
     @javax.annotation.Nullable
-    private JsonNullable<List<InstallationInfo>> completedInstallations = JsonNullable
-            .<List<InstallationInfo>> undefined();
+    private List<InstallationInfo> completedInstallations;
 
     public static final String JSON_PROPERTY_CAN_SELF_RESTART = "CanSelfRestart";
     @javax.annotation.Nullable
@@ -114,31 +111,31 @@ public class SystemInfo {
 
     public static final String JSON_PROPERTY_PROGRAM_DATA_PATH = "ProgramDataPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> programDataPath = JsonNullable.<String> undefined();
+    private String programDataPath;
 
     public static final String JSON_PROPERTY_WEB_PATH = "WebPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> webPath = JsonNullable.<String> undefined();
+    private String webPath;
 
     public static final String JSON_PROPERTY_ITEMS_BY_NAME_PATH = "ItemsByNamePath";
     @javax.annotation.Nullable
-    private JsonNullable<String> itemsByNamePath = JsonNullable.<String> undefined();
+    private String itemsByNamePath;
 
     public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
     @javax.annotation.Nullable
-    private JsonNullable<String> cachePath = JsonNullable.<String> undefined();
+    private String cachePath;
 
     public static final String JSON_PROPERTY_LOG_PATH = "LogPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> logPath = JsonNullable.<String> undefined();
+    private String logPath;
 
     public static final String JSON_PROPERTY_INTERNAL_METADATA_PATH = "InternalMetadataPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> internalMetadataPath = JsonNullable.<String> undefined();
+    private String internalMetadataPath;
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> transcodingTempPath = JsonNullable.<String> undefined();
+    private String transcodingTempPath;
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
     @javax.annotation.Nullable
@@ -156,8 +153,8 @@ public class SystemInfo {
     }
 
     public SystemInfo localAddress(@javax.annotation.Nullable String localAddress) {
-        this.localAddress = JsonNullable.<String> of(localAddress);
 
+        this.localAddress = localAddress;
         return this;
     }
 
@@ -167,31 +164,22 @@ public class SystemInfo {
      * @return localAddress
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLocalAddress() {
-        return localAddress.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLocalAddress_JsonNullable() {
+    public String getLocalAddress() {
         return localAddress;
     }
 
     @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
-    public void setLocalAddress_JsonNullable(JsonNullable<String> localAddress) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLocalAddress(@javax.annotation.Nullable String localAddress) {
         this.localAddress = localAddress;
     }
 
-    public void setLocalAddress(@javax.annotation.Nullable String localAddress) {
-        this.localAddress = JsonNullable.<String> of(localAddress);
-    }
-
     public SystemInfo serverName(@javax.annotation.Nullable String serverName) {
-        this.serverName = JsonNullable.<String> of(serverName);
 
+        this.serverName = serverName;
         return this;
     }
 
@@ -200,32 +188,23 @@ public class SystemInfo {
      * 
      * @return serverName
      */
-    @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerName() {
-        return serverName.orElse(null);
-    }
-
+    Nullable
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerName_JsonNullable() {
+    public String getServerName() {
         return serverName;
     }
 
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
-    public void setServerName_JsonNullable(JsonNullable<String> serverName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setServerName(@javax.annotation.Nullable String serverName) {
         this.serverName = serverName;
     }
 
-    public void setServerName(@javax.annotation.Nullable String serverName) {
-        this.serverName = JsonNullable.<String> of(serverName);
-    }
-
     public SystemInfo version(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
 
+        this.version = version;
         return this;
     }
 
@@ -235,31 +214,22 @@ public class SystemInfo {
      * @return version
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVersion() {
-        return version.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVersion_JsonNullable() {
+    public String getVersion() {
         return version;
     }
 
     @JsonProperty(JSON_PROPERTY_VERSION)
-    public void setVersion_JsonNullable(JsonNullable<String> version) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setVersion(@javax.annotation.Nullable String version) {
         this.version = version;
     }
 
-    public void setVersion(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
-    }
-
     public SystemInfo productName(@javax.annotation.Nullable String productName) {
-        this.productName = JsonNullable.<String> of(productName);
 
+        this.productName = productName;
         return this;
     }
 
@@ -269,31 +239,22 @@ public class SystemInfo {
      * @return productName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProductName() {
-        return productName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProductName_JsonNullable() {
+    public String getProductName() {
         return productName;
     }
 
     @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
-    public void setProductName_JsonNullable(JsonNullable<String> productName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProductName(@javax.annotation.Nullable String productName) {
         this.productName = productName;
     }
 
-    public void setProductName(@javax.annotation.Nullable String productName) {
-        this.productName = JsonNullable.<String> of(productName);
-    }
-
     public SystemInfo operatingSystem(@javax.annotation.Nullable String operatingSystem) {
-        this.operatingSystem = JsonNullable.<String> of(operatingSystem);
 
+        this.operatingSystem = operatingSystem;
         return this;
     }
 
@@ -303,31 +264,22 @@ public class SystemInfo {
      * @return operatingSystem
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOperatingSystem() {
-        return operatingSystem.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOperatingSystem_JsonNullable() {
+    public String getOperatingSystem() {
         return operatingSystem;
     }
 
     @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
-    public void setOperatingSystem_JsonNullable(JsonNullable<String> operatingSystem) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOperatingSystem(@javax.annotation.Nullable String operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
 
-    public void setOperatingSystem(@javax.annotation.Nullable String operatingSystem) {
-        this.operatingSystem = JsonNullable.<String> of(operatingSystem);
-    }
-
     public SystemInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -337,31 +289,22 @@ public class SystemInfo {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public SystemInfo startupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
-        this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
 
+        this.startupWizardCompleted = startupWizardCompleted;
         return this;
     }
 
@@ -371,31 +314,22 @@ public class SystemInfo {
      * @return startupWizardCompleted
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getStartupWizardCompleted() {
-        return startupWizardCompleted.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getStartupWizardCompleted_JsonNullable() {
+    public Boolean getStartupWizardCompleted() {
         return startupWizardCompleted;
     }
 
     @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
-    public void setStartupWizardCompleted_JsonNullable(JsonNullable<Boolean> startupWizardCompleted) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
         this.startupWizardCompleted = startupWizardCompleted;
     }
 
-    public void setStartupWizardCompleted(@javax.annotation.Nullable Boolean startupWizardCompleted) {
-        this.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
-    }
-
     public SystemInfo operatingSystemDisplayName(@javax.annotation.Nullable String operatingSystemDisplayName) {
-        this.operatingSystemDisplayName = JsonNullable.<String> of(operatingSystemDisplayName);
 
+        this.operatingSystemDisplayName = operatingSystemDisplayName;
         return this;
     }
 
@@ -405,31 +339,22 @@ public class SystemInfo {
      * @return operatingSystemDisplayName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOperatingSystemDisplayName() {
-        return operatingSystemDisplayName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOperatingSystemDisplayName_JsonNullable() {
+    public String getOperatingSystemDisplayName() {
         return operatingSystemDisplayName;
     }
 
     @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME)
-    public void setOperatingSystemDisplayName_JsonNullable(JsonNullable<String> operatingSystemDisplayName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOperatingSystemDisplayName(@javax.annotation.Nullable String operatingSystemDisplayName) {
         this.operatingSystemDisplayName = operatingSystemDisplayName;
     }
 
-    public void setOperatingSystemDisplayName(@javax.annotation.Nullable String operatingSystemDisplayName) {
-        this.operatingSystemDisplayName = JsonNullable.<String> of(operatingSystemDisplayName);
-    }
-
     public SystemInfo packageName(@javax.annotation.Nullable String packageName) {
-        this.packageName = JsonNullable.<String> of(packageName);
 
+        this.packageName = packageName;
         return this;
     }
 
@@ -439,26 +364,17 @@ public class SystemInfo {
      * @return packageName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPackageName() {
-        return packageName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PACKAGE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPackageName_JsonNullable() {
+    public String getPackageName() {
         return packageName;
     }
 
     @JsonProperty(JSON_PROPERTY_PACKAGE_NAME)
-    public void setPackageName_JsonNullable(JsonNullable<String> packageName) {
-        this.packageName = packageName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPackageName(@javax.annotation.Nullable String packageName) {
-        this.packageName = JsonNullable.<String> of(packageName);
+        this.packageName = packageName;
     }
 
     public SystemInfo hasPendingRestart(@javax.annotation.Nullable Boolean hasPendingRestart) {
@@ -562,20 +478,16 @@ public class SystemInfo {
     }
 
     public SystemInfo completedInstallations(@javax.annotation.Nullable List<InstallationInfo> completedInstallations) {
-        this.completedInstallations = JsonNullable.<List<InstallationInfo>> of(completedInstallations);
 
+        this.completedInstallations = completedInstallations;
         return this;
     }
 
     public SystemInfo addCompletedInstallationsItem(InstallationInfo completedInstallationsItem) {
-        if (this.completedInstallations == null || !this.completedInstallations.isPresent()) {
-            this.completedInstallations = JsonNullable.<List<InstallationInfo>> of(new ArrayList<>());
+        if (this.completedInstallations == null) {
+            this.completedInstallations = new ArrayList<>();
         }
-        try {
-            this.completedInstallations.get().add(completedInstallationsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.completedInstallations.add(completedInstallationsItem);
         return this;
     }
 
@@ -585,26 +497,17 @@ public class SystemInfo {
      * @return completedInstallations
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<InstallationInfo> getCompletedInstallations() {
-        return completedInstallations.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_COMPLETED_INSTALLATIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<InstallationInfo>> getCompletedInstallations_JsonNullable() {
+    public List<InstallationInfo> getCompletedInstallations() {
         return completedInstallations;
     }
 
     @JsonProperty(JSON_PROPERTY_COMPLETED_INSTALLATIONS)
-    public void setCompletedInstallations_JsonNullable(JsonNullable<List<InstallationInfo>> completedInstallations) {
-        this.completedInstallations = completedInstallations;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCompletedInstallations(@javax.annotation.Nullable List<InstallationInfo> completedInstallations) {
-        this.completedInstallations = JsonNullable.<List<InstallationInfo>> of(completedInstallations);
+        this.completedInstallations = completedInstallations;
     }
 
     public SystemInfo canSelfRestart(@javax.annotation.Nullable Boolean canSelfRestart) {
@@ -658,8 +561,8 @@ public class SystemInfo {
     }
 
     public SystemInfo programDataPath(@javax.annotation.Nullable String programDataPath) {
-        this.programDataPath = JsonNullable.<String> of(programDataPath);
 
+        this.programDataPath = programDataPath;
         return this;
     }
 
@@ -669,31 +572,22 @@ public class SystemInfo {
      * @return programDataPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProgramDataPath() {
-        return programDataPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROGRAM_DATA_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProgramDataPath_JsonNullable() {
+    public String getProgramDataPath() {
         return programDataPath;
     }
 
     @JsonProperty(JSON_PROPERTY_PROGRAM_DATA_PATH)
-    public void setProgramDataPath_JsonNullable(JsonNullable<String> programDataPath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProgramDataPath(@javax.annotation.Nullable String programDataPath) {
         this.programDataPath = programDataPath;
     }
 
-    public void setProgramDataPath(@javax.annotation.Nullable String programDataPath) {
-        this.programDataPath = JsonNullable.<String> of(programDataPath);
-    }
-
     public SystemInfo webPath(@javax.annotation.Nullable String webPath) {
-        this.webPath = JsonNullable.<String> of(webPath);
 
+        this.webPath = webPath;
         return this;
     }
 
@@ -703,31 +597,22 @@ public class SystemInfo {
      * @return webPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getWebPath() {
-        return webPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_WEB_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getWebPath_JsonNullable() {
+    public String getWebPath() {
         return webPath;
     }
 
     @JsonProperty(JSON_PROPERTY_WEB_PATH)
-    public void setWebPath_JsonNullable(JsonNullable<String> webPath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setWebPath(@javax.annotation.Nullable String webPath) {
         this.webPath = webPath;
     }
 
-    public void setWebPath(@javax.annotation.Nullable String webPath) {
-        this.webPath = JsonNullable.<String> of(webPath);
-    }
-
     public SystemInfo itemsByNamePath(@javax.annotation.Nullable String itemsByNamePath) {
-        this.itemsByNamePath = JsonNullable.<String> of(itemsByNamePath);
 
+        this.itemsByNamePath = itemsByNamePath;
         return this;
     }
 
@@ -737,31 +622,22 @@ public class SystemInfo {
      * @return itemsByNamePath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getItemsByNamePath() {
-        return itemsByNamePath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEMS_BY_NAME_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getItemsByNamePath_JsonNullable() {
+    public String getItemsByNamePath() {
         return itemsByNamePath;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEMS_BY_NAME_PATH)
-    public void setItemsByNamePath_JsonNullable(JsonNullable<String> itemsByNamePath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItemsByNamePath(@javax.annotation.Nullable String itemsByNamePath) {
         this.itemsByNamePath = itemsByNamePath;
     }
 
-    public void setItemsByNamePath(@javax.annotation.Nullable String itemsByNamePath) {
-        this.itemsByNamePath = JsonNullable.<String> of(itemsByNamePath);
-    }
-
     public SystemInfo cachePath(@javax.annotation.Nullable String cachePath) {
-        this.cachePath = JsonNullable.<String> of(cachePath);
 
+        this.cachePath = cachePath;
         return this;
     }
 
@@ -771,31 +647,22 @@ public class SystemInfo {
      * @return cachePath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCachePath() {
-        return cachePath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CACHE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCachePath_JsonNullable() {
+    public String getCachePath() {
         return cachePath;
     }
 
     @JsonProperty(JSON_PROPERTY_CACHE_PATH)
-    public void setCachePath_JsonNullable(JsonNullable<String> cachePath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCachePath(@javax.annotation.Nullable String cachePath) {
         this.cachePath = cachePath;
     }
 
-    public void setCachePath(@javax.annotation.Nullable String cachePath) {
-        this.cachePath = JsonNullable.<String> of(cachePath);
-    }
-
     public SystemInfo logPath(@javax.annotation.Nullable String logPath) {
-        this.logPath = JsonNullable.<String> of(logPath);
 
+        this.logPath = logPath;
         return this;
     }
 
@@ -805,31 +672,22 @@ public class SystemInfo {
      * @return logPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLogPath() {
-        return logPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOG_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLogPath_JsonNullable() {
+    public String getLogPath() {
         return logPath;
     }
 
     @JsonProperty(JSON_PROPERTY_LOG_PATH)
-    public void setLogPath_JsonNullable(JsonNullable<String> logPath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLogPath(@javax.annotation.Nullable String logPath) {
         this.logPath = logPath;
     }
 
-    public void setLogPath(@javax.annotation.Nullable String logPath) {
-        this.logPath = JsonNullable.<String> of(logPath);
-    }
-
     public SystemInfo internalMetadataPath(@javax.annotation.Nullable String internalMetadataPath) {
-        this.internalMetadataPath = JsonNullable.<String> of(internalMetadataPath);
 
+        this.internalMetadataPath = internalMetadataPath;
         return this;
     }
 
@@ -839,31 +697,22 @@ public class SystemInfo {
      * @return internalMetadataPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getInternalMetadataPath() {
-        return internalMetadataPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_INTERNAL_METADATA_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getInternalMetadataPath_JsonNullable() {
+    public String getInternalMetadataPath() {
         return internalMetadataPath;
     }
 
     @JsonProperty(JSON_PROPERTY_INTERNAL_METADATA_PATH)
-    public void setInternalMetadataPath_JsonNullable(JsonNullable<String> internalMetadataPath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setInternalMetadataPath(@javax.annotation.Nullable String internalMetadataPath) {
         this.internalMetadataPath = internalMetadataPath;
     }
 
-    public void setInternalMetadataPath(@javax.annotation.Nullable String internalMetadataPath) {
-        this.internalMetadataPath = JsonNullable.<String> of(internalMetadataPath);
-    }
-
     public SystemInfo transcodingTempPath(@javax.annotation.Nullable String transcodingTempPath) {
-        this.transcodingTempPath = JsonNullable.<String> of(transcodingTempPath);
 
+        this.transcodingTempPath = transcodingTempPath;
         return this;
     }
 
@@ -873,26 +722,17 @@ public class SystemInfo {
      * @return transcodingTempPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTranscodingTempPath() {
-        return transcodingTempPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTranscodingTempPath_JsonNullable() {
+    public String getTranscodingTempPath() {
         return transcodingTempPath;
     }
 
     @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
-    public void setTranscodingTempPath_JsonNullable(JsonNullable<String> transcodingTempPath) {
-        this.transcodingTempPath = transcodingTempPath;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingTempPath(@javax.annotation.Nullable String transcodingTempPath) {
-        this.transcodingTempPath = JsonNullable.<String> of(transcodingTempPath);
+        this.transcodingTempPath = transcodingTempPath;
     }
 
     public SystemInfo hasUpdateAvailable(@javax.annotation.Nullable Boolean hasUpdateAvailable) {
@@ -983,56 +823,41 @@ public class SystemInfo {
             return false;
         }
         SystemInfo systemInfo = (SystemInfo) o;
-        return equalsNullable(this.localAddress, systemInfo.localAddress)
-                && equalsNullable(this.serverName, systemInfo.serverName)
-                && equalsNullable(this.version, systemInfo.version)
-                && equalsNullable(this.productName, systemInfo.productName)
-                && equalsNullable(this.operatingSystem, systemInfo.operatingSystem)
-                && equalsNullable(this.id, systemInfo.id)
-                && equalsNullable(this.startupWizardCompleted, systemInfo.startupWizardCompleted)
-                && equalsNullable(this.operatingSystemDisplayName, systemInfo.operatingSystemDisplayName)
-                && equalsNullable(this.packageName, systemInfo.packageName)
+        return Objects.equals(this.localAddress, systemInfo.localAddress)
+                && Objects.equals(this.serverName, systemInfo.serverName)
+                && Objects.equals(this.version, systemInfo.version)
+                && Objects.equals(this.productName, systemInfo.productName)
+                && Objects.equals(this.operatingSystem, systemInfo.operatingSystem)
+                && Objects.equals(this.id, systemInfo.id)
+                && Objects.equals(this.startupWizardCompleted, systemInfo.startupWizardCompleted)
+                && Objects.equals(this.operatingSystemDisplayName, systemInfo.operatingSystemDisplayName)
+                && Objects.equals(this.packageName, systemInfo.packageName)
                 && Objects.equals(this.hasPendingRestart, systemInfo.hasPendingRestart)
                 && Objects.equals(this.isShuttingDown, systemInfo.isShuttingDown)
                 && Objects.equals(this.supportsLibraryMonitor, systemInfo.supportsLibraryMonitor)
                 && Objects.equals(this.webSocketPortNumber, systemInfo.webSocketPortNumber)
-                && equalsNullable(this.completedInstallations, systemInfo.completedInstallations)
+                && Objects.equals(this.completedInstallations, systemInfo.completedInstallations)
                 && Objects.equals(this.canSelfRestart, systemInfo.canSelfRestart)
                 && Objects.equals(this.canLaunchWebBrowser, systemInfo.canLaunchWebBrowser)
-                && equalsNullable(this.programDataPath, systemInfo.programDataPath)
-                && equalsNullable(this.webPath, systemInfo.webPath)
-                && equalsNullable(this.itemsByNamePath, systemInfo.itemsByNamePath)
-                && equalsNullable(this.cachePath, systemInfo.cachePath)
-                && equalsNullable(this.logPath, systemInfo.logPath)
-                && equalsNullable(this.internalMetadataPath, systemInfo.internalMetadataPath)
-                && equalsNullable(this.transcodingTempPath, systemInfo.transcodingTempPath)
+                && Objects.equals(this.programDataPath, systemInfo.programDataPath)
+                && Objects.equals(this.webPath, systemInfo.webPath)
+                && Objects.equals(this.itemsByNamePath, systemInfo.itemsByNamePath)
+                && Objects.equals(this.cachePath, systemInfo.cachePath)
+                && Objects.equals(this.logPath, systemInfo.logPath)
+                && Objects.equals(this.internalMetadataPath, systemInfo.internalMetadataPath)
+                && Objects.equals(this.transcodingTempPath, systemInfo.transcodingTempPath)
                 && Objects.equals(this.hasUpdateAvailable, systemInfo.hasUpdateAvailable)
                 && Objects.equals(this.encoderLocation, systemInfo.encoderLocation)
                 && Objects.equals(this.systemArchitecture, systemInfo.systemArchitecture);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(localAddress), hashCodeNullable(serverName), hashCodeNullable(version),
-                hashCodeNullable(productName), hashCodeNullable(operatingSystem), hashCodeNullable(id),
-                hashCodeNullable(startupWizardCompleted), hashCodeNullable(operatingSystemDisplayName),
-                hashCodeNullable(packageName), hasPendingRestart, isShuttingDown, supportsLibraryMonitor,
-                webSocketPortNumber, hashCodeNullable(completedInstallations), canSelfRestart, canLaunchWebBrowser,
-                hashCodeNullable(programDataPath), hashCodeNullable(webPath), hashCodeNullable(itemsByNamePath),
-                hashCodeNullable(cachePath), hashCodeNullable(logPath), hashCodeNullable(internalMetadataPath),
-                hashCodeNullable(transcodingTempPath), hasUpdateAvailable, encoderLocation, systemArchitecture);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(localAddress, serverName, version, productName, operatingSystem, id, startupWizardCompleted,
+                operatingSystemDisplayName, packageName, hasPendingRestart, isShuttingDown, supportsLibraryMonitor,
+                webSocketPortNumber, completedInstallations, canSelfRestart, canLaunchWebBrowser, programDataPath,
+                webPath, itemsByNamePath, cachePath, logPath, internalMetadataPath, transcodingTempPath,
+                hasUpdateAvailable, encoderLocation, systemArchitecture);
     }
 
     @Override
@@ -1093,91 +918,46 @@ public class SystemInfo {
         }
 
         public SystemInfo.Builder localAddress(String localAddress) {
-            this.instance.localAddress = JsonNullable.<String> of(localAddress);
-            return this;
-        }
-
-        public SystemInfo.Builder localAddress(JsonNullable<String> localAddress) {
             this.instance.localAddress = localAddress;
             return this;
         }
 
         public SystemInfo.Builder serverName(String serverName) {
-            this.instance.serverName = JsonNullable.<String> of(serverName);
-            return this;
-        }
-
-        public SystemInfo.Builder serverName(JsonNullable<String> serverName) {
             this.instance.serverName = serverName;
             return this;
         }
 
         public SystemInfo.Builder version(String version) {
-            this.instance.version = JsonNullable.<String> of(version);
-            return this;
-        }
-
-        public SystemInfo.Builder version(JsonNullable<String> version) {
             this.instance.version = version;
             return this;
         }
 
         public SystemInfo.Builder productName(String productName) {
-            this.instance.productName = JsonNullable.<String> of(productName);
-            return this;
-        }
-
-        public SystemInfo.Builder productName(JsonNullable<String> productName) {
             this.instance.productName = productName;
             return this;
         }
 
         public SystemInfo.Builder operatingSystem(String operatingSystem) {
-            this.instance.operatingSystem = JsonNullable.<String> of(operatingSystem);
-            return this;
-        }
-
-        public SystemInfo.Builder operatingSystem(JsonNullable<String> operatingSystem) {
             this.instance.operatingSystem = operatingSystem;
             return this;
         }
 
         public SystemInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public SystemInfo.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public SystemInfo.Builder startupWizardCompleted(Boolean startupWizardCompleted) {
-            this.instance.startupWizardCompleted = JsonNullable.<Boolean> of(startupWizardCompleted);
-            return this;
-        }
-
-        public SystemInfo.Builder startupWizardCompleted(JsonNullable<Boolean> startupWizardCompleted) {
             this.instance.startupWizardCompleted = startupWizardCompleted;
             return this;
         }
 
         public SystemInfo.Builder operatingSystemDisplayName(String operatingSystemDisplayName) {
-            this.instance.operatingSystemDisplayName = JsonNullable.<String> of(operatingSystemDisplayName);
-            return this;
-        }
-
-        public SystemInfo.Builder operatingSystemDisplayName(JsonNullable<String> operatingSystemDisplayName) {
             this.instance.operatingSystemDisplayName = operatingSystemDisplayName;
             return this;
         }
 
         public SystemInfo.Builder packageName(String packageName) {
-            this.instance.packageName = JsonNullable.<String> of(packageName);
-            return this;
-        }
-
-        public SystemInfo.Builder packageName(JsonNullable<String> packageName) {
             this.instance.packageName = packageName;
             return this;
         }
@@ -1203,11 +983,6 @@ public class SystemInfo {
         }
 
         public SystemInfo.Builder completedInstallations(List<InstallationInfo> completedInstallations) {
-            this.instance.completedInstallations = JsonNullable.<List<InstallationInfo>> of(completedInstallations);
-            return this;
-        }
-
-        public SystemInfo.Builder completedInstallations(JsonNullable<List<InstallationInfo>> completedInstallations) {
             this.instance.completedInstallations = completedInstallations;
             return this;
         }
@@ -1223,71 +998,36 @@ public class SystemInfo {
         }
 
         public SystemInfo.Builder programDataPath(String programDataPath) {
-            this.instance.programDataPath = JsonNullable.<String> of(programDataPath);
-            return this;
-        }
-
-        public SystemInfo.Builder programDataPath(JsonNullable<String> programDataPath) {
             this.instance.programDataPath = programDataPath;
             return this;
         }
 
         public SystemInfo.Builder webPath(String webPath) {
-            this.instance.webPath = JsonNullable.<String> of(webPath);
-            return this;
-        }
-
-        public SystemInfo.Builder webPath(JsonNullable<String> webPath) {
             this.instance.webPath = webPath;
             return this;
         }
 
         public SystemInfo.Builder itemsByNamePath(String itemsByNamePath) {
-            this.instance.itemsByNamePath = JsonNullable.<String> of(itemsByNamePath);
-            return this;
-        }
-
-        public SystemInfo.Builder itemsByNamePath(JsonNullable<String> itemsByNamePath) {
             this.instance.itemsByNamePath = itemsByNamePath;
             return this;
         }
 
         public SystemInfo.Builder cachePath(String cachePath) {
-            this.instance.cachePath = JsonNullable.<String> of(cachePath);
-            return this;
-        }
-
-        public SystemInfo.Builder cachePath(JsonNullable<String> cachePath) {
             this.instance.cachePath = cachePath;
             return this;
         }
 
         public SystemInfo.Builder logPath(String logPath) {
-            this.instance.logPath = JsonNullable.<String> of(logPath);
-            return this;
-        }
-
-        public SystemInfo.Builder logPath(JsonNullable<String> logPath) {
             this.instance.logPath = logPath;
             return this;
         }
 
         public SystemInfo.Builder internalMetadataPath(String internalMetadataPath) {
-            this.instance.internalMetadataPath = JsonNullable.<String> of(internalMetadataPath);
-            return this;
-        }
-
-        public SystemInfo.Builder internalMetadataPath(JsonNullable<String> internalMetadataPath) {
             this.instance.internalMetadataPath = internalMetadataPath;
             return this;
         }
 
         public SystemInfo.Builder transcodingTempPath(String transcodingTempPath) {
-            this.instance.transcodingTempPath = JsonNullable.<String> of(transcodingTempPath);
-            return this;
-        }
-
-        public SystemInfo.Builder transcodingTempPath(JsonNullable<String> transcodingTempPath) {
             this.instance.transcodingTempPath = transcodingTempPath;
             return this;
         }

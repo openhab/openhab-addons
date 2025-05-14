@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,11 +36,11 @@ public class DirectPlayProfile {
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
     @javax.annotation.Nullable
-    private JsonNullable<String> audioCodec = JsonNullable.<String> undefined();
+    private String audioCodec;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
     @javax.annotation.Nullable
-    private JsonNullable<String> videoCodec = JsonNullable.<String> undefined();
+    private String videoCodec;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -79,8 +75,8 @@ public class DirectPlayProfile {
     }
 
     public DirectPlayProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
-        this.audioCodec = JsonNullable.<String> of(audioCodec);
 
+        this.audioCodec = audioCodec;
         return this;
     }
 
@@ -90,31 +86,22 @@ public class DirectPlayProfile {
      * @return audioCodec
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAudioCodec() {
-        return audioCodec.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAudioCodec_JsonNullable() {
+    public String getAudioCodec() {
         return audioCodec;
     }
 
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
-    public void setAudioCodec_JsonNullable(JsonNullable<String> audioCodec) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
         this.audioCodec = audioCodec;
     }
 
-    public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
-        this.audioCodec = JsonNullable.<String> of(audioCodec);
-    }
-
     public DirectPlayProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
-        this.videoCodec = JsonNullable.<String> of(videoCodec);
 
+        this.videoCodec = videoCodec;
         return this;
     }
 
@@ -124,26 +111,17 @@ public class DirectPlayProfile {
      * @return videoCodec
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVideoCodec() {
-        return videoCodec.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVideoCodec_JsonNullable() {
+    public String getVideoCodec() {
         return videoCodec;
     }
 
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
-    public void setVideoCodec_JsonNullable(JsonNullable<String> videoCodec) {
-        this.videoCodec = videoCodec;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
-        this.videoCodec = JsonNullable.<String> of(videoCodec);
+        this.videoCodec = videoCodec;
     }
 
     public DirectPlayProfile type(@javax.annotation.Nullable DlnaProfileType type) {
@@ -181,26 +159,14 @@ public class DirectPlayProfile {
         }
         DirectPlayProfile directPlayProfile = (DirectPlayProfile) o;
         return Objects.equals(this.container, directPlayProfile.container)
-                && equalsNullable(this.audioCodec, directPlayProfile.audioCodec)
-                && equalsNullable(this.videoCodec, directPlayProfile.videoCodec)
+                && Objects.equals(this.audioCodec, directPlayProfile.audioCodec)
+                && Objects.equals(this.videoCodec, directPlayProfile.videoCodec)
                 && Objects.equals(this.type, directPlayProfile.type);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(container, hashCodeNullable(audioCodec), hashCodeNullable(videoCodec), type);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(container, audioCodec, videoCodec, type);
     }
 
     @Override
@@ -244,21 +210,11 @@ public class DirectPlayProfile {
         }
 
         public DirectPlayProfile.Builder audioCodec(String audioCodec) {
-            this.instance.audioCodec = JsonNullable.<String> of(audioCodec);
-            return this;
-        }
-
-        public DirectPlayProfile.Builder audioCodec(JsonNullable<String> audioCodec) {
             this.instance.audioCodec = audioCodec;
             return this;
         }
 
         public DirectPlayProfile.Builder videoCodec(String videoCodec) {
-            this.instance.videoCodec = JsonNullable.<String> of(videoCodec);
-            return this;
-        }
-
-        public DirectPlayProfile.Builder videoCodec(JsonNullable<String> videoCodec) {
             this.instance.videoCodec = videoCodec;
             return this;
         }

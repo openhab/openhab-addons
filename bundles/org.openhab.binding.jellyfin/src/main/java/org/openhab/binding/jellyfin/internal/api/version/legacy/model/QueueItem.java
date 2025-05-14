@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +36,7 @@ public class QueueItem {
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
+    private String playlistItemId;
 
     public QueueItem() {
     }
@@ -71,8 +67,8 @@ public class QueueItem {
     }
 
     public QueueItem playlistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
 
+        this.playlistItemId = playlistItemId;
         return this;
     }
 
@@ -82,26 +78,17 @@ public class QueueItem {
      * @return playlistItemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPlaylistItemId() {
-        return playlistItemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPlaylistItemId_JsonNullable() {
+    public String getPlaylistItemId() {
         return playlistItemId;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
-        this.playlistItemId = playlistItemId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
+        this.playlistItemId = playlistItemId;
     }
 
     @Override
@@ -113,24 +100,12 @@ public class QueueItem {
             return false;
         }
         QueueItem queueItem = (QueueItem) o;
-        return Objects.equals(this.id, queueItem.id) && equalsNullable(this.playlistItemId, queueItem.playlistItemId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.id, queueItem.id) && Objects.equals(this.playlistItemId, queueItem.playlistItemId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(playlistItemId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, playlistItemId);
     }
 
     @Override
@@ -172,11 +147,6 @@ public class QueueItem {
         }
 
         public QueueItem.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = JsonNullable.<String> of(playlistItemId);
-            return this;
-        }
-
-        public QueueItem.Builder playlistItemId(JsonNullable<String> playlistItemId) {
             this.instance.playlistItemId = playlistItemId;
             return this;
         }

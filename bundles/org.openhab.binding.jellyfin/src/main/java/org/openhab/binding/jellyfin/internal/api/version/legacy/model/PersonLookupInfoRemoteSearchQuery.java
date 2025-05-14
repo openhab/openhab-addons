@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PersonLookupInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
     @javax.annotation.Nullable
-    private JsonNullable<PersonLookupInfo> searchInfo = JsonNullable.<PersonLookupInfo> undefined();
+    private PersonLookupInfo searchInfo;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @javax.annotation.Nullable
@@ -47,7 +43,7 @@ public class PersonLookupInfoRemoteSearchQuery {
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
     @javax.annotation.Nullable
-    private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
+    private String searchProviderName;
 
     public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
     @javax.annotation.Nullable
@@ -57,8 +53,8 @@ public class PersonLookupInfoRemoteSearchQuery {
     }
 
     public PersonLookupInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable PersonLookupInfo searchInfo) {
-        this.searchInfo = JsonNullable.<PersonLookupInfo> of(searchInfo);
 
+        this.searchInfo = searchInfo;
         return this;
     }
 
@@ -68,26 +64,17 @@ public class PersonLookupInfoRemoteSearchQuery {
      * @return searchInfo
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PersonLookupInfo getSearchInfo() {
-        return searchInfo.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<PersonLookupInfo> getSearchInfo_JsonNullable() {
+    public PersonLookupInfo getSearchInfo() {
         return searchInfo;
     }
 
     @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
-    public void setSearchInfo_JsonNullable(JsonNullable<PersonLookupInfo> searchInfo) {
-        this.searchInfo = searchInfo;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchInfo(@javax.annotation.Nullable PersonLookupInfo searchInfo) {
-        this.searchInfo = JsonNullable.<PersonLookupInfo> of(searchInfo);
+        this.searchInfo = searchInfo;
     }
 
     public PersonLookupInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
@@ -116,8 +103,8 @@ public class PersonLookupInfoRemoteSearchQuery {
     }
 
     public PersonLookupInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
 
+        this.searchProviderName = searchProviderName;
         return this;
     }
 
@@ -127,26 +114,17 @@ public class PersonLookupInfoRemoteSearchQuery {
      * @return searchProviderName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSearchProviderName() {
-        return searchProviderName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSearchProviderName_JsonNullable() {
+    public String getSearchProviderName() {
         return searchProviderName;
     }
 
     @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
-        this.searchProviderName = searchProviderName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+        this.searchProviderName = searchProviderName;
     }
 
     public PersonLookupInfoRemoteSearchQuery includeDisabledProviders(
@@ -184,29 +162,16 @@ public class PersonLookupInfoRemoteSearchQuery {
             return false;
         }
         PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery = (PersonLookupInfoRemoteSearchQuery) o;
-        return equalsNullable(this.searchInfo, personLookupInfoRemoteSearchQuery.searchInfo)
+        return Objects.equals(this.searchInfo, personLookupInfoRemoteSearchQuery.searchInfo)
                 && Objects.equals(this.itemId, personLookupInfoRemoteSearchQuery.itemId)
-                && equalsNullable(this.searchProviderName, personLookupInfoRemoteSearchQuery.searchProviderName)
+                && Objects.equals(this.searchProviderName, personLookupInfoRemoteSearchQuery.searchProviderName)
                 && Objects.equals(this.includeDisabledProviders,
                         personLookupInfoRemoteSearchQuery.includeDisabledProviders);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName),
-                includeDisabledProviders);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(searchInfo, itemId, searchProviderName, includeDisabledProviders);
     }
 
     @Override
@@ -245,11 +210,6 @@ public class PersonLookupInfoRemoteSearchQuery {
         }
 
         public PersonLookupInfoRemoteSearchQuery.Builder searchInfo(PersonLookupInfo searchInfo) {
-            this.instance.searchInfo = JsonNullable.<PersonLookupInfo> of(searchInfo);
-            return this;
-        }
-
-        public PersonLookupInfoRemoteSearchQuery.Builder searchInfo(JsonNullable<PersonLookupInfo> searchInfo) {
             this.instance.searchInfo = searchInfo;
             return this;
         }
@@ -260,11 +220,6 @@ public class PersonLookupInfoRemoteSearchQuery {
         }
 
         public PersonLookupInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
-            this.instance.searchProviderName = JsonNullable.<String> of(searchProviderName);
-            return this;
-        }
-
-        public PersonLookupInfoRemoteSearchQuery.Builder searchProviderName(JsonNullable<String> searchProviderName) {
             this.instance.searchProviderName = searchProviderName;
             return this;
         }

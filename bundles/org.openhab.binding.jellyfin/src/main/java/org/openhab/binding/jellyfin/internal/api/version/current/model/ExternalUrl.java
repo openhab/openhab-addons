@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,18 +31,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ExternalUrl {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_URL = "Url";
     @javax.annotation.Nullable
-    private JsonNullable<String> url = JsonNullable.<String> undefined();
+    private String url;
 
     public ExternalUrl() {
     }
 
     public ExternalUrl name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -56,31 +52,22 @@ public class ExternalUrl {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public ExternalUrl url(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
 
+        this.url = url;
         return this;
     }
 
@@ -90,26 +77,17 @@ public class ExternalUrl {
      * @return url
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrl() {
-        return url.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUrl_JsonNullable() {
+    public String getUrl() {
         return url;
     }
 
     @JsonProperty(JSON_PROPERTY_URL)
-    public void setUrl_JsonNullable(JsonNullable<String> url) {
-        this.url = url;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
+        this.url = url;
     }
 
     @Override
@@ -121,24 +99,12 @@ public class ExternalUrl {
             return false;
         }
         ExternalUrl externalUrl = (ExternalUrl) o;
-        return equalsNullable(this.name, externalUrl.name) && equalsNullable(this.url, externalUrl.url);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, externalUrl.name) && Objects.equals(this.url, externalUrl.url);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(url));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, url);
     }
 
     @Override
@@ -175,21 +141,11 @@ public class ExternalUrl {
         }
 
         public ExternalUrl.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public ExternalUrl.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public ExternalUrl.Builder url(String url) {
-            this.instance.url = JsonNullable.<String> of(url);
-            return this;
-        }
-
-        public ExternalUrl.Builder url(JsonNullable<String> url) {
             this.instance.url = url;
             return this;
         }

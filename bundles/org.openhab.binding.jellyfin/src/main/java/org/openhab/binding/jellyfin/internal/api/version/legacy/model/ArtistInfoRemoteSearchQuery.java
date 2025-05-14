@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ArtistInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
     @javax.annotation.Nullable
-    private JsonNullable<ArtistInfo> searchInfo = JsonNullable.<ArtistInfo> undefined();
+    private ArtistInfo searchInfo;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @javax.annotation.Nullable
@@ -47,7 +43,7 @@ public class ArtistInfoRemoteSearchQuery {
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
     @javax.annotation.Nullable
-    private JsonNullable<String> searchProviderName = JsonNullable.<String> undefined();
+    private String searchProviderName;
 
     public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
     @javax.annotation.Nullable
@@ -57,8 +53,8 @@ public class ArtistInfoRemoteSearchQuery {
     }
 
     public ArtistInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable ArtistInfo searchInfo) {
-        this.searchInfo = JsonNullable.<ArtistInfo> of(searchInfo);
 
+        this.searchInfo = searchInfo;
         return this;
     }
 
@@ -68,26 +64,17 @@ public class ArtistInfoRemoteSearchQuery {
      * @return searchInfo
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ArtistInfo getSearchInfo() {
-        return searchInfo.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ArtistInfo> getSearchInfo_JsonNullable() {
+    public ArtistInfo getSearchInfo() {
         return searchInfo;
     }
 
     @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
-    public void setSearchInfo_JsonNullable(JsonNullable<ArtistInfo> searchInfo) {
-        this.searchInfo = searchInfo;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchInfo(@javax.annotation.Nullable ArtistInfo searchInfo) {
-        this.searchInfo = JsonNullable.<ArtistInfo> of(searchInfo);
+        this.searchInfo = searchInfo;
     }
 
     public ArtistInfoRemoteSearchQuery itemId(@javax.annotation.Nullable UUID itemId) {
@@ -116,8 +103,8 @@ public class ArtistInfoRemoteSearchQuery {
     }
 
     public ArtistInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
 
+        this.searchProviderName = searchProviderName;
         return this;
     }
 
@@ -127,26 +114,17 @@ public class ArtistInfoRemoteSearchQuery {
      * @return searchProviderName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSearchProviderName() {
-        return searchProviderName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSearchProviderName_JsonNullable() {
+    public String getSearchProviderName() {
         return searchProviderName;
     }
 
     @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
-        this.searchProviderName = searchProviderName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-        this.searchProviderName = JsonNullable.<String> of(searchProviderName);
+        this.searchProviderName = searchProviderName;
     }
 
     public ArtistInfoRemoteSearchQuery includeDisabledProviders(
@@ -184,28 +162,15 @@ public class ArtistInfoRemoteSearchQuery {
             return false;
         }
         ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery = (ArtistInfoRemoteSearchQuery) o;
-        return equalsNullable(this.searchInfo, artistInfoRemoteSearchQuery.searchInfo)
+        return Objects.equals(this.searchInfo, artistInfoRemoteSearchQuery.searchInfo)
                 && Objects.equals(this.itemId, artistInfoRemoteSearchQuery.itemId)
-                && equalsNullable(this.searchProviderName, artistInfoRemoteSearchQuery.searchProviderName)
+                && Objects.equals(this.searchProviderName, artistInfoRemoteSearchQuery.searchProviderName)
                 && Objects.equals(this.includeDisabledProviders, artistInfoRemoteSearchQuery.includeDisabledProviders);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName),
-                includeDisabledProviders);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(searchInfo, itemId, searchProviderName, includeDisabledProviders);
     }
 
     @Override
@@ -244,11 +209,6 @@ public class ArtistInfoRemoteSearchQuery {
         }
 
         public ArtistInfoRemoteSearchQuery.Builder searchInfo(ArtistInfo searchInfo) {
-            this.instance.searchInfo = JsonNullable.<ArtistInfo> of(searchInfo);
-            return this;
-        }
-
-        public ArtistInfoRemoteSearchQuery.Builder searchInfo(JsonNullable<ArtistInfo> searchInfo) {
             this.instance.searchInfo = searchInfo;
             return this;
         }
@@ -259,11 +219,6 @@ public class ArtistInfoRemoteSearchQuery {
         }
 
         public ArtistInfoRemoteSearchQuery.Builder searchProviderName(String searchProviderName) {
-            this.instance.searchProviderName = JsonNullable.<String> of(searchProviderName);
-            return this;
-        }
-
-        public ArtistInfoRemoteSearchQuery.Builder searchProviderName(JsonNullable<String> searchProviderName) {
             this.instance.searchProviderName = searchProviderName;
             return this;
         }

@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AuthenticationInfoQueryResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @javax.annotation.Nullable
-    private JsonNullable<List<AuthenticationInfo>> items = JsonNullable.<List<AuthenticationInfo>> undefined();
+    private List<AuthenticationInfo> items;
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @javax.annotation.Nullable
@@ -53,20 +49,16 @@ public class AuthenticationInfoQueryResult {
     }
 
     public AuthenticationInfoQueryResult items(@javax.annotation.Nullable List<AuthenticationInfo> items) {
-        this.items = JsonNullable.<List<AuthenticationInfo>> of(items);
 
+        this.items = items;
         return this;
     }
 
     public AuthenticationInfoQueryResult addItemsItem(AuthenticationInfo itemsItem) {
-        if (this.items == null || !this.items.isPresent()) {
-            this.items = JsonNullable.<List<AuthenticationInfo>> of(new ArrayList<>());
+        if (this.items == null) {
+            this.items = new ArrayList<>();
         }
-        try {
-            this.items.get().add(itemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.items.add(itemsItem);
         return this;
     }
 
@@ -76,26 +68,17 @@ public class AuthenticationInfoQueryResult {
      * @return items
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<AuthenticationInfo> getItems() {
-        return items.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<AuthenticationInfo>> getItems_JsonNullable() {
+    public List<AuthenticationInfo> getItems() {
         return items;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEMS)
-    public void setItems_JsonNullable(JsonNullable<List<AuthenticationInfo>> items) {
-        this.items = items;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItems(@javax.annotation.Nullable List<AuthenticationInfo> items) {
-        this.items = JsonNullable.<List<AuthenticationInfo>> of(items);
+        this.items = items;
     }
 
     public AuthenticationInfoQueryResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
@@ -157,26 +140,14 @@ public class AuthenticationInfoQueryResult {
             return false;
         }
         AuthenticationInfoQueryResult authenticationInfoQueryResult = (AuthenticationInfoQueryResult) o;
-        return equalsNullable(this.items, authenticationInfoQueryResult.items)
+        return Objects.equals(this.items, authenticationInfoQueryResult.items)
                 && Objects.equals(this.totalRecordCount, authenticationInfoQueryResult.totalRecordCount)
                 && Objects.equals(this.startIndex, authenticationInfoQueryResult.startIndex);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(items), totalRecordCount, startIndex);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(items, totalRecordCount, startIndex);
     }
 
     @Override
@@ -214,11 +185,6 @@ public class AuthenticationInfoQueryResult {
         }
 
         public AuthenticationInfoQueryResult.Builder items(List<AuthenticationInfo> items) {
-            this.instance.items = JsonNullable.<List<AuthenticationInfo>> of(items);
-            return this;
-        }
-
-        public AuthenticationInfoQueryResult.Builder items(JsonNullable<List<AuthenticationInfo>> items) {
             this.instance.items = items;
             return this;
         }

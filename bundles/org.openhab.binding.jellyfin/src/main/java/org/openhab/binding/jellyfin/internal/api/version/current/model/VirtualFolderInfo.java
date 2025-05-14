@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,42 +36,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class VirtualFolderInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_LOCATIONS = "Locations";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> locations = JsonNullable.<List<String>> undefined();
+    private List<String> locations;
 
     public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
     @javax.annotation.Nullable
-    private JsonNullable<CollectionTypeOptions> collectionType = JsonNullable.<CollectionTypeOptions> undefined();
+    private CollectionTypeOptions collectionType;
 
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
     @javax.annotation.Nullable
-    private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
+    private LibraryOptions libraryOptions;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> itemId = JsonNullable.<String> undefined();
+    private String itemId;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID = "PrimaryImageItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> primaryImageItemId = JsonNullable.<String> undefined();
+    private String primaryImageItemId;
 
     public static final String JSON_PROPERTY_REFRESH_PROGRESS = "RefreshProgress";
     @javax.annotation.Nullable
-    private JsonNullable<Double> refreshProgress = JsonNullable.<Double> undefined();
+    private Double refreshProgress;
 
     public static final String JSON_PROPERTY_REFRESH_STATUS = "RefreshStatus";
     @javax.annotation.Nullable
-    private JsonNullable<String> refreshStatus = JsonNullable.<String> undefined();
+    private String refreshStatus;
 
     public VirtualFolderInfo() {
     }
 
     public VirtualFolderInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -85,43 +81,30 @@ public class VirtualFolderInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public VirtualFolderInfo locations(@javax.annotation.Nullable List<String> locations) {
-        this.locations = JsonNullable.<List<String>> of(locations);
 
+        this.locations = locations;
         return this;
     }
 
     public VirtualFolderInfo addLocationsItem(String locationsItem) {
-        if (this.locations == null || !this.locations.isPresent()) {
-            this.locations = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.locations == null) {
+            this.locations = new ArrayList<>();
         }
-        try {
-            this.locations.get().add(locationsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.locations.add(locationsItem);
         return this;
     }
 
@@ -131,31 +114,22 @@ public class VirtualFolderInfo {
      * @return locations
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getLocations() {
-        return locations.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOCATIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getLocations_JsonNullable() {
+    public List<String> getLocations() {
         return locations;
     }
 
     @JsonProperty(JSON_PROPERTY_LOCATIONS)
-    public void setLocations_JsonNullable(JsonNullable<List<String>> locations) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLocations(@javax.annotation.Nullable List<String> locations) {
         this.locations = locations;
     }
 
-    public void setLocations(@javax.annotation.Nullable List<String> locations) {
-        this.locations = JsonNullable.<List<String>> of(locations);
-    }
-
     public VirtualFolderInfo collectionType(@javax.annotation.Nullable CollectionTypeOptions collectionType) {
-        this.collectionType = JsonNullable.<CollectionTypeOptions> of(collectionType);
 
+        this.collectionType = collectionType;
         return this;
     }
 
@@ -165,31 +139,22 @@ public class VirtualFolderInfo {
      * @return collectionType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public CollectionTypeOptions getCollectionType() {
-        return collectionType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<CollectionTypeOptions> getCollectionType_JsonNullable() {
+    public CollectionTypeOptions getCollectionType() {
         return collectionType;
     }
 
     @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
-    public void setCollectionType_JsonNullable(JsonNullable<CollectionTypeOptions> collectionType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCollectionType(@javax.annotation.Nullable CollectionTypeOptions collectionType) {
         this.collectionType = collectionType;
     }
 
-    public void setCollectionType(@javax.annotation.Nullable CollectionTypeOptions collectionType) {
-        this.collectionType = JsonNullable.<CollectionTypeOptions> of(collectionType);
-    }
-
     public VirtualFolderInfo libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
 
+        this.libraryOptions = libraryOptions;
         return this;
     }
 
@@ -199,31 +164,22 @@ public class VirtualFolderInfo {
      * @return libraryOptions
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public LibraryOptions getLibraryOptions() {
-        return libraryOptions.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
+    public LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
     @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
-    public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
         this.libraryOptions = libraryOptions;
     }
 
-    public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
-    }
-
     public VirtualFolderInfo itemId(@javax.annotation.Nullable String itemId) {
-        this.itemId = JsonNullable.<String> of(itemId);
 
+        this.itemId = itemId;
         return this;
     }
 
@@ -233,31 +189,22 @@ public class VirtualFolderInfo {
      * @return itemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getItemId() {
-        return itemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getItemId_JsonNullable() {
+    public String getItemId() {
         return itemId;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    public void setItemId_JsonNullable(JsonNullable<String> itemId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItemId(@javax.annotation.Nullable String itemId) {
         this.itemId = itemId;
     }
 
-    public void setItemId(@javax.annotation.Nullable String itemId) {
-        this.itemId = JsonNullable.<String> of(itemId);
-    }
-
     public VirtualFolderInfo primaryImageItemId(@javax.annotation.Nullable String primaryImageItemId) {
-        this.primaryImageItemId = JsonNullable.<String> of(primaryImageItemId);
 
+        this.primaryImageItemId = primaryImageItemId;
         return this;
     }
 
@@ -267,31 +214,22 @@ public class VirtualFolderInfo {
      * @return primaryImageItemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPrimaryImageItemId() {
-        return primaryImageItemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPrimaryImageItemId_JsonNullable() {
+    public String getPrimaryImageItemId() {
         return primaryImageItemId;
     }
 
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
-    public void setPrimaryImageItemId_JsonNullable(JsonNullable<String> primaryImageItemId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPrimaryImageItemId(@javax.annotation.Nullable String primaryImageItemId) {
         this.primaryImageItemId = primaryImageItemId;
     }
 
-    public void setPrimaryImageItemId(@javax.annotation.Nullable String primaryImageItemId) {
-        this.primaryImageItemId = JsonNullable.<String> of(primaryImageItemId);
-    }
-
     public VirtualFolderInfo refreshProgress(@javax.annotation.Nullable Double refreshProgress) {
-        this.refreshProgress = JsonNullable.<Double> of(refreshProgress);
 
+        this.refreshProgress = refreshProgress;
         return this;
     }
 
@@ -301,31 +239,22 @@ public class VirtualFolderInfo {
      * @return refreshProgress
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getRefreshProgress() {
-        return refreshProgress.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getRefreshProgress_JsonNullable() {
+    public Double getRefreshProgress() {
         return refreshProgress;
     }
 
     @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
-    public void setRefreshProgress_JsonNullable(JsonNullable<Double> refreshProgress) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setRefreshProgress(@javax.annotation.Nullable Double refreshProgress) {
         this.refreshProgress = refreshProgress;
     }
 
-    public void setRefreshProgress(@javax.annotation.Nullable Double refreshProgress) {
-        this.refreshProgress = JsonNullable.<Double> of(refreshProgress);
-    }
-
     public VirtualFolderInfo refreshStatus(@javax.annotation.Nullable String refreshStatus) {
-        this.refreshStatus = JsonNullable.<String> of(refreshStatus);
 
+        this.refreshStatus = refreshStatus;
         return this;
     }
 
@@ -335,26 +264,17 @@ public class VirtualFolderInfo {
      * @return refreshStatus
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getRefreshStatus() {
-        return refreshStatus.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getRefreshStatus_JsonNullable() {
+    public String getRefreshStatus() {
         return refreshStatus;
     }
 
     @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
-    public void setRefreshStatus_JsonNullable(JsonNullable<String> refreshStatus) {
-        this.refreshStatus = refreshStatus;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRefreshStatus(@javax.annotation.Nullable String refreshStatus) {
-        this.refreshStatus = JsonNullable.<String> of(refreshStatus);
+        this.refreshStatus = refreshStatus;
     }
 
     @Override
@@ -366,33 +286,20 @@ public class VirtualFolderInfo {
             return false;
         }
         VirtualFolderInfo virtualFolderInfo = (VirtualFolderInfo) o;
-        return equalsNullable(this.name, virtualFolderInfo.name)
-                && equalsNullable(this.locations, virtualFolderInfo.locations)
-                && equalsNullable(this.collectionType, virtualFolderInfo.collectionType)
-                && equalsNullable(this.libraryOptions, virtualFolderInfo.libraryOptions)
-                && equalsNullable(this.itemId, virtualFolderInfo.itemId)
-                && equalsNullable(this.primaryImageItemId, virtualFolderInfo.primaryImageItemId)
-                && equalsNullable(this.refreshProgress, virtualFolderInfo.refreshProgress)
-                && equalsNullable(this.refreshStatus, virtualFolderInfo.refreshStatus);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, virtualFolderInfo.name)
+                && Objects.equals(this.locations, virtualFolderInfo.locations)
+                && Objects.equals(this.collectionType, virtualFolderInfo.collectionType)
+                && Objects.equals(this.libraryOptions, virtualFolderInfo.libraryOptions)
+                && Objects.equals(this.itemId, virtualFolderInfo.itemId)
+                && Objects.equals(this.primaryImageItemId, virtualFolderInfo.primaryImageItemId)
+                && Objects.equals(this.refreshProgress, virtualFolderInfo.refreshProgress)
+                && Objects.equals(this.refreshStatus, virtualFolderInfo.refreshStatus);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(locations), hashCodeNullable(collectionType),
-                hashCodeNullable(libraryOptions), hashCodeNullable(itemId), hashCodeNullable(primaryImageItemId),
-                hashCodeNullable(refreshProgress), hashCodeNullable(refreshStatus));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, locations, collectionType, libraryOptions, itemId, primaryImageItemId,
+                refreshProgress, refreshStatus);
     }
 
     @Override
@@ -435,81 +342,41 @@ public class VirtualFolderInfo {
         }
 
         public VirtualFolderInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public VirtualFolderInfo.Builder locations(List<String> locations) {
-            this.instance.locations = JsonNullable.<List<String>> of(locations);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder locations(JsonNullable<List<String>> locations) {
             this.instance.locations = locations;
             return this;
         }
 
         public VirtualFolderInfo.Builder collectionType(CollectionTypeOptions collectionType) {
-            this.instance.collectionType = JsonNullable.<CollectionTypeOptions> of(collectionType);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder collectionType(JsonNullable<CollectionTypeOptions> collectionType) {
             this.instance.collectionType = collectionType;
             return this;
         }
 
         public VirtualFolderInfo.Builder libraryOptions(LibraryOptions libraryOptions) {
-            this.instance.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder libraryOptions(JsonNullable<LibraryOptions> libraryOptions) {
             this.instance.libraryOptions = libraryOptions;
             return this;
         }
 
         public VirtualFolderInfo.Builder itemId(String itemId) {
-            this.instance.itemId = JsonNullable.<String> of(itemId);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder itemId(JsonNullable<String> itemId) {
             this.instance.itemId = itemId;
             return this;
         }
 
         public VirtualFolderInfo.Builder primaryImageItemId(String primaryImageItemId) {
-            this.instance.primaryImageItemId = JsonNullable.<String> of(primaryImageItemId);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder primaryImageItemId(JsonNullable<String> primaryImageItemId) {
             this.instance.primaryImageItemId = primaryImageItemId;
             return this;
         }
 
         public VirtualFolderInfo.Builder refreshProgress(Double refreshProgress) {
-            this.instance.refreshProgress = JsonNullable.<Double> of(refreshProgress);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder refreshProgress(JsonNullable<Double> refreshProgress) {
             this.instance.refreshProgress = refreshProgress;
             return this;
         }
 
         public VirtualFolderInfo.Builder refreshStatus(String refreshStatus) {
-            this.instance.refreshStatus = JsonNullable.<String> of(refreshStatus);
-            return this;
-        }
-
-        public VirtualFolderInfo.Builder refreshStatus(JsonNullable<String> refreshStatus) {
             this.instance.refreshStatus = refreshStatus;
             return this;
         }

@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -49,11 +45,11 @@ public class ActivityLogEntry {
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
     @javax.annotation.Nullable
-    private JsonNullable<String> overview = JsonNullable.<String> undefined();
+    private String overview;
 
     public static final String JSON_PROPERTY_SHORT_OVERVIEW = "ShortOverview";
     @javax.annotation.Nullable
-    private JsonNullable<String> shortOverview = JsonNullable.<String> undefined();
+    private String shortOverview;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -61,7 +57,7 @@ public class ActivityLogEntry {
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> itemId = JsonNullable.<String> undefined();
+    private String itemId;
 
     public static final String JSON_PROPERTY_DATE = "Date";
     @javax.annotation.Nullable
@@ -73,7 +69,7 @@ public class ActivityLogEntry {
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String> undefined();
+    private String userPrimaryImageTag;
 
     public static final String JSON_PROPERTY_SEVERITY = "Severity";
     @javax.annotation.Nullable
@@ -133,8 +129,8 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry overview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
 
+        this.overview = overview;
         return this;
     }
 
@@ -144,31 +140,22 @@ public class ActivityLogEntry {
      * @return overview
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOverview() {
-        return overview.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOverview_JsonNullable() {
+    public String getOverview() {
         return overview;
     }
 
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    public void setOverview_JsonNullable(JsonNullable<String> overview) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOverview(@javax.annotation.Nullable String overview) {
         this.overview = overview;
     }
 
-    public void setOverview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
-    }
-
     public ActivityLogEntry shortOverview(@javax.annotation.Nullable String shortOverview) {
-        this.shortOverview = JsonNullable.<String> of(shortOverview);
 
+        this.shortOverview = shortOverview;
         return this;
     }
 
@@ -178,26 +165,17 @@ public class ActivityLogEntry {
      * @return shortOverview
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getShortOverview() {
-        return shortOverview.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getShortOverview_JsonNullable() {
+    public String getShortOverview() {
         return shortOverview;
     }
 
     @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
-    public void setShortOverview_JsonNullable(JsonNullable<String> shortOverview) {
-        this.shortOverview = shortOverview;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShortOverview(@javax.annotation.Nullable String shortOverview) {
-        this.shortOverview = JsonNullable.<String> of(shortOverview);
+        this.shortOverview = shortOverview;
     }
 
     public ActivityLogEntry type(@javax.annotation.Nullable String type) {
@@ -226,8 +204,8 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry itemId(@javax.annotation.Nullable String itemId) {
-        this.itemId = JsonNullable.<String> of(itemId);
 
+        this.itemId = itemId;
         return this;
     }
 
@@ -237,26 +215,17 @@ public class ActivityLogEntry {
      * @return itemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getItemId() {
-        return itemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getItemId_JsonNullable() {
+    public String getItemId() {
         return itemId;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    public void setItemId_JsonNullable(JsonNullable<String> itemId) {
-        this.itemId = itemId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@javax.annotation.Nullable String itemId) {
-        this.itemId = JsonNullable.<String> of(itemId);
+        this.itemId = itemId;
     }
 
     public ActivityLogEntry date(@javax.annotation.Nullable OffsetDateTime date) {
@@ -310,8 +279,8 @@ public class ActivityLogEntry {
     }
 
     public ActivityLogEntry userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-        this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
 
+        this.userPrimaryImageTag = userPrimaryImageTag;
         return this;
     }
 
@@ -323,26 +292,17 @@ public class ActivityLogEntry {
      */
     @Deprecated
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserPrimaryImageTag() {
-        return userPrimaryImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserPrimaryImageTag_JsonNullable() {
+    public String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
-    public void setUserPrimaryImageTag_JsonNullable(JsonNullable<String> userPrimaryImageTag) {
-        this.userPrimaryImageTag = userPrimaryImageTag;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-        this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
+        this.userPrimaryImageTag = userPrimaryImageTag;
     }
 
     public ActivityLogEntry severity(@javax.annotation.Nullable LogLevel severity) {
@@ -380,32 +340,20 @@ public class ActivityLogEntry {
         }
         ActivityLogEntry activityLogEntry = (ActivityLogEntry) o;
         return Objects.equals(this.id, activityLogEntry.id) && Objects.equals(this.name, activityLogEntry.name)
-                && equalsNullable(this.overview, activityLogEntry.overview)
-                && equalsNullable(this.shortOverview, activityLogEntry.shortOverview)
+                && Objects.equals(this.overview, activityLogEntry.overview)
+                && Objects.equals(this.shortOverview, activityLogEntry.shortOverview)
                 && Objects.equals(this.type, activityLogEntry.type)
-                && equalsNullable(this.itemId, activityLogEntry.itemId)
+                && Objects.equals(this.itemId, activityLogEntry.itemId)
                 && Objects.equals(this.date, activityLogEntry.date)
                 && Objects.equals(this.userId, activityLogEntry.userId)
-                && equalsNullable(this.userPrimaryImageTag, activityLogEntry.userPrimaryImageTag)
+                && Objects.equals(this.userPrimaryImageTag, activityLogEntry.userPrimaryImageTag)
                 && Objects.equals(this.severity, activityLogEntry.severity);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, hashCodeNullable(overview), hashCodeNullable(shortOverview), type,
-                hashCodeNullable(itemId), date, userId, hashCodeNullable(userPrimaryImageTag), severity);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, name, overview, shortOverview, type, itemId, date, userId, userPrimaryImageTag,
+                severity);
     }
 
     @Override
@@ -460,21 +408,11 @@ public class ActivityLogEntry {
         }
 
         public ActivityLogEntry.Builder overview(String overview) {
-            this.instance.overview = JsonNullable.<String> of(overview);
-            return this;
-        }
-
-        public ActivityLogEntry.Builder overview(JsonNullable<String> overview) {
             this.instance.overview = overview;
             return this;
         }
 
         public ActivityLogEntry.Builder shortOverview(String shortOverview) {
-            this.instance.shortOverview = JsonNullable.<String> of(shortOverview);
-            return this;
-        }
-
-        public ActivityLogEntry.Builder shortOverview(JsonNullable<String> shortOverview) {
             this.instance.shortOverview = shortOverview;
             return this;
         }
@@ -485,11 +423,6 @@ public class ActivityLogEntry {
         }
 
         public ActivityLogEntry.Builder itemId(String itemId) {
-            this.instance.itemId = JsonNullable.<String> of(itemId);
-            return this;
-        }
-
-        public ActivityLogEntry.Builder itemId(JsonNullable<String> itemId) {
             this.instance.itemId = itemId;
             return this;
         }
@@ -505,11 +438,6 @@ public class ActivityLogEntry {
         }
 
         public ActivityLogEntry.Builder userPrimaryImageTag(String userPrimaryImageTag) {
-            this.instance.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
-            return this;
-        }
-
-        public ActivityLogEntry.Builder userPrimaryImageTag(JsonNullable<String> userPrimaryImageTag) {
             this.instance.userPrimaryImageTag = userPrimaryImageTag;
             return this;
         }

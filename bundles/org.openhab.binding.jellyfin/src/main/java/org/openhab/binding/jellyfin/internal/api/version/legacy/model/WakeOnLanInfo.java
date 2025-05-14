@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class WakeOnLanInfo {
     public static final String JSON_PROPERTY_MAC_ADDRESS = "MacAddress";
     @javax.annotation.Nullable
-    private JsonNullable<String> macAddress = JsonNullable.<String> undefined();
+    private String macAddress;
 
     public static final String JSON_PROPERTY_PORT = "Port";
     @javax.annotation.Nullable
@@ -45,8 +41,8 @@ public class WakeOnLanInfo {
     }
 
     public WakeOnLanInfo macAddress(@javax.annotation.Nullable String macAddress) {
-        this.macAddress = JsonNullable.<String> of(macAddress);
 
+        this.macAddress = macAddress;
         return this;
     }
 
@@ -56,26 +52,17 @@ public class WakeOnLanInfo {
      * @return macAddress
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMacAddress() {
-        return macAddress.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMacAddress_JsonNullable() {
+    public String getMacAddress() {
         return macAddress;
     }
 
     @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
-    public void setMacAddress_JsonNullable(JsonNullable<String> macAddress) {
-        this.macAddress = macAddress;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMacAddress(@javax.annotation.Nullable String macAddress) {
-        this.macAddress = JsonNullable.<String> of(macAddress);
+        this.macAddress = macAddress;
     }
 
     public WakeOnLanInfo port(@javax.annotation.Nullable Integer port) {
@@ -112,25 +99,13 @@ public class WakeOnLanInfo {
             return false;
         }
         WakeOnLanInfo wakeOnLanInfo = (WakeOnLanInfo) o;
-        return equalsNullable(this.macAddress, wakeOnLanInfo.macAddress)
+        return Objects.equals(this.macAddress, wakeOnLanInfo.macAddress)
                 && Objects.equals(this.port, wakeOnLanInfo.port);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(macAddress), port);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(macAddress, port);
     }
 
     @Override
@@ -167,11 +142,6 @@ public class WakeOnLanInfo {
         }
 
         public WakeOnLanInfo.Builder macAddress(String macAddress) {
-            this.instance.macAddress = JsonNullable.<String> of(macAddress);
-            return this;
-        }
-
-        public WakeOnLanInfo.Builder macAddress(JsonNullable<String> macAddress) {
             this.instance.macAddress = macAddress;
             return this;
         }

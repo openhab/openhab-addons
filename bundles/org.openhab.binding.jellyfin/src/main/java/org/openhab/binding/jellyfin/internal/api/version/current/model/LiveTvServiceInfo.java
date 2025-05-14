@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,11 +36,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LiveTvServiceInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_HOME_PAGE_URL = "HomePageUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> homePageUrl = JsonNullable.<String> undefined();
+    private String homePageUrl;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @javax.annotation.Nullable
@@ -52,11 +48,11 @@ public class LiveTvServiceInfo {
 
     public static final String JSON_PROPERTY_STATUS_MESSAGE = "StatusMessage";
     @javax.annotation.Nullable
-    private JsonNullable<String> statusMessage = JsonNullable.<String> undefined();
+    private String statusMessage;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @javax.annotation.Nullable
-    private JsonNullable<String> version = JsonNullable.<String> undefined();
+    private String version;
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
     @javax.annotation.Nullable
@@ -68,14 +64,14 @@ public class LiveTvServiceInfo {
 
     public static final String JSON_PROPERTY_TUNERS = "Tuners";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> tuners = JsonNullable.<List<String>> undefined();
+    private List<String> tuners;
 
     public LiveTvServiceInfo() {
     }
 
     public LiveTvServiceInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -85,31 +81,22 @@ public class LiveTvServiceInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public LiveTvServiceInfo homePageUrl(@javax.annotation.Nullable String homePageUrl) {
-        this.homePageUrl = JsonNullable.<String> of(homePageUrl);
 
+        this.homePageUrl = homePageUrl;
         return this;
     }
 
@@ -119,26 +106,17 @@ public class LiveTvServiceInfo {
      * @return homePageUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getHomePageUrl() {
-        return homePageUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_HOME_PAGE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getHomePageUrl_JsonNullable() {
+    public String getHomePageUrl() {
         return homePageUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_HOME_PAGE_URL)
-    public void setHomePageUrl_JsonNullable(JsonNullable<String> homePageUrl) {
-        this.homePageUrl = homePageUrl;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHomePageUrl(@javax.annotation.Nullable String homePageUrl) {
-        this.homePageUrl = JsonNullable.<String> of(homePageUrl);
+        this.homePageUrl = homePageUrl;
     }
 
     public LiveTvServiceInfo status(@javax.annotation.Nullable LiveTvServiceStatus status) {
@@ -167,8 +145,8 @@ public class LiveTvServiceInfo {
     }
 
     public LiveTvServiceInfo statusMessage(@javax.annotation.Nullable String statusMessage) {
-        this.statusMessage = JsonNullable.<String> of(statusMessage);
 
+        this.statusMessage = statusMessage;
         return this;
     }
 
@@ -178,31 +156,22 @@ public class LiveTvServiceInfo {
      * @return statusMessage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getStatusMessage() {
-        return statusMessage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_STATUS_MESSAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getStatusMessage_JsonNullable() {
+    public String getStatusMessage() {
         return statusMessage;
     }
 
     @JsonProperty(JSON_PROPERTY_STATUS_MESSAGE)
-    public void setStatusMessage_JsonNullable(JsonNullable<String> statusMessage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStatusMessage(@javax.annotation.Nullable String statusMessage) {
         this.statusMessage = statusMessage;
     }
 
-    public void setStatusMessage(@javax.annotation.Nullable String statusMessage) {
-        this.statusMessage = JsonNullable.<String> of(statusMessage);
-    }
-
     public LiveTvServiceInfo version(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
 
+        this.version = version;
         return this;
     }
 
@@ -212,26 +181,17 @@ public class LiveTvServiceInfo {
      * @return version
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVersion() {
-        return version.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVersion_JsonNullable() {
+    public String getVersion() {
         return version;
     }
 
     @JsonProperty(JSON_PROPERTY_VERSION)
-    public void setVersion_JsonNullable(JsonNullable<String> version) {
-        this.version = version;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@javax.annotation.Nullable String version) {
-        this.version = JsonNullable.<String> of(version);
+        this.version = version;
     }
 
     public LiveTvServiceInfo hasUpdateAvailable(@javax.annotation.Nullable Boolean hasUpdateAvailable) {
@@ -285,20 +245,16 @@ public class LiveTvServiceInfo {
     }
 
     public LiveTvServiceInfo tuners(@javax.annotation.Nullable List<String> tuners) {
-        this.tuners = JsonNullable.<List<String>> of(tuners);
 
+        this.tuners = tuners;
         return this;
     }
 
     public LiveTvServiceInfo addTunersItem(String tunersItem) {
-        if (this.tuners == null || !this.tuners.isPresent()) {
-            this.tuners = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.tuners == null) {
+            this.tuners = new ArrayList<>();
         }
-        try {
-            this.tuners.get().add(tunersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.tuners.add(tunersItem);
         return this;
     }
 
@@ -308,26 +264,17 @@ public class LiveTvServiceInfo {
      * @return tuners
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getTuners() {
-        return tuners.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TUNERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getTuners_JsonNullable() {
+    public List<String> getTuners() {
         return tuners;
     }
 
     @JsonProperty(JSON_PROPERTY_TUNERS)
-    public void setTuners_JsonNullable(JsonNullable<List<String>> tuners) {
-        this.tuners = tuners;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTuners(@javax.annotation.Nullable List<String> tuners) {
-        this.tuners = JsonNullable.<List<String>> of(tuners);
+        this.tuners = tuners;
     }
 
     @Override
@@ -339,33 +286,19 @@ public class LiveTvServiceInfo {
             return false;
         }
         LiveTvServiceInfo liveTvServiceInfo = (LiveTvServiceInfo) o;
-        return equalsNullable(this.name, liveTvServiceInfo.name)
-                && equalsNullable(this.homePageUrl, liveTvServiceInfo.homePageUrl)
+        return Objects.equals(this.name, liveTvServiceInfo.name)
+                && Objects.equals(this.homePageUrl, liveTvServiceInfo.homePageUrl)
                 && Objects.equals(this.status, liveTvServiceInfo.status)
-                && equalsNullable(this.statusMessage, liveTvServiceInfo.statusMessage)
-                && equalsNullable(this.version, liveTvServiceInfo.version)
+                && Objects.equals(this.statusMessage, liveTvServiceInfo.statusMessage)
+                && Objects.equals(this.version, liveTvServiceInfo.version)
                 && Objects.equals(this.hasUpdateAvailable, liveTvServiceInfo.hasUpdateAvailable)
                 && Objects.equals(this.isVisible, liveTvServiceInfo.isVisible)
-                && equalsNullable(this.tuners, liveTvServiceInfo.tuners);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.tuners, liveTvServiceInfo.tuners);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(homePageUrl), status,
-                hashCodeNullable(statusMessage), hashCodeNullable(version), hasUpdateAvailable, isVisible,
-                hashCodeNullable(tuners));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, homePageUrl, status, statusMessage, version, hasUpdateAvailable, isVisible, tuners);
     }
 
     @Override
@@ -408,21 +341,11 @@ public class LiveTvServiceInfo {
         }
 
         public LiveTvServiceInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public LiveTvServiceInfo.Builder homePageUrl(String homePageUrl) {
-            this.instance.homePageUrl = JsonNullable.<String> of(homePageUrl);
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder homePageUrl(JsonNullable<String> homePageUrl) {
             this.instance.homePageUrl = homePageUrl;
             return this;
         }
@@ -433,21 +356,11 @@ public class LiveTvServiceInfo {
         }
 
         public LiveTvServiceInfo.Builder statusMessage(String statusMessage) {
-            this.instance.statusMessage = JsonNullable.<String> of(statusMessage);
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder statusMessage(JsonNullable<String> statusMessage) {
             this.instance.statusMessage = statusMessage;
             return this;
         }
 
         public LiveTvServiceInfo.Builder version(String version) {
-            this.instance.version = JsonNullable.<String> of(version);
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder version(JsonNullable<String> version) {
             this.instance.version = version;
             return this;
         }
@@ -463,11 +376,6 @@ public class LiveTvServiceInfo {
         }
 
         public LiveTvServiceInfo.Builder tuners(List<String> tuners) {
-            this.instance.tuners = JsonNullable.<List<String>> of(tuners);
-            return this;
-        }
-
-        public LiveTvServiceInfo.Builder tuners(JsonNullable<List<String>> tuners) {
             this.instance.tuners = tuners;
             return this;
         }

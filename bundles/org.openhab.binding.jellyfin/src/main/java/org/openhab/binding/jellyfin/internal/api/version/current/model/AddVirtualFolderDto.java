@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,14 +31,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AddVirtualFolderDto {
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
     @javax.annotation.Nullable
-    private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions> undefined();
+    private LibraryOptions libraryOptions;
 
     public AddVirtualFolderDto() {
     }
 
     public AddVirtualFolderDto libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
 
+        this.libraryOptions = libraryOptions;
         return this;
     }
 
@@ -52,26 +48,17 @@ public class AddVirtualFolderDto {
      * @return libraryOptions
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public LibraryOptions getLibraryOptions() {
-        return libraryOptions.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
+    public LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
     @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
-    public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
-        this.libraryOptions = libraryOptions;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-        this.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
+        this.libraryOptions = libraryOptions;
     }
 
     @Override
@@ -83,24 +70,12 @@ public class AddVirtualFolderDto {
             return false;
         }
         AddVirtualFolderDto addVirtualFolderDto = (AddVirtualFolderDto) o;
-        return equalsNullable(this.libraryOptions, addVirtualFolderDto.libraryOptions);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.libraryOptions, addVirtualFolderDto.libraryOptions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(libraryOptions));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(libraryOptions);
     }
 
     @Override
@@ -136,11 +111,6 @@ public class AddVirtualFolderDto {
         }
 
         public AddVirtualFolderDto.Builder libraryOptions(LibraryOptions libraryOptions) {
-            this.instance.libraryOptions = JsonNullable.<LibraryOptions> of(libraryOptions);
-            return this;
-        }
-
-        public AddVirtualFolderDto.Builder libraryOptions(JsonNullable<LibraryOptions> libraryOptions) {
             this.instance.libraryOptions = libraryOptions;
             return this;
         }

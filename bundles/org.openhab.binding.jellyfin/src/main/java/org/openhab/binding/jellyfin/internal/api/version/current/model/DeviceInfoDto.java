@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,39 +38,39 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
     @javax.annotation.Nullable
-    private JsonNullable<String> customName = JsonNullable.<String> undefined();
+    private String customName;
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
     @javax.annotation.Nullable
-    private JsonNullable<String> accessToken = JsonNullable.<String> undefined();
+    private String accessToken;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_LAST_USER_NAME = "LastUserName";
     @javax.annotation.Nullable
-    private JsonNullable<String> lastUserName = JsonNullable.<String> undefined();
+    private String lastUserName;
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
     @javax.annotation.Nullable
-    private JsonNullable<String> appName = JsonNullable.<String> undefined();
+    private String appName;
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
     @javax.annotation.Nullable
-    private JsonNullable<String> appVersion = JsonNullable.<String> undefined();
+    private String appVersion;
 
     public static final String JSON_PROPERTY_LAST_USER_ID = "LastUserId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> lastUserId = JsonNullable.<UUID> undefined();
+    private UUID lastUserId;
 
     public static final String JSON_PROPERTY_DATE_LAST_ACTIVITY = "DateLastActivity";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> dateLastActivity = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime dateLastActivity;
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
     @javax.annotation.Nullable
@@ -82,14 +78,14 @@ public class DeviceInfoDto {
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> iconUrl = JsonNullable.<String> undefined();
+    private String iconUrl;
 
     public DeviceInfoDto() {
     }
 
     public DeviceInfoDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -99,31 +95,22 @@ public class DeviceInfoDto {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public DeviceInfoDto customName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
 
+        this.customName = customName;
         return this;
     }
 
@@ -133,31 +120,22 @@ public class DeviceInfoDto {
      * @return customName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCustomName() {
-        return customName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCustomName_JsonNullable() {
+    public String getCustomName() {
         return customName;
     }
 
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
-    public void setCustomName_JsonNullable(JsonNullable<String> customName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCustomName(@javax.annotation.Nullable String customName) {
         this.customName = customName;
     }
 
-    public void setCustomName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
-    }
-
     public DeviceInfoDto accessToken(@javax.annotation.Nullable String accessToken) {
-        this.accessToken = JsonNullable.<String> of(accessToken);
 
+        this.accessToken = accessToken;
         return this;
     }
 
@@ -167,31 +145,22 @@ public class DeviceInfoDto {
      * @return accessToken
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAccessToken() {
-        return accessToken.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAccessToken_JsonNullable() {
+    public String getAccessToken() {
         return accessToken;
     }
 
     @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
-    public void setAccessToken_JsonNullable(JsonNullable<String> accessToken) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAccessToken(@javax.annotation.Nullable String accessToken) {
         this.accessToken = accessToken;
     }
 
-    public void setAccessToken(@javax.annotation.Nullable String accessToken) {
-        this.accessToken = JsonNullable.<String> of(accessToken);
-    }
-
     public DeviceInfoDto id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -201,31 +170,22 @@ public class DeviceInfoDto {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public DeviceInfoDto lastUserName(@javax.annotation.Nullable String lastUserName) {
-        this.lastUserName = JsonNullable.<String> of(lastUserName);
 
+        this.lastUserName = lastUserName;
         return this;
     }
 
@@ -235,31 +195,22 @@ public class DeviceInfoDto {
      * @return lastUserName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLastUserName() {
-        return lastUserName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLastUserName_JsonNullable() {
+    public String getLastUserName() {
         return lastUserName;
     }
 
     @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
-    public void setLastUserName_JsonNullable(JsonNullable<String> lastUserName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLastUserName(@javax.annotation.Nullable String lastUserName) {
         this.lastUserName = lastUserName;
     }
 
-    public void setLastUserName(@javax.annotation.Nullable String lastUserName) {
-        this.lastUserName = JsonNullable.<String> of(lastUserName);
-    }
-
     public DeviceInfoDto appName(@javax.annotation.Nullable String appName) {
-        this.appName = JsonNullable.<String> of(appName);
 
+        this.appName = appName;
         return this;
     }
 
@@ -269,31 +220,22 @@ public class DeviceInfoDto {
      * @return appName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppName() {
-        return appName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APP_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAppName_JsonNullable() {
+    public String getAppName() {
         return appName;
     }
 
     @JsonProperty(JSON_PROPERTY_APP_NAME)
-    public void setAppName_JsonNullable(JsonNullable<String> appName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAppName(@javax.annotation.Nullable String appName) {
         this.appName = appName;
     }
 
-    public void setAppName(@javax.annotation.Nullable String appName) {
-        this.appName = JsonNullable.<String> of(appName);
-    }
-
     public DeviceInfoDto appVersion(@javax.annotation.Nullable String appVersion) {
-        this.appVersion = JsonNullable.<String> of(appVersion);
 
+        this.appVersion = appVersion;
         return this;
     }
 
@@ -303,31 +245,22 @@ public class DeviceInfoDto {
      * @return appVersion
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppVersion() {
-        return appVersion.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAppVersion_JsonNullable() {
+    public String getAppVersion() {
         return appVersion;
     }
 
     @JsonProperty(JSON_PROPERTY_APP_VERSION)
-    public void setAppVersion_JsonNullable(JsonNullable<String> appVersion) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAppVersion(@javax.annotation.Nullable String appVersion) {
         this.appVersion = appVersion;
     }
 
-    public void setAppVersion(@javax.annotation.Nullable String appVersion) {
-        this.appVersion = JsonNullable.<String> of(appVersion);
-    }
-
     public DeviceInfoDto lastUserId(@javax.annotation.Nullable UUID lastUserId) {
-        this.lastUserId = JsonNullable.<UUID> of(lastUserId);
 
+        this.lastUserId = lastUserId;
         return this;
     }
 
@@ -337,31 +270,22 @@ public class DeviceInfoDto {
      * @return lastUserId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getLastUserId() {
-        return lastUserId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getLastUserId_JsonNullable() {
+    public UUID getLastUserId() {
         return lastUserId;
     }
 
     @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
-    public void setLastUserId_JsonNullable(JsonNullable<UUID> lastUserId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLastUserId(@javax.annotation.Nullable UUID lastUserId) {
         this.lastUserId = lastUserId;
     }
 
-    public void setLastUserId(@javax.annotation.Nullable UUID lastUserId) {
-        this.lastUserId = JsonNullable.<UUID> of(lastUserId);
-    }
-
     public DeviceInfoDto dateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
-        this.dateLastActivity = JsonNullable.<OffsetDateTime> of(dateLastActivity);
 
+        this.dateLastActivity = dateLastActivity;
         return this;
     }
 
@@ -371,26 +295,17 @@ public class DeviceInfoDto {
      * @return dateLastActivity
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getDateLastActivity() {
-        return dateLastActivity.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getDateLastActivity_JsonNullable() {
+    public OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
 
     @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
-    public void setDateLastActivity_JsonNullable(JsonNullable<OffsetDateTime> dateLastActivity) {
-        this.dateLastActivity = dateLastActivity;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
-        this.dateLastActivity = JsonNullable.<OffsetDateTime> of(dateLastActivity);
+        this.dateLastActivity = dateLastActivity;
     }
 
     public DeviceInfoDto capabilities(@javax.annotation.Nullable ClientCapabilitiesDto capabilities) {
@@ -419,8 +334,8 @@ public class DeviceInfoDto {
     }
 
     public DeviceInfoDto iconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
 
+        this.iconUrl = iconUrl;
         return this;
     }
 
@@ -430,26 +345,17 @@ public class DeviceInfoDto {
      * @return iconUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getIconUrl() {
-        return iconUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ICON_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getIconUrl_JsonNullable() {
+    public String getIconUrl() {
         return iconUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_ICON_URL)
-    public void setIconUrl_JsonNullable(JsonNullable<String> iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
+        this.iconUrl = iconUrl;
     }
 
     @Override
@@ -461,37 +367,23 @@ public class DeviceInfoDto {
             return false;
         }
         DeviceInfoDto deviceInfoDto = (DeviceInfoDto) o;
-        return equalsNullable(this.name, deviceInfoDto.name)
-                && equalsNullable(this.customName, deviceInfoDto.customName)
-                && equalsNullable(this.accessToken, deviceInfoDto.accessToken)
-                && equalsNullable(this.id, deviceInfoDto.id)
-                && equalsNullable(this.lastUserName, deviceInfoDto.lastUserName)
-                && equalsNullable(this.appName, deviceInfoDto.appName)
-                && equalsNullable(this.appVersion, deviceInfoDto.appVersion)
-                && equalsNullable(this.lastUserId, deviceInfoDto.lastUserId)
-                && equalsNullable(this.dateLastActivity, deviceInfoDto.dateLastActivity)
+        return Objects.equals(this.name, deviceInfoDto.name)
+                && Objects.equals(this.customName, deviceInfoDto.customName)
+                && Objects.equals(this.accessToken, deviceInfoDto.accessToken)
+                && Objects.equals(this.id, deviceInfoDto.id)
+                && Objects.equals(this.lastUserName, deviceInfoDto.lastUserName)
+                && Objects.equals(this.appName, deviceInfoDto.appName)
+                && Objects.equals(this.appVersion, deviceInfoDto.appVersion)
+                && Objects.equals(this.lastUserId, deviceInfoDto.lastUserId)
+                && Objects.equals(this.dateLastActivity, deviceInfoDto.dateLastActivity)
                 && Objects.equals(this.capabilities, deviceInfoDto.capabilities)
-                && equalsNullable(this.iconUrl, deviceInfoDto.iconUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.iconUrl, deviceInfoDto.iconUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(customName), hashCodeNullable(accessToken),
-                hashCodeNullable(id), hashCodeNullable(lastUserName), hashCodeNullable(appName),
-                hashCodeNullable(appVersion), hashCodeNullable(lastUserId), hashCodeNullable(dateLastActivity),
-                capabilities, hashCodeNullable(iconUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, customName, accessToken, id, lastUserName, appName, appVersion, lastUserId,
+                dateLastActivity, capabilities, iconUrl);
     }
 
     @Override
@@ -537,91 +429,46 @@ public class DeviceInfoDto {
         }
 
         public DeviceInfoDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public DeviceInfoDto.Builder customName(String customName) {
-            this.instance.customName = JsonNullable.<String> of(customName);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder customName(JsonNullable<String> customName) {
             this.instance.customName = customName;
             return this;
         }
 
         public DeviceInfoDto.Builder accessToken(String accessToken) {
-            this.instance.accessToken = JsonNullable.<String> of(accessToken);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder accessToken(JsonNullable<String> accessToken) {
             this.instance.accessToken = accessToken;
             return this;
         }
 
         public DeviceInfoDto.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public DeviceInfoDto.Builder lastUserName(String lastUserName) {
-            this.instance.lastUserName = JsonNullable.<String> of(lastUserName);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder lastUserName(JsonNullable<String> lastUserName) {
             this.instance.lastUserName = lastUserName;
             return this;
         }
 
         public DeviceInfoDto.Builder appName(String appName) {
-            this.instance.appName = JsonNullable.<String> of(appName);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder appName(JsonNullable<String> appName) {
             this.instance.appName = appName;
             return this;
         }
 
         public DeviceInfoDto.Builder appVersion(String appVersion) {
-            this.instance.appVersion = JsonNullable.<String> of(appVersion);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder appVersion(JsonNullable<String> appVersion) {
             this.instance.appVersion = appVersion;
             return this;
         }
 
         public DeviceInfoDto.Builder lastUserId(UUID lastUserId) {
-            this.instance.lastUserId = JsonNullable.<UUID> of(lastUserId);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder lastUserId(JsonNullable<UUID> lastUserId) {
             this.instance.lastUserId = lastUserId;
             return this;
         }
 
         public DeviceInfoDto.Builder dateLastActivity(OffsetDateTime dateLastActivity) {
-            this.instance.dateLastActivity = JsonNullable.<OffsetDateTime> of(dateLastActivity);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder dateLastActivity(JsonNullable<OffsetDateTime> dateLastActivity) {
             this.instance.dateLastActivity = dateLastActivity;
             return this;
         }
@@ -632,11 +479,6 @@ public class DeviceInfoDto {
         }
 
         public DeviceInfoDto.Builder iconUrl(String iconUrl) {
-            this.instance.iconUrl = JsonNullable.<String> of(iconUrl);
-            return this;
-        }
-
-        public DeviceInfoDto.Builder iconUrl(JsonNullable<String> iconUrl) {
             this.instance.iconUrl = iconUrl;
             return this;
         }

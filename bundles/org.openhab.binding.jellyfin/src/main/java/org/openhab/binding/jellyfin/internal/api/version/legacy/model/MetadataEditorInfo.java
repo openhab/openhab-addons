@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -56,7 +52,7 @@ public class MetadataEditorInfo {
 
     public static final String JSON_PROPERTY_CONTENT_TYPE = "ContentType";
     @javax.annotation.Nullable
-    private JsonNullable<String> contentType = JsonNullable.<String> undefined();
+    private String contentType;
 
     public static final String JSON_PROPERTY_CONTENT_TYPE_OPTIONS = "ContentTypeOptions";
     @javax.annotation.Nullable
@@ -199,8 +195,8 @@ public class MetadataEditorInfo {
     }
 
     public MetadataEditorInfo contentType(@javax.annotation.Nullable String contentType) {
-        this.contentType = JsonNullable.<String> of(contentType);
 
+        this.contentType = contentType;
         return this;
     }
 
@@ -210,26 +206,17 @@ public class MetadataEditorInfo {
      * @return contentType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContentType() {
-        return contentType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContentType_JsonNullable() {
+    public String getContentType() {
         return contentType;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
-    public void setContentType_JsonNullable(JsonNullable<String> contentType) {
-        this.contentType = contentType;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContentType(@javax.annotation.Nullable String contentType) {
-        this.contentType = JsonNullable.<String> of(contentType);
+        this.contentType = contentType;
     }
 
     public MetadataEditorInfo contentTypeOptions(@javax.annotation.Nullable List<NameValuePair> contentTypeOptions) {
@@ -278,26 +265,14 @@ public class MetadataEditorInfo {
                 && Objects.equals(this.countries, metadataEditorInfo.countries)
                 && Objects.equals(this.cultures, metadataEditorInfo.cultures)
                 && Objects.equals(this.externalIdInfos, metadataEditorInfo.externalIdInfos)
-                && equalsNullable(this.contentType, metadataEditorInfo.contentType)
+                && Objects.equals(this.contentType, metadataEditorInfo.contentType)
                 && Objects.equals(this.contentTypeOptions, metadataEditorInfo.contentTypeOptions);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parentalRatingOptions, countries, cultures, externalIdInfos, hashCodeNullable(contentType),
+        return Objects.hash(parentalRatingOptions, countries, cultures, externalIdInfos, contentType,
                 contentTypeOptions);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
@@ -358,11 +333,6 @@ public class MetadataEditorInfo {
         }
 
         public MetadataEditorInfo.Builder contentType(String contentType) {
-            this.instance.contentType = JsonNullable.<String> of(contentType);
-            return this;
-        }
-
-        public MetadataEditorInfo.Builder contentType(JsonNullable<String> contentType) {
             this.instance.contentType = contentType;
             return this;
         }

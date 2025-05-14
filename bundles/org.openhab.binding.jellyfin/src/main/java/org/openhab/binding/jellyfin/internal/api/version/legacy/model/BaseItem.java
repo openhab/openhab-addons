@@ -19,15 +19,11 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -43,11 +39,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BaseItem {
     public static final String JSON_PROPERTY_SIZE = "Size";
     @javax.annotation.Nullable
-    private JsonNullable<Long> size = JsonNullable.<Long> undefined();
+    private Long size;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+    private String container;
 
     public static final String JSON_PROPERTY_IS_H_D = "IsHD";
     @javax.annotation.Nullable
@@ -59,7 +55,7 @@ public class BaseItem {
 
     public static final String JSON_PROPERTY_SHORTCUT_PATH = "ShortcutPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> shortcutPath = JsonNullable.<String> undefined();
+    private String shortcutPath;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
     @javax.annotation.Nullable
@@ -71,7 +67,7 @@ public class BaseItem {
 
     public static final String JSON_PROPERTY_EXTRA_IDS = "ExtraIds";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> extraIds = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> extraIds;
 
     public static final String JSON_PROPERTY_DATE_LAST_SAVED = "DateLastSaved";
     @javax.annotation.Nullable
@@ -79,7 +75,7 @@ public class BaseItem {
 
     public static final String JSON_PROPERTY_REMOTE_TRAILERS = "RemoteTrailers";
     @javax.annotation.Nullable
-    private JsonNullable<List<MediaUrl>> remoteTrailers = JsonNullable.<List<MediaUrl>> undefined();
+    private List<MediaUrl> remoteTrailers;
 
     public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER = "SupportsExternalTransfer";
     @javax.annotation.Nullable
@@ -100,8 +96,8 @@ public class BaseItem {
     }
 
     public BaseItem size(@javax.annotation.Nullable Long size) {
-        this.size = JsonNullable.<Long> of(size);
 
+        this.size = size;
         return this;
     }
 
@@ -111,31 +107,22 @@ public class BaseItem {
      * @return size
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getSize() {
-        return size.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getSize_JsonNullable() {
+    public Long getSize() {
         return size;
     }
 
     @JsonProperty(JSON_PROPERTY_SIZE)
-    public void setSize_JsonNullable(JsonNullable<Long> size) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSize(@javax.annotation.Nullable Long size) {
         this.size = size;
     }
 
-    public void setSize(@javax.annotation.Nullable Long size) {
-        this.size = JsonNullable.<Long> of(size);
-    }
-
     public BaseItem container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
 
+        this.container = container;
         return this;
     }
 
@@ -145,26 +132,17 @@ public class BaseItem {
      * @return container
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
+    public String getContainer() {
         return container;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
-        this.container = container;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
+        this.container = container;
     }
 
     /**
@@ -206,8 +184,8 @@ public class BaseItem {
     }
 
     public BaseItem shortcutPath(@javax.annotation.Nullable String shortcutPath) {
-        this.shortcutPath = JsonNullable.<String> of(shortcutPath);
 
+        this.shortcutPath = shortcutPath;
         return this;
     }
 
@@ -217,26 +195,17 @@ public class BaseItem {
      * @return shortcutPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getShortcutPath() {
-        return shortcutPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SHORTCUT_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getShortcutPath_JsonNullable() {
+    public String getShortcutPath() {
         return shortcutPath;
     }
 
     @JsonProperty(JSON_PROPERTY_SHORTCUT_PATH)
-    public void setShortcutPath_JsonNullable(JsonNullable<String> shortcutPath) {
-        this.shortcutPath = shortcutPath;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShortcutPath(@javax.annotation.Nullable String shortcutPath) {
-        this.shortcutPath = JsonNullable.<String> of(shortcutPath);
+        this.shortcutPath = shortcutPath;
     }
 
     public BaseItem width(@javax.annotation.Nullable Integer width) {
@@ -290,20 +259,16 @@ public class BaseItem {
     }
 
     public BaseItem extraIds(@javax.annotation.Nullable List<UUID> extraIds) {
-        this.extraIds = JsonNullable.<List<UUID>> of(extraIds);
 
+        this.extraIds = extraIds;
         return this;
     }
 
     public BaseItem addExtraIdsItem(UUID extraIdsItem) {
-        if (this.extraIds == null || !this.extraIds.isPresent()) {
-            this.extraIds = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.extraIds == null) {
+            this.extraIds = new ArrayList<>();
         }
-        try {
-            this.extraIds.get().add(extraIdsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.extraIds.add(extraIdsItem);
         return this;
     }
 
@@ -313,26 +278,17 @@ public class BaseItem {
      * @return extraIds
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getExtraIds() {
-        return extraIds.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_EXTRA_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getExtraIds_JsonNullable() {
+    public List<UUID> getExtraIds() {
         return extraIds;
     }
 
     @JsonProperty(JSON_PROPERTY_EXTRA_IDS)
-    public void setExtraIds_JsonNullable(JsonNullable<List<UUID>> extraIds) {
-        this.extraIds = extraIds;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExtraIds(@javax.annotation.Nullable List<UUID> extraIds) {
-        this.extraIds = JsonNullable.<List<UUID>> of(extraIds);
+        this.extraIds = extraIds;
     }
 
     public BaseItem dateLastSaved(@javax.annotation.Nullable OffsetDateTime dateLastSaved) {
@@ -361,20 +317,16 @@ public class BaseItem {
     }
 
     public BaseItem remoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
-        this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
 
+        this.remoteTrailers = remoteTrailers;
         return this;
     }
 
     public BaseItem addRemoteTrailersItem(MediaUrl remoteTrailersItem) {
-        if (this.remoteTrailers == null || !this.remoteTrailers.isPresent()) {
-            this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(new ArrayList<>());
+        if (this.remoteTrailers == null) {
+            this.remoteTrailers = new ArrayList<>();
         }
-        try {
-            this.remoteTrailers.get().add(remoteTrailersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.remoteTrailers.add(remoteTrailersItem);
         return this;
     }
 
@@ -384,26 +336,17 @@ public class BaseItem {
      * @return remoteTrailers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MediaUrl> getRemoteTrailers() {
-        return remoteTrailers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<MediaUrl>> getRemoteTrailers_JsonNullable() {
+    public List<MediaUrl> getRemoteTrailers() {
         return remoteTrailers;
     }
 
     @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
-    public void setRemoteTrailers_JsonNullable(JsonNullable<List<MediaUrl>> remoteTrailers) {
-        this.remoteTrailers = remoteTrailers;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRemoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
-        this.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
+        this.remoteTrailers = remoteTrailers;
     }
 
     /**
@@ -428,33 +371,20 @@ public class BaseItem {
             return false;
         }
         BaseItem baseItem = (BaseItem) o;
-        return equalsNullable(this.size, baseItem.size) && equalsNullable(this.container, baseItem.container)
+        return Objects.equals(this.size, baseItem.size) && Objects.equals(this.container, baseItem.container)
                 && Objects.equals(this.isHD, baseItem.isHD) && Objects.equals(this.isShortcut, baseItem.isShortcut)
-                && equalsNullable(this.shortcutPath, baseItem.shortcutPath)
+                && Objects.equals(this.shortcutPath, baseItem.shortcutPath)
                 && Objects.equals(this.width, baseItem.width) && Objects.equals(this.height, baseItem.height)
-                && equalsNullable(this.extraIds, baseItem.extraIds)
+                && Objects.equals(this.extraIds, baseItem.extraIds)
                 && Objects.equals(this.dateLastSaved, baseItem.dateLastSaved)
-                && equalsNullable(this.remoteTrailers, baseItem.remoteTrailers)
+                && Objects.equals(this.remoteTrailers, baseItem.remoteTrailers)
                 && Objects.equals(this.supportsExternalTransfer, baseItem.supportsExternalTransfer);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(size), hashCodeNullable(container), isHD, isShortcut,
-                hashCodeNullable(shortcutPath), width, height, hashCodeNullable(extraIds), dateLastSaved,
-                hashCodeNullable(remoteTrailers), supportsExternalTransfer);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(size, container, isHD, isShortcut, shortcutPath, width, height, extraIds, dateLastSaved,
+                remoteTrailers, supportsExternalTransfer);
     }
 
     @Override
@@ -500,21 +430,11 @@ public class BaseItem {
         }
 
         public BaseItem.Builder size(Long size) {
-            this.instance.size = JsonNullable.<Long> of(size);
-            return this;
-        }
-
-        public BaseItem.Builder size(JsonNullable<Long> size) {
             this.instance.size = size;
             return this;
         }
 
         public BaseItem.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public BaseItem.Builder container(JsonNullable<String> container) {
             this.instance.container = container;
             return this;
         }
@@ -530,11 +450,6 @@ public class BaseItem {
         }
 
         public BaseItem.Builder shortcutPath(String shortcutPath) {
-            this.instance.shortcutPath = JsonNullable.<String> of(shortcutPath);
-            return this;
-        }
-
-        public BaseItem.Builder shortcutPath(JsonNullable<String> shortcutPath) {
             this.instance.shortcutPath = shortcutPath;
             return this;
         }
@@ -550,11 +465,6 @@ public class BaseItem {
         }
 
         public BaseItem.Builder extraIds(List<UUID> extraIds) {
-            this.instance.extraIds = JsonNullable.<List<UUID>> of(extraIds);
-            return this;
-        }
-
-        public BaseItem.Builder extraIds(JsonNullable<List<UUID>> extraIds) {
             this.instance.extraIds = extraIds;
             return this;
         }
@@ -565,11 +475,6 @@ public class BaseItem {
         }
 
         public BaseItem.Builder remoteTrailers(List<MediaUrl> remoteTrailers) {
-            this.instance.remoteTrailers = JsonNullable.<List<MediaUrl>> of(remoteTrailers);
-            return this;
-        }
-
-        public BaseItem.Builder remoteTrailers(JsonNullable<List<MediaUrl>> remoteTrailers) {
             this.instance.remoteTrailers = remoteTrailers;
             return this;
         }

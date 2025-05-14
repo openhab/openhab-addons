@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,11 +40,11 @@ public class ExternalIdInfo {
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
-    private JsonNullable<ExternalIdMediaType> type = JsonNullable.<ExternalIdMediaType> undefined();
+    private ExternalIdMediaType type;
 
     public static final String JSON_PROPERTY_URL_FORMAT_STRING = "UrlFormatString";
     @javax.annotation.Nullable
-    private JsonNullable<String> urlFormatString = JsonNullable.<String> undefined();
+    private String urlFormatString;
 
     public ExternalIdInfo() {
     }
@@ -104,8 +100,8 @@ public class ExternalIdInfo {
     }
 
     public ExternalIdInfo type(@javax.annotation.Nullable ExternalIdMediaType type) {
-        this.type = JsonNullable.<ExternalIdMediaType> of(type);
 
+        this.type = type;
         return this;
     }
 
@@ -117,31 +113,22 @@ public class ExternalIdInfo {
      * @return type
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ExternalIdMediaType getType() {
-        return type.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ExternalIdMediaType> getType_JsonNullable() {
+    public ExternalIdMediaType getType() {
         return type;
     }
 
     @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<ExternalIdMediaType> type) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable ExternalIdMediaType type) {
         this.type = type;
     }
 
-    public void setType(@javax.annotation.Nullable ExternalIdMediaType type) {
-        this.type = JsonNullable.<ExternalIdMediaType> of(type);
-    }
-
     public ExternalIdInfo urlFormatString(@javax.annotation.Nullable String urlFormatString) {
-        this.urlFormatString = JsonNullable.<String> of(urlFormatString);
 
+        this.urlFormatString = urlFormatString;
         return this;
     }
 
@@ -151,26 +138,17 @@ public class ExternalIdInfo {
      * @return urlFormatString
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrlFormatString() {
-        return urlFormatString.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUrlFormatString_JsonNullable() {
+    public String getUrlFormatString() {
         return urlFormatString;
     }
 
     @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
-    public void setUrlFormatString_JsonNullable(JsonNullable<String> urlFormatString) {
-        this.urlFormatString = urlFormatString;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrlFormatString(@javax.annotation.Nullable String urlFormatString) {
-        this.urlFormatString = JsonNullable.<String> of(urlFormatString);
+        this.urlFormatString = urlFormatString;
     }
 
     @Override
@@ -183,25 +161,13 @@ public class ExternalIdInfo {
         }
         ExternalIdInfo externalIdInfo = (ExternalIdInfo) o;
         return Objects.equals(this.name, externalIdInfo.name) && Objects.equals(this.key, externalIdInfo.key)
-                && equalsNullable(this.type, externalIdInfo.type)
-                && equalsNullable(this.urlFormatString, externalIdInfo.urlFormatString);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.type, externalIdInfo.type)
+                && Objects.equals(this.urlFormatString, externalIdInfo.urlFormatString);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, key, hashCodeNullable(type), hashCodeNullable(urlFormatString));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, key, type, urlFormatString);
     }
 
     @Override
@@ -250,21 +216,11 @@ public class ExternalIdInfo {
         }
 
         public ExternalIdInfo.Builder type(ExternalIdMediaType type) {
-            this.instance.type = JsonNullable.<ExternalIdMediaType> of(type);
-            return this;
-        }
-
-        public ExternalIdInfo.Builder type(JsonNullable<ExternalIdMediaType> type) {
             this.instance.type = type;
             return this;
         }
 
         public ExternalIdInfo.Builder urlFormatString(String urlFormatString) {
-            this.instance.urlFormatString = JsonNullable.<String> of(urlFormatString);
-            return this;
-        }
-
-        public ExternalIdInfo.Builder urlFormatString(JsonNullable<String> urlFormatString) {
             this.instance.urlFormatString = urlFormatString;
             return this;
         }

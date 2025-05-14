@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,7 +38,7 @@ public class ContainerProfile {
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
     @javax.annotation.Nullable
-    private JsonNullable<List<ProfileCondition>> conditions = JsonNullable.<List<ProfileCondition>> undefined();
+    private List<ProfileCondition> conditions;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
@@ -77,20 +73,16 @@ public class ContainerProfile {
     }
 
     public ContainerProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
 
+        this.conditions = conditions;
         return this;
     }
 
     public ContainerProfile addConditionsItem(ProfileCondition conditionsItem) {
-        if (this.conditions == null || !this.conditions.isPresent()) {
-            this.conditions = JsonNullable.<List<ProfileCondition>> of(new ArrayList<>());
+        if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
         }
-        try {
-            this.conditions.get().add(conditionsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.conditions.add(conditionsItem);
         return this;
     }
 
@@ -100,26 +92,17 @@ public class ContainerProfile {
      * @return conditions
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ProfileCondition> getConditions() {
-        return conditions.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<ProfileCondition>> getConditions_JsonNullable() {
+    public List<ProfileCondition> getConditions() {
         return conditions;
     }
 
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
-    public void setConditions_JsonNullable(JsonNullable<List<ProfileCondition>> conditions) {
-        this.conditions = conditions;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
+        this.conditions = conditions;
     }
 
     public ContainerProfile container(@javax.annotation.Nullable String container) {
@@ -157,25 +140,13 @@ public class ContainerProfile {
         }
         ContainerProfile containerProfile = (ContainerProfile) o;
         return Objects.equals(this.type, containerProfile.type)
-                && equalsNullable(this.conditions, containerProfile.conditions)
+                && Objects.equals(this.conditions, containerProfile.conditions)
                 && Objects.equals(this.container, containerProfile.container);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, hashCodeNullable(conditions), container);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, conditions, container);
     }
 
     @Override
@@ -218,11 +189,6 @@ public class ContainerProfile {
         }
 
         public ContainerProfile.Builder conditions(List<ProfileCondition> conditions) {
-            this.instance.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
-            return this;
-        }
-
-        public ContainerProfile.Builder conditions(JsonNullable<List<ProfileCondition>> conditions) {
             this.instance.conditions = conditions;
             return this;
         }

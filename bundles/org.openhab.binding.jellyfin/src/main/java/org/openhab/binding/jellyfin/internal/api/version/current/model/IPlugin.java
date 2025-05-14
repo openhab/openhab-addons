@@ -17,14 +17,10 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,11 +35,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class IPlugin {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
     @javax.annotation.Nullable
-    private JsonNullable<String> description = JsonNullable.<String> undefined();
+    private String description;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
@@ -51,11 +47,11 @@ public class IPlugin {
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @javax.annotation.Nullable
-    private JsonNullable<String> version = JsonNullable.<String> undefined();
+    private String version;
 
     public static final String JSON_PROPERTY_ASSEMBLY_FILE_PATH = "AssemblyFilePath";
     @javax.annotation.Nullable
-    private JsonNullable<String> assemblyFilePath = JsonNullable.<String> undefined();
+    private String assemblyFilePath;
 
     public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
     @javax.annotation.Nullable
@@ -63,7 +59,7 @@ public class IPlugin {
 
     public static final String JSON_PROPERTY_DATA_FOLDER_PATH = "DataFolderPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> dataFolderPath = JsonNullable.<String> undefined();
+    private String dataFolderPath;
 
     public IPlugin() {
     }
@@ -79,15 +75,13 @@ public class IPlugin {
             @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL) Boolean canUninstall,
             @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH) String dataFolderPath) {
         this();
-        this.name = name == null ? JsonNullable.<String> undefined() : JsonNullable.of(name);
-        this.description = description == null ? JsonNullable.<String> undefined() : JsonNullable.of(description);
+        this.name = name;
+        this.description = description;
         this.id = id;
-        this.version = version == null ? JsonNullable.<String> undefined() : JsonNullable.of(version);
-        this.assemblyFilePath = assemblyFilePath == null ? JsonNullable.<String> undefined()
-                : JsonNullable.of(assemblyFilePath);
+        this.version = version;
+        this.assemblyFilePath = assemblyFilePath;
         this.canUninstall = canUninstall;
-        this.dataFolderPath = dataFolderPath == null ? JsonNullable.<String> undefined()
-                : JsonNullable.of(dataFolderPath);
+        this.dataFolderPath = dataFolderPath;
     }
 
     /**
@@ -96,26 +90,11 @@ public class IPlugin {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-
-        if (name == null) {
-            name = JsonNullable.<String> undefined();
-        }
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
-    }
-
-    @JsonProperty(JSON_PROPERTY_NAME)
-    private void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
     }
 
     /**
@@ -124,26 +103,11 @@ public class IPlugin {
      * @return description
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDescription() {
-
-        if (description == null) {
-            description = JsonNullable.<String> undefined();
-        }
-        return description.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDescription_JsonNullable() {
+    public String getDescription() {
         return description;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    private void setDescription_JsonNullable(JsonNullable<String> description) {
-        this.description = description;
     }
 
     /**
@@ -165,26 +129,11 @@ public class IPlugin {
      * @return version
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVersion() {
-
-        if (version == null) {
-            version = JsonNullable.<String> undefined();
-        }
-        return version.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVersion_JsonNullable() {
+    public String getVersion() {
         return version;
-    }
-
-    @JsonProperty(JSON_PROPERTY_VERSION)
-    private void setVersion_JsonNullable(JsonNullable<String> version) {
-        this.version = version;
     }
 
     /**
@@ -193,26 +142,11 @@ public class IPlugin {
      * @return assemblyFilePath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAssemblyFilePath() {
-
-        if (assemblyFilePath == null) {
-            assemblyFilePath = JsonNullable.<String> undefined();
-        }
-        return assemblyFilePath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAssemblyFilePath_JsonNullable() {
+    public String getAssemblyFilePath() {
         return assemblyFilePath;
-    }
-
-    @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH)
-    private void setAssemblyFilePath_JsonNullable(JsonNullable<String> assemblyFilePath) {
-        this.assemblyFilePath = assemblyFilePath;
     }
 
     /**
@@ -234,26 +168,11 @@ public class IPlugin {
      * @return dataFolderPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDataFolderPath() {
-
-        if (dataFolderPath == null) {
-            dataFolderPath = JsonNullable.<String> undefined();
-        }
-        return dataFolderPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDataFolderPath_JsonNullable() {
+    public String getDataFolderPath() {
         return dataFolderPath;
-    }
-
-    @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH)
-    private void setDataFolderPath_JsonNullable(JsonNullable<String> dataFolderPath) {
-        this.dataFolderPath = dataFolderPath;
     }
 
     @Override
@@ -265,29 +184,16 @@ public class IPlugin {
             return false;
         }
         IPlugin iplugin = (IPlugin) o;
-        return equalsNullable(this.name, iplugin.name) && equalsNullable(this.description, iplugin.description)
-                && Objects.equals(this.id, iplugin.id) && equalsNullable(this.version, iplugin.version)
-                && equalsNullable(this.assemblyFilePath, iplugin.assemblyFilePath)
+        return Objects.equals(this.name, iplugin.name) && Objects.equals(this.description, iplugin.description)
+                && Objects.equals(this.id, iplugin.id) && Objects.equals(this.version, iplugin.version)
+                && Objects.equals(this.assemblyFilePath, iplugin.assemblyFilePath)
                 && Objects.equals(this.canUninstall, iplugin.canUninstall)
-                && equalsNullable(this.dataFolderPath, iplugin.dataFolderPath);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.dataFolderPath, iplugin.dataFolderPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(description), id, hashCodeNullable(version),
-                hashCodeNullable(assemblyFilePath), canUninstall, hashCodeNullable(dataFolderPath));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, description, id, version, assemblyFilePath, canUninstall, dataFolderPath);
     }
 
     @Override
@@ -329,21 +235,11 @@ public class IPlugin {
         }
 
         public IPlugin.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public IPlugin.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public IPlugin.Builder description(String description) {
-            this.instance.description = JsonNullable.<String> of(description);
-            return this;
-        }
-
-        public IPlugin.Builder description(JsonNullable<String> description) {
             this.instance.description = description;
             return this;
         }
@@ -354,21 +250,11 @@ public class IPlugin {
         }
 
         public IPlugin.Builder version(String version) {
-            this.instance.version = JsonNullable.<String> of(version);
-            return this;
-        }
-
-        public IPlugin.Builder version(JsonNullable<String> version) {
             this.instance.version = version;
             return this;
         }
 
         public IPlugin.Builder assemblyFilePath(String assemblyFilePath) {
-            this.instance.assemblyFilePath = JsonNullable.<String> of(assemblyFilePath);
-            return this;
-        }
-
-        public IPlugin.Builder assemblyFilePath(JsonNullable<String> assemblyFilePath) {
             this.instance.assemblyFilePath = assemblyFilePath;
             return this;
         }
@@ -379,11 +265,6 @@ public class IPlugin {
         }
 
         public IPlugin.Builder dataFolderPath(String dataFolderPath) {
-            this.instance.dataFolderPath = JsonNullable.<String> of(dataFolderPath);
-            return this;
-        }
-
-        public IPlugin.Builder dataFolderPath(JsonNullable<String> dataFolderPath) {
             this.instance.dataFolderPath = dataFolderPath;
             return this;
         }

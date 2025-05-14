@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,11 +36,11 @@ public class DeviceOptionsDto {
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
+    private String deviceId;
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
     @javax.annotation.Nullable
-    private JsonNullable<String> customName = JsonNullable.<String> undefined();
+    private String customName;
 
     public DeviceOptionsDto() {
     }
@@ -75,8 +71,8 @@ public class DeviceOptionsDto {
     }
 
     public DeviceOptionsDto deviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
 
+        this.deviceId = deviceId;
         return this;
     }
 
@@ -86,31 +82,22 @@ public class DeviceOptionsDto {
      * @return deviceId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceId() {
-        return deviceId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceId_JsonNullable() {
+    public String getDeviceId() {
         return deviceId;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = deviceId;
     }
 
-    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
-    }
-
     public DeviceOptionsDto customName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
 
+        this.customName = customName;
         return this;
     }
 
@@ -120,26 +107,17 @@ public class DeviceOptionsDto {
      * @return customName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCustomName() {
-        return customName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCustomName_JsonNullable() {
+    public String getCustomName() {
         return customName;
     }
 
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
-    public void setCustomName_JsonNullable(JsonNullable<String> customName) {
-        this.customName = customName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
+        this.customName = customName;
     }
 
     @Override
@@ -151,25 +129,13 @@ public class DeviceOptionsDto {
             return false;
         }
         DeviceOptionsDto deviceOptionsDto = (DeviceOptionsDto) o;
-        return Objects.equals(this.id, deviceOptionsDto.id) && equalsNullable(this.deviceId, deviceOptionsDto.deviceId)
-                && equalsNullable(this.customName, deviceOptionsDto.customName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.id, deviceOptionsDto.id) && Objects.equals(this.deviceId, deviceOptionsDto.deviceId)
+                && Objects.equals(this.customName, deviceOptionsDto.customName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, hashCodeNullable(deviceId), hashCodeNullable(customName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, deviceId, customName);
     }
 
     @Override
@@ -212,21 +178,11 @@ public class DeviceOptionsDto {
         }
 
         public DeviceOptionsDto.Builder deviceId(String deviceId) {
-            this.instance.deviceId = JsonNullable.<String> of(deviceId);
-            return this;
-        }
-
-        public DeviceOptionsDto.Builder deviceId(JsonNullable<String> deviceId) {
             this.instance.deviceId = deviceId;
             return this;
         }
 
         public DeviceOptionsDto.Builder customName(String customName) {
-            this.instance.customName = JsonNullable.<String> of(customName);
-            return this;
-        }
-
-        public DeviceOptionsDto.Builder customName(JsonNullable<String> customName) {
             this.instance.customName = customName;
             return this;
         }

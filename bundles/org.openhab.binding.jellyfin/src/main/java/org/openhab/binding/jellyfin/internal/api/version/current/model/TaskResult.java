@@ -18,12 +18,8 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -51,23 +47,23 @@ public class TaskResult {
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_KEY = "Key";
     @javax.annotation.Nullable
-    private JsonNullable<String> key = JsonNullable.<String> undefined();
+    private String key;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_ERROR_MESSAGE = "ErrorMessage";
     @javax.annotation.Nullable
-    private JsonNullable<String> errorMessage = JsonNullable.<String> undefined();
+    private String errorMessage;
 
     public static final String JSON_PROPERTY_LONG_ERROR_MESSAGE = "LongErrorMessage";
     @javax.annotation.Nullable
-    private JsonNullable<String> longErrorMessage = JsonNullable.<String> undefined();
+    private String longErrorMessage;
 
     public TaskResult() {
     }
@@ -148,8 +144,8 @@ public class TaskResult {
     }
 
     public TaskResult name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -159,31 +155,22 @@ public class TaskResult {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public TaskResult key(@javax.annotation.Nullable String key) {
-        this.key = JsonNullable.<String> of(key);
 
+        this.key = key;
         return this;
     }
 
@@ -193,31 +180,22 @@ public class TaskResult {
      * @return key
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getKey() {
-        return key.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getKey_JsonNullable() {
+    public String getKey() {
         return key;
     }
 
     @JsonProperty(JSON_PROPERTY_KEY)
-    public void setKey_JsonNullable(JsonNullable<String> key) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setKey(@javax.annotation.Nullable String key) {
         this.key = key;
     }
 
-    public void setKey(@javax.annotation.Nullable String key) {
-        this.key = JsonNullable.<String> of(key);
-    }
-
     public TaskResult id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -227,31 +205,22 @@ public class TaskResult {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public TaskResult errorMessage(@javax.annotation.Nullable String errorMessage) {
-        this.errorMessage = JsonNullable.<String> of(errorMessage);
 
+        this.errorMessage = errorMessage;
         return this;
     }
 
@@ -261,31 +230,22 @@ public class TaskResult {
      * @return errorMessage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getErrorMessage() {
-        return errorMessage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getErrorMessage_JsonNullable() {
+    public String getErrorMessage() {
         return errorMessage;
     }
 
     @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
-    public void setErrorMessage_JsonNullable(JsonNullable<String> errorMessage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setErrorMessage(@javax.annotation.Nullable String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
-    public void setErrorMessage(@javax.annotation.Nullable String errorMessage) {
-        this.errorMessage = JsonNullable.<String> of(errorMessage);
-    }
-
     public TaskResult longErrorMessage(@javax.annotation.Nullable String longErrorMessage) {
-        this.longErrorMessage = JsonNullable.<String> of(longErrorMessage);
 
+        this.longErrorMessage = longErrorMessage;
         return this;
     }
 
@@ -295,26 +255,17 @@ public class TaskResult {
      * @return longErrorMessage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLongErrorMessage() {
-        return longErrorMessage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLongErrorMessage_JsonNullable() {
+    public String getLongErrorMessage() {
         return longErrorMessage;
     }
 
     @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
-    public void setLongErrorMessage_JsonNullable(JsonNullable<String> longErrorMessage) {
-        this.longErrorMessage = longErrorMessage;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLongErrorMessage(@javax.annotation.Nullable String longErrorMessage) {
-        this.longErrorMessage = JsonNullable.<String> of(longErrorMessage);
+        this.longErrorMessage = longErrorMessage;
     }
 
     @Override
@@ -328,28 +279,15 @@ public class TaskResult {
         TaskResult taskResult = (TaskResult) o;
         return Objects.equals(this.startTimeUtc, taskResult.startTimeUtc)
                 && Objects.equals(this.endTimeUtc, taskResult.endTimeUtc)
-                && Objects.equals(this.status, taskResult.status) && equalsNullable(this.name, taskResult.name)
-                && equalsNullable(this.key, taskResult.key) && equalsNullable(this.id, taskResult.id)
-                && equalsNullable(this.errorMessage, taskResult.errorMessage)
-                && equalsNullable(this.longErrorMessage, taskResult.longErrorMessage);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.status, taskResult.status) && Objects.equals(this.name, taskResult.name)
+                && Objects.equals(this.key, taskResult.key) && Objects.equals(this.id, taskResult.id)
+                && Objects.equals(this.errorMessage, taskResult.errorMessage)
+                && Objects.equals(this.longErrorMessage, taskResult.longErrorMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startTimeUtc, endTimeUtc, status, hashCodeNullable(name), hashCodeNullable(key),
-                hashCodeNullable(id), hashCodeNullable(errorMessage), hashCodeNullable(longErrorMessage));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(startTimeUtc, endTimeUtc, status, name, key, id, errorMessage, longErrorMessage);
     }
 
     @Override
@@ -407,51 +345,26 @@ public class TaskResult {
         }
 
         public TaskResult.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public TaskResult.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public TaskResult.Builder key(String key) {
-            this.instance.key = JsonNullable.<String> of(key);
-            return this;
-        }
-
-        public TaskResult.Builder key(JsonNullable<String> key) {
             this.instance.key = key;
             return this;
         }
 
         public TaskResult.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public TaskResult.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public TaskResult.Builder errorMessage(String errorMessage) {
-            this.instance.errorMessage = JsonNullable.<String> of(errorMessage);
-            return this;
-        }
-
-        public TaskResult.Builder errorMessage(JsonNullable<String> errorMessage) {
             this.instance.errorMessage = errorMessage;
             return this;
         }
 
         public TaskResult.Builder longErrorMessage(String longErrorMessage) {
-            this.instance.longErrorMessage = JsonNullable.<String> of(longErrorMessage);
-            return this;
-        }
-
-        public TaskResult.Builder longErrorMessage(JsonNullable<String> longErrorMessage) {
             this.instance.longErrorMessage = longErrorMessage;
             return this;
         }

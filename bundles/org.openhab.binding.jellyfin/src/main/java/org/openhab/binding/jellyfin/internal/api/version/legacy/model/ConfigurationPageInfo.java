@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -46,19 +42,19 @@ public class ConfigurationPageInfo {
 
     public static final String JSON_PROPERTY_MENU_SECTION = "MenuSection";
     @javax.annotation.Nullable
-    private JsonNullable<String> menuSection = JsonNullable.<String> undefined();
+    private String menuSection;
 
     public static final String JSON_PROPERTY_MENU_ICON = "MenuIcon";
     @javax.annotation.Nullable
-    private JsonNullable<String> menuIcon = JsonNullable.<String> undefined();
+    private String menuIcon;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
     @javax.annotation.Nullable
-    private JsonNullable<String> displayName = JsonNullable.<String> undefined();
+    private String displayName;
 
     public static final String JSON_PROPERTY_PLUGIN_ID = "PluginId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> pluginId = JsonNullable.<UUID> undefined();
+    private UUID pluginId;
 
     public ConfigurationPageInfo() {
     }
@@ -114,8 +110,8 @@ public class ConfigurationPageInfo {
     }
 
     public ConfigurationPageInfo menuSection(@javax.annotation.Nullable String menuSection) {
-        this.menuSection = JsonNullable.<String> of(menuSection);
 
+        this.menuSection = menuSection;
         return this;
     }
 
@@ -125,31 +121,22 @@ public class ConfigurationPageInfo {
      * @return menuSection
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMenuSection() {
-        return menuSection.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MENU_SECTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMenuSection_JsonNullable() {
+    public String getMenuSection() {
         return menuSection;
     }
 
     @JsonProperty(JSON_PROPERTY_MENU_SECTION)
-    public void setMenuSection_JsonNullable(JsonNullable<String> menuSection) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMenuSection(@javax.annotation.Nullable String menuSection) {
         this.menuSection = menuSection;
     }
 
-    public void setMenuSection(@javax.annotation.Nullable String menuSection) {
-        this.menuSection = JsonNullable.<String> of(menuSection);
-    }
-
     public ConfigurationPageInfo menuIcon(@javax.annotation.Nullable String menuIcon) {
-        this.menuIcon = JsonNullable.<String> of(menuIcon);
 
+        this.menuIcon = menuIcon;
         return this;
     }
 
@@ -159,31 +146,22 @@ public class ConfigurationPageInfo {
      * @return menuIcon
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMenuIcon() {
-        return menuIcon.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MENU_ICON)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMenuIcon_JsonNullable() {
+    public String getMenuIcon() {
         return menuIcon;
     }
 
     @JsonProperty(JSON_PROPERTY_MENU_ICON)
-    public void setMenuIcon_JsonNullable(JsonNullable<String> menuIcon) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMenuIcon(@javax.annotation.Nullable String menuIcon) {
         this.menuIcon = menuIcon;
     }
 
-    public void setMenuIcon(@javax.annotation.Nullable String menuIcon) {
-        this.menuIcon = JsonNullable.<String> of(menuIcon);
-    }
-
     public ConfigurationPageInfo displayName(@javax.annotation.Nullable String displayName) {
-        this.displayName = JsonNullable.<String> of(displayName);
 
+        this.displayName = displayName;
         return this;
     }
 
@@ -193,31 +171,22 @@ public class ConfigurationPageInfo {
      * @return displayName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDisplayName() {
-        return displayName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDisplayName_JsonNullable() {
+    public String getDisplayName() {
         return displayName;
     }
 
     @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
-    public void setDisplayName_JsonNullable(JsonNullable<String> displayName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDisplayName(@javax.annotation.Nullable String displayName) {
         this.displayName = displayName;
     }
 
-    public void setDisplayName(@javax.annotation.Nullable String displayName) {
-        this.displayName = JsonNullable.<String> of(displayName);
-    }
-
     public ConfigurationPageInfo pluginId(@javax.annotation.Nullable UUID pluginId) {
-        this.pluginId = JsonNullable.<UUID> of(pluginId);
 
+        this.pluginId = pluginId;
         return this;
     }
 
@@ -227,26 +196,17 @@ public class ConfigurationPageInfo {
      * @return pluginId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getPluginId() {
-        return pluginId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getPluginId_JsonNullable() {
+    public UUID getPluginId() {
         return pluginId;
     }
 
     @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
-    public void setPluginId_JsonNullable(JsonNullable<UUID> pluginId) {
-        this.pluginId = pluginId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPluginId(@javax.annotation.Nullable UUID pluginId) {
-        this.pluginId = JsonNullable.<UUID> of(pluginId);
+        this.pluginId = pluginId;
     }
 
     @Override
@@ -260,28 +220,15 @@ public class ConfigurationPageInfo {
         ConfigurationPageInfo configurationPageInfo = (ConfigurationPageInfo) o;
         return Objects.equals(this.name, configurationPageInfo.name)
                 && Objects.equals(this.enableInMainMenu, configurationPageInfo.enableInMainMenu)
-                && equalsNullable(this.menuSection, configurationPageInfo.menuSection)
-                && equalsNullable(this.menuIcon, configurationPageInfo.menuIcon)
-                && equalsNullable(this.displayName, configurationPageInfo.displayName)
-                && equalsNullable(this.pluginId, configurationPageInfo.pluginId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.menuSection, configurationPageInfo.menuSection)
+                && Objects.equals(this.menuIcon, configurationPageInfo.menuIcon)
+                && Objects.equals(this.displayName, configurationPageInfo.displayName)
+                && Objects.equals(this.pluginId, configurationPageInfo.pluginId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, enableInMainMenu, hashCodeNullable(menuSection), hashCodeNullable(menuIcon),
-                hashCodeNullable(displayName), hashCodeNullable(pluginId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, enableInMainMenu, menuSection, menuIcon, displayName, pluginId);
     }
 
     @Override
@@ -332,41 +279,21 @@ public class ConfigurationPageInfo {
         }
 
         public ConfigurationPageInfo.Builder menuSection(String menuSection) {
-            this.instance.menuSection = JsonNullable.<String> of(menuSection);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuSection(JsonNullable<String> menuSection) {
             this.instance.menuSection = menuSection;
             return this;
         }
 
         public ConfigurationPageInfo.Builder menuIcon(String menuIcon) {
-            this.instance.menuIcon = JsonNullable.<String> of(menuIcon);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder menuIcon(JsonNullable<String> menuIcon) {
             this.instance.menuIcon = menuIcon;
             return this;
         }
 
         public ConfigurationPageInfo.Builder displayName(String displayName) {
-            this.instance.displayName = JsonNullable.<String> of(displayName);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder displayName(JsonNullable<String> displayName) {
             this.instance.displayName = displayName;
             return this;
         }
 
         public ConfigurationPageInfo.Builder pluginId(UUID pluginId) {
-            this.instance.pluginId = JsonNullable.<UUID> of(pluginId);
-            return this;
-        }
-
-        public ConfigurationPageInfo.Builder pluginId(JsonNullable<UUID> pluginId) {
             this.instance.pluginId = pluginId;
             return this;
         }

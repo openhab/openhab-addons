@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,74 +40,74 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaybackInfoDto {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> userId = JsonNullable.<UUID> undefined();
+    private UUID userId;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_START_TIME_TICKS = "StartTimeTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> startTimeTicks = JsonNullable.<Long> undefined();
+    private Long startTimeTicks;
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer> undefined();
+    private Integer audioStreamIndex;
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer> undefined();
+    private Integer subtitleStreamIndex;
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxAudioChannels = JsonNullable.<Integer> undefined();
+    private Integer maxAudioChannels;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
     @javax.annotation.Nullable
-    private JsonNullable<String> mediaSourceId = JsonNullable.<String> undefined();
+    private String mediaSourceId;
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
     @javax.annotation.Nullable
-    private JsonNullable<String> liveStreamId = JsonNullable.<String> undefined();
+    private String liveStreamId;
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
     @javax.annotation.Nullable
-    private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile> undefined();
+    private DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_PLAY = "EnableDirectPlay";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableDirectPlay = JsonNullable.<Boolean> undefined();
+    private Boolean enableDirectPlay;
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_STREAM = "EnableDirectStream";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableDirectStream = JsonNullable.<Boolean> undefined();
+    private Boolean enableDirectStream;
 
     public static final String JSON_PROPERTY_ENABLE_TRANSCODING = "EnableTranscoding";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> enableTranscoding = JsonNullable.<Boolean> undefined();
+    private Boolean enableTranscoding;
 
     public static final String JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY = "AllowVideoStreamCopy";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> allowVideoStreamCopy = JsonNullable.<Boolean> undefined();
+    private Boolean allowVideoStreamCopy;
 
     public static final String JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY = "AllowAudioStreamCopy";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> allowAudioStreamCopy = JsonNullable.<Boolean> undefined();
+    private Boolean allowAudioStreamCopy;
 
     public static final String JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM = "AutoOpenLiveStream";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> autoOpenLiveStream = JsonNullable.<Boolean> undefined();
+    private Boolean autoOpenLiveStream;
 
     public static final String JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING = "AlwaysBurnInSubtitleWhenTranscoding";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> alwaysBurnInSubtitleWhenTranscoding = JsonNullable.<Boolean> undefined();
+    private Boolean alwaysBurnInSubtitleWhenTranscoding;
 
     public PlaybackInfoDto() {
     }
 
     public PlaybackInfoDto userId(@javax.annotation.Nullable UUID userId) {
-        this.userId = JsonNullable.<UUID> of(userId);
 
+        this.userId = userId;
         return this;
     }
 
@@ -121,31 +117,22 @@ public class PlaybackInfoDto {
      * @return userId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getUserId() {
-        return userId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getUserId_JsonNullable() {
+    public UUID getUserId() {
         return userId;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_ID)
-    public void setUserId_JsonNullable(JsonNullable<UUID> userId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserId(@javax.annotation.Nullable UUID userId) {
         this.userId = userId;
     }
 
-    public void setUserId(@javax.annotation.Nullable UUID userId) {
-        this.userId = JsonNullable.<UUID> of(userId);
-    }
-
     public PlaybackInfoDto maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
 
+        this.maxStreamingBitrate = maxStreamingBitrate;
         return this;
     }
 
@@ -155,31 +142,22 @@ public class PlaybackInfoDto {
      * @return maxStreamingBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStreamingBitrate() {
-        return maxStreamingBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
+    public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = maxStreamingBitrate;
     }
 
-    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-    }
-
     public PlaybackInfoDto startTimeTicks(@javax.annotation.Nullable Long startTimeTicks) {
-        this.startTimeTicks = JsonNullable.<Long> of(startTimeTicks);
 
+        this.startTimeTicks = startTimeTicks;
         return this;
     }
 
@@ -189,31 +167,22 @@ public class PlaybackInfoDto {
      * @return startTimeTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getStartTimeTicks() {
-        return startTimeTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_START_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getStartTimeTicks_JsonNullable() {
+    public Long getStartTimeTicks() {
         return startTimeTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_START_TIME_TICKS)
-    public void setStartTimeTicks_JsonNullable(JsonNullable<Long> startTimeTicks) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartTimeTicks(@javax.annotation.Nullable Long startTimeTicks) {
         this.startTimeTicks = startTimeTicks;
     }
 
-    public void setStartTimeTicks(@javax.annotation.Nullable Long startTimeTicks) {
-        this.startTimeTicks = JsonNullable.<Long> of(startTimeTicks);
-    }
-
     public PlaybackInfoDto audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-        this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
 
+        this.audioStreamIndex = audioStreamIndex;
         return this;
     }
 
@@ -223,31 +192,22 @@ public class PlaybackInfoDto {
      * @return audioStreamIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAudioStreamIndex() {
-        return audioStreamIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
+    public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
-    public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
         this.audioStreamIndex = audioStreamIndex;
     }
 
-    public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-        this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
-    }
-
     public PlaybackInfoDto subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-        this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
 
+        this.subtitleStreamIndex = subtitleStreamIndex;
         return this;
     }
 
@@ -257,31 +217,22 @@ public class PlaybackInfoDto {
      * @return subtitleStreamIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSubtitleStreamIndex() {
-        return subtitleStreamIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
+    public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
-    public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
         this.subtitleStreamIndex = subtitleStreamIndex;
     }
 
-    public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-        this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
-    }
-
     public PlaybackInfoDto maxAudioChannels(@javax.annotation.Nullable Integer maxAudioChannels) {
-        this.maxAudioChannels = JsonNullable.<Integer> of(maxAudioChannels);
 
+        this.maxAudioChannels = maxAudioChannels;
         return this;
     }
 
@@ -291,31 +242,22 @@ public class PlaybackInfoDto {
      * @return maxAudioChannels
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxAudioChannels() {
-        return maxAudioChannels.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxAudioChannels_JsonNullable() {
+    public Integer getMaxAudioChannels() {
         return maxAudioChannels;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
-    public void setMaxAudioChannels_JsonNullable(JsonNullable<Integer> maxAudioChannels) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxAudioChannels(@javax.annotation.Nullable Integer maxAudioChannels) {
         this.maxAudioChannels = maxAudioChannels;
     }
 
-    public void setMaxAudioChannels(@javax.annotation.Nullable Integer maxAudioChannels) {
-        this.maxAudioChannels = JsonNullable.<Integer> of(maxAudioChannels);
-    }
-
     public PlaybackInfoDto mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-        this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
 
+        this.mediaSourceId = mediaSourceId;
         return this;
     }
 
@@ -325,31 +267,22 @@ public class PlaybackInfoDto {
      * @return mediaSourceId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMediaSourceId() {
-        return mediaSourceId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMediaSourceId_JsonNullable() {
+    public String getMediaSourceId() {
         return mediaSourceId;
     }
 
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
-    public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
         this.mediaSourceId = mediaSourceId;
     }
 
-    public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-        this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
-    }
-
     public PlaybackInfoDto liveStreamId(@javax.annotation.Nullable String liveStreamId) {
-        this.liveStreamId = JsonNullable.<String> of(liveStreamId);
 
+        this.liveStreamId = liveStreamId;
         return this;
     }
 
@@ -359,31 +292,22 @@ public class PlaybackInfoDto {
      * @return liveStreamId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLiveStreamId() {
-        return liveStreamId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLiveStreamId_JsonNullable() {
+    public String getLiveStreamId() {
         return liveStreamId;
     }
 
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
-    public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
         this.liveStreamId = liveStreamId;
     }
 
-    public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
-        this.liveStreamId = JsonNullable.<String> of(liveStreamId);
-    }
-
     public PlaybackInfoDto deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
 
+        this.deviceProfile = deviceProfile;
         return this;
     }
 
@@ -400,31 +324,22 @@ public class PlaybackInfoDto {
      * @return deviceProfile
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public DeviceProfile getDeviceProfile() {
-        return deviceProfile.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<DeviceProfile> getDeviceProfile_JsonNullable() {
+    public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
-    public void setDeviceProfile_JsonNullable(JsonNullable<DeviceProfile> deviceProfile) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
         this.deviceProfile = deviceProfile;
     }
 
-    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-    }
-
     public PlaybackInfoDto enableDirectPlay(@javax.annotation.Nullable Boolean enableDirectPlay) {
-        this.enableDirectPlay = JsonNullable.<Boolean> of(enableDirectPlay);
 
+        this.enableDirectPlay = enableDirectPlay;
         return this;
     }
 
@@ -434,31 +349,22 @@ public class PlaybackInfoDto {
      * @return enableDirectPlay
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableDirectPlay() {
-        return enableDirectPlay.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_PLAY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableDirectPlay_JsonNullable() {
+    public Boolean getEnableDirectPlay() {
         return enableDirectPlay;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_PLAY)
-    public void setEnableDirectPlay_JsonNullable(JsonNullable<Boolean> enableDirectPlay) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableDirectPlay(@javax.annotation.Nullable Boolean enableDirectPlay) {
         this.enableDirectPlay = enableDirectPlay;
     }
 
-    public void setEnableDirectPlay(@javax.annotation.Nullable Boolean enableDirectPlay) {
-        this.enableDirectPlay = JsonNullable.<Boolean> of(enableDirectPlay);
-    }
-
     public PlaybackInfoDto enableDirectStream(@javax.annotation.Nullable Boolean enableDirectStream) {
-        this.enableDirectStream = JsonNullable.<Boolean> of(enableDirectStream);
 
+        this.enableDirectStream = enableDirectStream;
         return this;
     }
 
@@ -468,31 +374,22 @@ public class PlaybackInfoDto {
      * @return enableDirectStream
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableDirectStream() {
-        return enableDirectStream.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_STREAM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableDirectStream_JsonNullable() {
+    public Boolean getEnableDirectStream() {
         return enableDirectStream;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_STREAM)
-    public void setEnableDirectStream_JsonNullable(JsonNullable<Boolean> enableDirectStream) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableDirectStream(@javax.annotation.Nullable Boolean enableDirectStream) {
         this.enableDirectStream = enableDirectStream;
     }
 
-    public void setEnableDirectStream(@javax.annotation.Nullable Boolean enableDirectStream) {
-        this.enableDirectStream = JsonNullable.<Boolean> of(enableDirectStream);
-    }
-
     public PlaybackInfoDto enableTranscoding(@javax.annotation.Nullable Boolean enableTranscoding) {
-        this.enableTranscoding = JsonNullable.<Boolean> of(enableTranscoding);
 
+        this.enableTranscoding = enableTranscoding;
         return this;
     }
 
@@ -502,31 +399,22 @@ public class PlaybackInfoDto {
      * @return enableTranscoding
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getEnableTranscoding() {
-        return enableTranscoding.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLE_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getEnableTranscoding_JsonNullable() {
+    public Boolean getEnableTranscoding() {
         return enableTranscoding;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLE_TRANSCODING)
-    public void setEnableTranscoding_JsonNullable(JsonNullable<Boolean> enableTranscoding) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableTranscoding(@javax.annotation.Nullable Boolean enableTranscoding) {
         this.enableTranscoding = enableTranscoding;
     }
 
-    public void setEnableTranscoding(@javax.annotation.Nullable Boolean enableTranscoding) {
-        this.enableTranscoding = JsonNullable.<Boolean> of(enableTranscoding);
-    }
-
     public PlaybackInfoDto allowVideoStreamCopy(@javax.annotation.Nullable Boolean allowVideoStreamCopy) {
-        this.allowVideoStreamCopy = JsonNullable.<Boolean> of(allowVideoStreamCopy);
 
+        this.allowVideoStreamCopy = allowVideoStreamCopy;
         return this;
     }
 
@@ -536,31 +424,22 @@ public class PlaybackInfoDto {
      * @return allowVideoStreamCopy
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getAllowVideoStreamCopy() {
-        return allowVideoStreamCopy.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getAllowVideoStreamCopy_JsonNullable() {
+    public Boolean getAllowVideoStreamCopy() {
         return allowVideoStreamCopy;
     }
 
     @JsonProperty(JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY)
-    public void setAllowVideoStreamCopy_JsonNullable(JsonNullable<Boolean> allowVideoStreamCopy) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAllowVideoStreamCopy(@javax.annotation.Nullable Boolean allowVideoStreamCopy) {
         this.allowVideoStreamCopy = allowVideoStreamCopy;
     }
 
-    public void setAllowVideoStreamCopy(@javax.annotation.Nullable Boolean allowVideoStreamCopy) {
-        this.allowVideoStreamCopy = JsonNullable.<Boolean> of(allowVideoStreamCopy);
-    }
-
     public PlaybackInfoDto allowAudioStreamCopy(@javax.annotation.Nullable Boolean allowAudioStreamCopy) {
-        this.allowAudioStreamCopy = JsonNullable.<Boolean> of(allowAudioStreamCopy);
 
+        this.allowAudioStreamCopy = allowAudioStreamCopy;
         return this;
     }
 
@@ -570,31 +449,22 @@ public class PlaybackInfoDto {
      * @return allowAudioStreamCopy
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getAllowAudioStreamCopy() {
-        return allowAudioStreamCopy.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getAllowAudioStreamCopy_JsonNullable() {
+    public Boolean getAllowAudioStreamCopy() {
         return allowAudioStreamCopy;
     }
 
     @JsonProperty(JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY)
-    public void setAllowAudioStreamCopy_JsonNullable(JsonNullable<Boolean> allowAudioStreamCopy) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAllowAudioStreamCopy(@javax.annotation.Nullable Boolean allowAudioStreamCopy) {
         this.allowAudioStreamCopy = allowAudioStreamCopy;
     }
 
-    public void setAllowAudioStreamCopy(@javax.annotation.Nullable Boolean allowAudioStreamCopy) {
-        this.allowAudioStreamCopy = JsonNullable.<Boolean> of(allowAudioStreamCopy);
-    }
-
     public PlaybackInfoDto autoOpenLiveStream(@javax.annotation.Nullable Boolean autoOpenLiveStream) {
-        this.autoOpenLiveStream = JsonNullable.<Boolean> of(autoOpenLiveStream);
 
+        this.autoOpenLiveStream = autoOpenLiveStream;
         return this;
     }
 
@@ -604,32 +474,23 @@ public class PlaybackInfoDto {
      * @return autoOpenLiveStream
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getAutoOpenLiveStream() {
-        return autoOpenLiveStream.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getAutoOpenLiveStream_JsonNullable() {
+    public Boolean getAutoOpenLiveStream() {
         return autoOpenLiveStream;
     }
 
     @JsonProperty(JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM)
-    public void setAutoOpenLiveStream_JsonNullable(JsonNullable<Boolean> autoOpenLiveStream) {
-        this.autoOpenLiveStream = autoOpenLiveStream;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutoOpenLiveStream(@javax.annotation.Nullable Boolean autoOpenLiveStream) {
-        this.autoOpenLiveStream = JsonNullable.<Boolean> of(autoOpenLiveStream);
+        this.autoOpenLiveStream = autoOpenLiveStream;
     }
 
     public PlaybackInfoDto alwaysBurnInSubtitleWhenTranscoding(
             @javax.annotation.Nullable Boolean alwaysBurnInSubtitleWhenTranscoding) {
-        this.alwaysBurnInSubtitleWhenTranscoding = JsonNullable.<Boolean> of(alwaysBurnInSubtitleWhenTranscoding);
 
+        this.alwaysBurnInSubtitleWhenTranscoding = alwaysBurnInSubtitleWhenTranscoding;
         return this;
     }
 
@@ -639,28 +500,18 @@ public class PlaybackInfoDto {
      * @return alwaysBurnInSubtitleWhenTranscoding
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
-        return alwaysBurnInSubtitleWhenTranscoding.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getAlwaysBurnInSubtitleWhenTranscoding_JsonNullable() {
+    public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
         return alwaysBurnInSubtitleWhenTranscoding;
     }
 
     @JsonProperty(JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
-    public void setAlwaysBurnInSubtitleWhenTranscoding_JsonNullable(
-            JsonNullable<Boolean> alwaysBurnInSubtitleWhenTranscoding) {
-        this.alwaysBurnInSubtitleWhenTranscoding = alwaysBurnInSubtitleWhenTranscoding;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlwaysBurnInSubtitleWhenTranscoding(
             @javax.annotation.Nullable Boolean alwaysBurnInSubtitleWhenTranscoding) {
-        this.alwaysBurnInSubtitleWhenTranscoding = JsonNullable.<Boolean> of(alwaysBurnInSubtitleWhenTranscoding);
+        this.alwaysBurnInSubtitleWhenTranscoding = alwaysBurnInSubtitleWhenTranscoding;
     }
 
     @Override
@@ -672,46 +523,30 @@ public class PlaybackInfoDto {
             return false;
         }
         PlaybackInfoDto playbackInfoDto = (PlaybackInfoDto) o;
-        return equalsNullable(this.userId, playbackInfoDto.userId)
-                && equalsNullable(this.maxStreamingBitrate, playbackInfoDto.maxStreamingBitrate)
-                && equalsNullable(this.startTimeTicks, playbackInfoDto.startTimeTicks)
-                && equalsNullable(this.audioStreamIndex, playbackInfoDto.audioStreamIndex)
-                && equalsNullable(this.subtitleStreamIndex, playbackInfoDto.subtitleStreamIndex)
-                && equalsNullable(this.maxAudioChannels, playbackInfoDto.maxAudioChannels)
-                && equalsNullable(this.mediaSourceId, playbackInfoDto.mediaSourceId)
-                && equalsNullable(this.liveStreamId, playbackInfoDto.liveStreamId)
-                && equalsNullable(this.deviceProfile, playbackInfoDto.deviceProfile)
-                && equalsNullable(this.enableDirectPlay, playbackInfoDto.enableDirectPlay)
-                && equalsNullable(this.enableDirectStream, playbackInfoDto.enableDirectStream)
-                && equalsNullable(this.enableTranscoding, playbackInfoDto.enableTranscoding)
-                && equalsNullable(this.allowVideoStreamCopy, playbackInfoDto.allowVideoStreamCopy)
-                && equalsNullable(this.allowAudioStreamCopy, playbackInfoDto.allowAudioStreamCopy)
-                && equalsNullable(this.autoOpenLiveStream, playbackInfoDto.autoOpenLiveStream) && equalsNullable(
+        return Objects.equals(this.userId, playbackInfoDto.userId)
+                && Objects.equals(this.maxStreamingBitrate, playbackInfoDto.maxStreamingBitrate)
+                && Objects.equals(this.startTimeTicks, playbackInfoDto.startTimeTicks)
+                && Objects.equals(this.audioStreamIndex, playbackInfoDto.audioStreamIndex)
+                && Objects.equals(this.subtitleStreamIndex, playbackInfoDto.subtitleStreamIndex)
+                && Objects.equals(this.maxAudioChannels, playbackInfoDto.maxAudioChannels)
+                && Objects.equals(this.mediaSourceId, playbackInfoDto.mediaSourceId)
+                && Objects.equals(this.liveStreamId, playbackInfoDto.liveStreamId)
+                && Objects.equals(this.deviceProfile, playbackInfoDto.deviceProfile)
+                && Objects.equals(this.enableDirectPlay, playbackInfoDto.enableDirectPlay)
+                && Objects.equals(this.enableDirectStream, playbackInfoDto.enableDirectStream)
+                && Objects.equals(this.enableTranscoding, playbackInfoDto.enableTranscoding)
+                && Objects.equals(this.allowVideoStreamCopy, playbackInfoDto.allowVideoStreamCopy)
+                && Objects.equals(this.allowAudioStreamCopy, playbackInfoDto.allowAudioStreamCopy)
+                && Objects.equals(this.autoOpenLiveStream, playbackInfoDto.autoOpenLiveStream) && Objects.equals(
                         this.alwaysBurnInSubtitleWhenTranscoding, playbackInfoDto.alwaysBurnInSubtitleWhenTranscoding);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(userId), hashCodeNullable(maxStreamingBitrate),
-                hashCodeNullable(startTimeTicks), hashCodeNullable(audioStreamIndex),
-                hashCodeNullable(subtitleStreamIndex), hashCodeNullable(maxAudioChannels),
-                hashCodeNullable(mediaSourceId), hashCodeNullable(liveStreamId), hashCodeNullable(deviceProfile),
-                hashCodeNullable(enableDirectPlay), hashCodeNullable(enableDirectStream),
-                hashCodeNullable(enableTranscoding), hashCodeNullable(allowVideoStreamCopy),
-                hashCodeNullable(allowAudioStreamCopy), hashCodeNullable(autoOpenLiveStream),
-                hashCodeNullable(alwaysBurnInSubtitleWhenTranscoding));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex,
+                maxAudioChannels, mediaSourceId, liveStreamId, deviceProfile, enableDirectPlay, enableDirectStream,
+                enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, autoOpenLiveStream,
+                alwaysBurnInSubtitleWhenTranscoding);
     }
 
     @Override
@@ -763,164 +598,82 @@ public class PlaybackInfoDto {
         }
 
         public PlaybackInfoDto.Builder userId(UUID userId) {
-            this.instance.userId = JsonNullable.<UUID> of(userId);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder userId(JsonNullable<UUID> userId) {
             this.instance.userId = userId;
             return this;
         }
 
         public PlaybackInfoDto.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder maxStreamingBitrate(JsonNullable<Integer> maxStreamingBitrate) {
             this.instance.maxStreamingBitrate = maxStreamingBitrate;
             return this;
         }
 
         public PlaybackInfoDto.Builder startTimeTicks(Long startTimeTicks) {
-            this.instance.startTimeTicks = JsonNullable.<Long> of(startTimeTicks);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder startTimeTicks(JsonNullable<Long> startTimeTicks) {
             this.instance.startTimeTicks = startTimeTicks;
             return this;
         }
 
         public PlaybackInfoDto.Builder audioStreamIndex(Integer audioStreamIndex) {
-            this.instance.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder audioStreamIndex(JsonNullable<Integer> audioStreamIndex) {
             this.instance.audioStreamIndex = audioStreamIndex;
             return this;
         }
 
         public PlaybackInfoDto.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder subtitleStreamIndex(JsonNullable<Integer> subtitleStreamIndex) {
             this.instance.subtitleStreamIndex = subtitleStreamIndex;
             return this;
         }
 
         public PlaybackInfoDto.Builder maxAudioChannels(Integer maxAudioChannels) {
-            this.instance.maxAudioChannels = JsonNullable.<Integer> of(maxAudioChannels);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder maxAudioChannels(JsonNullable<Integer> maxAudioChannels) {
             this.instance.maxAudioChannels = maxAudioChannels;
             return this;
         }
 
         public PlaybackInfoDto.Builder mediaSourceId(String mediaSourceId) {
-            this.instance.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder mediaSourceId(JsonNullable<String> mediaSourceId) {
             this.instance.mediaSourceId = mediaSourceId;
             return this;
         }
 
         public PlaybackInfoDto.Builder liveStreamId(String liveStreamId) {
-            this.instance.liveStreamId = JsonNullable.<String> of(liveStreamId);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder liveStreamId(JsonNullable<String> liveStreamId) {
             this.instance.liveStreamId = liveStreamId;
             return this;
         }
 
         public PlaybackInfoDto.Builder deviceProfile(DeviceProfile deviceProfile) {
-            this.instance.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder deviceProfile(JsonNullable<DeviceProfile> deviceProfile) {
             this.instance.deviceProfile = deviceProfile;
             return this;
         }
 
         public PlaybackInfoDto.Builder enableDirectPlay(Boolean enableDirectPlay) {
-            this.instance.enableDirectPlay = JsonNullable.<Boolean> of(enableDirectPlay);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder enableDirectPlay(JsonNullable<Boolean> enableDirectPlay) {
             this.instance.enableDirectPlay = enableDirectPlay;
             return this;
         }
 
         public PlaybackInfoDto.Builder enableDirectStream(Boolean enableDirectStream) {
-            this.instance.enableDirectStream = JsonNullable.<Boolean> of(enableDirectStream);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder enableDirectStream(JsonNullable<Boolean> enableDirectStream) {
             this.instance.enableDirectStream = enableDirectStream;
             return this;
         }
 
         public PlaybackInfoDto.Builder enableTranscoding(Boolean enableTranscoding) {
-            this.instance.enableTranscoding = JsonNullable.<Boolean> of(enableTranscoding);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder enableTranscoding(JsonNullable<Boolean> enableTranscoding) {
             this.instance.enableTranscoding = enableTranscoding;
             return this;
         }
 
         public PlaybackInfoDto.Builder allowVideoStreamCopy(Boolean allowVideoStreamCopy) {
-            this.instance.allowVideoStreamCopy = JsonNullable.<Boolean> of(allowVideoStreamCopy);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder allowVideoStreamCopy(JsonNullable<Boolean> allowVideoStreamCopy) {
             this.instance.allowVideoStreamCopy = allowVideoStreamCopy;
             return this;
         }
 
         public PlaybackInfoDto.Builder allowAudioStreamCopy(Boolean allowAudioStreamCopy) {
-            this.instance.allowAudioStreamCopy = JsonNullable.<Boolean> of(allowAudioStreamCopy);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder allowAudioStreamCopy(JsonNullable<Boolean> allowAudioStreamCopy) {
             this.instance.allowAudioStreamCopy = allowAudioStreamCopy;
             return this;
         }
 
         public PlaybackInfoDto.Builder autoOpenLiveStream(Boolean autoOpenLiveStream) {
-            this.instance.autoOpenLiveStream = JsonNullable.<Boolean> of(autoOpenLiveStream);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder autoOpenLiveStream(JsonNullable<Boolean> autoOpenLiveStream) {
             this.instance.autoOpenLiveStream = autoOpenLiveStream;
             return this;
         }
 
         public PlaybackInfoDto.Builder alwaysBurnInSubtitleWhenTranscoding(
                 Boolean alwaysBurnInSubtitleWhenTranscoding) {
-            this.instance.alwaysBurnInSubtitleWhenTranscoding = JsonNullable
-                    .<Boolean> of(alwaysBurnInSubtitleWhenTranscoding);
-            return this;
-        }
-
-        public PlaybackInfoDto.Builder alwaysBurnInSubtitleWhenTranscoding(
-                JsonNullable<Boolean> alwaysBurnInSubtitleWhenTranscoding) {
             this.instance.alwaysBurnInSubtitleWhenTranscoding = alwaysBurnInSubtitleWhenTranscoding;
             return this;
         }

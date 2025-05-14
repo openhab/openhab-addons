@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,50 +36,46 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ConfigImageTypes {
     public static final String JSON_PROPERTY_BACKDROP_SIZES = "BackdropSizes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> backdropSizes = JsonNullable.<List<String>> undefined();
+    private List<String> backdropSizes;
 
     public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> baseUrl = JsonNullable.<String> undefined();
+    private String baseUrl;
 
     public static final String JSON_PROPERTY_LOGO_SIZES = "LogoSizes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> logoSizes = JsonNullable.<List<String>> undefined();
+    private List<String> logoSizes;
 
     public static final String JSON_PROPERTY_POSTER_SIZES = "PosterSizes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> posterSizes = JsonNullable.<List<String>> undefined();
+    private List<String> posterSizes;
 
     public static final String JSON_PROPERTY_PROFILE_SIZES = "ProfileSizes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> profileSizes = JsonNullable.<List<String>> undefined();
+    private List<String> profileSizes;
 
     public static final String JSON_PROPERTY_SECURE_BASE_URL = "SecureBaseUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> secureBaseUrl = JsonNullable.<String> undefined();
+    private String secureBaseUrl;
 
     public static final String JSON_PROPERTY_STILL_SIZES = "StillSizes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> stillSizes = JsonNullable.<List<String>> undefined();
+    private List<String> stillSizes;
 
     public ConfigImageTypes() {
     }
 
     public ConfigImageTypes backdropSizes(@javax.annotation.Nullable List<String> backdropSizes) {
-        this.backdropSizes = JsonNullable.<List<String>> of(backdropSizes);
 
+        this.backdropSizes = backdropSizes;
         return this;
     }
 
     public ConfigImageTypes addBackdropSizesItem(String backdropSizesItem) {
-        if (this.backdropSizes == null || !this.backdropSizes.isPresent()) {
-            this.backdropSizes = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.backdropSizes == null) {
+            this.backdropSizes = new ArrayList<>();
         }
-        try {
-            this.backdropSizes.get().add(backdropSizesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.backdropSizes.add(backdropSizesItem);
         return this;
     }
 
@@ -93,31 +85,22 @@ public class ConfigImageTypes {
      * @return backdropSizes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getBackdropSizes() {
-        return backdropSizes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getBackdropSizes_JsonNullable() {
+    public List<String> getBackdropSizes() {
         return backdropSizes;
     }
 
     @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
-    public void setBackdropSizes_JsonNullable(JsonNullable<List<String>> backdropSizes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBackdropSizes(@javax.annotation.Nullable List<String> backdropSizes) {
         this.backdropSizes = backdropSizes;
     }
 
-    public void setBackdropSizes(@javax.annotation.Nullable List<String> backdropSizes) {
-        this.backdropSizes = JsonNullable.<List<String>> of(backdropSizes);
-    }
-
     public ConfigImageTypes baseUrl(@javax.annotation.Nullable String baseUrl) {
-        this.baseUrl = JsonNullable.<String> of(baseUrl);
 
+        this.baseUrl = baseUrl;
         return this;
     }
 
@@ -127,43 +110,30 @@ public class ConfigImageTypes {
      * @return baseUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getBaseUrl() {
-        return baseUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BASE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getBaseUrl_JsonNullable() {
+    public String getBaseUrl() {
         return baseUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_BASE_URL)
-    public void setBaseUrl_JsonNullable(JsonNullable<String> baseUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBaseUrl(@javax.annotation.Nullable String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    public void setBaseUrl(@javax.annotation.Nullable String baseUrl) {
-        this.baseUrl = JsonNullable.<String> of(baseUrl);
-    }
-
     public ConfigImageTypes logoSizes(@javax.annotation.Nullable List<String> logoSizes) {
-        this.logoSizes = JsonNullable.<List<String>> of(logoSizes);
 
+        this.logoSizes = logoSizes;
         return this;
     }
 
     public ConfigImageTypes addLogoSizesItem(String logoSizesItem) {
-        if (this.logoSizes == null || !this.logoSizes.isPresent()) {
-            this.logoSizes = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.logoSizes == null) {
+            this.logoSizes = new ArrayList<>();
         }
-        try {
-            this.logoSizes.get().add(logoSizesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.logoSizes.add(logoSizesItem);
         return this;
     }
 
@@ -173,43 +143,30 @@ public class ConfigImageTypes {
      * @return logoSizes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getLogoSizes() {
-        return logoSizes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getLogoSizes_JsonNullable() {
+    public List<String> getLogoSizes() {
         return logoSizes;
     }
 
     @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
-    public void setLogoSizes_JsonNullable(JsonNullable<List<String>> logoSizes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLogoSizes(@javax.annotation.Nullable List<String> logoSizes) {
         this.logoSizes = logoSizes;
     }
 
-    public void setLogoSizes(@javax.annotation.Nullable List<String> logoSizes) {
-        this.logoSizes = JsonNullable.<List<String>> of(logoSizes);
-    }
-
     public ConfigImageTypes posterSizes(@javax.annotation.Nullable List<String> posterSizes) {
-        this.posterSizes = JsonNullable.<List<String>> of(posterSizes);
 
+        this.posterSizes = posterSizes;
         return this;
     }
 
     public ConfigImageTypes addPosterSizesItem(String posterSizesItem) {
-        if (this.posterSizes == null || !this.posterSizes.isPresent()) {
-            this.posterSizes = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.posterSizes == null) {
+            this.posterSizes = new ArrayList<>();
         }
-        try {
-            this.posterSizes.get().add(posterSizesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.posterSizes.add(posterSizesItem);
         return this;
     }
 
@@ -219,43 +176,30 @@ public class ConfigImageTypes {
      * @return posterSizes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getPosterSizes() {
-        return posterSizes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getPosterSizes_JsonNullable() {
+    public List<String> getPosterSizes() {
         return posterSizes;
     }
 
     @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
-    public void setPosterSizes_JsonNullable(JsonNullable<List<String>> posterSizes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPosterSizes(@javax.annotation.Nullable List<String> posterSizes) {
         this.posterSizes = posterSizes;
     }
 
-    public void setPosterSizes(@javax.annotation.Nullable List<String> posterSizes) {
-        this.posterSizes = JsonNullable.<List<String>> of(posterSizes);
-    }
-
     public ConfigImageTypes profileSizes(@javax.annotation.Nullable List<String> profileSizes) {
-        this.profileSizes = JsonNullable.<List<String>> of(profileSizes);
 
+        this.profileSizes = profileSizes;
         return this;
     }
 
     public ConfigImageTypes addProfileSizesItem(String profileSizesItem) {
-        if (this.profileSizes == null || !this.profileSizes.isPresent()) {
-            this.profileSizes = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.profileSizes == null) {
+            this.profileSizes = new ArrayList<>();
         }
-        try {
-            this.profileSizes.get().add(profileSizesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.profileSizes.add(profileSizesItem);
         return this;
     }
 
@@ -265,31 +209,22 @@ public class ConfigImageTypes {
      * @return profileSizes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getProfileSizes() {
-        return profileSizes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getProfileSizes_JsonNullable() {
+    public List<String> getProfileSizes() {
         return profileSizes;
     }
 
     @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
-    public void setProfileSizes_JsonNullable(JsonNullable<List<String>> profileSizes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProfileSizes(@javax.annotation.Nullable List<String> profileSizes) {
         this.profileSizes = profileSizes;
     }
 
-    public void setProfileSizes(@javax.annotation.Nullable List<String> profileSizes) {
-        this.profileSizes = JsonNullable.<List<String>> of(profileSizes);
-    }
-
     public ConfigImageTypes secureBaseUrl(@javax.annotation.Nullable String secureBaseUrl) {
-        this.secureBaseUrl = JsonNullable.<String> of(secureBaseUrl);
 
+        this.secureBaseUrl = secureBaseUrl;
         return this;
     }
 
@@ -299,43 +234,30 @@ public class ConfigImageTypes {
      * @return secureBaseUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSecureBaseUrl() {
-        return secureBaseUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSecureBaseUrl_JsonNullable() {
+    public String getSecureBaseUrl() {
         return secureBaseUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
-    public void setSecureBaseUrl_JsonNullable(JsonNullable<String> secureBaseUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSecureBaseUrl(@javax.annotation.Nullable String secureBaseUrl) {
         this.secureBaseUrl = secureBaseUrl;
     }
 
-    public void setSecureBaseUrl(@javax.annotation.Nullable String secureBaseUrl) {
-        this.secureBaseUrl = JsonNullable.<String> of(secureBaseUrl);
-    }
-
     public ConfigImageTypes stillSizes(@javax.annotation.Nullable List<String> stillSizes) {
-        this.stillSizes = JsonNullable.<List<String>> of(stillSizes);
 
+        this.stillSizes = stillSizes;
         return this;
     }
 
     public ConfigImageTypes addStillSizesItem(String stillSizesItem) {
-        if (this.stillSizes == null || !this.stillSizes.isPresent()) {
-            this.stillSizes = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.stillSizes == null) {
+            this.stillSizes = new ArrayList<>();
         }
-        try {
-            this.stillSizes.get().add(stillSizesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.stillSizes.add(stillSizesItem);
         return this;
     }
 
@@ -345,26 +267,17 @@ public class ConfigImageTypes {
      * @return stillSizes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getStillSizes() {
-        return stillSizes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_STILL_SIZES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getStillSizes_JsonNullable() {
+    public List<String> getStillSizes() {
         return stillSizes;
     }
 
     @JsonProperty(JSON_PROPERTY_STILL_SIZES)
-    public void setStillSizes_JsonNullable(JsonNullable<List<String>> stillSizes) {
-        this.stillSizes = stillSizes;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStillSizes(@javax.annotation.Nullable List<String> stillSizes) {
-        this.stillSizes = JsonNullable.<List<String>> of(stillSizes);
+        this.stillSizes = stillSizes;
     }
 
     @Override
@@ -376,32 +289,18 @@ public class ConfigImageTypes {
             return false;
         }
         ConfigImageTypes configImageTypes = (ConfigImageTypes) o;
-        return equalsNullable(this.backdropSizes, configImageTypes.backdropSizes)
-                && equalsNullable(this.baseUrl, configImageTypes.baseUrl)
-                && equalsNullable(this.logoSizes, configImageTypes.logoSizes)
-                && equalsNullable(this.posterSizes, configImageTypes.posterSizes)
-                && equalsNullable(this.profileSizes, configImageTypes.profileSizes)
-                && equalsNullable(this.secureBaseUrl, configImageTypes.secureBaseUrl)
-                && equalsNullable(this.stillSizes, configImageTypes.stillSizes);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.backdropSizes, configImageTypes.backdropSizes)
+                && Objects.equals(this.baseUrl, configImageTypes.baseUrl)
+                && Objects.equals(this.logoSizes, configImageTypes.logoSizes)
+                && Objects.equals(this.posterSizes, configImageTypes.posterSizes)
+                && Objects.equals(this.profileSizes, configImageTypes.profileSizes)
+                && Objects.equals(this.secureBaseUrl, configImageTypes.secureBaseUrl)
+                && Objects.equals(this.stillSizes, configImageTypes.stillSizes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(backdropSizes), hashCodeNullable(baseUrl), hashCodeNullable(logoSizes),
-                hashCodeNullable(posterSizes), hashCodeNullable(profileSizes), hashCodeNullable(secureBaseUrl),
-                hashCodeNullable(stillSizes));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(backdropSizes, baseUrl, logoSizes, posterSizes, profileSizes, secureBaseUrl, stillSizes);
     }
 
     @Override
@@ -443,71 +342,36 @@ public class ConfigImageTypes {
         }
 
         public ConfigImageTypes.Builder backdropSizes(List<String> backdropSizes) {
-            this.instance.backdropSizes = JsonNullable.<List<String>> of(backdropSizes);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder backdropSizes(JsonNullable<List<String>> backdropSizes) {
             this.instance.backdropSizes = backdropSizes;
             return this;
         }
 
         public ConfigImageTypes.Builder baseUrl(String baseUrl) {
-            this.instance.baseUrl = JsonNullable.<String> of(baseUrl);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder baseUrl(JsonNullable<String> baseUrl) {
             this.instance.baseUrl = baseUrl;
             return this;
         }
 
         public ConfigImageTypes.Builder logoSizes(List<String> logoSizes) {
-            this.instance.logoSizes = JsonNullable.<List<String>> of(logoSizes);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder logoSizes(JsonNullable<List<String>> logoSizes) {
             this.instance.logoSizes = logoSizes;
             return this;
         }
 
         public ConfigImageTypes.Builder posterSizes(List<String> posterSizes) {
-            this.instance.posterSizes = JsonNullable.<List<String>> of(posterSizes);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder posterSizes(JsonNullable<List<String>> posterSizes) {
             this.instance.posterSizes = posterSizes;
             return this;
         }
 
         public ConfigImageTypes.Builder profileSizes(List<String> profileSizes) {
-            this.instance.profileSizes = JsonNullable.<List<String>> of(profileSizes);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder profileSizes(JsonNullable<List<String>> profileSizes) {
             this.instance.profileSizes = profileSizes;
             return this;
         }
 
         public ConfigImageTypes.Builder secureBaseUrl(String secureBaseUrl) {
-            this.instance.secureBaseUrl = JsonNullable.<String> of(secureBaseUrl);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder secureBaseUrl(JsonNullable<String> secureBaseUrl) {
             this.instance.secureBaseUrl = secureBaseUrl;
             return this;
         }
 
         public ConfigImageTypes.Builder stillSizes(List<String> stillSizes) {
-            this.instance.stillSizes = JsonNullable.<List<String>> of(stillSizes);
-            return this;
-        }
-
-        public ConfigImageTypes.Builder stillSizes(JsonNullable<List<String>> stillSizes) {
             this.instance.stillSizes = stillSizes;
             return this;
         }

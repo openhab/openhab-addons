@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -129,11 +125,11 @@ public class LibraryOptions {
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
     @javax.annotation.Nullable
-    private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String> undefined();
+    private String preferredMetadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @javax.annotation.Nullable
-    private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
+    private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME = "SeasonZeroDisplayName";
     @javax.annotation.Nullable
@@ -141,7 +137,7 @@ public class LibraryOptions {
 
     public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> metadataSavers = JsonNullable.<List<String>> undefined();
+    private List<String> metadataSavers;
 
     public static final String JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS = "DisabledLocalMetadataReaders";
     @javax.annotation.Nullable
@@ -149,7 +145,7 @@ public class LibraryOptions {
 
     public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> localMetadataReaderOrder = JsonNullable.<List<String>> undefined();
+    private List<String> localMetadataReaderOrder;
 
     public static final String JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS = "DisabledSubtitleFetchers";
     @javax.annotation.Nullable
@@ -177,7 +173,7 @@ public class LibraryOptions {
 
     public static final String JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES = "SubtitleDownloadLanguages";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> subtitleDownloadLanguages = JsonNullable.<List<String>> undefined();
+    private List<String> subtitleDownloadLanguages;
 
     public static final String JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH = "RequirePerfectSubtitleMatch";
     @javax.annotation.Nullable
@@ -653,8 +649,8 @@ public class LibraryOptions {
     }
 
     public LibraryOptions preferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
 
+        this.preferredMetadataLanguage = preferredMetadataLanguage;
         return this;
     }
 
@@ -664,31 +660,22 @@ public class LibraryOptions {
      * @return preferredMetadataLanguage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPreferredMetadataLanguage() {
-        return preferredMetadataLanguage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPreferredMetadataLanguage_JsonNullable() {
+    public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
-    public void setPreferredMetadataLanguage_JsonNullable(JsonNullable<String> preferredMetadataLanguage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
         this.preferredMetadataLanguage = preferredMetadataLanguage;
     }
 
-    public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
-    }
-
     public LibraryOptions metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
 
+        this.metadataCountryCode = metadataCountryCode;
         return this;
     }
 
@@ -698,26 +685,17 @@ public class LibraryOptions {
      * @return metadataCountryCode
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMetadataCountryCode() {
-        return metadataCountryCode.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
+    public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
-        this.metadataCountryCode = metadataCountryCode;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
+        this.metadataCountryCode = metadataCountryCode;
     }
 
     public LibraryOptions seasonZeroDisplayName(@javax.annotation.Nullable String seasonZeroDisplayName) {
@@ -746,20 +724,16 @@ public class LibraryOptions {
     }
 
     public LibraryOptions metadataSavers(@javax.annotation.Nullable List<String> metadataSavers) {
-        this.metadataSavers = JsonNullable.<List<String>> of(metadataSavers);
 
+        this.metadataSavers = metadataSavers;
         return this;
     }
 
     public LibraryOptions addMetadataSaversItem(String metadataSaversItem) {
-        if (this.metadataSavers == null || !this.metadataSavers.isPresent()) {
-            this.metadataSavers = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.metadataSavers == null) {
+            this.metadataSavers = new ArrayList<>();
         }
-        try {
-            this.metadataSavers.get().add(metadataSaversItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.metadataSavers.add(metadataSaversItem);
         return this;
     }
 
@@ -769,26 +743,17 @@ public class LibraryOptions {
      * @return metadataSavers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getMetadataSavers() {
-        return metadataSavers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getMetadataSavers_JsonNullable() {
+    public List<String> getMetadataSavers() {
         return metadataSavers;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
-    public void setMetadataSavers_JsonNullable(JsonNullable<List<String>> metadataSavers) {
-        this.metadataSavers = metadataSavers;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataSavers(@javax.annotation.Nullable List<String> metadataSavers) {
-        this.metadataSavers = JsonNullable.<List<String>> of(metadataSavers);
+        this.metadataSavers = metadataSavers;
     }
 
     public LibraryOptions disabledLocalMetadataReaders(
@@ -826,20 +791,16 @@ public class LibraryOptions {
     }
 
     public LibraryOptions localMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
-        this.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
 
+        this.localMetadataReaderOrder = localMetadataReaderOrder;
         return this;
     }
 
     public LibraryOptions addLocalMetadataReaderOrderItem(String localMetadataReaderOrderItem) {
-        if (this.localMetadataReaderOrder == null || !this.localMetadataReaderOrder.isPresent()) {
-            this.localMetadataReaderOrder = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.localMetadataReaderOrder == null) {
+            this.localMetadataReaderOrder = new ArrayList<>();
         }
-        try {
-            this.localMetadataReaderOrder.get().add(localMetadataReaderOrderItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.localMetadataReaderOrder.add(localMetadataReaderOrderItem);
         return this;
     }
 
@@ -849,26 +810,17 @@ public class LibraryOptions {
      * @return localMetadataReaderOrder
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getLocalMetadataReaderOrder() {
-        return localMetadataReaderOrder.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getLocalMetadataReaderOrder_JsonNullable() {
+    public List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder;
     }
 
     @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
-    public void setLocalMetadataReaderOrder_JsonNullable(JsonNullable<List<String>> localMetadataReaderOrder) {
-        this.localMetadataReaderOrder = localMetadataReaderOrder;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
-        this.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
+        this.localMetadataReaderOrder = localMetadataReaderOrder;
     }
 
     public LibraryOptions disabledSubtitleFetchers(@javax.annotation.Nullable List<String> disabledSubtitleFetchers) {
@@ -1060,20 +1012,16 @@ public class LibraryOptions {
     }
 
     public LibraryOptions subtitleDownloadLanguages(@javax.annotation.Nullable List<String> subtitleDownloadLanguages) {
-        this.subtitleDownloadLanguages = JsonNullable.<List<String>> of(subtitleDownloadLanguages);
 
+        this.subtitleDownloadLanguages = subtitleDownloadLanguages;
         return this;
     }
 
     public LibraryOptions addSubtitleDownloadLanguagesItem(String subtitleDownloadLanguagesItem) {
-        if (this.subtitleDownloadLanguages == null || !this.subtitleDownloadLanguages.isPresent()) {
-            this.subtitleDownloadLanguages = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.subtitleDownloadLanguages == null) {
+            this.subtitleDownloadLanguages = new ArrayList<>();
         }
-        try {
-            this.subtitleDownloadLanguages.get().add(subtitleDownloadLanguagesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.subtitleDownloadLanguages.add(subtitleDownloadLanguagesItem);
         return this;
     }
 
@@ -1083,26 +1031,17 @@ public class LibraryOptions {
      * @return subtitleDownloadLanguages
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getSubtitleDownloadLanguages() {
-        return subtitleDownloadLanguages.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getSubtitleDownloadLanguages_JsonNullable() {
+    public List<String> getSubtitleDownloadLanguages() {
         return subtitleDownloadLanguages;
     }
 
     @JsonProperty(JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
-    public void setSubtitleDownloadLanguages_JsonNullable(JsonNullable<List<String>> subtitleDownloadLanguages) {
-        this.subtitleDownloadLanguages = subtitleDownloadLanguages;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleDownloadLanguages(@javax.annotation.Nullable List<String> subtitleDownloadLanguages) {
-        this.subtitleDownloadLanguages = JsonNullable.<List<String>> of(subtitleDownloadLanguages);
+        this.subtitleDownloadLanguages = subtitleDownloadLanguages;
     }
 
     public LibraryOptions requirePerfectSubtitleMatch(@javax.annotation.Nullable Boolean requirePerfectSubtitleMatch) {
@@ -1499,12 +1438,12 @@ public class LibraryOptions {
                 && Objects.equals(this.enableEmbeddedExtrasTitles, libraryOptions.enableEmbeddedExtrasTitles)
                 && Objects.equals(this.enableEmbeddedEpisodeInfos, libraryOptions.enableEmbeddedEpisodeInfos)
                 && Objects.equals(this.automaticRefreshIntervalDays, libraryOptions.automaticRefreshIntervalDays)
-                && equalsNullable(this.preferredMetadataLanguage, libraryOptions.preferredMetadataLanguage)
-                && equalsNullable(this.metadataCountryCode, libraryOptions.metadataCountryCode)
+                && Objects.equals(this.preferredMetadataLanguage, libraryOptions.preferredMetadataLanguage)
+                && Objects.equals(this.metadataCountryCode, libraryOptions.metadataCountryCode)
                 && Objects.equals(this.seasonZeroDisplayName, libraryOptions.seasonZeroDisplayName)
-                && equalsNullable(this.metadataSavers, libraryOptions.metadataSavers)
+                && Objects.equals(this.metadataSavers, libraryOptions.metadataSavers)
                 && Objects.equals(this.disabledLocalMetadataReaders, libraryOptions.disabledLocalMetadataReaders)
-                && equalsNullable(this.localMetadataReaderOrder, libraryOptions.localMetadataReaderOrder)
+                && Objects.equals(this.localMetadataReaderOrder, libraryOptions.localMetadataReaderOrder)
                 && Objects.equals(this.disabledSubtitleFetchers, libraryOptions.disabledSubtitleFetchers)
                 && Objects.equals(this.subtitleFetcherOrder, libraryOptions.subtitleFetcherOrder)
                 && Objects.equals(this.disabledMediaSegmentProviders, libraryOptions.disabledMediaSegmentProviders)
@@ -1513,7 +1452,7 @@ public class LibraryOptions {
                         libraryOptions.skipSubtitlesIfEmbeddedSubtitlesPresent)
                 && Objects.equals(this.skipSubtitlesIfAudioTrackMatches,
                         libraryOptions.skipSubtitlesIfAudioTrackMatches)
-                && equalsNullable(this.subtitleDownloadLanguages, libraryOptions.subtitleDownloadLanguages)
+                && Objects.equals(this.subtitleDownloadLanguages, libraryOptions.subtitleDownloadLanguages)
                 && Objects.equals(this.requirePerfectSubtitleMatch, libraryOptions.requirePerfectSubtitleMatch)
                 && Objects.equals(this.saveSubtitlesWithMedia, libraryOptions.saveSubtitlesWithMedia)
                 && Objects.equals(this.saveLyricsWithMedia, libraryOptions.saveLyricsWithMedia)
@@ -1529,33 +1468,20 @@ public class LibraryOptions {
                 && Objects.equals(this.typeOptions, libraryOptions.typeOptions);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(enabled, enablePhotos, enableRealtimeMonitor, enableLUFSScan, enableChapterImageExtraction,
                 extractChapterImagesDuringLibraryScan, enableTrickplayImageExtraction,
                 extractTrickplayImagesDuringLibraryScan, pathInfos, saveLocalMetadata, enableInternetProviders,
                 enableAutomaticSeriesGrouping, enableEmbeddedTitles, enableEmbeddedExtrasTitles,
-                enableEmbeddedEpisodeInfos, automaticRefreshIntervalDays, hashCodeNullable(preferredMetadataLanguage),
-                hashCodeNullable(metadataCountryCode), seasonZeroDisplayName, hashCodeNullable(metadataSavers),
-                disabledLocalMetadataReaders, hashCodeNullable(localMetadataReaderOrder), disabledSubtitleFetchers,
-                subtitleFetcherOrder, disabledMediaSegmentProviders, mediaSegmentProvideOrder,
-                skipSubtitlesIfEmbeddedSubtitlesPresent, skipSubtitlesIfAudioTrackMatches,
-                hashCodeNullable(subtitleDownloadLanguages), requirePerfectSubtitleMatch, saveSubtitlesWithMedia,
-                saveLyricsWithMedia, saveTrickplayWithMedia, disabledLyricFetchers, lyricFetcherOrder,
-                preferNonstandardArtistsTag, useCustomTagDelimiters, customTagDelimiters, delimiterWhitelist,
-                automaticallyAddToCollection, allowEmbeddedSubtitles, typeOptions);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+                enableEmbeddedEpisodeInfos, automaticRefreshIntervalDays, preferredMetadataLanguage,
+                metadataCountryCode, seasonZeroDisplayName, metadataSavers, disabledLocalMetadataReaders,
+                localMetadataReaderOrder, disabledSubtitleFetchers, subtitleFetcherOrder, disabledMediaSegmentProviders,
+                mediaSegmentProvideOrder, skipSubtitlesIfEmbeddedSubtitlesPresent, skipSubtitlesIfAudioTrackMatches,
+                subtitleDownloadLanguages, requirePerfectSubtitleMatch, saveSubtitlesWithMedia, saveLyricsWithMedia,
+                saveTrickplayWithMedia, disabledLyricFetchers, lyricFetcherOrder, preferNonstandardArtistsTag,
+                useCustomTagDelimiters, customTagDelimiters, delimiterWhitelist, automaticallyAddToCollection,
+                allowEmbeddedSubtitles, typeOptions);
     }
 
     @Override
@@ -1727,21 +1653,11 @@ public class LibraryOptions {
         }
 
         public LibraryOptions.Builder preferredMetadataLanguage(String preferredMetadataLanguage) {
-            this.instance.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
-            return this;
-        }
-
-        public LibraryOptions.Builder preferredMetadataLanguage(JsonNullable<String> preferredMetadataLanguage) {
             this.instance.preferredMetadataLanguage = preferredMetadataLanguage;
             return this;
         }
 
         public LibraryOptions.Builder metadataCountryCode(String metadataCountryCode) {
-            this.instance.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
-            return this;
-        }
-
-        public LibraryOptions.Builder metadataCountryCode(JsonNullable<String> metadataCountryCode) {
             this.instance.metadataCountryCode = metadataCountryCode;
             return this;
         }
@@ -1752,11 +1668,6 @@ public class LibraryOptions {
         }
 
         public LibraryOptions.Builder metadataSavers(List<String> metadataSavers) {
-            this.instance.metadataSavers = JsonNullable.<List<String>> of(metadataSavers);
-            return this;
-        }
-
-        public LibraryOptions.Builder metadataSavers(JsonNullable<List<String>> metadataSavers) {
             this.instance.metadataSavers = metadataSavers;
             return this;
         }
@@ -1767,11 +1678,6 @@ public class LibraryOptions {
         }
 
         public LibraryOptions.Builder localMetadataReaderOrder(List<String> localMetadataReaderOrder) {
-            this.instance.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
-            return this;
-        }
-
-        public LibraryOptions.Builder localMetadataReaderOrder(JsonNullable<List<String>> localMetadataReaderOrder) {
             this.instance.localMetadataReaderOrder = localMetadataReaderOrder;
             return this;
         }
@@ -1808,11 +1714,6 @@ public class LibraryOptions {
         }
 
         public LibraryOptions.Builder subtitleDownloadLanguages(List<String> subtitleDownloadLanguages) {
-            this.instance.subtitleDownloadLanguages = JsonNullable.<List<String>> of(subtitleDownloadLanguages);
-            return this;
-        }
-
-        public LibraryOptions.Builder subtitleDownloadLanguages(JsonNullable<List<String>> subtitleDownloadLanguages) {
             this.instance.subtitleDownloadLanguages = subtitleDownloadLanguages;
             return this;
         }

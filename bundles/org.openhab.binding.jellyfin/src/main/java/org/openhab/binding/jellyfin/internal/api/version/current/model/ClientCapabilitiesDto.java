@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -58,15 +54,15 @@ public class ClientCapabilitiesDto {
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
     @javax.annotation.Nullable
-    private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile> undefined();
+    private DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> appStoreUrl = JsonNullable.<String> undefined();
+    private String appStoreUrl;
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> iconUrl = JsonNullable.<String> undefined();
+    private String iconUrl;
 
     public ClientCapabilitiesDto() {
     }
@@ -190,8 +186,8 @@ public class ClientCapabilitiesDto {
     }
 
     public ClientCapabilitiesDto deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
 
+        this.deviceProfile = deviceProfile;
         return this;
     }
 
@@ -201,31 +197,22 @@ public class ClientCapabilitiesDto {
      * @return deviceProfile
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public DeviceProfile getDeviceProfile() {
-        return deviceProfile.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<DeviceProfile> getDeviceProfile_JsonNullable() {
+    public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
-    public void setDeviceProfile_JsonNullable(JsonNullable<DeviceProfile> deviceProfile) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
         this.deviceProfile = deviceProfile;
     }
 
-    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-    }
-
     public ClientCapabilitiesDto appStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
-        this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
 
+        this.appStoreUrl = appStoreUrl;
         return this;
     }
 
@@ -235,31 +222,22 @@ public class ClientCapabilitiesDto {
      * @return appStoreUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppStoreUrl() {
-        return appStoreUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAppStoreUrl_JsonNullable() {
+    public String getAppStoreUrl() {
         return appStoreUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
-    public void setAppStoreUrl_JsonNullable(JsonNullable<String> appStoreUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAppStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
         this.appStoreUrl = appStoreUrl;
     }
 
-    public void setAppStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
-        this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
-    }
-
     public ClientCapabilitiesDto iconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
 
+        this.iconUrl = iconUrl;
         return this;
     }
 
@@ -269,26 +247,17 @@ public class ClientCapabilitiesDto {
      * @return iconUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getIconUrl() {
-        return iconUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ICON_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getIconUrl_JsonNullable() {
+    public String getIconUrl() {
         return iconUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_ICON_URL)
-    public void setIconUrl_JsonNullable(JsonNullable<String> iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
+        this.iconUrl = iconUrl;
     }
 
     @Override
@@ -304,27 +273,15 @@ public class ClientCapabilitiesDto {
                 && Objects.equals(this.supportedCommands, clientCapabilitiesDto.supportedCommands)
                 && Objects.equals(this.supportsMediaControl, clientCapabilitiesDto.supportsMediaControl)
                 && Objects.equals(this.supportsPersistentIdentifier, clientCapabilitiesDto.supportsPersistentIdentifier)
-                && equalsNullable(this.deviceProfile, clientCapabilitiesDto.deviceProfile)
-                && equalsNullable(this.appStoreUrl, clientCapabilitiesDto.appStoreUrl)
-                && equalsNullable(this.iconUrl, clientCapabilitiesDto.iconUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.deviceProfile, clientCapabilitiesDto.deviceProfile)
+                && Objects.equals(this.appStoreUrl, clientCapabilitiesDto.appStoreUrl)
+                && Objects.equals(this.iconUrl, clientCapabilitiesDto.iconUrl);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(playableMediaTypes, supportedCommands, supportsMediaControl, supportsPersistentIdentifier,
-                hashCodeNullable(deviceProfile), hashCodeNullable(appStoreUrl), hashCodeNullable(iconUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+                deviceProfile, appStoreUrl, iconUrl);
     }
 
     @Override
@@ -387,31 +344,16 @@ public class ClientCapabilitiesDto {
         }
 
         public ClientCapabilitiesDto.Builder deviceProfile(DeviceProfile deviceProfile) {
-            this.instance.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder deviceProfile(JsonNullable<DeviceProfile> deviceProfile) {
             this.instance.deviceProfile = deviceProfile;
             return this;
         }
 
         public ClientCapabilitiesDto.Builder appStoreUrl(String appStoreUrl) {
-            this.instance.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder appStoreUrl(JsonNullable<String> appStoreUrl) {
             this.instance.appStoreUrl = appStoreUrl;
             return this;
         }
 
         public ClientCapabilitiesDto.Builder iconUrl(String iconUrl) {
-            this.instance.iconUrl = JsonNullable.<String> of(iconUrl);
-            return this;
-        }
-
-        public ClientCapabilitiesDto.Builder iconUrl(JsonNullable<String> iconUrl) {
             this.instance.iconUrl = iconUrl;
             return this;
         }

@@ -17,14 +17,10 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GeneralCommandMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<GeneralCommand> data = JsonNullable.<GeneralCommand> undefined();
+    private GeneralCommand data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @javax.annotation.Nullable
@@ -61,8 +57,8 @@ public class GeneralCommandMessage {
     }
 
     public GeneralCommandMessage data(@javax.annotation.Nullable GeneralCommand data) {
-        this.data = JsonNullable.<GeneralCommand> of(data);
 
+        this.data = data;
         return this;
     }
 
@@ -72,26 +68,17 @@ public class GeneralCommandMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public GeneralCommand getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<GeneralCommand> getData_JsonNullable() {
+    public GeneralCommand getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<GeneralCommand> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable GeneralCommand data) {
-        this.data = JsonNullable.<GeneralCommand> of(data);
+        this.data = data;
     }
 
     public GeneralCommandMessage messageId(@javax.annotation.Nullable UUID messageId) {
@@ -141,26 +128,14 @@ public class GeneralCommandMessage {
             return false;
         }
         GeneralCommandMessage generalCommandMessage = (GeneralCommandMessage) o;
-        return equalsNullable(this.data, generalCommandMessage.data)
+        return Objects.equals(this.data, generalCommandMessage.data)
                 && Objects.equals(this.messageId, generalCommandMessage.messageId)
                 && Objects.equals(this.messageType, generalCommandMessage.messageType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageId, messageType);
     }
 
     @Override
@@ -198,11 +173,6 @@ public class GeneralCommandMessage {
         }
 
         public GeneralCommandMessage.Builder data(GeneralCommand data) {
-            this.instance.data = JsonNullable.<GeneralCommand> of(data);
-            return this;
-        }
-
-        public GeneralCommandMessage.Builder data(JsonNullable<GeneralCommand> data) {
             this.instance.data = data;
             return this;
         }

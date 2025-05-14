@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -69,7 +65,7 @@ public class DlnaOptions {
 
     public static final String JSON_PROPERTY_DEFAULT_USER_ID = "DefaultUserId";
     @javax.annotation.Nullable
-    private JsonNullable<String> defaultUserId = JsonNullable.<String> undefined();
+    private String defaultUserId;
 
     public static final String JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES = "AutoCreatePlayToProfiles";
     @javax.annotation.Nullable
@@ -270,8 +266,8 @@ public class DlnaOptions {
     }
 
     public DlnaOptions defaultUserId(@javax.annotation.Nullable String defaultUserId) {
-        this.defaultUserId = JsonNullable.<String> of(defaultUserId);
 
+        this.defaultUserId = defaultUserId;
         return this;
     }
 
@@ -281,26 +277,17 @@ public class DlnaOptions {
      * @return defaultUserId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDefaultUserId() {
-        return defaultUserId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEFAULT_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDefaultUserId_JsonNullable() {
+    public String getDefaultUserId() {
         return defaultUserId;
     }
 
     @JsonProperty(JSON_PROPERTY_DEFAULT_USER_ID)
-    public void setDefaultUserId_JsonNullable(JsonNullable<String> defaultUserId) {
-        this.defaultUserId = defaultUserId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultUserId(@javax.annotation.Nullable String defaultUserId) {
-        this.defaultUserId = JsonNullable.<String> of(defaultUserId);
+        this.defaultUserId = defaultUserId;
     }
 
     public DlnaOptions autoCreatePlayToProfiles(@javax.annotation.Nullable Boolean autoCreatePlayToProfiles) {
@@ -394,29 +381,17 @@ public class DlnaOptions {
                 && Objects.equals(this.clientDiscoveryIntervalSeconds, dlnaOptions.clientDiscoveryIntervalSeconds)
                 && Objects.equals(this.aliveMessageIntervalSeconds, dlnaOptions.aliveMessageIntervalSeconds)
                 && Objects.equals(this.blastAliveMessageIntervalSeconds, dlnaOptions.blastAliveMessageIntervalSeconds)
-                && equalsNullable(this.defaultUserId, dlnaOptions.defaultUserId)
+                && Objects.equals(this.defaultUserId, dlnaOptions.defaultUserId)
                 && Objects.equals(this.autoCreatePlayToProfiles, dlnaOptions.autoCreatePlayToProfiles)
                 && Objects.equals(this.blastAliveMessages, dlnaOptions.blastAliveMessages)
                 && Objects.equals(this.sendOnlyMatchedHost, dlnaOptions.sendOnlyMatchedHost);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(enablePlayTo, enableServer, enableDebugLog, enablePlayToTracing,
                 clientDiscoveryIntervalSeconds, aliveMessageIntervalSeconds, blastAliveMessageIntervalSeconds,
-                hashCodeNullable(defaultUserId), autoCreatePlayToProfiles, blastAliveMessages, sendOnlyMatchedHost);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+                defaultUserId, autoCreatePlayToProfiles, blastAliveMessages, sendOnlyMatchedHost);
     }
 
     @Override
@@ -500,11 +475,6 @@ public class DlnaOptions {
         }
 
         public DlnaOptions.Builder defaultUserId(String defaultUserId) {
-            this.instance.defaultUserId = JsonNullable.<String> of(defaultUserId);
-            return this;
-        }
-
-        public DlnaOptions.Builder defaultUserId(JsonNullable<String> defaultUserId) {
             this.instance.defaultUserId = defaultUserId;
             return this;
         }

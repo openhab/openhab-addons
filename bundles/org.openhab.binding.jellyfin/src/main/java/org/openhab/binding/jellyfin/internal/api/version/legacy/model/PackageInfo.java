@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -68,7 +64,7 @@ public class PackageInfo {
 
     public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> imageUrl = JsonNullable.<String> undefined();
+    private String imageUrl;
 
     public PackageInfo() {
     }
@@ -258,8 +254,8 @@ public class PackageInfo {
     }
 
     public PackageInfo imageUrl(@javax.annotation.Nullable String imageUrl) {
-        this.imageUrl = JsonNullable.<String> of(imageUrl);
 
+        this.imageUrl = imageUrl;
         return this;
     }
 
@@ -269,26 +265,17 @@ public class PackageInfo {
      * @return imageUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getImageUrl() {
-        return imageUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IMAGE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getImageUrl_JsonNullable() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_IMAGE_URL)
-    public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
-        this.imageUrl = JsonNullable.<String> of(imageUrl);
+        this.imageUrl = imageUrl;
     }
 
     @Override
@@ -304,24 +291,12 @@ public class PackageInfo {
                 && Objects.equals(this.overview, packageInfo.overview) && Objects.equals(this.owner, packageInfo.owner)
                 && Objects.equals(this.category, packageInfo.category) && Objects.equals(this.guid, packageInfo.guid)
                 && Objects.equals(this.versions, packageInfo.versions)
-                && equalsNullable(this.imageUrl, packageInfo.imageUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.imageUrl, packageInfo.imageUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, overview, owner, category, guid, versions, hashCodeNullable(imageUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, description, overview, owner, category, guid, versions, imageUrl);
     }
 
     @Override
@@ -399,11 +374,6 @@ public class PackageInfo {
         }
 
         public PackageInfo.Builder imageUrl(String imageUrl) {
-            this.instance.imageUrl = JsonNullable.<String> of(imageUrl);
-            return this;
-        }
-
-        public PackageInfo.Builder imageUrl(JsonNullable<String> imageUrl) {
             this.instance.imageUrl = imageUrl;
             return this;
         }

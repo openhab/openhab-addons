@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -51,15 +47,15 @@ public class CodecProfile {
 
     public static final String JSON_PROPERTY_CODEC = "Codec";
     @javax.annotation.Nullable
-    private JsonNullable<String> codec = JsonNullable.<String> undefined();
+    private String codec;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+    private String container;
 
     public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
     @javax.annotation.Nullable
-    private JsonNullable<String> subContainer = JsonNullable.<String> undefined();
+    private String subContainer;
 
     public CodecProfile() {
     }
@@ -156,8 +152,8 @@ public class CodecProfile {
     }
 
     public CodecProfile codec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
 
+        this.codec = codec;
         return this;
     }
 
@@ -167,31 +163,22 @@ public class CodecProfile {
      * @return codec
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCodec() {
-        return codec.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCodec_JsonNullable() {
+    public String getCodec() {
         return codec;
     }
 
     @JsonProperty(JSON_PROPERTY_CODEC)
-    public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCodec(@javax.annotation.Nullable String codec) {
         this.codec = codec;
     }
 
-    public void setCodec(@javax.annotation.Nullable String codec) {
-        this.codec = JsonNullable.<String> of(codec);
-    }
-
     public CodecProfile container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
 
+        this.container = container;
         return this;
     }
 
@@ -201,31 +188,22 @@ public class CodecProfile {
      * @return container
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
+    public String getContainer() {
         return container;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContainer(@javax.annotation.Nullable String container) {
         this.container = container;
     }
 
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
-
     public CodecProfile subContainer(@javax.annotation.Nullable String subContainer) {
-        this.subContainer = JsonNullable.<String> of(subContainer);
 
+        this.subContainer = subContainer;
         return this;
     }
 
@@ -235,26 +213,17 @@ public class CodecProfile {
      * @return subContainer
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSubContainer() {
-        return subContainer.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSubContainer_JsonNullable() {
+    public String getSubContainer() {
         return subContainer;
     }
 
     @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
-    public void setSubContainer_JsonNullable(JsonNullable<String> subContainer) {
-        this.subContainer = subContainer;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubContainer(@javax.annotation.Nullable String subContainer) {
-        this.subContainer = JsonNullable.<String> of(subContainer);
+        this.subContainer = subContainer;
     }
 
     @Override
@@ -268,27 +237,14 @@ public class CodecProfile {
         CodecProfile codecProfile = (CodecProfile) o;
         return Objects.equals(this.type, codecProfile.type) && Objects.equals(this.conditions, codecProfile.conditions)
                 && Objects.equals(this.applyConditions, codecProfile.applyConditions)
-                && equalsNullable(this.codec, codecProfile.codec)
-                && equalsNullable(this.container, codecProfile.container)
-                && equalsNullable(this.subContainer, codecProfile.subContainer);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.codec, codecProfile.codec)
+                && Objects.equals(this.container, codecProfile.container)
+                && Objects.equals(this.subContainer, codecProfile.subContainer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, conditions, applyConditions, hashCodeNullable(codec), hashCodeNullable(container),
-                hashCodeNullable(subContainer));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, conditions, applyConditions, codec, container, subContainer);
     }
 
     @Override
@@ -344,31 +300,16 @@ public class CodecProfile {
         }
 
         public CodecProfile.Builder codec(String codec) {
-            this.instance.codec = JsonNullable.<String> of(codec);
-            return this;
-        }
-
-        public CodecProfile.Builder codec(JsonNullable<String> codec) {
             this.instance.codec = codec;
             return this;
         }
 
         public CodecProfile.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public CodecProfile.Builder container(JsonNullable<String> container) {
             this.instance.container = container;
             return this;
         }
 
         public CodecProfile.Builder subContainer(String subContainer) {
-            this.instance.subContainer = JsonNullable.<String> of(subContainer);
-            return this;
-        }
-
-        public CodecProfile.Builder subContainer(JsonNullable<String> subContainer) {
             this.instance.subContainer = subContainer;
             return this;
         }

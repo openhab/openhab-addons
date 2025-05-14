@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -84,15 +80,15 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_MAX_PARENTAL_RATING = "MaxParentalRating";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxParentalRating = JsonNullable.<Integer> undefined();
+    private Integer maxParentalRating;
 
     public static final String JSON_PROPERTY_BLOCKED_TAGS = "BlockedTags";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> blockedTags = JsonNullable.<List<String>> undefined();
+    private List<String> blockedTags;
 
     public static final String JSON_PROPERTY_ALLOWED_TAGS = "AllowedTags";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> allowedTags = JsonNullable.<List<String>> undefined();
+    private List<String> allowedTags;
 
     public static final String JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS = "EnableUserPreferenceAccess";
     @javax.annotation.Nullable
@@ -100,11 +96,11 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_ACCESS_SCHEDULES = "AccessSchedules";
     @javax.annotation.Nullable
-    private JsonNullable<List<AccessSchedule>> accessSchedules = JsonNullable.<List<AccessSchedule>> undefined();
+    private List<AccessSchedule> accessSchedules;
 
     public static final String JSON_PROPERTY_BLOCK_UNRATED_ITEMS = "BlockUnratedItems";
     @javax.annotation.Nullable
-    private JsonNullable<List<UnratedItem>> blockUnratedItems = JsonNullable.<List<UnratedItem>> undefined();
+    private List<UnratedItem> blockUnratedItems;
 
     public static final String JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS = "EnableRemoteControlOfOtherUsers";
     @javax.annotation.Nullable
@@ -152,7 +148,7 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS = "EnableContentDeletionFromFolders";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> enableContentDeletionFromFolders = JsonNullable.<List<String>> undefined();
+    private List<String> enableContentDeletionFromFolders;
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING = "EnableContentDownloading";
     @javax.annotation.Nullable
@@ -168,7 +164,7 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_ENABLED_DEVICES = "EnabledDevices";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> enabledDevices = JsonNullable.<List<String>> undefined();
+    private List<String> enabledDevices;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_DEVICES = "EnableAllDevices";
     @javax.annotation.Nullable
@@ -176,7 +172,7 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_ENABLED_CHANNELS = "EnabledChannels";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> enabledChannels = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> enabledChannels;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_CHANNELS = "EnableAllChannels";
     @javax.annotation.Nullable
@@ -184,7 +180,7 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_ENABLED_FOLDERS = "EnabledFolders";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> enabledFolders = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> enabledFolders;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_FOLDERS = "EnableAllFolders";
     @javax.annotation.Nullable
@@ -208,11 +204,11 @@ public class UserPolicy {
 
     public static final String JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS = "BlockedMediaFolders";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> blockedMediaFolders = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> blockedMediaFolders;
 
     public static final String JSON_PROPERTY_BLOCKED_CHANNELS = "BlockedChannels";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> blockedChannels = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> blockedChannels;
 
     public static final String JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT = "RemoteClientBitrateLimit";
     @javax.annotation.Nullable
@@ -384,8 +380,8 @@ public class UserPolicy {
     }
 
     public UserPolicy maxParentalRating(@javax.annotation.Nullable Integer maxParentalRating) {
-        this.maxParentalRating = JsonNullable.<Integer> of(maxParentalRating);
 
+        this.maxParentalRating = maxParentalRating;
         return this;
     }
 
@@ -395,43 +391,30 @@ public class UserPolicy {
      * @return maxParentalRating
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxParentalRating() {
-        return maxParentalRating.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_PARENTAL_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxParentalRating_JsonNullable() {
+    public Integer getMaxParentalRating() {
         return maxParentalRating;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_PARENTAL_RATING)
-    public void setMaxParentalRating_JsonNullable(JsonNullable<Integer> maxParentalRating) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxParentalRating(@javax.annotation.Nullable Integer maxParentalRating) {
         this.maxParentalRating = maxParentalRating;
     }
 
-    public void setMaxParentalRating(@javax.annotation.Nullable Integer maxParentalRating) {
-        this.maxParentalRating = JsonNullable.<Integer> of(maxParentalRating);
-    }
-
     public UserPolicy blockedTags(@javax.annotation.Nullable List<String> blockedTags) {
-        this.blockedTags = JsonNullable.<List<String>> of(blockedTags);
 
+        this.blockedTags = blockedTags;
         return this;
     }
 
     public UserPolicy addBlockedTagsItem(String blockedTagsItem) {
-        if (this.blockedTags == null || !this.blockedTags.isPresent()) {
-            this.blockedTags = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.blockedTags == null) {
+            this.blockedTags = new ArrayList<>();
         }
-        try {
-            this.blockedTags.get().add(blockedTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.blockedTags.add(blockedTagsItem);
         return this;
     }
 
@@ -441,43 +424,30 @@ public class UserPolicy {
      * @return blockedTags
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getBlockedTags() {
-        return blockedTags.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BLOCKED_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getBlockedTags_JsonNullable() {
+    public List<String> getBlockedTags() {
         return blockedTags;
     }
 
     @JsonProperty(JSON_PROPERTY_BLOCKED_TAGS)
-    public void setBlockedTags_JsonNullable(JsonNullable<List<String>> blockedTags) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBlockedTags(@javax.annotation.Nullable List<String> blockedTags) {
         this.blockedTags = blockedTags;
     }
 
-    public void setBlockedTags(@javax.annotation.Nullable List<String> blockedTags) {
-        this.blockedTags = JsonNullable.<List<String>> of(blockedTags);
-    }
-
     public UserPolicy allowedTags(@javax.annotation.Nullable List<String> allowedTags) {
-        this.allowedTags = JsonNullable.<List<String>> of(allowedTags);
 
+        this.allowedTags = allowedTags;
         return this;
     }
 
     public UserPolicy addAllowedTagsItem(String allowedTagsItem) {
-        if (this.allowedTags == null || !this.allowedTags.isPresent()) {
-            this.allowedTags = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.allowedTags == null) {
+            this.allowedTags = new ArrayList<>();
         }
-        try {
-            this.allowedTags.get().add(allowedTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.allowedTags.add(allowedTagsItem);
         return this;
     }
 
@@ -487,26 +457,17 @@ public class UserPolicy {
      * @return allowedTags
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getAllowedTags() {
-        return allowedTags.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALLOWED_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getAllowedTags_JsonNullable() {
+    public List<String> getAllowedTags() {
         return allowedTags;
     }
 
     @JsonProperty(JSON_PROPERTY_ALLOWED_TAGS)
-    public void setAllowedTags_JsonNullable(JsonNullable<List<String>> allowedTags) {
-        this.allowedTags = allowedTags;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowedTags(@javax.annotation.Nullable List<String> allowedTags) {
-        this.allowedTags = JsonNullable.<List<String>> of(allowedTags);
+        this.allowedTags = allowedTags;
     }
 
     public UserPolicy enableUserPreferenceAccess(@javax.annotation.Nullable Boolean enableUserPreferenceAccess) {
@@ -535,20 +496,16 @@ public class UserPolicy {
     }
 
     public UserPolicy accessSchedules(@javax.annotation.Nullable List<AccessSchedule> accessSchedules) {
-        this.accessSchedules = JsonNullable.<List<AccessSchedule>> of(accessSchedules);
 
+        this.accessSchedules = accessSchedules;
         return this;
     }
 
     public UserPolicy addAccessSchedulesItem(AccessSchedule accessSchedulesItem) {
-        if (this.accessSchedules == null || !this.accessSchedules.isPresent()) {
-            this.accessSchedules = JsonNullable.<List<AccessSchedule>> of(new ArrayList<>());
+        if (this.accessSchedules == null) {
+            this.accessSchedules = new ArrayList<>();
         }
-        try {
-            this.accessSchedules.get().add(accessSchedulesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.accessSchedules.add(accessSchedulesItem);
         return this;
     }
 
@@ -558,43 +515,30 @@ public class UserPolicy {
      * @return accessSchedules
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<AccessSchedule> getAccessSchedules() {
-        return accessSchedules.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ACCESS_SCHEDULES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<AccessSchedule>> getAccessSchedules_JsonNullable() {
+    public List<AccessSchedule> getAccessSchedules() {
         return accessSchedules;
     }
 
     @JsonProperty(JSON_PROPERTY_ACCESS_SCHEDULES)
-    public void setAccessSchedules_JsonNullable(JsonNullable<List<AccessSchedule>> accessSchedules) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAccessSchedules(@javax.annotation.Nullable List<AccessSchedule> accessSchedules) {
         this.accessSchedules = accessSchedules;
     }
 
-    public void setAccessSchedules(@javax.annotation.Nullable List<AccessSchedule> accessSchedules) {
-        this.accessSchedules = JsonNullable.<List<AccessSchedule>> of(accessSchedules);
-    }
-
     public UserPolicy blockUnratedItems(@javax.annotation.Nullable List<UnratedItem> blockUnratedItems) {
-        this.blockUnratedItems = JsonNullable.<List<UnratedItem>> of(blockUnratedItems);
 
+        this.blockUnratedItems = blockUnratedItems;
         return this;
     }
 
     public UserPolicy addBlockUnratedItemsItem(UnratedItem blockUnratedItemsItem) {
-        if (this.blockUnratedItems == null || !this.blockUnratedItems.isPresent()) {
-            this.blockUnratedItems = JsonNullable.<List<UnratedItem>> of(new ArrayList<>());
+        if (this.blockUnratedItems == null) {
+            this.blockUnratedItems = new ArrayList<>();
         }
-        try {
-            this.blockUnratedItems.get().add(blockUnratedItemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.blockUnratedItems.add(blockUnratedItemsItem);
         return this;
     }
 
@@ -604,26 +548,17 @@ public class UserPolicy {
      * @return blockUnratedItems
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UnratedItem> getBlockUnratedItems() {
-        return blockUnratedItems.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BLOCK_UNRATED_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UnratedItem>> getBlockUnratedItems_JsonNullable() {
+    public List<UnratedItem> getBlockUnratedItems() {
         return blockUnratedItems;
     }
 
     @JsonProperty(JSON_PROPERTY_BLOCK_UNRATED_ITEMS)
-    public void setBlockUnratedItems_JsonNullable(JsonNullable<List<UnratedItem>> blockUnratedItems) {
-        this.blockUnratedItems = blockUnratedItems;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBlockUnratedItems(@javax.annotation.Nullable List<UnratedItem> blockUnratedItems) {
-        this.blockUnratedItems = JsonNullable.<List<UnratedItem>> of(blockUnratedItems);
+        this.blockUnratedItems = blockUnratedItems;
     }
 
     public UserPolicy enableRemoteControlOfOtherUsers(
@@ -906,20 +841,16 @@ public class UserPolicy {
 
     public UserPolicy enableContentDeletionFromFolders(
             @javax.annotation.Nullable List<String> enableContentDeletionFromFolders) {
-        this.enableContentDeletionFromFolders = JsonNullable.<List<String>> of(enableContentDeletionFromFolders);
 
+        this.enableContentDeletionFromFolders = enableContentDeletionFromFolders;
         return this;
     }
 
     public UserPolicy addEnableContentDeletionFromFoldersItem(String enableContentDeletionFromFoldersItem) {
-        if (this.enableContentDeletionFromFolders == null || !this.enableContentDeletionFromFolders.isPresent()) {
-            this.enableContentDeletionFromFolders = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.enableContentDeletionFromFolders == null) {
+            this.enableContentDeletionFromFolders = new ArrayList<>();
         }
-        try {
-            this.enableContentDeletionFromFolders.get().add(enableContentDeletionFromFoldersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.enableContentDeletionFromFolders.add(enableContentDeletionFromFoldersItem);
         return this;
     }
 
@@ -929,28 +860,18 @@ public class UserPolicy {
      * @return enableContentDeletionFromFolders
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getEnableContentDeletionFromFolders() {
-        return enableContentDeletionFromFolders.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getEnableContentDeletionFromFolders_JsonNullable() {
+    public List<String> getEnableContentDeletionFromFolders() {
         return enableContentDeletionFromFolders;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS)
-    public void setEnableContentDeletionFromFolders_JsonNullable(
-            JsonNullable<List<String>> enableContentDeletionFromFolders) {
-        this.enableContentDeletionFromFolders = enableContentDeletionFromFolders;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableContentDeletionFromFolders(
             @javax.annotation.Nullable List<String> enableContentDeletionFromFolders) {
-        this.enableContentDeletionFromFolders = JsonNullable.<List<String>> of(enableContentDeletionFromFolders);
+        this.enableContentDeletionFromFolders = enableContentDeletionFromFolders;
     }
 
     public UserPolicy enableContentDownloading(@javax.annotation.Nullable Boolean enableContentDownloading) {
@@ -1029,20 +950,16 @@ public class UserPolicy {
     }
 
     public UserPolicy enabledDevices(@javax.annotation.Nullable List<String> enabledDevices) {
-        this.enabledDevices = JsonNullable.<List<String>> of(enabledDevices);
 
+        this.enabledDevices = enabledDevices;
         return this;
     }
 
     public UserPolicy addEnabledDevicesItem(String enabledDevicesItem) {
-        if (this.enabledDevices == null || !this.enabledDevices.isPresent()) {
-            this.enabledDevices = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.enabledDevices == null) {
+            this.enabledDevices = new ArrayList<>();
         }
-        try {
-            this.enabledDevices.get().add(enabledDevicesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.enabledDevices.add(enabledDevicesItem);
         return this;
     }
 
@@ -1052,26 +969,17 @@ public class UserPolicy {
      * @return enabledDevices
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getEnabledDevices() {
-        return enabledDevices.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLED_DEVICES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getEnabledDevices_JsonNullable() {
+    public List<String> getEnabledDevices() {
         return enabledDevices;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLED_DEVICES)
-    public void setEnabledDevices_JsonNullable(JsonNullable<List<String>> enabledDevices) {
-        this.enabledDevices = enabledDevices;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnabledDevices(@javax.annotation.Nullable List<String> enabledDevices) {
-        this.enabledDevices = JsonNullable.<List<String>> of(enabledDevices);
+        this.enabledDevices = enabledDevices;
     }
 
     public UserPolicy enableAllDevices(@javax.annotation.Nullable Boolean enableAllDevices) {
@@ -1100,20 +1008,16 @@ public class UserPolicy {
     }
 
     public UserPolicy enabledChannels(@javax.annotation.Nullable List<UUID> enabledChannels) {
-        this.enabledChannels = JsonNullable.<List<UUID>> of(enabledChannels);
 
+        this.enabledChannels = enabledChannels;
         return this;
     }
 
     public UserPolicy addEnabledChannelsItem(UUID enabledChannelsItem) {
-        if (this.enabledChannels == null || !this.enabledChannels.isPresent()) {
-            this.enabledChannels = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.enabledChannels == null) {
+            this.enabledChannels = new ArrayList<>();
         }
-        try {
-            this.enabledChannels.get().add(enabledChannelsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.enabledChannels.add(enabledChannelsItem);
         return this;
     }
 
@@ -1123,26 +1027,17 @@ public class UserPolicy {
      * @return enabledChannels
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getEnabledChannels() {
-        return enabledChannels.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLED_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getEnabledChannels_JsonNullable() {
+    public List<UUID> getEnabledChannels() {
         return enabledChannels;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLED_CHANNELS)
-    public void setEnabledChannels_JsonNullable(JsonNullable<List<UUID>> enabledChannels) {
-        this.enabledChannels = enabledChannels;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnabledChannels(@javax.annotation.Nullable List<UUID> enabledChannels) {
-        this.enabledChannels = JsonNullable.<List<UUID>> of(enabledChannels);
+        this.enabledChannels = enabledChannels;
     }
 
     public UserPolicy enableAllChannels(@javax.annotation.Nullable Boolean enableAllChannels) {
@@ -1171,20 +1066,16 @@ public class UserPolicy {
     }
 
     public UserPolicy enabledFolders(@javax.annotation.Nullable List<UUID> enabledFolders) {
-        this.enabledFolders = JsonNullable.<List<UUID>> of(enabledFolders);
 
+        this.enabledFolders = enabledFolders;
         return this;
     }
 
     public UserPolicy addEnabledFoldersItem(UUID enabledFoldersItem) {
-        if (this.enabledFolders == null || !this.enabledFolders.isPresent()) {
-            this.enabledFolders = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.enabledFolders == null) {
+            this.enabledFolders = new ArrayList<>();
         }
-        try {
-            this.enabledFolders.get().add(enabledFoldersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.enabledFolders.add(enabledFoldersItem);
         return this;
     }
 
@@ -1194,26 +1085,17 @@ public class UserPolicy {
      * @return enabledFolders
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getEnabledFolders() {
-        return enabledFolders.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENABLED_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getEnabledFolders_JsonNullable() {
+    public List<UUID> getEnabledFolders() {
         return enabledFolders;
     }
 
     @JsonProperty(JSON_PROPERTY_ENABLED_FOLDERS)
-    public void setEnabledFolders_JsonNullable(JsonNullable<List<UUID>> enabledFolders) {
-        this.enabledFolders = enabledFolders;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnabledFolders(@javax.annotation.Nullable List<UUID> enabledFolders) {
-        this.enabledFolders = JsonNullable.<List<UUID>> of(enabledFolders);
+        this.enabledFolders = enabledFolders;
     }
 
     public UserPolicy enableAllFolders(@javax.annotation.Nullable Boolean enableAllFolders) {
@@ -1342,20 +1224,16 @@ public class UserPolicy {
     }
 
     public UserPolicy blockedMediaFolders(@javax.annotation.Nullable List<UUID> blockedMediaFolders) {
-        this.blockedMediaFolders = JsonNullable.<List<UUID>> of(blockedMediaFolders);
 
+        this.blockedMediaFolders = blockedMediaFolders;
         return this;
     }
 
     public UserPolicy addBlockedMediaFoldersItem(UUID blockedMediaFoldersItem) {
-        if (this.blockedMediaFolders == null || !this.blockedMediaFolders.isPresent()) {
-            this.blockedMediaFolders = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.blockedMediaFolders == null) {
+            this.blockedMediaFolders = new ArrayList<>();
         }
-        try {
-            this.blockedMediaFolders.get().add(blockedMediaFoldersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.blockedMediaFolders.add(blockedMediaFoldersItem);
         return this;
     }
 
@@ -1365,43 +1243,30 @@ public class UserPolicy {
      * @return blockedMediaFolders
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getBlockedMediaFolders() {
-        return blockedMediaFolders.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getBlockedMediaFolders_JsonNullable() {
+    public List<UUID> getBlockedMediaFolders() {
         return blockedMediaFolders;
     }
 
     @JsonProperty(JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS)
-    public void setBlockedMediaFolders_JsonNullable(JsonNullable<List<UUID>> blockedMediaFolders) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBlockedMediaFolders(@javax.annotation.Nullable List<UUID> blockedMediaFolders) {
         this.blockedMediaFolders = blockedMediaFolders;
     }
 
-    public void setBlockedMediaFolders(@javax.annotation.Nullable List<UUID> blockedMediaFolders) {
-        this.blockedMediaFolders = JsonNullable.<List<UUID>> of(blockedMediaFolders);
-    }
-
     public UserPolicy blockedChannels(@javax.annotation.Nullable List<UUID> blockedChannels) {
-        this.blockedChannels = JsonNullable.<List<UUID>> of(blockedChannels);
 
+        this.blockedChannels = blockedChannels;
         return this;
     }
 
     public UserPolicy addBlockedChannelsItem(UUID blockedChannelsItem) {
-        if (this.blockedChannels == null || !this.blockedChannels.isPresent()) {
-            this.blockedChannels = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.blockedChannels == null) {
+            this.blockedChannels = new ArrayList<>();
         }
-        try {
-            this.blockedChannels.get().add(blockedChannelsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.blockedChannels.add(blockedChannelsItem);
         return this;
     }
 
@@ -1411,26 +1276,17 @@ public class UserPolicy {
      * @return blockedChannels
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getBlockedChannels() {
-        return blockedChannels.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BLOCKED_CHANNELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getBlockedChannels_JsonNullable() {
+    public List<UUID> getBlockedChannels() {
         return blockedChannels;
     }
 
     @JsonProperty(JSON_PROPERTY_BLOCKED_CHANNELS)
-    public void setBlockedChannels_JsonNullable(JsonNullable<List<UUID>> blockedChannels) {
-        this.blockedChannels = blockedChannels;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBlockedChannels(@javax.annotation.Nullable List<UUID> blockedChannels) {
-        this.blockedChannels = JsonNullable.<List<UUID>> of(blockedChannels);
+        this.blockedChannels = blockedChannels;
     }
 
     public UserPolicy remoteClientBitrateLimit(@javax.annotation.Nullable Integer remoteClientBitrateLimit) {
@@ -1548,12 +1404,12 @@ public class UserPolicy {
                 && Objects.equals(this.enableSubtitleManagement, userPolicy.enableSubtitleManagement)
                 && Objects.equals(this.enableLyricManagement, userPolicy.enableLyricManagement)
                 && Objects.equals(this.isDisabled, userPolicy.isDisabled)
-                && equalsNullable(this.maxParentalRating, userPolicy.maxParentalRating)
-                && equalsNullable(this.blockedTags, userPolicy.blockedTags)
-                && equalsNullable(this.allowedTags, userPolicy.allowedTags)
+                && Objects.equals(this.maxParentalRating, userPolicy.maxParentalRating)
+                && Objects.equals(this.blockedTags, userPolicy.blockedTags)
+                && Objects.equals(this.allowedTags, userPolicy.allowedTags)
                 && Objects.equals(this.enableUserPreferenceAccess, userPolicy.enableUserPreferenceAccess)
-                && equalsNullable(this.accessSchedules, userPolicy.accessSchedules)
-                && equalsNullable(this.blockUnratedItems, userPolicy.blockUnratedItems)
+                && Objects.equals(this.accessSchedules, userPolicy.accessSchedules)
+                && Objects.equals(this.blockUnratedItems, userPolicy.blockUnratedItems)
                 && Objects.equals(this.enableRemoteControlOfOtherUsers, userPolicy.enableRemoteControlOfOtherUsers)
                 && Objects.equals(this.enableSharedDeviceControl, userPolicy.enableSharedDeviceControl)
                 && Objects.equals(this.enableRemoteAccess, userPolicy.enableRemoteAccess)
@@ -1565,55 +1421,41 @@ public class UserPolicy {
                 && Objects.equals(this.enablePlaybackRemuxing, userPolicy.enablePlaybackRemuxing)
                 && Objects.equals(this.forceRemoteSourceTranscoding, userPolicy.forceRemoteSourceTranscoding)
                 && Objects.equals(this.enableContentDeletion, userPolicy.enableContentDeletion)
-                && equalsNullable(this.enableContentDeletionFromFolders, userPolicy.enableContentDeletionFromFolders)
+                && Objects.equals(this.enableContentDeletionFromFolders, userPolicy.enableContentDeletionFromFolders)
                 && Objects.equals(this.enableContentDownloading, userPolicy.enableContentDownloading)
                 && Objects.equals(this.enableSyncTranscoding, userPolicy.enableSyncTranscoding)
                 && Objects.equals(this.enableMediaConversion, userPolicy.enableMediaConversion)
-                && equalsNullable(this.enabledDevices, userPolicy.enabledDevices)
+                && Objects.equals(this.enabledDevices, userPolicy.enabledDevices)
                 && Objects.equals(this.enableAllDevices, userPolicy.enableAllDevices)
-                && equalsNullable(this.enabledChannels, userPolicy.enabledChannels)
+                && Objects.equals(this.enabledChannels, userPolicy.enabledChannels)
                 && Objects.equals(this.enableAllChannels, userPolicy.enableAllChannels)
-                && equalsNullable(this.enabledFolders, userPolicy.enabledFolders)
+                && Objects.equals(this.enabledFolders, userPolicy.enabledFolders)
                 && Objects.equals(this.enableAllFolders, userPolicy.enableAllFolders)
                 && Objects.equals(this.invalidLoginAttemptCount, userPolicy.invalidLoginAttemptCount)
                 && Objects.equals(this.loginAttemptsBeforeLockout, userPolicy.loginAttemptsBeforeLockout)
                 && Objects.equals(this.maxActiveSessions, userPolicy.maxActiveSessions)
                 && Objects.equals(this.enablePublicSharing, userPolicy.enablePublicSharing)
-                && equalsNullable(this.blockedMediaFolders, userPolicy.blockedMediaFolders)
-                && equalsNullable(this.blockedChannels, userPolicy.blockedChannels)
+                && Objects.equals(this.blockedMediaFolders, userPolicy.blockedMediaFolders)
+                && Objects.equals(this.blockedChannels, userPolicy.blockedChannels)
                 && Objects.equals(this.remoteClientBitrateLimit, userPolicy.remoteClientBitrateLimit)
                 && Objects.equals(this.authenticationProviderId, userPolicy.authenticationProviderId)
                 && Objects.equals(this.passwordResetProviderId, userPolicy.passwordResetProviderId)
                 && Objects.equals(this.syncPlayAccess, userPolicy.syncPlayAccess);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(isAdministrator, isHidden, enableCollectionManagement, enableSubtitleManagement,
-                enableLyricManagement, isDisabled, hashCodeNullable(maxParentalRating), hashCodeNullable(blockedTags),
-                hashCodeNullable(allowedTags), enableUserPreferenceAccess, hashCodeNullable(accessSchedules),
-                hashCodeNullable(blockUnratedItems), enableRemoteControlOfOtherUsers, enableSharedDeviceControl,
-                enableRemoteAccess, enableLiveTvManagement, enableLiveTvAccess, enableMediaPlayback,
-                enableAudioPlaybackTranscoding, enableVideoPlaybackTranscoding, enablePlaybackRemuxing,
-                forceRemoteSourceTranscoding, enableContentDeletion, hashCodeNullable(enableContentDeletionFromFolders),
-                enableContentDownloading, enableSyncTranscoding, enableMediaConversion,
-                hashCodeNullable(enabledDevices), enableAllDevices, hashCodeNullable(enabledChannels),
-                enableAllChannels, hashCodeNullable(enabledFolders), enableAllFolders, invalidLoginAttemptCount,
-                loginAttemptsBeforeLockout, maxActiveSessions, enablePublicSharing,
-                hashCodeNullable(blockedMediaFolders), hashCodeNullable(blockedChannels), remoteClientBitrateLimit,
+                enableLyricManagement, isDisabled, maxParentalRating, blockedTags, allowedTags,
+                enableUserPreferenceAccess, accessSchedules, blockUnratedItems, enableRemoteControlOfOtherUsers,
+                enableSharedDeviceControl, enableRemoteAccess, enableLiveTvManagement, enableLiveTvAccess,
+                enableMediaPlayback, enableAudioPlaybackTranscoding, enableVideoPlaybackTranscoding,
+                enablePlaybackRemuxing, forceRemoteSourceTranscoding, enableContentDeletion,
+                enableContentDeletionFromFolders, enableContentDownloading, enableSyncTranscoding,
+                enableMediaConversion, enabledDevices, enableAllDevices, enabledChannels, enableAllChannels,
+                enabledFolders, enableAllFolders, invalidLoginAttemptCount, loginAttemptsBeforeLockout,
+                maxActiveSessions, enablePublicSharing, blockedMediaFolders, blockedChannels, remoteClientBitrateLimit,
                 authenticationProviderId, passwordResetProviderId, syncPlayAccess);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
@@ -1726,31 +1568,16 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder maxParentalRating(Integer maxParentalRating) {
-            this.instance.maxParentalRating = JsonNullable.<Integer> of(maxParentalRating);
-            return this;
-        }
-
-        public UserPolicy.Builder maxParentalRating(JsonNullable<Integer> maxParentalRating) {
             this.instance.maxParentalRating = maxParentalRating;
             return this;
         }
 
         public UserPolicy.Builder blockedTags(List<String> blockedTags) {
-            this.instance.blockedTags = JsonNullable.<List<String>> of(blockedTags);
-            return this;
-        }
-
-        public UserPolicy.Builder blockedTags(JsonNullable<List<String>> blockedTags) {
             this.instance.blockedTags = blockedTags;
             return this;
         }
 
         public UserPolicy.Builder allowedTags(List<String> allowedTags) {
-            this.instance.allowedTags = JsonNullable.<List<String>> of(allowedTags);
-            return this;
-        }
-
-        public UserPolicy.Builder allowedTags(JsonNullable<List<String>> allowedTags) {
             this.instance.allowedTags = allowedTags;
             return this;
         }
@@ -1761,21 +1588,11 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder accessSchedules(List<AccessSchedule> accessSchedules) {
-            this.instance.accessSchedules = JsonNullable.<List<AccessSchedule>> of(accessSchedules);
-            return this;
-        }
-
-        public UserPolicy.Builder accessSchedules(JsonNullable<List<AccessSchedule>> accessSchedules) {
             this.instance.accessSchedules = accessSchedules;
             return this;
         }
 
         public UserPolicy.Builder blockUnratedItems(List<UnratedItem> blockUnratedItems) {
-            this.instance.blockUnratedItems = JsonNullable.<List<UnratedItem>> of(blockUnratedItems);
-            return this;
-        }
-
-        public UserPolicy.Builder blockUnratedItems(JsonNullable<List<UnratedItem>> blockUnratedItems) {
             this.instance.blockUnratedItems = blockUnratedItems;
             return this;
         }
@@ -1836,13 +1653,6 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder enableContentDeletionFromFolders(List<String> enableContentDeletionFromFolders) {
-            this.instance.enableContentDeletionFromFolders = JsonNullable
-                    .<List<String>> of(enableContentDeletionFromFolders);
-            return this;
-        }
-
-        public UserPolicy.Builder enableContentDeletionFromFolders(
-                JsonNullable<List<String>> enableContentDeletionFromFolders) {
             this.instance.enableContentDeletionFromFolders = enableContentDeletionFromFolders;
             return this;
         }
@@ -1863,11 +1673,6 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder enabledDevices(List<String> enabledDevices) {
-            this.instance.enabledDevices = JsonNullable.<List<String>> of(enabledDevices);
-            return this;
-        }
-
-        public UserPolicy.Builder enabledDevices(JsonNullable<List<String>> enabledDevices) {
             this.instance.enabledDevices = enabledDevices;
             return this;
         }
@@ -1878,11 +1683,6 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder enabledChannels(List<UUID> enabledChannels) {
-            this.instance.enabledChannels = JsonNullable.<List<UUID>> of(enabledChannels);
-            return this;
-        }
-
-        public UserPolicy.Builder enabledChannels(JsonNullable<List<UUID>> enabledChannels) {
             this.instance.enabledChannels = enabledChannels;
             return this;
         }
@@ -1893,11 +1693,6 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder enabledFolders(List<UUID> enabledFolders) {
-            this.instance.enabledFolders = JsonNullable.<List<UUID>> of(enabledFolders);
-            return this;
-        }
-
-        public UserPolicy.Builder enabledFolders(JsonNullable<List<UUID>> enabledFolders) {
             this.instance.enabledFolders = enabledFolders;
             return this;
         }
@@ -1928,21 +1723,11 @@ public class UserPolicy {
         }
 
         public UserPolicy.Builder blockedMediaFolders(List<UUID> blockedMediaFolders) {
-            this.instance.blockedMediaFolders = JsonNullable.<List<UUID>> of(blockedMediaFolders);
-            return this;
-        }
-
-        public UserPolicy.Builder blockedMediaFolders(JsonNullable<List<UUID>> blockedMediaFolders) {
             this.instance.blockedMediaFolders = blockedMediaFolders;
             return this;
         }
 
         public UserPolicy.Builder blockedChannels(List<UUID> blockedChannels) {
-            this.instance.blockedChannels = JsonNullable.<List<UUID>> of(blockedChannels);
-            return this;
-        }
-
-        public UserPolicy.Builder blockedChannels(JsonNullable<List<UUID>> blockedChannels) {
             this.instance.blockedChannels = blockedChannels;
             return this;
         }

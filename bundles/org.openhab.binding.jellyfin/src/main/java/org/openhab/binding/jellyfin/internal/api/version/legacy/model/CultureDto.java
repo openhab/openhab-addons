@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -53,7 +49,7 @@ public class CultureDto {
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
     @javax.annotation.Nullable
-    private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String> undefined();
+    private String threeLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES = "ThreeLetterISOLanguageNames";
     @javax.annotation.Nullable
@@ -68,8 +64,7 @@ public class CultureDto {
     @JsonCreator
     public CultureDto(@JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME) String threeLetterISOLanguageName) {
         this();
-        this.threeLetterISOLanguageName = threeLetterISOLanguageName == null ? JsonNullable.<String> undefined()
-                : JsonNullable.of(threeLetterISOLanguageName);
+        this.threeLetterISOLanguageName = threeLetterISOLanguageName;
     }
 
     public CultureDto name(@javax.annotation.Nullable String name) {
@@ -153,26 +148,11 @@ public class CultureDto {
      * @return threeLetterISOLanguageName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getThreeLetterISOLanguageName() {
-
-        if (threeLetterISOLanguageName == null) {
-            threeLetterISOLanguageName = JsonNullable.<String> undefined();
-        }
-        return threeLetterISOLanguageName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getThreeLetterISOLanguageName_JsonNullable() {
+    public String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName;
-    }
-
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-    private void setThreeLetterISOLanguageName_JsonNullable(JsonNullable<String> threeLetterISOLanguageName) {
-        this.threeLetterISOLanguageName = threeLetterISOLanguageName;
     }
 
     public CultureDto threeLetterISOLanguageNames(@javax.annotation.Nullable List<String> threeLetterISOLanguageNames) {
@@ -219,26 +199,14 @@ public class CultureDto {
         CultureDto cultureDto = (CultureDto) o;
         return Objects.equals(this.name, cultureDto.name) && Objects.equals(this.displayName, cultureDto.displayName)
                 && Objects.equals(this.twoLetterISOLanguageName, cultureDto.twoLetterISOLanguageName)
-                && equalsNullable(this.threeLetterISOLanguageName, cultureDto.threeLetterISOLanguageName)
+                && Objects.equals(this.threeLetterISOLanguageName, cultureDto.threeLetterISOLanguageName)
                 && Objects.equals(this.threeLetterISOLanguageNames, cultureDto.threeLetterISOLanguageNames);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, displayName, twoLetterISOLanguageName, hashCodeNullable(threeLetterISOLanguageName),
+        return Objects.hash(name, displayName, twoLetterISOLanguageName, threeLetterISOLanguageName,
                 threeLetterISOLanguageNames);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
     }
 
     @Override
@@ -294,11 +262,6 @@ public class CultureDto {
         }
 
         public CultureDto.Builder threeLetterISOLanguageName(String threeLetterISOLanguageName) {
-            this.instance.threeLetterISOLanguageName = JsonNullable.<String> of(threeLetterISOLanguageName);
-            return this;
-        }
-
-        public CultureDto.Builder threeLetterISOLanguageName(JsonNullable<String> threeLetterISOLanguageName) {
             this.instance.threeLetterISOLanguageName = threeLetterISOLanguageName;
             return this;
         }

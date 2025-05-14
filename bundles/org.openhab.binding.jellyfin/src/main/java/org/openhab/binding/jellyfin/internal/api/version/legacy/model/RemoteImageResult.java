@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoteImageResult {
     public static final String JSON_PROPERTY_IMAGES = "Images";
     @javax.annotation.Nullable
-    private JsonNullable<List<RemoteImageInfo>> images = JsonNullable.<List<RemoteImageInfo>> undefined();
+    private List<RemoteImageInfo> images;
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @javax.annotation.Nullable
@@ -46,26 +42,22 @@ public class RemoteImageResult {
 
     public static final String JSON_PROPERTY_PROVIDERS = "Providers";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> providers = JsonNullable.<List<String>> undefined();
+    private List<String> providers;
 
     public RemoteImageResult() {
     }
 
     public RemoteImageResult images(@javax.annotation.Nullable List<RemoteImageInfo> images) {
-        this.images = JsonNullable.<List<RemoteImageInfo>> of(images);
 
+        this.images = images;
         return this;
     }
 
     public RemoteImageResult addImagesItem(RemoteImageInfo imagesItem) {
-        if (this.images == null || !this.images.isPresent()) {
-            this.images = JsonNullable.<List<RemoteImageInfo>> of(new ArrayList<>());
+        if (this.images == null) {
+            this.images = new ArrayList<>();
         }
-        try {
-            this.images.get().add(imagesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.images.add(imagesItem);
         return this;
     }
 
@@ -75,26 +67,17 @@ public class RemoteImageResult {
      * @return images
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<RemoteImageInfo> getImages() {
-        return images.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IMAGES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<RemoteImageInfo>> getImages_JsonNullable() {
+    public List<RemoteImageInfo> getImages() {
         return images;
     }
 
     @JsonProperty(JSON_PROPERTY_IMAGES)
-    public void setImages_JsonNullable(JsonNullable<List<RemoteImageInfo>> images) {
-        this.images = images;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImages(@javax.annotation.Nullable List<RemoteImageInfo> images) {
-        this.images = JsonNullable.<List<RemoteImageInfo>> of(images);
+        this.images = images;
     }
 
     public RemoteImageResult totalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
@@ -123,20 +106,16 @@ public class RemoteImageResult {
     }
 
     public RemoteImageResult providers(@javax.annotation.Nullable List<String> providers) {
-        this.providers = JsonNullable.<List<String>> of(providers);
 
+        this.providers = providers;
         return this;
     }
 
     public RemoteImageResult addProvidersItem(String providersItem) {
-        if (this.providers == null || !this.providers.isPresent()) {
-            this.providers = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.providers == null) {
+            this.providers = new ArrayList<>();
         }
-        try {
-            this.providers.get().add(providersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.providers.add(providersItem);
         return this;
     }
 
@@ -146,26 +125,17 @@ public class RemoteImageResult {
      * @return providers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getProviders() {
-        return providers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getProviders_JsonNullable() {
+    public List<String> getProviders() {
         return providers;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDERS)
-    public void setProviders_JsonNullable(JsonNullable<List<String>> providers) {
-        this.providers = providers;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviders(@javax.annotation.Nullable List<String> providers) {
-        this.providers = JsonNullable.<List<String>> of(providers);
+        this.providers = providers;
     }
 
     @Override
@@ -177,26 +147,14 @@ public class RemoteImageResult {
             return false;
         }
         RemoteImageResult remoteImageResult = (RemoteImageResult) o;
-        return equalsNullable(this.images, remoteImageResult.images)
+        return Objects.equals(this.images, remoteImageResult.images)
                 && Objects.equals(this.totalRecordCount, remoteImageResult.totalRecordCount)
-                && equalsNullable(this.providers, remoteImageResult.providers);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.providers, remoteImageResult.providers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(images), totalRecordCount, hashCodeNullable(providers));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(images, totalRecordCount, providers);
     }
 
     @Override
@@ -234,11 +192,6 @@ public class RemoteImageResult {
         }
 
         public RemoteImageResult.Builder images(List<RemoteImageInfo> images) {
-            this.instance.images = JsonNullable.<List<RemoteImageInfo>> of(images);
-            return this;
-        }
-
-        public RemoteImageResult.Builder images(JsonNullable<List<RemoteImageInfo>> images) {
             this.instance.images = images;
             return this;
         }
@@ -249,11 +202,6 @@ public class RemoteImageResult {
         }
 
         public RemoteImageResult.Builder providers(List<String> providers) {
-            this.instance.providers = JsonNullable.<List<String>> of(providers);
-            return this;
-        }
-
-        public RemoteImageResult.Builder providers(JsonNullable<List<String>> providers) {
             this.instance.providers = providers;
             return this;
         }

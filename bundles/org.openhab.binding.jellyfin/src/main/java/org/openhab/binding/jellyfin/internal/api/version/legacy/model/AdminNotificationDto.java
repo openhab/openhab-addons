@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,26 +32,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AdminNotificationDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
     @javax.annotation.Nullable
-    private JsonNullable<String> description = JsonNullable.<String> undefined();
+    private String description;
 
     public static final String JSON_PROPERTY_NOTIFICATION_LEVEL = "NotificationLevel";
     @javax.annotation.Nullable
-    private JsonNullable<NotificationLevel> notificationLevel = JsonNullable.<NotificationLevel> undefined();
+    private NotificationLevel notificationLevel;
 
     public static final String JSON_PROPERTY_URL = "Url";
     @javax.annotation.Nullable
-    private JsonNullable<String> url = JsonNullable.<String> undefined();
+    private String url;
 
     public AdminNotificationDto() {
     }
 
     public AdminNotificationDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -65,31 +61,22 @@ public class AdminNotificationDto {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public AdminNotificationDto description(@javax.annotation.Nullable String description) {
-        this.description = JsonNullable.<String> of(description);
 
+        this.description = description;
         return this;
     }
 
@@ -99,31 +86,22 @@ public class AdminNotificationDto {
      * @return description
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDescription() {
-        return description.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDescription_JsonNullable() {
+    public String getDescription() {
         return description;
     }
 
     @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-    public void setDescription_JsonNullable(JsonNullable<String> description) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDescription(@javax.annotation.Nullable String description) {
         this.description = description;
     }
 
-    public void setDescription(@javax.annotation.Nullable String description) {
-        this.description = JsonNullable.<String> of(description);
-    }
-
     public AdminNotificationDto notificationLevel(@javax.annotation.Nullable NotificationLevel notificationLevel) {
-        this.notificationLevel = JsonNullable.<NotificationLevel> of(notificationLevel);
 
+        this.notificationLevel = notificationLevel;
         return this;
     }
 
@@ -133,31 +111,22 @@ public class AdminNotificationDto {
      * @return notificationLevel
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public NotificationLevel getNotificationLevel() {
-        return notificationLevel.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NOTIFICATION_LEVEL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<NotificationLevel> getNotificationLevel_JsonNullable() {
+    public NotificationLevel getNotificationLevel() {
         return notificationLevel;
     }
 
     @JsonProperty(JSON_PROPERTY_NOTIFICATION_LEVEL)
-    public void setNotificationLevel_JsonNullable(JsonNullable<NotificationLevel> notificationLevel) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setNotificationLevel(@javax.annotation.Nullable NotificationLevel notificationLevel) {
         this.notificationLevel = notificationLevel;
     }
 
-    public void setNotificationLevel(@javax.annotation.Nullable NotificationLevel notificationLevel) {
-        this.notificationLevel = JsonNullable.<NotificationLevel> of(notificationLevel);
-    }
-
     public AdminNotificationDto url(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
 
+        this.url = url;
         return this;
     }
 
@@ -167,26 +136,17 @@ public class AdminNotificationDto {
      * @return url
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrl() {
-        return url.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUrl_JsonNullable() {
+    public String getUrl() {
         return url;
     }
 
     @JsonProperty(JSON_PROPERTY_URL)
-    public void setUrl_JsonNullable(JsonNullable<String> url) {
-        this.url = url;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
+        this.url = url;
     }
 
     @Override
@@ -198,28 +158,15 @@ public class AdminNotificationDto {
             return false;
         }
         AdminNotificationDto adminNotificationDto = (AdminNotificationDto) o;
-        return equalsNullable(this.name, adminNotificationDto.name)
-                && equalsNullable(this.description, adminNotificationDto.description)
-                && equalsNullable(this.notificationLevel, adminNotificationDto.notificationLevel)
-                && equalsNullable(this.url, adminNotificationDto.url);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, adminNotificationDto.name)
+                && Objects.equals(this.description, adminNotificationDto.description)
+                && Objects.equals(this.notificationLevel, adminNotificationDto.notificationLevel)
+                && Objects.equals(this.url, adminNotificationDto.url);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(description), hashCodeNullable(notificationLevel),
-                hashCodeNullable(url));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, description, notificationLevel, url);
     }
 
     @Override
@@ -258,41 +205,21 @@ public class AdminNotificationDto {
         }
 
         public AdminNotificationDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public AdminNotificationDto.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public AdminNotificationDto.Builder description(String description) {
-            this.instance.description = JsonNullable.<String> of(description);
-            return this;
-        }
-
-        public AdminNotificationDto.Builder description(JsonNullable<String> description) {
             this.instance.description = description;
             return this;
         }
 
         public AdminNotificationDto.Builder notificationLevel(NotificationLevel notificationLevel) {
-            this.instance.notificationLevel = JsonNullable.<NotificationLevel> of(notificationLevel);
-            return this;
-        }
-
-        public AdminNotificationDto.Builder notificationLevel(JsonNullable<NotificationLevel> notificationLevel) {
             this.instance.notificationLevel = notificationLevel;
             return this;
         }
 
         public AdminNotificationDto.Builder url(String url) {
-            this.instance.url = JsonNullable.<String> of(url);
-            return this;
-        }
-
-        public AdminNotificationDto.Builder url(JsonNullable<String> url) {
             this.instance.url = url;
             return this;
         }

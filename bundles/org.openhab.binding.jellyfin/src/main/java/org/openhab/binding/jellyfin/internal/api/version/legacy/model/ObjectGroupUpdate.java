@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -45,7 +41,7 @@ public class ObjectGroupUpdate {
 
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<Object> data = JsonNullable.<Object> of(null);
+    private Object data = null;
 
     public ObjectGroupUpdate() {
     }
@@ -101,8 +97,8 @@ public class ObjectGroupUpdate {
     }
 
     public ObjectGroupUpdate data(@javax.annotation.Nullable Object data) {
-        this.data = JsonNullable.<Object> of(data);
 
+        this.data = data;
         return this;
     }
 
@@ -112,26 +108,17 @@ public class ObjectGroupUpdate {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Object getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Object> getData_JsonNullable() {
+    public Object getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<Object> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable Object data) {
-        this.data = JsonNullable.<Object> of(data);
+        this.data = data;
     }
 
     @Override
@@ -145,24 +132,12 @@ public class ObjectGroupUpdate {
         ObjectGroupUpdate objectGroupUpdate = (ObjectGroupUpdate) o;
         return Objects.equals(this.groupId, objectGroupUpdate.groupId)
                 && Objects.equals(this.type, objectGroupUpdate.type)
-                && equalsNullable(this.data, objectGroupUpdate.data);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.data, objectGroupUpdate.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, type, hashCodeNullable(data));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(groupId, type, data);
     }
 
     @Override
@@ -210,11 +185,6 @@ public class ObjectGroupUpdate {
         }
 
         public ObjectGroupUpdate.Builder data(Object data) {
-            this.instance.data = JsonNullable.<Object> of(data);
-            return this;
-        }
-
-        public ObjectGroupUpdate.Builder data(JsonNullable<Object> data) {
             this.instance.data = data;
             return this;
         }

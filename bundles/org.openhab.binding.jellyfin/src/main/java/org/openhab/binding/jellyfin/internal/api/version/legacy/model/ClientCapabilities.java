@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -43,12 +39,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ClientCapabilities {
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> playableMediaTypes = JsonNullable.<List<String>> undefined();
+    private List<String> playableMediaTypes;
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
     @javax.annotation.Nullable
-    private JsonNullable<List<GeneralCommandType>> supportedCommands = JsonNullable
-            .<List<GeneralCommandType>> undefined();
+    private List<GeneralCommandType> supportedCommands;
 
     public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
     @javax.annotation.Nullable
@@ -60,7 +55,7 @@ public class ClientCapabilities {
 
     public static final String JSON_PROPERTY_MESSAGE_CALLBACK_URL = "MessageCallbackUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> messageCallbackUrl = JsonNullable.<String> undefined();
+    private String messageCallbackUrl;
 
     public static final String JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER = "SupportsPersistentIdentifier";
     @javax.annotation.Nullable
@@ -72,34 +67,30 @@ public class ClientCapabilities {
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
     @javax.annotation.Nullable
-    private JsonNullable<DeviceProfile> deviceProfile = JsonNullable.<DeviceProfile> undefined();
+    private DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> appStoreUrl = JsonNullable.<String> undefined();
+    private String appStoreUrl;
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> iconUrl = JsonNullable.<String> undefined();
+    private String iconUrl;
 
     public ClientCapabilities() {
     }
 
     public ClientCapabilities playableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
-        this.playableMediaTypes = JsonNullable.<List<String>> of(playableMediaTypes);
 
+        this.playableMediaTypes = playableMediaTypes;
         return this;
     }
 
     public ClientCapabilities addPlayableMediaTypesItem(String playableMediaTypesItem) {
-        if (this.playableMediaTypes == null || !this.playableMediaTypes.isPresent()) {
-            this.playableMediaTypes = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.playableMediaTypes == null) {
+            this.playableMediaTypes = new ArrayList<>();
         }
-        try {
-            this.playableMediaTypes.get().add(playableMediaTypesItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.playableMediaTypes.add(playableMediaTypesItem);
         return this;
     }
 
@@ -109,43 +100,30 @@ public class ClientCapabilities {
      * @return playableMediaTypes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getPlayableMediaTypes() {
-        return playableMediaTypes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getPlayableMediaTypes_JsonNullable() {
+    public List<String> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    public void setPlayableMediaTypes_JsonNullable(JsonNullable<List<String>> playableMediaTypes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlayableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
         this.playableMediaTypes = playableMediaTypes;
     }
 
-    public void setPlayableMediaTypes(@javax.annotation.Nullable List<String> playableMediaTypes) {
-        this.playableMediaTypes = JsonNullable.<List<String>> of(playableMediaTypes);
-    }
-
     public ClientCapabilities supportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
-        this.supportedCommands = JsonNullable.<List<GeneralCommandType>> of(supportedCommands);
 
+        this.supportedCommands = supportedCommands;
         return this;
     }
 
     public ClientCapabilities addSupportedCommandsItem(GeneralCommandType supportedCommandsItem) {
-        if (this.supportedCommands == null || !this.supportedCommands.isPresent()) {
-            this.supportedCommands = JsonNullable.<List<GeneralCommandType>> of(new ArrayList<>());
+        if (this.supportedCommands == null) {
+            this.supportedCommands = new ArrayList<>();
         }
-        try {
-            this.supportedCommands.get().add(supportedCommandsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.supportedCommands.add(supportedCommandsItem);
         return this;
     }
 
@@ -155,26 +133,17 @@ public class ClientCapabilities {
      * @return supportedCommands
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<GeneralCommandType> getSupportedCommands() {
-        return supportedCommands.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<GeneralCommandType>> getSupportedCommands_JsonNullable() {
+    public List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
     }
 
     @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
-    public void setSupportedCommands_JsonNullable(JsonNullable<List<GeneralCommandType>> supportedCommands) {
-        this.supportedCommands = supportedCommands;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportedCommands(@javax.annotation.Nullable List<GeneralCommandType> supportedCommands) {
-        this.supportedCommands = JsonNullable.<List<GeneralCommandType>> of(supportedCommands);
+        this.supportedCommands = supportedCommands;
     }
 
     public ClientCapabilities supportsMediaControl(@javax.annotation.Nullable Boolean supportsMediaControl) {
@@ -228,8 +197,8 @@ public class ClientCapabilities {
     }
 
     public ClientCapabilities messageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
-        this.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
 
+        this.messageCallbackUrl = messageCallbackUrl;
         return this;
     }
 
@@ -239,26 +208,17 @@ public class ClientCapabilities {
      * @return messageCallbackUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMessageCallbackUrl() {
-        return messageCallbackUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MESSAGE_CALLBACK_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMessageCallbackUrl_JsonNullable() {
+    public String getMessageCallbackUrl() {
         return messageCallbackUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_MESSAGE_CALLBACK_URL)
-    public void setMessageCallbackUrl_JsonNullable(JsonNullable<String> messageCallbackUrl) {
-        this.messageCallbackUrl = messageCallbackUrl;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMessageCallbackUrl(@javax.annotation.Nullable String messageCallbackUrl) {
-        this.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
+        this.messageCallbackUrl = messageCallbackUrl;
     }
 
     public ClientCapabilities supportsPersistentIdentifier(
@@ -313,8 +273,8 @@ public class ClientCapabilities {
     }
 
     public ClientCapabilities deviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
 
+        this.deviceProfile = deviceProfile;
         return this;
     }
 
@@ -331,31 +291,22 @@ public class ClientCapabilities {
      * @return deviceProfile
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public DeviceProfile getDeviceProfile() {
-        return deviceProfile.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<DeviceProfile> getDeviceProfile_JsonNullable() {
+    public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
-    public void setDeviceProfile_JsonNullable(JsonNullable<DeviceProfile> deviceProfile) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
         this.deviceProfile = deviceProfile;
     }
 
-    public void setDeviceProfile(@javax.annotation.Nullable DeviceProfile deviceProfile) {
-        this.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-    }
-
     public ClientCapabilities appStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
-        this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
 
+        this.appStoreUrl = appStoreUrl;
         return this;
     }
 
@@ -365,31 +316,22 @@ public class ClientCapabilities {
      * @return appStoreUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAppStoreUrl() {
-        return appStoreUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAppStoreUrl_JsonNullable() {
+    public String getAppStoreUrl() {
         return appStoreUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
-    public void setAppStoreUrl_JsonNullable(JsonNullable<String> appStoreUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAppStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
         this.appStoreUrl = appStoreUrl;
     }
 
-    public void setAppStoreUrl(@javax.annotation.Nullable String appStoreUrl) {
-        this.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
-    }
-
     public ClientCapabilities iconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
 
+        this.iconUrl = iconUrl;
         return this;
     }
 
@@ -399,26 +341,17 @@ public class ClientCapabilities {
      * @return iconUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getIconUrl() {
-        return iconUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ICON_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getIconUrl_JsonNullable() {
+    public String getIconUrl() {
         return iconUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_ICON_URL)
-    public void setIconUrl_JsonNullable(JsonNullable<String> iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
-        this.iconUrl = JsonNullable.<String> of(iconUrl);
+        this.iconUrl = iconUrl;
     }
 
     @Override
@@ -430,36 +363,22 @@ public class ClientCapabilities {
             return false;
         }
         ClientCapabilities clientCapabilities = (ClientCapabilities) o;
-        return equalsNullable(this.playableMediaTypes, clientCapabilities.playableMediaTypes)
-                && equalsNullable(this.supportedCommands, clientCapabilities.supportedCommands)
+        return Objects.equals(this.playableMediaTypes, clientCapabilities.playableMediaTypes)
+                && Objects.equals(this.supportedCommands, clientCapabilities.supportedCommands)
                 && Objects.equals(this.supportsMediaControl, clientCapabilities.supportsMediaControl)
                 && Objects.equals(this.supportsContentUploading, clientCapabilities.supportsContentUploading)
-                && equalsNullable(this.messageCallbackUrl, clientCapabilities.messageCallbackUrl)
+                && Objects.equals(this.messageCallbackUrl, clientCapabilities.messageCallbackUrl)
                 && Objects.equals(this.supportsPersistentIdentifier, clientCapabilities.supportsPersistentIdentifier)
                 && Objects.equals(this.supportsSync, clientCapabilities.supportsSync)
-                && equalsNullable(this.deviceProfile, clientCapabilities.deviceProfile)
-                && equalsNullable(this.appStoreUrl, clientCapabilities.appStoreUrl)
-                && equalsNullable(this.iconUrl, clientCapabilities.iconUrl);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.deviceProfile, clientCapabilities.deviceProfile)
+                && Objects.equals(this.appStoreUrl, clientCapabilities.appStoreUrl)
+                && Objects.equals(this.iconUrl, clientCapabilities.iconUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(playableMediaTypes), hashCodeNullable(supportedCommands),
-                supportsMediaControl, supportsContentUploading, hashCodeNullable(messageCallbackUrl),
-                supportsPersistentIdentifier, supportsSync, hashCodeNullable(deviceProfile),
-                hashCodeNullable(appStoreUrl), hashCodeNullable(iconUrl));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(playableMediaTypes, supportedCommands, supportsMediaControl, supportsContentUploading,
+                messageCallbackUrl, supportsPersistentIdentifier, supportsSync, deviceProfile, appStoreUrl, iconUrl);
     }
 
     @Override
@@ -505,21 +424,11 @@ public class ClientCapabilities {
         }
 
         public ClientCapabilities.Builder playableMediaTypes(List<String> playableMediaTypes) {
-            this.instance.playableMediaTypes = JsonNullable.<List<String>> of(playableMediaTypes);
-            return this;
-        }
-
-        public ClientCapabilities.Builder playableMediaTypes(JsonNullable<List<String>> playableMediaTypes) {
             this.instance.playableMediaTypes = playableMediaTypes;
             return this;
         }
 
         public ClientCapabilities.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
-            this.instance.supportedCommands = JsonNullable.<List<GeneralCommandType>> of(supportedCommands);
-            return this;
-        }
-
-        public ClientCapabilities.Builder supportedCommands(JsonNullable<List<GeneralCommandType>> supportedCommands) {
             this.instance.supportedCommands = supportedCommands;
             return this;
         }
@@ -535,11 +444,6 @@ public class ClientCapabilities {
         }
 
         public ClientCapabilities.Builder messageCallbackUrl(String messageCallbackUrl) {
-            this.instance.messageCallbackUrl = JsonNullable.<String> of(messageCallbackUrl);
-            return this;
-        }
-
-        public ClientCapabilities.Builder messageCallbackUrl(JsonNullable<String> messageCallbackUrl) {
             this.instance.messageCallbackUrl = messageCallbackUrl;
             return this;
         }
@@ -555,31 +459,16 @@ public class ClientCapabilities {
         }
 
         public ClientCapabilities.Builder deviceProfile(DeviceProfile deviceProfile) {
-            this.instance.deviceProfile = JsonNullable.<DeviceProfile> of(deviceProfile);
-            return this;
-        }
-
-        public ClientCapabilities.Builder deviceProfile(JsonNullable<DeviceProfile> deviceProfile) {
             this.instance.deviceProfile = deviceProfile;
             return this;
         }
 
         public ClientCapabilities.Builder appStoreUrl(String appStoreUrl) {
-            this.instance.appStoreUrl = JsonNullable.<String> of(appStoreUrl);
-            return this;
-        }
-
-        public ClientCapabilities.Builder appStoreUrl(JsonNullable<String> appStoreUrl) {
             this.instance.appStoreUrl = appStoreUrl;
             return this;
         }
 
         public ClientCapabilities.Builder iconUrl(String iconUrl) {
-            this.instance.iconUrl = JsonNullable.<String> of(iconUrl);
-            return this;
-        }
-
-        public ClientCapabilities.Builder iconUrl(JsonNullable<String> iconUrl) {
             this.instance.iconUrl = iconUrl;
             return this;
         }

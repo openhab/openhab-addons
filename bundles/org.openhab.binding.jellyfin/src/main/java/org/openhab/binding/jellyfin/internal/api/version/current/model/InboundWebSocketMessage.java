@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -59,7 +55,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class InboundWebSocketMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<String> data = JsonNullable.<String> undefined();
+    private String data;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @javax.annotation.Nullable
@@ -78,8 +74,8 @@ public class InboundWebSocketMessage {
     }
 
     public InboundWebSocketMessage data(@javax.annotation.Nullable String data) {
-        this.data = JsonNullable.<String> of(data);
 
+        this.data = data;
         return this;
     }
 
@@ -89,26 +85,17 @@ public class InboundWebSocketMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getData_JsonNullable() {
+    public String getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<String> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable String data) {
-        this.data = JsonNullable.<String> of(data);
+        this.data = data;
     }
 
     /**
@@ -133,25 +120,13 @@ public class InboundWebSocketMessage {
             return false;
         }
         InboundWebSocketMessage inboundWebSocketMessage = (InboundWebSocketMessage) o;
-        return equalsNullable(this.data, inboundWebSocketMessage.data)
+        return Objects.equals(this.data, inboundWebSocketMessage.data)
                 && Objects.equals(this.messageType, inboundWebSocketMessage.messageType);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageType);
     }
 
     @Override
@@ -188,11 +163,6 @@ public class InboundWebSocketMessage {
         }
 
         public InboundWebSocketMessage.Builder data(String data) {
-            this.instance.data = JsonNullable.<String> of(data);
-            return this;
-        }
-
-        public InboundWebSocketMessage.Builder data(JsonNullable<String> data) {
             this.instance.data = data;
             return this;
         }

@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -51,7 +47,7 @@ public class ChannelMappingOptionsDto {
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @javax.annotation.Nullable
-    private JsonNullable<String> providerName = JsonNullable.<String> undefined();
+    private String providerName;
 
     public ChannelMappingOptionsDto() {
     }
@@ -156,8 +152,8 @@ public class ChannelMappingOptionsDto {
     }
 
     public ChannelMappingOptionsDto providerName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
 
+        this.providerName = providerName;
         return this;
     }
 
@@ -167,26 +163,17 @@ public class ChannelMappingOptionsDto {
      * @return providerName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProviderName() {
-        return providerName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProviderName_JsonNullable() {
+    public String getProviderName() {
         return providerName;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
-    public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
-        this.providerName = providerName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
+        this.providerName = providerName;
     }
 
     @Override
@@ -201,24 +188,12 @@ public class ChannelMappingOptionsDto {
         return Objects.equals(this.tunerChannels, channelMappingOptionsDto.tunerChannels)
                 && Objects.equals(this.providerChannels, channelMappingOptionsDto.providerChannels)
                 && Objects.equals(this.mappings, channelMappingOptionsDto.mappings)
-                && equalsNullable(this.providerName, channelMappingOptionsDto.providerName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.providerName, channelMappingOptionsDto.providerName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tunerChannels, providerChannels, mappings, hashCodeNullable(providerName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(tunerChannels, providerChannels, mappings, providerName);
     }
 
     @Override
@@ -272,11 +247,6 @@ public class ChannelMappingOptionsDto {
         }
 
         public ChannelMappingOptionsDto.Builder providerName(String providerName) {
-            this.instance.providerName = JsonNullable.<String> of(providerName);
-            return this;
-        }
-
-        public ChannelMappingOptionsDto.Builder providerName(JsonNullable<String> providerName) {
             this.instance.providerName = providerName;
             return this;
         }

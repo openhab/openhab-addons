@@ -19,15 +19,11 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -45,43 +41,43 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SongInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
     @javax.annotation.Nullable
-    private JsonNullable<String> originalTitle = JsonNullable.<String> undefined();
+    private String originalTitle;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+    private String path;
 
     public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
     @javax.annotation.Nullable
-    private JsonNullable<String> metadataLanguage = JsonNullable.<String> undefined();
+    private String metadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @javax.annotation.Nullable
-    private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
+    private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
     @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>> undefined();
+    private Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_YEAR = "Year";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> year = JsonNullable.<Integer> undefined();
+    private Integer year;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
+    private Integer indexNumber;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
+    private Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
     @javax.annotation.Nullable
@@ -89,22 +85,22 @@ public class SongInfo {
 
     public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> albumArtists = JsonNullable.<List<String>> undefined();
+    private List<String> albumArtists;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
     @javax.annotation.Nullable
-    private JsonNullable<String> album = JsonNullable.<String> undefined();
+    private String album;
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> artists = JsonNullable.<List<String>> undefined();
+    private List<String> artists;
 
     public SongInfo() {
     }
 
     public SongInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -114,31 +110,22 @@ public class SongInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public SongInfo originalTitle(@javax.annotation.Nullable String originalTitle) {
-        this.originalTitle = JsonNullable.<String> of(originalTitle);
 
+        this.originalTitle = originalTitle;
         return this;
     }
 
@@ -148,31 +135,22 @@ public class SongInfo {
      * @return originalTitle
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOriginalTitle() {
-        return originalTitle.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOriginalTitle_JsonNullable() {
+    public String getOriginalTitle() {
         return originalTitle;
     }
 
     @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
-    public void setOriginalTitle_JsonNullable(JsonNullable<String> originalTitle) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
         this.originalTitle = originalTitle;
     }
 
-    public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
-        this.originalTitle = JsonNullable.<String> of(originalTitle);
-    }
-
     public SongInfo path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
 
+        this.path = path;
         return this;
     }
 
@@ -182,31 +160,22 @@ public class SongInfo {
      * @return path
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
+    public String getPath() {
         return path;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPath(@javax.annotation.Nullable String path) {
         this.path = path;
     }
 
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
-
     public SongInfo metadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
-        this.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
 
+        this.metadataLanguage = metadataLanguage;
         return this;
     }
 
@@ -216,31 +185,22 @@ public class SongInfo {
      * @return metadataLanguage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMetadataLanguage() {
-        return metadataLanguage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMetadataLanguage_JsonNullable() {
+    public String getMetadataLanguage() {
         return metadataLanguage;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
-    public void setMetadataLanguage_JsonNullable(JsonNullable<String> metadataLanguage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
         this.metadataLanguage = metadataLanguage;
     }
 
-    public void setMetadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
-        this.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
-    }
-
     public SongInfo metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
 
+        this.metadataCountryCode = metadataCountryCode;
         return this;
     }
 
@@ -250,43 +210,30 @@ public class SongInfo {
      * @return metadataCountryCode
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMetadataCountryCode() {
-        return metadataCountryCode.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
+    public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
         this.metadataCountryCode = metadataCountryCode;
     }
 
-    public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
-    }
-
     public SongInfo providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
 
+        this.providerIds = providerIds;
         return this;
     }
 
     public SongInfo putProviderIdsItem(String key, String providerIdsItem) {
-        if (this.providerIds == null || !this.providerIds.isPresent()) {
-            this.providerIds = JsonNullable.<Map<String, String>> of(new HashMap<>());
+        if (this.providerIds == null) {
+            this.providerIds = new HashMap<>();
         }
-        try {
-            this.providerIds.get().put(key, providerIdsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.providerIds.put(key, providerIdsItem);
         return this;
     }
 
@@ -296,31 +243,22 @@ public class SongInfo {
      * @return providerIds
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getProviderIds() {
-        return providerIds.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
+    public Map<String, String> getProviderIds() {
         return providerIds;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
-    public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
         this.providerIds = providerIds;
     }
 
-    public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-    }
-
     public SongInfo year(@javax.annotation.Nullable Integer year) {
-        this.year = JsonNullable.<Integer> of(year);
 
+        this.year = year;
         return this;
     }
 
@@ -330,31 +268,22 @@ public class SongInfo {
      * @return year
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getYear() {
-        return year.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getYear_JsonNullable() {
+    public Integer getYear() {
         return year;
     }
 
     @JsonProperty(JSON_PROPERTY_YEAR)
-    public void setYear_JsonNullable(JsonNullable<Integer> year) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setYear(@javax.annotation.Nullable Integer year) {
         this.year = year;
     }
 
-    public void setYear(@javax.annotation.Nullable Integer year) {
-        this.year = JsonNullable.<Integer> of(year);
-    }
-
     public SongInfo indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
 
+        this.indexNumber = indexNumber;
         return this;
     }
 
@@ -364,31 +293,22 @@ public class SongInfo {
      * @return indexNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumber() {
-        return indexNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumber_JsonNullable() {
+    public Integer getIndexNumber() {
         return indexNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
         this.indexNumber = indexNumber;
     }
 
-    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
-    }
-
     public SongInfo parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
 
+        this.parentIndexNumber = parentIndexNumber;
         return this;
     }
 
@@ -398,31 +318,22 @@ public class SongInfo {
      * @return parentIndexNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getParentIndexNumber() {
-        return parentIndexNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
+    public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
         this.parentIndexNumber = parentIndexNumber;
     }
 
-    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-    }
-
     public SongInfo premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
 
+        this.premiereDate = premiereDate;
         return this;
     }
 
@@ -432,26 +343,17 @@ public class SongInfo {
      * @return premiereDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getPremiereDate() {
-        return premiereDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
+    public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
 
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
-    public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
-        this.premiereDate = premiereDate;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
+        this.premiereDate = premiereDate;
     }
 
     public SongInfo isAutomated(@javax.annotation.Nullable Boolean isAutomated) {
@@ -480,20 +382,16 @@ public class SongInfo {
     }
 
     public SongInfo albumArtists(@javax.annotation.Nullable List<String> albumArtists) {
-        this.albumArtists = JsonNullable.<List<String>> of(albumArtists);
 
+        this.albumArtists = albumArtists;
         return this;
     }
 
     public SongInfo addAlbumArtistsItem(String albumArtistsItem) {
-        if (this.albumArtists == null || !this.albumArtists.isPresent()) {
-            this.albumArtists = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.albumArtists == null) {
+            this.albumArtists = new ArrayList<>();
         }
-        try {
-            this.albumArtists.get().add(albumArtistsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.albumArtists.add(albumArtistsItem);
         return this;
     }
 
@@ -503,31 +401,22 @@ public class SongInfo {
      * @return albumArtists
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getAlbumArtists() {
-        return albumArtists.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getAlbumArtists_JsonNullable() {
+    public List<String> getAlbumArtists() {
         return albumArtists;
     }
 
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
-    public void setAlbumArtists_JsonNullable(JsonNullable<List<String>> albumArtists) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAlbumArtists(@javax.annotation.Nullable List<String> albumArtists) {
         this.albumArtists = albumArtists;
     }
 
-    public void setAlbumArtists(@javax.annotation.Nullable List<String> albumArtists) {
-        this.albumArtists = JsonNullable.<List<String>> of(albumArtists);
-    }
-
     public SongInfo album(@javax.annotation.Nullable String album) {
-        this.album = JsonNullable.<String> of(album);
 
+        this.album = album;
         return this;
     }
 
@@ -537,43 +426,30 @@ public class SongInfo {
      * @return album
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbum() {
-        return album.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALBUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAlbum_JsonNullable() {
+    public String getAlbum() {
         return album;
     }
 
     @JsonProperty(JSON_PROPERTY_ALBUM)
-    public void setAlbum_JsonNullable(JsonNullable<String> album) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAlbum(@javax.annotation.Nullable String album) {
         this.album = album;
     }
 
-    public void setAlbum(@javax.annotation.Nullable String album) {
-        this.album = JsonNullable.<String> of(album);
-    }
-
     public SongInfo artists(@javax.annotation.Nullable List<String> artists) {
-        this.artists = JsonNullable.<List<String>> of(artists);
 
+        this.artists = artists;
         return this;
     }
 
     public SongInfo addArtistsItem(String artistsItem) {
-        if (this.artists == null || !this.artists.isPresent()) {
-            this.artists = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.artists == null) {
+            this.artists = new ArrayList<>();
         }
-        try {
-            this.artists.get().add(artistsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.artists.add(artistsItem);
         return this;
     }
 
@@ -583,26 +459,17 @@ public class SongInfo {
      * @return artists
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getArtists() {
-        return artists.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ARTISTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getArtists_JsonNullable() {
+    public List<String> getArtists() {
         return artists;
     }
 
     @JsonProperty(JSON_PROPERTY_ARTISTS)
-    public void setArtists_JsonNullable(JsonNullable<List<String>> artists) {
-        this.artists = artists;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setArtists(@javax.annotation.Nullable List<String> artists) {
-        this.artists = JsonNullable.<List<String>> of(artists);
+        this.artists = artists;
     }
 
     @Override
@@ -614,38 +481,23 @@ public class SongInfo {
             return false;
         }
         SongInfo songInfo = (SongInfo) o;
-        return equalsNullable(this.name, songInfo.name) && equalsNullable(this.originalTitle, songInfo.originalTitle)
-                && equalsNullable(this.path, songInfo.path)
-                && equalsNullable(this.metadataLanguage, songInfo.metadataLanguage)
-                && equalsNullable(this.metadataCountryCode, songInfo.metadataCountryCode)
-                && equalsNullable(this.providerIds, songInfo.providerIds) && equalsNullable(this.year, songInfo.year)
-                && equalsNullable(this.indexNumber, songInfo.indexNumber)
-                && equalsNullable(this.parentIndexNumber, songInfo.parentIndexNumber)
-                && equalsNullable(this.premiereDate, songInfo.premiereDate)
+        return Objects.equals(this.name, songInfo.name) && Objects.equals(this.originalTitle, songInfo.originalTitle)
+                && Objects.equals(this.path, songInfo.path)
+                && Objects.equals(this.metadataLanguage, songInfo.metadataLanguage)
+                && Objects.equals(this.metadataCountryCode, songInfo.metadataCountryCode)
+                && Objects.equals(this.providerIds, songInfo.providerIds) && Objects.equals(this.year, songInfo.year)
+                && Objects.equals(this.indexNumber, songInfo.indexNumber)
+                && Objects.equals(this.parentIndexNumber, songInfo.parentIndexNumber)
+                && Objects.equals(this.premiereDate, songInfo.premiereDate)
                 && Objects.equals(this.isAutomated, songInfo.isAutomated)
-                && equalsNullable(this.albumArtists, songInfo.albumArtists)
-                && equalsNullable(this.album, songInfo.album) && equalsNullable(this.artists, songInfo.artists);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.albumArtists, songInfo.albumArtists)
+                && Objects.equals(this.album, songInfo.album) && Objects.equals(this.artists, songInfo.artists);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(originalTitle), hashCodeNullable(path),
-                hashCodeNullable(metadataLanguage), hashCodeNullable(metadataCountryCode),
-                hashCodeNullable(providerIds), hashCodeNullable(year), hashCodeNullable(indexNumber),
-                hashCodeNullable(parentIndexNumber), hashCodeNullable(premiereDate), isAutomated,
-                hashCodeNullable(albumArtists), hashCodeNullable(album), hashCodeNullable(artists));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, originalTitle, path, metadataLanguage, metadataCountryCode, providerIds, year,
+                indexNumber, parentIndexNumber, premiereDate, isAutomated, albumArtists, album, artists);
     }
 
     @Override
@@ -694,101 +546,51 @@ public class SongInfo {
         }
 
         public SongInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public SongInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public SongInfo.Builder originalTitle(String originalTitle) {
-            this.instance.originalTitle = JsonNullable.<String> of(originalTitle);
-            return this;
-        }
-
-        public SongInfo.Builder originalTitle(JsonNullable<String> originalTitle) {
             this.instance.originalTitle = originalTitle;
             return this;
         }
 
         public SongInfo.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public SongInfo.Builder path(JsonNullable<String> path) {
             this.instance.path = path;
             return this;
         }
 
         public SongInfo.Builder metadataLanguage(String metadataLanguage) {
-            this.instance.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
-            return this;
-        }
-
-        public SongInfo.Builder metadataLanguage(JsonNullable<String> metadataLanguage) {
             this.instance.metadataLanguage = metadataLanguage;
             return this;
         }
 
         public SongInfo.Builder metadataCountryCode(String metadataCountryCode) {
-            this.instance.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
-            return this;
-        }
-
-        public SongInfo.Builder metadataCountryCode(JsonNullable<String> metadataCountryCode) {
             this.instance.metadataCountryCode = metadataCountryCode;
             return this;
         }
 
         public SongInfo.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-            return this;
-        }
-
-        public SongInfo.Builder providerIds(JsonNullable<Map<String, String>> providerIds) {
             this.instance.providerIds = providerIds;
             return this;
         }
 
         public SongInfo.Builder year(Integer year) {
-            this.instance.year = JsonNullable.<Integer> of(year);
-            return this;
-        }
-
-        public SongInfo.Builder year(JsonNullable<Integer> year) {
             this.instance.year = year;
             return this;
         }
 
         public SongInfo.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = JsonNullable.<Integer> of(indexNumber);
-            return this;
-        }
-
-        public SongInfo.Builder indexNumber(JsonNullable<Integer> indexNumber) {
             this.instance.indexNumber = indexNumber;
             return this;
         }
 
         public SongInfo.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-            return this;
-        }
-
-        public SongInfo.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
             this.instance.parentIndexNumber = parentIndexNumber;
             return this;
         }
 
         public SongInfo.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
-            return this;
-        }
-
-        public SongInfo.Builder premiereDate(JsonNullable<OffsetDateTime> premiereDate) {
             this.instance.premiereDate = premiereDate;
             return this;
         }
@@ -799,31 +601,16 @@ public class SongInfo {
         }
 
         public SongInfo.Builder albumArtists(List<String> albumArtists) {
-            this.instance.albumArtists = JsonNullable.<List<String>> of(albumArtists);
-            return this;
-        }
-
-        public SongInfo.Builder albumArtists(JsonNullable<List<String>> albumArtists) {
             this.instance.albumArtists = albumArtists;
             return this;
         }
 
         public SongInfo.Builder album(String album) {
-            this.instance.album = JsonNullable.<String> of(album);
-            return this;
-        }
-
-        public SongInfo.Builder album(JsonNullable<String> album) {
             this.instance.album = album;
             return this;
         }
 
         public SongInfo.Builder artists(List<String> artists) {
-            this.instance.artists = JsonNullable.<List<String>> of(artists);
-            return this;
-        }
-
-        public SongInfo.Builder artists(JsonNullable<List<String>> artists) {
             this.instance.artists = artists;
             return this;
         }

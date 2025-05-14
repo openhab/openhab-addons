@@ -17,16 +17,12 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RefreshProgressMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> data = JsonNullable.<Map<String, String>> undefined();
+    private Map<String, String> data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @javax.annotation.Nullable
@@ -63,20 +59,16 @@ public class RefreshProgressMessage {
     }
 
     public RefreshProgressMessage data(@javax.annotation.Nullable Map<String, String> data) {
-        this.data = JsonNullable.<Map<String, String>> of(data);
 
+        this.data = data;
         return this;
     }
 
     public RefreshProgressMessage putDataItem(String key, String dataItem) {
-        if (this.data == null || !this.data.isPresent()) {
-            this.data = JsonNullable.<Map<String, String>> of(new HashMap<>());
+        if (this.data == null) {
+            this.data = new HashMap<>();
         }
-        try {
-            this.data.get().put(key, dataItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.data.put(key, dataItem);
         return this;
     }
 
@@ -86,26 +78,17 @@ public class RefreshProgressMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Map<String, String>> getData_JsonNullable() {
+    public Map<String, String> getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<Map<String, String>> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable Map<String, String> data) {
-        this.data = JsonNullable.<Map<String, String>> of(data);
+        this.data = data;
     }
 
     public RefreshProgressMessage messageId(@javax.annotation.Nullable UUID messageId) {
@@ -155,26 +138,14 @@ public class RefreshProgressMessage {
             return false;
         }
         RefreshProgressMessage refreshProgressMessage = (RefreshProgressMessage) o;
-        return equalsNullable(this.data, refreshProgressMessage.data)
+        return Objects.equals(this.data, refreshProgressMessage.data)
                 && Objects.equals(this.messageId, refreshProgressMessage.messageId)
                 && Objects.equals(this.messageType, refreshProgressMessage.messageType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageId, messageType);
     }
 
     @Override
@@ -212,11 +183,6 @@ public class RefreshProgressMessage {
         }
 
         public RefreshProgressMessage.Builder data(Map<String, String> data) {
-            this.instance.data = JsonNullable.<Map<String, String>> of(data);
-            return this;
-        }
-
-        public RefreshProgressMessage.Builder data(JsonNullable<Map<String, String>> data) {
             this.instance.data = data;
             return this;
         }

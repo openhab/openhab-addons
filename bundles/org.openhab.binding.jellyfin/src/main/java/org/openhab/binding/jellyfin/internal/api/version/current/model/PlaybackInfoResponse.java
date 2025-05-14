@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,11 +38,11 @@ public class PlaybackInfoResponse {
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
     @javax.annotation.Nullable
-    private JsonNullable<String> playSessionId = JsonNullable.<String> undefined();
+    private String playSessionId;
 
     public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
     @javax.annotation.Nullable
-    private JsonNullable<PlaybackErrorCode> errorCode = JsonNullable.<PlaybackErrorCode> undefined();
+    private PlaybackErrorCode errorCode;
 
     public PlaybackInfoResponse() {
     }
@@ -85,8 +81,8 @@ public class PlaybackInfoResponse {
     }
 
     public PlaybackInfoResponse playSessionId(@javax.annotation.Nullable String playSessionId) {
-        this.playSessionId = JsonNullable.<String> of(playSessionId);
 
+        this.playSessionId = playSessionId;
         return this;
     }
 
@@ -96,31 +92,22 @@ public class PlaybackInfoResponse {
      * @return playSessionId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPlaySessionId() {
-        return playSessionId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPlaySessionId_JsonNullable() {
+    public String getPlaySessionId() {
         return playSessionId;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
-    public void setPlaySessionId_JsonNullable(JsonNullable<String> playSessionId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlaySessionId(@javax.annotation.Nullable String playSessionId) {
         this.playSessionId = playSessionId;
     }
 
-    public void setPlaySessionId(@javax.annotation.Nullable String playSessionId) {
-        this.playSessionId = JsonNullable.<String> of(playSessionId);
-    }
-
     public PlaybackInfoResponse errorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
-        this.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
 
+        this.errorCode = errorCode;
         return this;
     }
 
@@ -130,26 +117,17 @@ public class PlaybackInfoResponse {
      * @return errorCode
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PlaybackErrorCode getErrorCode() {
-        return errorCode.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ERROR_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<PlaybackErrorCode> getErrorCode_JsonNullable() {
+    public PlaybackErrorCode getErrorCode() {
         return errorCode;
     }
 
     @JsonProperty(JSON_PROPERTY_ERROR_CODE)
-    public void setErrorCode_JsonNullable(JsonNullable<PlaybackErrorCode> errorCode) {
-        this.errorCode = errorCode;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setErrorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
-        this.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
+        this.errorCode = errorCode;
     }
 
     @Override
@@ -162,25 +140,13 @@ public class PlaybackInfoResponse {
         }
         PlaybackInfoResponse playbackInfoResponse = (PlaybackInfoResponse) o;
         return Objects.equals(this.mediaSources, playbackInfoResponse.mediaSources)
-                && equalsNullable(this.playSessionId, playbackInfoResponse.playSessionId)
-                && equalsNullable(this.errorCode, playbackInfoResponse.errorCode);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.playSessionId, playbackInfoResponse.playSessionId)
+                && Objects.equals(this.errorCode, playbackInfoResponse.errorCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mediaSources, hashCodeNullable(playSessionId), hashCodeNullable(errorCode));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(mediaSources, playSessionId, errorCode);
     }
 
     @Override
@@ -223,21 +189,11 @@ public class PlaybackInfoResponse {
         }
 
         public PlaybackInfoResponse.Builder playSessionId(String playSessionId) {
-            this.instance.playSessionId = JsonNullable.<String> of(playSessionId);
-            return this;
-        }
-
-        public PlaybackInfoResponse.Builder playSessionId(JsonNullable<String> playSessionId) {
             this.instance.playSessionId = playSessionId;
             return this;
         }
 
         public PlaybackInfoResponse.Builder errorCode(PlaybackErrorCode errorCode) {
-            this.instance.errorCode = JsonNullable.<PlaybackErrorCode> of(errorCode);
-            return this;
-        }
-
-        public PlaybackInfoResponse.Builder errorCode(JsonNullable<PlaybackErrorCode> errorCode) {
             this.instance.errorCode = errorCode;
             return this;
         }

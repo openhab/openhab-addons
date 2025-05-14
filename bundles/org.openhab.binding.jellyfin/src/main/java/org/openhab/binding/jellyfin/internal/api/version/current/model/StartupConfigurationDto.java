@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,22 +33,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class StartupConfigurationDto {
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
     @javax.annotation.Nullable
-    private JsonNullable<String> uiCulture = JsonNullable.<String> undefined();
+    private String uiCulture;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @javax.annotation.Nullable
-    private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
+    private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
     @javax.annotation.Nullable
-    private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String> undefined();
+    private String preferredMetadataLanguage;
 
     public StartupConfigurationDto() {
     }
 
     public StartupConfigurationDto uiCulture(@javax.annotation.Nullable String uiCulture) {
-        this.uiCulture = JsonNullable.<String> of(uiCulture);
 
+        this.uiCulture = uiCulture;
         return this;
     }
 
@@ -62,31 +58,22 @@ public class StartupConfigurationDto {
      * @return uiCulture
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUiCulture() {
-        return uiCulture.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_UI_CULTURE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUiCulture_JsonNullable() {
+    public String getUiCulture() {
         return uiCulture;
     }
 
     @JsonProperty(JSON_PROPERTY_UI_CULTURE)
-    public void setUiCulture_JsonNullable(JsonNullable<String> uiCulture) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUiCulture(@javax.annotation.Nullable String uiCulture) {
         this.uiCulture = uiCulture;
     }
 
-    public void setUiCulture(@javax.annotation.Nullable String uiCulture) {
-        this.uiCulture = JsonNullable.<String> of(uiCulture);
-    }
-
     public StartupConfigurationDto metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
 
+        this.metadataCountryCode = metadataCountryCode;
         return this;
     }
 
@@ -96,32 +83,23 @@ public class StartupConfigurationDto {
      * @return metadataCountryCode
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMetadataCountryCode() {
-        return metadataCountryCode.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
+    public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
-        this.metadataCountryCode = metadataCountryCode;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
+        this.metadataCountryCode = metadataCountryCode;
     }
 
     public StartupConfigurationDto preferredMetadataLanguage(
             @javax.annotation.Nullable String preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
 
+        this.preferredMetadataLanguage = preferredMetadataLanguage;
         return this;
     }
 
@@ -131,26 +109,17 @@ public class StartupConfigurationDto {
      * @return preferredMetadataLanguage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPreferredMetadataLanguage() {
-        return preferredMetadataLanguage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPreferredMetadataLanguage_JsonNullable() {
+    public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
     @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
-    public void setPreferredMetadataLanguage_JsonNullable(JsonNullable<String> preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = preferredMetadataLanguage;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-        this.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
+        this.preferredMetadataLanguage = preferredMetadataLanguage;
     }
 
     @Override
@@ -162,27 +131,14 @@ public class StartupConfigurationDto {
             return false;
         }
         StartupConfigurationDto startupConfigurationDto = (StartupConfigurationDto) o;
-        return equalsNullable(this.uiCulture, startupConfigurationDto.uiCulture)
-                && equalsNullable(this.metadataCountryCode, startupConfigurationDto.metadataCountryCode)
-                && equalsNullable(this.preferredMetadataLanguage, startupConfigurationDto.preferredMetadataLanguage);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.uiCulture, startupConfigurationDto.uiCulture)
+                && Objects.equals(this.metadataCountryCode, startupConfigurationDto.metadataCountryCode)
+                && Objects.equals(this.preferredMetadataLanguage, startupConfigurationDto.preferredMetadataLanguage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(uiCulture), hashCodeNullable(metadataCountryCode),
-                hashCodeNullable(preferredMetadataLanguage));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(uiCulture, metadataCountryCode, preferredMetadataLanguage);
     }
 
     @Override
@@ -220,32 +176,16 @@ public class StartupConfigurationDto {
         }
 
         public StartupConfigurationDto.Builder uiCulture(String uiCulture) {
-            this.instance.uiCulture = JsonNullable.<String> of(uiCulture);
-            return this;
-        }
-
-        public StartupConfigurationDto.Builder uiCulture(JsonNullable<String> uiCulture) {
             this.instance.uiCulture = uiCulture;
             return this;
         }
 
         public StartupConfigurationDto.Builder metadataCountryCode(String metadataCountryCode) {
-            this.instance.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
-            return this;
-        }
-
-        public StartupConfigurationDto.Builder metadataCountryCode(JsonNullable<String> metadataCountryCode) {
             this.instance.metadataCountryCode = metadataCountryCode;
             return this;
         }
 
         public StartupConfigurationDto.Builder preferredMetadataLanguage(String preferredMetadataLanguage) {
-            this.instance.preferredMetadataLanguage = JsonNullable.<String> of(preferredMetadataLanguage);
-            return this;
-        }
-
-        public StartupConfigurationDto.Builder preferredMetadataLanguage(
-                JsonNullable<String> preferredMetadataLanguage) {
             this.instance.preferredMetadataLanguage = preferredMetadataLanguage;
             return this;
         }

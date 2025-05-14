@@ -17,13 +17,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -45,7 +41,7 @@ public class DeviceOptions {
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
     @javax.annotation.Nullable
-    private JsonNullable<String> customName = JsonNullable.<String> undefined();
+    private String customName;
 
     public DeviceOptions() {
     }
@@ -98,8 +94,8 @@ public class DeviceOptions {
     }
 
     public DeviceOptions customName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
 
+        this.customName = customName;
         return this;
     }
 
@@ -109,26 +105,17 @@ public class DeviceOptions {
      * @return customName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCustomName() {
-        return customName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCustomName_JsonNullable() {
+    public String getCustomName() {
         return customName;
     }
 
     @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
-    public void setCustomName_JsonNullable(JsonNullable<String> customName) {
-        this.customName = customName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomName(@javax.annotation.Nullable String customName) {
-        this.customName = JsonNullable.<String> of(customName);
+        this.customName = customName;
     }
 
     @Override
@@ -141,24 +128,12 @@ public class DeviceOptions {
         }
         DeviceOptions deviceOptions = (DeviceOptions) o;
         return Objects.equals(this.id, deviceOptions.id) && Objects.equals(this.deviceId, deviceOptions.deviceId)
-                && equalsNullable(this.customName, deviceOptions.customName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.customName, deviceOptions.customName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, deviceId, hashCodeNullable(customName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, deviceId, customName);
     }
 
     @Override
@@ -206,11 +181,6 @@ public class DeviceOptions {
         }
 
         public DeviceOptions.Builder customName(String customName) {
-            this.instance.customName = JsonNullable.<String> of(customName);
-            return this;
-        }
-
-        public DeviceOptions.Builder customName(JsonNullable<String> customName) {
             this.instance.customName = customName;
             return this;
         }

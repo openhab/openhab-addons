@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,11 +36,11 @@ public class MediaPathDto {
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+    private String path;
 
     public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
     @javax.annotation.Nullable
-    private JsonNullable<MediaPathInfo> pathInfo = JsonNullable.<MediaPathInfo> undefined();
+    private MediaPathInfo pathInfo;
 
     public MediaPathDto() {
     }
@@ -75,8 +71,8 @@ public class MediaPathDto {
     }
 
     public MediaPathDto path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
 
+        this.path = path;
         return this;
     }
 
@@ -86,31 +82,22 @@ public class MediaPathDto {
      * @return path
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
+    public String getPath() {
         return path;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPath(@javax.annotation.Nullable String path) {
         this.path = path;
     }
 
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
-
     public MediaPathDto pathInfo(@javax.annotation.Nullable MediaPathInfo pathInfo) {
-        this.pathInfo = JsonNullable.<MediaPathInfo> of(pathInfo);
 
+        this.pathInfo = pathInfo;
         return this;
     }
 
@@ -120,26 +107,17 @@ public class MediaPathDto {
      * @return pathInfo
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public MediaPathInfo getPathInfo() {
-        return pathInfo.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<MediaPathInfo> getPathInfo_JsonNullable() {
+    public MediaPathInfo getPathInfo() {
         return pathInfo;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH_INFO)
-    public void setPathInfo_JsonNullable(JsonNullable<MediaPathInfo> pathInfo) {
-        this.pathInfo = pathInfo;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPathInfo(@javax.annotation.Nullable MediaPathInfo pathInfo) {
-        this.pathInfo = JsonNullable.<MediaPathInfo> of(pathInfo);
+        this.pathInfo = pathInfo;
     }
 
     @Override
@@ -151,25 +129,13 @@ public class MediaPathDto {
             return false;
         }
         MediaPathDto mediaPathDto = (MediaPathDto) o;
-        return Objects.equals(this.name, mediaPathDto.name) && equalsNullable(this.path, mediaPathDto.path)
-                && equalsNullable(this.pathInfo, mediaPathDto.pathInfo);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, mediaPathDto.name) && Objects.equals(this.path, mediaPathDto.path)
+                && Objects.equals(this.pathInfo, mediaPathDto.pathInfo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, hashCodeNullable(path), hashCodeNullable(pathInfo));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, path, pathInfo);
     }
 
     @Override
@@ -212,21 +178,11 @@ public class MediaPathDto {
         }
 
         public MediaPathDto.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public MediaPathDto.Builder path(JsonNullable<String> path) {
             this.instance.path = path;
             return this;
         }
 
         public MediaPathDto.Builder pathInfo(MediaPathInfo pathInfo) {
-            this.instance.pathInfo = JsonNullable.<MediaPathInfo> of(pathInfo);
-            return this;
-        }
-
-        public MediaPathDto.Builder pathInfo(JsonNullable<MediaPathInfo> pathInfo) {
             this.instance.pathInfo = pathInfo;
             return this;
         }

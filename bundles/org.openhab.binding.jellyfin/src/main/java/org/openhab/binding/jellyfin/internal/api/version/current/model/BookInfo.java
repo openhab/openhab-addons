@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,43 +38,43 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BookInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
     @javax.annotation.Nullable
-    private JsonNullable<String> originalTitle = JsonNullable.<String> undefined();
+    private String originalTitle;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+    private String path;
 
     public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
     @javax.annotation.Nullable
-    private JsonNullable<String> metadataLanguage = JsonNullable.<String> undefined();
+    private String metadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @javax.annotation.Nullable
-    private JsonNullable<String> metadataCountryCode = JsonNullable.<String> undefined();
+    private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
     @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>> undefined();
+    private Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_YEAR = "Year";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> year = JsonNullable.<Integer> undefined();
+    private Integer year;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
+    private Integer indexNumber;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
+    private Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
     @javax.annotation.Nullable
@@ -86,14 +82,14 @@ public class BookInfo {
 
     public static final String JSON_PROPERTY_SERIES_NAME = "SeriesName";
     @javax.annotation.Nullable
-    private JsonNullable<String> seriesName = JsonNullable.<String> undefined();
+    private String seriesName;
 
     public BookInfo() {
     }
 
     public BookInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -103,31 +99,22 @@ public class BookInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public BookInfo originalTitle(@javax.annotation.Nullable String originalTitle) {
-        this.originalTitle = JsonNullable.<String> of(originalTitle);
 
+        this.originalTitle = originalTitle;
         return this;
     }
 
@@ -137,31 +124,22 @@ public class BookInfo {
      * @return originalTitle
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOriginalTitle() {
-        return originalTitle.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOriginalTitle_JsonNullable() {
+    public String getOriginalTitle() {
         return originalTitle;
     }
 
     @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
-    public void setOriginalTitle_JsonNullable(JsonNullable<String> originalTitle) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
         this.originalTitle = originalTitle;
     }
 
-    public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
-        this.originalTitle = JsonNullable.<String> of(originalTitle);
-    }
-
     public BookInfo path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
 
+        this.path = path;
         return this;
     }
 
@@ -171,31 +149,22 @@ public class BookInfo {
      * @return path
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
+    public String getPath() {
         return path;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPath(@javax.annotation.Nullable String path) {
         this.path = path;
     }
 
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
-
     public BookInfo metadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
-        this.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
 
+        this.metadataLanguage = metadataLanguage;
         return this;
     }
 
@@ -205,31 +174,22 @@ public class BookInfo {
      * @return metadataLanguage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMetadataLanguage() {
-        return metadataLanguage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMetadataLanguage_JsonNullable() {
+    public String getMetadataLanguage() {
         return metadataLanguage;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
-    public void setMetadataLanguage_JsonNullable(JsonNullable<String> metadataLanguage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
         this.metadataLanguage = metadataLanguage;
     }
 
-    public void setMetadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
-        this.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
-    }
-
     public BookInfo metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
 
+        this.metadataCountryCode = metadataCountryCode;
         return this;
     }
 
@@ -239,43 +199,30 @@ public class BookInfo {
      * @return metadataCountryCode
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMetadataCountryCode() {
-        return metadataCountryCode.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
+    public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
         this.metadataCountryCode = metadataCountryCode;
     }
 
-    public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-        this.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
-    }
-
     public BookInfo providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
 
+        this.providerIds = providerIds;
         return this;
     }
 
     public BookInfo putProviderIdsItem(String key, String providerIdsItem) {
-        if (this.providerIds == null || !this.providerIds.isPresent()) {
-            this.providerIds = JsonNullable.<Map<String, String>> of(new HashMap<>());
+        if (this.providerIds == null) {
+            this.providerIds = new HashMap<>();
         }
-        try {
-            this.providerIds.get().put(key, providerIdsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.providerIds.put(key, providerIdsItem);
         return this;
     }
 
@@ -285,31 +232,22 @@ public class BookInfo {
      * @return providerIds
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getProviderIds() {
-        return providerIds.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
+    public Map<String, String> getProviderIds() {
         return providerIds;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
-    public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
         this.providerIds = providerIds;
     }
 
-    public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-        this.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-    }
-
     public BookInfo year(@javax.annotation.Nullable Integer year) {
-        this.year = JsonNullable.<Integer> of(year);
 
+        this.year = year;
         return this;
     }
 
@@ -319,31 +257,22 @@ public class BookInfo {
      * @return year
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getYear() {
-        return year.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getYear_JsonNullable() {
+    public Integer getYear() {
         return year;
     }
 
     @JsonProperty(JSON_PROPERTY_YEAR)
-    public void setYear_JsonNullable(JsonNullable<Integer> year) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setYear(@javax.annotation.Nullable Integer year) {
         this.year = year;
     }
 
-    public void setYear(@javax.annotation.Nullable Integer year) {
-        this.year = JsonNullable.<Integer> of(year);
-    }
-
     public BookInfo indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
 
+        this.indexNumber = indexNumber;
         return this;
     }
 
@@ -353,31 +282,22 @@ public class BookInfo {
      * @return indexNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumber() {
-        return indexNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumber_JsonNullable() {
+    public Integer getIndexNumber() {
         return indexNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
         this.indexNumber = indexNumber;
     }
 
-    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
-    }
-
     public BookInfo parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
 
+        this.parentIndexNumber = parentIndexNumber;
         return this;
     }
 
@@ -387,31 +307,22 @@ public class BookInfo {
      * @return parentIndexNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getParentIndexNumber() {
-        return parentIndexNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
+    public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
         this.parentIndexNumber = parentIndexNumber;
     }
 
-    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-    }
-
     public BookInfo premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
 
+        this.premiereDate = premiereDate;
         return this;
     }
 
@@ -421,26 +332,17 @@ public class BookInfo {
      * @return premiereDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getPremiereDate() {
-        return premiereDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
+    public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
 
     @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
-    public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
-        this.premiereDate = premiereDate;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-        this.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
+        this.premiereDate = premiereDate;
     }
 
     public BookInfo isAutomated(@javax.annotation.Nullable Boolean isAutomated) {
@@ -469,8 +371,8 @@ public class BookInfo {
     }
 
     public BookInfo seriesName(@javax.annotation.Nullable String seriesName) {
-        this.seriesName = JsonNullable.<String> of(seriesName);
 
+        this.seriesName = seriesName;
         return this;
     }
 
@@ -480,26 +382,17 @@ public class BookInfo {
      * @return seriesName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesName() {
-        return seriesName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERIES_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesName_JsonNullable() {
+    public String getSeriesName() {
         return seriesName;
     }
 
     @JsonProperty(JSON_PROPERTY_SERIES_NAME)
-    public void setSeriesName_JsonNullable(JsonNullable<String> seriesName) {
-        this.seriesName = seriesName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeriesName(@javax.annotation.Nullable String seriesName) {
-        this.seriesName = JsonNullable.<String> of(seriesName);
+        this.seriesName = seriesName;
     }
 
     @Override
@@ -511,37 +404,22 @@ public class BookInfo {
             return false;
         }
         BookInfo bookInfo = (BookInfo) o;
-        return equalsNullable(this.name, bookInfo.name) && equalsNullable(this.originalTitle, bookInfo.originalTitle)
-                && equalsNullable(this.path, bookInfo.path)
-                && equalsNullable(this.metadataLanguage, bookInfo.metadataLanguage)
-                && equalsNullable(this.metadataCountryCode, bookInfo.metadataCountryCode)
-                && equalsNullable(this.providerIds, bookInfo.providerIds) && equalsNullable(this.year, bookInfo.year)
-                && equalsNullable(this.indexNumber, bookInfo.indexNumber)
-                && equalsNullable(this.parentIndexNumber, bookInfo.parentIndexNumber)
-                && equalsNullable(this.premiereDate, bookInfo.premiereDate)
+        return Objects.equals(this.name, bookInfo.name) && Objects.equals(this.originalTitle, bookInfo.originalTitle)
+                && Objects.equals(this.path, bookInfo.path)
+                && Objects.equals(this.metadataLanguage, bookInfo.metadataLanguage)
+                && Objects.equals(this.metadataCountryCode, bookInfo.metadataCountryCode)
+                && Objects.equals(this.providerIds, bookInfo.providerIds) && Objects.equals(this.year, bookInfo.year)
+                && Objects.equals(this.indexNumber, bookInfo.indexNumber)
+                && Objects.equals(this.parentIndexNumber, bookInfo.parentIndexNumber)
+                && Objects.equals(this.premiereDate, bookInfo.premiereDate)
                 && Objects.equals(this.isAutomated, bookInfo.isAutomated)
-                && equalsNullable(this.seriesName, bookInfo.seriesName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.seriesName, bookInfo.seriesName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(originalTitle), hashCodeNullable(path),
-                hashCodeNullable(metadataLanguage), hashCodeNullable(metadataCountryCode),
-                hashCodeNullable(providerIds), hashCodeNullable(year), hashCodeNullable(indexNumber),
-                hashCodeNullable(parentIndexNumber), hashCodeNullable(premiereDate), isAutomated,
-                hashCodeNullable(seriesName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, originalTitle, path, metadataLanguage, metadataCountryCode, providerIds, year,
+                indexNumber, parentIndexNumber, premiereDate, isAutomated, seriesName);
     }
 
     @Override
@@ -588,101 +466,51 @@ public class BookInfo {
         }
 
         public BookInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public BookInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public BookInfo.Builder originalTitle(String originalTitle) {
-            this.instance.originalTitle = JsonNullable.<String> of(originalTitle);
-            return this;
-        }
-
-        public BookInfo.Builder originalTitle(JsonNullable<String> originalTitle) {
             this.instance.originalTitle = originalTitle;
             return this;
         }
 
         public BookInfo.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public BookInfo.Builder path(JsonNullable<String> path) {
             this.instance.path = path;
             return this;
         }
 
         public BookInfo.Builder metadataLanguage(String metadataLanguage) {
-            this.instance.metadataLanguage = JsonNullable.<String> of(metadataLanguage);
-            return this;
-        }
-
-        public BookInfo.Builder metadataLanguage(JsonNullable<String> metadataLanguage) {
             this.instance.metadataLanguage = metadataLanguage;
             return this;
         }
 
         public BookInfo.Builder metadataCountryCode(String metadataCountryCode) {
-            this.instance.metadataCountryCode = JsonNullable.<String> of(metadataCountryCode);
-            return this;
-        }
-
-        public BookInfo.Builder metadataCountryCode(JsonNullable<String> metadataCountryCode) {
             this.instance.metadataCountryCode = metadataCountryCode;
             return this;
         }
 
         public BookInfo.Builder providerIds(Map<String, String> providerIds) {
-            this.instance.providerIds = JsonNullable.<Map<String, String>> of(providerIds);
-            return this;
-        }
-
-        public BookInfo.Builder providerIds(JsonNullable<Map<String, String>> providerIds) {
             this.instance.providerIds = providerIds;
             return this;
         }
 
         public BookInfo.Builder year(Integer year) {
-            this.instance.year = JsonNullable.<Integer> of(year);
-            return this;
-        }
-
-        public BookInfo.Builder year(JsonNullable<Integer> year) {
             this.instance.year = year;
             return this;
         }
 
         public BookInfo.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = JsonNullable.<Integer> of(indexNumber);
-            return this;
-        }
-
-        public BookInfo.Builder indexNumber(JsonNullable<Integer> indexNumber) {
             this.instance.indexNumber = indexNumber;
             return this;
         }
 
         public BookInfo.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-            return this;
-        }
-
-        public BookInfo.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
             this.instance.parentIndexNumber = parentIndexNumber;
             return this;
         }
 
         public BookInfo.Builder premiereDate(OffsetDateTime premiereDate) {
-            this.instance.premiereDate = JsonNullable.<OffsetDateTime> of(premiereDate);
-            return this;
-        }
-
-        public BookInfo.Builder premiereDate(JsonNullable<OffsetDateTime> premiereDate) {
             this.instance.premiereDate = premiereDate;
             return this;
         }
@@ -693,11 +521,6 @@ public class BookInfo {
         }
 
         public BookInfo.Builder seriesName(String seriesName) {
-            this.instance.seriesName = JsonNullable.<String> of(seriesName);
-            return this;
-        }
-
-        public BookInfo.Builder seriesName(JsonNullable<String> seriesName) {
             this.instance.seriesName = seriesName;
             return this;
         }

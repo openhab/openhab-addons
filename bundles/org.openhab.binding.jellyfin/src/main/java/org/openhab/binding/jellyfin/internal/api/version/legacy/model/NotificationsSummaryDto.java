@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +36,7 @@ public class NotificationsSummaryDto {
 
     public static final String JSON_PROPERTY_MAX_UNREAD_NOTIFICATION_LEVEL = "MaxUnreadNotificationLevel";
     @javax.annotation.Nullable
-    private JsonNullable<NotificationLevel> maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> undefined();
+    private NotificationLevel maxUnreadNotificationLevel;
 
     public NotificationsSummaryDto() {
     }
@@ -72,8 +68,8 @@ public class NotificationsSummaryDto {
 
     public NotificationsSummaryDto maxUnreadNotificationLevel(
             @javax.annotation.Nullable NotificationLevel maxUnreadNotificationLevel) {
-        this.maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> of(maxUnreadNotificationLevel);
 
+        this.maxUnreadNotificationLevel = maxUnreadNotificationLevel;
         return this;
     }
 
@@ -83,26 +79,17 @@ public class NotificationsSummaryDto {
      * @return maxUnreadNotificationLevel
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public NotificationLevel getMaxUnreadNotificationLevel() {
-        return maxUnreadNotificationLevel.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_UNREAD_NOTIFICATION_LEVEL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<NotificationLevel> getMaxUnreadNotificationLevel_JsonNullable() {
+    public NotificationLevel getMaxUnreadNotificationLevel() {
         return maxUnreadNotificationLevel;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_UNREAD_NOTIFICATION_LEVEL)
-    public void setMaxUnreadNotificationLevel_JsonNullable(JsonNullable<NotificationLevel> maxUnreadNotificationLevel) {
-        this.maxUnreadNotificationLevel = maxUnreadNotificationLevel;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxUnreadNotificationLevel(@javax.annotation.Nullable NotificationLevel maxUnreadNotificationLevel) {
-        this.maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> of(maxUnreadNotificationLevel);
+        this.maxUnreadNotificationLevel = maxUnreadNotificationLevel;
     }
 
     @Override
@@ -115,24 +102,12 @@ public class NotificationsSummaryDto {
         }
         NotificationsSummaryDto notificationsSummaryDto = (NotificationsSummaryDto) o;
         return Objects.equals(this.unreadCount, notificationsSummaryDto.unreadCount)
-                && equalsNullable(this.maxUnreadNotificationLevel, notificationsSummaryDto.maxUnreadNotificationLevel);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.maxUnreadNotificationLevel, notificationsSummaryDto.maxUnreadNotificationLevel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(unreadCount, hashCodeNullable(maxUnreadNotificationLevel));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(unreadCount, maxUnreadNotificationLevel);
     }
 
     @Override
@@ -175,12 +150,6 @@ public class NotificationsSummaryDto {
 
         public NotificationsSummaryDto.Builder maxUnreadNotificationLevel(
                 NotificationLevel maxUnreadNotificationLevel) {
-            this.instance.maxUnreadNotificationLevel = JsonNullable.<NotificationLevel> of(maxUnreadNotificationLevel);
-            return this;
-        }
-
-        public NotificationsSummaryDto.Builder maxUnreadNotificationLevel(
-                JsonNullable<NotificationLevel> maxUnreadNotificationLevel) {
             this.instance.maxUnreadNotificationLevel = maxUnreadNotificationLevel;
             return this;
         }

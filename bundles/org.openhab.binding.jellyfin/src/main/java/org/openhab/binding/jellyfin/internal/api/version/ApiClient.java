@@ -31,8 +31,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TimeZone;
 
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.openapitools.jackson.nullable.JsonNullableModule;
+import javax.annotation.Nullable;
+
 import org.openhab.binding.jellyfin.internal.api.version.auth.ApiKeyAuth;
 import org.openhab.binding.jellyfin.internal.api.version.auth.Authentication;
 import org.openhab.binding.jellyfin.internal.api.version.auth.HttpBasicAuth;
@@ -53,6 +53,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -133,8 +134,6 @@ public class ApiClient extends JavaTimeFormatter {
         mapper.setDateFormat(dateFormat);
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        JsonNullableModule jnm = new JsonNullableModule();
-        mapper.registerModule(jnm);
         return mapper;
     }
 
@@ -570,7 +569,7 @@ public class ApiClient extends JavaTimeFormatter {
      * @return Object the selected body
      */
     protected BodyInserter<?, ? super ClientHttpRequest> selectBody(Object obj,
-                    MultiValueMap<String, Object> formParams, MediaType contentType) {
+            MultiValueMap<String, Object> formParams, MediaType contentType) {
         if (MediaType.APPLICATION_FORM_URLENCODED.equals(contentType)) {
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 

@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -51,7 +47,7 @@ public class SendCommand {
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> positionTicks = JsonNullable.<Long> undefined();
+    private Long positionTicks;
 
     public static final String JSON_PROPERTY_COMMAND = "Command";
     @javax.annotation.Nullable
@@ -140,8 +136,8 @@ public class SendCommand {
     }
 
     public SendCommand positionTicks(@javax.annotation.Nullable Long positionTicks) {
-        this.positionTicks = JsonNullable.<Long> of(positionTicks);
 
+        this.positionTicks = positionTicks;
         return this;
     }
 
@@ -151,26 +147,17 @@ public class SendCommand {
      * @return positionTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getPositionTicks() {
-        return positionTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getPositionTicks_JsonNullable() {
+    public Long getPositionTicks() {
         return positionTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
-    public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
-        this.positionTicks = positionTicks;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-        this.positionTicks = JsonNullable.<Long> of(positionTicks);
+        this.positionTicks = positionTicks;
     }
 
     public SendCommand command(@javax.annotation.Nullable SendCommandType command) {
@@ -235,26 +222,14 @@ public class SendCommand {
         return Objects.equals(this.groupId, sendCommand.groupId)
                 && Objects.equals(this.playlistItemId, sendCommand.playlistItemId)
                 && Objects.equals(this.when, sendCommand.when)
-                && equalsNullable(this.positionTicks, sendCommand.positionTicks)
+                && Objects.equals(this.positionTicks, sendCommand.positionTicks)
                 && Objects.equals(this.command, sendCommand.command)
                 && Objects.equals(this.emittedAt, sendCommand.emittedAt);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, playlistItemId, when, hashCodeNullable(positionTicks), command, emittedAt);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(groupId, playlistItemId, when, positionTicks, command, emittedAt);
     }
 
     @Override
@@ -310,11 +285,6 @@ public class SendCommand {
         }
 
         public SendCommand.Builder positionTicks(Long positionTicks) {
-            this.instance.positionTicks = JsonNullable.<Long> of(positionTicks);
-            return this;
-        }
-
-        public SendCommand.Builder positionTicks(JsonNullable<Long> positionTicks) {
             this.instance.positionTicks = positionTicks;
             return this;
         }

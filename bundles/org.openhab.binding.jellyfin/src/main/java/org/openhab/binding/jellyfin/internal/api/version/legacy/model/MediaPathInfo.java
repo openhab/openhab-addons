@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ public class MediaPathInfo {
 
     public static final String JSON_PROPERTY_NETWORK_PATH = "NetworkPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> networkPath = JsonNullable.<String> undefined();
+    private String networkPath;
 
     public MediaPathInfo() {
     }
@@ -70,8 +66,8 @@ public class MediaPathInfo {
     }
 
     public MediaPathInfo networkPath(@javax.annotation.Nullable String networkPath) {
-        this.networkPath = JsonNullable.<String> of(networkPath);
 
+        this.networkPath = networkPath;
         return this;
     }
 
@@ -81,26 +77,17 @@ public class MediaPathInfo {
      * @return networkPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getNetworkPath() {
-        return networkPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NETWORK_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getNetworkPath_JsonNullable() {
+    public String getNetworkPath() {
         return networkPath;
     }
 
     @JsonProperty(JSON_PROPERTY_NETWORK_PATH)
-    public void setNetworkPath_JsonNullable(JsonNullable<String> networkPath) {
-        this.networkPath = networkPath;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNetworkPath(@javax.annotation.Nullable String networkPath) {
-        this.networkPath = JsonNullable.<String> of(networkPath);
+        this.networkPath = networkPath;
     }
 
     @Override
@@ -113,24 +100,12 @@ public class MediaPathInfo {
         }
         MediaPathInfo mediaPathInfo = (MediaPathInfo) o;
         return Objects.equals(this.path, mediaPathInfo.path)
-                && equalsNullable(this.networkPath, mediaPathInfo.networkPath);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.networkPath, mediaPathInfo.networkPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, hashCodeNullable(networkPath));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(path, networkPath);
     }
 
     @Override
@@ -172,11 +147,6 @@ public class MediaPathInfo {
         }
 
         public MediaPathInfo.Builder networkPath(String networkPath) {
-            this.instance.networkPath = JsonNullable.<String> of(networkPath);
-            return this;
-        }
-
-        public MediaPathInfo.Builder networkPath(JsonNullable<String> networkPath) {
             this.instance.networkPath = networkPath;
             return this;
         }

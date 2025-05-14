@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,18 +31,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class NameValuePair {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
     @javax.annotation.Nullable
-    private JsonNullable<String> value = JsonNullable.<String> undefined();
+    private String value;
 
     public NameValuePair() {
     }
 
     public NameValuePair name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -56,31 +52,22 @@ public class NameValuePair {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public NameValuePair value(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
 
+        this.value = value;
         return this;
     }
 
@@ -90,26 +77,17 @@ public class NameValuePair {
      * @return value
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getValue() {
-        return value.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VALUE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getValue_JsonNullable() {
+    public String getValue() {
         return value;
     }
 
     @JsonProperty(JSON_PROPERTY_VALUE)
-    public void setValue_JsonNullable(JsonNullable<String> value) {
-        this.value = value;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setValue(@javax.annotation.Nullable String value) {
-        this.value = JsonNullable.<String> of(value);
+        this.value = value;
     }
 
     @Override
@@ -121,24 +99,12 @@ public class NameValuePair {
             return false;
         }
         NameValuePair nameValuePair = (NameValuePair) o;
-        return equalsNullable(this.name, nameValuePair.name) && equalsNullable(this.value, nameValuePair.value);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, nameValuePair.name) && Objects.equals(this.value, nameValuePair.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(value));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, value);
     }
 
     @Override
@@ -175,21 +141,11 @@ public class NameValuePair {
         }
 
         public NameValuePair.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public NameValuePair.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public NameValuePair.Builder value(String value) {
-            this.instance.value = JsonNullable.<String> of(value);
-            return this;
-        }
-
-        public NameValuePair.Builder value(JsonNullable<String> value) {
             this.instance.value = value;
             return this;
         }

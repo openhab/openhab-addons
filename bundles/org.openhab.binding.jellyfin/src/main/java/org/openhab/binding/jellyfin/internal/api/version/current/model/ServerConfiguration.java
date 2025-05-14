@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -85,15 +81,15 @@ public class ServerConfiguration {
 
     public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
     @javax.annotation.Nullable
-    private JsonNullable<String> cachePath = JsonNullable.<String> undefined();
+    private String cachePath;
 
     public static final String JSON_PROPERTY_PREVIOUS_VERSION = "PreviousVersion";
     @javax.annotation.Nullable
-    private JsonNullable<String> previousVersion = JsonNullable.<String> undefined();
+    private String previousVersion;
 
     public static final String JSON_PROPERTY_PREVIOUS_VERSION_STR = "PreviousVersionStr";
     @javax.annotation.Nullable
-    private JsonNullable<String> previousVersionStr = JsonNullable.<String> undefined();
+    private String previousVersionStr;
 
     public static final String JSON_PROPERTY_ENABLE_METRICS = "EnableMetrics";
     @javax.annotation.Nullable
@@ -253,7 +249,7 @@ public class ServerConfiguration {
 
     public static final String JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS = "ActivityLogRetentionDays";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> activityLogRetentionDays = JsonNullable.<Integer> undefined();
+    private Integer activityLogRetentionDays;
 
     public static final String JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY = "LibraryScanFanoutConcurrency";
     @javax.annotation.Nullable
@@ -345,8 +341,8 @@ public class ServerConfiguration {
     }
 
     public ServerConfiguration cachePath(@javax.annotation.Nullable String cachePath) {
-        this.cachePath = JsonNullable.<String> of(cachePath);
 
+        this.cachePath = cachePath;
         return this;
     }
 
@@ -356,31 +352,22 @@ public class ServerConfiguration {
      * @return cachePath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getCachePath() {
-        return cachePath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CACHE_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getCachePath_JsonNullable() {
+    public String getCachePath() {
         return cachePath;
     }
 
     @JsonProperty(JSON_PROPERTY_CACHE_PATH)
-    public void setCachePath_JsonNullable(JsonNullable<String> cachePath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCachePath(@javax.annotation.Nullable String cachePath) {
         this.cachePath = cachePath;
     }
 
-    public void setCachePath(@javax.annotation.Nullable String cachePath) {
-        this.cachePath = JsonNullable.<String> of(cachePath);
-    }
-
     public ServerConfiguration previousVersion(@javax.annotation.Nullable String previousVersion) {
-        this.previousVersion = JsonNullable.<String> of(previousVersion);
 
+        this.previousVersion = previousVersion;
         return this;
     }
 
@@ -390,31 +377,22 @@ public class ServerConfiguration {
      * @return previousVersion
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPreviousVersion() {
-        return previousVersion.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPreviousVersion_JsonNullable() {
+    public String getPreviousVersion() {
         return previousVersion;
     }
 
     @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
-    public void setPreviousVersion_JsonNullable(JsonNullable<String> previousVersion) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPreviousVersion(@javax.annotation.Nullable String previousVersion) {
         this.previousVersion = previousVersion;
     }
 
-    public void setPreviousVersion(@javax.annotation.Nullable String previousVersion) {
-        this.previousVersion = JsonNullable.<String> of(previousVersion);
-    }
-
     public ServerConfiguration previousVersionStr(@javax.annotation.Nullable String previousVersionStr) {
-        this.previousVersionStr = JsonNullable.<String> of(previousVersionStr);
 
+        this.previousVersionStr = previousVersionStr;
         return this;
     }
 
@@ -425,26 +403,17 @@ public class ServerConfiguration {
      * @return previousVersionStr
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPreviousVersionStr() {
-        return previousVersionStr.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPreviousVersionStr_JsonNullable() {
+    public String getPreviousVersionStr() {
         return previousVersionStr;
     }
 
     @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
-    public void setPreviousVersionStr_JsonNullable(JsonNullable<String> previousVersionStr) {
-        this.previousVersionStr = previousVersionStr;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreviousVersionStr(@javax.annotation.Nullable String previousVersionStr) {
-        this.previousVersionStr = JsonNullable.<String> of(previousVersionStr);
+        this.previousVersionStr = previousVersionStr;
     }
 
     public ServerConfiguration enableMetrics(@javax.annotation.Nullable Boolean enableMetrics) {
@@ -1512,8 +1481,8 @@ public class ServerConfiguration {
     }
 
     public ServerConfiguration activityLogRetentionDays(@javax.annotation.Nullable Integer activityLogRetentionDays) {
-        this.activityLogRetentionDays = JsonNullable.<Integer> of(activityLogRetentionDays);
 
+        this.activityLogRetentionDays = activityLogRetentionDays;
         return this;
     }
 
@@ -1523,26 +1492,17 @@ public class ServerConfiguration {
      * @return activityLogRetentionDays
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getActivityLogRetentionDays() {
-        return activityLogRetentionDays.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getActivityLogRetentionDays_JsonNullable() {
+    public Integer getActivityLogRetentionDays() {
         return activityLogRetentionDays;
     }
 
     @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
-    public void setActivityLogRetentionDays_JsonNullable(JsonNullable<Integer> activityLogRetentionDays) {
-        this.activityLogRetentionDays = activityLogRetentionDays;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setActivityLogRetentionDays(@javax.annotation.Nullable Integer activityLogRetentionDays) {
-        this.activityLogRetentionDays = JsonNullable.<Integer> of(activityLogRetentionDays);
+        this.activityLogRetentionDays = activityLogRetentionDays;
     }
 
     public ServerConfiguration libraryScanFanoutConcurrency(
@@ -1796,9 +1756,9 @@ public class ServerConfiguration {
         ServerConfiguration serverConfiguration = (ServerConfiguration) o;
         return Objects.equals(this.logFileRetentionDays, serverConfiguration.logFileRetentionDays)
                 && Objects.equals(this.isStartupWizardCompleted, serverConfiguration.isStartupWizardCompleted)
-                && equalsNullable(this.cachePath, serverConfiguration.cachePath)
-                && equalsNullable(this.previousVersion, serverConfiguration.previousVersion)
-                && equalsNullable(this.previousVersionStr, serverConfiguration.previousVersionStr)
+                && Objects.equals(this.cachePath, serverConfiguration.cachePath)
+                && Objects.equals(this.previousVersion, serverConfiguration.previousVersion)
+                && Objects.equals(this.previousVersionStr, serverConfiguration.previousVersionStr)
                 && Objects.equals(this.enableMetrics, serverConfiguration.enableMetrics)
                 && Objects.equals(this.enableNormalizedItemByNameIds, serverConfiguration.enableNormalizedItemByNameIds)
                 && Objects.equals(this.isPortAuthorized, serverConfiguration.isPortAuthorized)
@@ -1841,7 +1801,7 @@ public class ServerConfiguration {
                 && Objects.equals(this.enableSlowResponseWarning, serverConfiguration.enableSlowResponseWarning)
                 && Objects.equals(this.slowResponseThresholdMs, serverConfiguration.slowResponseThresholdMs)
                 && Objects.equals(this.corsHosts, serverConfiguration.corsHosts)
-                && equalsNullable(this.activityLogRetentionDays, serverConfiguration.activityLogRetentionDays)
+                && Objects.equals(this.activityLogRetentionDays, serverConfiguration.activityLogRetentionDays)
                 && Objects.equals(this.libraryScanFanoutConcurrency, serverConfiguration.libraryScanFanoutConcurrency)
                 && Objects.equals(this.libraryMetadataRefreshConcurrency,
                         serverConfiguration.libraryMetadataRefreshConcurrency)
@@ -1854,34 +1814,22 @@ public class ServerConfiguration {
                 && Objects.equals(this.trickplayOptions, serverConfiguration.trickplayOptions);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(logFileRetentionDays, isStartupWizardCompleted, hashCodeNullable(cachePath),
-                hashCodeNullable(previousVersion), hashCodeNullable(previousVersionStr), enableMetrics,
-                enableNormalizedItemByNameIds, isPortAuthorized, quickConnectAvailable, enableCaseSensitiveItemIds,
-                disableLiveTvChannelUserDataName, metadataPath, preferredMetadataLanguage, metadataCountryCode,
-                sortReplaceCharacters, sortRemoveCharacters, sortRemoveWords, minResumePct, maxResumePct,
-                minResumeDurationSeconds, minAudiobookResume, maxAudiobookResume, inactiveSessionThreshold,
-                libraryMonitorDelay, libraryUpdateDuration, imageSavingConvention, metadataOptions,
-                skipDeserializationForBasicTypes, serverName, uiCulture, saveMetadataHidden, contentTypes,
-                remoteClientBitrateLimit, enableFolderView, enableGroupingIntoCollections, displaySpecialsWithinSeasons,
-                codecsUsed, pluginRepositories, enableExternalContentInSuggestions, imageExtractionTimeoutMs,
-                pathSubstitutions, enableSlowResponseWarning, slowResponseThresholdMs, corsHosts,
-                hashCodeNullable(activityLogRetentionDays), libraryScanFanoutConcurrency,
-                libraryMetadataRefreshConcurrency, removeOldPlugins, allowClientLogUpload, dummyChapterDuration,
-                chapterImageResolution, parallelImageEncodingLimit, castReceiverApplications, trickplayOptions);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(logFileRetentionDays, isStartupWizardCompleted, cachePath, previousVersion,
+                previousVersionStr, enableMetrics, enableNormalizedItemByNameIds, isPortAuthorized,
+                quickConnectAvailable, enableCaseSensitiveItemIds, disableLiveTvChannelUserDataName, metadataPath,
+                preferredMetadataLanguage, metadataCountryCode, sortReplaceCharacters, sortRemoveCharacters,
+                sortRemoveWords, minResumePct, maxResumePct, minResumeDurationSeconds, minAudiobookResume,
+                maxAudiobookResume, inactiveSessionThreshold, libraryMonitorDelay, libraryUpdateDuration,
+                imageSavingConvention, metadataOptions, skipDeserializationForBasicTypes, serverName, uiCulture,
+                saveMetadataHidden, contentTypes, remoteClientBitrateLimit, enableFolderView,
+                enableGroupingIntoCollections, displaySpecialsWithinSeasons, codecsUsed, pluginRepositories,
+                enableExternalContentInSuggestions, imageExtractionTimeoutMs, pathSubstitutions,
+                enableSlowResponseWarning, slowResponseThresholdMs, corsHosts, activityLogRetentionDays,
+                libraryScanFanoutConcurrency, libraryMetadataRefreshConcurrency, removeOldPlugins, allowClientLogUpload,
+                dummyChapterDuration, chapterImageResolution, parallelImageEncodingLimit, castReceiverApplications,
+                trickplayOptions);
     }
 
     @Override
@@ -1988,31 +1936,16 @@ public class ServerConfiguration {
         }
 
         public ServerConfiguration.Builder cachePath(String cachePath) {
-            this.instance.cachePath = JsonNullable.<String> of(cachePath);
-            return this;
-        }
-
-        public ServerConfiguration.Builder cachePath(JsonNullable<String> cachePath) {
             this.instance.cachePath = cachePath;
             return this;
         }
 
         public ServerConfiguration.Builder previousVersion(String previousVersion) {
-            this.instance.previousVersion = JsonNullable.<String> of(previousVersion);
-            return this;
-        }
-
-        public ServerConfiguration.Builder previousVersion(JsonNullable<String> previousVersion) {
             this.instance.previousVersion = previousVersion;
             return this;
         }
 
         public ServerConfiguration.Builder previousVersionStr(String previousVersionStr) {
-            this.instance.previousVersionStr = JsonNullable.<String> of(previousVersionStr);
-            return this;
-        }
-
-        public ServerConfiguration.Builder previousVersionStr(JsonNullable<String> previousVersionStr) {
             this.instance.previousVersionStr = previousVersionStr;
             return this;
         }
@@ -2214,11 +2147,6 @@ public class ServerConfiguration {
         }
 
         public ServerConfiguration.Builder activityLogRetentionDays(Integer activityLogRetentionDays) {
-            this.instance.activityLogRetentionDays = JsonNullable.<Integer> of(activityLogRetentionDays);
-            return this;
-        }
-
-        public ServerConfiguration.Builder activityLogRetentionDays(JsonNullable<Integer> activityLogRetentionDays) {
             this.instance.activityLogRetentionDays = activityLogRetentionDays;
             return this;
         }

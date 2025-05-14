@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,15 +36,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ResponseProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+    private String container;
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
     @javax.annotation.Nullable
-    private JsonNullable<String> audioCodec = JsonNullable.<String> undefined();
+    private String audioCodec;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
     @javax.annotation.Nullable
-    private JsonNullable<String> videoCodec = JsonNullable.<String> undefined();
+    private String videoCodec;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -56,22 +52,22 @@ public class ResponseProfile {
 
     public static final String JSON_PROPERTY_ORG_PN = "OrgPn";
     @javax.annotation.Nullable
-    private JsonNullable<String> orgPn = JsonNullable.<String> undefined();
+    private String orgPn;
 
     public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
     @javax.annotation.Nullable
-    private JsonNullable<String> mimeType = JsonNullable.<String> undefined();
+    private String mimeType;
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
     @javax.annotation.Nullable
-    private JsonNullable<List<ProfileCondition>> conditions = JsonNullable.<List<ProfileCondition>> undefined();
+    private List<ProfileCondition> conditions;
 
     public ResponseProfile() {
     }
 
     public ResponseProfile container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
 
+        this.container = container;
         return this;
     }
 
@@ -81,31 +77,22 @@ public class ResponseProfile {
      * @return container
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
+    public String getContainer() {
         return container;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContainer(@javax.annotation.Nullable String container) {
         this.container = container;
     }
 
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
-
     public ResponseProfile audioCodec(@javax.annotation.Nullable String audioCodec) {
-        this.audioCodec = JsonNullable.<String> of(audioCodec);
 
+        this.audioCodec = audioCodec;
         return this;
     }
 
@@ -115,31 +102,22 @@ public class ResponseProfile {
      * @return audioCodec
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAudioCodec() {
-        return audioCodec.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAudioCodec_JsonNullable() {
+    public String getAudioCodec() {
         return audioCodec;
     }
 
     @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
-    public void setAudioCodec_JsonNullable(JsonNullable<String> audioCodec) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
         this.audioCodec = audioCodec;
     }
 
-    public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
-        this.audioCodec = JsonNullable.<String> of(audioCodec);
-    }
-
     public ResponseProfile videoCodec(@javax.annotation.Nullable String videoCodec) {
-        this.videoCodec = JsonNullable.<String> of(videoCodec);
 
+        this.videoCodec = videoCodec;
         return this;
     }
 
@@ -149,26 +127,17 @@ public class ResponseProfile {
      * @return videoCodec
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getVideoCodec() {
-        return videoCodec.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getVideoCodec_JsonNullable() {
+    public String getVideoCodec() {
         return videoCodec;
     }
 
     @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
-    public void setVideoCodec_JsonNullable(JsonNullable<String> videoCodec) {
-        this.videoCodec = videoCodec;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
-        this.videoCodec = JsonNullable.<String> of(videoCodec);
+        this.videoCodec = videoCodec;
     }
 
     public ResponseProfile type(@javax.annotation.Nullable DlnaProfileType type) {
@@ -197,8 +166,8 @@ public class ResponseProfile {
     }
 
     public ResponseProfile orgPn(@javax.annotation.Nullable String orgPn) {
-        this.orgPn = JsonNullable.<String> of(orgPn);
 
+        this.orgPn = orgPn;
         return this;
     }
 
@@ -208,31 +177,22 @@ public class ResponseProfile {
      * @return orgPn
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOrgPn() {
-        return orgPn.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ORG_PN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOrgPn_JsonNullable() {
+    public String getOrgPn() {
         return orgPn;
     }
 
     @JsonProperty(JSON_PROPERTY_ORG_PN)
-    public void setOrgPn_JsonNullable(JsonNullable<String> orgPn) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setOrgPn(@javax.annotation.Nullable String orgPn) {
         this.orgPn = orgPn;
     }
 
-    public void setOrgPn(@javax.annotation.Nullable String orgPn) {
-        this.orgPn = JsonNullable.<String> of(orgPn);
-    }
-
     public ResponseProfile mimeType(@javax.annotation.Nullable String mimeType) {
-        this.mimeType = JsonNullable.<String> of(mimeType);
 
+        this.mimeType = mimeType;
         return this;
     }
 
@@ -242,43 +202,30 @@ public class ResponseProfile {
      * @return mimeType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMimeType() {
-        return mimeType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MIME_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMimeType_JsonNullable() {
+    public String getMimeType() {
         return mimeType;
     }
 
     @JsonProperty(JSON_PROPERTY_MIME_TYPE)
-    public void setMimeType_JsonNullable(JsonNullable<String> mimeType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMimeType(@javax.annotation.Nullable String mimeType) {
         this.mimeType = mimeType;
     }
 
-    public void setMimeType(@javax.annotation.Nullable String mimeType) {
-        this.mimeType = JsonNullable.<String> of(mimeType);
-    }
-
     public ResponseProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
 
+        this.conditions = conditions;
         return this;
     }
 
     public ResponseProfile addConditionsItem(ProfileCondition conditionsItem) {
-        if (this.conditions == null || !this.conditions.isPresent()) {
-            this.conditions = JsonNullable.<List<ProfileCondition>> of(new ArrayList<>());
+        if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
         }
-        try {
-            this.conditions.get().add(conditionsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.conditions.add(conditionsItem);
         return this;
     }
 
@@ -288,26 +235,17 @@ public class ResponseProfile {
      * @return conditions
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<ProfileCondition> getConditions() {
-        return conditions.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<ProfileCondition>> getConditions_JsonNullable() {
+    public List<ProfileCondition> getConditions() {
         return conditions;
     }
 
     @JsonProperty(JSON_PROPERTY_CONDITIONS)
-    public void setConditions_JsonNullable(JsonNullable<List<ProfileCondition>> conditions) {
-        this.conditions = conditions;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-        this.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
+        this.conditions = conditions;
     }
 
     @Override
@@ -319,30 +257,17 @@ public class ResponseProfile {
             return false;
         }
         ResponseProfile responseProfile = (ResponseProfile) o;
-        return equalsNullable(this.container, responseProfile.container)
-                && equalsNullable(this.audioCodec, responseProfile.audioCodec)
-                && equalsNullable(this.videoCodec, responseProfile.videoCodec)
-                && Objects.equals(this.type, responseProfile.type) && equalsNullable(this.orgPn, responseProfile.orgPn)
-                && equalsNullable(this.mimeType, responseProfile.mimeType)
-                && equalsNullable(this.conditions, responseProfile.conditions);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.container, responseProfile.container)
+                && Objects.equals(this.audioCodec, responseProfile.audioCodec)
+                && Objects.equals(this.videoCodec, responseProfile.videoCodec)
+                && Objects.equals(this.type, responseProfile.type) && Objects.equals(this.orgPn, responseProfile.orgPn)
+                && Objects.equals(this.mimeType, responseProfile.mimeType)
+                && Objects.equals(this.conditions, responseProfile.conditions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(container), hashCodeNullable(audioCodec), hashCodeNullable(videoCodec),
-                type, hashCodeNullable(orgPn), hashCodeNullable(mimeType), hashCodeNullable(conditions));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(container, audioCodec, videoCodec, type, orgPn, mimeType, conditions);
     }
 
     @Override
@@ -384,31 +309,16 @@ public class ResponseProfile {
         }
 
         public ResponseProfile.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public ResponseProfile.Builder container(JsonNullable<String> container) {
             this.instance.container = container;
             return this;
         }
 
         public ResponseProfile.Builder audioCodec(String audioCodec) {
-            this.instance.audioCodec = JsonNullable.<String> of(audioCodec);
-            return this;
-        }
-
-        public ResponseProfile.Builder audioCodec(JsonNullable<String> audioCodec) {
             this.instance.audioCodec = audioCodec;
             return this;
         }
 
         public ResponseProfile.Builder videoCodec(String videoCodec) {
-            this.instance.videoCodec = JsonNullable.<String> of(videoCodec);
-            return this;
-        }
-
-        public ResponseProfile.Builder videoCodec(JsonNullable<String> videoCodec) {
             this.instance.videoCodec = videoCodec;
             return this;
         }
@@ -419,31 +329,16 @@ public class ResponseProfile {
         }
 
         public ResponseProfile.Builder orgPn(String orgPn) {
-            this.instance.orgPn = JsonNullable.<String> of(orgPn);
-            return this;
-        }
-
-        public ResponseProfile.Builder orgPn(JsonNullable<String> orgPn) {
             this.instance.orgPn = orgPn;
             return this;
         }
 
         public ResponseProfile.Builder mimeType(String mimeType) {
-            this.instance.mimeType = JsonNullable.<String> of(mimeType);
-            return this;
-        }
-
-        public ResponseProfile.Builder mimeType(JsonNullable<String> mimeType) {
             this.instance.mimeType = mimeType;
             return this;
         }
 
         public ResponseProfile.Builder conditions(List<ProfileCondition> conditions) {
-            this.instance.conditions = JsonNullable.<List<ProfileCondition>> of(conditions);
-            return this;
-        }
-
-        public ResponseProfile.Builder conditions(JsonNullable<List<ProfileCondition>> conditions) {
             this.instance.conditions = conditions;
             return this;
         }

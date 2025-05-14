@@ -17,14 +17,10 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserDataChangedMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<UserDataChangeInfo> data = JsonNullable.<UserDataChangeInfo> undefined();
+    private UserDataChangeInfo data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @javax.annotation.Nullable
@@ -61,8 +57,8 @@ public class UserDataChangedMessage {
     }
 
     public UserDataChangedMessage data(@javax.annotation.Nullable UserDataChangeInfo data) {
-        this.data = JsonNullable.<UserDataChangeInfo> of(data);
 
+        this.data = data;
         return this;
     }
 
@@ -72,26 +68,17 @@ public class UserDataChangedMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UserDataChangeInfo getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UserDataChangeInfo> getData_JsonNullable() {
+    public UserDataChangeInfo getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<UserDataChangeInfo> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable UserDataChangeInfo data) {
-        this.data = JsonNullable.<UserDataChangeInfo> of(data);
+        this.data = data;
     }
 
     public UserDataChangedMessage messageId(@javax.annotation.Nullable UUID messageId) {
@@ -141,26 +128,14 @@ public class UserDataChangedMessage {
             return false;
         }
         UserDataChangedMessage userDataChangedMessage = (UserDataChangedMessage) o;
-        return equalsNullable(this.data, userDataChangedMessage.data)
+        return Objects.equals(this.data, userDataChangedMessage.data)
                 && Objects.equals(this.messageId, userDataChangedMessage.messageId)
                 && Objects.equals(this.messageType, userDataChangedMessage.messageType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageId, messageType);
     }
 
     @Override
@@ -198,11 +173,6 @@ public class UserDataChangedMessage {
         }
 
         public UserDataChangedMessage.Builder data(UserDataChangeInfo data) {
-            this.instance.data = JsonNullable.<UserDataChangeInfo> of(data);
-            return this;
-        }
-
-        public UserDataChangedMessage.Builder data(JsonNullable<UserDataChangeInfo> data) {
             this.instance.data = data;
             return this;
         }

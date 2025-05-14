@@ -17,14 +17,10 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PluginUninstalledMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @javax.annotation.Nullable
-    private JsonNullable<PluginInfo> data = JsonNullable.<PluginInfo> undefined();
+    private PluginInfo data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @javax.annotation.Nullable
@@ -61,8 +57,8 @@ public class PluginUninstalledMessage {
     }
 
     public PluginUninstalledMessage data(@javax.annotation.Nullable PluginInfo data) {
-        this.data = JsonNullable.<PluginInfo> of(data);
 
+        this.data = data;
         return this;
     }
 
@@ -72,26 +68,17 @@ public class PluginUninstalledMessage {
      * @return data
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PluginInfo getData() {
-        return data.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<PluginInfo> getData_JsonNullable() {
+    public PluginInfo getData() {
         return data;
     }
 
     @JsonProperty(JSON_PROPERTY_DATA)
-    public void setData_JsonNullable(JsonNullable<PluginInfo> data) {
-        this.data = data;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@javax.annotation.Nullable PluginInfo data) {
-        this.data = JsonNullable.<PluginInfo> of(data);
+        this.data = data;
     }
 
     public PluginUninstalledMessage messageId(@javax.annotation.Nullable UUID messageId) {
@@ -141,26 +128,14 @@ public class PluginUninstalledMessage {
             return false;
         }
         PluginUninstalledMessage pluginUninstalledMessage = (PluginUninstalledMessage) o;
-        return equalsNullable(this.data, pluginUninstalledMessage.data)
+        return Objects.equals(this.data, pluginUninstalledMessage.data)
                 && Objects.equals(this.messageId, pluginUninstalledMessage.messageId)
                 && Objects.equals(this.messageType, pluginUninstalledMessage.messageType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(data), messageId, messageType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(data, messageId, messageType);
     }
 
     @Override
@@ -198,11 +173,6 @@ public class PluginUninstalledMessage {
         }
 
         public PluginUninstalledMessage.Builder data(PluginInfo data) {
-            this.instance.data = JsonNullable.<PluginInfo> of(data);
-            return this;
-        }
-
-        public PluginUninstalledMessage.Builder data(JsonNullable<PluginInfo> data) {
             this.instance.data = data;
             return this;
         }

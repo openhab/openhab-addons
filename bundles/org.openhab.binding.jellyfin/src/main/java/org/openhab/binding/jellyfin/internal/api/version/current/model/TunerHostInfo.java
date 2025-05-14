@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,23 +37,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TunerHostInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_URL = "Url";
     @javax.annotation.Nullable
-    private JsonNullable<String> url = JsonNullable.<String> undefined();
+    private String url;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+    private String type;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
+    private String deviceId;
 
     public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
     @javax.annotation.Nullable
-    private JsonNullable<String> friendlyName = JsonNullable.<String> undefined();
+    private String friendlyName;
 
     public static final String JSON_PROPERTY_IMPORT_FAVORITES_ONLY = "ImportFavoritesOnly";
     @javax.annotation.Nullable
@@ -85,7 +81,7 @@ public class TunerHostInfo {
 
     public static final String JSON_PROPERTY_SOURCE = "Source";
     @javax.annotation.Nullable
-    private JsonNullable<String> source = JsonNullable.<String> undefined();
+    private String source;
 
     public static final String JSON_PROPERTY_TUNER_COUNT = "TunerCount";
     @javax.annotation.Nullable
@@ -93,7 +89,7 @@ public class TunerHostInfo {
 
     public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
     @javax.annotation.Nullable
-    private JsonNullable<String> userAgent = JsonNullable.<String> undefined();
+    private String userAgent;
 
     public static final String JSON_PROPERTY_IGNORE_DTS = "IgnoreDts";
     @javax.annotation.Nullable
@@ -103,8 +99,8 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -114,31 +110,22 @@ public class TunerHostInfo {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public TunerHostInfo url(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
 
+        this.url = url;
         return this;
     }
 
@@ -148,31 +135,22 @@ public class TunerHostInfo {
      * @return url
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrl() {
-        return url.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUrl_JsonNullable() {
+    public String getUrl() {
         return url;
     }
 
     @JsonProperty(JSON_PROPERTY_URL)
-    public void setUrl_JsonNullable(JsonNullable<String> url) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUrl(@javax.annotation.Nullable String url) {
         this.url = url;
     }
 
-    public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
-    }
-
     public TunerHostInfo type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
 
+        this.type = type;
         return this;
     }
 
@@ -182,31 +160,22 @@ public class TunerHostInfo {
      * @return type
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
-        return type.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
+    public String getType() {
         return type;
     }
 
     @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable String type) {
         this.type = type;
     }
 
-    public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
-    }
-
     public TunerHostInfo deviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
 
+        this.deviceId = deviceId;
         return this;
     }
 
@@ -216,31 +185,22 @@ public class TunerHostInfo {
      * @return deviceId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceId() {
-        return deviceId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceId_JsonNullable() {
+    public String getDeviceId() {
         return deviceId;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = deviceId;
     }
 
-    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
-    }
-
     public TunerHostInfo friendlyName(@javax.annotation.Nullable String friendlyName) {
-        this.friendlyName = JsonNullable.<String> of(friendlyName);
 
+        this.friendlyName = friendlyName;
         return this;
     }
 
@@ -250,26 +210,17 @@ public class TunerHostInfo {
      * @return friendlyName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getFriendlyName() {
-        return friendlyName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getFriendlyName_JsonNullable() {
+    public String getFriendlyName() {
         return friendlyName;
     }
 
     @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
-    public void setFriendlyName_JsonNullable(JsonNullable<String> friendlyName) {
-        this.friendlyName = friendlyName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFriendlyName(@javax.annotation.Nullable String friendlyName) {
-        this.friendlyName = JsonNullable.<String> of(friendlyName);
+        this.friendlyName = friendlyName;
     }
 
     public TunerHostInfo importFavoritesOnly(@javax.annotation.Nullable Boolean importFavoritesOnly) {
@@ -424,8 +375,8 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo source(@javax.annotation.Nullable String source) {
-        this.source = JsonNullable.<String> of(source);
 
+        this.source = source;
         return this;
     }
 
@@ -435,26 +386,17 @@ public class TunerHostInfo {
      * @return source
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSource() {
-        return source.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SOURCE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSource_JsonNullable() {
+    public String getSource() {
         return source;
     }
 
     @JsonProperty(JSON_PROPERTY_SOURCE)
-    public void setSource_JsonNullable(JsonNullable<String> source) {
-        this.source = source;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSource(@javax.annotation.Nullable String source) {
-        this.source = JsonNullable.<String> of(source);
+        this.source = source;
     }
 
     public TunerHostInfo tunerCount(@javax.annotation.Nullable Integer tunerCount) {
@@ -483,8 +425,8 @@ public class TunerHostInfo {
     }
 
     public TunerHostInfo userAgent(@javax.annotation.Nullable String userAgent) {
-        this.userAgent = JsonNullable.<String> of(userAgent);
 
+        this.userAgent = userAgent;
         return this;
     }
 
@@ -494,26 +436,17 @@ public class TunerHostInfo {
      * @return userAgent
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserAgent() {
-        return userAgent.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_AGENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserAgent_JsonNullable() {
+    public String getUserAgent() {
         return userAgent;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_AGENT)
-    public void setUserAgent_JsonNullable(JsonNullable<String> userAgent) {
-        this.userAgent = userAgent;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserAgent(@javax.annotation.Nullable String userAgent) {
-        this.userAgent = JsonNullable.<String> of(userAgent);
+        this.userAgent = userAgent;
     }
 
     public TunerHostInfo ignoreDts(@javax.annotation.Nullable Boolean ignoreDts) {
@@ -550,40 +483,27 @@ public class TunerHostInfo {
             return false;
         }
         TunerHostInfo tunerHostInfo = (TunerHostInfo) o;
-        return equalsNullable(this.id, tunerHostInfo.id) && equalsNullable(this.url, tunerHostInfo.url)
-                && equalsNullable(this.type, tunerHostInfo.type)
-                && equalsNullable(this.deviceId, tunerHostInfo.deviceId)
-                && equalsNullable(this.friendlyName, tunerHostInfo.friendlyName)
+        return Objects.equals(this.id, tunerHostInfo.id) && Objects.equals(this.url, tunerHostInfo.url)
+                && Objects.equals(this.type, tunerHostInfo.type)
+                && Objects.equals(this.deviceId, tunerHostInfo.deviceId)
+                && Objects.equals(this.friendlyName, tunerHostInfo.friendlyName)
                 && Objects.equals(this.importFavoritesOnly, tunerHostInfo.importFavoritesOnly)
                 && Objects.equals(this.allowHWTranscoding, tunerHostInfo.allowHWTranscoding)
                 && Objects.equals(this.allowFmp4TranscodingContainer, tunerHostInfo.allowFmp4TranscodingContainer)
                 && Objects.equals(this.allowStreamSharing, tunerHostInfo.allowStreamSharing)
                 && Objects.equals(this.fallbackMaxStreamingBitrate, tunerHostInfo.fallbackMaxStreamingBitrate)
                 && Objects.equals(this.enableStreamLooping, tunerHostInfo.enableStreamLooping)
-                && equalsNullable(this.source, tunerHostInfo.source)
+                && Objects.equals(this.source, tunerHostInfo.source)
                 && Objects.equals(this.tunerCount, tunerHostInfo.tunerCount)
-                && equalsNullable(this.userAgent, tunerHostInfo.userAgent)
+                && Objects.equals(this.userAgent, tunerHostInfo.userAgent)
                 && Objects.equals(this.ignoreDts, tunerHostInfo.ignoreDts);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(id), hashCodeNullable(url), hashCodeNullable(type),
-                hashCodeNullable(deviceId), hashCodeNullable(friendlyName), importFavoritesOnly, allowHWTranscoding,
+        return Objects.hash(id, url, type, deviceId, friendlyName, importFavoritesOnly, allowHWTranscoding,
                 allowFmp4TranscodingContainer, allowStreamSharing, fallbackMaxStreamingBitrate, enableStreamLooping,
-                hashCodeNullable(source), tunerCount, hashCodeNullable(userAgent), ignoreDts);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+                source, tunerCount, userAgent, ignoreDts);
     }
 
     @Override
@@ -635,51 +555,26 @@ public class TunerHostInfo {
         }
 
         public TunerHostInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public TunerHostInfo.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public TunerHostInfo.Builder url(String url) {
-            this.instance.url = JsonNullable.<String> of(url);
-            return this;
-        }
-
-        public TunerHostInfo.Builder url(JsonNullable<String> url) {
             this.instance.url = url;
             return this;
         }
 
         public TunerHostInfo.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public TunerHostInfo.Builder type(JsonNullable<String> type) {
             this.instance.type = type;
             return this;
         }
 
         public TunerHostInfo.Builder deviceId(String deviceId) {
-            this.instance.deviceId = JsonNullable.<String> of(deviceId);
-            return this;
-        }
-
-        public TunerHostInfo.Builder deviceId(JsonNullable<String> deviceId) {
             this.instance.deviceId = deviceId;
             return this;
         }
 
         public TunerHostInfo.Builder friendlyName(String friendlyName) {
-            this.instance.friendlyName = JsonNullable.<String> of(friendlyName);
-            return this;
-        }
-
-        public TunerHostInfo.Builder friendlyName(JsonNullable<String> friendlyName) {
             this.instance.friendlyName = friendlyName;
             return this;
         }
@@ -715,11 +610,6 @@ public class TunerHostInfo {
         }
 
         public TunerHostInfo.Builder source(String source) {
-            this.instance.source = JsonNullable.<String> of(source);
-            return this;
-        }
-
-        public TunerHostInfo.Builder source(JsonNullable<String> source) {
             this.instance.source = source;
             return this;
         }
@@ -730,11 +620,6 @@ public class TunerHostInfo {
         }
 
         public TunerHostInfo.Builder userAgent(String userAgent) {
-            this.instance.userAgent = JsonNullable.<String> of(userAgent);
-            return this;
-        }
-
-        public TunerHostInfo.Builder userAgent(JsonNullable<String> userAgent) {
             this.instance.userAgent = userAgent;
             return this;
         }

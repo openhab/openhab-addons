@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,22 +32,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AuthenticateUserByName {
     public static final String JSON_PROPERTY_USERNAME = "Username";
     @javax.annotation.Nullable
-    private JsonNullable<String> username = JsonNullable.<String> undefined();
+    private String username;
 
     public static final String JSON_PROPERTY_PW = "Pw";
     @javax.annotation.Nullable
-    private JsonNullable<String> pw = JsonNullable.<String> undefined();
+    private String pw;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
     @javax.annotation.Nullable
-    private JsonNullable<String> password = JsonNullable.<String> undefined();
+    private String password;
 
     public AuthenticateUserByName() {
     }
 
     public AuthenticateUserByName username(@javax.annotation.Nullable String username) {
-        this.username = JsonNullable.<String> of(username);
 
+        this.username = username;
         return this;
     }
 
@@ -61,31 +57,22 @@ public class AuthenticateUserByName {
      * @return username
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUsername() {
-        return username.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USERNAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUsername_JsonNullable() {
+    public String getUsername() {
         return username;
     }
 
     @JsonProperty(JSON_PROPERTY_USERNAME)
-    public void setUsername_JsonNullable(JsonNullable<String> username) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUsername(@javax.annotation.Nullable String username) {
         this.username = username;
     }
 
-    public void setUsername(@javax.annotation.Nullable String username) {
-        this.username = JsonNullable.<String> of(username);
-    }
-
     public AuthenticateUserByName pw(@javax.annotation.Nullable String pw) {
-        this.pw = JsonNullable.<String> of(pw);
 
+        this.pw = pw;
         return this;
     }
 
@@ -95,31 +82,22 @@ public class AuthenticateUserByName {
      * @return pw
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPw() {
-        return pw.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPw_JsonNullable() {
+    public String getPw() {
         return pw;
     }
 
     @JsonProperty(JSON_PROPERTY_PW)
-    public void setPw_JsonNullable(JsonNullable<String> pw) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPw(@javax.annotation.Nullable String pw) {
         this.pw = pw;
     }
 
-    public void setPw(@javax.annotation.Nullable String pw) {
-        this.pw = JsonNullable.<String> of(pw);
-    }
-
     public AuthenticateUserByName password(@javax.annotation.Nullable String password) {
-        this.password = JsonNullable.<String> of(password);
 
+        this.password = password;
         return this;
     }
 
@@ -131,26 +109,17 @@ public class AuthenticateUserByName {
      */
     @Deprecated
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPassword() {
-        return password.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPassword_JsonNullable() {
+    public String getPassword() {
         return password;
     }
 
     @JsonProperty(JSON_PROPERTY_PASSWORD)
-    public void setPassword_JsonNullable(JsonNullable<String> password) {
-        this.password = password;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPassword(@javax.annotation.Nullable String password) {
-        this.password = JsonNullable.<String> of(password);
+        this.password = password;
     }
 
     @Override
@@ -162,26 +131,14 @@ public class AuthenticateUserByName {
             return false;
         }
         AuthenticateUserByName authenticateUserByName = (AuthenticateUserByName) o;
-        return equalsNullable(this.username, authenticateUserByName.username)
-                && equalsNullable(this.pw, authenticateUserByName.pw)
-                && equalsNullable(this.password, authenticateUserByName.password);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.username, authenticateUserByName.username)
+                && Objects.equals(this.pw, authenticateUserByName.pw)
+                && Objects.equals(this.password, authenticateUserByName.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(username), hashCodeNullable(pw), hashCodeNullable(password));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(username, pw, password);
     }
 
     @Override
@@ -219,31 +176,16 @@ public class AuthenticateUserByName {
         }
 
         public AuthenticateUserByName.Builder username(String username) {
-            this.instance.username = JsonNullable.<String> of(username);
-            return this;
-        }
-
-        public AuthenticateUserByName.Builder username(JsonNullable<String> username) {
             this.instance.username = username;
             return this;
         }
 
         public AuthenticateUserByName.Builder pw(String pw) {
-            this.instance.pw = JsonNullable.<String> of(pw);
-            return this;
-        }
-
-        public AuthenticateUserByName.Builder pw(JsonNullable<String> pw) {
             this.instance.pw = pw;
             return this;
         }
 
         public AuthenticateUserByName.Builder password(String password) {
-            this.instance.password = JsonNullable.<String> of(password);
-            return this;
-        }
-
-        public AuthenticateUserByName.Builder password(JsonNullable<String> password) {
             this.instance.password = password;
             return this;
         }

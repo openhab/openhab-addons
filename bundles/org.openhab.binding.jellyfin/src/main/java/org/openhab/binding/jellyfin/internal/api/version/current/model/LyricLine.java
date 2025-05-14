@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ public class LyricLine {
 
     public static final String JSON_PROPERTY_START = "Start";
     @javax.annotation.Nullable
-    private JsonNullable<Long> start = JsonNullable.<Long> undefined();
+    private Long start;
 
     public LyricLine() {
     }
@@ -70,8 +66,8 @@ public class LyricLine {
     }
 
     public LyricLine start(@javax.annotation.Nullable Long start) {
-        this.start = JsonNullable.<Long> of(start);
 
+        this.start = start;
         return this;
     }
 
@@ -81,26 +77,17 @@ public class LyricLine {
      * @return start
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getStart() {
-        return start.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_START)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getStart_JsonNullable() {
+    public Long getStart() {
         return start;
     }
 
     @JsonProperty(JSON_PROPERTY_START)
-    public void setStart_JsonNullable(JsonNullable<Long> start) {
-        this.start = start;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStart(@javax.annotation.Nullable Long start) {
-        this.start = JsonNullable.<Long> of(start);
+        this.start = start;
     }
 
     @Override
@@ -112,24 +99,12 @@ public class LyricLine {
             return false;
         }
         LyricLine lyricLine = (LyricLine) o;
-        return Objects.equals(this.text, lyricLine.text) && equalsNullable(this.start, lyricLine.start);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.text, lyricLine.text) && Objects.equals(this.start, lyricLine.start);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(text, hashCodeNullable(start));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(text, start);
     }
 
     @Override
@@ -171,11 +146,6 @@ public class LyricLine {
         }
 
         public LyricLine.Builder start(Long start) {
-            this.instance.start = JsonNullable.<Long> of(start);
-            return this;
-        }
-
-        public LyricLine.Builder start(JsonNullable<Long> start) {
             this.instance.start = start;
             return this;
         }

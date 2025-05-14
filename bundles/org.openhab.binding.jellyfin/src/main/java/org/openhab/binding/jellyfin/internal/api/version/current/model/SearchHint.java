@@ -19,14 +19,10 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -63,39 +59,39 @@ public class SearchHint {
 
     public static final String JSON_PROPERTY_MATCHED_TERM = "MatchedTerm";
     @javax.annotation.Nullable
-    private JsonNullable<String> matchedTerm = JsonNullable.<String> undefined();
+    private String matchedTerm;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> indexNumber = JsonNullable.<Integer> undefined();
+    private Integer indexNumber;
 
     public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> productionYear = JsonNullable.<Integer> undefined();
+    private Integer productionYear;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer> undefined();
+    private Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> primaryImageTag = JsonNullable.<String> undefined();
+    private String primaryImageTag;
 
     public static final String JSON_PROPERTY_THUMB_IMAGE_TAG = "ThumbImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> thumbImageTag = JsonNullable.<String> undefined();
+    private String thumbImageTag;
 
     public static final String JSON_PROPERTY_THUMB_IMAGE_ITEM_ID = "ThumbImageItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> thumbImageItemId = JsonNullable.<String> undefined();
+    private String thumbImageItemId;
 
     public static final String JSON_PROPERTY_BACKDROP_IMAGE_TAG = "BackdropImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> backdropImageTag = JsonNullable.<String> undefined();
+    private String backdropImageTag;
 
     public static final String JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID = "BackdropImageItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> backdropImageItemId = JsonNullable.<String> undefined();
+    private String backdropImageItemId;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -103,11 +99,11 @@ public class SearchHint {
 
     public static final String JSON_PROPERTY_IS_FOLDER = "IsFolder";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> isFolder = JsonNullable.<Boolean> undefined();
+    private Boolean isFolder;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> runTimeTicks = JsonNullable.<Long> undefined();
+    private Long runTimeTicks;
 
     public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
     @javax.annotation.Nullable
@@ -115,31 +111,31 @@ public class SearchHint {
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> startDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> endDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime endDate;
 
     public static final String JSON_PROPERTY_SERIES = "Series";
     @javax.annotation.Nullable
-    private JsonNullable<String> series = JsonNullable.<String> undefined();
+    private String series;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @javax.annotation.Nullable
-    private JsonNullable<String> status = JsonNullable.<String> undefined();
+    private String status;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
     @javax.annotation.Nullable
-    private JsonNullable<String> album = JsonNullable.<String> undefined();
+    private String album;
 
     public static final String JSON_PROPERTY_ALBUM_ID = "AlbumId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> albumId = JsonNullable.<UUID> undefined();
+    private UUID albumId;
 
     public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
     @javax.annotation.Nullable
-    private JsonNullable<String> albumArtist = JsonNullable.<String> undefined();
+    private String albumArtist;
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
     @javax.annotation.Nullable
@@ -147,23 +143,23 @@ public class SearchHint {
 
     public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> songCount = JsonNullable.<Integer> undefined();
+    private Integer songCount;
 
     public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> episodeCount = JsonNullable.<Integer> undefined();
+    private Integer episodeCount;
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> channelId = JsonNullable.<UUID> undefined();
+    private UUID channelId;
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
     @javax.annotation.Nullable
-    private JsonNullable<String> channelName = JsonNullable.<String> undefined();
+    private String channelName;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
     @javax.annotation.Nullable
-    private JsonNullable<Double> primaryImageAspectRatio = JsonNullable.<Double> undefined();
+    private Double primaryImageAspectRatio;
 
     public SearchHint() {
     }
@@ -246,8 +242,8 @@ public class SearchHint {
     }
 
     public SearchHint matchedTerm(@javax.annotation.Nullable String matchedTerm) {
-        this.matchedTerm = JsonNullable.<String> of(matchedTerm);
 
+        this.matchedTerm = matchedTerm;
         return this;
     }
 
@@ -257,31 +253,22 @@ public class SearchHint {
      * @return matchedTerm
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMatchedTerm() {
-        return matchedTerm.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MATCHED_TERM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMatchedTerm_JsonNullable() {
+    public String getMatchedTerm() {
         return matchedTerm;
     }
 
     @JsonProperty(JSON_PROPERTY_MATCHED_TERM)
-    public void setMatchedTerm_JsonNullable(JsonNullable<String> matchedTerm) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMatchedTerm(@javax.annotation.Nullable String matchedTerm) {
         this.matchedTerm = matchedTerm;
     }
 
-    public void setMatchedTerm(@javax.annotation.Nullable String matchedTerm) {
-        this.matchedTerm = JsonNullable.<String> of(matchedTerm);
-    }
-
     public SearchHint indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
 
+        this.indexNumber = indexNumber;
         return this;
     }
 
@@ -291,31 +278,22 @@ public class SearchHint {
      * @return indexNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getIndexNumber() {
-        return indexNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getIndexNumber_JsonNullable() {
+    public Integer getIndexNumber() {
         return indexNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
-    public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
         this.indexNumber = indexNumber;
     }
 
-    public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-        this.indexNumber = JsonNullable.<Integer> of(indexNumber);
-    }
-
     public SearchHint productionYear(@javax.annotation.Nullable Integer productionYear) {
-        this.productionYear = JsonNullable.<Integer> of(productionYear);
 
+        this.productionYear = productionYear;
         return this;
     }
 
@@ -325,31 +303,22 @@ public class SearchHint {
      * @return productionYear
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getProductionYear() {
-        return productionYear.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getProductionYear_JsonNullable() {
+    public Integer getProductionYear() {
         return productionYear;
     }
 
     @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
-    public void setProductionYear_JsonNullable(JsonNullable<Integer> productionYear) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
         this.productionYear = productionYear;
     }
 
-    public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
-        this.productionYear = JsonNullable.<Integer> of(productionYear);
-    }
-
     public SearchHint parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
 
+        this.parentIndexNumber = parentIndexNumber;
         return this;
     }
 
@@ -359,31 +328,22 @@ public class SearchHint {
      * @return parentIndexNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getParentIndexNumber() {
-        return parentIndexNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
+    public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
         this.parentIndexNumber = parentIndexNumber;
     }
 
-    public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-        this.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-    }
-
     public SearchHint primaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-        this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
 
+        this.primaryImageTag = primaryImageTag;
         return this;
     }
 
@@ -393,31 +353,22 @@ public class SearchHint {
      * @return primaryImageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPrimaryImageTag() {
-        return primaryImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPrimaryImageTag_JsonNullable() {
+    public String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
-    public void setPrimaryImageTag_JsonNullable(JsonNullable<String> primaryImageTag) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPrimaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
         this.primaryImageTag = primaryImageTag;
     }
 
-    public void setPrimaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-        this.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
-    }
-
     public SearchHint thumbImageTag(@javax.annotation.Nullable String thumbImageTag) {
-        this.thumbImageTag = JsonNullable.<String> of(thumbImageTag);
 
+        this.thumbImageTag = thumbImageTag;
         return this;
     }
 
@@ -427,31 +378,22 @@ public class SearchHint {
      * @return thumbImageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getThumbImageTag() {
-        return thumbImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getThumbImageTag_JsonNullable() {
+    public String getThumbImageTag() {
         return thumbImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_TAG)
-    public void setThumbImageTag_JsonNullable(JsonNullable<String> thumbImageTag) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setThumbImageTag(@javax.annotation.Nullable String thumbImageTag) {
         this.thumbImageTag = thumbImageTag;
     }
 
-    public void setThumbImageTag(@javax.annotation.Nullable String thumbImageTag) {
-        this.thumbImageTag = JsonNullable.<String> of(thumbImageTag);
-    }
-
     public SearchHint thumbImageItemId(@javax.annotation.Nullable String thumbImageItemId) {
-        this.thumbImageItemId = JsonNullable.<String> of(thumbImageItemId);
 
+        this.thumbImageItemId = thumbImageItemId;
         return this;
     }
 
@@ -461,31 +403,22 @@ public class SearchHint {
      * @return thumbImageItemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getThumbImageItemId() {
-        return thumbImageItemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getThumbImageItemId_JsonNullable() {
+    public String getThumbImageItemId() {
         return thumbImageItemId;
     }
 
     @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_ITEM_ID)
-    public void setThumbImageItemId_JsonNullable(JsonNullable<String> thumbImageItemId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setThumbImageItemId(@javax.annotation.Nullable String thumbImageItemId) {
         this.thumbImageItemId = thumbImageItemId;
     }
 
-    public void setThumbImageItemId(@javax.annotation.Nullable String thumbImageItemId) {
-        this.thumbImageItemId = JsonNullable.<String> of(thumbImageItemId);
-    }
-
     public SearchHint backdropImageTag(@javax.annotation.Nullable String backdropImageTag) {
-        this.backdropImageTag = JsonNullable.<String> of(backdropImageTag);
 
+        this.backdropImageTag = backdropImageTag;
         return this;
     }
 
@@ -495,31 +428,22 @@ public class SearchHint {
      * @return backdropImageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getBackdropImageTag() {
-        return backdropImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getBackdropImageTag_JsonNullable() {
+    public String getBackdropImageTag() {
         return backdropImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAG)
-    public void setBackdropImageTag_JsonNullable(JsonNullable<String> backdropImageTag) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBackdropImageTag(@javax.annotation.Nullable String backdropImageTag) {
         this.backdropImageTag = backdropImageTag;
     }
 
-    public void setBackdropImageTag(@javax.annotation.Nullable String backdropImageTag) {
-        this.backdropImageTag = JsonNullable.<String> of(backdropImageTag);
-    }
-
     public SearchHint backdropImageItemId(@javax.annotation.Nullable String backdropImageItemId) {
-        this.backdropImageItemId = JsonNullable.<String> of(backdropImageItemId);
 
+        this.backdropImageItemId = backdropImageItemId;
         return this;
     }
 
@@ -529,26 +453,17 @@ public class SearchHint {
      * @return backdropImageItemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getBackdropImageItemId() {
-        return backdropImageItemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getBackdropImageItemId_JsonNullable() {
+    public String getBackdropImageItemId() {
         return backdropImageItemId;
     }
 
     @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID)
-    public void setBackdropImageItemId_JsonNullable(JsonNullable<String> backdropImageItemId) {
-        this.backdropImageItemId = backdropImageItemId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBackdropImageItemId(@javax.annotation.Nullable String backdropImageItemId) {
-        this.backdropImageItemId = JsonNullable.<String> of(backdropImageItemId);
+        this.backdropImageItemId = backdropImageItemId;
     }
 
     public SearchHint type(@javax.annotation.Nullable BaseItemKind type) {
@@ -577,8 +492,8 @@ public class SearchHint {
     }
 
     public SearchHint isFolder(@javax.annotation.Nullable Boolean isFolder) {
-        this.isFolder = JsonNullable.<Boolean> of(isFolder);
 
+        this.isFolder = isFolder;
         return this;
     }
 
@@ -588,31 +503,22 @@ public class SearchHint {
      * @return isFolder
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsFolder() {
-        return isFolder.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IS_FOLDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsFolder_JsonNullable() {
+    public Boolean getIsFolder() {
         return isFolder;
     }
 
     @JsonProperty(JSON_PROPERTY_IS_FOLDER)
-    public void setIsFolder_JsonNullable(JsonNullable<Boolean> isFolder) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsFolder(@javax.annotation.Nullable Boolean isFolder) {
         this.isFolder = isFolder;
     }
 
-    public void setIsFolder(@javax.annotation.Nullable Boolean isFolder) {
-        this.isFolder = JsonNullable.<Boolean> of(isFolder);
-    }
-
     public SearchHint runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
 
+        this.runTimeTicks = runTimeTicks;
         return this;
     }
 
@@ -622,26 +528,17 @@ public class SearchHint {
      * @return runTimeTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getRunTimeTicks() {
-        return runTimeTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getRunTimeTicks_JsonNullable() {
+    public Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
-    public void setRunTimeTicks_JsonNullable(JsonNullable<Long> runTimeTicks) {
-        this.runTimeTicks = runTimeTicks;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
+        this.runTimeTicks = runTimeTicks;
     }
 
     public SearchHint mediaType(@javax.annotation.Nullable MediaType mediaType) {
@@ -670,8 +567,8 @@ public class SearchHint {
     }
 
     public SearchHint startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
-        this.startDate = JsonNullable.<OffsetDateTime> of(startDate);
 
+        this.startDate = startDate;
         return this;
     }
 
@@ -681,31 +578,22 @@ public class SearchHint {
      * @return startDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getStartDate() {
-        return startDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_START_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getStartDate_JsonNullable() {
+    public OffsetDateTime getStartDate() {
         return startDate;
     }
 
     @JsonProperty(JSON_PROPERTY_START_DATE)
-    public void setStartDate_JsonNullable(JsonNullable<OffsetDateTime> startDate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStartDate(@javax.annotation.Nullable OffsetDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public void setStartDate(@javax.annotation.Nullable OffsetDateTime startDate) {
-        this.startDate = JsonNullable.<OffsetDateTime> of(startDate);
-    }
-
     public SearchHint endDate(@javax.annotation.Nullable OffsetDateTime endDate) {
-        this.endDate = JsonNullable.<OffsetDateTime> of(endDate);
 
+        this.endDate = endDate;
         return this;
     }
 
@@ -715,31 +603,22 @@ public class SearchHint {
      * @return endDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getEndDate() {
-        return endDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_END_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getEndDate_JsonNullable() {
+    public OffsetDateTime getEndDate() {
         return endDate;
     }
 
     @JsonProperty(JSON_PROPERTY_END_DATE)
-    public void setEndDate_JsonNullable(JsonNullable<OffsetDateTime> endDate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEndDate(@javax.annotation.Nullable OffsetDateTime endDate) {
         this.endDate = endDate;
     }
 
-    public void setEndDate(@javax.annotation.Nullable OffsetDateTime endDate) {
-        this.endDate = JsonNullable.<OffsetDateTime> of(endDate);
-    }
-
     public SearchHint series(@javax.annotation.Nullable String series) {
-        this.series = JsonNullable.<String> of(series);
 
+        this.series = series;
         return this;
     }
 
@@ -749,31 +628,22 @@ public class SearchHint {
      * @return series
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeries() {
-        return series.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeries_JsonNullable() {
+    public String getSeries() {
         return series;
     }
 
     @JsonProperty(JSON_PROPERTY_SERIES)
-    public void setSeries_JsonNullable(JsonNullable<String> series) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSeries(@javax.annotation.Nullable String series) {
         this.series = series;
     }
 
-    public void setSeries(@javax.annotation.Nullable String series) {
-        this.series = JsonNullable.<String> of(series);
-    }
-
     public SearchHint status(@javax.annotation.Nullable String status) {
-        this.status = JsonNullable.<String> of(status);
 
+        this.status = status;
         return this;
     }
 
@@ -783,31 +653,22 @@ public class SearchHint {
      * @return status
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getStatus() {
-        return status.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_STATUS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getStatus_JsonNullable() {
+    public String getStatus() {
         return status;
     }
 
     @JsonProperty(JSON_PROPERTY_STATUS)
-    public void setStatus_JsonNullable(JsonNullable<String> status) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setStatus(@javax.annotation.Nullable String status) {
         this.status = status;
     }
 
-    public void setStatus(@javax.annotation.Nullable String status) {
-        this.status = JsonNullable.<String> of(status);
-    }
-
     public SearchHint album(@javax.annotation.Nullable String album) {
-        this.album = JsonNullable.<String> of(album);
 
+        this.album = album;
         return this;
     }
 
@@ -817,31 +678,22 @@ public class SearchHint {
      * @return album
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbum() {
-        return album.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALBUM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAlbum_JsonNullable() {
+    public String getAlbum() {
         return album;
     }
 
     @JsonProperty(JSON_PROPERTY_ALBUM)
-    public void setAlbum_JsonNullable(JsonNullable<String> album) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAlbum(@javax.annotation.Nullable String album) {
         this.album = album;
     }
 
-    public void setAlbum(@javax.annotation.Nullable String album) {
-        this.album = JsonNullable.<String> of(album);
-    }
-
     public SearchHint albumId(@javax.annotation.Nullable UUID albumId) {
-        this.albumId = JsonNullable.<UUID> of(albumId);
 
+        this.albumId = albumId;
         return this;
     }
 
@@ -851,31 +703,22 @@ public class SearchHint {
      * @return albumId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getAlbumId() {
-        return albumId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALBUM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getAlbumId_JsonNullable() {
+    public UUID getAlbumId() {
         return albumId;
     }
 
     @JsonProperty(JSON_PROPERTY_ALBUM_ID)
-    public void setAlbumId_JsonNullable(JsonNullable<UUID> albumId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAlbumId(@javax.annotation.Nullable UUID albumId) {
         this.albumId = albumId;
     }
 
-    public void setAlbumId(@javax.annotation.Nullable UUID albumId) {
-        this.albumId = JsonNullable.<UUID> of(albumId);
-    }
-
     public SearchHint albumArtist(@javax.annotation.Nullable String albumArtist) {
-        this.albumArtist = JsonNullable.<String> of(albumArtist);
 
+        this.albumArtist = albumArtist;
         return this;
     }
 
@@ -885,26 +728,17 @@ public class SearchHint {
      * @return albumArtist
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbumArtist() {
-        return albumArtist.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAlbumArtist_JsonNullable() {
+    public String getAlbumArtist() {
         return albumArtist;
     }
 
     @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
-    public void setAlbumArtist_JsonNullable(JsonNullable<String> albumArtist) {
-        this.albumArtist = albumArtist;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbumArtist(@javax.annotation.Nullable String albumArtist) {
-        this.albumArtist = JsonNullable.<String> of(albumArtist);
+        this.albumArtist = albumArtist;
     }
 
     public SearchHint artists(@javax.annotation.Nullable List<String> artists) {
@@ -941,8 +775,8 @@ public class SearchHint {
     }
 
     public SearchHint songCount(@javax.annotation.Nullable Integer songCount) {
-        this.songCount = JsonNullable.<Integer> of(songCount);
 
+        this.songCount = songCount;
         return this;
     }
 
@@ -952,31 +786,22 @@ public class SearchHint {
      * @return songCount
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSongCount() {
-        return songCount.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SONG_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSongCount_JsonNullable() {
+    public Integer getSongCount() {
         return songCount;
     }
 
     @JsonProperty(JSON_PROPERTY_SONG_COUNT)
-    public void setSongCount_JsonNullable(JsonNullable<Integer> songCount) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSongCount(@javax.annotation.Nullable Integer songCount) {
         this.songCount = songCount;
     }
 
-    public void setSongCount(@javax.annotation.Nullable Integer songCount) {
-        this.songCount = JsonNullable.<Integer> of(songCount);
-    }
-
     public SearchHint episodeCount(@javax.annotation.Nullable Integer episodeCount) {
-        this.episodeCount = JsonNullable.<Integer> of(episodeCount);
 
+        this.episodeCount = episodeCount;
         return this;
     }
 
@@ -986,31 +811,22 @@ public class SearchHint {
      * @return episodeCount
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getEpisodeCount() {
-        return episodeCount.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getEpisodeCount_JsonNullable() {
+    public Integer getEpisodeCount() {
         return episodeCount;
     }
 
     @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
-    public void setEpisodeCount_JsonNullable(JsonNullable<Integer> episodeCount) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
         this.episodeCount = episodeCount;
     }
 
-    public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
-        this.episodeCount = JsonNullable.<Integer> of(episodeCount);
-    }
-
     public SearchHint channelId(@javax.annotation.Nullable UUID channelId) {
-        this.channelId = JsonNullable.<UUID> of(channelId);
 
+        this.channelId = channelId;
         return this;
     }
 
@@ -1020,31 +836,22 @@ public class SearchHint {
      * @return channelId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getChannelId() {
-        return channelId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getChannelId_JsonNullable() {
+    public UUID getChannelId() {
         return channelId;
     }
 
     @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
-    public void setChannelId_JsonNullable(JsonNullable<UUID> channelId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setChannelId(@javax.annotation.Nullable UUID channelId) {
         this.channelId = channelId;
     }
 
-    public void setChannelId(@javax.annotation.Nullable UUID channelId) {
-        this.channelId = JsonNullable.<UUID> of(channelId);
-    }
-
     public SearchHint channelName(@javax.annotation.Nullable String channelName) {
-        this.channelName = JsonNullable.<String> of(channelName);
 
+        this.channelName = channelName;
         return this;
     }
 
@@ -1054,31 +861,22 @@ public class SearchHint {
      * @return channelName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChannelName() {
-        return channelName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChannelName_JsonNullable() {
+    public String getChannelName() {
         return channelName;
     }
 
     @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
-    public void setChannelName_JsonNullable(JsonNullable<String> channelName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setChannelName(@javax.annotation.Nullable String channelName) {
         this.channelName = channelName;
     }
 
-    public void setChannelName(@javax.annotation.Nullable String channelName) {
-        this.channelName = JsonNullable.<String> of(channelName);
-    }
-
     public SearchHint primaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
 
+        this.primaryImageAspectRatio = primaryImageAspectRatio;
         return this;
     }
 
@@ -1088,26 +886,17 @@ public class SearchHint {
      * @return primaryImageAspectRatio
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getPrimaryImageAspectRatio() {
-        return primaryImageAspectRatio.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getPrimaryImageAspectRatio_JsonNullable() {
+    public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
 
     @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
-    public void setPrimaryImageAspectRatio_JsonNullable(JsonNullable<Double> primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = primaryImageAspectRatio;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-        this.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
+        this.primaryImageAspectRatio = primaryImageAspectRatio;
     }
 
     @Override
@@ -1121,54 +910,37 @@ public class SearchHint {
         SearchHint searchHint = (SearchHint) o;
         return Objects.equals(this.itemId, searchHint.itemId) && Objects.equals(this.id, searchHint.id)
                 && Objects.equals(this.name, searchHint.name)
-                && equalsNullable(this.matchedTerm, searchHint.matchedTerm)
-                && equalsNullable(this.indexNumber, searchHint.indexNumber)
-                && equalsNullable(this.productionYear, searchHint.productionYear)
-                && equalsNullable(this.parentIndexNumber, searchHint.parentIndexNumber)
-                && equalsNullable(this.primaryImageTag, searchHint.primaryImageTag)
-                && equalsNullable(this.thumbImageTag, searchHint.thumbImageTag)
-                && equalsNullable(this.thumbImageItemId, searchHint.thumbImageItemId)
-                && equalsNullable(this.backdropImageTag, searchHint.backdropImageTag)
-                && equalsNullable(this.backdropImageItemId, searchHint.backdropImageItemId)
-                && Objects.equals(this.type, searchHint.type) && equalsNullable(this.isFolder, searchHint.isFolder)
-                && equalsNullable(this.runTimeTicks, searchHint.runTimeTicks)
+                && Objects.equals(this.matchedTerm, searchHint.matchedTerm)
+                && Objects.equals(this.indexNumber, searchHint.indexNumber)
+                && Objects.equals(this.productionYear, searchHint.productionYear)
+                && Objects.equals(this.parentIndexNumber, searchHint.parentIndexNumber)
+                && Objects.equals(this.primaryImageTag, searchHint.primaryImageTag)
+                && Objects.equals(this.thumbImageTag, searchHint.thumbImageTag)
+                && Objects.equals(this.thumbImageItemId, searchHint.thumbImageItemId)
+                && Objects.equals(this.backdropImageTag, searchHint.backdropImageTag)
+                && Objects.equals(this.backdropImageItemId, searchHint.backdropImageItemId)
+                && Objects.equals(this.type, searchHint.type) && Objects.equals(this.isFolder, searchHint.isFolder)
+                && Objects.equals(this.runTimeTicks, searchHint.runTimeTicks)
                 && Objects.equals(this.mediaType, searchHint.mediaType)
-                && equalsNullable(this.startDate, searchHint.startDate)
-                && equalsNullable(this.endDate, searchHint.endDate) && equalsNullable(this.series, searchHint.series)
-                && equalsNullable(this.status, searchHint.status) && equalsNullable(this.album, searchHint.album)
-                && equalsNullable(this.albumId, searchHint.albumId)
-                && equalsNullable(this.albumArtist, searchHint.albumArtist)
+                && Objects.equals(this.startDate, searchHint.startDate)
+                && Objects.equals(this.endDate, searchHint.endDate) && Objects.equals(this.series, searchHint.series)
+                && Objects.equals(this.status, searchHint.status) && Objects.equals(this.album, searchHint.album)
+                && Objects.equals(this.albumId, searchHint.albumId)
+                && Objects.equals(this.albumArtist, searchHint.albumArtist)
                 && Objects.equals(this.artists, searchHint.artists)
-                && equalsNullable(this.songCount, searchHint.songCount)
-                && equalsNullable(this.episodeCount, searchHint.episodeCount)
-                && equalsNullable(this.channelId, searchHint.channelId)
-                && equalsNullable(this.channelName, searchHint.channelName)
-                && equalsNullable(this.primaryImageAspectRatio, searchHint.primaryImageAspectRatio);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.songCount, searchHint.songCount)
+                && Objects.equals(this.episodeCount, searchHint.episodeCount)
+                && Objects.equals(this.channelId, searchHint.channelId)
+                && Objects.equals(this.channelName, searchHint.channelName)
+                && Objects.equals(this.primaryImageAspectRatio, searchHint.primaryImageAspectRatio);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(itemId, id, name, hashCodeNullable(matchedTerm), hashCodeNullable(indexNumber),
-                hashCodeNullable(productionYear), hashCodeNullable(parentIndexNumber),
-                hashCodeNullable(primaryImageTag), hashCodeNullable(thumbImageTag), hashCodeNullable(thumbImageItemId),
-                hashCodeNullable(backdropImageTag), hashCodeNullable(backdropImageItemId), type,
-                hashCodeNullable(isFolder), hashCodeNullable(runTimeTicks), mediaType, hashCodeNullable(startDate),
-                hashCodeNullable(endDate), hashCodeNullable(series), hashCodeNullable(status), hashCodeNullable(album),
-                hashCodeNullable(albumId), hashCodeNullable(albumArtist), artists, hashCodeNullable(songCount),
-                hashCodeNullable(episodeCount), hashCodeNullable(channelId), hashCodeNullable(channelName),
-                hashCodeNullable(primaryImageAspectRatio));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(itemId, id, name, matchedTerm, indexNumber, productionYear, parentIndexNumber,
+                primaryImageTag, thumbImageTag, thumbImageItemId, backdropImageTag, backdropImageItemId, type, isFolder,
+                runTimeTicks, mediaType, startDate, endDate, series, status, album, albumId, albumArtist, artists,
+                songCount, episodeCount, channelId, channelName, primaryImageAspectRatio);
     }
 
     @Override
@@ -1247,91 +1019,46 @@ public class SearchHint {
         }
 
         public SearchHint.Builder matchedTerm(String matchedTerm) {
-            this.instance.matchedTerm = JsonNullable.<String> of(matchedTerm);
-            return this;
-        }
-
-        public SearchHint.Builder matchedTerm(JsonNullable<String> matchedTerm) {
             this.instance.matchedTerm = matchedTerm;
             return this;
         }
 
         public SearchHint.Builder indexNumber(Integer indexNumber) {
-            this.instance.indexNumber = JsonNullable.<Integer> of(indexNumber);
-            return this;
-        }
-
-        public SearchHint.Builder indexNumber(JsonNullable<Integer> indexNumber) {
             this.instance.indexNumber = indexNumber;
             return this;
         }
 
         public SearchHint.Builder productionYear(Integer productionYear) {
-            this.instance.productionYear = JsonNullable.<Integer> of(productionYear);
-            return this;
-        }
-
-        public SearchHint.Builder productionYear(JsonNullable<Integer> productionYear) {
             this.instance.productionYear = productionYear;
             return this;
         }
 
         public SearchHint.Builder parentIndexNumber(Integer parentIndexNumber) {
-            this.instance.parentIndexNumber = JsonNullable.<Integer> of(parentIndexNumber);
-            return this;
-        }
-
-        public SearchHint.Builder parentIndexNumber(JsonNullable<Integer> parentIndexNumber) {
             this.instance.parentIndexNumber = parentIndexNumber;
             return this;
         }
 
         public SearchHint.Builder primaryImageTag(String primaryImageTag) {
-            this.instance.primaryImageTag = JsonNullable.<String> of(primaryImageTag);
-            return this;
-        }
-
-        public SearchHint.Builder primaryImageTag(JsonNullable<String> primaryImageTag) {
             this.instance.primaryImageTag = primaryImageTag;
             return this;
         }
 
         public SearchHint.Builder thumbImageTag(String thumbImageTag) {
-            this.instance.thumbImageTag = JsonNullable.<String> of(thumbImageTag);
-            return this;
-        }
-
-        public SearchHint.Builder thumbImageTag(JsonNullable<String> thumbImageTag) {
             this.instance.thumbImageTag = thumbImageTag;
             return this;
         }
 
         public SearchHint.Builder thumbImageItemId(String thumbImageItemId) {
-            this.instance.thumbImageItemId = JsonNullable.<String> of(thumbImageItemId);
-            return this;
-        }
-
-        public SearchHint.Builder thumbImageItemId(JsonNullable<String> thumbImageItemId) {
             this.instance.thumbImageItemId = thumbImageItemId;
             return this;
         }
 
         public SearchHint.Builder backdropImageTag(String backdropImageTag) {
-            this.instance.backdropImageTag = JsonNullable.<String> of(backdropImageTag);
-            return this;
-        }
-
-        public SearchHint.Builder backdropImageTag(JsonNullable<String> backdropImageTag) {
             this.instance.backdropImageTag = backdropImageTag;
             return this;
         }
 
         public SearchHint.Builder backdropImageItemId(String backdropImageItemId) {
-            this.instance.backdropImageItemId = JsonNullable.<String> of(backdropImageItemId);
-            return this;
-        }
-
-        public SearchHint.Builder backdropImageItemId(JsonNullable<String> backdropImageItemId) {
             this.instance.backdropImageItemId = backdropImageItemId;
             return this;
         }
@@ -1342,21 +1069,11 @@ public class SearchHint {
         }
 
         public SearchHint.Builder isFolder(Boolean isFolder) {
-            this.instance.isFolder = JsonNullable.<Boolean> of(isFolder);
-            return this;
-        }
-
-        public SearchHint.Builder isFolder(JsonNullable<Boolean> isFolder) {
             this.instance.isFolder = isFolder;
             return this;
         }
 
         public SearchHint.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
-            return this;
-        }
-
-        public SearchHint.Builder runTimeTicks(JsonNullable<Long> runTimeTicks) {
             this.instance.runTimeTicks = runTimeTicks;
             return this;
         }
@@ -1367,71 +1084,36 @@ public class SearchHint {
         }
 
         public SearchHint.Builder startDate(OffsetDateTime startDate) {
-            this.instance.startDate = JsonNullable.<OffsetDateTime> of(startDate);
-            return this;
-        }
-
-        public SearchHint.Builder startDate(JsonNullable<OffsetDateTime> startDate) {
             this.instance.startDate = startDate;
             return this;
         }
 
         public SearchHint.Builder endDate(OffsetDateTime endDate) {
-            this.instance.endDate = JsonNullable.<OffsetDateTime> of(endDate);
-            return this;
-        }
-
-        public SearchHint.Builder endDate(JsonNullable<OffsetDateTime> endDate) {
             this.instance.endDate = endDate;
             return this;
         }
 
         public SearchHint.Builder series(String series) {
-            this.instance.series = JsonNullable.<String> of(series);
-            return this;
-        }
-
-        public SearchHint.Builder series(JsonNullable<String> series) {
             this.instance.series = series;
             return this;
         }
 
         public SearchHint.Builder status(String status) {
-            this.instance.status = JsonNullable.<String> of(status);
-            return this;
-        }
-
-        public SearchHint.Builder status(JsonNullable<String> status) {
             this.instance.status = status;
             return this;
         }
 
         public SearchHint.Builder album(String album) {
-            this.instance.album = JsonNullable.<String> of(album);
-            return this;
-        }
-
-        public SearchHint.Builder album(JsonNullable<String> album) {
             this.instance.album = album;
             return this;
         }
 
         public SearchHint.Builder albumId(UUID albumId) {
-            this.instance.albumId = JsonNullable.<UUID> of(albumId);
-            return this;
-        }
-
-        public SearchHint.Builder albumId(JsonNullable<UUID> albumId) {
             this.instance.albumId = albumId;
             return this;
         }
 
         public SearchHint.Builder albumArtist(String albumArtist) {
-            this.instance.albumArtist = JsonNullable.<String> of(albumArtist);
-            return this;
-        }
-
-        public SearchHint.Builder albumArtist(JsonNullable<String> albumArtist) {
             this.instance.albumArtist = albumArtist;
             return this;
         }
@@ -1442,51 +1124,26 @@ public class SearchHint {
         }
 
         public SearchHint.Builder songCount(Integer songCount) {
-            this.instance.songCount = JsonNullable.<Integer> of(songCount);
-            return this;
-        }
-
-        public SearchHint.Builder songCount(JsonNullable<Integer> songCount) {
             this.instance.songCount = songCount;
             return this;
         }
 
         public SearchHint.Builder episodeCount(Integer episodeCount) {
-            this.instance.episodeCount = JsonNullable.<Integer> of(episodeCount);
-            return this;
-        }
-
-        public SearchHint.Builder episodeCount(JsonNullable<Integer> episodeCount) {
             this.instance.episodeCount = episodeCount;
             return this;
         }
 
         public SearchHint.Builder channelId(UUID channelId) {
-            this.instance.channelId = JsonNullable.<UUID> of(channelId);
-            return this;
-        }
-
-        public SearchHint.Builder channelId(JsonNullable<UUID> channelId) {
             this.instance.channelId = channelId;
             return this;
         }
 
         public SearchHint.Builder channelName(String channelName) {
-            this.instance.channelName = JsonNullable.<String> of(channelName);
-            return this;
-        }
-
-        public SearchHint.Builder channelName(JsonNullable<String> channelName) {
             this.instance.channelName = channelName;
             return this;
         }
 
         public SearchHint.Builder primaryImageAspectRatio(Double primaryImageAspectRatio) {
-            this.instance.primaryImageAspectRatio = JsonNullable.<Double> of(primaryImageAspectRatio);
-            return this;
-        }
-
-        public SearchHint.Builder primaryImageAspectRatio(JsonNullable<Double> primaryImageAspectRatio) {
             this.instance.primaryImageAspectRatio = primaryImageAspectRatio;
             return this;
         }

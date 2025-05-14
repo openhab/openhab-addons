@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MessageCommand {
     public static final String JSON_PROPERTY_HEADER = "Header";
     @javax.annotation.Nullable
-    private JsonNullable<String> header = JsonNullable.<String> undefined();
+    private String header;
 
     public static final String JSON_PROPERTY_TEXT = "Text";
     @javax.annotation.Nonnull
@@ -44,14 +40,14 @@ public class MessageCommand {
 
     public static final String JSON_PROPERTY_TIMEOUT_MS = "TimeoutMs";
     @javax.annotation.Nullable
-    private JsonNullable<Long> timeoutMs = JsonNullable.<Long> undefined();
+    private Long timeoutMs;
 
     public MessageCommand() {
     }
 
     public MessageCommand header(@javax.annotation.Nullable String header) {
-        this.header = JsonNullable.<String> of(header);
 
+        this.header = header;
         return this;
     }
 
@@ -61,26 +57,17 @@ public class MessageCommand {
      * @return header
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getHeader() {
-        return header.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_HEADER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getHeader_JsonNullable() {
+    public String getHeader() {
         return header;
     }
 
     @JsonProperty(JSON_PROPERTY_HEADER)
-    public void setHeader_JsonNullable(JsonNullable<String> header) {
-        this.header = header;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHeader(@javax.annotation.Nullable String header) {
-        this.header = JsonNullable.<String> of(header);
+        this.header = header;
     }
 
     public MessageCommand text(@javax.annotation.Nonnull String text) {
@@ -109,8 +96,8 @@ public class MessageCommand {
     }
 
     public MessageCommand timeoutMs(@javax.annotation.Nullable Long timeoutMs) {
-        this.timeoutMs = JsonNullable.<Long> of(timeoutMs);
 
+        this.timeoutMs = timeoutMs;
         return this;
     }
 
@@ -120,26 +107,17 @@ public class MessageCommand {
      * @return timeoutMs
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getTimeoutMs() {
-        return timeoutMs.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TIMEOUT_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getTimeoutMs_JsonNullable() {
+    public Long getTimeoutMs() {
         return timeoutMs;
     }
 
     @JsonProperty(JSON_PROPERTY_TIMEOUT_MS)
-    public void setTimeoutMs_JsonNullable(JsonNullable<Long> timeoutMs) {
-        this.timeoutMs = timeoutMs;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTimeoutMs(@javax.annotation.Nullable Long timeoutMs) {
-        this.timeoutMs = JsonNullable.<Long> of(timeoutMs);
+        this.timeoutMs = timeoutMs;
     }
 
     @Override
@@ -151,25 +129,13 @@ public class MessageCommand {
             return false;
         }
         MessageCommand messageCommand = (MessageCommand) o;
-        return equalsNullable(this.header, messageCommand.header) && Objects.equals(this.text, messageCommand.text)
-                && equalsNullable(this.timeoutMs, messageCommand.timeoutMs);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.header, messageCommand.header) && Objects.equals(this.text, messageCommand.text)
+                && Objects.equals(this.timeoutMs, messageCommand.timeoutMs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(header), text, hashCodeNullable(timeoutMs));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(header, text, timeoutMs);
     }
 
     @Override
@@ -207,11 +173,6 @@ public class MessageCommand {
         }
 
         public MessageCommand.Builder header(String header) {
-            this.instance.header = JsonNullable.<String> of(header);
-            return this;
-        }
-
-        public MessageCommand.Builder header(JsonNullable<String> header) {
             this.instance.header = header;
             return this;
         }
@@ -222,11 +183,6 @@ public class MessageCommand {
         }
 
         public MessageCommand.Builder timeoutMs(Long timeoutMs) {
-            this.instance.timeoutMs = JsonNullable.<Long> of(timeoutMs);
-            return this;
-        }
-
-        public MessageCommand.Builder timeoutMs(JsonNullable<Long> timeoutMs) {
             this.instance.timeoutMs = timeoutMs;
             return this;
         }

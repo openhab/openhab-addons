@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,15 +38,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserItemDataDto {
     public static final String JSON_PROPERTY_RATING = "Rating";
     @javax.annotation.Nullable
-    private JsonNullable<Double> rating = JsonNullable.<Double> undefined();
+    private Double rating;
 
     public static final String JSON_PROPERTY_PLAYED_PERCENTAGE = "PlayedPercentage";
     @javax.annotation.Nullable
-    private JsonNullable<Double> playedPercentage = JsonNullable.<Double> undefined();
+    private Double playedPercentage;
 
     public static final String JSON_PROPERTY_UNPLAYED_ITEM_COUNT = "UnplayedItemCount";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> unplayedItemCount = JsonNullable.<Integer> undefined();
+    private Integer unplayedItemCount;
 
     public static final String JSON_PROPERTY_PLAYBACK_POSITION_TICKS = "PlaybackPositionTicks";
     @javax.annotation.Nullable
@@ -66,11 +62,11 @@ public class UserItemDataDto {
 
     public static final String JSON_PROPERTY_LIKES = "Likes";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> likes = JsonNullable.<Boolean> undefined();
+    private Boolean likes;
 
     public static final String JSON_PROPERTY_LAST_PLAYED_DATE = "LastPlayedDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> lastPlayedDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime lastPlayedDate;
 
     public static final String JSON_PROPERTY_PLAYED = "Played";
     @javax.annotation.Nullable
@@ -88,8 +84,8 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto rating(@javax.annotation.Nullable Double rating) {
-        this.rating = JsonNullable.<Double> of(rating);
 
+        this.rating = rating;
         return this;
     }
 
@@ -99,31 +95,22 @@ public class UserItemDataDto {
      * @return rating
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getRating() {
-        return rating.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getRating_JsonNullable() {
+    public Double getRating() {
         return rating;
     }
 
     @JsonProperty(JSON_PROPERTY_RATING)
-    public void setRating_JsonNullable(JsonNullable<Double> rating) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setRating(@javax.annotation.Nullable Double rating) {
         this.rating = rating;
     }
 
-    public void setRating(@javax.annotation.Nullable Double rating) {
-        this.rating = JsonNullable.<Double> of(rating);
-    }
-
     public UserItemDataDto playedPercentage(@javax.annotation.Nullable Double playedPercentage) {
-        this.playedPercentage = JsonNullable.<Double> of(playedPercentage);
 
+        this.playedPercentage = playedPercentage;
         return this;
     }
 
@@ -133,31 +120,22 @@ public class UserItemDataDto {
      * @return playedPercentage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getPlayedPercentage() {
-        return playedPercentage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getPlayedPercentage_JsonNullable() {
+    public Double getPlayedPercentage() {
         return playedPercentage;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
-    public void setPlayedPercentage_JsonNullable(JsonNullable<Double> playedPercentage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlayedPercentage(@javax.annotation.Nullable Double playedPercentage) {
         this.playedPercentage = playedPercentage;
     }
 
-    public void setPlayedPercentage(@javax.annotation.Nullable Double playedPercentage) {
-        this.playedPercentage = JsonNullable.<Double> of(playedPercentage);
-    }
-
     public UserItemDataDto unplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
-        this.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
 
+        this.unplayedItemCount = unplayedItemCount;
         return this;
     }
 
@@ -167,26 +145,17 @@ public class UserItemDataDto {
      * @return unplayedItemCount
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getUnplayedItemCount() {
-        return unplayedItemCount.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getUnplayedItemCount_JsonNullable() {
+    public Integer getUnplayedItemCount() {
         return unplayedItemCount;
     }
 
     @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
-    public void setUnplayedItemCount_JsonNullable(JsonNullable<Integer> unplayedItemCount) {
-        this.unplayedItemCount = unplayedItemCount;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUnplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
-        this.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
+        this.unplayedItemCount = unplayedItemCount;
     }
 
     public UserItemDataDto playbackPositionTicks(@javax.annotation.Nullable Long playbackPositionTicks) {
@@ -265,8 +234,8 @@ public class UserItemDataDto {
     }
 
     public UserItemDataDto likes(@javax.annotation.Nullable Boolean likes) {
-        this.likes = JsonNullable.<Boolean> of(likes);
 
+        this.likes = likes;
         return this;
     }
 
@@ -276,31 +245,22 @@ public class UserItemDataDto {
      * @return likes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getLikes() {
-        return likes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LIKES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getLikes_JsonNullable() {
+    public Boolean getLikes() {
         return likes;
     }
 
     @JsonProperty(JSON_PROPERTY_LIKES)
-    public void setLikes_JsonNullable(JsonNullable<Boolean> likes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLikes(@javax.annotation.Nullable Boolean likes) {
         this.likes = likes;
     }
 
-    public void setLikes(@javax.annotation.Nullable Boolean likes) {
-        this.likes = JsonNullable.<Boolean> of(likes);
-    }
-
     public UserItemDataDto lastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
-        this.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
 
+        this.lastPlayedDate = lastPlayedDate;
         return this;
     }
 
@@ -310,26 +270,17 @@ public class UserItemDataDto {
      * @return lastPlayedDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getLastPlayedDate() {
-        return lastPlayedDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getLastPlayedDate_JsonNullable() {
+    public OffsetDateTime getLastPlayedDate() {
         return lastPlayedDate;
     }
 
     @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
-    public void setLastPlayedDate_JsonNullable(JsonNullable<OffsetDateTime> lastPlayedDate) {
-        this.lastPlayedDate = lastPlayedDate;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
-        this.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
+        this.lastPlayedDate = lastPlayedDate;
     }
 
     public UserItemDataDto played(@javax.annotation.Nullable Boolean played) {
@@ -416,35 +367,22 @@ public class UserItemDataDto {
             return false;
         }
         UserItemDataDto userItemDataDto = (UserItemDataDto) o;
-        return equalsNullable(this.rating, userItemDataDto.rating)
-                && equalsNullable(this.playedPercentage, userItemDataDto.playedPercentage)
-                && equalsNullable(this.unplayedItemCount, userItemDataDto.unplayedItemCount)
+        return Objects.equals(this.rating, userItemDataDto.rating)
+                && Objects.equals(this.playedPercentage, userItemDataDto.playedPercentage)
+                && Objects.equals(this.unplayedItemCount, userItemDataDto.unplayedItemCount)
                 && Objects.equals(this.playbackPositionTicks, userItemDataDto.playbackPositionTicks)
                 && Objects.equals(this.playCount, userItemDataDto.playCount)
                 && Objects.equals(this.isFavorite, userItemDataDto.isFavorite)
-                && equalsNullable(this.likes, userItemDataDto.likes)
-                && equalsNullable(this.lastPlayedDate, userItemDataDto.lastPlayedDate)
+                && Objects.equals(this.likes, userItemDataDto.likes)
+                && Objects.equals(this.lastPlayedDate, userItemDataDto.lastPlayedDate)
                 && Objects.equals(this.played, userItemDataDto.played) && Objects.equals(this.key, userItemDataDto.key)
                 && Objects.equals(this.itemId, userItemDataDto.itemId);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(rating), hashCodeNullable(playedPercentage),
-                hashCodeNullable(unplayedItemCount), playbackPositionTicks, playCount, isFavorite,
-                hashCodeNullable(likes), hashCodeNullable(lastPlayedDate), played, key, itemId);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(rating, playedPercentage, unplayedItemCount, playbackPositionTicks, playCount, isFavorite,
+                likes, lastPlayedDate, played, key, itemId);
     }
 
     @Override
@@ -490,31 +428,16 @@ public class UserItemDataDto {
         }
 
         public UserItemDataDto.Builder rating(Double rating) {
-            this.instance.rating = JsonNullable.<Double> of(rating);
-            return this;
-        }
-
-        public UserItemDataDto.Builder rating(JsonNullable<Double> rating) {
             this.instance.rating = rating;
             return this;
         }
 
         public UserItemDataDto.Builder playedPercentage(Double playedPercentage) {
-            this.instance.playedPercentage = JsonNullable.<Double> of(playedPercentage);
-            return this;
-        }
-
-        public UserItemDataDto.Builder playedPercentage(JsonNullable<Double> playedPercentage) {
             this.instance.playedPercentage = playedPercentage;
             return this;
         }
 
         public UserItemDataDto.Builder unplayedItemCount(Integer unplayedItemCount) {
-            this.instance.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
-            return this;
-        }
-
-        public UserItemDataDto.Builder unplayedItemCount(JsonNullable<Integer> unplayedItemCount) {
             this.instance.unplayedItemCount = unplayedItemCount;
             return this;
         }
@@ -535,21 +458,11 @@ public class UserItemDataDto {
         }
 
         public UserItemDataDto.Builder likes(Boolean likes) {
-            this.instance.likes = JsonNullable.<Boolean> of(likes);
-            return this;
-        }
-
-        public UserItemDataDto.Builder likes(JsonNullable<Boolean> likes) {
             this.instance.likes = likes;
             return this;
         }
 
         public UserItemDataDto.Builder lastPlayedDate(OffsetDateTime lastPlayedDate) {
-            this.instance.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
-            return this;
-        }
-
-        public UserItemDataDto.Builder lastPlayedDate(JsonNullable<OffsetDateTime> lastPlayedDate) {
             this.instance.lastPlayedDate = lastPlayedDate;
             return this;
         }

@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -65,47 +61,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceProfile {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_IDENTIFICATION = "Identification";
     @javax.annotation.Nullable
-    private JsonNullable<DeviceIdentification> identification = JsonNullable.<DeviceIdentification> undefined();
+    private DeviceIdentification identification;
 
     public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
     @javax.annotation.Nullable
-    private JsonNullable<String> friendlyName = JsonNullable.<String> undefined();
+    private String friendlyName;
 
     public static final String JSON_PROPERTY_MANUFACTURER = "Manufacturer";
     @javax.annotation.Nullable
-    private JsonNullable<String> manufacturer = JsonNullable.<String> undefined();
+    private String manufacturer;
 
     public static final String JSON_PROPERTY_MANUFACTURER_URL = "ManufacturerUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> manufacturerUrl = JsonNullable.<String> undefined();
+    private String manufacturerUrl;
 
     public static final String JSON_PROPERTY_MODEL_NAME = "ModelName";
     @javax.annotation.Nullable
-    private JsonNullable<String> modelName = JsonNullable.<String> undefined();
+    private String modelName;
 
     public static final String JSON_PROPERTY_MODEL_DESCRIPTION = "ModelDescription";
     @javax.annotation.Nullable
-    private JsonNullable<String> modelDescription = JsonNullable.<String> undefined();
+    private String modelDescription;
 
     public static final String JSON_PROPERTY_MODEL_NUMBER = "ModelNumber";
     @javax.annotation.Nullable
-    private JsonNullable<String> modelNumber = JsonNullable.<String> undefined();
+    private String modelNumber;
 
     public static final String JSON_PROPERTY_MODEL_URL = "ModelUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> modelUrl = JsonNullable.<String> undefined();
+    private String modelUrl;
 
     public static final String JSON_PROPERTY_SERIAL_NUMBER = "SerialNumber";
     @javax.annotation.Nullable
-    private JsonNullable<String> serialNumber = JsonNullable.<String> undefined();
+    private String serialNumber;
 
     public static final String JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL = "EnableAlbumArtInDidl";
     @javax.annotation.Nullable
@@ -125,51 +121,51 @@ public class DeviceProfile {
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @javax.annotation.Nullable
-    private JsonNullable<String> userId = JsonNullable.<String> undefined();
+    private String userId;
 
     public static final String JSON_PROPERTY_ALBUM_ART_PN = "AlbumArtPn";
     @javax.annotation.Nullable
-    private JsonNullable<String> albumArtPn = JsonNullable.<String> undefined();
+    private String albumArtPn;
 
     public static final String JSON_PROPERTY_MAX_ALBUM_ART_WIDTH = "MaxAlbumArtWidth";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxAlbumArtWidth = JsonNullable.<Integer> undefined();
+    private Integer maxAlbumArtWidth;
 
     public static final String JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT = "MaxAlbumArtHeight";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxAlbumArtHeight = JsonNullable.<Integer> undefined();
+    private Integer maxAlbumArtHeight;
 
     public static final String JSON_PROPERTY_MAX_ICON_WIDTH = "MaxIconWidth";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxIconWidth = JsonNullable.<Integer> undefined();
+    private Integer maxIconWidth;
 
     public static final String JSON_PROPERTY_MAX_ICON_HEIGHT = "MaxIconHeight";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxIconHeight = JsonNullable.<Integer> undefined();
+    private Integer maxIconHeight;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStaticBitrate;
 
     public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer> undefined();
+    private Integer musicStreamingTranscodingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStaticMusicBitrate;
 
     public static final String JSON_PROPERTY_SONY_AGGREGATION_FLAGS = "SonyAggregationFlags";
     @javax.annotation.Nullable
-    private JsonNullable<String> sonyAggregationFlags = JsonNullable.<String> undefined();
+    private String sonyAggregationFlags;
 
     public static final String JSON_PROPERTY_PROTOCOL_INFO = "ProtocolInfo";
     @javax.annotation.Nullable
-    private JsonNullable<String> protocolInfo = JsonNullable.<String> undefined();
+    private String protocolInfo;
 
     public static final String JSON_PROPERTY_TIMELINE_OFFSET_SECONDS = "TimelineOffsetSeconds";
     @javax.annotation.Nullable
@@ -223,8 +219,8 @@ public class DeviceProfile {
     }
 
     public DeviceProfile name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -234,31 +230,22 @@ public class DeviceProfile {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public DeviceProfile id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -268,31 +255,22 @@ public class DeviceProfile {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public DeviceProfile identification(@javax.annotation.Nullable DeviceIdentification identification) {
-        this.identification = JsonNullable.<DeviceIdentification> of(identification);
 
+        this.identification = identification;
         return this;
     }
 
@@ -302,31 +280,22 @@ public class DeviceProfile {
      * @return identification
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public DeviceIdentification getIdentification() {
-        return identification.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IDENTIFICATION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<DeviceIdentification> getIdentification_JsonNullable() {
+    public DeviceIdentification getIdentification() {
         return identification;
     }
 
     @JsonProperty(JSON_PROPERTY_IDENTIFICATION)
-    public void setIdentification_JsonNullable(JsonNullable<DeviceIdentification> identification) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIdentification(@javax.annotation.Nullable DeviceIdentification identification) {
         this.identification = identification;
     }
 
-    public void setIdentification(@javax.annotation.Nullable DeviceIdentification identification) {
-        this.identification = JsonNullable.<DeviceIdentification> of(identification);
-    }
-
     public DeviceProfile friendlyName(@javax.annotation.Nullable String friendlyName) {
-        this.friendlyName = JsonNullable.<String> of(friendlyName);
 
+        this.friendlyName = friendlyName;
         return this;
     }
 
@@ -336,31 +305,22 @@ public class DeviceProfile {
      * @return friendlyName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getFriendlyName() {
-        return friendlyName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getFriendlyName_JsonNullable() {
+    public String getFriendlyName() {
         return friendlyName;
     }
 
     @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
-    public void setFriendlyName_JsonNullable(JsonNullable<String> friendlyName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setFriendlyName(@javax.annotation.Nullable String friendlyName) {
         this.friendlyName = friendlyName;
     }
 
-    public void setFriendlyName(@javax.annotation.Nullable String friendlyName) {
-        this.friendlyName = JsonNullable.<String> of(friendlyName);
-    }
-
     public DeviceProfile manufacturer(@javax.annotation.Nullable String manufacturer) {
-        this.manufacturer = JsonNullable.<String> of(manufacturer);
 
+        this.manufacturer = manufacturer;
         return this;
     }
 
@@ -370,31 +330,22 @@ public class DeviceProfile {
      * @return manufacturer
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getManufacturer() {
-        return manufacturer.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MANUFACTURER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getManufacturer_JsonNullable() {
+    public String getManufacturer() {
         return manufacturer;
     }
 
     @JsonProperty(JSON_PROPERTY_MANUFACTURER)
-    public void setManufacturer_JsonNullable(JsonNullable<String> manufacturer) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setManufacturer(@javax.annotation.Nullable String manufacturer) {
         this.manufacturer = manufacturer;
     }
 
-    public void setManufacturer(@javax.annotation.Nullable String manufacturer) {
-        this.manufacturer = JsonNullable.<String> of(manufacturer);
-    }
-
     public DeviceProfile manufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
-        this.manufacturerUrl = JsonNullable.<String> of(manufacturerUrl);
 
+        this.manufacturerUrl = manufacturerUrl;
         return this;
     }
 
@@ -404,31 +355,22 @@ public class DeviceProfile {
      * @return manufacturerUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getManufacturerUrl() {
-        return manufacturerUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getManufacturerUrl_JsonNullable() {
+    public String getManufacturerUrl() {
         return manufacturerUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
-    public void setManufacturerUrl_JsonNullable(JsonNullable<String> manufacturerUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setManufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
         this.manufacturerUrl = manufacturerUrl;
     }
 
-    public void setManufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
-        this.manufacturerUrl = JsonNullable.<String> of(manufacturerUrl);
-    }
-
     public DeviceProfile modelName(@javax.annotation.Nullable String modelName) {
-        this.modelName = JsonNullable.<String> of(modelName);
 
+        this.modelName = modelName;
         return this;
     }
 
@@ -438,31 +380,22 @@ public class DeviceProfile {
      * @return modelName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getModelName() {
-        return modelName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MODEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getModelName_JsonNullable() {
+    public String getModelName() {
         return modelName;
     }
 
     @JsonProperty(JSON_PROPERTY_MODEL_NAME)
-    public void setModelName_JsonNullable(JsonNullable<String> modelName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setModelName(@javax.annotation.Nullable String modelName) {
         this.modelName = modelName;
     }
 
-    public void setModelName(@javax.annotation.Nullable String modelName) {
-        this.modelName = JsonNullable.<String> of(modelName);
-    }
-
     public DeviceProfile modelDescription(@javax.annotation.Nullable String modelDescription) {
-        this.modelDescription = JsonNullable.<String> of(modelDescription);
 
+        this.modelDescription = modelDescription;
         return this;
     }
 
@@ -472,31 +405,22 @@ public class DeviceProfile {
      * @return modelDescription
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getModelDescription() {
-        return modelDescription.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getModelDescription_JsonNullable() {
+    public String getModelDescription() {
         return modelDescription;
     }
 
     @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
-    public void setModelDescription_JsonNullable(JsonNullable<String> modelDescription) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setModelDescription(@javax.annotation.Nullable String modelDescription) {
         this.modelDescription = modelDescription;
     }
 
-    public void setModelDescription(@javax.annotation.Nullable String modelDescription) {
-        this.modelDescription = JsonNullable.<String> of(modelDescription);
-    }
-
     public DeviceProfile modelNumber(@javax.annotation.Nullable String modelNumber) {
-        this.modelNumber = JsonNullable.<String> of(modelNumber);
 
+        this.modelNumber = modelNumber;
         return this;
     }
 
@@ -506,31 +430,22 @@ public class DeviceProfile {
      * @return modelNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getModelNumber() {
-        return modelNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getModelNumber_JsonNullable() {
+    public String getModelNumber() {
         return modelNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
-    public void setModelNumber_JsonNullable(JsonNullable<String> modelNumber) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setModelNumber(@javax.annotation.Nullable String modelNumber) {
         this.modelNumber = modelNumber;
     }
 
-    public void setModelNumber(@javax.annotation.Nullable String modelNumber) {
-        this.modelNumber = JsonNullable.<String> of(modelNumber);
-    }
-
     public DeviceProfile modelUrl(@javax.annotation.Nullable String modelUrl) {
-        this.modelUrl = JsonNullable.<String> of(modelUrl);
 
+        this.modelUrl = modelUrl;
         return this;
     }
 
@@ -540,31 +455,22 @@ public class DeviceProfile {
      * @return modelUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getModelUrl() {
-        return modelUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MODEL_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getModelUrl_JsonNullable() {
+    public String getModelUrl() {
         return modelUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_MODEL_URL)
-    public void setModelUrl_JsonNullable(JsonNullable<String> modelUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setModelUrl(@javax.annotation.Nullable String modelUrl) {
         this.modelUrl = modelUrl;
     }
 
-    public void setModelUrl(@javax.annotation.Nullable String modelUrl) {
-        this.modelUrl = JsonNullable.<String> of(modelUrl);
-    }
-
     public DeviceProfile serialNumber(@javax.annotation.Nullable String serialNumber) {
-        this.serialNumber = JsonNullable.<String> of(serialNumber);
 
+        this.serialNumber = serialNumber;
         return this;
     }
 
@@ -574,26 +480,17 @@ public class DeviceProfile {
      * @return serialNumber
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSerialNumber() {
-        return serialNumber.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSerialNumber_JsonNullable() {
+    public String getSerialNumber() {
         return serialNumber;
     }
 
     @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
-    public void setSerialNumber_JsonNullable(JsonNullable<String> serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSerialNumber(@javax.annotation.Nullable String serialNumber) {
-        this.serialNumber = JsonNullable.<String> of(serialNumber);
+        this.serialNumber = serialNumber;
     }
 
     public DeviceProfile enableAlbumArtInDidl(@javax.annotation.Nullable Boolean enableAlbumArtInDidl) {
@@ -697,8 +594,8 @@ public class DeviceProfile {
     }
 
     public DeviceProfile userId(@javax.annotation.Nullable String userId) {
-        this.userId = JsonNullable.<String> of(userId);
 
+        this.userId = userId;
         return this;
     }
 
@@ -708,31 +605,22 @@ public class DeviceProfile {
      * @return userId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserId() {
-        return userId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserId_JsonNullable() {
+    public String getUserId() {
         return userId;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_ID)
-    public void setUserId_JsonNullable(JsonNullable<String> userId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserId(@javax.annotation.Nullable String userId) {
         this.userId = userId;
     }
 
-    public void setUserId(@javax.annotation.Nullable String userId) {
-        this.userId = JsonNullable.<String> of(userId);
-    }
-
     public DeviceProfile albumArtPn(@javax.annotation.Nullable String albumArtPn) {
-        this.albumArtPn = JsonNullable.<String> of(albumArtPn);
 
+        this.albumArtPn = albumArtPn;
         return this;
     }
 
@@ -742,31 +630,22 @@ public class DeviceProfile {
      * @return albumArtPn
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getAlbumArtPn() {
-        return albumArtPn.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ALBUM_ART_PN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getAlbumArtPn_JsonNullable() {
+    public String getAlbumArtPn() {
         return albumArtPn;
     }
 
     @JsonProperty(JSON_PROPERTY_ALBUM_ART_PN)
-    public void setAlbumArtPn_JsonNullable(JsonNullable<String> albumArtPn) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAlbumArtPn(@javax.annotation.Nullable String albumArtPn) {
         this.albumArtPn = albumArtPn;
     }
 
-    public void setAlbumArtPn(@javax.annotation.Nullable String albumArtPn) {
-        this.albumArtPn = JsonNullable.<String> of(albumArtPn);
-    }
-
     public DeviceProfile maxAlbumArtWidth(@javax.annotation.Nullable Integer maxAlbumArtWidth) {
-        this.maxAlbumArtWidth = JsonNullable.<Integer> of(maxAlbumArtWidth);
 
+        this.maxAlbumArtWidth = maxAlbumArtWidth;
         return this;
     }
 
@@ -776,31 +655,22 @@ public class DeviceProfile {
      * @return maxAlbumArtWidth
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxAlbumArtWidth() {
-        return maxAlbumArtWidth.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxAlbumArtWidth_JsonNullable() {
+    public Integer getMaxAlbumArtWidth() {
         return maxAlbumArtWidth;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_WIDTH)
-    public void setMaxAlbumArtWidth_JsonNullable(JsonNullable<Integer> maxAlbumArtWidth) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxAlbumArtWidth(@javax.annotation.Nullable Integer maxAlbumArtWidth) {
         this.maxAlbumArtWidth = maxAlbumArtWidth;
     }
 
-    public void setMaxAlbumArtWidth(@javax.annotation.Nullable Integer maxAlbumArtWidth) {
-        this.maxAlbumArtWidth = JsonNullable.<Integer> of(maxAlbumArtWidth);
-    }
-
     public DeviceProfile maxAlbumArtHeight(@javax.annotation.Nullable Integer maxAlbumArtHeight) {
-        this.maxAlbumArtHeight = JsonNullable.<Integer> of(maxAlbumArtHeight);
 
+        this.maxAlbumArtHeight = maxAlbumArtHeight;
         return this;
     }
 
@@ -810,31 +680,22 @@ public class DeviceProfile {
      * @return maxAlbumArtHeight
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxAlbumArtHeight() {
-        return maxAlbumArtHeight.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxAlbumArtHeight_JsonNullable() {
+    public Integer getMaxAlbumArtHeight() {
         return maxAlbumArtHeight;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT)
-    public void setMaxAlbumArtHeight_JsonNullable(JsonNullable<Integer> maxAlbumArtHeight) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxAlbumArtHeight(@javax.annotation.Nullable Integer maxAlbumArtHeight) {
         this.maxAlbumArtHeight = maxAlbumArtHeight;
     }
 
-    public void setMaxAlbumArtHeight(@javax.annotation.Nullable Integer maxAlbumArtHeight) {
-        this.maxAlbumArtHeight = JsonNullable.<Integer> of(maxAlbumArtHeight);
-    }
-
     public DeviceProfile maxIconWidth(@javax.annotation.Nullable Integer maxIconWidth) {
-        this.maxIconWidth = JsonNullable.<Integer> of(maxIconWidth);
 
+        this.maxIconWidth = maxIconWidth;
         return this;
     }
 
@@ -844,31 +705,22 @@ public class DeviceProfile {
      * @return maxIconWidth
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxIconWidth() {
-        return maxIconWidth.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_ICON_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxIconWidth_JsonNullable() {
+    public Integer getMaxIconWidth() {
         return maxIconWidth;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_ICON_WIDTH)
-    public void setMaxIconWidth_JsonNullable(JsonNullable<Integer> maxIconWidth) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxIconWidth(@javax.annotation.Nullable Integer maxIconWidth) {
         this.maxIconWidth = maxIconWidth;
     }
 
-    public void setMaxIconWidth(@javax.annotation.Nullable Integer maxIconWidth) {
-        this.maxIconWidth = JsonNullable.<Integer> of(maxIconWidth);
-    }
-
     public DeviceProfile maxIconHeight(@javax.annotation.Nullable Integer maxIconHeight) {
-        this.maxIconHeight = JsonNullable.<Integer> of(maxIconHeight);
 
+        this.maxIconHeight = maxIconHeight;
         return this;
     }
 
@@ -878,31 +730,22 @@ public class DeviceProfile {
      * @return maxIconHeight
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxIconHeight() {
-        return maxIconHeight.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_ICON_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxIconHeight_JsonNullable() {
+    public Integer getMaxIconHeight() {
         return maxIconHeight;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_ICON_HEIGHT)
-    public void setMaxIconHeight_JsonNullable(JsonNullable<Integer> maxIconHeight) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxIconHeight(@javax.annotation.Nullable Integer maxIconHeight) {
         this.maxIconHeight = maxIconHeight;
     }
 
-    public void setMaxIconHeight(@javax.annotation.Nullable Integer maxIconHeight) {
-        this.maxIconHeight = JsonNullable.<Integer> of(maxIconHeight);
-    }
-
     public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
 
+        this.maxStreamingBitrate = maxStreamingBitrate;
         return this;
     }
 
@@ -912,31 +755,22 @@ public class DeviceProfile {
      * @return maxStreamingBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStreamingBitrate() {
-        return maxStreamingBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
+    public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = maxStreamingBitrate;
     }
 
-    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-    }
-
     public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-        this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
 
+        this.maxStaticBitrate = maxStaticBitrate;
         return this;
     }
 
@@ -946,32 +780,23 @@ public class DeviceProfile {
      * @return maxStaticBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStaticBitrate() {
-        return maxStaticBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStaticBitrate_JsonNullable() {
+    public Integer getMaxStaticBitrate() {
         return maxStaticBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
-    public void setMaxStaticBitrate_JsonNullable(JsonNullable<Integer> maxStaticBitrate) {
-        this.maxStaticBitrate = maxStaticBitrate;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-        this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
+        this.maxStaticBitrate = maxStaticBitrate;
     }
 
     public DeviceProfile musicStreamingTranscodingBitrate(
             @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
 
+        this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
         return this;
     }
 
@@ -981,33 +806,23 @@ public class DeviceProfile {
      * @return musicStreamingTranscodingBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMusicStreamingTranscodingBitrate() {
-        return musicStreamingTranscodingBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMusicStreamingTranscodingBitrate_JsonNullable() {
+    public Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
-    public void setMusicStreamingTranscodingBitrate_JsonNullable(
-            JsonNullable<Integer> musicStreamingTranscodingBitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMusicStreamingTranscodingBitrate(
+            @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
         this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
     }
 
-    public void setMusicStreamingTranscodingBitrate(
-            @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
-    }
-
     public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
 
+        this.maxStaticMusicBitrate = maxStaticMusicBitrate;
         return this;
     }
 
@@ -1017,31 +832,22 @@ public class DeviceProfile {
      * @return maxStaticMusicBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStaticMusicBitrate() {
-        return maxStaticMusicBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStaticMusicBitrate_JsonNullable() {
+    public Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
-    public void setMaxStaticMusicBitrate_JsonNullable(JsonNullable<Integer> maxStaticMusicBitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
         this.maxStaticMusicBitrate = maxStaticMusicBitrate;
     }
 
-    public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
-    }
-
     public DeviceProfile sonyAggregationFlags(@javax.annotation.Nullable String sonyAggregationFlags) {
-        this.sonyAggregationFlags = JsonNullable.<String> of(sonyAggregationFlags);
 
+        this.sonyAggregationFlags = sonyAggregationFlags;
         return this;
     }
 
@@ -1051,31 +857,22 @@ public class DeviceProfile {
      * @return sonyAggregationFlags
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSonyAggregationFlags() {
-        return sonyAggregationFlags.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SONY_AGGREGATION_FLAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSonyAggregationFlags_JsonNullable() {
+    public String getSonyAggregationFlags() {
         return sonyAggregationFlags;
     }
 
     @JsonProperty(JSON_PROPERTY_SONY_AGGREGATION_FLAGS)
-    public void setSonyAggregationFlags_JsonNullable(JsonNullable<String> sonyAggregationFlags) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSonyAggregationFlags(@javax.annotation.Nullable String sonyAggregationFlags) {
         this.sonyAggregationFlags = sonyAggregationFlags;
     }
 
-    public void setSonyAggregationFlags(@javax.annotation.Nullable String sonyAggregationFlags) {
-        this.sonyAggregationFlags = JsonNullable.<String> of(sonyAggregationFlags);
-    }
-
     public DeviceProfile protocolInfo(@javax.annotation.Nullable String protocolInfo) {
-        this.protocolInfo = JsonNullable.<String> of(protocolInfo);
 
+        this.protocolInfo = protocolInfo;
         return this;
     }
 
@@ -1085,26 +882,17 @@ public class DeviceProfile {
      * @return protocolInfo
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProtocolInfo() {
-        return protocolInfo.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROTOCOL_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProtocolInfo_JsonNullable() {
+    public String getProtocolInfo() {
         return protocolInfo;
     }
 
     @JsonProperty(JSON_PROPERTY_PROTOCOL_INFO)
-    public void setProtocolInfo_JsonNullable(JsonNullable<String> protocolInfo) {
-        this.protocolInfo = protocolInfo;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProtocolInfo(@javax.annotation.Nullable String protocolInfo) {
-        this.protocolInfo = JsonNullable.<String> of(protocolInfo);
+        this.protocolInfo = protocolInfo;
     }
 
     public DeviceProfile timelineOffsetSeconds(@javax.annotation.Nullable Integer timelineOffsetSeconds) {
@@ -1475,32 +1263,32 @@ public class DeviceProfile {
             return false;
         }
         DeviceProfile deviceProfile = (DeviceProfile) o;
-        return equalsNullable(this.name, deviceProfile.name) && equalsNullable(this.id, deviceProfile.id)
-                && equalsNullable(this.identification, deviceProfile.identification)
-                && equalsNullable(this.friendlyName, deviceProfile.friendlyName)
-                && equalsNullable(this.manufacturer, deviceProfile.manufacturer)
-                && equalsNullable(this.manufacturerUrl, deviceProfile.manufacturerUrl)
-                && equalsNullable(this.modelName, deviceProfile.modelName)
-                && equalsNullable(this.modelDescription, deviceProfile.modelDescription)
-                && equalsNullable(this.modelNumber, deviceProfile.modelNumber)
-                && equalsNullable(this.modelUrl, deviceProfile.modelUrl)
-                && equalsNullable(this.serialNumber, deviceProfile.serialNumber)
+        return Objects.equals(this.name, deviceProfile.name) && Objects.equals(this.id, deviceProfile.id)
+                && Objects.equals(this.identification, deviceProfile.identification)
+                && Objects.equals(this.friendlyName, deviceProfile.friendlyName)
+                && Objects.equals(this.manufacturer, deviceProfile.manufacturer)
+                && Objects.equals(this.manufacturerUrl, deviceProfile.manufacturerUrl)
+                && Objects.equals(this.modelName, deviceProfile.modelName)
+                && Objects.equals(this.modelDescription, deviceProfile.modelDescription)
+                && Objects.equals(this.modelNumber, deviceProfile.modelNumber)
+                && Objects.equals(this.modelUrl, deviceProfile.modelUrl)
+                && Objects.equals(this.serialNumber, deviceProfile.serialNumber)
                 && Objects.equals(this.enableAlbumArtInDidl, deviceProfile.enableAlbumArtInDidl)
                 && Objects.equals(this.enableSingleAlbumArtLimit, deviceProfile.enableSingleAlbumArtLimit)
                 && Objects.equals(this.enableSingleSubtitleLimit, deviceProfile.enableSingleSubtitleLimit)
                 && Objects.equals(this.supportedMediaTypes, deviceProfile.supportedMediaTypes)
-                && equalsNullable(this.userId, deviceProfile.userId)
-                && equalsNullable(this.albumArtPn, deviceProfile.albumArtPn)
-                && equalsNullable(this.maxAlbumArtWidth, deviceProfile.maxAlbumArtWidth)
-                && equalsNullable(this.maxAlbumArtHeight, deviceProfile.maxAlbumArtHeight)
-                && equalsNullable(this.maxIconWidth, deviceProfile.maxIconWidth)
-                && equalsNullable(this.maxIconHeight, deviceProfile.maxIconHeight)
-                && equalsNullable(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate)
-                && equalsNullable(this.maxStaticBitrate, deviceProfile.maxStaticBitrate)
-                && equalsNullable(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate)
-                && equalsNullable(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate)
-                && equalsNullable(this.sonyAggregationFlags, deviceProfile.sonyAggregationFlags)
-                && equalsNullable(this.protocolInfo, deviceProfile.protocolInfo)
+                && Objects.equals(this.userId, deviceProfile.userId)
+                && Objects.equals(this.albumArtPn, deviceProfile.albumArtPn)
+                && Objects.equals(this.maxAlbumArtWidth, deviceProfile.maxAlbumArtWidth)
+                && Objects.equals(this.maxAlbumArtHeight, deviceProfile.maxAlbumArtHeight)
+                && Objects.equals(this.maxIconWidth, deviceProfile.maxIconWidth)
+                && Objects.equals(this.maxIconHeight, deviceProfile.maxIconHeight)
+                && Objects.equals(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate)
+                && Objects.equals(this.maxStaticBitrate, deviceProfile.maxStaticBitrate)
+                && Objects.equals(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate)
+                && Objects.equals(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate)
+                && Objects.equals(this.sonyAggregationFlags, deviceProfile.sonyAggregationFlags)
+                && Objects.equals(this.protocolInfo, deviceProfile.protocolInfo)
                 && Objects.equals(this.timelineOffsetSeconds, deviceProfile.timelineOffsetSeconds)
                 && Objects.equals(this.requiresPlainVideoItems, deviceProfile.requiresPlainVideoItems)
                 && Objects.equals(this.requiresPlainFolders, deviceProfile.requiresPlainFolders)
@@ -1515,32 +1303,16 @@ public class DeviceProfile {
                 && Objects.equals(this.subtitleProfiles, deviceProfile.subtitleProfiles);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(id), hashCodeNullable(identification),
-                hashCodeNullable(friendlyName), hashCodeNullable(manufacturer), hashCodeNullable(manufacturerUrl),
-                hashCodeNullable(modelName), hashCodeNullable(modelDescription), hashCodeNullable(modelNumber),
-                hashCodeNullable(modelUrl), hashCodeNullable(serialNumber), enableAlbumArtInDidl,
-                enableSingleAlbumArtLimit, enableSingleSubtitleLimit, supportedMediaTypes, hashCodeNullable(userId),
-                hashCodeNullable(albumArtPn), hashCodeNullable(maxAlbumArtWidth), hashCodeNullable(maxAlbumArtHeight),
-                hashCodeNullable(maxIconWidth), hashCodeNullable(maxIconHeight), hashCodeNullable(maxStreamingBitrate),
-                hashCodeNullable(maxStaticBitrate), hashCodeNullable(musicStreamingTranscodingBitrate),
-                hashCodeNullable(maxStaticMusicBitrate), hashCodeNullable(sonyAggregationFlags),
-                hashCodeNullable(protocolInfo), timelineOffsetSeconds, requiresPlainVideoItems, requiresPlainFolders,
-                enableMSMediaReceiverRegistrar, ignoreTranscodeByteRangeRequests, xmlRootAttributes, directPlayProfiles,
-                transcodingProfiles, containerProfiles, codecProfiles, responseProfiles, subtitleProfiles);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, id, identification, friendlyName, manufacturer, manufacturerUrl, modelName,
+                modelDescription, modelNumber, modelUrl, serialNumber, enableAlbumArtInDidl, enableSingleAlbumArtLimit,
+                enableSingleSubtitleLimit, supportedMediaTypes, userId, albumArtPn, maxAlbumArtWidth, maxAlbumArtHeight,
+                maxIconWidth, maxIconHeight, maxStreamingBitrate, maxStaticBitrate, musicStreamingTranscodingBitrate,
+                maxStaticMusicBitrate, sonyAggregationFlags, protocolInfo, timelineOffsetSeconds,
+                requiresPlainVideoItems, requiresPlainFolders, enableMSMediaReceiverRegistrar,
+                ignoreTranscodeByteRangeRequests, xmlRootAttributes, directPlayProfiles, transcodingProfiles,
+                containerProfiles, codecProfiles, responseProfiles, subtitleProfiles);
     }
 
     @Override
@@ -1617,111 +1389,56 @@ public class DeviceProfile {
         }
 
         public DeviceProfile.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public DeviceProfile.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public DeviceProfile.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public DeviceProfile.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public DeviceProfile.Builder identification(DeviceIdentification identification) {
-            this.instance.identification = JsonNullable.<DeviceIdentification> of(identification);
-            return this;
-        }
-
-        public DeviceProfile.Builder identification(JsonNullable<DeviceIdentification> identification) {
             this.instance.identification = identification;
             return this;
         }
 
         public DeviceProfile.Builder friendlyName(String friendlyName) {
-            this.instance.friendlyName = JsonNullable.<String> of(friendlyName);
-            return this;
-        }
-
-        public DeviceProfile.Builder friendlyName(JsonNullable<String> friendlyName) {
             this.instance.friendlyName = friendlyName;
             return this;
         }
 
         public DeviceProfile.Builder manufacturer(String manufacturer) {
-            this.instance.manufacturer = JsonNullable.<String> of(manufacturer);
-            return this;
-        }
-
-        public DeviceProfile.Builder manufacturer(JsonNullable<String> manufacturer) {
             this.instance.manufacturer = manufacturer;
             return this;
         }
 
         public DeviceProfile.Builder manufacturerUrl(String manufacturerUrl) {
-            this.instance.manufacturerUrl = JsonNullable.<String> of(manufacturerUrl);
-            return this;
-        }
-
-        public DeviceProfile.Builder manufacturerUrl(JsonNullable<String> manufacturerUrl) {
             this.instance.manufacturerUrl = manufacturerUrl;
             return this;
         }
 
         public DeviceProfile.Builder modelName(String modelName) {
-            this.instance.modelName = JsonNullable.<String> of(modelName);
-            return this;
-        }
-
-        public DeviceProfile.Builder modelName(JsonNullable<String> modelName) {
             this.instance.modelName = modelName;
             return this;
         }
 
         public DeviceProfile.Builder modelDescription(String modelDescription) {
-            this.instance.modelDescription = JsonNullable.<String> of(modelDescription);
-            return this;
-        }
-
-        public DeviceProfile.Builder modelDescription(JsonNullable<String> modelDescription) {
             this.instance.modelDescription = modelDescription;
             return this;
         }
 
         public DeviceProfile.Builder modelNumber(String modelNumber) {
-            this.instance.modelNumber = JsonNullable.<String> of(modelNumber);
-            return this;
-        }
-
-        public DeviceProfile.Builder modelNumber(JsonNullable<String> modelNumber) {
             this.instance.modelNumber = modelNumber;
             return this;
         }
 
         public DeviceProfile.Builder modelUrl(String modelUrl) {
-            this.instance.modelUrl = JsonNullable.<String> of(modelUrl);
-            return this;
-        }
-
-        public DeviceProfile.Builder modelUrl(JsonNullable<String> modelUrl) {
             this.instance.modelUrl = modelUrl;
             return this;
         }
 
         public DeviceProfile.Builder serialNumber(String serialNumber) {
-            this.instance.serialNumber = JsonNullable.<String> of(serialNumber);
-            return this;
-        }
-
-        public DeviceProfile.Builder serialNumber(JsonNullable<String> serialNumber) {
             this.instance.serialNumber = serialNumber;
             return this;
         }
@@ -1747,123 +1464,61 @@ public class DeviceProfile {
         }
 
         public DeviceProfile.Builder userId(String userId) {
-            this.instance.userId = JsonNullable.<String> of(userId);
-            return this;
-        }
-
-        public DeviceProfile.Builder userId(JsonNullable<String> userId) {
             this.instance.userId = userId;
             return this;
         }
 
         public DeviceProfile.Builder albumArtPn(String albumArtPn) {
-            this.instance.albumArtPn = JsonNullable.<String> of(albumArtPn);
-            return this;
-        }
-
-        public DeviceProfile.Builder albumArtPn(JsonNullable<String> albumArtPn) {
             this.instance.albumArtPn = albumArtPn;
             return this;
         }
 
         public DeviceProfile.Builder maxAlbumArtWidth(Integer maxAlbumArtWidth) {
-            this.instance.maxAlbumArtWidth = JsonNullable.<Integer> of(maxAlbumArtWidth);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxAlbumArtWidth(JsonNullable<Integer> maxAlbumArtWidth) {
             this.instance.maxAlbumArtWidth = maxAlbumArtWidth;
             return this;
         }
 
         public DeviceProfile.Builder maxAlbumArtHeight(Integer maxAlbumArtHeight) {
-            this.instance.maxAlbumArtHeight = JsonNullable.<Integer> of(maxAlbumArtHeight);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxAlbumArtHeight(JsonNullable<Integer> maxAlbumArtHeight) {
             this.instance.maxAlbumArtHeight = maxAlbumArtHeight;
             return this;
         }
 
         public DeviceProfile.Builder maxIconWidth(Integer maxIconWidth) {
-            this.instance.maxIconWidth = JsonNullable.<Integer> of(maxIconWidth);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxIconWidth(JsonNullable<Integer> maxIconWidth) {
             this.instance.maxIconWidth = maxIconWidth;
             return this;
         }
 
         public DeviceProfile.Builder maxIconHeight(Integer maxIconHeight) {
-            this.instance.maxIconHeight = JsonNullable.<Integer> of(maxIconHeight);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxIconHeight(JsonNullable<Integer> maxIconHeight) {
             this.instance.maxIconHeight = maxIconHeight;
             return this;
         }
 
         public DeviceProfile.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStreamingBitrate(JsonNullable<Integer> maxStreamingBitrate) {
             this.instance.maxStreamingBitrate = maxStreamingBitrate;
             return this;
         }
 
         public DeviceProfile.Builder maxStaticBitrate(Integer maxStaticBitrate) {
-            this.instance.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticBitrate(JsonNullable<Integer> maxStaticBitrate) {
             this.instance.maxStaticBitrate = maxStaticBitrate;
             return this;
         }
 
         public DeviceProfile.Builder musicStreamingTranscodingBitrate(Integer musicStreamingTranscodingBitrate) {
-            this.instance.musicStreamingTranscodingBitrate = JsonNullable
-                    .<Integer> of(musicStreamingTranscodingBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder musicStreamingTranscodingBitrate(
-                JsonNullable<Integer> musicStreamingTranscodingBitrate) {
             this.instance.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
             return this;
         }
 
         public DeviceProfile.Builder maxStaticMusicBitrate(Integer maxStaticMusicBitrate) {
-            this.instance.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticMusicBitrate(JsonNullable<Integer> maxStaticMusicBitrate) {
             this.instance.maxStaticMusicBitrate = maxStaticMusicBitrate;
             return this;
         }
 
         public DeviceProfile.Builder sonyAggregationFlags(String sonyAggregationFlags) {
-            this.instance.sonyAggregationFlags = JsonNullable.<String> of(sonyAggregationFlags);
-            return this;
-        }
-
-        public DeviceProfile.Builder sonyAggregationFlags(JsonNullable<String> sonyAggregationFlags) {
             this.instance.sonyAggregationFlags = sonyAggregationFlags;
             return this;
         }
 
         public DeviceProfile.Builder protocolInfo(String protocolInfo) {
-            this.instance.protocolInfo = JsonNullable.<String> of(protocolInfo);
-            return this;
-        }
-
-        public DeviceProfile.Builder protocolInfo(JsonNullable<String> protocolInfo) {
             this.instance.protocolInfo = protocolInfo;
             return this;
         }

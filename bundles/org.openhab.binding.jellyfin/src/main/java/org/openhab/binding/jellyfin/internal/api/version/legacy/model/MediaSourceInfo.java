@@ -18,15 +18,11 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -63,19 +59,19 @@ public class MediaSourceInfo {
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+    private String path;
 
     public static final String JSON_PROPERTY_ENCODER_PATH = "EncoderPath";
     @javax.annotation.Nullable
-    private JsonNullable<String> encoderPath = JsonNullable.<String> undefined();
+    private String encoderPath;
 
     public static final String JSON_PROPERTY_ENCODER_PROTOCOL = "EncoderProtocol";
     @javax.annotation.Nullable
-    private JsonNullable<MediaProtocol> encoderProtocol = JsonNullable.<MediaProtocol> undefined();
+    private MediaProtocol encoderProtocol;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -83,15 +79,15 @@ public class MediaSourceInfo {
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+    private String container;
 
     public static final String JSON_PROPERTY_SIZE = "Size";
     @javax.annotation.Nullable
-    private JsonNullable<Long> size = JsonNullable.<Long> undefined();
+    private Long size;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_IS_REMOTE = "IsRemote";
     @javax.annotation.Nullable
@@ -99,11 +95,11 @@ public class MediaSourceInfo {
 
     public static final String JSON_PROPERTY_ETAG = "ETag";
     @javax.annotation.Nullable
-    private JsonNullable<String> etag = JsonNullable.<String> undefined();
+    private String etag;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> runTimeTicks = JsonNullable.<Long> undefined();
+    private Long runTimeTicks;
 
     public static final String JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE = "ReadAtNativeFramerate";
     @javax.annotation.Nullable
@@ -143,7 +139,7 @@ public class MediaSourceInfo {
 
     public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
     @javax.annotation.Nullable
-    private JsonNullable<String> openToken = JsonNullable.<String> undefined();
+    private String openToken;
 
     public static final String JSON_PROPERTY_REQUIRES_CLOSING = "RequiresClosing";
     @javax.annotation.Nullable
@@ -151,11 +147,11 @@ public class MediaSourceInfo {
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
     @javax.annotation.Nullable
-    private JsonNullable<String> liveStreamId = JsonNullable.<String> undefined();
+    private String liveStreamId;
 
     public static final String JSON_PROPERTY_BUFFER_MS = "BufferMs";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> bufferMs = JsonNullable.<Integer> undefined();
+    private Integer bufferMs;
 
     public static final String JSON_PROPERTY_REQUIRES_LOOPING = "RequiresLooping";
     @javax.annotation.Nullable
@@ -167,63 +163,63 @@ public class MediaSourceInfo {
 
     public static final String JSON_PROPERTY_VIDEO_TYPE = "VideoType";
     @javax.annotation.Nullable
-    private JsonNullable<VideoType> videoType = JsonNullable.<VideoType> undefined();
+    private VideoType videoType;
 
     public static final String JSON_PROPERTY_ISO_TYPE = "IsoType";
     @javax.annotation.Nullable
-    private JsonNullable<IsoType> isoType = JsonNullable.<IsoType> undefined();
+    private IsoType isoType;
 
     public static final String JSON_PROPERTY_VIDEO3_D_FORMAT = "Video3DFormat";
     @javax.annotation.Nullable
-    private JsonNullable<Video3DFormat> video3DFormat = JsonNullable.<Video3DFormat> undefined();
+    private Video3DFormat video3DFormat;
 
     public static final String JSON_PROPERTY_MEDIA_STREAMS = "MediaStreams";
     @javax.annotation.Nullable
-    private JsonNullable<List<MediaStream>> mediaStreams = JsonNullable.<List<MediaStream>> undefined();
+    private List<MediaStream> mediaStreams;
 
     public static final String JSON_PROPERTY_MEDIA_ATTACHMENTS = "MediaAttachments";
     @javax.annotation.Nullable
-    private JsonNullable<List<MediaAttachment>> mediaAttachments = JsonNullable.<List<MediaAttachment>> undefined();
+    private List<MediaAttachment> mediaAttachments;
 
     public static final String JSON_PROPERTY_FORMATS = "Formats";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> formats = JsonNullable.<List<String>> undefined();
+    private List<String> formats;
 
     public static final String JSON_PROPERTY_BITRATE = "Bitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> bitrate = JsonNullable.<Integer> undefined();
+    private Integer bitrate;
 
     public static final String JSON_PROPERTY_TIMESTAMP = "Timestamp";
     @javax.annotation.Nullable
-    private JsonNullable<TransportStreamTimestamp> timestamp = JsonNullable.<TransportStreamTimestamp> undefined();
+    private TransportStreamTimestamp timestamp;
 
     public static final String JSON_PROPERTY_REQUIRED_HTTP_HEADERS = "RequiredHttpHeaders";
     @javax.annotation.Nullable
-    private JsonNullable<Map<String, String>> requiredHttpHeaders = JsonNullable.<Map<String, String>> undefined();
+    private Map<String, String> requiredHttpHeaders;
 
     public static final String JSON_PROPERTY_TRANSCODING_URL = "TranscodingUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> transcodingUrl = JsonNullable.<String> undefined();
+    private String transcodingUrl;
 
     public static final String JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL = "TranscodingSubProtocol";
     @javax.annotation.Nullable
-    private JsonNullable<String> transcodingSubProtocol = JsonNullable.<String> undefined();
+    private String transcodingSubProtocol;
 
     public static final String JSON_PROPERTY_TRANSCODING_CONTAINER = "TranscodingContainer";
     @javax.annotation.Nullable
-    private JsonNullable<String> transcodingContainer = JsonNullable.<String> undefined();
+    private String transcodingContainer;
 
     public static final String JSON_PROPERTY_ANALYZE_DURATION_MS = "AnalyzeDurationMs";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> analyzeDurationMs = JsonNullable.<Integer> undefined();
+    private Integer analyzeDurationMs;
 
     public static final String JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX = "DefaultAudioStreamIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> defaultAudioStreamIndex = JsonNullable.<Integer> undefined();
+    private Integer defaultAudioStreamIndex;
 
     public static final String JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX = "DefaultSubtitleStreamIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> defaultSubtitleStreamIndex = JsonNullable.<Integer> undefined();
+    private Integer defaultSubtitleStreamIndex;
 
     public MediaSourceInfo() {
     }
@@ -254,8 +250,8 @@ public class MediaSourceInfo {
     }
 
     public MediaSourceInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -265,31 +261,22 @@ public class MediaSourceInfo {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public MediaSourceInfo path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
 
+        this.path = path;
         return this;
     }
 
@@ -299,31 +286,22 @@ public class MediaSourceInfo {
      * @return path
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
+    public String getPath() {
         return path;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPath(@javax.annotation.Nullable String path) {
         this.path = path;
     }
 
-    public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
-    }
-
     public MediaSourceInfo encoderPath(@javax.annotation.Nullable String encoderPath) {
-        this.encoderPath = JsonNullable.<String> of(encoderPath);
 
+        this.encoderPath = encoderPath;
         return this;
     }
 
@@ -333,31 +311,22 @@ public class MediaSourceInfo {
      * @return encoderPath
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getEncoderPath() {
-        return encoderPath.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getEncoderPath_JsonNullable() {
+    public String getEncoderPath() {
         return encoderPath;
     }
 
     @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
-    public void setEncoderPath_JsonNullable(JsonNullable<String> encoderPath) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEncoderPath(@javax.annotation.Nullable String encoderPath) {
         this.encoderPath = encoderPath;
     }
 
-    public void setEncoderPath(@javax.annotation.Nullable String encoderPath) {
-        this.encoderPath = JsonNullable.<String> of(encoderPath);
-    }
-
     public MediaSourceInfo encoderProtocol(@javax.annotation.Nullable MediaProtocol encoderProtocol) {
-        this.encoderProtocol = JsonNullable.<MediaProtocol> of(encoderProtocol);
 
+        this.encoderProtocol = encoderProtocol;
         return this;
     }
 
@@ -367,26 +336,17 @@ public class MediaSourceInfo {
      * @return encoderProtocol
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public MediaProtocol getEncoderProtocol() {
-        return encoderProtocol.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<MediaProtocol> getEncoderProtocol_JsonNullable() {
+    public MediaProtocol getEncoderProtocol() {
         return encoderProtocol;
     }
 
     @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
-    public void setEncoderProtocol_JsonNullable(JsonNullable<MediaProtocol> encoderProtocol) {
-        this.encoderProtocol = encoderProtocol;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderProtocol(@javax.annotation.Nullable MediaProtocol encoderProtocol) {
-        this.encoderProtocol = JsonNullable.<MediaProtocol> of(encoderProtocol);
+        this.encoderProtocol = encoderProtocol;
     }
 
     public MediaSourceInfo type(@javax.annotation.Nullable MediaSourceType type) {
@@ -415,8 +375,8 @@ public class MediaSourceInfo {
     }
 
     public MediaSourceInfo container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
 
+        this.container = container;
         return this;
     }
 
@@ -426,31 +386,22 @@ public class MediaSourceInfo {
      * @return container
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
+    public String getContainer() {
         return container;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContainer(@javax.annotation.Nullable String container) {
         this.container = container;
     }
 
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
-
     public MediaSourceInfo size(@javax.annotation.Nullable Long size) {
-        this.size = JsonNullable.<Long> of(size);
 
+        this.size = size;
         return this;
     }
 
@@ -460,31 +411,22 @@ public class MediaSourceInfo {
      * @return size
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getSize() {
-        return size.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getSize_JsonNullable() {
+    public Long getSize() {
         return size;
     }
 
     @JsonProperty(JSON_PROPERTY_SIZE)
-    public void setSize_JsonNullable(JsonNullable<Long> size) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSize(@javax.annotation.Nullable Long size) {
         this.size = size;
     }
 
-    public void setSize(@javax.annotation.Nullable Long size) {
-        this.size = JsonNullable.<Long> of(size);
-    }
-
     public MediaSourceInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -494,26 +436,17 @@ public class MediaSourceInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+        this.name = name;
     }
 
     public MediaSourceInfo isRemote(@javax.annotation.Nullable Boolean isRemote) {
@@ -542,8 +475,8 @@ public class MediaSourceInfo {
     }
 
     public MediaSourceInfo etag(@javax.annotation.Nullable String etag) {
-        this.etag = JsonNullable.<String> of(etag);
 
+        this.etag = etag;
         return this;
     }
 
@@ -553,31 +486,22 @@ public class MediaSourceInfo {
      * @return etag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getEtag() {
-        return etag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ETAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getEtag_JsonNullable() {
+    public String getEtag() {
         return etag;
     }
 
     @JsonProperty(JSON_PROPERTY_ETAG)
-    public void setEtag_JsonNullable(JsonNullable<String> etag) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEtag(@javax.annotation.Nullable String etag) {
         this.etag = etag;
     }
 
-    public void setEtag(@javax.annotation.Nullable String etag) {
-        this.etag = JsonNullable.<String> of(etag);
-    }
-
     public MediaSourceInfo runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
 
+        this.runTimeTicks = runTimeTicks;
         return this;
     }
 
@@ -587,26 +511,17 @@ public class MediaSourceInfo {
      * @return runTimeTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getRunTimeTicks() {
-        return runTimeTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getRunTimeTicks_JsonNullable() {
+    public Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
-    public void setRunTimeTicks_JsonNullable(JsonNullable<Long> runTimeTicks) {
-        this.runTimeTicks = runTimeTicks;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
+        this.runTimeTicks = runTimeTicks;
     }
 
     public MediaSourceInfo readAtNativeFramerate(@javax.annotation.Nullable Boolean readAtNativeFramerate) {
@@ -835,8 +750,8 @@ public class MediaSourceInfo {
     }
 
     public MediaSourceInfo openToken(@javax.annotation.Nullable String openToken) {
-        this.openToken = JsonNullable.<String> of(openToken);
 
+        this.openToken = openToken;
         return this;
     }
 
@@ -846,26 +761,17 @@ public class MediaSourceInfo {
      * @return openToken
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOpenToken() {
-        return openToken.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOpenToken_JsonNullable() {
+    public String getOpenToken() {
         return openToken;
     }
 
     @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
-    public void setOpenToken_JsonNullable(JsonNullable<String> openToken) {
-        this.openToken = openToken;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOpenToken(@javax.annotation.Nullable String openToken) {
-        this.openToken = JsonNullable.<String> of(openToken);
+        this.openToken = openToken;
     }
 
     public MediaSourceInfo requiresClosing(@javax.annotation.Nullable Boolean requiresClosing) {
@@ -894,8 +800,8 @@ public class MediaSourceInfo {
     }
 
     public MediaSourceInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
-        this.liveStreamId = JsonNullable.<String> of(liveStreamId);
 
+        this.liveStreamId = liveStreamId;
         return this;
     }
 
@@ -905,31 +811,22 @@ public class MediaSourceInfo {
      * @return liveStreamId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLiveStreamId() {
-        return liveStreamId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLiveStreamId_JsonNullable() {
+    public String getLiveStreamId() {
         return liveStreamId;
     }
 
     @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
-    public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
         this.liveStreamId = liveStreamId;
     }
 
-    public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
-        this.liveStreamId = JsonNullable.<String> of(liveStreamId);
-    }
-
     public MediaSourceInfo bufferMs(@javax.annotation.Nullable Integer bufferMs) {
-        this.bufferMs = JsonNullable.<Integer> of(bufferMs);
 
+        this.bufferMs = bufferMs;
         return this;
     }
 
@@ -939,26 +836,17 @@ public class MediaSourceInfo {
      * @return bufferMs
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getBufferMs() {
-        return bufferMs.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BUFFER_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getBufferMs_JsonNullable() {
+    public Integer getBufferMs() {
         return bufferMs;
     }
 
     @JsonProperty(JSON_PROPERTY_BUFFER_MS)
-    public void setBufferMs_JsonNullable(JsonNullable<Integer> bufferMs) {
-        this.bufferMs = bufferMs;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBufferMs(@javax.annotation.Nullable Integer bufferMs) {
-        this.bufferMs = JsonNullable.<Integer> of(bufferMs);
+        this.bufferMs = bufferMs;
     }
 
     public MediaSourceInfo requiresLooping(@javax.annotation.Nullable Boolean requiresLooping) {
@@ -1012,8 +900,8 @@ public class MediaSourceInfo {
     }
 
     public MediaSourceInfo videoType(@javax.annotation.Nullable VideoType videoType) {
-        this.videoType = JsonNullable.<VideoType> of(videoType);
 
+        this.videoType = videoType;
         return this;
     }
 
@@ -1023,31 +911,22 @@ public class MediaSourceInfo {
      * @return videoType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public VideoType getVideoType() {
-        return videoType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<VideoType> getVideoType_JsonNullable() {
+    public VideoType getVideoType() {
         return videoType;
     }
 
     @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
-    public void setVideoType_JsonNullable(JsonNullable<VideoType> videoType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setVideoType(@javax.annotation.Nullable VideoType videoType) {
         this.videoType = videoType;
     }
 
-    public void setVideoType(@javax.annotation.Nullable VideoType videoType) {
-        this.videoType = JsonNullable.<VideoType> of(videoType);
-    }
-
     public MediaSourceInfo isoType(@javax.annotation.Nullable IsoType isoType) {
-        this.isoType = JsonNullable.<IsoType> of(isoType);
 
+        this.isoType = isoType;
         return this;
     }
 
@@ -1057,31 +936,22 @@ public class MediaSourceInfo {
      * @return isoType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public IsoType getIsoType() {
-        return isoType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ISO_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<IsoType> getIsoType_JsonNullable() {
+    public IsoType getIsoType() {
         return isoType;
     }
 
     @JsonProperty(JSON_PROPERTY_ISO_TYPE)
-    public void setIsoType_JsonNullable(JsonNullable<IsoType> isoType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsoType(@javax.annotation.Nullable IsoType isoType) {
         this.isoType = isoType;
     }
 
-    public void setIsoType(@javax.annotation.Nullable IsoType isoType) {
-        this.isoType = JsonNullable.<IsoType> of(isoType);
-    }
-
     public MediaSourceInfo video3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
-        this.video3DFormat = JsonNullable.<Video3DFormat> of(video3DFormat);
 
+        this.video3DFormat = video3DFormat;
         return this;
     }
 
@@ -1091,43 +961,30 @@ public class MediaSourceInfo {
      * @return video3DFormat
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Video3DFormat getVideo3DFormat() {
-        return video3DFormat.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Video3DFormat> getVideo3DFormat_JsonNullable() {
+    public Video3DFormat getVideo3DFormat() {
         return video3DFormat;
     }
 
     @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
-    public void setVideo3DFormat_JsonNullable(JsonNullable<Video3DFormat> video3DFormat) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setVideo3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
         this.video3DFormat = video3DFormat;
     }
 
-    public void setVideo3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
-        this.video3DFormat = JsonNullable.<Video3DFormat> of(video3DFormat);
-    }
-
     public MediaSourceInfo mediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
-        this.mediaStreams = JsonNullable.<List<MediaStream>> of(mediaStreams);
 
+        this.mediaStreams = mediaStreams;
         return this;
     }
 
     public MediaSourceInfo addMediaStreamsItem(MediaStream mediaStreamsItem) {
-        if (this.mediaStreams == null || !this.mediaStreams.isPresent()) {
-            this.mediaStreams = JsonNullable.<List<MediaStream>> of(new ArrayList<>());
+        if (this.mediaStreams == null) {
+            this.mediaStreams = new ArrayList<>();
         }
-        try {
-            this.mediaStreams.get().add(mediaStreamsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.mediaStreams.add(mediaStreamsItem);
         return this;
     }
 
@@ -1137,43 +994,30 @@ public class MediaSourceInfo {
      * @return mediaStreams
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MediaStream> getMediaStreams() {
-        return mediaStreams.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<MediaStream>> getMediaStreams_JsonNullable() {
+    public List<MediaStream> getMediaStreams() {
         return mediaStreams;
     }
 
     @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
-    public void setMediaStreams_JsonNullable(JsonNullable<List<MediaStream>> mediaStreams) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
         this.mediaStreams = mediaStreams;
     }
 
-    public void setMediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
-        this.mediaStreams = JsonNullable.<List<MediaStream>> of(mediaStreams);
-    }
-
     public MediaSourceInfo mediaAttachments(@javax.annotation.Nullable List<MediaAttachment> mediaAttachments) {
-        this.mediaAttachments = JsonNullable.<List<MediaAttachment>> of(mediaAttachments);
 
+        this.mediaAttachments = mediaAttachments;
         return this;
     }
 
     public MediaSourceInfo addMediaAttachmentsItem(MediaAttachment mediaAttachmentsItem) {
-        if (this.mediaAttachments == null || !this.mediaAttachments.isPresent()) {
-            this.mediaAttachments = JsonNullable.<List<MediaAttachment>> of(new ArrayList<>());
+        if (this.mediaAttachments == null) {
+            this.mediaAttachments = new ArrayList<>();
         }
-        try {
-            this.mediaAttachments.get().add(mediaAttachmentsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.mediaAttachments.add(mediaAttachmentsItem);
         return this;
     }
 
@@ -1183,43 +1027,30 @@ public class MediaSourceInfo {
      * @return mediaAttachments
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<MediaAttachment> getMediaAttachments() {
-        return mediaAttachments.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<MediaAttachment>> getMediaAttachments_JsonNullable() {
+    public List<MediaAttachment> getMediaAttachments() {
         return mediaAttachments;
     }
 
     @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
-    public void setMediaAttachments_JsonNullable(JsonNullable<List<MediaAttachment>> mediaAttachments) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaAttachments(@javax.annotation.Nullable List<MediaAttachment> mediaAttachments) {
         this.mediaAttachments = mediaAttachments;
     }
 
-    public void setMediaAttachments(@javax.annotation.Nullable List<MediaAttachment> mediaAttachments) {
-        this.mediaAttachments = JsonNullable.<List<MediaAttachment>> of(mediaAttachments);
-    }
-
     public MediaSourceInfo formats(@javax.annotation.Nullable List<String> formats) {
-        this.formats = JsonNullable.<List<String>> of(formats);
 
+        this.formats = formats;
         return this;
     }
 
     public MediaSourceInfo addFormatsItem(String formatsItem) {
-        if (this.formats == null || !this.formats.isPresent()) {
-            this.formats = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.formats == null) {
+            this.formats = new ArrayList<>();
         }
-        try {
-            this.formats.get().add(formatsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.formats.add(formatsItem);
         return this;
     }
 
@@ -1229,31 +1060,22 @@ public class MediaSourceInfo {
      * @return formats
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getFormats() {
-        return formats.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_FORMATS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getFormats_JsonNullable() {
+    public List<String> getFormats() {
         return formats;
     }
 
     @JsonProperty(JSON_PROPERTY_FORMATS)
-    public void setFormats_JsonNullable(JsonNullable<List<String>> formats) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setFormats(@javax.annotation.Nullable List<String> formats) {
         this.formats = formats;
     }
 
-    public void setFormats(@javax.annotation.Nullable List<String> formats) {
-        this.formats = JsonNullable.<List<String>> of(formats);
-    }
-
     public MediaSourceInfo bitrate(@javax.annotation.Nullable Integer bitrate) {
-        this.bitrate = JsonNullable.<Integer> of(bitrate);
 
+        this.bitrate = bitrate;
         return this;
     }
 
@@ -1263,31 +1085,22 @@ public class MediaSourceInfo {
      * @return bitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getBitrate() {
-        return bitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getBitrate_JsonNullable() {
+    public Integer getBitrate() {
         return bitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_BITRATE)
-    public void setBitrate_JsonNullable(JsonNullable<Integer> bitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setBitrate(@javax.annotation.Nullable Integer bitrate) {
         this.bitrate = bitrate;
     }
 
-    public void setBitrate(@javax.annotation.Nullable Integer bitrate) {
-        this.bitrate = JsonNullable.<Integer> of(bitrate);
-    }
-
     public MediaSourceInfo timestamp(@javax.annotation.Nullable TransportStreamTimestamp timestamp) {
-        this.timestamp = JsonNullable.<TransportStreamTimestamp> of(timestamp);
 
+        this.timestamp = timestamp;
         return this;
     }
 
@@ -1297,43 +1110,30 @@ public class MediaSourceInfo {
      * @return timestamp
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public TransportStreamTimestamp getTimestamp() {
-        return timestamp.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TIMESTAMP)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<TransportStreamTimestamp> getTimestamp_JsonNullable() {
+    public TransportStreamTimestamp getTimestamp() {
         return timestamp;
     }
 
     @JsonProperty(JSON_PROPERTY_TIMESTAMP)
-    public void setTimestamp_JsonNullable(JsonNullable<TransportStreamTimestamp> timestamp) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTimestamp(@javax.annotation.Nullable TransportStreamTimestamp timestamp) {
         this.timestamp = timestamp;
     }
 
-    public void setTimestamp(@javax.annotation.Nullable TransportStreamTimestamp timestamp) {
-        this.timestamp = JsonNullable.<TransportStreamTimestamp> of(timestamp);
-    }
-
     public MediaSourceInfo requiredHttpHeaders(@javax.annotation.Nullable Map<String, String> requiredHttpHeaders) {
-        this.requiredHttpHeaders = JsonNullable.<Map<String, String>> of(requiredHttpHeaders);
 
+        this.requiredHttpHeaders = requiredHttpHeaders;
         return this;
     }
 
     public MediaSourceInfo putRequiredHttpHeadersItem(String key, String requiredHttpHeadersItem) {
-        if (this.requiredHttpHeaders == null || !this.requiredHttpHeaders.isPresent()) {
-            this.requiredHttpHeaders = JsonNullable.<Map<String, String>> of(new HashMap<>());
+        if (this.requiredHttpHeaders == null) {
+            this.requiredHttpHeaders = new HashMap<>();
         }
-        try {
-            this.requiredHttpHeaders.get().put(key, requiredHttpHeadersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.requiredHttpHeaders.put(key, requiredHttpHeadersItem);
         return this;
     }
 
@@ -1343,31 +1143,22 @@ public class MediaSourceInfo {
      * @return requiredHttpHeaders
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Map<String, String> getRequiredHttpHeaders() {
-        return requiredHttpHeaders.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Map<String, String>> getRequiredHttpHeaders_JsonNullable() {
+    public Map<String, String> getRequiredHttpHeaders() {
         return requiredHttpHeaders;
     }
 
     @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
-    public void setRequiredHttpHeaders_JsonNullable(JsonNullable<Map<String, String>> requiredHttpHeaders) {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    public void setRequiredHttpHeaders(@javax.annotation.Nullable Map<String, String> requiredHttpHeaders) {
         this.requiredHttpHeaders = requiredHttpHeaders;
     }
 
-    public void setRequiredHttpHeaders(@javax.annotation.Nullable Map<String, String> requiredHttpHeaders) {
-        this.requiredHttpHeaders = JsonNullable.<Map<String, String>> of(requiredHttpHeaders);
-    }
-
     public MediaSourceInfo transcodingUrl(@javax.annotation.Nullable String transcodingUrl) {
-        this.transcodingUrl = JsonNullable.<String> of(transcodingUrl);
 
+        this.transcodingUrl = transcodingUrl;
         return this;
     }
 
@@ -1377,31 +1168,22 @@ public class MediaSourceInfo {
      * @return transcodingUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTranscodingUrl() {
-        return transcodingUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTranscodingUrl_JsonNullable() {
+    public String getTranscodingUrl() {
         return transcodingUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
-    public void setTranscodingUrl_JsonNullable(JsonNullable<String> transcodingUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTranscodingUrl(@javax.annotation.Nullable String transcodingUrl) {
         this.transcodingUrl = transcodingUrl;
     }
 
-    public void setTranscodingUrl(@javax.annotation.Nullable String transcodingUrl) {
-        this.transcodingUrl = JsonNullable.<String> of(transcodingUrl);
-    }
-
     public MediaSourceInfo transcodingSubProtocol(@javax.annotation.Nullable String transcodingSubProtocol) {
-        this.transcodingSubProtocol = JsonNullable.<String> of(transcodingSubProtocol);
 
+        this.transcodingSubProtocol = transcodingSubProtocol;
         return this;
     }
 
@@ -1411,31 +1193,22 @@ public class MediaSourceInfo {
      * @return transcodingSubProtocol
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTranscodingSubProtocol() {
-        return transcodingSubProtocol.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTranscodingSubProtocol_JsonNullable() {
+    public String getTranscodingSubProtocol() {
         return transcodingSubProtocol;
     }
 
     @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
-    public void setTranscodingSubProtocol_JsonNullable(JsonNullable<String> transcodingSubProtocol) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTranscodingSubProtocol(@javax.annotation.Nullable String transcodingSubProtocol) {
         this.transcodingSubProtocol = transcodingSubProtocol;
     }
 
-    public void setTranscodingSubProtocol(@javax.annotation.Nullable String transcodingSubProtocol) {
-        this.transcodingSubProtocol = JsonNullable.<String> of(transcodingSubProtocol);
-    }
-
     public MediaSourceInfo transcodingContainer(@javax.annotation.Nullable String transcodingContainer) {
-        this.transcodingContainer = JsonNullable.<String> of(transcodingContainer);
 
+        this.transcodingContainer = transcodingContainer;
         return this;
     }
 
@@ -1445,31 +1218,22 @@ public class MediaSourceInfo {
      * @return transcodingContainer
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTranscodingContainer() {
-        return transcodingContainer.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTranscodingContainer_JsonNullable() {
+    public String getTranscodingContainer() {
         return transcodingContainer;
     }
 
     @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
-    public void setTranscodingContainer_JsonNullable(JsonNullable<String> transcodingContainer) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTranscodingContainer(@javax.annotation.Nullable String transcodingContainer) {
         this.transcodingContainer = transcodingContainer;
     }
 
-    public void setTranscodingContainer(@javax.annotation.Nullable String transcodingContainer) {
-        this.transcodingContainer = JsonNullable.<String> of(transcodingContainer);
-    }
-
     public MediaSourceInfo analyzeDurationMs(@javax.annotation.Nullable Integer analyzeDurationMs) {
-        this.analyzeDurationMs = JsonNullable.<Integer> of(analyzeDurationMs);
 
+        this.analyzeDurationMs = analyzeDurationMs;
         return this;
     }
 
@@ -1479,31 +1243,22 @@ public class MediaSourceInfo {
      * @return analyzeDurationMs
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAnalyzeDurationMs() {
-        return analyzeDurationMs.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAnalyzeDurationMs_JsonNullable() {
+    public Integer getAnalyzeDurationMs() {
         return analyzeDurationMs;
     }
 
     @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
-    public void setAnalyzeDurationMs_JsonNullable(JsonNullable<Integer> analyzeDurationMs) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAnalyzeDurationMs(@javax.annotation.Nullable Integer analyzeDurationMs) {
         this.analyzeDurationMs = analyzeDurationMs;
     }
 
-    public void setAnalyzeDurationMs(@javax.annotation.Nullable Integer analyzeDurationMs) {
-        this.analyzeDurationMs = JsonNullable.<Integer> of(analyzeDurationMs);
-    }
-
     public MediaSourceInfo defaultAudioStreamIndex(@javax.annotation.Nullable Integer defaultAudioStreamIndex) {
-        this.defaultAudioStreamIndex = JsonNullable.<Integer> of(defaultAudioStreamIndex);
 
+        this.defaultAudioStreamIndex = defaultAudioStreamIndex;
         return this;
     }
 
@@ -1513,31 +1268,22 @@ public class MediaSourceInfo {
      * @return defaultAudioStreamIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getDefaultAudioStreamIndex() {
-        return defaultAudioStreamIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getDefaultAudioStreamIndex_JsonNullable() {
+    public Integer getDefaultAudioStreamIndex() {
         return defaultAudioStreamIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
-    public void setDefaultAudioStreamIndex_JsonNullable(JsonNullable<Integer> defaultAudioStreamIndex) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDefaultAudioStreamIndex(@javax.annotation.Nullable Integer defaultAudioStreamIndex) {
         this.defaultAudioStreamIndex = defaultAudioStreamIndex;
     }
 
-    public void setDefaultAudioStreamIndex(@javax.annotation.Nullable Integer defaultAudioStreamIndex) {
-        this.defaultAudioStreamIndex = JsonNullable.<Integer> of(defaultAudioStreamIndex);
-    }
-
     public MediaSourceInfo defaultSubtitleStreamIndex(@javax.annotation.Nullable Integer defaultSubtitleStreamIndex) {
-        this.defaultSubtitleStreamIndex = JsonNullable.<Integer> of(defaultSubtitleStreamIndex);
 
+        this.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
         return this;
     }
 
@@ -1547,26 +1293,17 @@ public class MediaSourceInfo {
      * @return defaultSubtitleStreamIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getDefaultSubtitleStreamIndex() {
-        return defaultSubtitleStreamIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getDefaultSubtitleStreamIndex_JsonNullable() {
+    public Integer getDefaultSubtitleStreamIndex() {
         return defaultSubtitleStreamIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
-    public void setDefaultSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> defaultSubtitleStreamIndex) {
-        this.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultSubtitleStreamIndex(@javax.annotation.Nullable Integer defaultSubtitleStreamIndex) {
-        this.defaultSubtitleStreamIndex = JsonNullable.<Integer> of(defaultSubtitleStreamIndex);
+        this.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
     }
 
     @Override
@@ -1578,16 +1315,16 @@ public class MediaSourceInfo {
             return false;
         }
         MediaSourceInfo mediaSourceInfo = (MediaSourceInfo) o;
-        return Objects.equals(this.protocol, mediaSourceInfo.protocol) && equalsNullable(this.id, mediaSourceInfo.id)
-                && equalsNullable(this.path, mediaSourceInfo.path)
-                && equalsNullable(this.encoderPath, mediaSourceInfo.encoderPath)
-                && equalsNullable(this.encoderProtocol, mediaSourceInfo.encoderProtocol)
+        return Objects.equals(this.protocol, mediaSourceInfo.protocol) && Objects.equals(this.id, mediaSourceInfo.id)
+                && Objects.equals(this.path, mediaSourceInfo.path)
+                && Objects.equals(this.encoderPath, mediaSourceInfo.encoderPath)
+                && Objects.equals(this.encoderProtocol, mediaSourceInfo.encoderProtocol)
                 && Objects.equals(this.type, mediaSourceInfo.type)
-                && equalsNullable(this.container, mediaSourceInfo.container)
-                && equalsNullable(this.size, mediaSourceInfo.size) && equalsNullable(this.name, mediaSourceInfo.name)
+                && Objects.equals(this.container, mediaSourceInfo.container)
+                && Objects.equals(this.size, mediaSourceInfo.size) && Objects.equals(this.name, mediaSourceInfo.name)
                 && Objects.equals(this.isRemote, mediaSourceInfo.isRemote)
-                && equalsNullable(this.etag, mediaSourceInfo.etag)
-                && equalsNullable(this.runTimeTicks, mediaSourceInfo.runTimeTicks)
+                && Objects.equals(this.etag, mediaSourceInfo.etag)
+                && Objects.equals(this.runTimeTicks, mediaSourceInfo.runTimeTicks)
                 && Objects.equals(this.readAtNativeFramerate, mediaSourceInfo.readAtNativeFramerate)
                 && Objects.equals(this.ignoreDts, mediaSourceInfo.ignoreDts)
                 && Objects.equals(this.ignoreIndex, mediaSourceInfo.ignoreIndex)
@@ -1597,55 +1334,38 @@ public class MediaSourceInfo {
                 && Objects.equals(this.supportsDirectPlay, mediaSourceInfo.supportsDirectPlay)
                 && Objects.equals(this.isInfiniteStream, mediaSourceInfo.isInfiniteStream)
                 && Objects.equals(this.requiresOpening, mediaSourceInfo.requiresOpening)
-                && equalsNullable(this.openToken, mediaSourceInfo.openToken)
+                && Objects.equals(this.openToken, mediaSourceInfo.openToken)
                 && Objects.equals(this.requiresClosing, mediaSourceInfo.requiresClosing)
-                && equalsNullable(this.liveStreamId, mediaSourceInfo.liveStreamId)
-                && equalsNullable(this.bufferMs, mediaSourceInfo.bufferMs)
+                && Objects.equals(this.liveStreamId, mediaSourceInfo.liveStreamId)
+                && Objects.equals(this.bufferMs, mediaSourceInfo.bufferMs)
                 && Objects.equals(this.requiresLooping, mediaSourceInfo.requiresLooping)
                 && Objects.equals(this.supportsProbing, mediaSourceInfo.supportsProbing)
-                && equalsNullable(this.videoType, mediaSourceInfo.videoType)
-                && equalsNullable(this.isoType, mediaSourceInfo.isoType)
-                && equalsNullable(this.video3DFormat, mediaSourceInfo.video3DFormat)
-                && equalsNullable(this.mediaStreams, mediaSourceInfo.mediaStreams)
-                && equalsNullable(this.mediaAttachments, mediaSourceInfo.mediaAttachments)
-                && equalsNullable(this.formats, mediaSourceInfo.formats)
-                && equalsNullable(this.bitrate, mediaSourceInfo.bitrate)
-                && equalsNullable(this.timestamp, mediaSourceInfo.timestamp)
-                && equalsNullable(this.requiredHttpHeaders, mediaSourceInfo.requiredHttpHeaders)
-                && equalsNullable(this.transcodingUrl, mediaSourceInfo.transcodingUrl)
-                && equalsNullable(this.transcodingSubProtocol, mediaSourceInfo.transcodingSubProtocol)
-                && equalsNullable(this.transcodingContainer, mediaSourceInfo.transcodingContainer)
-                && equalsNullable(this.analyzeDurationMs, mediaSourceInfo.analyzeDurationMs)
-                && equalsNullable(this.defaultAudioStreamIndex, mediaSourceInfo.defaultAudioStreamIndex)
-                && equalsNullable(this.defaultSubtitleStreamIndex, mediaSourceInfo.defaultSubtitleStreamIndex);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.videoType, mediaSourceInfo.videoType)
+                && Objects.equals(this.isoType, mediaSourceInfo.isoType)
+                && Objects.equals(this.video3DFormat, mediaSourceInfo.video3DFormat)
+                && Objects.equals(this.mediaStreams, mediaSourceInfo.mediaStreams)
+                && Objects.equals(this.mediaAttachments, mediaSourceInfo.mediaAttachments)
+                && Objects.equals(this.formats, mediaSourceInfo.formats)
+                && Objects.equals(this.bitrate, mediaSourceInfo.bitrate)
+                && Objects.equals(this.timestamp, mediaSourceInfo.timestamp)
+                && Objects.equals(this.requiredHttpHeaders, mediaSourceInfo.requiredHttpHeaders)
+                && Objects.equals(this.transcodingUrl, mediaSourceInfo.transcodingUrl)
+                && Objects.equals(this.transcodingSubProtocol, mediaSourceInfo.transcodingSubProtocol)
+                && Objects.equals(this.transcodingContainer, mediaSourceInfo.transcodingContainer)
+                && Objects.equals(this.analyzeDurationMs, mediaSourceInfo.analyzeDurationMs)
+                && Objects.equals(this.defaultAudioStreamIndex, mediaSourceInfo.defaultAudioStreamIndex)
+                && Objects.equals(this.defaultSubtitleStreamIndex, mediaSourceInfo.defaultSubtitleStreamIndex);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(protocol, hashCodeNullable(id), hashCodeNullable(path), hashCodeNullable(encoderPath),
-                hashCodeNullable(encoderProtocol), type, hashCodeNullable(container), hashCodeNullable(size),
-                hashCodeNullable(name), isRemote, hashCodeNullable(etag), hashCodeNullable(runTimeTicks),
-                readAtNativeFramerate, ignoreDts, ignoreIndex, genPtsInput, supportsTranscoding, supportsDirectStream,
-                supportsDirectPlay, isInfiniteStream, requiresOpening, hashCodeNullable(openToken), requiresClosing,
-                hashCodeNullable(liveStreamId), hashCodeNullable(bufferMs), requiresLooping, supportsProbing,
-                hashCodeNullable(videoType), hashCodeNullable(isoType), hashCodeNullable(video3DFormat),
-                hashCodeNullable(mediaStreams), hashCodeNullable(mediaAttachments), hashCodeNullable(formats),
-                hashCodeNullable(bitrate), hashCodeNullable(timestamp), hashCodeNullable(requiredHttpHeaders),
-                hashCodeNullable(transcodingUrl), hashCodeNullable(transcodingSubProtocol),
-                hashCodeNullable(transcodingContainer), hashCodeNullable(analyzeDurationMs),
-                hashCodeNullable(defaultAudioStreamIndex), hashCodeNullable(defaultSubtitleStreamIndex));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(protocol, id, path, encoderPath, encoderProtocol, type, container, size, name, isRemote,
+                etag, runTimeTicks, readAtNativeFramerate, ignoreDts, ignoreIndex, genPtsInput, supportsTranscoding,
+                supportsDirectStream, supportsDirectPlay, isInfiniteStream, requiresOpening, openToken, requiresClosing,
+                liveStreamId, bufferMs, requiresLooping, supportsProbing, videoType, isoType, video3DFormat,
+                mediaStreams, mediaAttachments, formats, bitrate, timestamp, requiredHttpHeaders, transcodingUrl,
+                transcodingSubProtocol, transcodingContainer, analyzeDurationMs, defaultAudioStreamIndex,
+                defaultSubtitleStreamIndex);
     }
 
     @Override
@@ -1727,41 +1447,21 @@ public class MediaSourceInfo {
         }
 
         public MediaSourceInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public MediaSourceInfo.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder path(JsonNullable<String> path) {
             this.instance.path = path;
             return this;
         }
 
         public MediaSourceInfo.Builder encoderPath(String encoderPath) {
-            this.instance.encoderPath = JsonNullable.<String> of(encoderPath);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder encoderPath(JsonNullable<String> encoderPath) {
             this.instance.encoderPath = encoderPath;
             return this;
         }
 
         public MediaSourceInfo.Builder encoderProtocol(MediaProtocol encoderProtocol) {
-            this.instance.encoderProtocol = JsonNullable.<MediaProtocol> of(encoderProtocol);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder encoderProtocol(JsonNullable<MediaProtocol> encoderProtocol) {
             this.instance.encoderProtocol = encoderProtocol;
             return this;
         }
@@ -1772,31 +1472,16 @@ public class MediaSourceInfo {
         }
 
         public MediaSourceInfo.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder container(JsonNullable<String> container) {
             this.instance.container = container;
             return this;
         }
 
         public MediaSourceInfo.Builder size(Long size) {
-            this.instance.size = JsonNullable.<Long> of(size);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder size(JsonNullable<Long> size) {
             this.instance.size = size;
             return this;
         }
 
         public MediaSourceInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
@@ -1807,21 +1492,11 @@ public class MediaSourceInfo {
         }
 
         public MediaSourceInfo.Builder etag(String etag) {
-            this.instance.etag = JsonNullable.<String> of(etag);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder etag(JsonNullable<String> etag) {
             this.instance.etag = etag;
             return this;
         }
 
         public MediaSourceInfo.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder runTimeTicks(JsonNullable<Long> runTimeTicks) {
             this.instance.runTimeTicks = runTimeTicks;
             return this;
         }
@@ -1872,11 +1547,6 @@ public class MediaSourceInfo {
         }
 
         public MediaSourceInfo.Builder openToken(String openToken) {
-            this.instance.openToken = JsonNullable.<String> of(openToken);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder openToken(JsonNullable<String> openToken) {
             this.instance.openToken = openToken;
             return this;
         }
@@ -1887,21 +1557,11 @@ public class MediaSourceInfo {
         }
 
         public MediaSourceInfo.Builder liveStreamId(String liveStreamId) {
-            this.instance.liveStreamId = JsonNullable.<String> of(liveStreamId);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder liveStreamId(JsonNullable<String> liveStreamId) {
             this.instance.liveStreamId = liveStreamId;
             return this;
         }
 
         public MediaSourceInfo.Builder bufferMs(Integer bufferMs) {
-            this.instance.bufferMs = JsonNullable.<Integer> of(bufferMs);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder bufferMs(JsonNullable<Integer> bufferMs) {
             this.instance.bufferMs = bufferMs;
             return this;
         }
@@ -1917,151 +1577,76 @@ public class MediaSourceInfo {
         }
 
         public MediaSourceInfo.Builder videoType(VideoType videoType) {
-            this.instance.videoType = JsonNullable.<VideoType> of(videoType);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder videoType(JsonNullable<VideoType> videoType) {
             this.instance.videoType = videoType;
             return this;
         }
 
         public MediaSourceInfo.Builder isoType(IsoType isoType) {
-            this.instance.isoType = JsonNullable.<IsoType> of(isoType);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder isoType(JsonNullable<IsoType> isoType) {
             this.instance.isoType = isoType;
             return this;
         }
 
         public MediaSourceInfo.Builder video3DFormat(Video3DFormat video3DFormat) {
-            this.instance.video3DFormat = JsonNullable.<Video3DFormat> of(video3DFormat);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder video3DFormat(JsonNullable<Video3DFormat> video3DFormat) {
             this.instance.video3DFormat = video3DFormat;
             return this;
         }
 
         public MediaSourceInfo.Builder mediaStreams(List<MediaStream> mediaStreams) {
-            this.instance.mediaStreams = JsonNullable.<List<MediaStream>> of(mediaStreams);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder mediaStreams(JsonNullable<List<MediaStream>> mediaStreams) {
             this.instance.mediaStreams = mediaStreams;
             return this;
         }
 
         public MediaSourceInfo.Builder mediaAttachments(List<MediaAttachment> mediaAttachments) {
-            this.instance.mediaAttachments = JsonNullable.<List<MediaAttachment>> of(mediaAttachments);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder mediaAttachments(JsonNullable<List<MediaAttachment>> mediaAttachments) {
             this.instance.mediaAttachments = mediaAttachments;
             return this;
         }
 
         public MediaSourceInfo.Builder formats(List<String> formats) {
-            this.instance.formats = JsonNullable.<List<String>> of(formats);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder formats(JsonNullable<List<String>> formats) {
             this.instance.formats = formats;
             return this;
         }
 
         public MediaSourceInfo.Builder bitrate(Integer bitrate) {
-            this.instance.bitrate = JsonNullable.<Integer> of(bitrate);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder bitrate(JsonNullable<Integer> bitrate) {
             this.instance.bitrate = bitrate;
             return this;
         }
 
         public MediaSourceInfo.Builder timestamp(TransportStreamTimestamp timestamp) {
-            this.instance.timestamp = JsonNullable.<TransportStreamTimestamp> of(timestamp);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder timestamp(JsonNullable<TransportStreamTimestamp> timestamp) {
             this.instance.timestamp = timestamp;
             return this;
         }
 
         public MediaSourceInfo.Builder requiredHttpHeaders(Map<String, String> requiredHttpHeaders) {
-            this.instance.requiredHttpHeaders = JsonNullable.<Map<String, String>> of(requiredHttpHeaders);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder requiredHttpHeaders(JsonNullable<Map<String, String>> requiredHttpHeaders) {
             this.instance.requiredHttpHeaders = requiredHttpHeaders;
             return this;
         }
 
         public MediaSourceInfo.Builder transcodingUrl(String transcodingUrl) {
-            this.instance.transcodingUrl = JsonNullable.<String> of(transcodingUrl);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder transcodingUrl(JsonNullable<String> transcodingUrl) {
             this.instance.transcodingUrl = transcodingUrl;
             return this;
         }
 
         public MediaSourceInfo.Builder transcodingSubProtocol(String transcodingSubProtocol) {
-            this.instance.transcodingSubProtocol = JsonNullable.<String> of(transcodingSubProtocol);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder transcodingSubProtocol(JsonNullable<String> transcodingSubProtocol) {
             this.instance.transcodingSubProtocol = transcodingSubProtocol;
             return this;
         }
 
         public MediaSourceInfo.Builder transcodingContainer(String transcodingContainer) {
-            this.instance.transcodingContainer = JsonNullable.<String> of(transcodingContainer);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder transcodingContainer(JsonNullable<String> transcodingContainer) {
             this.instance.transcodingContainer = transcodingContainer;
             return this;
         }
 
         public MediaSourceInfo.Builder analyzeDurationMs(Integer analyzeDurationMs) {
-            this.instance.analyzeDurationMs = JsonNullable.<Integer> of(analyzeDurationMs);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder analyzeDurationMs(JsonNullable<Integer> analyzeDurationMs) {
             this.instance.analyzeDurationMs = analyzeDurationMs;
             return this;
         }
 
         public MediaSourceInfo.Builder defaultAudioStreamIndex(Integer defaultAudioStreamIndex) {
-            this.instance.defaultAudioStreamIndex = JsonNullable.<Integer> of(defaultAudioStreamIndex);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder defaultAudioStreamIndex(JsonNullable<Integer> defaultAudioStreamIndex) {
             this.instance.defaultAudioStreamIndex = defaultAudioStreamIndex;
             return this;
         }
 
         public MediaSourceInfo.Builder defaultSubtitleStreamIndex(Integer defaultSubtitleStreamIndex) {
-            this.instance.defaultSubtitleStreamIndex = JsonNullable.<Integer> of(defaultSubtitleStreamIndex);
-            return this;
-        }
-
-        public MediaSourceInfo.Builder defaultSubtitleStreamIndex(JsonNullable<Integer> defaultSubtitleStreamIndex) {
             this.instance.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
             return this;
         }

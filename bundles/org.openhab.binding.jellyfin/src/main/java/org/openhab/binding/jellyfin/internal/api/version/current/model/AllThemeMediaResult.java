@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,22 +33,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AllThemeMediaResult {
     public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
     @javax.annotation.Nullable
-    private JsonNullable<ThemeMediaResult> themeVideosResult = JsonNullable.<ThemeMediaResult> undefined();
+    private ThemeMediaResult themeVideosResult;
 
     public static final String JSON_PROPERTY_THEME_SONGS_RESULT = "ThemeSongsResult";
     @javax.annotation.Nullable
-    private JsonNullable<ThemeMediaResult> themeSongsResult = JsonNullable.<ThemeMediaResult> undefined();
+    private ThemeMediaResult themeSongsResult;
 
     public static final String JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT = "SoundtrackSongsResult";
     @javax.annotation.Nullable
-    private JsonNullable<ThemeMediaResult> soundtrackSongsResult = JsonNullable.<ThemeMediaResult> undefined();
+    private ThemeMediaResult soundtrackSongsResult;
 
     public AllThemeMediaResult() {
     }
 
     public AllThemeMediaResult themeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
-        this.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
 
+        this.themeVideosResult = themeVideosResult;
         return this;
     }
 
@@ -62,31 +58,22 @@ public class AllThemeMediaResult {
      * @return themeVideosResult
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ThemeMediaResult getThemeVideosResult() {
-        return themeVideosResult.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ThemeMediaResult> getThemeVideosResult_JsonNullable() {
+    public ThemeMediaResult getThemeVideosResult() {
         return themeVideosResult;
     }
 
     @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
-    public void setThemeVideosResult_JsonNullable(JsonNullable<ThemeMediaResult> themeVideosResult) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setThemeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
         this.themeVideosResult = themeVideosResult;
     }
 
-    public void setThemeVideosResult(@javax.annotation.Nullable ThemeMediaResult themeVideosResult) {
-        this.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
-    }
-
     public AllThemeMediaResult themeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
-        this.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
 
+        this.themeSongsResult = themeSongsResult;
         return this;
     }
 
@@ -96,32 +83,23 @@ public class AllThemeMediaResult {
      * @return themeSongsResult
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ThemeMediaResult getThemeSongsResult() {
-        return themeSongsResult.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ThemeMediaResult> getThemeSongsResult_JsonNullable() {
+    public ThemeMediaResult getThemeSongsResult() {
         return themeSongsResult;
     }
 
     @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
-    public void setThemeSongsResult_JsonNullable(JsonNullable<ThemeMediaResult> themeSongsResult) {
-        this.themeSongsResult = themeSongsResult;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThemeSongsResult(@javax.annotation.Nullable ThemeMediaResult themeSongsResult) {
-        this.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
+        this.themeSongsResult = themeSongsResult;
     }
 
     public AllThemeMediaResult soundtrackSongsResult(
             @javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
-        this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
 
+        this.soundtrackSongsResult = soundtrackSongsResult;
         return this;
     }
 
@@ -131,26 +109,17 @@ public class AllThemeMediaResult {
      * @return soundtrackSongsResult
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ThemeMediaResult getSoundtrackSongsResult() {
-        return soundtrackSongsResult.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ThemeMediaResult> getSoundtrackSongsResult_JsonNullable() {
+    public ThemeMediaResult getSoundtrackSongsResult() {
         return soundtrackSongsResult;
     }
 
     @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
-    public void setSoundtrackSongsResult_JsonNullable(JsonNullable<ThemeMediaResult> soundtrackSongsResult) {
-        this.soundtrackSongsResult = soundtrackSongsResult;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSoundtrackSongsResult(@javax.annotation.Nullable ThemeMediaResult soundtrackSongsResult) {
-        this.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
+        this.soundtrackSongsResult = soundtrackSongsResult;
     }
 
     @Override
@@ -162,27 +131,14 @@ public class AllThemeMediaResult {
             return false;
         }
         AllThemeMediaResult allThemeMediaResult = (AllThemeMediaResult) o;
-        return equalsNullable(this.themeVideosResult, allThemeMediaResult.themeVideosResult)
-                && equalsNullable(this.themeSongsResult, allThemeMediaResult.themeSongsResult)
-                && equalsNullable(this.soundtrackSongsResult, allThemeMediaResult.soundtrackSongsResult);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.themeVideosResult, allThemeMediaResult.themeVideosResult)
+                && Objects.equals(this.themeSongsResult, allThemeMediaResult.themeSongsResult)
+                && Objects.equals(this.soundtrackSongsResult, allThemeMediaResult.soundtrackSongsResult);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(themeVideosResult), hashCodeNullable(themeSongsResult),
-                hashCodeNullable(soundtrackSongsResult));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(themeVideosResult, themeSongsResult, soundtrackSongsResult);
     }
 
     @Override
@@ -220,31 +176,16 @@ public class AllThemeMediaResult {
         }
 
         public AllThemeMediaResult.Builder themeVideosResult(ThemeMediaResult themeVideosResult) {
-            this.instance.themeVideosResult = JsonNullable.<ThemeMediaResult> of(themeVideosResult);
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder themeVideosResult(JsonNullable<ThemeMediaResult> themeVideosResult) {
             this.instance.themeVideosResult = themeVideosResult;
             return this;
         }
 
         public AllThemeMediaResult.Builder themeSongsResult(ThemeMediaResult themeSongsResult) {
-            this.instance.themeSongsResult = JsonNullable.<ThemeMediaResult> of(themeSongsResult);
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder themeSongsResult(JsonNullable<ThemeMediaResult> themeSongsResult) {
             this.instance.themeSongsResult = themeSongsResult;
             return this;
         }
 
         public AllThemeMediaResult.Builder soundtrackSongsResult(ThemeMediaResult soundtrackSongsResult) {
-            this.instance.soundtrackSongsResult = JsonNullable.<ThemeMediaResult> of(soundtrackSongsResult);
-            return this;
-        }
-
-        public AllThemeMediaResult.Builder soundtrackSongsResult(JsonNullable<ThemeMediaResult> soundtrackSongsResult) {
             this.instance.soundtrackSongsResult = soundtrackSongsResult;
             return this;
         }

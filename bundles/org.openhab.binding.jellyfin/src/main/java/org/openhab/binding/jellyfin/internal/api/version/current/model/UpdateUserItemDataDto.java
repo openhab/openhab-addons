@@ -18,12 +18,8 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,54 +37,54 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdateUserItemDataDto {
     public static final String JSON_PROPERTY_RATING = "Rating";
     @javax.annotation.Nullable
-    private JsonNullable<Double> rating = JsonNullable.<Double> undefined();
+    private Double rating;
 
     public static final String JSON_PROPERTY_PLAYED_PERCENTAGE = "PlayedPercentage";
     @javax.annotation.Nullable
-    private JsonNullable<Double> playedPercentage = JsonNullable.<Double> undefined();
+    private Double playedPercentage;
 
     public static final String JSON_PROPERTY_UNPLAYED_ITEM_COUNT = "UnplayedItemCount";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> unplayedItemCount = JsonNullable.<Integer> undefined();
+    private Integer unplayedItemCount;
 
     public static final String JSON_PROPERTY_PLAYBACK_POSITION_TICKS = "PlaybackPositionTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> playbackPositionTicks = JsonNullable.<Long> undefined();
+    private Long playbackPositionTicks;
 
     public static final String JSON_PROPERTY_PLAY_COUNT = "PlayCount";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> playCount = JsonNullable.<Integer> undefined();
+    private Integer playCount;
 
     public static final String JSON_PROPERTY_IS_FAVORITE = "IsFavorite";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> isFavorite = JsonNullable.<Boolean> undefined();
+    private Boolean isFavorite;
 
     public static final String JSON_PROPERTY_LIKES = "Likes";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> likes = JsonNullable.<Boolean> undefined();
+    private Boolean likes;
 
     public static final String JSON_PROPERTY_LAST_PLAYED_DATE = "LastPlayedDate";
     @javax.annotation.Nullable
-    private JsonNullable<OffsetDateTime> lastPlayedDate = JsonNullable.<OffsetDateTime> undefined();
+    private OffsetDateTime lastPlayedDate;
 
     public static final String JSON_PROPERTY_PLAYED = "Played";
     @javax.annotation.Nullable
-    private JsonNullable<Boolean> played = JsonNullable.<Boolean> undefined();
+    private Boolean played;
 
     public static final String JSON_PROPERTY_KEY = "Key";
     @javax.annotation.Nullable
-    private JsonNullable<String> key = JsonNullable.<String> undefined();
+    private String key;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> itemId = JsonNullable.<String> undefined();
+    private String itemId;
 
     public UpdateUserItemDataDto() {
     }
 
     public UpdateUserItemDataDto rating(@javax.annotation.Nullable Double rating) {
-        this.rating = JsonNullable.<Double> of(rating);
 
+        this.rating = rating;
         return this;
     }
 
@@ -98,31 +94,22 @@ public class UpdateUserItemDataDto {
      * @return rating
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getRating() {
-        return rating.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getRating_JsonNullable() {
+    public Double getRating() {
         return rating;
     }
 
     @JsonProperty(JSON_PROPERTY_RATING)
-    public void setRating_JsonNullable(JsonNullable<Double> rating) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setRating(@javax.annotation.Nullable Double rating) {
         this.rating = rating;
     }
 
-    public void setRating(@javax.annotation.Nullable Double rating) {
-        this.rating = JsonNullable.<Double> of(rating);
-    }
-
     public UpdateUserItemDataDto playedPercentage(@javax.annotation.Nullable Double playedPercentage) {
-        this.playedPercentage = JsonNullable.<Double> of(playedPercentage);
 
+        this.playedPercentage = playedPercentage;
         return this;
     }
 
@@ -132,31 +119,22 @@ public class UpdateUserItemDataDto {
      * @return playedPercentage
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getPlayedPercentage() {
-        return playedPercentage.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getPlayedPercentage_JsonNullable() {
+    public Double getPlayedPercentage() {
         return playedPercentage;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
-    public void setPlayedPercentage_JsonNullable(JsonNullable<Double> playedPercentage) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlayedPercentage(@javax.annotation.Nullable Double playedPercentage) {
         this.playedPercentage = playedPercentage;
     }
 
-    public void setPlayedPercentage(@javax.annotation.Nullable Double playedPercentage) {
-        this.playedPercentage = JsonNullable.<Double> of(playedPercentage);
-    }
-
     public UpdateUserItemDataDto unplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
-        this.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
 
+        this.unplayedItemCount = unplayedItemCount;
         return this;
     }
 
@@ -166,31 +144,22 @@ public class UpdateUserItemDataDto {
      * @return unplayedItemCount
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getUnplayedItemCount() {
-        return unplayedItemCount.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getUnplayedItemCount_JsonNullable() {
+    public Integer getUnplayedItemCount() {
         return unplayedItemCount;
     }
 
     @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
-    public void setUnplayedItemCount_JsonNullable(JsonNullable<Integer> unplayedItemCount) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUnplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
         this.unplayedItemCount = unplayedItemCount;
     }
 
-    public void setUnplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
-        this.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
-    }
-
     public UpdateUserItemDataDto playbackPositionTicks(@javax.annotation.Nullable Long playbackPositionTicks) {
-        this.playbackPositionTicks = JsonNullable.<Long> of(playbackPositionTicks);
 
+        this.playbackPositionTicks = playbackPositionTicks;
         return this;
     }
 
@@ -200,31 +169,22 @@ public class UpdateUserItemDataDto {
      * @return playbackPositionTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getPlaybackPositionTicks() {
-        return playbackPositionTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getPlaybackPositionTicks_JsonNullable() {
+    public Long getPlaybackPositionTicks() {
         return playbackPositionTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
-    public void setPlaybackPositionTicks_JsonNullable(JsonNullable<Long> playbackPositionTicks) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlaybackPositionTicks(@javax.annotation.Nullable Long playbackPositionTicks) {
         this.playbackPositionTicks = playbackPositionTicks;
     }
 
-    public void setPlaybackPositionTicks(@javax.annotation.Nullable Long playbackPositionTicks) {
-        this.playbackPositionTicks = JsonNullable.<Long> of(playbackPositionTicks);
-    }
-
     public UpdateUserItemDataDto playCount(@javax.annotation.Nullable Integer playCount) {
-        this.playCount = JsonNullable.<Integer> of(playCount);
 
+        this.playCount = playCount;
         return this;
     }
 
@@ -234,31 +194,22 @@ public class UpdateUserItemDataDto {
      * @return playCount
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getPlayCount() {
-        return playCount.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getPlayCount_JsonNullable() {
+    public Integer getPlayCount() {
         return playCount;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
-    public void setPlayCount_JsonNullable(JsonNullable<Integer> playCount) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlayCount(@javax.annotation.Nullable Integer playCount) {
         this.playCount = playCount;
     }
 
-    public void setPlayCount(@javax.annotation.Nullable Integer playCount) {
-        this.playCount = JsonNullable.<Integer> of(playCount);
-    }
-
     public UpdateUserItemDataDto isFavorite(@javax.annotation.Nullable Boolean isFavorite) {
-        this.isFavorite = JsonNullable.<Boolean> of(isFavorite);
 
+        this.isFavorite = isFavorite;
         return this;
     }
 
@@ -268,31 +219,22 @@ public class UpdateUserItemDataDto {
      * @return isFavorite
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getIsFavorite() {
-        return isFavorite.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getIsFavorite_JsonNullable() {
+    public Boolean getIsFavorite() {
         return isFavorite;
     }
 
     @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
-    public void setIsFavorite_JsonNullable(JsonNullable<Boolean> isFavorite) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setIsFavorite(@javax.annotation.Nullable Boolean isFavorite) {
         this.isFavorite = isFavorite;
     }
 
-    public void setIsFavorite(@javax.annotation.Nullable Boolean isFavorite) {
-        this.isFavorite = JsonNullable.<Boolean> of(isFavorite);
-    }
-
     public UpdateUserItemDataDto likes(@javax.annotation.Nullable Boolean likes) {
-        this.likes = JsonNullable.<Boolean> of(likes);
 
+        this.likes = likes;
         return this;
     }
 
@@ -302,31 +244,22 @@ public class UpdateUserItemDataDto {
      * @return likes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getLikes() {
-        return likes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LIKES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getLikes_JsonNullable() {
+    public Boolean getLikes() {
         return likes;
     }
 
     @JsonProperty(JSON_PROPERTY_LIKES)
-    public void setLikes_JsonNullable(JsonNullable<Boolean> likes) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLikes(@javax.annotation.Nullable Boolean likes) {
         this.likes = likes;
     }
 
-    public void setLikes(@javax.annotation.Nullable Boolean likes) {
-        this.likes = JsonNullable.<Boolean> of(likes);
-    }
-
     public UpdateUserItemDataDto lastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
-        this.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
 
+        this.lastPlayedDate = lastPlayedDate;
         return this;
     }
 
@@ -336,31 +269,22 @@ public class UpdateUserItemDataDto {
      * @return lastPlayedDate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public OffsetDateTime getLastPlayedDate() {
-        return lastPlayedDate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<OffsetDateTime> getLastPlayedDate_JsonNullable() {
+    public OffsetDateTime getLastPlayedDate() {
         return lastPlayedDate;
     }
 
     @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
-    public void setLastPlayedDate_JsonNullable(JsonNullable<OffsetDateTime> lastPlayedDate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
         this.lastPlayedDate = lastPlayedDate;
     }
 
-    public void setLastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
-        this.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
-    }
-
     public UpdateUserItemDataDto played(@javax.annotation.Nullable Boolean played) {
-        this.played = JsonNullable.<Boolean> of(played);
 
+        this.played = played;
         return this;
     }
 
@@ -370,31 +294,22 @@ public class UpdateUserItemDataDto {
      * @return played
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Boolean getPlayed() {
-        return played.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Boolean> getPlayed_JsonNullable() {
+    public Boolean getPlayed() {
         return played;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYED)
-    public void setPlayed_JsonNullable(JsonNullable<Boolean> played) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlayed(@javax.annotation.Nullable Boolean played) {
         this.played = played;
     }
 
-    public void setPlayed(@javax.annotation.Nullable Boolean played) {
-        this.played = JsonNullable.<Boolean> of(played);
-    }
-
     public UpdateUserItemDataDto key(@javax.annotation.Nullable String key) {
-        this.key = JsonNullable.<String> of(key);
 
+        this.key = key;
         return this;
     }
 
@@ -404,31 +319,22 @@ public class UpdateUserItemDataDto {
      * @return key
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getKey() {
-        return key.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_KEY)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getKey_JsonNullable() {
+    public String getKey() {
         return key;
     }
 
     @JsonProperty(JSON_PROPERTY_KEY)
-    public void setKey_JsonNullable(JsonNullable<String> key) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setKey(@javax.annotation.Nullable String key) {
         this.key = key;
     }
 
-    public void setKey(@javax.annotation.Nullable String key) {
-        this.key = JsonNullable.<String> of(key);
-    }
-
     public UpdateUserItemDataDto itemId(@javax.annotation.Nullable String itemId) {
-        this.itemId = JsonNullable.<String> of(itemId);
 
+        this.itemId = itemId;
         return this;
     }
 
@@ -438,26 +344,17 @@ public class UpdateUserItemDataDto {
      * @return itemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getItemId() {
-        return itemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getItemId_JsonNullable() {
+    public String getItemId() {
         return itemId;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEM_ID)
-    public void setItemId_JsonNullable(JsonNullable<String> itemId) {
-        this.itemId = itemId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@javax.annotation.Nullable String itemId) {
-        this.itemId = JsonNullable.<String> of(itemId);
+        this.itemId = itemId;
     }
 
     @Override
@@ -469,38 +366,23 @@ public class UpdateUserItemDataDto {
             return false;
         }
         UpdateUserItemDataDto updateUserItemDataDto = (UpdateUserItemDataDto) o;
-        return equalsNullable(this.rating, updateUserItemDataDto.rating)
-                && equalsNullable(this.playedPercentage, updateUserItemDataDto.playedPercentage)
-                && equalsNullable(this.unplayedItemCount, updateUserItemDataDto.unplayedItemCount)
-                && equalsNullable(this.playbackPositionTicks, updateUserItemDataDto.playbackPositionTicks)
-                && equalsNullable(this.playCount, updateUserItemDataDto.playCount)
-                && equalsNullable(this.isFavorite, updateUserItemDataDto.isFavorite)
-                && equalsNullable(this.likes, updateUserItemDataDto.likes)
-                && equalsNullable(this.lastPlayedDate, updateUserItemDataDto.lastPlayedDate)
-                && equalsNullable(this.played, updateUserItemDataDto.played)
-                && equalsNullable(this.key, updateUserItemDataDto.key)
-                && equalsNullable(this.itemId, updateUserItemDataDto.itemId);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.rating, updateUserItemDataDto.rating)
+                && Objects.equals(this.playedPercentage, updateUserItemDataDto.playedPercentage)
+                && Objects.equals(this.unplayedItemCount, updateUserItemDataDto.unplayedItemCount)
+                && Objects.equals(this.playbackPositionTicks, updateUserItemDataDto.playbackPositionTicks)
+                && Objects.equals(this.playCount, updateUserItemDataDto.playCount)
+                && Objects.equals(this.isFavorite, updateUserItemDataDto.isFavorite)
+                && Objects.equals(this.likes, updateUserItemDataDto.likes)
+                && Objects.equals(this.lastPlayedDate, updateUserItemDataDto.lastPlayedDate)
+                && Objects.equals(this.played, updateUserItemDataDto.played)
+                && Objects.equals(this.key, updateUserItemDataDto.key)
+                && Objects.equals(this.itemId, updateUserItemDataDto.itemId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(rating), hashCodeNullable(playedPercentage),
-                hashCodeNullable(unplayedItemCount), hashCodeNullable(playbackPositionTicks),
-                hashCodeNullable(playCount), hashCodeNullable(isFavorite), hashCodeNullable(likes),
-                hashCodeNullable(lastPlayedDate), hashCodeNullable(played), hashCodeNullable(key),
-                hashCodeNullable(itemId));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(rating, playedPercentage, unplayedItemCount, playbackPositionTicks, playCount, isFavorite,
+                likes, lastPlayedDate, played, key, itemId);
     }
 
     @Override
@@ -546,111 +428,56 @@ public class UpdateUserItemDataDto {
         }
 
         public UpdateUserItemDataDto.Builder rating(Double rating) {
-            this.instance.rating = JsonNullable.<Double> of(rating);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder rating(JsonNullable<Double> rating) {
             this.instance.rating = rating;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder playedPercentage(Double playedPercentage) {
-            this.instance.playedPercentage = JsonNullable.<Double> of(playedPercentage);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder playedPercentage(JsonNullable<Double> playedPercentage) {
             this.instance.playedPercentage = playedPercentage;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder unplayedItemCount(Integer unplayedItemCount) {
-            this.instance.unplayedItemCount = JsonNullable.<Integer> of(unplayedItemCount);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder unplayedItemCount(JsonNullable<Integer> unplayedItemCount) {
             this.instance.unplayedItemCount = unplayedItemCount;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder playbackPositionTicks(Long playbackPositionTicks) {
-            this.instance.playbackPositionTicks = JsonNullable.<Long> of(playbackPositionTicks);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder playbackPositionTicks(JsonNullable<Long> playbackPositionTicks) {
             this.instance.playbackPositionTicks = playbackPositionTicks;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder playCount(Integer playCount) {
-            this.instance.playCount = JsonNullable.<Integer> of(playCount);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder playCount(JsonNullable<Integer> playCount) {
             this.instance.playCount = playCount;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder isFavorite(Boolean isFavorite) {
-            this.instance.isFavorite = JsonNullable.<Boolean> of(isFavorite);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder isFavorite(JsonNullable<Boolean> isFavorite) {
             this.instance.isFavorite = isFavorite;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder likes(Boolean likes) {
-            this.instance.likes = JsonNullable.<Boolean> of(likes);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder likes(JsonNullable<Boolean> likes) {
             this.instance.likes = likes;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder lastPlayedDate(OffsetDateTime lastPlayedDate) {
-            this.instance.lastPlayedDate = JsonNullable.<OffsetDateTime> of(lastPlayedDate);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder lastPlayedDate(JsonNullable<OffsetDateTime> lastPlayedDate) {
             this.instance.lastPlayedDate = lastPlayedDate;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder played(Boolean played) {
-            this.instance.played = JsonNullable.<Boolean> of(played);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder played(JsonNullable<Boolean> played) {
             this.instance.played = played;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder key(String key) {
-            this.instance.key = JsonNullable.<String> of(key);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder key(JsonNullable<String> key) {
             this.instance.key = key;
             return this;
         }
 
         public UpdateUserItemDataDto.Builder itemId(String itemId) {
-            this.instance.itemId = JsonNullable.<String> of(itemId);
-            return this;
-        }
-
-        public UpdateUserItemDataDto.Builder itemId(JsonNullable<String> itemId) {
             this.instance.itemId = itemId;
             return this;
         }

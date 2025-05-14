@@ -19,14 +19,10 @@ package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -52,19 +48,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+    private String type;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @javax.annotation.Nullable
-    private JsonNullable<String> serverId = JsonNullable.<String> undefined();
+    private String serverId;
 
     public static final String JSON_PROPERTY_EXTERNAL_ID = "ExternalId";
     @javax.annotation.Nullable
-    private JsonNullable<String> externalId = JsonNullable.<String> undefined();
+    private String externalId;
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
     @javax.annotation.Nullable
@@ -72,31 +68,31 @@ public class TimerInfoDto {
 
     public static final String JSON_PROPERTY_EXTERNAL_CHANNEL_ID = "ExternalChannelId";
     @javax.annotation.Nullable
-    private JsonNullable<String> externalChannelId = JsonNullable.<String> undefined();
+    private String externalChannelId;
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
     @javax.annotation.Nullable
-    private JsonNullable<String> channelName = JsonNullable.<String> undefined();
+    private String channelName;
 
     public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> channelPrimaryImageTag = JsonNullable.<String> undefined();
+    private String channelPrimaryImageTag;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
     @javax.annotation.Nullable
-    private JsonNullable<String> programId = JsonNullable.<String> undefined();
+    private String programId;
 
     public static final String JSON_PROPERTY_EXTERNAL_PROGRAM_ID = "ExternalProgramId";
     @javax.annotation.Nullable
-    private JsonNullable<String> externalProgramId = JsonNullable.<String> undefined();
+    private String externalProgramId;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
     @javax.annotation.Nullable
-    private JsonNullable<String> overview = JsonNullable.<String> undefined();
+    private String overview;
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @javax.annotation.Nullable
@@ -108,7 +104,7 @@ public class TimerInfoDto {
 
     public static final String JSON_PROPERTY_SERVICE_NAME = "ServiceName";
     @javax.annotation.Nullable
-    private JsonNullable<String> serviceName = JsonNullable.<String> undefined();
+    private String serviceName;
 
     public static final String JSON_PROPERTY_PRIORITY = "Priority";
     @javax.annotation.Nullable
@@ -128,11 +124,11 @@ public class TimerInfoDto {
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> parentBackdropItemId = JsonNullable.<String> undefined();
+    private String parentBackdropItemId;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> parentBackdropImageTags = JsonNullable.<List<String>> undefined();
+    private List<String> parentBackdropImageTags;
 
     public static final String JSON_PROPERTY_IS_POST_PADDING_REQUIRED = "IsPostPaddingRequired";
     @javax.annotation.Nullable
@@ -148,26 +144,26 @@ public class TimerInfoDto {
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
     @javax.annotation.Nullable
-    private JsonNullable<String> seriesTimerId = JsonNullable.<String> undefined();
+    private String seriesTimerId;
 
     public static final String JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID = "ExternalSeriesTimerId";
     @javax.annotation.Nullable
-    private JsonNullable<String> externalSeriesTimerId = JsonNullable.<String> undefined();
+    private String externalSeriesTimerId;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> runTimeTicks = JsonNullable.<Long> undefined();
+    private Long runTimeTicks;
 
     public static final String JSON_PROPERTY_PROGRAM_INFO = "ProgramInfo";
     @javax.annotation.Nullable
-    private JsonNullable<BaseItemDto> programInfo = JsonNullable.<BaseItemDto> undefined();
+    private BaseItemDto programInfo;
 
     public TimerInfoDto() {
     }
 
     public TimerInfoDto id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -177,31 +173,22 @@ public class TimerInfoDto {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable String id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
-    }
-
     public TimerInfoDto type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
 
+        this.type = type;
         return this;
     }
 
@@ -211,31 +198,22 @@ public class TimerInfoDto {
      * @return type
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
-        return type.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
+    public String getType() {
         return type;
     }
 
     @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setType(@javax.annotation.Nullable String type) {
         this.type = type;
     }
 
-    public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
-    }
-
     public TimerInfoDto serverId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
 
+        this.serverId = serverId;
         return this;
     }
 
@@ -245,31 +223,22 @@ public class TimerInfoDto {
      * @return serverId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerId() {
-        return serverId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerId_JsonNullable() {
+    public String getServerId() {
         return serverId;
     }
 
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setServerId(@javax.annotation.Nullable String serverId) {
         this.serverId = serverId;
     }
 
-    public void setServerId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
-    }
-
     public TimerInfoDto externalId(@javax.annotation.Nullable String externalId) {
-        this.externalId = JsonNullable.<String> of(externalId);
 
+        this.externalId = externalId;
         return this;
     }
 
@@ -279,26 +248,17 @@ public class TimerInfoDto {
      * @return externalId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getExternalId() {
-        return externalId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_EXTERNAL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getExternalId_JsonNullable() {
+    public String getExternalId() {
         return externalId;
     }
 
     @JsonProperty(JSON_PROPERTY_EXTERNAL_ID)
-    public void setExternalId_JsonNullable(JsonNullable<String> externalId) {
-        this.externalId = externalId;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalId(@javax.annotation.Nullable String externalId) {
-        this.externalId = JsonNullable.<String> of(externalId);
+        this.externalId = externalId;
     }
 
     public TimerInfoDto channelId(@javax.annotation.Nullable UUID channelId) {
@@ -327,8 +287,8 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto externalChannelId(@javax.annotation.Nullable String externalChannelId) {
-        this.externalChannelId = JsonNullable.<String> of(externalChannelId);
 
+        this.externalChannelId = externalChannelId;
         return this;
     }
 
@@ -338,31 +298,22 @@ public class TimerInfoDto {
      * @return externalChannelId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getExternalChannelId() {
-        return externalChannelId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getExternalChannelId_JsonNullable() {
+    public String getExternalChannelId() {
         return externalChannelId;
     }
 
     @JsonProperty(JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
-    public void setExternalChannelId_JsonNullable(JsonNullable<String> externalChannelId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setExternalChannelId(@javax.annotation.Nullable String externalChannelId) {
         this.externalChannelId = externalChannelId;
     }
 
-    public void setExternalChannelId(@javax.annotation.Nullable String externalChannelId) {
-        this.externalChannelId = JsonNullable.<String> of(externalChannelId);
-    }
-
     public TimerInfoDto channelName(@javax.annotation.Nullable String channelName) {
-        this.channelName = JsonNullable.<String> of(channelName);
 
+        this.channelName = channelName;
         return this;
     }
 
@@ -372,31 +323,22 @@ public class TimerInfoDto {
      * @return channelName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChannelName() {
-        return channelName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChannelName_JsonNullable() {
+    public String getChannelName() {
         return channelName;
     }
 
     @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
-    public void setChannelName_JsonNullable(JsonNullable<String> channelName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setChannelName(@javax.annotation.Nullable String channelName) {
         this.channelName = channelName;
     }
 
-    public void setChannelName(@javax.annotation.Nullable String channelName) {
-        this.channelName = JsonNullable.<String> of(channelName);
-    }
-
     public TimerInfoDto channelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
-        this.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
 
+        this.channelPrimaryImageTag = channelPrimaryImageTag;
         return this;
     }
 
@@ -406,31 +348,22 @@ public class TimerInfoDto {
      * @return channelPrimaryImageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getChannelPrimaryImageTag() {
-        return channelPrimaryImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getChannelPrimaryImageTag_JsonNullable() {
+    public String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
-    public void setChannelPrimaryImageTag_JsonNullable(JsonNullable<String> channelPrimaryImageTag) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setChannelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
         this.channelPrimaryImageTag = channelPrimaryImageTag;
     }
 
-    public void setChannelPrimaryImageTag(@javax.annotation.Nullable String channelPrimaryImageTag) {
-        this.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
-    }
-
     public TimerInfoDto programId(@javax.annotation.Nullable String programId) {
-        this.programId = JsonNullable.<String> of(programId);
 
+        this.programId = programId;
         return this;
     }
 
@@ -440,31 +373,22 @@ public class TimerInfoDto {
      * @return programId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProgramId() {
-        return programId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProgramId_JsonNullable() {
+    public String getProgramId() {
         return programId;
     }
 
     @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
-    public void setProgramId_JsonNullable(JsonNullable<String> programId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProgramId(@javax.annotation.Nullable String programId) {
         this.programId = programId;
     }
 
-    public void setProgramId(@javax.annotation.Nullable String programId) {
-        this.programId = JsonNullable.<String> of(programId);
-    }
-
     public TimerInfoDto externalProgramId(@javax.annotation.Nullable String externalProgramId) {
-        this.externalProgramId = JsonNullable.<String> of(externalProgramId);
 
+        this.externalProgramId = externalProgramId;
         return this;
     }
 
@@ -474,31 +398,22 @@ public class TimerInfoDto {
      * @return externalProgramId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getExternalProgramId() {
-        return externalProgramId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getExternalProgramId_JsonNullable() {
+    public String getExternalProgramId() {
         return externalProgramId;
     }
 
     @JsonProperty(JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
-    public void setExternalProgramId_JsonNullable(JsonNullable<String> externalProgramId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setExternalProgramId(@javax.annotation.Nullable String externalProgramId) {
         this.externalProgramId = externalProgramId;
     }
 
-    public void setExternalProgramId(@javax.annotation.Nullable String externalProgramId) {
-        this.externalProgramId = JsonNullable.<String> of(externalProgramId);
-    }
-
     public TimerInfoDto name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -508,31 +423,22 @@ public class TimerInfoDto {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public TimerInfoDto overview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
 
+        this.overview = overview;
         return this;
     }
 
@@ -542,26 +448,17 @@ public class TimerInfoDto {
      * @return overview
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getOverview() {
-        return overview.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getOverview_JsonNullable() {
+    public String getOverview() {
         return overview;
     }
 
     @JsonProperty(JSON_PROPERTY_OVERVIEW)
-    public void setOverview_JsonNullable(JsonNullable<String> overview) {
-        this.overview = overview;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOverview(@javax.annotation.Nullable String overview) {
-        this.overview = JsonNullable.<String> of(overview);
+        this.overview = overview;
     }
 
     public TimerInfoDto startDate(@javax.annotation.Nullable OffsetDateTime startDate) {
@@ -615,8 +512,8 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto serviceName(@javax.annotation.Nullable String serviceName) {
-        this.serviceName = JsonNullable.<String> of(serviceName);
 
+        this.serviceName = serviceName;
         return this;
     }
 
@@ -626,26 +523,17 @@ public class TimerInfoDto {
      * @return serviceName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServiceName() {
-        return serviceName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERVICE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServiceName_JsonNullable() {
+    public String getServiceName() {
         return serviceName;
     }
 
     @JsonProperty(JSON_PROPERTY_SERVICE_NAME)
-    public void setServiceName_JsonNullable(JsonNullable<String> serviceName) {
-        this.serviceName = serviceName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServiceName(@javax.annotation.Nullable String serviceName) {
-        this.serviceName = JsonNullable.<String> of(serviceName);
+        this.serviceName = serviceName;
     }
 
     public TimerInfoDto priority(@javax.annotation.Nullable Integer priority) {
@@ -749,8 +637,8 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto parentBackdropItemId(@javax.annotation.Nullable String parentBackdropItemId) {
-        this.parentBackdropItemId = JsonNullable.<String> of(parentBackdropItemId);
 
+        this.parentBackdropItemId = parentBackdropItemId;
         return this;
     }
 
@@ -760,43 +648,30 @@ public class TimerInfoDto {
      * @return parentBackdropItemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getParentBackdropItemId() {
-        return parentBackdropItemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getParentBackdropItemId_JsonNullable() {
+    public String getParentBackdropItemId() {
         return parentBackdropItemId;
     }
 
     @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
-    public void setParentBackdropItemId_JsonNullable(JsonNullable<String> parentBackdropItemId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setParentBackdropItemId(@javax.annotation.Nullable String parentBackdropItemId) {
         this.parentBackdropItemId = parentBackdropItemId;
     }
 
-    public void setParentBackdropItemId(@javax.annotation.Nullable String parentBackdropItemId) {
-        this.parentBackdropItemId = JsonNullable.<String> of(parentBackdropItemId);
-    }
-
     public TimerInfoDto parentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
-        this.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
 
+        this.parentBackdropImageTags = parentBackdropImageTags;
         return this;
     }
 
     public TimerInfoDto addParentBackdropImageTagsItem(String parentBackdropImageTagsItem) {
-        if (this.parentBackdropImageTags == null || !this.parentBackdropImageTags.isPresent()) {
-            this.parentBackdropImageTags = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.parentBackdropImageTags == null) {
+            this.parentBackdropImageTags = new ArrayList<>();
         }
-        try {
-            this.parentBackdropImageTags.get().add(parentBackdropImageTagsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.parentBackdropImageTags.add(parentBackdropImageTagsItem);
         return this;
     }
 
@@ -806,26 +681,17 @@ public class TimerInfoDto {
      * @return parentBackdropImageTags
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getParentBackdropImageTags() {
-        return parentBackdropImageTags.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getParentBackdropImageTags_JsonNullable() {
+    public List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags;
     }
 
     @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
-    public void setParentBackdropImageTags_JsonNullable(JsonNullable<List<String>> parentBackdropImageTags) {
-        this.parentBackdropImageTags = parentBackdropImageTags;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentBackdropImageTags(@javax.annotation.Nullable List<String> parentBackdropImageTags) {
-        this.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
+        this.parentBackdropImageTags = parentBackdropImageTags;
     }
 
     public TimerInfoDto isPostPaddingRequired(@javax.annotation.Nullable Boolean isPostPaddingRequired) {
@@ -904,8 +770,8 @@ public class TimerInfoDto {
     }
 
     public TimerInfoDto seriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
-        this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
 
+        this.seriesTimerId = seriesTimerId;
         return this;
     }
 
@@ -915,31 +781,22 @@ public class TimerInfoDto {
      * @return seriesTimerId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSeriesTimerId() {
-        return seriesTimerId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSeriesTimerId_JsonNullable() {
+    public String getSeriesTimerId() {
         return seriesTimerId;
     }
 
     @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
-    public void setSeriesTimerId_JsonNullable(JsonNullable<String> seriesTimerId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSeriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
         this.seriesTimerId = seriesTimerId;
     }
 
-    public void setSeriesTimerId(@javax.annotation.Nullable String seriesTimerId) {
-        this.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
-    }
-
     public TimerInfoDto externalSeriesTimerId(@javax.annotation.Nullable String externalSeriesTimerId) {
-        this.externalSeriesTimerId = JsonNullable.<String> of(externalSeriesTimerId);
 
+        this.externalSeriesTimerId = externalSeriesTimerId;
         return this;
     }
 
@@ -949,31 +806,22 @@ public class TimerInfoDto {
      * @return externalSeriesTimerId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getExternalSeriesTimerId() {
-        return externalSeriesTimerId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getExternalSeriesTimerId_JsonNullable() {
+    public String getExternalSeriesTimerId() {
         return externalSeriesTimerId;
     }
 
     @JsonProperty(JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
-    public void setExternalSeriesTimerId_JsonNullable(JsonNullable<String> externalSeriesTimerId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setExternalSeriesTimerId(@javax.annotation.Nullable String externalSeriesTimerId) {
         this.externalSeriesTimerId = externalSeriesTimerId;
     }
 
-    public void setExternalSeriesTimerId(@javax.annotation.Nullable String externalSeriesTimerId) {
-        this.externalSeriesTimerId = JsonNullable.<String> of(externalSeriesTimerId);
-    }
-
     public TimerInfoDto runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
 
+        this.runTimeTicks = runTimeTicks;
         return this;
     }
 
@@ -983,31 +831,22 @@ public class TimerInfoDto {
      * @return runTimeTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getRunTimeTicks() {
-        return runTimeTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getRunTimeTicks_JsonNullable() {
+    public Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
-    public void setRunTimeTicks_JsonNullable(JsonNullable<Long> runTimeTicks) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
         this.runTimeTicks = runTimeTicks;
     }
 
-    public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-        this.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
-    }
-
     public TimerInfoDto programInfo(@javax.annotation.Nullable BaseItemDto programInfo) {
-        this.programInfo = JsonNullable.<BaseItemDto> of(programInfo);
 
+        this.programInfo = programInfo;
         return this;
     }
 
@@ -1017,26 +856,17 @@ public class TimerInfoDto {
      * @return programInfo
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDto getProgramInfo() {
-        return programInfo.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROGRAM_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItemDto> getProgramInfo_JsonNullable() {
+    public BaseItemDto getProgramInfo() {
         return programInfo;
     }
 
     @JsonProperty(JSON_PROPERTY_PROGRAM_INFO)
-    public void setProgramInfo_JsonNullable(JsonNullable<BaseItemDto> programInfo) {
-        this.programInfo = programInfo;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramInfo(@javax.annotation.Nullable BaseItemDto programInfo) {
-        this.programInfo = JsonNullable.<BaseItemDto> of(programInfo);
+        this.programInfo = programInfo;
     }
 
     @Override
@@ -1048,56 +878,41 @@ public class TimerInfoDto {
             return false;
         }
         TimerInfoDto timerInfoDto = (TimerInfoDto) o;
-        return equalsNullable(this.id, timerInfoDto.id) && equalsNullable(this.type, timerInfoDto.type)
-                && equalsNullable(this.serverId, timerInfoDto.serverId)
-                && equalsNullable(this.externalId, timerInfoDto.externalId)
+        return Objects.equals(this.id, timerInfoDto.id) && Objects.equals(this.type, timerInfoDto.type)
+                && Objects.equals(this.serverId, timerInfoDto.serverId)
+                && Objects.equals(this.externalId, timerInfoDto.externalId)
                 && Objects.equals(this.channelId, timerInfoDto.channelId)
-                && equalsNullable(this.externalChannelId, timerInfoDto.externalChannelId)
-                && equalsNullable(this.channelName, timerInfoDto.channelName)
-                && equalsNullable(this.channelPrimaryImageTag, timerInfoDto.channelPrimaryImageTag)
-                && equalsNullable(this.programId, timerInfoDto.programId)
-                && equalsNullable(this.externalProgramId, timerInfoDto.externalProgramId)
-                && equalsNullable(this.name, timerInfoDto.name) && equalsNullable(this.overview, timerInfoDto.overview)
+                && Objects.equals(this.externalChannelId, timerInfoDto.externalChannelId)
+                && Objects.equals(this.channelName, timerInfoDto.channelName)
+                && Objects.equals(this.channelPrimaryImageTag, timerInfoDto.channelPrimaryImageTag)
+                && Objects.equals(this.programId, timerInfoDto.programId)
+                && Objects.equals(this.externalProgramId, timerInfoDto.externalProgramId)
+                && Objects.equals(this.name, timerInfoDto.name) && Objects.equals(this.overview, timerInfoDto.overview)
                 && Objects.equals(this.startDate, timerInfoDto.startDate)
                 && Objects.equals(this.endDate, timerInfoDto.endDate)
-                && equalsNullable(this.serviceName, timerInfoDto.serviceName)
+                && Objects.equals(this.serviceName, timerInfoDto.serviceName)
                 && Objects.equals(this.priority, timerInfoDto.priority)
                 && Objects.equals(this.prePaddingSeconds, timerInfoDto.prePaddingSeconds)
                 && Objects.equals(this.postPaddingSeconds, timerInfoDto.postPaddingSeconds)
                 && Objects.equals(this.isPrePaddingRequired, timerInfoDto.isPrePaddingRequired)
-                && equalsNullable(this.parentBackdropItemId, timerInfoDto.parentBackdropItemId)
-                && equalsNullable(this.parentBackdropImageTags, timerInfoDto.parentBackdropImageTags)
+                && Objects.equals(this.parentBackdropItemId, timerInfoDto.parentBackdropItemId)
+                && Objects.equals(this.parentBackdropImageTags, timerInfoDto.parentBackdropImageTags)
                 && Objects.equals(this.isPostPaddingRequired, timerInfoDto.isPostPaddingRequired)
                 && Objects.equals(this.keepUntil, timerInfoDto.keepUntil)
                 && Objects.equals(this.status, timerInfoDto.status)
-                && equalsNullable(this.seriesTimerId, timerInfoDto.seriesTimerId)
-                && equalsNullable(this.externalSeriesTimerId, timerInfoDto.externalSeriesTimerId)
-                && equalsNullable(this.runTimeTicks, timerInfoDto.runTimeTicks)
-                && equalsNullable(this.programInfo, timerInfoDto.programInfo);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.seriesTimerId, timerInfoDto.seriesTimerId)
+                && Objects.equals(this.externalSeriesTimerId, timerInfoDto.externalSeriesTimerId)
+                && Objects.equals(this.runTimeTicks, timerInfoDto.runTimeTicks)
+                && Objects.equals(this.programInfo, timerInfoDto.programInfo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(id), hashCodeNullable(type), hashCodeNullable(serverId),
-                hashCodeNullable(externalId), channelId, hashCodeNullable(externalChannelId),
-                hashCodeNullable(channelName), hashCodeNullable(channelPrimaryImageTag), hashCodeNullable(programId),
-                hashCodeNullable(externalProgramId), hashCodeNullable(name), hashCodeNullable(overview), startDate,
-                endDate, hashCodeNullable(serviceName), priority, prePaddingSeconds, postPaddingSeconds,
-                isPrePaddingRequired, hashCodeNullable(parentBackdropItemId), hashCodeNullable(parentBackdropImageTags),
-                isPostPaddingRequired, keepUntil, status, hashCodeNullable(seriesTimerId),
-                hashCodeNullable(externalSeriesTimerId), hashCodeNullable(runTimeTicks), hashCodeNullable(programInfo));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(id, type, serverId, externalId, channelId, externalChannelId, channelName,
+                channelPrimaryImageTag, programId, externalProgramId, name, overview, startDate, endDate, serviceName,
+                priority, prePaddingSeconds, postPaddingSeconds, isPrePaddingRequired, parentBackdropItemId,
+                parentBackdropImageTags, isPostPaddingRequired, keepUntil, status, seriesTimerId, externalSeriesTimerId,
+                runTimeTicks, programInfo);
     }
 
     @Override
@@ -1160,41 +975,21 @@ public class TimerInfoDto {
         }
 
         public TimerInfoDto.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public TimerInfoDto.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
 
         public TimerInfoDto.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public TimerInfoDto.Builder type(JsonNullable<String> type) {
             this.instance.type = type;
             return this;
         }
 
         public TimerInfoDto.Builder serverId(String serverId) {
-            this.instance.serverId = JsonNullable.<String> of(serverId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder serverId(JsonNullable<String> serverId) {
             this.instance.serverId = serverId;
             return this;
         }
 
         public TimerInfoDto.Builder externalId(String externalId) {
-            this.instance.externalId = JsonNullable.<String> of(externalId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder externalId(JsonNullable<String> externalId) {
             this.instance.externalId = externalId;
             return this;
         }
@@ -1205,71 +1000,36 @@ public class TimerInfoDto {
         }
 
         public TimerInfoDto.Builder externalChannelId(String externalChannelId) {
-            this.instance.externalChannelId = JsonNullable.<String> of(externalChannelId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder externalChannelId(JsonNullable<String> externalChannelId) {
             this.instance.externalChannelId = externalChannelId;
             return this;
         }
 
         public TimerInfoDto.Builder channelName(String channelName) {
-            this.instance.channelName = JsonNullable.<String> of(channelName);
-            return this;
-        }
-
-        public TimerInfoDto.Builder channelName(JsonNullable<String> channelName) {
             this.instance.channelName = channelName;
             return this;
         }
 
         public TimerInfoDto.Builder channelPrimaryImageTag(String channelPrimaryImageTag) {
-            this.instance.channelPrimaryImageTag = JsonNullable.<String> of(channelPrimaryImageTag);
-            return this;
-        }
-
-        public TimerInfoDto.Builder channelPrimaryImageTag(JsonNullable<String> channelPrimaryImageTag) {
             this.instance.channelPrimaryImageTag = channelPrimaryImageTag;
             return this;
         }
 
         public TimerInfoDto.Builder programId(String programId) {
-            this.instance.programId = JsonNullable.<String> of(programId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder programId(JsonNullable<String> programId) {
             this.instance.programId = programId;
             return this;
         }
 
         public TimerInfoDto.Builder externalProgramId(String externalProgramId) {
-            this.instance.externalProgramId = JsonNullable.<String> of(externalProgramId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder externalProgramId(JsonNullable<String> externalProgramId) {
             this.instance.externalProgramId = externalProgramId;
             return this;
         }
 
         public TimerInfoDto.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public TimerInfoDto.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public TimerInfoDto.Builder overview(String overview) {
-            this.instance.overview = JsonNullable.<String> of(overview);
-            return this;
-        }
-
-        public TimerInfoDto.Builder overview(JsonNullable<String> overview) {
             this.instance.overview = overview;
             return this;
         }
@@ -1285,11 +1045,6 @@ public class TimerInfoDto {
         }
 
         public TimerInfoDto.Builder serviceName(String serviceName) {
-            this.instance.serviceName = JsonNullable.<String> of(serviceName);
-            return this;
-        }
-
-        public TimerInfoDto.Builder serviceName(JsonNullable<String> serviceName) {
             this.instance.serviceName = serviceName;
             return this;
         }
@@ -1315,21 +1070,11 @@ public class TimerInfoDto {
         }
 
         public TimerInfoDto.Builder parentBackdropItemId(String parentBackdropItemId) {
-            this.instance.parentBackdropItemId = JsonNullable.<String> of(parentBackdropItemId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder parentBackdropItemId(JsonNullable<String> parentBackdropItemId) {
             this.instance.parentBackdropItemId = parentBackdropItemId;
             return this;
         }
 
         public TimerInfoDto.Builder parentBackdropImageTags(List<String> parentBackdropImageTags) {
-            this.instance.parentBackdropImageTags = JsonNullable.<List<String>> of(parentBackdropImageTags);
-            return this;
-        }
-
-        public TimerInfoDto.Builder parentBackdropImageTags(JsonNullable<List<String>> parentBackdropImageTags) {
             this.instance.parentBackdropImageTags = parentBackdropImageTags;
             return this;
         }
@@ -1350,41 +1095,21 @@ public class TimerInfoDto {
         }
 
         public TimerInfoDto.Builder seriesTimerId(String seriesTimerId) {
-            this.instance.seriesTimerId = JsonNullable.<String> of(seriesTimerId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder seriesTimerId(JsonNullable<String> seriesTimerId) {
             this.instance.seriesTimerId = seriesTimerId;
             return this;
         }
 
         public TimerInfoDto.Builder externalSeriesTimerId(String externalSeriesTimerId) {
-            this.instance.externalSeriesTimerId = JsonNullable.<String> of(externalSeriesTimerId);
-            return this;
-        }
-
-        public TimerInfoDto.Builder externalSeriesTimerId(JsonNullable<String> externalSeriesTimerId) {
             this.instance.externalSeriesTimerId = externalSeriesTimerId;
             return this;
         }
 
         public TimerInfoDto.Builder runTimeTicks(Long runTimeTicks) {
-            this.instance.runTimeTicks = JsonNullable.<Long> of(runTimeTicks);
-            return this;
-        }
-
-        public TimerInfoDto.Builder runTimeTicks(JsonNullable<Long> runTimeTicks) {
             this.instance.runTimeTicks = runTimeTicks;
             return this;
         }
 
         public TimerInfoDto.Builder programInfo(BaseItemDto programInfo) {
-            this.instance.programInfo = JsonNullable.<BaseItemDto> of(programInfo);
-            return this;
-        }
-
-        public TimerInfoDto.Builder programInfo(JsonNullable<BaseItemDto> programInfo) {
             this.instance.programInfo = programInfo;
             return this;
         }

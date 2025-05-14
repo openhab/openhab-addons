@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -63,11 +59,11 @@ public class ChannelFeatures {
 
     public static final String JSON_PROPERTY_MAX_PAGE_SIZE = "MaxPageSize";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxPageSize = JsonNullable.<Integer> undefined();
+    private Integer maxPageSize;
 
     public static final String JSON_PROPERTY_AUTO_REFRESH_LEVELS = "AutoRefreshLevels";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> autoRefreshLevels = JsonNullable.<Integer> undefined();
+    private Integer autoRefreshLevels;
 
     public static final String JSON_PROPERTY_DEFAULT_SORT_FIELDS = "DefaultSortFields";
     @javax.annotation.Nullable
@@ -234,8 +230,8 @@ public class ChannelFeatures {
     }
 
     public ChannelFeatures maxPageSize(@javax.annotation.Nullable Integer maxPageSize) {
-        this.maxPageSize = JsonNullable.<Integer> of(maxPageSize);
 
+        this.maxPageSize = maxPageSize;
         return this;
     }
 
@@ -245,31 +241,22 @@ public class ChannelFeatures {
      * @return maxPageSize
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxPageSize() {
-        return maxPageSize.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_PAGE_SIZE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxPageSize_JsonNullable() {
+    public Integer getMaxPageSize() {
         return maxPageSize;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_PAGE_SIZE)
-    public void setMaxPageSize_JsonNullable(JsonNullable<Integer> maxPageSize) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxPageSize(@javax.annotation.Nullable Integer maxPageSize) {
         this.maxPageSize = maxPageSize;
     }
 
-    public void setMaxPageSize(@javax.annotation.Nullable Integer maxPageSize) {
-        this.maxPageSize = JsonNullable.<Integer> of(maxPageSize);
-    }
-
     public ChannelFeatures autoRefreshLevels(@javax.annotation.Nullable Integer autoRefreshLevels) {
-        this.autoRefreshLevels = JsonNullable.<Integer> of(autoRefreshLevels);
 
+        this.autoRefreshLevels = autoRefreshLevels;
         return this;
     }
 
@@ -279,26 +266,17 @@ public class ChannelFeatures {
      * @return autoRefreshLevels
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAutoRefreshLevels() {
-        return autoRefreshLevels.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUTO_REFRESH_LEVELS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAutoRefreshLevels_JsonNullable() {
+    public Integer getAutoRefreshLevels() {
         return autoRefreshLevels;
     }
 
     @JsonProperty(JSON_PROPERTY_AUTO_REFRESH_LEVELS)
-    public void setAutoRefreshLevels_JsonNullable(JsonNullable<Integer> autoRefreshLevels) {
-        this.autoRefreshLevels = autoRefreshLevels;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutoRefreshLevels(@javax.annotation.Nullable Integer autoRefreshLevels) {
-        this.autoRefreshLevels = JsonNullable.<Integer> of(autoRefreshLevels);
+        this.autoRefreshLevels = autoRefreshLevels;
     }
 
     public ChannelFeatures defaultSortFields(@javax.annotation.Nullable List<ChannelItemSortField> defaultSortFields) {
@@ -447,8 +425,8 @@ public class ChannelFeatures {
                 && Objects.equals(this.canSearch, channelFeatures.canSearch)
                 && Objects.equals(this.mediaTypes, channelFeatures.mediaTypes)
                 && Objects.equals(this.contentTypes, channelFeatures.contentTypes)
-                && equalsNullable(this.maxPageSize, channelFeatures.maxPageSize)
-                && equalsNullable(this.autoRefreshLevels, channelFeatures.autoRefreshLevels)
+                && Objects.equals(this.maxPageSize, channelFeatures.maxPageSize)
+                && Objects.equals(this.autoRefreshLevels, channelFeatures.autoRefreshLevels)
                 && Objects.equals(this.defaultSortFields, channelFeatures.defaultSortFields)
                 && Objects.equals(this.supportsSortOrderToggle, channelFeatures.supportsSortOrderToggle)
                 && Objects.equals(this.supportsLatestMedia, channelFeatures.supportsLatestMedia)
@@ -456,23 +434,10 @@ public class ChannelFeatures {
                 && Objects.equals(this.supportsContentDownloading, channelFeatures.supportsContentDownloading);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(name, id, canSearch, mediaTypes, contentTypes, hashCodeNullable(maxPageSize),
-                hashCodeNullable(autoRefreshLevels), defaultSortFields, supportsSortOrderToggle, supportsLatestMedia,
-                canFilter, supportsContentDownloading);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, id, canSearch, mediaTypes, contentTypes, maxPageSize, autoRefreshLevels,
+                defaultSortFields, supportsSortOrderToggle, supportsLatestMedia, canFilter, supportsContentDownloading);
     }
 
     @Override
@@ -544,21 +509,11 @@ public class ChannelFeatures {
         }
 
         public ChannelFeatures.Builder maxPageSize(Integer maxPageSize) {
-            this.instance.maxPageSize = JsonNullable.<Integer> of(maxPageSize);
-            return this;
-        }
-
-        public ChannelFeatures.Builder maxPageSize(JsonNullable<Integer> maxPageSize) {
             this.instance.maxPageSize = maxPageSize;
             return this;
         }
 
         public ChannelFeatures.Builder autoRefreshLevels(Integer autoRefreshLevels) {
-            this.instance.autoRefreshLevels = JsonNullable.<Integer> of(autoRefreshLevels);
-            return this;
-        }
-
-        public ChannelFeatures.Builder autoRefreshLevels(JsonNullable<Integer> autoRefreshLevels) {
             this.instance.autoRefreshLevels = autoRefreshLevels;
             return this;
         }

@@ -18,12 +18,8 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class FontFile {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_SIZE = "Size";
     @javax.annotation.Nullable
@@ -55,8 +51,8 @@ public class FontFile {
     }
 
     public FontFile name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -66,26 +62,17 @@ public class FontFile {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
-        this.name = name;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
+        this.name = name;
     }
 
     public FontFile size(@javax.annotation.Nullable Long size) {
@@ -172,26 +159,14 @@ public class FontFile {
             return false;
         }
         FontFile fontFile = (FontFile) o;
-        return equalsNullable(this.name, fontFile.name) && Objects.equals(this.size, fontFile.size)
+        return Objects.equals(this.name, fontFile.name) && Objects.equals(this.size, fontFile.size)
                 && Objects.equals(this.dateCreated, fontFile.dateCreated)
                 && Objects.equals(this.dateModified, fontFile.dateModified);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), size, dateCreated, dateModified);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, size, dateCreated, dateModified);
     }
 
     @Override
@@ -230,11 +205,6 @@ public class FontFile {
         }
 
         public FontFile.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public FontFile.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }

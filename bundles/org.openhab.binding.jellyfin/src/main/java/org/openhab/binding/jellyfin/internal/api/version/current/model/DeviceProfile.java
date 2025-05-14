@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -50,27 +46,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceProfile {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<UUID> id = JsonNullable.<UUID> undefined();
+    private UUID id;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStaticBitrate;
 
     public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer> undefined();
+    private Integer musicStreamingTranscodingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer> undefined();
+    private Integer maxStaticMusicBitrate;
 
     public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
     @javax.annotation.Nullable
@@ -96,8 +92,8 @@ public class DeviceProfile {
     }
 
     public DeviceProfile name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -107,31 +103,22 @@ public class DeviceProfile {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public DeviceProfile id(@javax.annotation.Nullable UUID id) {
-        this.id = JsonNullable.<UUID> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -141,31 +128,22 @@ public class DeviceProfile {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public UUID getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<UUID> getId_JsonNullable() {
+    public UUID getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<UUID> id) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setId(@javax.annotation.Nullable UUID id) {
         this.id = id;
     }
 
-    public void setId(@javax.annotation.Nullable UUID id) {
-        this.id = JsonNullable.<UUID> of(id);
-    }
-
     public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
 
+        this.maxStreamingBitrate = maxStreamingBitrate;
         return this;
     }
 
@@ -175,31 +153,22 @@ public class DeviceProfile {
      * @return maxStreamingBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStreamingBitrate() {
-        return maxStreamingBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
+    public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = maxStreamingBitrate;
     }
 
-    public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-        this.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-    }
-
     public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-        this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
 
+        this.maxStaticBitrate = maxStaticBitrate;
         return this;
     }
 
@@ -209,32 +178,23 @@ public class DeviceProfile {
      * @return maxStaticBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStaticBitrate() {
-        return maxStaticBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStaticBitrate_JsonNullable() {
+    public Integer getMaxStaticBitrate() {
         return maxStaticBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
-    public void setMaxStaticBitrate_JsonNullable(JsonNullable<Integer> maxStaticBitrate) {
-        this.maxStaticBitrate = maxStaticBitrate;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-        this.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
+        this.maxStaticBitrate = maxStaticBitrate;
     }
 
     public DeviceProfile musicStreamingTranscodingBitrate(
             @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
 
+        this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
         return this;
     }
 
@@ -244,33 +204,23 @@ public class DeviceProfile {
      * @return musicStreamingTranscodingBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMusicStreamingTranscodingBitrate() {
-        return musicStreamingTranscodingBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMusicStreamingTranscodingBitrate_JsonNullable() {
+    public Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
-    public void setMusicStreamingTranscodingBitrate_JsonNullable(
-            JsonNullable<Integer> musicStreamingTranscodingBitrate) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMusicStreamingTranscodingBitrate(
+            @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
         this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
     }
 
-    public void setMusicStreamingTranscodingBitrate(
-            @javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-        this.musicStreamingTranscodingBitrate = JsonNullable.<Integer> of(musicStreamingTranscodingBitrate);
-    }
-
     public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
 
+        this.maxStaticMusicBitrate = maxStaticMusicBitrate;
         return this;
     }
 
@@ -280,26 +230,17 @@ public class DeviceProfile {
      * @return maxStaticMusicBitrate
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getMaxStaticMusicBitrate() {
-        return maxStaticMusicBitrate.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getMaxStaticMusicBitrate_JsonNullable() {
+    public Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate;
     }
 
     @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
-    public void setMaxStaticMusicBitrate_JsonNullable(JsonNullable<Integer> maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = maxStaticMusicBitrate;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-        this.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
+        this.maxStaticMusicBitrate = maxStaticMusicBitrate;
     }
 
     public DeviceProfile directPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
@@ -476,11 +417,11 @@ public class DeviceProfile {
             return false;
         }
         DeviceProfile deviceProfile = (DeviceProfile) o;
-        return equalsNullable(this.name, deviceProfile.name) && equalsNullable(this.id, deviceProfile.id)
-                && equalsNullable(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate)
-                && equalsNullable(this.maxStaticBitrate, deviceProfile.maxStaticBitrate)
-                && equalsNullable(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate)
-                && equalsNullable(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate)
+        return Objects.equals(this.name, deviceProfile.name) && Objects.equals(this.id, deviceProfile.id)
+                && Objects.equals(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate)
+                && Objects.equals(this.maxStaticBitrate, deviceProfile.maxStaticBitrate)
+                && Objects.equals(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate)
+                && Objects.equals(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate)
                 && Objects.equals(this.directPlayProfiles, deviceProfile.directPlayProfiles)
                 && Objects.equals(this.transcodingProfiles, deviceProfile.transcodingProfiles)
                 && Objects.equals(this.containerProfiles, deviceProfile.containerProfiles)
@@ -488,24 +429,11 @@ public class DeviceProfile {
                 && Objects.equals(this.subtitleProfiles, deviceProfile.subtitleProfiles);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(id), hashCodeNullable(maxStreamingBitrate),
-                hashCodeNullable(maxStaticBitrate), hashCodeNullable(musicStreamingTranscodingBitrate),
-                hashCodeNullable(maxStaticMusicBitrate), directPlayProfiles, transcodingProfiles, containerProfiles,
-                codecProfiles, subtitleProfiles);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, id, maxStreamingBitrate, maxStaticBitrate, musicStreamingTranscodingBitrate,
+                maxStaticMusicBitrate, directPlayProfiles, transcodingProfiles, containerProfiles, codecProfiles,
+                subtitleProfiles);
     }
 
     @Override
@@ -552,63 +480,31 @@ public class DeviceProfile {
         }
 
         public DeviceProfile.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public DeviceProfile.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public DeviceProfile.Builder id(UUID id) {
-            this.instance.id = JsonNullable.<UUID> of(id);
-            return this;
-        }
-
-        public DeviceProfile.Builder id(JsonNullable<UUID> id) {
             this.instance.id = id;
             return this;
         }
 
         public DeviceProfile.Builder maxStreamingBitrate(Integer maxStreamingBitrate) {
-            this.instance.maxStreamingBitrate = JsonNullable.<Integer> of(maxStreamingBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStreamingBitrate(JsonNullable<Integer> maxStreamingBitrate) {
             this.instance.maxStreamingBitrate = maxStreamingBitrate;
             return this;
         }
 
         public DeviceProfile.Builder maxStaticBitrate(Integer maxStaticBitrate) {
-            this.instance.maxStaticBitrate = JsonNullable.<Integer> of(maxStaticBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticBitrate(JsonNullable<Integer> maxStaticBitrate) {
             this.instance.maxStaticBitrate = maxStaticBitrate;
             return this;
         }
 
         public DeviceProfile.Builder musicStreamingTranscodingBitrate(Integer musicStreamingTranscodingBitrate) {
-            this.instance.musicStreamingTranscodingBitrate = JsonNullable
-                    .<Integer> of(musicStreamingTranscodingBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder musicStreamingTranscodingBitrate(
-                JsonNullable<Integer> musicStreamingTranscodingBitrate) {
             this.instance.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
             return this;
         }
 
         public DeviceProfile.Builder maxStaticMusicBitrate(Integer maxStaticMusicBitrate) {
-            this.instance.maxStaticMusicBitrate = JsonNullable.<Integer> of(maxStaticMusicBitrate);
-            return this;
-        }
-
-        public DeviceProfile.Builder maxStaticMusicBitrate(JsonNullable<Integer> maxStaticMusicBitrate) {
             this.instance.maxStaticMusicBitrate = maxStaticMusicBitrate;
             return this;
         }

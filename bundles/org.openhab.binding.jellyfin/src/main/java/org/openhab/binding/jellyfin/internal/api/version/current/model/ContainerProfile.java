@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -46,11 +42,11 @@ public class ContainerProfile {
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @javax.annotation.Nullable
-    private JsonNullable<String> container = JsonNullable.<String> undefined();
+    private String container;
 
     public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
     @javax.annotation.Nullable
-    private JsonNullable<String> subContainer = JsonNullable.<String> undefined();
+    private String subContainer;
 
     public ContainerProfile() {
     }
@@ -114,8 +110,8 @@ public class ContainerProfile {
     }
 
     public ContainerProfile container(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
 
+        this.container = container;
         return this;
     }
 
@@ -125,31 +121,22 @@ public class ContainerProfile {
      * @return container
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContainer() {
-        return container.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContainer_JsonNullable() {
+    public String getContainer() {
         return container;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTAINER)
-    public void setContainer_JsonNullable(JsonNullable<String> container) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setContainer(@javax.annotation.Nullable String container) {
         this.container = container;
     }
 
-    public void setContainer(@javax.annotation.Nullable String container) {
-        this.container = JsonNullable.<String> of(container);
-    }
-
     public ContainerProfile subContainer(@javax.annotation.Nullable String subContainer) {
-        this.subContainer = JsonNullable.<String> of(subContainer);
 
+        this.subContainer = subContainer;
         return this;
     }
 
@@ -159,26 +146,17 @@ public class ContainerProfile {
      * @return subContainer
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getSubContainer() {
-        return subContainer.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getSubContainer_JsonNullable() {
+    public String getSubContainer() {
         return subContainer;
     }
 
     @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
-    public void setSubContainer_JsonNullable(JsonNullable<String> subContainer) {
-        this.subContainer = subContainer;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubContainer(@javax.annotation.Nullable String subContainer) {
-        this.subContainer = JsonNullable.<String> of(subContainer);
+        this.subContainer = subContainer;
     }
 
     @Override
@@ -192,25 +170,13 @@ public class ContainerProfile {
         ContainerProfile containerProfile = (ContainerProfile) o;
         return Objects.equals(this.type, containerProfile.type)
                 && Objects.equals(this.conditions, containerProfile.conditions)
-                && equalsNullable(this.container, containerProfile.container)
-                && equalsNullable(this.subContainer, containerProfile.subContainer);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.container, containerProfile.container)
+                && Objects.equals(this.subContainer, containerProfile.subContainer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, conditions, hashCodeNullable(container), hashCodeNullable(subContainer));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, conditions, container, subContainer);
     }
 
     @Override
@@ -259,21 +225,11 @@ public class ContainerProfile {
         }
 
         public ContainerProfile.Builder container(String container) {
-            this.instance.container = JsonNullable.<String> of(container);
-            return this;
-        }
-
-        public ContainerProfile.Builder container(JsonNullable<String> container) {
             this.instance.container = container;
             return this;
         }
 
         public ContainerProfile.Builder subContainer(String subContainer) {
-            this.instance.subContainer = JsonNullable.<String> of(subContainer);
-            return this;
-        }
-
-        public ContainerProfile.Builder subContainer(JsonNullable<String> subContainer) {
             this.instance.subContainer = subContainer;
             return this;
         }

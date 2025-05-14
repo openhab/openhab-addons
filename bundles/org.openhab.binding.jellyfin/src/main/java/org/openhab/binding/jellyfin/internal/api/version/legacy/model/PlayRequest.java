@@ -18,14 +18,10 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,11 +37,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlayRequest {
     public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
     @javax.annotation.Nullable
-    private JsonNullable<List<UUID>> itemIds = JsonNullable.<List<UUID>> undefined();
+    private List<UUID> itemIds;
 
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
     @javax.annotation.Nullable
-    private JsonNullable<Long> startPositionTicks = JsonNullable.<Long> undefined();
+    private Long startPositionTicks;
 
     public static final String JSON_PROPERTY_PLAY_COMMAND = "PlayCommand";
     @javax.annotation.Nullable
@@ -57,38 +53,34 @@ public class PlayRequest {
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer> undefined();
+    private Integer subtitleStreamIndex;
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer> undefined();
+    private Integer audioStreamIndex;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
     @javax.annotation.Nullable
-    private JsonNullable<String> mediaSourceId = JsonNullable.<String> undefined();
+    private String mediaSourceId;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> startIndex = JsonNullable.<Integer> undefined();
+    private Integer startIndex;
 
     public PlayRequest() {
     }
 
     public PlayRequest itemIds(@javax.annotation.Nullable List<UUID> itemIds) {
-        this.itemIds = JsonNullable.<List<UUID>> of(itemIds);
 
+        this.itemIds = itemIds;
         return this;
     }
 
     public PlayRequest addItemIdsItem(UUID itemIdsItem) {
-        if (this.itemIds == null || !this.itemIds.isPresent()) {
-            this.itemIds = JsonNullable.<List<UUID>> of(new ArrayList<>());
+        if (this.itemIds == null) {
+            this.itemIds = new ArrayList<>();
         }
-        try {
-            this.itemIds.get().add(itemIdsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.itemIds.add(itemIdsItem);
         return this;
     }
 
@@ -98,31 +90,22 @@ public class PlayRequest {
      * @return itemIds
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<UUID> getItemIds() {
-        return itemIds.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEM_IDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<UUID>> getItemIds_JsonNullable() {
+    public List<UUID> getItemIds() {
         return itemIds;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEM_IDS)
-    public void setItemIds_JsonNullable(JsonNullable<List<UUID>> itemIds) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItemIds(@javax.annotation.Nullable List<UUID> itemIds) {
         this.itemIds = itemIds;
     }
 
-    public void setItemIds(@javax.annotation.Nullable List<UUID> itemIds) {
-        this.itemIds = JsonNullable.<List<UUID>> of(itemIds);
-    }
-
     public PlayRequest startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-        this.startPositionTicks = JsonNullable.<Long> of(startPositionTicks);
 
+        this.startPositionTicks = startPositionTicks;
         return this;
     }
 
@@ -132,26 +115,17 @@ public class PlayRequest {
      * @return startPositionTicks
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Long getStartPositionTicks() {
-        return startPositionTicks.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Long> getStartPositionTicks_JsonNullable() {
+    public Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
     @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
-    public void setStartPositionTicks_JsonNullable(JsonNullable<Long> startPositionTicks) {
-        this.startPositionTicks = startPositionTicks;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-        this.startPositionTicks = JsonNullable.<Long> of(startPositionTicks);
+        this.startPositionTicks = startPositionTicks;
     }
 
     public PlayRequest playCommand(@javax.annotation.Nullable PlayCommand playCommand) {
@@ -205,8 +179,8 @@ public class PlayRequest {
     }
 
     public PlayRequest subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-        this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
 
+        this.subtitleStreamIndex = subtitleStreamIndex;
         return this;
     }
 
@@ -216,31 +190,22 @@ public class PlayRequest {
      * @return subtitleStreamIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getSubtitleStreamIndex() {
-        return subtitleStreamIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
+    public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
-    public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
         this.subtitleStreamIndex = subtitleStreamIndex;
     }
 
-    public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-        this.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
-    }
-
     public PlayRequest audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-        this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
 
+        this.audioStreamIndex = audioStreamIndex;
         return this;
     }
 
@@ -250,31 +215,22 @@ public class PlayRequest {
      * @return audioStreamIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getAudioStreamIndex() {
-        return audioStreamIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
+    public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
-    public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
         this.audioStreamIndex = audioStreamIndex;
     }
 
-    public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-        this.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
-    }
-
     public PlayRequest mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-        this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
 
+        this.mediaSourceId = mediaSourceId;
         return this;
     }
 
@@ -284,31 +240,22 @@ public class PlayRequest {
      * @return mediaSourceId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getMediaSourceId() {
-        return mediaSourceId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getMediaSourceId_JsonNullable() {
+    public String getMediaSourceId() {
         return mediaSourceId;
     }
 
     @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
-    public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
         this.mediaSourceId = mediaSourceId;
     }
 
-    public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-        this.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
-    }
-
     public PlayRequest startIndex(@javax.annotation.Nullable Integer startIndex) {
-        this.startIndex = JsonNullable.<Integer> of(startIndex);
 
+        this.startIndex = startIndex;
         return this;
     }
 
@@ -318,26 +265,17 @@ public class PlayRequest {
      * @return startIndex
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getStartIndex() {
-        return startIndex.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_START_INDEX)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getStartIndex_JsonNullable() {
+    public Integer getStartIndex() {
         return startIndex;
     }
 
     @JsonProperty(JSON_PROPERTY_START_INDEX)
-    public void setStartIndex_JsonNullable(JsonNullable<Integer> startIndex) {
-        this.startIndex = startIndex;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
-        this.startIndex = JsonNullable.<Integer> of(startIndex);
+        this.startIndex = startIndex;
     }
 
     @Override
@@ -349,33 +287,20 @@ public class PlayRequest {
             return false;
         }
         PlayRequest playRequest = (PlayRequest) o;
-        return equalsNullable(this.itemIds, playRequest.itemIds)
-                && equalsNullable(this.startPositionTicks, playRequest.startPositionTicks)
+        return Objects.equals(this.itemIds, playRequest.itemIds)
+                && Objects.equals(this.startPositionTicks, playRequest.startPositionTicks)
                 && Objects.equals(this.playCommand, playRequest.playCommand)
                 && Objects.equals(this.controllingUserId, playRequest.controllingUserId)
-                && equalsNullable(this.subtitleStreamIndex, playRequest.subtitleStreamIndex)
-                && equalsNullable(this.audioStreamIndex, playRequest.audioStreamIndex)
-                && equalsNullable(this.mediaSourceId, playRequest.mediaSourceId)
-                && equalsNullable(this.startIndex, playRequest.startIndex);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.subtitleStreamIndex, playRequest.subtitleStreamIndex)
+                && Objects.equals(this.audioStreamIndex, playRequest.audioStreamIndex)
+                && Objects.equals(this.mediaSourceId, playRequest.mediaSourceId)
+                && Objects.equals(this.startIndex, playRequest.startIndex);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(itemIds), hashCodeNullable(startPositionTicks), playCommand,
-                controllingUserId, hashCodeNullable(subtitleStreamIndex), hashCodeNullable(audioStreamIndex),
-                hashCodeNullable(mediaSourceId), hashCodeNullable(startIndex));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(itemIds, startPositionTicks, playCommand, controllingUserId, subtitleStreamIndex,
+                audioStreamIndex, mediaSourceId, startIndex);
     }
 
     @Override
@@ -418,21 +343,11 @@ public class PlayRequest {
         }
 
         public PlayRequest.Builder itemIds(List<UUID> itemIds) {
-            this.instance.itemIds = JsonNullable.<List<UUID>> of(itemIds);
-            return this;
-        }
-
-        public PlayRequest.Builder itemIds(JsonNullable<List<UUID>> itemIds) {
             this.instance.itemIds = itemIds;
             return this;
         }
 
         public PlayRequest.Builder startPositionTicks(Long startPositionTicks) {
-            this.instance.startPositionTicks = JsonNullable.<Long> of(startPositionTicks);
-            return this;
-        }
-
-        public PlayRequest.Builder startPositionTicks(JsonNullable<Long> startPositionTicks) {
             this.instance.startPositionTicks = startPositionTicks;
             return this;
         }
@@ -448,41 +363,21 @@ public class PlayRequest {
         }
 
         public PlayRequest.Builder subtitleStreamIndex(Integer subtitleStreamIndex) {
-            this.instance.subtitleStreamIndex = JsonNullable.<Integer> of(subtitleStreamIndex);
-            return this;
-        }
-
-        public PlayRequest.Builder subtitleStreamIndex(JsonNullable<Integer> subtitleStreamIndex) {
             this.instance.subtitleStreamIndex = subtitleStreamIndex;
             return this;
         }
 
         public PlayRequest.Builder audioStreamIndex(Integer audioStreamIndex) {
-            this.instance.audioStreamIndex = JsonNullable.<Integer> of(audioStreamIndex);
-            return this;
-        }
-
-        public PlayRequest.Builder audioStreamIndex(JsonNullable<Integer> audioStreamIndex) {
             this.instance.audioStreamIndex = audioStreamIndex;
             return this;
         }
 
         public PlayRequest.Builder mediaSourceId(String mediaSourceId) {
-            this.instance.mediaSourceId = JsonNullable.<String> of(mediaSourceId);
-            return this;
-        }
-
-        public PlayRequest.Builder mediaSourceId(JsonNullable<String> mediaSourceId) {
             this.instance.mediaSourceId = mediaSourceId;
             return this;
         }
 
         public PlayRequest.Builder startIndex(Integer startIndex) {
-            this.instance.startIndex = JsonNullable.<Integer> of(startIndex);
-            return this;
-        }
-
-        public PlayRequest.Builder startIndex(JsonNullable<Integer> startIndex) {
             this.instance.startIndex = startIndex;
             return this;
         }

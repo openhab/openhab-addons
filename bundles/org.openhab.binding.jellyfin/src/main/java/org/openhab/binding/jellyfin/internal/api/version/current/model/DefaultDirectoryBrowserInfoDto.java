@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,14 +31,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DefaultDirectoryBrowserInfoDto {
     public static final String JSON_PROPERTY_PATH = "Path";
     @javax.annotation.Nullable
-    private JsonNullable<String> path = JsonNullable.<String> undefined();
+    private String path;
 
     public DefaultDirectoryBrowserInfoDto() {
     }
 
     public DefaultDirectoryBrowserInfoDto path(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
 
+        this.path = path;
         return this;
     }
 
@@ -52,26 +48,17 @@ public class DefaultDirectoryBrowserInfoDto {
      * @return path
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPath() {
-        return path.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PATH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPath_JsonNullable() {
+    public String getPath() {
         return path;
     }
 
     @JsonProperty(JSON_PROPERTY_PATH)
-    public void setPath_JsonNullable(JsonNullable<String> path) {
-        this.path = path;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@javax.annotation.Nullable String path) {
-        this.path = JsonNullable.<String> of(path);
+        this.path = path;
     }
 
     @Override
@@ -83,24 +70,12 @@ public class DefaultDirectoryBrowserInfoDto {
             return false;
         }
         DefaultDirectoryBrowserInfoDto defaultDirectoryBrowserInfoDto = (DefaultDirectoryBrowserInfoDto) o;
-        return equalsNullable(this.path, defaultDirectoryBrowserInfoDto.path);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.path, defaultDirectoryBrowserInfoDto.path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(path));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(path);
     }
 
     @Override
@@ -136,11 +111,6 @@ public class DefaultDirectoryBrowserInfoDto {
         }
 
         public DefaultDirectoryBrowserInfoDto.Builder path(String path) {
-            this.instance.path = JsonNullable.<String> of(path);
-            return this;
-        }
-
-        public DefaultDirectoryBrowserInfoDto.Builder path(JsonNullable<String> path) {
             this.instance.path = path;
             return this;
         }

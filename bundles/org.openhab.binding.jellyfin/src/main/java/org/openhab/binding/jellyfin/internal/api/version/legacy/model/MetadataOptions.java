@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,38 +36,38 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MetadataOptions {
     public static final String JSON_PROPERTY_ITEM_TYPE = "ItemType";
     @javax.annotation.Nullable
-    private JsonNullable<String> itemType = JsonNullable.<String> undefined();
+    private String itemType;
 
     public static final String JSON_PROPERTY_DISABLED_METADATA_SAVERS = "DisabledMetadataSavers";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> disabledMetadataSavers = JsonNullable.<List<String>> undefined();
+    private List<String> disabledMetadataSavers;
 
     public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> localMetadataReaderOrder = JsonNullable.<List<String>> undefined();
+    private List<String> localMetadataReaderOrder;
 
     public static final String JSON_PROPERTY_DISABLED_METADATA_FETCHERS = "DisabledMetadataFetchers";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> disabledMetadataFetchers = JsonNullable.<List<String>> undefined();
+    private List<String> disabledMetadataFetchers;
 
     public static final String JSON_PROPERTY_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> metadataFetcherOrder = JsonNullable.<List<String>> undefined();
+    private List<String> metadataFetcherOrder;
 
     public static final String JSON_PROPERTY_DISABLED_IMAGE_FETCHERS = "DisabledImageFetchers";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> disabledImageFetchers = JsonNullable.<List<String>> undefined();
+    private List<String> disabledImageFetchers;
 
     public static final String JSON_PROPERTY_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> imageFetcherOrder = JsonNullable.<List<String>> undefined();
+    private List<String> imageFetcherOrder;
 
     public MetadataOptions() {
     }
 
     public MetadataOptions itemType(@javax.annotation.Nullable String itemType) {
-        this.itemType = JsonNullable.<String> of(itemType);
 
+        this.itemType = itemType;
         return this;
     }
 
@@ -81,43 +77,30 @@ public class MetadataOptions {
      * @return itemType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getItemType() {
-        return itemType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ITEM_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getItemType_JsonNullable() {
+    public String getItemType() {
         return itemType;
     }
 
     @JsonProperty(JSON_PROPERTY_ITEM_TYPE)
-    public void setItemType_JsonNullable(JsonNullable<String> itemType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setItemType(@javax.annotation.Nullable String itemType) {
         this.itemType = itemType;
     }
 
-    public void setItemType(@javax.annotation.Nullable String itemType) {
-        this.itemType = JsonNullable.<String> of(itemType);
-    }
-
     public MetadataOptions disabledMetadataSavers(@javax.annotation.Nullable List<String> disabledMetadataSavers) {
-        this.disabledMetadataSavers = JsonNullable.<List<String>> of(disabledMetadataSavers);
 
+        this.disabledMetadataSavers = disabledMetadataSavers;
         return this;
     }
 
     public MetadataOptions addDisabledMetadataSaversItem(String disabledMetadataSaversItem) {
-        if (this.disabledMetadataSavers == null || !this.disabledMetadataSavers.isPresent()) {
-            this.disabledMetadataSavers = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.disabledMetadataSavers == null) {
+            this.disabledMetadataSavers = new ArrayList<>();
         }
-        try {
-            this.disabledMetadataSavers.get().add(disabledMetadataSaversItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.disabledMetadataSavers.add(disabledMetadataSaversItem);
         return this;
     }
 
@@ -127,43 +110,30 @@ public class MetadataOptions {
      * @return disabledMetadataSavers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getDisabledMetadataSavers() {
-        return disabledMetadataSavers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DISABLED_METADATA_SAVERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getDisabledMetadataSavers_JsonNullable() {
+    public List<String> getDisabledMetadataSavers() {
         return disabledMetadataSavers;
     }
 
     @JsonProperty(JSON_PROPERTY_DISABLED_METADATA_SAVERS)
-    public void setDisabledMetadataSavers_JsonNullable(JsonNullable<List<String>> disabledMetadataSavers) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDisabledMetadataSavers(@javax.annotation.Nullable List<String> disabledMetadataSavers) {
         this.disabledMetadataSavers = disabledMetadataSavers;
     }
 
-    public void setDisabledMetadataSavers(@javax.annotation.Nullable List<String> disabledMetadataSavers) {
-        this.disabledMetadataSavers = JsonNullable.<List<String>> of(disabledMetadataSavers);
-    }
-
     public MetadataOptions localMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
-        this.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
 
+        this.localMetadataReaderOrder = localMetadataReaderOrder;
         return this;
     }
 
     public MetadataOptions addLocalMetadataReaderOrderItem(String localMetadataReaderOrderItem) {
-        if (this.localMetadataReaderOrder == null || !this.localMetadataReaderOrder.isPresent()) {
-            this.localMetadataReaderOrder = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.localMetadataReaderOrder == null) {
+            this.localMetadataReaderOrder = new ArrayList<>();
         }
-        try {
-            this.localMetadataReaderOrder.get().add(localMetadataReaderOrderItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.localMetadataReaderOrder.add(localMetadataReaderOrderItem);
         return this;
     }
 
@@ -173,43 +143,30 @@ public class MetadataOptions {
      * @return localMetadataReaderOrder
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getLocalMetadataReaderOrder() {
-        return localMetadataReaderOrder.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getLocalMetadataReaderOrder_JsonNullable() {
+    public List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder;
     }
 
     @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
-    public void setLocalMetadataReaderOrder_JsonNullable(JsonNullable<List<String>> localMetadataReaderOrder) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setLocalMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
         this.localMetadataReaderOrder = localMetadataReaderOrder;
     }
 
-    public void setLocalMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
-        this.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
-    }
-
     public MetadataOptions disabledMetadataFetchers(@javax.annotation.Nullable List<String> disabledMetadataFetchers) {
-        this.disabledMetadataFetchers = JsonNullable.<List<String>> of(disabledMetadataFetchers);
 
+        this.disabledMetadataFetchers = disabledMetadataFetchers;
         return this;
     }
 
     public MetadataOptions addDisabledMetadataFetchersItem(String disabledMetadataFetchersItem) {
-        if (this.disabledMetadataFetchers == null || !this.disabledMetadataFetchers.isPresent()) {
-            this.disabledMetadataFetchers = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.disabledMetadataFetchers == null) {
+            this.disabledMetadataFetchers = new ArrayList<>();
         }
-        try {
-            this.disabledMetadataFetchers.get().add(disabledMetadataFetchersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.disabledMetadataFetchers.add(disabledMetadataFetchersItem);
         return this;
     }
 
@@ -219,43 +176,30 @@ public class MetadataOptions {
      * @return disabledMetadataFetchers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getDisabledMetadataFetchers() {
-        return disabledMetadataFetchers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DISABLED_METADATA_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getDisabledMetadataFetchers_JsonNullable() {
+    public List<String> getDisabledMetadataFetchers() {
         return disabledMetadataFetchers;
     }
 
     @JsonProperty(JSON_PROPERTY_DISABLED_METADATA_FETCHERS)
-    public void setDisabledMetadataFetchers_JsonNullable(JsonNullable<List<String>> disabledMetadataFetchers) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDisabledMetadataFetchers(@javax.annotation.Nullable List<String> disabledMetadataFetchers) {
         this.disabledMetadataFetchers = disabledMetadataFetchers;
     }
 
-    public void setDisabledMetadataFetchers(@javax.annotation.Nullable List<String> disabledMetadataFetchers) {
-        this.disabledMetadataFetchers = JsonNullable.<List<String>> of(disabledMetadataFetchers);
-    }
-
     public MetadataOptions metadataFetcherOrder(@javax.annotation.Nullable List<String> metadataFetcherOrder) {
-        this.metadataFetcherOrder = JsonNullable.<List<String>> of(metadataFetcherOrder);
 
+        this.metadataFetcherOrder = metadataFetcherOrder;
         return this;
     }
 
     public MetadataOptions addMetadataFetcherOrderItem(String metadataFetcherOrderItem) {
-        if (this.metadataFetcherOrder == null || !this.metadataFetcherOrder.isPresent()) {
-            this.metadataFetcherOrder = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.metadataFetcherOrder == null) {
+            this.metadataFetcherOrder = new ArrayList<>();
         }
-        try {
-            this.metadataFetcherOrder.get().add(metadataFetcherOrderItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.metadataFetcherOrder.add(metadataFetcherOrderItem);
         return this;
     }
 
@@ -265,43 +209,30 @@ public class MetadataOptions {
      * @return metadataFetcherOrder
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getMetadataFetcherOrder() {
-        return metadataFetcherOrder.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_METADATA_FETCHER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getMetadataFetcherOrder_JsonNullable() {
+    public List<String> getMetadataFetcherOrder() {
         return metadataFetcherOrder;
     }
 
     @JsonProperty(JSON_PROPERTY_METADATA_FETCHER_ORDER)
-    public void setMetadataFetcherOrder_JsonNullable(JsonNullable<List<String>> metadataFetcherOrder) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMetadataFetcherOrder(@javax.annotation.Nullable List<String> metadataFetcherOrder) {
         this.metadataFetcherOrder = metadataFetcherOrder;
     }
 
-    public void setMetadataFetcherOrder(@javax.annotation.Nullable List<String> metadataFetcherOrder) {
-        this.metadataFetcherOrder = JsonNullable.<List<String>> of(metadataFetcherOrder);
-    }
-
     public MetadataOptions disabledImageFetchers(@javax.annotation.Nullable List<String> disabledImageFetchers) {
-        this.disabledImageFetchers = JsonNullable.<List<String>> of(disabledImageFetchers);
 
+        this.disabledImageFetchers = disabledImageFetchers;
         return this;
     }
 
     public MetadataOptions addDisabledImageFetchersItem(String disabledImageFetchersItem) {
-        if (this.disabledImageFetchers == null || !this.disabledImageFetchers.isPresent()) {
-            this.disabledImageFetchers = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.disabledImageFetchers == null) {
+            this.disabledImageFetchers = new ArrayList<>();
         }
-        try {
-            this.disabledImageFetchers.get().add(disabledImageFetchersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.disabledImageFetchers.add(disabledImageFetchersItem);
         return this;
     }
 
@@ -311,43 +242,30 @@ public class MetadataOptions {
      * @return disabledImageFetchers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getDisabledImageFetchers() {
-        return disabledImageFetchers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DISABLED_IMAGE_FETCHERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getDisabledImageFetchers_JsonNullable() {
+    public List<String> getDisabledImageFetchers() {
         return disabledImageFetchers;
     }
 
     @JsonProperty(JSON_PROPERTY_DISABLED_IMAGE_FETCHERS)
-    public void setDisabledImageFetchers_JsonNullable(JsonNullable<List<String>> disabledImageFetchers) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDisabledImageFetchers(@javax.annotation.Nullable List<String> disabledImageFetchers) {
         this.disabledImageFetchers = disabledImageFetchers;
     }
 
-    public void setDisabledImageFetchers(@javax.annotation.Nullable List<String> disabledImageFetchers) {
-        this.disabledImageFetchers = JsonNullable.<List<String>> of(disabledImageFetchers);
-    }
-
     public MetadataOptions imageFetcherOrder(@javax.annotation.Nullable List<String> imageFetcherOrder) {
-        this.imageFetcherOrder = JsonNullable.<List<String>> of(imageFetcherOrder);
 
+        this.imageFetcherOrder = imageFetcherOrder;
         return this;
     }
 
     public MetadataOptions addImageFetcherOrderItem(String imageFetcherOrderItem) {
-        if (this.imageFetcherOrder == null || !this.imageFetcherOrder.isPresent()) {
-            this.imageFetcherOrder = JsonNullable.<List<String>> of(new ArrayList<>());
+        if (this.imageFetcherOrder == null) {
+            this.imageFetcherOrder = new ArrayList<>();
         }
-        try {
-            this.imageFetcherOrder.get().add(imageFetcherOrderItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.imageFetcherOrder.add(imageFetcherOrderItem);
         return this;
     }
 
@@ -357,26 +275,17 @@ public class MetadataOptions {
      * @return imageFetcherOrder
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getImageFetcherOrder() {
-        return imageFetcherOrder.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_IMAGE_FETCHER_ORDER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getImageFetcherOrder_JsonNullable() {
+    public List<String> getImageFetcherOrder() {
         return imageFetcherOrder;
     }
 
     @JsonProperty(JSON_PROPERTY_IMAGE_FETCHER_ORDER)
-    public void setImageFetcherOrder_JsonNullable(JsonNullable<List<String>> imageFetcherOrder) {
-        this.imageFetcherOrder = imageFetcherOrder;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageFetcherOrder(@javax.annotation.Nullable List<String> imageFetcherOrder) {
-        this.imageFetcherOrder = JsonNullable.<List<String>> of(imageFetcherOrder);
+        this.imageFetcherOrder = imageFetcherOrder;
     }
 
     @Override
@@ -388,33 +297,19 @@ public class MetadataOptions {
             return false;
         }
         MetadataOptions metadataOptions = (MetadataOptions) o;
-        return equalsNullable(this.itemType, metadataOptions.itemType)
-                && equalsNullable(this.disabledMetadataSavers, metadataOptions.disabledMetadataSavers)
-                && equalsNullable(this.localMetadataReaderOrder, metadataOptions.localMetadataReaderOrder)
-                && equalsNullable(this.disabledMetadataFetchers, metadataOptions.disabledMetadataFetchers)
-                && equalsNullable(this.metadataFetcherOrder, metadataOptions.metadataFetcherOrder)
-                && equalsNullable(this.disabledImageFetchers, metadataOptions.disabledImageFetchers)
-                && equalsNullable(this.imageFetcherOrder, metadataOptions.imageFetcherOrder);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.itemType, metadataOptions.itemType)
+                && Objects.equals(this.disabledMetadataSavers, metadataOptions.disabledMetadataSavers)
+                && Objects.equals(this.localMetadataReaderOrder, metadataOptions.localMetadataReaderOrder)
+                && Objects.equals(this.disabledMetadataFetchers, metadataOptions.disabledMetadataFetchers)
+                && Objects.equals(this.metadataFetcherOrder, metadataOptions.metadataFetcherOrder)
+                && Objects.equals(this.disabledImageFetchers, metadataOptions.disabledImageFetchers)
+                && Objects.equals(this.imageFetcherOrder, metadataOptions.imageFetcherOrder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(itemType), hashCodeNullable(disabledMetadataSavers),
-                hashCodeNullable(localMetadataReaderOrder), hashCodeNullable(disabledMetadataFetchers),
-                hashCodeNullable(metadataFetcherOrder), hashCodeNullable(disabledImageFetchers),
-                hashCodeNullable(imageFetcherOrder));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(itemType, disabledMetadataSavers, localMetadataReaderOrder, disabledMetadataFetchers,
+                metadataFetcherOrder, disabledImageFetchers, imageFetcherOrder);
     }
 
     @Override
@@ -456,71 +351,36 @@ public class MetadataOptions {
         }
 
         public MetadataOptions.Builder itemType(String itemType) {
-            this.instance.itemType = JsonNullable.<String> of(itemType);
-            return this;
-        }
-
-        public MetadataOptions.Builder itemType(JsonNullable<String> itemType) {
             this.instance.itemType = itemType;
             return this;
         }
 
         public MetadataOptions.Builder disabledMetadataSavers(List<String> disabledMetadataSavers) {
-            this.instance.disabledMetadataSavers = JsonNullable.<List<String>> of(disabledMetadataSavers);
-            return this;
-        }
-
-        public MetadataOptions.Builder disabledMetadataSavers(JsonNullable<List<String>> disabledMetadataSavers) {
             this.instance.disabledMetadataSavers = disabledMetadataSavers;
             return this;
         }
 
         public MetadataOptions.Builder localMetadataReaderOrder(List<String> localMetadataReaderOrder) {
-            this.instance.localMetadataReaderOrder = JsonNullable.<List<String>> of(localMetadataReaderOrder);
-            return this;
-        }
-
-        public MetadataOptions.Builder localMetadataReaderOrder(JsonNullable<List<String>> localMetadataReaderOrder) {
             this.instance.localMetadataReaderOrder = localMetadataReaderOrder;
             return this;
         }
 
         public MetadataOptions.Builder disabledMetadataFetchers(List<String> disabledMetadataFetchers) {
-            this.instance.disabledMetadataFetchers = JsonNullable.<List<String>> of(disabledMetadataFetchers);
-            return this;
-        }
-
-        public MetadataOptions.Builder disabledMetadataFetchers(JsonNullable<List<String>> disabledMetadataFetchers) {
             this.instance.disabledMetadataFetchers = disabledMetadataFetchers;
             return this;
         }
 
         public MetadataOptions.Builder metadataFetcherOrder(List<String> metadataFetcherOrder) {
-            this.instance.metadataFetcherOrder = JsonNullable.<List<String>> of(metadataFetcherOrder);
-            return this;
-        }
-
-        public MetadataOptions.Builder metadataFetcherOrder(JsonNullable<List<String>> metadataFetcherOrder) {
             this.instance.metadataFetcherOrder = metadataFetcherOrder;
             return this;
         }
 
         public MetadataOptions.Builder disabledImageFetchers(List<String> disabledImageFetchers) {
-            this.instance.disabledImageFetchers = JsonNullable.<List<String>> of(disabledImageFetchers);
-            return this;
-        }
-
-        public MetadataOptions.Builder disabledImageFetchers(JsonNullable<List<String>> disabledImageFetchers) {
             this.instance.disabledImageFetchers = disabledImageFetchers;
             return this;
         }
 
         public MetadataOptions.Builder imageFetcherOrder(List<String> imageFetcherOrder) {
-            this.instance.imageFetcherOrder = JsonNullable.<List<String>> of(imageFetcherOrder);
-            return this;
-        }
-
-        public MetadataOptions.Builder imageFetcherOrder(JsonNullable<List<String>> imageFetcherOrder) {
             this.instance.imageFetcherOrder = imageFetcherOrder;
             return this;
         }

@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,15 +33,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ImageByNameInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_THEME = "Theme";
     @javax.annotation.Nullable
-    private JsonNullable<String> theme = JsonNullable.<String> undefined();
+    private String theme;
 
     public static final String JSON_PROPERTY_CONTEXT = "Context";
     @javax.annotation.Nullable
-    private JsonNullable<String> context = JsonNullable.<String> undefined();
+    private String context;
 
     public static final String JSON_PROPERTY_FILE_LENGTH = "FileLength";
     @javax.annotation.Nullable
@@ -53,14 +49,14 @@ public class ImageByNameInfo {
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
     @javax.annotation.Nullable
-    private JsonNullable<String> format = JsonNullable.<String> undefined();
+    private String format;
 
     public ImageByNameInfo() {
     }
 
     public ImageByNameInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -70,31 +66,22 @@ public class ImageByNameInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public ImageByNameInfo theme(@javax.annotation.Nullable String theme) {
-        this.theme = JsonNullable.<String> of(theme);
 
+        this.theme = theme;
         return this;
     }
 
@@ -104,31 +91,22 @@ public class ImageByNameInfo {
      * @return theme
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTheme() {
-        return theme.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THEME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTheme_JsonNullable() {
+    public String getTheme() {
         return theme;
     }
 
     @JsonProperty(JSON_PROPERTY_THEME)
-    public void setTheme_JsonNullable(JsonNullable<String> theme) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTheme(@javax.annotation.Nullable String theme) {
         this.theme = theme;
     }
 
-    public void setTheme(@javax.annotation.Nullable String theme) {
-        this.theme = JsonNullable.<String> of(theme);
-    }
-
     public ImageByNameInfo context(@javax.annotation.Nullable String context) {
-        this.context = JsonNullable.<String> of(context);
 
+        this.context = context;
         return this;
     }
 
@@ -138,26 +116,17 @@ public class ImageByNameInfo {
      * @return context
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getContext() {
-        return context.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CONTEXT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getContext_JsonNullable() {
+    public String getContext() {
         return context;
     }
 
     @JsonProperty(JSON_PROPERTY_CONTEXT)
-    public void setContext_JsonNullable(JsonNullable<String> context) {
-        this.context = context;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContext(@javax.annotation.Nullable String context) {
-        this.context = JsonNullable.<String> of(context);
+        this.context = context;
     }
 
     public ImageByNameInfo fileLength(@javax.annotation.Nullable Long fileLength) {
@@ -186,8 +155,8 @@ public class ImageByNameInfo {
     }
 
     public ImageByNameInfo format(@javax.annotation.Nullable String format) {
-        this.format = JsonNullable.<String> of(format);
 
+        this.format = format;
         return this;
     }
 
@@ -197,26 +166,17 @@ public class ImageByNameInfo {
      * @return format
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getFormat() {
-        return format.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_FORMAT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getFormat_JsonNullable() {
+    public String getFormat() {
         return format;
     }
 
     @JsonProperty(JSON_PROPERTY_FORMAT)
-    public void setFormat_JsonNullable(JsonNullable<String> format) {
-        this.format = format;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFormat(@javax.annotation.Nullable String format) {
-        this.format = JsonNullable.<String> of(format);
+        this.format = format;
     }
 
     @Override
@@ -228,28 +188,15 @@ public class ImageByNameInfo {
             return false;
         }
         ImageByNameInfo imageByNameInfo = (ImageByNameInfo) o;
-        return equalsNullable(this.name, imageByNameInfo.name) && equalsNullable(this.theme, imageByNameInfo.theme)
-                && equalsNullable(this.context, imageByNameInfo.context)
+        return Objects.equals(this.name, imageByNameInfo.name) && Objects.equals(this.theme, imageByNameInfo.theme)
+                && Objects.equals(this.context, imageByNameInfo.context)
                 && Objects.equals(this.fileLength, imageByNameInfo.fileLength)
-                && equalsNullable(this.format, imageByNameInfo.format);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.format, imageByNameInfo.format);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(theme), hashCodeNullable(context), fileLength,
-                hashCodeNullable(format));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, theme, context, fileLength, format);
     }
 
     @Override
@@ -289,31 +236,16 @@ public class ImageByNameInfo {
         }
 
         public ImageByNameInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public ImageByNameInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public ImageByNameInfo.Builder theme(String theme) {
-            this.instance.theme = JsonNullable.<String> of(theme);
-            return this;
-        }
-
-        public ImageByNameInfo.Builder theme(JsonNullable<String> theme) {
             this.instance.theme = theme;
             return this;
         }
 
         public ImageByNameInfo.Builder context(String context) {
-            this.instance.context = JsonNullable.<String> of(context);
-            return this;
-        }
-
-        public ImageByNameInfo.Builder context(JsonNullable<String> context) {
             this.instance.context = context;
             return this;
         }
@@ -324,11 +256,6 @@ public class ImageByNameInfo {
         }
 
         public ImageByNameInfo.Builder format(String format) {
-            this.instance.format = JsonNullable.<String> of(format);
-            return this;
-        }
-
-        public ImageByNameInfo.Builder format(JsonNullable<String> format) {
             this.instance.format = format;
             return this;
         }

@@ -18,13 +18,9 @@
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LibraryTypeOptionsDto {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
-    private JsonNullable<String> type = JsonNullable.<String> undefined();
+    private String type;
 
     public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
     @javax.annotation.Nullable
@@ -61,8 +57,8 @@ public class LibraryTypeOptionsDto {
     }
 
     public LibraryTypeOptionsDto type(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
 
+        this.type = type;
         return this;
     }
 
@@ -72,26 +68,17 @@ public class LibraryTypeOptionsDto {
      * @return type
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getType() {
-        return type.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getType_JsonNullable() {
+    public String getType() {
         return type;
     }
 
     @JsonProperty(JSON_PROPERTY_TYPE)
-    public void setType_JsonNullable(JsonNullable<String> type) {
-        this.type = type;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@javax.annotation.Nullable String type) {
-        this.type = JsonNullable.<String> of(type);
+        this.type = type;
     }
 
     public LibraryTypeOptionsDto metadataFetchers(
@@ -236,29 +223,16 @@ public class LibraryTypeOptionsDto {
             return false;
         }
         LibraryTypeOptionsDto libraryTypeOptionsDto = (LibraryTypeOptionsDto) o;
-        return equalsNullable(this.type, libraryTypeOptionsDto.type)
+        return Objects.equals(this.type, libraryTypeOptionsDto.type)
                 && Objects.equals(this.metadataFetchers, libraryTypeOptionsDto.metadataFetchers)
                 && Objects.equals(this.imageFetchers, libraryTypeOptionsDto.imageFetchers)
                 && Objects.equals(this.supportedImageTypes, libraryTypeOptionsDto.supportedImageTypes)
                 && Objects.equals(this.defaultImageOptions, libraryTypeOptionsDto.defaultImageOptions);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(type), metadataFetchers, imageFetchers, supportedImageTypes,
-                defaultImageOptions);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(type, metadataFetchers, imageFetchers, supportedImageTypes, defaultImageOptions);
     }
 
     @Override
@@ -298,11 +272,6 @@ public class LibraryTypeOptionsDto {
         }
 
         public LibraryTypeOptionsDto.Builder type(String type) {
-            this.instance.type = JsonNullable.<String> of(type);
-            return this;
-        }
-
-        public LibraryTypeOptionsDto.Builder type(JsonNullable<String> type) {
             this.instance.type = type;
             return this;
         }

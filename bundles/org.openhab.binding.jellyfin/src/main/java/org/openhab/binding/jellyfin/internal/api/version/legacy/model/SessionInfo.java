@@ -19,15 +19,11 @@ package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -53,27 +49,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SessionInfo {
     public static final String JSON_PROPERTY_PLAY_STATE = "PlayState";
     @javax.annotation.Nullable
-    private JsonNullable<PlayerStateInfo> playState = JsonNullable.<PlayerStateInfo> undefined();
+    private PlayerStateInfo playState;
 
     public static final String JSON_PROPERTY_ADDITIONAL_USERS = "AdditionalUsers";
     @javax.annotation.Nullable
-    private JsonNullable<List<SessionUserInfo>> additionalUsers = JsonNullable.<List<SessionUserInfo>> undefined();
+    private List<SessionUserInfo> additionalUsers;
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
     @javax.annotation.Nullable
-    private JsonNullable<ClientCapabilities> capabilities = JsonNullable.<ClientCapabilities> undefined();
+    private ClientCapabilities capabilities;
 
     public static final String JSON_PROPERTY_REMOTE_END_POINT = "RemoteEndPoint";
     @javax.annotation.Nullable
-    private JsonNullable<String> remoteEndPoint = JsonNullable.<String> undefined();
+    private String remoteEndPoint;
 
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
     @javax.annotation.Nullable
-    private JsonNullable<List<String>> playableMediaTypes = JsonNullable.<List<String>> undefined();
+    private List<String> playableMediaTypes;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @javax.annotation.Nullable
-    private JsonNullable<String> id = JsonNullable.<String> undefined();
+    private String id;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @javax.annotation.Nullable
@@ -81,11 +77,11 @@ public class SessionInfo {
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
     @javax.annotation.Nullable
-    private JsonNullable<String> userName = JsonNullable.<String> undefined();
+    private String userName;
 
     public static final String JSON_PROPERTY_CLIENT = "Client";
     @javax.annotation.Nullable
-    private JsonNullable<String> client = JsonNullable.<String> undefined();
+    private String client;
 
     public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
     @javax.annotation.Nullable
@@ -97,35 +93,35 @@ public class SessionInfo {
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceName = JsonNullable.<String> undefined();
+    private String deviceName;
 
     public static final String JSON_PROPERTY_DEVICE_TYPE = "DeviceType";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceType = JsonNullable.<String> undefined();
+    private String deviceType;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_ITEM = "NowPlayingItem";
     @javax.annotation.Nullable
-    private JsonNullable<BaseItemDto> nowPlayingItem = JsonNullable.<BaseItemDto> undefined();
+    private BaseItemDto nowPlayingItem;
 
     public static final String JSON_PROPERTY_FULL_NOW_PLAYING_ITEM = "FullNowPlayingItem";
     @javax.annotation.Nullable
-    private JsonNullable<BaseItem> fullNowPlayingItem = JsonNullable.<BaseItem> undefined();
+    private BaseItem fullNowPlayingItem;
 
     public static final String JSON_PROPERTY_NOW_VIEWING_ITEM = "NowViewingItem";
     @javax.annotation.Nullable
-    private JsonNullable<BaseItemDto> nowViewingItem = JsonNullable.<BaseItemDto> undefined();
+    private BaseItemDto nowViewingItem;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @javax.annotation.Nullable
-    private JsonNullable<String> deviceId = JsonNullable.<String> undefined();
+    private String deviceId;
 
     public static final String JSON_PROPERTY_APPLICATION_VERSION = "ApplicationVersion";
     @javax.annotation.Nullable
-    private JsonNullable<String> applicationVersion = JsonNullable.<String> undefined();
+    private String applicationVersion;
 
     public static final String JSON_PROPERTY_TRANSCODING_INFO = "TranscodingInfo";
     @javax.annotation.Nullable
-    private JsonNullable<TranscodingInfo> transcodingInfo = JsonNullable.<TranscodingInfo> undefined();
+    private TranscodingInfo transcodingInfo;
 
     public static final String JSON_PROPERTY_IS_ACTIVE = "IsActive";
     @javax.annotation.Nullable
@@ -141,11 +137,11 @@ public class SessionInfo {
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
     @javax.annotation.Nullable
-    private JsonNullable<List<QueueItem>> nowPlayingQueue = JsonNullable.<List<QueueItem>> undefined();
+    private List<QueueItem> nowPlayingQueue;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS = "NowPlayingQueueFullItems";
     @javax.annotation.Nullable
-    private JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> undefined();
+    private List<BaseItemDto> nowPlayingQueueFullItems;
 
     public static final String JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME = "HasCustomDeviceName";
     @javax.annotation.Nullable
@@ -153,20 +149,19 @@ public class SessionInfo {
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @javax.annotation.Nullable
-    private JsonNullable<String> playlistItemId = JsonNullable.<String> undefined();
+    private String playlistItemId;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @javax.annotation.Nullable
-    private JsonNullable<String> serverId = JsonNullable.<String> undefined();
+    private String serverId;
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
     @javax.annotation.Nullable
-    private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String> undefined();
+    private String userPrimaryImageTag;
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
     @javax.annotation.Nullable
-    private JsonNullable<List<GeneralCommandType>> supportedCommands = JsonNullable
-            .<List<GeneralCommandType>> undefined();
+    private List<GeneralCommandType> supportedCommands;
 
     public SessionInfo() {
     }
@@ -181,18 +176,16 @@ public class SessionInfo {
             @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL) Boolean supportsRemoteControl,
             @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS) List<GeneralCommandType> supportedCommands) {
         this();
-        this.playableMediaTypes = playableMediaTypes == null ? JsonNullable.<List<String>> undefined()
-                : JsonNullable.of(playableMediaTypes);
+        this.playableMediaTypes = playableMediaTypes;
         this.isActive = isActive;
         this.supportsMediaControl = supportsMediaControl;
         this.supportsRemoteControl = supportsRemoteControl;
-        this.supportedCommands = supportedCommands == null ? JsonNullable.<List<GeneralCommandType>> undefined()
-                : JsonNullable.of(supportedCommands);
+        this.supportedCommands = supportedCommands;
     }
 
     public SessionInfo playState(@javax.annotation.Nullable PlayerStateInfo playState) {
-        this.playState = JsonNullable.<PlayerStateInfo> of(playState);
 
+        this.playState = playState;
         return this;
     }
 
@@ -202,43 +195,30 @@ public class SessionInfo {
      * @return playState
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public PlayerStateInfo getPlayState() {
-        return playState.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAY_STATE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<PlayerStateInfo> getPlayState_JsonNullable() {
+    public PlayerStateInfo getPlayState() {
         return playState;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAY_STATE)
-    public void setPlayState_JsonNullable(JsonNullable<PlayerStateInfo> playState) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlayState(@javax.annotation.Nullable PlayerStateInfo playState) {
         this.playState = playState;
     }
 
-    public void setPlayState(@javax.annotation.Nullable PlayerStateInfo playState) {
-        this.playState = JsonNullable.<PlayerStateInfo> of(playState);
-    }
-
     public SessionInfo additionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
-        this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
 
+        this.additionalUsers = additionalUsers;
         return this;
     }
 
     public SessionInfo addAdditionalUsersItem(SessionUserInfo additionalUsersItem) {
-        if (this.additionalUsers == null || !this.additionalUsers.isPresent()) {
-            this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(new ArrayList<>());
+        if (this.additionalUsers == null) {
+            this.additionalUsers = new ArrayList<>();
         }
-        try {
-            this.additionalUsers.get().add(additionalUsersItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.additionalUsers.add(additionalUsersItem);
         return this;
     }
 
@@ -248,31 +228,22 @@ public class SessionInfo {
      * @return additionalUsers
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<SessionUserInfo> getAdditionalUsers() {
-        return additionalUsers.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<SessionUserInfo>> getAdditionalUsers_JsonNullable() {
+    public List<SessionUserInfo> getAdditionalUsers() {
         return additionalUsers;
     }
 
     @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
-    public void setAdditionalUsers_JsonNullable(JsonNullable<List<SessionUserInfo>> additionalUsers) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setAdditionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
         this.additionalUsers = additionalUsers;
     }
 
-    public void setAdditionalUsers(@javax.annotation.Nullable List<SessionUserInfo> additionalUsers) {
-        this.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
-    }
-
     public SessionInfo capabilities(@javax.annotation.Nullable ClientCapabilities capabilities) {
-        this.capabilities = JsonNullable.<ClientCapabilities> of(capabilities);
 
+        this.capabilities = capabilities;
         return this;
     }
 
@@ -282,31 +253,22 @@ public class SessionInfo {
      * @return capabilities
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public ClientCapabilities getCapabilities() {
-        return capabilities.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CAPABILITIES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<ClientCapabilities> getCapabilities_JsonNullable() {
+    public ClientCapabilities getCapabilities() {
         return capabilities;
     }
 
     @JsonProperty(JSON_PROPERTY_CAPABILITIES)
-    public void setCapabilities_JsonNullable(JsonNullable<ClientCapabilities> capabilities) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCapabilities(@javax.annotation.Nullable ClientCapabilities capabilities) {
         this.capabilities = capabilities;
     }
 
-    public void setCapabilities(@javax.annotation.Nullable ClientCapabilities capabilities) {
-        this.capabilities = JsonNullable.<ClientCapabilities> of(capabilities);
-    }
-
     public SessionInfo remoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
-        this.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
 
+        this.remoteEndPoint = remoteEndPoint;
         return this;
     }
 
@@ -316,26 +278,17 @@ public class SessionInfo {
      * @return remoteEndPoint
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getRemoteEndPoint() {
-        return remoteEndPoint.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getRemoteEndPoint_JsonNullable() {
+    public String getRemoteEndPoint() {
         return remoteEndPoint;
     }
 
     @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
-    public void setRemoteEndPoint_JsonNullable(JsonNullable<String> remoteEndPoint) {
-        this.remoteEndPoint = remoteEndPoint;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRemoteEndPoint(@javax.annotation.Nullable String remoteEndPoint) {
-        this.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
+        this.remoteEndPoint = remoteEndPoint;
     }
 
     /**
@@ -344,31 +297,16 @@ public class SessionInfo {
      * @return playableMediaTypes
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<String> getPlayableMediaTypes() {
-
-        if (playableMediaTypes == null) {
-            playableMediaTypes = JsonNullable.<List<String>> undefined();
-        }
-        return playableMediaTypes.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<String>> getPlayableMediaTypes_JsonNullable() {
+    public List<String> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    private void setPlayableMediaTypes_JsonNullable(JsonNullable<List<String>> playableMediaTypes) {
-        this.playableMediaTypes = playableMediaTypes;
-    }
-
     public SessionInfo id(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
 
+        this.id = id;
         return this;
     }
 
@@ -378,26 +316,17 @@ public class SessionInfo {
      * @return id
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getId() {
-        return id.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getId_JsonNullable() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty(JSON_PROPERTY_ID)
-    public void setId_JsonNullable(JsonNullable<String> id) {
-        this.id = id;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@javax.annotation.Nullable String id) {
-        this.id = JsonNullable.<String> of(id);
+        this.id = id;
     }
 
     public SessionInfo userId(@javax.annotation.Nullable UUID userId) {
@@ -426,8 +355,8 @@ public class SessionInfo {
     }
 
     public SessionInfo userName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
 
+        this.userName = userName;
         return this;
     }
 
@@ -437,31 +366,22 @@ public class SessionInfo {
      * @return userName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserName() {
-        return userName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserName_JsonNullable() {
+    public String getUserName() {
         return userName;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_NAME)
-    public void setUserName_JsonNullable(JsonNullable<String> userName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUserName(@javax.annotation.Nullable String userName) {
         this.userName = userName;
     }
 
-    public void setUserName(@javax.annotation.Nullable String userName) {
-        this.userName = JsonNullable.<String> of(userName);
-    }
-
     public SessionInfo client(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
 
+        this.client = client;
         return this;
     }
 
@@ -471,26 +391,17 @@ public class SessionInfo {
      * @return client
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getClient() {
-        return client.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_CLIENT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getClient_JsonNullable() {
+    public String getClient() {
         return client;
     }
 
     @JsonProperty(JSON_PROPERTY_CLIENT)
-    public void setClient_JsonNullable(JsonNullable<String> client) {
-        this.client = client;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setClient(@javax.annotation.Nullable String client) {
-        this.client = JsonNullable.<String> of(client);
+        this.client = client;
     }
 
     public SessionInfo lastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
@@ -544,8 +455,8 @@ public class SessionInfo {
     }
 
     public SessionInfo deviceName(@javax.annotation.Nullable String deviceName) {
-        this.deviceName = JsonNullable.<String> of(deviceName);
 
+        this.deviceName = deviceName;
         return this;
     }
 
@@ -555,31 +466,22 @@ public class SessionInfo {
      * @return deviceName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceName() {
-        return deviceName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceName_JsonNullable() {
+    public String getDeviceName() {
         return deviceName;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
-    public void setDeviceName_JsonNullable(JsonNullable<String> deviceName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceName(@javax.annotation.Nullable String deviceName) {
         this.deviceName = deviceName;
     }
 
-    public void setDeviceName(@javax.annotation.Nullable String deviceName) {
-        this.deviceName = JsonNullable.<String> of(deviceName);
-    }
-
     public SessionInfo deviceType(@javax.annotation.Nullable String deviceType) {
-        this.deviceType = JsonNullable.<String> of(deviceType);
 
+        this.deviceType = deviceType;
         return this;
     }
 
@@ -589,31 +491,22 @@ public class SessionInfo {
      * @return deviceType
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceType() {
-        return deviceType.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceType_JsonNullable() {
+    public String getDeviceType() {
         return deviceType;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
-    public void setDeviceType_JsonNullable(JsonNullable<String> deviceType) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceType(@javax.annotation.Nullable String deviceType) {
         this.deviceType = deviceType;
     }
 
-    public void setDeviceType(@javax.annotation.Nullable String deviceType) {
-        this.deviceType = JsonNullable.<String> of(deviceType);
-    }
-
     public SessionInfo nowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
-        this.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
 
+        this.nowPlayingItem = nowPlayingItem;
         return this;
     }
 
@@ -623,31 +516,22 @@ public class SessionInfo {
      * @return nowPlayingItem
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDto getNowPlayingItem() {
-        return nowPlayingItem.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItemDto> getNowPlayingItem_JsonNullable() {
+    public BaseItemDto getNowPlayingItem() {
         return nowPlayingItem;
     }
 
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
-    public void setNowPlayingItem_JsonNullable(JsonNullable<BaseItemDto> nowPlayingItem) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setNowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
         this.nowPlayingItem = nowPlayingItem;
     }
 
-    public void setNowPlayingItem(@javax.annotation.Nullable BaseItemDto nowPlayingItem) {
-        this.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
-    }
-
     public SessionInfo fullNowPlayingItem(@javax.annotation.Nullable BaseItem fullNowPlayingItem) {
-        this.fullNowPlayingItem = JsonNullable.<BaseItem> of(fullNowPlayingItem);
 
+        this.fullNowPlayingItem = fullNowPlayingItem;
         return this;
     }
 
@@ -657,31 +541,22 @@ public class SessionInfo {
      * @return fullNowPlayingItem
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItem getFullNowPlayingItem() {
-        return fullNowPlayingItem.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_FULL_NOW_PLAYING_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItem> getFullNowPlayingItem_JsonNullable() {
+    public BaseItem getFullNowPlayingItem() {
         return fullNowPlayingItem;
     }
 
     @JsonProperty(JSON_PROPERTY_FULL_NOW_PLAYING_ITEM)
-    public void setFullNowPlayingItem_JsonNullable(JsonNullable<BaseItem> fullNowPlayingItem) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setFullNowPlayingItem(@javax.annotation.Nullable BaseItem fullNowPlayingItem) {
         this.fullNowPlayingItem = fullNowPlayingItem;
     }
 
-    public void setFullNowPlayingItem(@javax.annotation.Nullable BaseItem fullNowPlayingItem) {
-        this.fullNowPlayingItem = JsonNullable.<BaseItem> of(fullNowPlayingItem);
-    }
-
     public SessionInfo nowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
-        this.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
 
+        this.nowViewingItem = nowViewingItem;
         return this;
     }
 
@@ -692,31 +567,22 @@ public class SessionInfo {
      * @return nowViewingItem
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public BaseItemDto getNowViewingItem() {
-        return nowViewingItem.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<BaseItemDto> getNowViewingItem_JsonNullable() {
+    public BaseItemDto getNowViewingItem() {
         return nowViewingItem;
     }
 
     @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
-    public void setNowViewingItem_JsonNullable(JsonNullable<BaseItemDto> nowViewingItem) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setNowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
         this.nowViewingItem = nowViewingItem;
     }
 
-    public void setNowViewingItem(@javax.annotation.Nullable BaseItemDto nowViewingItem) {
-        this.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
-    }
-
     public SessionInfo deviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
 
+        this.deviceId = deviceId;
         return this;
     }
 
@@ -726,31 +592,22 @@ public class SessionInfo {
      * @return deviceId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDeviceId() {
-        return deviceId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDeviceId_JsonNullable() {
+    public String getDeviceId() {
         return deviceId;
     }
 
     @JsonProperty(JSON_PROPERTY_DEVICE_ID)
-    public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
         this.deviceId = deviceId;
     }
 
-    public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-        this.deviceId = JsonNullable.<String> of(deviceId);
-    }
-
     public SessionInfo applicationVersion(@javax.annotation.Nullable String applicationVersion) {
-        this.applicationVersion = JsonNullable.<String> of(applicationVersion);
 
+        this.applicationVersion = applicationVersion;
         return this;
     }
 
@@ -760,31 +617,22 @@ public class SessionInfo {
      * @return applicationVersion
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getApplicationVersion() {
-        return applicationVersion.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getApplicationVersion_JsonNullable() {
+    public String getApplicationVersion() {
         return applicationVersion;
     }
 
     @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
-    public void setApplicationVersion_JsonNullable(JsonNullable<String> applicationVersion) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setApplicationVersion(@javax.annotation.Nullable String applicationVersion) {
         this.applicationVersion = applicationVersion;
     }
 
-    public void setApplicationVersion(@javax.annotation.Nullable String applicationVersion) {
-        this.applicationVersion = JsonNullable.<String> of(applicationVersion);
-    }
-
     public SessionInfo transcodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
-        this.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
 
+        this.transcodingInfo = transcodingInfo;
         return this;
     }
 
@@ -794,26 +642,17 @@ public class SessionInfo {
      * @return transcodingInfo
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public TranscodingInfo getTranscodingInfo() {
-        return transcodingInfo.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<TranscodingInfo> getTranscodingInfo_JsonNullable() {
+    public TranscodingInfo getTranscodingInfo() {
         return transcodingInfo;
     }
 
     @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
-    public void setTranscodingInfo_JsonNullable(JsonNullable<TranscodingInfo> transcodingInfo) {
-        this.transcodingInfo = transcodingInfo;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingInfo(@javax.annotation.Nullable TranscodingInfo transcodingInfo) {
-        this.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
+        this.transcodingInfo = transcodingInfo;
     }
 
     /**
@@ -856,20 +695,16 @@ public class SessionInfo {
     }
 
     public SessionInfo nowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
-        this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
 
+        this.nowPlayingQueue = nowPlayingQueue;
         return this;
     }
 
     public SessionInfo addNowPlayingQueueItem(QueueItem nowPlayingQueueItem) {
-        if (this.nowPlayingQueue == null || !this.nowPlayingQueue.isPresent()) {
-            this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(new ArrayList<>());
+        if (this.nowPlayingQueue == null) {
+            this.nowPlayingQueue = new ArrayList<>();
         }
-        try {
-            this.nowPlayingQueue.get().add(nowPlayingQueueItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.nowPlayingQueue.add(nowPlayingQueueItem);
         return this;
     }
 
@@ -879,43 +714,30 @@ public class SessionInfo {
      * @return nowPlayingQueue
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<QueueItem> getNowPlayingQueue() {
-        return nowPlayingQueue.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<QueueItem>> getNowPlayingQueue_JsonNullable() {
+    public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
 
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
-    public void setNowPlayingQueue_JsonNullable(JsonNullable<List<QueueItem>> nowPlayingQueue) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setNowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
         this.nowPlayingQueue = nowPlayingQueue;
     }
 
-    public void setNowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
-        this.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
-    }
-
     public SessionInfo nowPlayingQueueFullItems(@javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
-        this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
 
+        this.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
         return this;
     }
 
     public SessionInfo addNowPlayingQueueFullItemsItem(BaseItemDto nowPlayingQueueFullItemsItem) {
-        if (this.nowPlayingQueueFullItems == null || !this.nowPlayingQueueFullItems.isPresent()) {
-            this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(new ArrayList<>());
+        if (this.nowPlayingQueueFullItems == null) {
+            this.nowPlayingQueueFullItems = new ArrayList<>();
         }
-        try {
-            this.nowPlayingQueueFullItems.get().add(nowPlayingQueueFullItemsItem);
-        } catch (java.util.NoSuchElementException e) {
-            // this can never happen, as we make sure above that the value is present
-        }
+        this.nowPlayingQueueFullItems.add(nowPlayingQueueFullItemsItem);
         return this;
     }
 
@@ -925,26 +747,17 @@ public class SessionInfo {
      * @return nowPlayingQueueFullItems
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<BaseItemDto> getNowPlayingQueueFullItems() {
-        return nowPlayingQueueFullItems.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<BaseItemDto>> getNowPlayingQueueFullItems_JsonNullable() {
+    public List<BaseItemDto> getNowPlayingQueueFullItems() {
         return nowPlayingQueueFullItems;
     }
 
     @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
-    public void setNowPlayingQueueFullItems_JsonNullable(JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems) {
-        this.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowPlayingQueueFullItems(@javax.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems) {
-        this.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
+        this.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
     }
 
     public SessionInfo hasCustomDeviceName(@javax.annotation.Nullable Boolean hasCustomDeviceName) {
@@ -973,8 +786,8 @@ public class SessionInfo {
     }
 
     public SessionInfo playlistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
 
+        this.playlistItemId = playlistItemId;
         return this;
     }
 
@@ -984,31 +797,22 @@ public class SessionInfo {
      * @return playlistItemId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPlaylistItemId() {
-        return playlistItemId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPlaylistItemId_JsonNullable() {
+    public String getPlaylistItemId() {
         return playlistItemId;
     }
 
     @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
         this.playlistItemId = playlistItemId;
     }
 
-    public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
-        this.playlistItemId = JsonNullable.<String> of(playlistItemId);
-    }
-
     public SessionInfo serverId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
 
+        this.serverId = serverId;
         return this;
     }
 
@@ -1018,31 +822,22 @@ public class SessionInfo {
      * @return serverId
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getServerId() {
-        return serverId.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getServerId_JsonNullable() {
+    public String getServerId() {
         return serverId;
     }
 
     @JsonProperty(JSON_PROPERTY_SERVER_ID)
-    public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setServerId(@javax.annotation.Nullable String serverId) {
         this.serverId = serverId;
     }
 
-    public void setServerId(@javax.annotation.Nullable String serverId) {
-        this.serverId = JsonNullable.<String> of(serverId);
-    }
-
     public SessionInfo userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-        this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
 
+        this.userPrimaryImageTag = userPrimaryImageTag;
         return this;
     }
 
@@ -1052,26 +847,17 @@ public class SessionInfo {
      * @return userPrimaryImageTag
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUserPrimaryImageTag() {
-        return userPrimaryImageTag.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUserPrimaryImageTag_JsonNullable() {
+    public String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
     @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
-    public void setUserPrimaryImageTag_JsonNullable(JsonNullable<String> userPrimaryImageTag) {
-        this.userPrimaryImageTag = userPrimaryImageTag;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-        this.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
+        this.userPrimaryImageTag = userPrimaryImageTag;
     }
 
     /**
@@ -1080,26 +866,11 @@ public class SessionInfo {
      * @return supportedCommands
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public List<GeneralCommandType> getSupportedCommands() {
-
-        if (supportedCommands == null) {
-            supportedCommands = JsonNullable.<List<GeneralCommandType>> undefined();
-        }
-        return supportedCommands.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<List<GeneralCommandType>> getSupportedCommands_JsonNullable() {
+    public List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
-    }
-
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
-    private void setSupportedCommands_JsonNullable(JsonNullable<List<GeneralCommandType>> supportedCommands) {
-        this.supportedCommands = supportedCommands;
     }
 
     @Override
@@ -1111,60 +882,43 @@ public class SessionInfo {
             return false;
         }
         SessionInfo sessionInfo = (SessionInfo) o;
-        return equalsNullable(this.playState, sessionInfo.playState)
-                && equalsNullable(this.additionalUsers, sessionInfo.additionalUsers)
-                && equalsNullable(this.capabilities, sessionInfo.capabilities)
-                && equalsNullable(this.remoteEndPoint, sessionInfo.remoteEndPoint)
-                && equalsNullable(this.playableMediaTypes, sessionInfo.playableMediaTypes)
-                && equalsNullable(this.id, sessionInfo.id) && Objects.equals(this.userId, sessionInfo.userId)
-                && equalsNullable(this.userName, sessionInfo.userName)
-                && equalsNullable(this.client, sessionInfo.client)
+        return Objects.equals(this.playState, sessionInfo.playState)
+                && Objects.equals(this.additionalUsers, sessionInfo.additionalUsers)
+                && Objects.equals(this.capabilities, sessionInfo.capabilities)
+                && Objects.equals(this.remoteEndPoint, sessionInfo.remoteEndPoint)
+                && Objects.equals(this.playableMediaTypes, sessionInfo.playableMediaTypes)
+                && Objects.equals(this.id, sessionInfo.id) && Objects.equals(this.userId, sessionInfo.userId)
+                && Objects.equals(this.userName, sessionInfo.userName)
+                && Objects.equals(this.client, sessionInfo.client)
                 && Objects.equals(this.lastActivityDate, sessionInfo.lastActivityDate)
                 && Objects.equals(this.lastPlaybackCheckIn, sessionInfo.lastPlaybackCheckIn)
-                && equalsNullable(this.deviceName, sessionInfo.deviceName)
-                && equalsNullable(this.deviceType, sessionInfo.deviceType)
-                && equalsNullable(this.nowPlayingItem, sessionInfo.nowPlayingItem)
-                && equalsNullable(this.fullNowPlayingItem, sessionInfo.fullNowPlayingItem)
-                && equalsNullable(this.nowViewingItem, sessionInfo.nowViewingItem)
-                && equalsNullable(this.deviceId, sessionInfo.deviceId)
-                && equalsNullable(this.applicationVersion, sessionInfo.applicationVersion)
-                && equalsNullable(this.transcodingInfo, sessionInfo.transcodingInfo)
+                && Objects.equals(this.deviceName, sessionInfo.deviceName)
+                && Objects.equals(this.deviceType, sessionInfo.deviceType)
+                && Objects.equals(this.nowPlayingItem, sessionInfo.nowPlayingItem)
+                && Objects.equals(this.fullNowPlayingItem, sessionInfo.fullNowPlayingItem)
+                && Objects.equals(this.nowViewingItem, sessionInfo.nowViewingItem)
+                && Objects.equals(this.deviceId, sessionInfo.deviceId)
+                && Objects.equals(this.applicationVersion, sessionInfo.applicationVersion)
+                && Objects.equals(this.transcodingInfo, sessionInfo.transcodingInfo)
                 && Objects.equals(this.isActive, sessionInfo.isActive)
                 && Objects.equals(this.supportsMediaControl, sessionInfo.supportsMediaControl)
                 && Objects.equals(this.supportsRemoteControl, sessionInfo.supportsRemoteControl)
-                && equalsNullable(this.nowPlayingQueue, sessionInfo.nowPlayingQueue)
-                && equalsNullable(this.nowPlayingQueueFullItems, sessionInfo.nowPlayingQueueFullItems)
+                && Objects.equals(this.nowPlayingQueue, sessionInfo.nowPlayingQueue)
+                && Objects.equals(this.nowPlayingQueueFullItems, sessionInfo.nowPlayingQueueFullItems)
                 && Objects.equals(this.hasCustomDeviceName, sessionInfo.hasCustomDeviceName)
-                && equalsNullable(this.playlistItemId, sessionInfo.playlistItemId)
-                && equalsNullable(this.serverId, sessionInfo.serverId)
-                && equalsNullable(this.userPrimaryImageTag, sessionInfo.userPrimaryImageTag)
-                && equalsNullable(this.supportedCommands, sessionInfo.supportedCommands);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.playlistItemId, sessionInfo.playlistItemId)
+                && Objects.equals(this.serverId, sessionInfo.serverId)
+                && Objects.equals(this.userPrimaryImageTag, sessionInfo.userPrimaryImageTag)
+                && Objects.equals(this.supportedCommands, sessionInfo.supportedCommands);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(playState), hashCodeNullable(additionalUsers),
-                hashCodeNullable(capabilities), hashCodeNullable(remoteEndPoint), hashCodeNullable(playableMediaTypes),
-                hashCodeNullable(id), userId, hashCodeNullable(userName), hashCodeNullable(client), lastActivityDate,
-                lastPlaybackCheckIn, hashCodeNullable(deviceName), hashCodeNullable(deviceType),
-                hashCodeNullable(nowPlayingItem), hashCodeNullable(fullNowPlayingItem),
-                hashCodeNullable(nowViewingItem), hashCodeNullable(deviceId), hashCodeNullable(applicationVersion),
-                hashCodeNullable(transcodingInfo), isActive, supportsMediaControl, supportsRemoteControl,
-                hashCodeNullable(nowPlayingQueue), hashCodeNullable(nowPlayingQueueFullItems), hasCustomDeviceName,
-                hashCodeNullable(playlistItemId), hashCodeNullable(serverId), hashCodeNullable(userPrimaryImageTag),
-                hashCodeNullable(supportedCommands));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(playState, additionalUsers, capabilities, remoteEndPoint, playableMediaTypes, id, userId,
+                userName, client, lastActivityDate, lastPlaybackCheckIn, deviceName, deviceType, nowPlayingItem,
+                fullNowPlayingItem, nowViewingItem, deviceId, applicationVersion, transcodingInfo, isActive,
+                supportsMediaControl, supportsRemoteControl, nowPlayingQueue, nowPlayingQueueFullItems,
+                hasCustomDeviceName, playlistItemId, serverId, userPrimaryImageTag, supportedCommands);
     }
 
     @Override
@@ -1228,61 +982,31 @@ public class SessionInfo {
         }
 
         public SessionInfo.Builder playState(PlayerStateInfo playState) {
-            this.instance.playState = JsonNullable.<PlayerStateInfo> of(playState);
-            return this;
-        }
-
-        public SessionInfo.Builder playState(JsonNullable<PlayerStateInfo> playState) {
             this.instance.playState = playState;
             return this;
         }
 
         public SessionInfo.Builder additionalUsers(List<SessionUserInfo> additionalUsers) {
-            this.instance.additionalUsers = JsonNullable.<List<SessionUserInfo>> of(additionalUsers);
-            return this;
-        }
-
-        public SessionInfo.Builder additionalUsers(JsonNullable<List<SessionUserInfo>> additionalUsers) {
             this.instance.additionalUsers = additionalUsers;
             return this;
         }
 
         public SessionInfo.Builder capabilities(ClientCapabilities capabilities) {
-            this.instance.capabilities = JsonNullable.<ClientCapabilities> of(capabilities);
-            return this;
-        }
-
-        public SessionInfo.Builder capabilities(JsonNullable<ClientCapabilities> capabilities) {
             this.instance.capabilities = capabilities;
             return this;
         }
 
         public SessionInfo.Builder remoteEndPoint(String remoteEndPoint) {
-            this.instance.remoteEndPoint = JsonNullable.<String> of(remoteEndPoint);
-            return this;
-        }
-
-        public SessionInfo.Builder remoteEndPoint(JsonNullable<String> remoteEndPoint) {
             this.instance.remoteEndPoint = remoteEndPoint;
             return this;
         }
 
         public SessionInfo.Builder playableMediaTypes(List<String> playableMediaTypes) {
-            this.instance.playableMediaTypes = JsonNullable.<List<String>> of(playableMediaTypes);
-            return this;
-        }
-
-        public SessionInfo.Builder playableMediaTypes(JsonNullable<List<String>> playableMediaTypes) {
             this.instance.playableMediaTypes = playableMediaTypes;
             return this;
         }
 
         public SessionInfo.Builder id(String id) {
-            this.instance.id = JsonNullable.<String> of(id);
-            return this;
-        }
-
-        public SessionInfo.Builder id(JsonNullable<String> id) {
             this.instance.id = id;
             return this;
         }
@@ -1293,21 +1017,11 @@ public class SessionInfo {
         }
 
         public SessionInfo.Builder userName(String userName) {
-            this.instance.userName = JsonNullable.<String> of(userName);
-            return this;
-        }
-
-        public SessionInfo.Builder userName(JsonNullable<String> userName) {
             this.instance.userName = userName;
             return this;
         }
 
         public SessionInfo.Builder client(String client) {
-            this.instance.client = JsonNullable.<String> of(client);
-            return this;
-        }
-
-        public SessionInfo.Builder client(JsonNullable<String> client) {
             this.instance.client = client;
             return this;
         }
@@ -1323,81 +1037,41 @@ public class SessionInfo {
         }
 
         public SessionInfo.Builder deviceName(String deviceName) {
-            this.instance.deviceName = JsonNullable.<String> of(deviceName);
-            return this;
-        }
-
-        public SessionInfo.Builder deviceName(JsonNullable<String> deviceName) {
             this.instance.deviceName = deviceName;
             return this;
         }
 
         public SessionInfo.Builder deviceType(String deviceType) {
-            this.instance.deviceType = JsonNullable.<String> of(deviceType);
-            return this;
-        }
-
-        public SessionInfo.Builder deviceType(JsonNullable<String> deviceType) {
             this.instance.deviceType = deviceType;
             return this;
         }
 
         public SessionInfo.Builder nowPlayingItem(BaseItemDto nowPlayingItem) {
-            this.instance.nowPlayingItem = JsonNullable.<BaseItemDto> of(nowPlayingItem);
-            return this;
-        }
-
-        public SessionInfo.Builder nowPlayingItem(JsonNullable<BaseItemDto> nowPlayingItem) {
             this.instance.nowPlayingItem = nowPlayingItem;
             return this;
         }
 
         public SessionInfo.Builder fullNowPlayingItem(BaseItem fullNowPlayingItem) {
-            this.instance.fullNowPlayingItem = JsonNullable.<BaseItem> of(fullNowPlayingItem);
-            return this;
-        }
-
-        public SessionInfo.Builder fullNowPlayingItem(JsonNullable<BaseItem> fullNowPlayingItem) {
             this.instance.fullNowPlayingItem = fullNowPlayingItem;
             return this;
         }
 
         public SessionInfo.Builder nowViewingItem(BaseItemDto nowViewingItem) {
-            this.instance.nowViewingItem = JsonNullable.<BaseItemDto> of(nowViewingItem);
-            return this;
-        }
-
-        public SessionInfo.Builder nowViewingItem(JsonNullable<BaseItemDto> nowViewingItem) {
             this.instance.nowViewingItem = nowViewingItem;
             return this;
         }
 
         public SessionInfo.Builder deviceId(String deviceId) {
-            this.instance.deviceId = JsonNullable.<String> of(deviceId);
-            return this;
-        }
-
-        public SessionInfo.Builder deviceId(JsonNullable<String> deviceId) {
             this.instance.deviceId = deviceId;
             return this;
         }
 
         public SessionInfo.Builder applicationVersion(String applicationVersion) {
-            this.instance.applicationVersion = JsonNullable.<String> of(applicationVersion);
-            return this;
-        }
-
-        public SessionInfo.Builder applicationVersion(JsonNullable<String> applicationVersion) {
             this.instance.applicationVersion = applicationVersion;
             return this;
         }
 
         public SessionInfo.Builder transcodingInfo(TranscodingInfo transcodingInfo) {
-            this.instance.transcodingInfo = JsonNullable.<TranscodingInfo> of(transcodingInfo);
-            return this;
-        }
-
-        public SessionInfo.Builder transcodingInfo(JsonNullable<TranscodingInfo> transcodingInfo) {
             this.instance.transcodingInfo = transcodingInfo;
             return this;
         }
@@ -1418,21 +1092,11 @@ public class SessionInfo {
         }
 
         public SessionInfo.Builder nowPlayingQueue(List<QueueItem> nowPlayingQueue) {
-            this.instance.nowPlayingQueue = JsonNullable.<List<QueueItem>> of(nowPlayingQueue);
-            return this;
-        }
-
-        public SessionInfo.Builder nowPlayingQueue(JsonNullable<List<QueueItem>> nowPlayingQueue) {
             this.instance.nowPlayingQueue = nowPlayingQueue;
             return this;
         }
 
         public SessionInfo.Builder nowPlayingQueueFullItems(List<BaseItemDto> nowPlayingQueueFullItems) {
-            this.instance.nowPlayingQueueFullItems = JsonNullable.<List<BaseItemDto>> of(nowPlayingQueueFullItems);
-            return this;
-        }
-
-        public SessionInfo.Builder nowPlayingQueueFullItems(JsonNullable<List<BaseItemDto>> nowPlayingQueueFullItems) {
             this.instance.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
             return this;
         }
@@ -1443,41 +1107,21 @@ public class SessionInfo {
         }
 
         public SessionInfo.Builder playlistItemId(String playlistItemId) {
-            this.instance.playlistItemId = JsonNullable.<String> of(playlistItemId);
-            return this;
-        }
-
-        public SessionInfo.Builder playlistItemId(JsonNullable<String> playlistItemId) {
             this.instance.playlistItemId = playlistItemId;
             return this;
         }
 
         public SessionInfo.Builder serverId(String serverId) {
-            this.instance.serverId = JsonNullable.<String> of(serverId);
-            return this;
-        }
-
-        public SessionInfo.Builder serverId(JsonNullable<String> serverId) {
             this.instance.serverId = serverId;
             return this;
         }
 
         public SessionInfo.Builder userPrimaryImageTag(String userPrimaryImageTag) {
-            this.instance.userPrimaryImageTag = JsonNullable.<String> of(userPrimaryImageTag);
-            return this;
-        }
-
-        public SessionInfo.Builder userPrimaryImageTag(JsonNullable<String> userPrimaryImageTag) {
             this.instance.userPrimaryImageTag = userPrimaryImageTag;
             return this;
         }
 
         public SessionInfo.Builder supportedCommands(List<GeneralCommandType> supportedCommands) {
-            this.instance.supportedCommands = JsonNullable.<List<GeneralCommandType>> of(supportedCommands);
-            return this;
-        }
-
-        public SessionInfo.Builder supportedCommands(JsonNullable<List<GeneralCommandType>> supportedCommands) {
             this.instance.supportedCommands = supportedCommands;
             return this;
         }

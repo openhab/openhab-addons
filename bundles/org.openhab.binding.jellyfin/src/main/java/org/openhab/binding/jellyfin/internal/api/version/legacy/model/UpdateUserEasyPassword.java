@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.legacy.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,11 +32,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdateUserEasyPassword {
     public static final String JSON_PROPERTY_NEW_PASSWORD = "NewPassword";
     @javax.annotation.Nullable
-    private JsonNullable<String> newPassword = JsonNullable.<String> undefined();
+    private String newPassword;
 
     public static final String JSON_PROPERTY_NEW_PW = "NewPw";
     @javax.annotation.Nullable
-    private JsonNullable<String> newPw = JsonNullable.<String> undefined();
+    private String newPw;
 
     public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
     @javax.annotation.Nullable
@@ -50,8 +46,8 @@ public class UpdateUserEasyPassword {
     }
 
     public UpdateUserEasyPassword newPassword(@javax.annotation.Nullable String newPassword) {
-        this.newPassword = JsonNullable.<String> of(newPassword);
 
+        this.newPassword = newPassword;
         return this;
     }
 
@@ -61,31 +57,22 @@ public class UpdateUserEasyPassword {
      * @return newPassword
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getNewPassword() {
-        return newPassword.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NEW_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getNewPassword_JsonNullable() {
+    public String getNewPassword() {
         return newPassword;
     }
 
     @JsonProperty(JSON_PROPERTY_NEW_PASSWORD)
-    public void setNewPassword_JsonNullable(JsonNullable<String> newPassword) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setNewPassword(@javax.annotation.Nullable String newPassword) {
         this.newPassword = newPassword;
     }
 
-    public void setNewPassword(@javax.annotation.Nullable String newPassword) {
-        this.newPassword = JsonNullable.<String> of(newPassword);
-    }
-
     public UpdateUserEasyPassword newPw(@javax.annotation.Nullable String newPw) {
-        this.newPw = JsonNullable.<String> of(newPw);
 
+        this.newPw = newPw;
         return this;
     }
 
@@ -95,26 +82,17 @@ public class UpdateUserEasyPassword {
      * @return newPw
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getNewPw() {
-        return newPw.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NEW_PW)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getNewPw_JsonNullable() {
+    public String getNewPw() {
         return newPw;
     }
 
     @JsonProperty(JSON_PROPERTY_NEW_PW)
-    public void setNewPw_JsonNullable(JsonNullable<String> newPw) {
-        this.newPw = newPw;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNewPw(@javax.annotation.Nullable String newPw) {
-        this.newPw = JsonNullable.<String> of(newPw);
+        this.newPw = newPw;
     }
 
     public UpdateUserEasyPassword resetPassword(@javax.annotation.Nullable Boolean resetPassword) {
@@ -151,26 +129,14 @@ public class UpdateUserEasyPassword {
             return false;
         }
         UpdateUserEasyPassword updateUserEasyPassword = (UpdateUserEasyPassword) o;
-        return equalsNullable(this.newPassword, updateUserEasyPassword.newPassword)
-                && equalsNullable(this.newPw, updateUserEasyPassword.newPw)
+        return Objects.equals(this.newPassword, updateUserEasyPassword.newPassword)
+                && Objects.equals(this.newPw, updateUserEasyPassword.newPw)
                 && Objects.equals(this.resetPassword, updateUserEasyPassword.resetPassword);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(newPassword), hashCodeNullable(newPw), resetPassword);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(newPassword, newPw, resetPassword);
     }
 
     @Override
@@ -208,21 +174,11 @@ public class UpdateUserEasyPassword {
         }
 
         public UpdateUserEasyPassword.Builder newPassword(String newPassword) {
-            this.instance.newPassword = JsonNullable.<String> of(newPassword);
-            return this;
-        }
-
-        public UpdateUserEasyPassword.Builder newPassword(JsonNullable<String> newPassword) {
             this.instance.newPassword = newPassword;
             return this;
         }
 
         public UpdateUserEasyPassword.Builder newPw(String newPw) {
-            this.instance.newPw = JsonNullable.<String> of(newPw);
-            return this;
-        }
-
-        public UpdateUserEasyPassword.Builder newPw(JsonNullable<String> newPw) {
             this.instance.newPw = newPw;
             return this;
         }

@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,35 +35,35 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoteImageInfo {
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @javax.annotation.Nullable
-    private JsonNullable<String> providerName = JsonNullable.<String> undefined();
+    private String providerName;
 
     public static final String JSON_PROPERTY_URL = "Url";
     @javax.annotation.Nullable
-    private JsonNullable<String> url = JsonNullable.<String> undefined();
+    private String url;
 
     public static final String JSON_PROPERTY_THUMBNAIL_URL = "ThumbnailUrl";
     @javax.annotation.Nullable
-    private JsonNullable<String> thumbnailUrl = JsonNullable.<String> undefined();
+    private String thumbnailUrl;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> height = JsonNullable.<Integer> undefined();
+    private Integer height;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> width = JsonNullable.<Integer> undefined();
+    private Integer width;
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
     @javax.annotation.Nullable
-    private JsonNullable<Double> communityRating = JsonNullable.<Double> undefined();
+    private Double communityRating;
 
     public static final String JSON_PROPERTY_VOTE_COUNT = "VoteCount";
     @javax.annotation.Nullable
-    private JsonNullable<Integer> voteCount = JsonNullable.<Integer> undefined();
+    private Integer voteCount;
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
     @javax.annotation.Nullable
-    private JsonNullable<String> language = JsonNullable.<String> undefined();
+    private String language;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @javax.annotation.Nullable
@@ -81,8 +77,8 @@ public class RemoteImageInfo {
     }
 
     public RemoteImageInfo providerName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
 
+        this.providerName = providerName;
         return this;
     }
 
@@ -92,31 +88,22 @@ public class RemoteImageInfo {
      * @return providerName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getProviderName() {
-        return providerName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getProviderName_JsonNullable() {
+    public String getProviderName() {
         return providerName;
     }
 
     @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
-    public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setProviderName(@javax.annotation.Nullable String providerName) {
         this.providerName = providerName;
     }
 
-    public void setProviderName(@javax.annotation.Nullable String providerName) {
-        this.providerName = JsonNullable.<String> of(providerName);
-    }
-
     public RemoteImageInfo url(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
 
+        this.url = url;
         return this;
     }
 
@@ -126,31 +113,22 @@ public class RemoteImageInfo {
      * @return url
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getUrl() {
-        return url.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getUrl_JsonNullable() {
+    public String getUrl() {
         return url;
     }
 
     @JsonProperty(JSON_PROPERTY_URL)
-    public void setUrl_JsonNullable(JsonNullable<String> url) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setUrl(@javax.annotation.Nullable String url) {
         this.url = url;
     }
 
-    public void setUrl(@javax.annotation.Nullable String url) {
-        this.url = JsonNullable.<String> of(url);
-    }
-
     public RemoteImageInfo thumbnailUrl(@javax.annotation.Nullable String thumbnailUrl) {
-        this.thumbnailUrl = JsonNullable.<String> of(thumbnailUrl);
 
+        this.thumbnailUrl = thumbnailUrl;
         return this;
     }
 
@@ -160,31 +138,22 @@ public class RemoteImageInfo {
      * @return thumbnailUrl
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getThumbnailUrl_JsonNullable() {
+    public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
     @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
-    public void setThumbnailUrl_JsonNullable(JsonNullable<String> thumbnailUrl) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setThumbnailUrl(@javax.annotation.Nullable String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public void setThumbnailUrl(@javax.annotation.Nullable String thumbnailUrl) {
-        this.thumbnailUrl = JsonNullable.<String> of(thumbnailUrl);
-    }
-
     public RemoteImageInfo height(@javax.annotation.Nullable Integer height) {
-        this.height = JsonNullable.<Integer> of(height);
 
+        this.height = height;
         return this;
     }
 
@@ -194,31 +163,22 @@ public class RemoteImageInfo {
      * @return height
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getHeight() {
-        return height.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_HEIGHT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getHeight_JsonNullable() {
+    public Integer getHeight() {
         return height;
     }
 
     @JsonProperty(JSON_PROPERTY_HEIGHT)
-    public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setHeight(@javax.annotation.Nullable Integer height) {
         this.height = height;
     }
 
-    public void setHeight(@javax.annotation.Nullable Integer height) {
-        this.height = JsonNullable.<Integer> of(height);
-    }
-
     public RemoteImageInfo width(@javax.annotation.Nullable Integer width) {
-        this.width = JsonNullable.<Integer> of(width);
 
+        this.width = width;
         return this;
     }
 
@@ -228,31 +188,22 @@ public class RemoteImageInfo {
      * @return width
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getWidth() {
-        return width.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_WIDTH)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getWidth_JsonNullable() {
+    public Integer getWidth() {
         return width;
     }
 
     @JsonProperty(JSON_PROPERTY_WIDTH)
-    public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setWidth(@javax.annotation.Nullable Integer width) {
         this.width = width;
     }
 
-    public void setWidth(@javax.annotation.Nullable Integer width) {
-        this.width = JsonNullable.<Integer> of(width);
-    }
-
     public RemoteImageInfo communityRating(@javax.annotation.Nullable Double communityRating) {
-        this.communityRating = JsonNullable.<Double> of(communityRating);
 
+        this.communityRating = communityRating;
         return this;
     }
 
@@ -262,31 +213,22 @@ public class RemoteImageInfo {
      * @return communityRating
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Double getCommunityRating() {
-        return communityRating.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Double> getCommunityRating_JsonNullable() {
+    public Double getCommunityRating() {
         return communityRating;
     }
 
     @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
-    public void setCommunityRating_JsonNullable(JsonNullable<Double> communityRating) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCommunityRating(@javax.annotation.Nullable Double communityRating) {
         this.communityRating = communityRating;
     }
 
-    public void setCommunityRating(@javax.annotation.Nullable Double communityRating) {
-        this.communityRating = JsonNullable.<Double> of(communityRating);
-    }
-
     public RemoteImageInfo voteCount(@javax.annotation.Nullable Integer voteCount) {
-        this.voteCount = JsonNullable.<Integer> of(voteCount);
 
+        this.voteCount = voteCount;
         return this;
     }
 
@@ -296,31 +238,22 @@ public class RemoteImageInfo {
      * @return voteCount
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public Integer getVoteCount() {
-        return voteCount.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<Integer> getVoteCount_JsonNullable() {
+    public Integer getVoteCount() {
         return voteCount;
     }
 
     @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
-    public void setVoteCount_JsonNullable(JsonNullable<Integer> voteCount) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setVoteCount(@javax.annotation.Nullable Integer voteCount) {
         this.voteCount = voteCount;
     }
 
-    public void setVoteCount(@javax.annotation.Nullable Integer voteCount) {
-        this.voteCount = JsonNullable.<Integer> of(voteCount);
-    }
-
     public RemoteImageInfo language(@javax.annotation.Nullable String language) {
-        this.language = JsonNullable.<String> of(language);
 
+        this.language = language;
         return this;
     }
 
@@ -330,26 +263,17 @@ public class RemoteImageInfo {
      * @return language
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getLanguage() {
-        return language.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_LANGUAGE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getLanguage_JsonNullable() {
+    public String getLanguage() {
         return language;
     }
 
     @JsonProperty(JSON_PROPERTY_LANGUAGE)
-    public void setLanguage_JsonNullable(JsonNullable<String> language) {
-        this.language = language;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLanguage(@javax.annotation.Nullable String language) {
-        this.language = JsonNullable.<String> of(language);
+        this.language = language;
     }
 
     public RemoteImageInfo type(@javax.annotation.Nullable ImageType type) {
@@ -411,35 +335,22 @@ public class RemoteImageInfo {
             return false;
         }
         RemoteImageInfo remoteImageInfo = (RemoteImageInfo) o;
-        return equalsNullable(this.providerName, remoteImageInfo.providerName)
-                && equalsNullable(this.url, remoteImageInfo.url)
-                && equalsNullable(this.thumbnailUrl, remoteImageInfo.thumbnailUrl)
-                && equalsNullable(this.height, remoteImageInfo.height)
-                && equalsNullable(this.width, remoteImageInfo.width)
-                && equalsNullable(this.communityRating, remoteImageInfo.communityRating)
-                && equalsNullable(this.voteCount, remoteImageInfo.voteCount)
-                && equalsNullable(this.language, remoteImageInfo.language)
+        return Objects.equals(this.providerName, remoteImageInfo.providerName)
+                && Objects.equals(this.url, remoteImageInfo.url)
+                && Objects.equals(this.thumbnailUrl, remoteImageInfo.thumbnailUrl)
+                && Objects.equals(this.height, remoteImageInfo.height)
+                && Objects.equals(this.width, remoteImageInfo.width)
+                && Objects.equals(this.communityRating, remoteImageInfo.communityRating)
+                && Objects.equals(this.voteCount, remoteImageInfo.voteCount)
+                && Objects.equals(this.language, remoteImageInfo.language)
                 && Objects.equals(this.type, remoteImageInfo.type)
                 && Objects.equals(this.ratingType, remoteImageInfo.ratingType);
     }
 
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(providerName), hashCodeNullable(url), hashCodeNullable(thumbnailUrl),
-                hashCodeNullable(height), hashCodeNullable(width), hashCodeNullable(communityRating),
-                hashCodeNullable(voteCount), hashCodeNullable(language), type, ratingType);
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(providerName, url, thumbnailUrl, height, width, communityRating, voteCount, language, type,
+                ratingType);
     }
 
     @Override
@@ -484,81 +395,41 @@ public class RemoteImageInfo {
         }
 
         public RemoteImageInfo.Builder providerName(String providerName) {
-            this.instance.providerName = JsonNullable.<String> of(providerName);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder providerName(JsonNullable<String> providerName) {
             this.instance.providerName = providerName;
             return this;
         }
 
         public RemoteImageInfo.Builder url(String url) {
-            this.instance.url = JsonNullable.<String> of(url);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder url(JsonNullable<String> url) {
             this.instance.url = url;
             return this;
         }
 
         public RemoteImageInfo.Builder thumbnailUrl(String thumbnailUrl) {
-            this.instance.thumbnailUrl = JsonNullable.<String> of(thumbnailUrl);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder thumbnailUrl(JsonNullable<String> thumbnailUrl) {
             this.instance.thumbnailUrl = thumbnailUrl;
             return this;
         }
 
         public RemoteImageInfo.Builder height(Integer height) {
-            this.instance.height = JsonNullable.<Integer> of(height);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder height(JsonNullable<Integer> height) {
             this.instance.height = height;
             return this;
         }
 
         public RemoteImageInfo.Builder width(Integer width) {
-            this.instance.width = JsonNullable.<Integer> of(width);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder width(JsonNullable<Integer> width) {
             this.instance.width = width;
             return this;
         }
 
         public RemoteImageInfo.Builder communityRating(Double communityRating) {
-            this.instance.communityRating = JsonNullable.<Double> of(communityRating);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder communityRating(JsonNullable<Double> communityRating) {
             this.instance.communityRating = communityRating;
             return this;
         }
 
         public RemoteImageInfo.Builder voteCount(Integer voteCount) {
-            this.instance.voteCount = JsonNullable.<Integer> of(voteCount);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder voteCount(JsonNullable<Integer> voteCount) {
             this.instance.voteCount = voteCount;
             return this;
         }
 
         public RemoteImageInfo.Builder language(String language) {
-            this.instance.language = JsonNullable.<String> of(language);
-            return this;
-        }
-
-        public RemoteImageInfo.Builder language(JsonNullable<String> language) {
             this.instance.language = language;
             return this;
         }

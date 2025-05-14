@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,26 +33,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CountryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @javax.annotation.Nullable
-    private JsonNullable<String> name = JsonNullable.<String> undefined();
+    private String name;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
     @javax.annotation.Nullable
-    private JsonNullable<String> displayName = JsonNullable.<String> undefined();
+    private String displayName;
 
     public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME = "TwoLetterISORegionName";
     @javax.annotation.Nullable
-    private JsonNullable<String> twoLetterISORegionName = JsonNullable.<String> undefined();
+    private String twoLetterISORegionName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME = "ThreeLetterISORegionName";
     @javax.annotation.Nullable
-    private JsonNullable<String> threeLetterISORegionName = JsonNullable.<String> undefined();
+    private String threeLetterISORegionName;
 
     public CountryInfo() {
     }
 
     public CountryInfo name(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
 
+        this.name = name;
         return this;
     }
 
@@ -66,31 +62,22 @@ public class CountryInfo {
      * @return name
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getName() {
-        return name.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getName_JsonNullable() {
+    public String getName() {
         return name;
     }
 
     @JsonProperty(JSON_PROPERTY_NAME)
-    public void setName_JsonNullable(JsonNullable<String> name) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setName(@javax.annotation.Nullable String name) {
         this.name = name;
     }
 
-    public void setName(@javax.annotation.Nullable String name) {
-        this.name = JsonNullable.<String> of(name);
-    }
-
     public CountryInfo displayName(@javax.annotation.Nullable String displayName) {
-        this.displayName = JsonNullable.<String> of(displayName);
 
+        this.displayName = displayName;
         return this;
     }
 
@@ -100,31 +87,22 @@ public class CountryInfo {
      * @return displayName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getDisplayName() {
-        return displayName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getDisplayName_JsonNullable() {
+    public String getDisplayName() {
         return displayName;
     }
 
     @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
-    public void setDisplayName_JsonNullable(JsonNullable<String> displayName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setDisplayName(@javax.annotation.Nullable String displayName) {
         this.displayName = displayName;
     }
 
-    public void setDisplayName(@javax.annotation.Nullable String displayName) {
-        this.displayName = JsonNullable.<String> of(displayName);
-    }
-
     public CountryInfo twoLetterISORegionName(@javax.annotation.Nullable String twoLetterISORegionName) {
-        this.twoLetterISORegionName = JsonNullable.<String> of(twoLetterISORegionName);
 
+        this.twoLetterISORegionName = twoLetterISORegionName;
         return this;
     }
 
@@ -134,31 +112,22 @@ public class CountryInfo {
      * @return twoLetterISORegionName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getTwoLetterISORegionName() {
-        return twoLetterISORegionName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getTwoLetterISORegionName_JsonNullable() {
+    public String getTwoLetterISORegionName() {
         return twoLetterISORegionName;
     }
 
     @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
-    public void setTwoLetterISORegionName_JsonNullable(JsonNullable<String> twoLetterISORegionName) {
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setTwoLetterISORegionName(@javax.annotation.Nullable String twoLetterISORegionName) {
         this.twoLetterISORegionName = twoLetterISORegionName;
     }
 
-    public void setTwoLetterISORegionName(@javax.annotation.Nullable String twoLetterISORegionName) {
-        this.twoLetterISORegionName = JsonNullable.<String> of(twoLetterISORegionName);
-    }
-
     public CountryInfo threeLetterISORegionName(@javax.annotation.Nullable String threeLetterISORegionName) {
-        this.threeLetterISORegionName = JsonNullable.<String> of(threeLetterISORegionName);
 
+        this.threeLetterISORegionName = threeLetterISORegionName;
         return this;
     }
 
@@ -168,26 +137,17 @@ public class CountryInfo {
      * @return threeLetterISORegionName
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getThreeLetterISORegionName() {
-        return threeLetterISORegionName.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getThreeLetterISORegionName_JsonNullable() {
+    public String getThreeLetterISORegionName() {
         return threeLetterISORegionName;
     }
 
     @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
-    public void setThreeLetterISORegionName_JsonNullable(JsonNullable<String> threeLetterISORegionName) {
-        this.threeLetterISORegionName = threeLetterISORegionName;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThreeLetterISORegionName(@javax.annotation.Nullable String threeLetterISORegionName) {
-        this.threeLetterISORegionName = JsonNullable.<String> of(threeLetterISORegionName);
+        this.threeLetterISORegionName = threeLetterISORegionName;
     }
 
     @Override
@@ -199,27 +159,14 @@ public class CountryInfo {
             return false;
         }
         CountryInfo countryInfo = (CountryInfo) o;
-        return equalsNullable(this.name, countryInfo.name) && equalsNullable(this.displayName, countryInfo.displayName)
-                && equalsNullable(this.twoLetterISORegionName, countryInfo.twoLetterISORegionName)
-                && equalsNullable(this.threeLetterISORegionName, countryInfo.threeLetterISORegionName);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+        return Objects.equals(this.name, countryInfo.name) && Objects.equals(this.displayName, countryInfo.displayName)
+                && Objects.equals(this.twoLetterISORegionName, countryInfo.twoLetterISORegionName)
+                && Objects.equals(this.threeLetterISORegionName, countryInfo.threeLetterISORegionName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashCodeNullable(name), hashCodeNullable(displayName),
-                hashCodeNullable(twoLetterISORegionName), hashCodeNullable(threeLetterISORegionName));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, displayName, twoLetterISORegionName, threeLetterISORegionName);
     }
 
     @Override
@@ -258,41 +205,21 @@ public class CountryInfo {
         }
 
         public CountryInfo.Builder name(String name) {
-            this.instance.name = JsonNullable.<String> of(name);
-            return this;
-        }
-
-        public CountryInfo.Builder name(JsonNullable<String> name) {
             this.instance.name = name;
             return this;
         }
 
         public CountryInfo.Builder displayName(String displayName) {
-            this.instance.displayName = JsonNullable.<String> of(displayName);
-            return this;
-        }
-
-        public CountryInfo.Builder displayName(JsonNullable<String> displayName) {
             this.instance.displayName = displayName;
             return this;
         }
 
         public CountryInfo.Builder twoLetterISORegionName(String twoLetterISORegionName) {
-            this.instance.twoLetterISORegionName = JsonNullable.<String> of(twoLetterISORegionName);
-            return this;
-        }
-
-        public CountryInfo.Builder twoLetterISORegionName(JsonNullable<String> twoLetterISORegionName) {
             this.instance.twoLetterISORegionName = twoLetterISORegionName;
             return this;
         }
 
         public CountryInfo.Builder threeLetterISORegionName(String threeLetterISORegionName) {
-            this.instance.threeLetterISORegionName = JsonNullable.<String> of(threeLetterISORegionName);
-            return this;
-        }
-
-        public CountryInfo.Builder threeLetterISORegionName(JsonNullable<String> threeLetterISORegionName) {
             this.instance.threeLetterISORegionName = threeLetterISORegionName;
             return this;
         }

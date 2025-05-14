@@ -17,12 +17,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.version.current.model;
 
-import java.util.Arrays;
 import java.util.Objects;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -39,7 +35,7 @@ public class CreateUserByName {
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
     @javax.annotation.Nullable
-    private JsonNullable<String> password = JsonNullable.<String> undefined();
+    private String password;
 
     public CreateUserByName() {
     }
@@ -70,8 +66,8 @@ public class CreateUserByName {
     }
 
     public CreateUserByName password(@javax.annotation.Nullable String password) {
-        this.password = JsonNullable.<String> of(password);
 
+        this.password = password;
         return this;
     }
 
@@ -81,26 +77,17 @@ public class CreateUserByName {
      * @return password
      */
     @javax.annotation.Nullable
-    @JsonIgnore
-
-    public String getPassword() {
-        return password.orElse(null);
-    }
-
     @JsonProperty(JSON_PROPERTY_PASSWORD)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-    public JsonNullable<String> getPassword_JsonNullable() {
+    public String getPassword() {
         return password;
     }
 
     @JsonProperty(JSON_PROPERTY_PASSWORD)
-    public void setPassword_JsonNullable(JsonNullable<String> password) {
-        this.password = password;
-    }
-
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPassword(@javax.annotation.Nullable String password) {
-        this.password = JsonNullable.<String> of(password);
+        this.password = password;
     }
 
     @Override
@@ -113,24 +100,12 @@ public class CreateUserByName {
         }
         CreateUserByName createUserByName = (CreateUserByName) o;
         return Objects.equals(this.name, createUserByName.name)
-                && equalsNullable(this.password, createUserByName.password);
-    }
-
-    private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-        return a == b
-                || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
+                && Objects.equals(this.password, createUserByName.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, hashCodeNullable(password));
-    }
-
-    private static <T> int hashCodeNullable(JsonNullable<T> a) {
-        if (a == null) {
-            return 1;
-        }
-        return a.isPresent() ? Arrays.deepHashCode(new Object[] { a.get() }) : 31;
+        return Objects.hash(name, password);
     }
 
     @Override
@@ -172,11 +147,6 @@ public class CreateUserByName {
         }
 
         public CreateUserByName.Builder password(String password) {
-            this.instance.password = JsonNullable.<String> of(password);
-            return this;
-        }
-
-        public CreateUserByName.Builder password(JsonNullable<String> password) {
             this.instance.password = password;
             return this;
         }
