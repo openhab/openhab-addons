@@ -356,9 +356,9 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYPROEM50_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPRO4PM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER1PM_STR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER1PM = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPRODIMMER1PM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER1PM_STR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER2PM = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPRODIMMER2PM_STR);
 
     // Shelly Blu series
