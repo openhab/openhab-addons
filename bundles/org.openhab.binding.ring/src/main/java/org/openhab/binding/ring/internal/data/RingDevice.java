@@ -13,11 +13,12 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONObject;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.core.config.discovery.DiscoveryResult;
+
+import com.google.gson.JsonObject;
 
 /**
  * Interface common to all Ring devices.
@@ -127,7 +128,7 @@ public interface RingDevice {
      */
     public void setRingDeviceHandler(RingDeviceHandler ringDeviceHandler);
 
-    public void setJSONObject(JSONObject jsonObject);
+    public void setJsonObject(JsonObject jsonObject);
 
-    public JSONObject getJSONObject();
+    public JsonObject getJsonObject();
 }

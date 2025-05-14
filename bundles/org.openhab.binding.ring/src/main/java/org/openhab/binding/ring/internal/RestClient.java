@@ -47,10 +47,6 @@ import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openhab.binding.ring.internal.data.DataFactory;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
 import org.openhab.binding.ring.internal.data.Profile;
@@ -60,6 +56,11 @@ import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * @author Wim Vissers - Initial contribution
@@ -101,9 +102,8 @@ public class RestClient {
      *
      */
 
-    private @Nullable String postRequest(String resourceUrl, String data, String oauthToken)
-            throws AuthenticationException {
-        String result = null;
+    private String postRequest(String resourceUrl, String data, String oauthToken) throws AuthenticationException {
+        String result = "";
         logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, oauthToken);
         try {
             byte[] postData = data.getBytes(StandardCharsets.UTF_8);
@@ -186,8 +186,8 @@ public class RestClient {
      * @return the servers response
      * @throws AuthenticationException
      */
-    private @Nullable String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
-        String result = null;
+    private String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
+        String result = "";
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
             StringBuilder output = new StringBuilder();
@@ -272,10 +272,10 @@ public class RestClient {
      * @param hardwareId a hardware ID (must be unique for every piece of hardware used).
      * @return a Profile instance with available data stored in it.
      * @throws AuthenticationException
-     * @throws ParseException
+     * @throws JsonParseException
      */
     public Profile getAuthenticatedProfile(String username, String password, String refreshToken, String twofactorCode,
-            String hardwareId) throws AuthenticationException, ParseException {
+            String hardwareId) throws AuthenticationException, JsonParseException {
         String refToken = refreshToken;
 
         logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
@@ -288,13 +288,13 @@ public class RestClient {
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
 
-        JSONObject oauthToken = getOauthToken(username, password, refToken);
+        JsonObject oauthToken = getOauthToken(username, password, refToken);
         String jsonResult = postRequest(ApiConstants.URL_SESSION, DataFactory.getSessionParams(hardwareId),
-                oauthToken.get("access_token").toString());
+                oauthToken.get("access_token").getAsString());
 
-        JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
-        return new Profile((JSONObject) obj.get("profile"), oauthToken.get("refresh_token").toString(),
-                oauthToken.get("access_token").toString());
+        JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
+        return new Profile((JsonObject) obj.get("profile"), oauthToken.get("refresh_token").getAsString(),
+                oauthToken.get("access_token").getAsString());
     }
 
     /**
@@ -302,17 +302,17 @@ public class RestClient {
      *
      * @param username the username of the Ring account.
      * @param password the password for the Ring account.
-     * @return a JSONObject with the available data stored in it (access_token, refresh_token)
+     * @return a JsonObject with the available data stored in it (access_token, refresh_token)
      * @throws AuthenticationException
-     * @throws ParseException
+     * @throws JsonParseException
      */
-    private @Nullable JSONObject getOauthToken(String username, String password, String refreshToken)
-            throws AuthenticationException, ParseException {
+    private @Nullable JsonObject getOauthToken(String username, String password, String refreshToken)
+            throws AuthenticationException, JsonParseException {
         logger.debug("RestClient - getOauthToken {} - {} - {}", RingUtils.sanitizeData(username),
                 RingUtils.sanitizeData(password), RingUtils.sanitizeData(refreshToken));
 
         String result = null;
-        JSONObject oauthToken = null;
+        JsonObject oauthToken = null;
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
             Map<String, String> map = new HashMap<String, String>();
@@ -402,7 +402,7 @@ public class RestClient {
             result = readFullyAsString(conn.getInputStream(), "UTF-8");
             conn.disconnect();
 
-            oauthToken = (JSONObject) new JSONParser().parse(result);
+            oauthToken = JsonParser.parseString(result).getAsJsonObject();
             logger.debug("RestClient response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("RestApi: Error in getOauthToken!", ex);
@@ -604,12 +604,13 @@ public class RestClient {
             result = readFullyAsString(conn.getInputStream(), "UTF-8");
             conn.disconnect();
 
-            JSONObject refToken = (JSONObject) new JSONParser().parse(result);
-            result = refToken.get("refresh_token").toString();
+            JsonObject refToken = JsonParser.parseString(result).getAsJsonObject();
+
+            result = refToken.get("refresh_token").getAsString();
             logger.debug("RestClient - getAuthCode response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("Error getting auth code!", ex);
-        } catch (ParseException e) {
+        } catch (JsonParseException e) {
             logger.error("Error parsing refToken", e);
         }
         return result;
@@ -621,13 +622,13 @@ public class RestClient {
      * @param profile the Profile previously retrieved when authenticating.
      * @return the RingDevices instance filled with all available data.
      * @throws AuthenticationException when request is invalid.
-     * @throws ParseException when response is invalid JSON.
+     * @throws JsonParseException when response is invalid JSON.
      */
     public RingDevices getRingDevices(Profile profile, RingAccount ringAccount)
-            throws ParseException, AuthenticationException {
+            throws JsonParseException, AuthenticationException {
         logger.debug("RestClient - getRingDevices");
         String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);// DataFactory.getDevicesParams(profile));
-        JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
+        JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
         return new RingDevices(obj, ringAccount);
     }
 
@@ -638,16 +639,16 @@ public class RestClient {
      * @param limit the maximum number of events.
      * @return
      * @throws AuthenticationException
-     * @throws ParseException
+     * @throws JsonParseException
      */
     public synchronized List<RingEvent> getHistory(Profile profile, int limit)
-            throws AuthenticationException, ParseException {
+            throws AuthenticationException, JsonParseException {
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
         if (jsonResult != null) {
-            JSONArray obj = (JSONArray) new JSONParser().parse(jsonResult);
+            JsonArray obj = JsonParser.parseString(jsonResult).getAsJsonArray();
             List<RingEvent> result = new ArrayList<>(limit);
-            for (Object jsonEvent : obj.toArray()) {
-                result.add(new RingEvent((JSONObject) jsonEvent));
+            for (Object jsonEvent : obj) {
+                result.add(new RingEvent((JsonObject) jsonEvent));
             }
             return result;
         } else {
@@ -661,12 +662,12 @@ public class RestClient {
             vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId).append(ApiConstants.URL_RECORDING_END);
 
             String jsonResult = getRequest(vidUrl.toString(), profile);
-            JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
-            return obj.get("url").toString();
+            JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
+            return obj.get("url").getAsString();
         } catch (AuthenticationException e) {
             logger.error("Authentication exception in getRecordingURL", e);
             return null;
-        } catch (ParseException e) {
+        } catch (JsonParseException e) {
             logger.error("Parse exception in getRecordingURL!", e);
             return null;
         }
@@ -699,9 +700,9 @@ public class RestClient {
                     for (int i = 0; i < 10; i++) {
                         try {
                             String jsonResult = getRequest(vidUrl.toString(), profile);
-                            JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
-                            if (obj.get("url").toString().startsWith("http")) {
-                                URL url = new URI(obj.get("url").toString()).toURL();
+                            JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
+                            if (obj.get("url").getAsString().startsWith("http")) {
+                                URL url = new URI(obj.get("url").getAsString()).toURL();
                                 InputStream in = url.openStream();
                                 Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 in.close();

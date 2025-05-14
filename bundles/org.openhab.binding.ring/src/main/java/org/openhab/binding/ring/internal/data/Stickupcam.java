@@ -13,10 +13,11 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONObject;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Chris Milbert - Initial contribution
@@ -31,7 +32,7 @@ public class Stickupcam extends AbstractRingDevice {
      *
      * @param jsonStickupCam the JSON Stickup Cam retrieved from the Ring API.
      */
-    public Stickupcam(JSONObject jsonStickupcam) {
+    public Stickupcam(JsonObject jsonStickupcam) {
         super(jsonStickupcam);
     }
 

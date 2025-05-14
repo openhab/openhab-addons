@@ -13,10 +13,11 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONObject;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Ben Rosenblum - Initial contribution
@@ -29,7 +30,7 @@ public class Other extends AbstractRingDevice {
      *
      * @param jsonOther the JSON Other retrieved from the Ring API.
      */
-    public Other(JSONObject jsonOther) {
+    public Other(JsonObject jsonOther) {
         super(jsonOther);
     }
 

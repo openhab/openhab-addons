@@ -14,8 +14,9 @@ package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Wim Vissers - Initial contribution
@@ -25,13 +26,13 @@ import org.openhab.binding.ring.internal.ApiConstants;
 public class Doorbot {
 
     /**
-     * The JSONObject contains the data retrieved from the Ring API,
+     * The JsonObject contains the data retrieved from the Ring API,
      * or the data to send to the API.
      */
-    protected @Nullable JSONObject jsonObject;
+    protected @Nullable JsonObject jsonObject;
 
     /**
-     * Create from a JSONObject, example:
+     * Create from a JsonObject, example:
      * {
      * "id": 5047591,
      * "description": "Front Door"
@@ -39,7 +40,7 @@ public class Doorbot {
      *
      * @param jsonObject
      */
-    public Doorbot(@Nullable JSONObject jsonObject) {
+    public Doorbot(@Nullable JsonObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 
@@ -50,7 +51,7 @@ public class Doorbot {
      */
     @SuppressWarnings("unchecked")
     public String getId() {
-        return (jsonObject != null) ? jsonObject.getOrDefault(ApiConstants.DOORBOT_ID, "?").toString() : "";
+        return (jsonObject != null) ? jsonObject.get(ApiConstants.DOORBOT_ID).getAsString() : "";
     }
 
     /**
@@ -60,6 +61,6 @@ public class Doorbot {
      */
     @SuppressWarnings("unchecked")
     public String getDescription() {
-        return (jsonObject != null) ? jsonObject.getOrDefault(ApiConstants.DOORBOT_DESCRIPTION, "?").toString() : "";
+        return (jsonObject != null) ? jsonObject.get(ApiConstants.DOORBOT_DESCRIPTION).getAsString() : "";
     }
 }

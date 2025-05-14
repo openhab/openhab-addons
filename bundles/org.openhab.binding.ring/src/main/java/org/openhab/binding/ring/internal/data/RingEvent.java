@@ -18,8 +18,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
+
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -31,17 +32,17 @@ import org.openhab.binding.ring.internal.ApiConstants;
 public class RingEvent {
 
     /**
-     * The JSONObject contains the data retrieved from the Ring API,
+     * The JsonObject contains the data retrieved from the Ring API,
      * or the data to send to the API.
      */
-    private JSONObject jsonObject;
+    private JsonObject jsonObject;
     /**
      * The Doorbot linked to this event
      */
     private Doorbot doorbot;
 
     /**
-     * The JSONObject is retrieved from the Ring API, example:
+     * The JsonObject is retrieved from the Ring API, example:
      * {
      * "id": 6514261607488226599,
      * "created_at": "2018-01-23T15:02:03.000Z",
@@ -61,9 +62,9 @@ public class RingEvent {
      *
      * @param jsonObject
      */
-    public RingEvent(JSONObject jsonObject) {
+    public RingEvent(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
-        this.doorbot = new Doorbot((JSONObject) jsonObject.get(ApiConstants.EVENT_DOORBOT));
+        this.doorbot = new Doorbot((JsonObject) jsonObject.get(ApiConstants.EVENT_DOORBOT));
     }
 
     /**
@@ -73,7 +74,7 @@ public class RingEvent {
      */
     @SuppressWarnings("unchecked")
     public String getEventId() {
-        return jsonObject.getOrDefault(ApiConstants.EVENT_ID, "?").toString();
+        return jsonObject.get(ApiConstants.EVENT_ID).getAsString();
     }
 
     /**
@@ -83,7 +84,7 @@ public class RingEvent {
      */
     @SuppressWarnings("unchecked")
     public String getCreatedAt() {
-        String eventTime = jsonObject.getOrDefault(ApiConstants.EVENT_CREATED_AT, "?").toString();
+        String eventTime = jsonObject.get(ApiConstants.EVENT_CREATED_AT).getAsString();
         ZonedDateTime gmtTime = LocalDateTime
                 .parse(eventTime, DateTimeFormatter.ofPattern("yyy-MM-dd'T'HH:mm:ss.SSS'Z'")).atZone(ZoneId.of("GMT"));
         LocalDateTime localTime = gmtTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
@@ -97,7 +98,7 @@ public class RingEvent {
      */
     @SuppressWarnings("unchecked")
     public boolean isAnswered() {
-        return jsonObject.getOrDefault(ApiConstants.EVENT_ANSWERED, "false").toString().equalsIgnoreCase("true");
+        return jsonObject.get(ApiConstants.EVENT_ANSWERED).getAsString().equalsIgnoreCase("true");
     }
 
     /**
@@ -107,7 +108,7 @@ public class RingEvent {
      */
     @SuppressWarnings("unchecked")
     public String getKind() {
-        return jsonObject.getOrDefault(ApiConstants.EVENT_KIND, "?").toString();
+        return jsonObject.get(ApiConstants.EVENT_KIND).getAsString();
     }
 
     /**
@@ -117,7 +118,7 @@ public class RingEvent {
      */
     @SuppressWarnings("unchecked")
     public boolean isFavorite() {
-        return jsonObject.getOrDefault(ApiConstants.EVENT_FAVORITE, "false").toString().equalsIgnoreCase("true");
+        return jsonObject.get(ApiConstants.EVENT_FAVORITE).getAsString().equalsIgnoreCase("true");
     }
 
     /**
@@ -127,7 +128,7 @@ public class RingEvent {
      */
     @SuppressWarnings("unchecked")
     public String getSnapshotUrl() {
-        return jsonObject.getOrDefault(ApiConstants.EVENT_SNAPSHOT_URL, "").toString();
+        return jsonObject.get(ApiConstants.EVENT_SNAPSHOT_URL).getAsString();
     }
 
     /**

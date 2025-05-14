@@ -14,8 +14,9 @@ package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
+
+import com.google.gson.JsonObject;
 
 /**
  * {"profile":{
@@ -85,8 +86,8 @@ import org.openhab.binding.ring.internal.ApiConstants;
 @NonNullByDefault
 public class Profile {
     // ADD REFRESH TOKEN
-    private @Nullable JSONObject jsonProfile;
-    private @Nullable JSONObject jsonFeatures;
+    private @Nullable JsonObject jsonProfile;
+    private @Nullable JsonObject jsonFeatures;
     private String refreshToken;
     private String accessToken;
 
@@ -97,10 +98,10 @@ public class Profile {
      * @param refreshToken needed for the refresh token so we aren't logging in every time.
      *            Needed as a separate parameter because it's not part of the jsonProfile object.
      */
-    public Profile(@Nullable JSONObject jsonProfile, String refreshToken, String accessToken) {
+    public Profile(@Nullable JsonObject jsonProfile, String refreshToken, String accessToken) {
         this.jsonProfile = jsonProfile;
         if (jsonProfile != null) {
-            this.jsonFeatures = (JSONObject) jsonProfile.get("features");
+            this.jsonFeatures = (JsonObject) jsonProfile.get("features");
         }
         this.refreshToken = refreshToken;
         this.accessToken = accessToken;
@@ -113,7 +114,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getId() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_ID, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_ID).getAsString();
     }
 
     /**
@@ -136,7 +137,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getAuthenticationToken() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_AUTHENTICATION_TOKEN, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_AUTHENTICATION_TOKEN).getAsString();
     }
 
     /**
@@ -150,7 +151,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getHardwareId() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_HARDWARE_ID, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_HARDWARE_ID).getAsString();
     }
 
     /**
@@ -161,7 +162,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getEmail() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_EMAIL, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_EMAIL).getAsString();
     }
 
     /**
@@ -171,7 +172,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getFirstName() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_FIRST_NAME, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_FIRST_NAME).getAsString();
     }
 
     /**
@@ -181,7 +182,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getLastName() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_LAST_NAME, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_LAST_NAME).getAsString();
     }
 
     /**
@@ -191,7 +192,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getPhoneNumber() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_PHONE_NUMBER, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_PHONE_NUMBER).getAsString();
     }
 
     /**
@@ -203,7 +204,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getUserFlow() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_USER_FLOW, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_USER_FLOW).getAsString();
     }
 
     /**
@@ -213,7 +214,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public String getExplorerProgramTerms() {
-        return jsonProfile.getOrDefault(ApiConstants.PROFILE_EXPLORER_PROGRAM_TERMS, "?").toString();
+        return jsonProfile.get(ApiConstants.PROFILE_EXPLORER_PROGRAM_TERMS).getAsString();
     }
 
     /**
@@ -224,7 +225,7 @@ public class Profile {
      */
     @SuppressWarnings("unchecked")
     public boolean isFeatureEnabled(Feature feature) {
-        String result = jsonFeatures.getOrDefault(feature.getJsonName(), "?").toString();
+        String result = jsonFeatures.get(feature.getJsonName()).getAsString();
         if ("?".equals(result)) {
             throw new IllegalArgumentException("No value found for feature: " + feature);
         }

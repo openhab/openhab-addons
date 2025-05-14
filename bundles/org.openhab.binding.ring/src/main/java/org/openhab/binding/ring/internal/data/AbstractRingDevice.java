@@ -13,13 +13,14 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONObject;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * Interface common to all Ring devices.
@@ -34,10 +35,10 @@ public abstract class AbstractRingDevice implements RingDevice {
     private final Logger logger = LoggerFactory.getLogger(AbstractRingDevice.class);
 
     /**
-     * The JSONObject contains the data retrieved from the Ring API,
+     * The JsonObject contains the data retrieved from the Ring API,
      * or the data to send to the API.
      */
-    protected JSONObject jsonObject = new JSONObject();
+    protected JsonObject jsonObject = new JsonObject();
     /**
      * The registration status.
      */
@@ -51,7 +52,7 @@ public abstract class AbstractRingDevice implements RingDevice {
      */
     private @NonNullByDefault({}) RingDeviceHandler ringDeviceHandler;
 
-    public AbstractRingDevice(JSONObject jsonObject) {
+    public AbstractRingDevice(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 
@@ -63,7 +64,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public String getId() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_ID, "?").toString();
+        return jsonObject.get(ApiConstants.DEVICE_ID).getAsString();
     }
 
     /**
@@ -74,7 +75,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public String getDeviceId() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_DEVICE_ID, "?").toString();
+        return jsonObject.get(ApiConstants.DEVICE_DEVICE_ID).getAsString();
     }
 
     /**
@@ -85,7 +86,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public String getDescription() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_DESCRIPTION, "?").toString();
+        return jsonObject.get(ApiConstants.DEVICE_DESCRIPTION).getAsString();
     }
 
     /**
@@ -96,7 +97,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public String getFirmwareVersion() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_FIRMWARE_VERSION, "?").toString();
+        return jsonObject.get(ApiConstants.DEVICE_FIRMWARE_VERSION).getAsString();
     }
 
     /**
@@ -107,7 +108,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public String getTimeZone() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_TIME_ZONE, "?").toString();
+        return jsonObject.get(ApiConstants.DEVICE_TIME_ZONE).getAsString();
     }
 
     /**
@@ -118,7 +119,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public String getKind() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_KIND, "?").toString();
+        return jsonObject.get(ApiConstants.DEVICE_KIND).getAsString();
     }
 
     /**
@@ -129,8 +130,8 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public Integer getBattery() {
-        if (jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1") != null) {
-            return Integer.parseInt(jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1").toString());
+        if (jsonObject.get(ApiConstants.DEVICE_BATTERY) != null) {
+            return Integer.parseInt(jsonObject.get(ApiConstants.DEVICE_BATTERY).getAsString());
         } else {
             return 0;
         }
@@ -197,13 +198,13 @@ public abstract class AbstractRingDevice implements RingDevice {
     }
 
     @Override
-    public void setJSONObject(JSONObject jsonObject) {
+    public void setJsonObject(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
-        logger.trace("AbstractRingDevice - setJSONObject - Updated JSON: {}", this.jsonObject.toString());
+        logger.trace("AbstractRingDevice - setJsonObject - Updated JSON: {}", this.jsonObject.getAsString());
     }
 
     @Override
-    public JSONObject getJSONObject() {
+    public JsonObject getJsonObject() {
         return this.jsonObject;
     }
 }

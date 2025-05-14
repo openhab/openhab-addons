@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.json.simple.parser.ParseException;
 import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -56,6 +55,8 @@ import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link RingDoorbellHandler} is responsible for handling commands, which are
@@ -294,7 +295,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
-        } catch (ParseException e) {
+        } catch (JsonParseException e) {
             logger.debug("Invalid response from api.ring.com when initializing Ring Account handler{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Invalid response from api.ring.com");
@@ -310,11 +311,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
             logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
-        } catch (ParseException pe1) {
+        } catch (JsonParseException pe1) {
             registry = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "ParseException response from ring.com");
-            logger.debug("RestClient reported ParseException in finally block: {}", pe1.getMessage());
+                    "JsonParseException response from ring.com");
+            logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
         }
     }
 
@@ -398,7 +399,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                 }
-            } catch (ParseException e) {
+            } catch (JsonParseException e) {
                 logger.debug("Invalid response from api.ring.com when initializing Ring Account handler {}",
                         e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -414,7 +415,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    private void refreshRegistry() throws ParseException, AuthenticationException, DuplicateIdException {
+    private void refreshRegistry() throws JsonParseException, AuthenticationException, DuplicateIdException {
         logger.debug("AccountHandler - refreshRegistry");
         RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
         registry = RingDeviceRegistry.getInstance();
@@ -426,7 +427,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             // Init the devices
             refreshRegistry();
             updateStatus(ThingStatus.ONLINE);
-        } catch (AuthenticationException | ParseException e) {
+        } catch (AuthenticationException | JsonParseException e) {
             logger.debug(
                     "AuthenticationException in AccountHandler.minuteTick() when trying refreshRegistry, attempting to reconnect {}",
                     e.getMessage());
@@ -443,8 +444,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     logger.debug("RestClient reported AuthenticationException trying getAuthenticatedProfile: {}",
                             ex.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid credentials");
-                } catch (ParseException e1) {
-                    logger.debug("RestClient reported ParseException trying getAuthenticatedProfile: {}",
+                } catch (JsonParseException e1) {
+                    logger.debug("RestClient reported JsonParseException trying getAuthenticatedProfile: {}",
                             e1.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Invalid response from api.ring.com");
@@ -460,11 +461,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                                 "AuthenticationException response from ring.com");
                         logger.debug("RestClient reported AuthenticationException in finally block: {}",
                                 ae.getMessage());
-                    } catch (ParseException pe1) {
+                    } catch (JsonParseException pe1) {
                         registry = null;
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "ParseException response from ring.com");
-                        logger.debug("RestClient reported ParseException in finally block: {}", pe1.getMessage());
+                                "JsonParseException response from ring.com");
+                        logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
                     }
                 }
             }
@@ -528,9 +529,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug(
                     "RestClient reported AuthenticationExceptionfrom api.ring.com when retrying refreshRegistry for the second time: {}",
                     ex.getMessage());
-        } catch (ParseException ignored) {
+        } catch (JsonParseException ignored) {
             logger.debug(
-                    "RestClient reported ParseException api.ring.com when retrying refreshRegistry for the second time: {}",
+                    "RestClient reported JsonParseException api.ring.com when retrying refreshRegistry for the second time: {}",
                     ignored.getMessage());
 
         }

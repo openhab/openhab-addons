@@ -102,9 +102,9 @@ public class RingDeviceRegistry {
                 addRingDevice(device);
             } catch (DuplicateIdException e) {
                 logger.debug(
-                        "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating JSON.",
+                        "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating Json.",
                         device.getId());
-                devices.get(device.getId()).setJSONObject(device.getJSONObject());
+                devices.get(device.getId()).setJsonObject(device.getJsonObject());
             }
         }
         initialized = true;

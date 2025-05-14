@@ -13,10 +13,11 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONObject;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Wim Vissers - Initial contribution
@@ -31,7 +32,7 @@ public class Doorbell extends AbstractRingDevice {
      *
      * @param jsonDoorbell the JSON doorbell (doorbot) retrieved from the Ring API.
      */
-    public Doorbell(JSONObject jsonDoorbell) {
+    public Doorbell(JsonObject jsonDoorbell) {
         super(jsonDoorbell);
     }
 

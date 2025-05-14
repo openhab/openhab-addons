@@ -17,10 +17,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RingAccount;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -36,11 +37,11 @@ public class RingDevices {
     private @NonNullByDefault({}) List<Chime> chimes;
     private @NonNullByDefault({}) List<Other> others;
 
-    public RingDevices(JSONObject jsonRingDevices, RingAccount ringAccount) {
-        addDoorbells((JSONArray) jsonRingDevices.get(ApiConstants.DEVICES_DOORBOTS), ringAccount);
-        addStickupCams((JSONArray) jsonRingDevices.get(ApiConstants.DEVICES_STICKUP_CAMS), ringAccount);
-        addChimes((JSONArray) jsonRingDevices.get(ApiConstants.DEVICES_CHIMES), ringAccount);
-        addOthers((JSONArray) jsonRingDevices.get(ApiConstants.DEVICES_OTHER), ringAccount);
+    public RingDevices(JsonObject jsonRingDevices, RingAccount ringAccount) {
+        addDoorbells((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_DOORBOTS), ringAccount);
+        addStickupCams((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_STICKUP_CAMS), ringAccount);
+        addChimes((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_CHIMES), ringAccount);
+        addOthers((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_OTHER), ringAccount);
     }
 
     /**
@@ -48,10 +49,10 @@ public class RingDevices {
      *
      * @param jsonDoorbells
      */
-    private final void addDoorbells(@NonNullByDefault({}) JSONArray jsonDoorbells, RingAccount ringAccount) {
+    private final void addDoorbells(@NonNullByDefault({}) JsonArray jsonDoorbells, RingAccount ringAccount) {
         doorbells = new ArrayList<>();
         for (Object obj : jsonDoorbells) {
-            Doorbell doorbell = new Doorbell((JSONObject) obj);
+            Doorbell doorbell = new Doorbell((JsonObject) obj);
             doorbell.setRingAccount(ringAccount);
             doorbells.add(doorbell);
         }
@@ -71,10 +72,10 @@ public class RingDevices {
      *
      * @param jsonStickupcams
      */
-    private final void addStickupCams(@NonNullByDefault({}) JSONArray jsonStickupcams, RingAccount ringAccount) {
+    private final void addStickupCams(@NonNullByDefault({}) JsonArray jsonStickupcams, RingAccount ringAccount) {
         stickupcams = new ArrayList<>();
         for (Object obj : jsonStickupcams) {
-            Stickupcam stickupcam = new Stickupcam((JSONObject) obj);
+            Stickupcam stickupcam = new Stickupcam((JsonObject) obj);
             stickupcam.setRingAccount(ringAccount);
             stickupcams.add(stickupcam);
         }
@@ -94,10 +95,10 @@ public class RingDevices {
      *
      * @param jsonChimes
      */
-    private final void addChimes(@NonNullByDefault({}) JSONArray jsonChimes, RingAccount ringAccount) {
+    private final void addChimes(@NonNullByDefault({}) JsonArray jsonChimes, RingAccount ringAccount) {
         chimes = new ArrayList<>();
         for (Object obj : jsonChimes) {
-            Chime chime = new Chime((JSONObject) obj);
+            Chime chime = new Chime((JsonObject) obj);
             chime.setRingAccount(ringAccount);
             chimes.add(chime);
         }
@@ -117,10 +118,10 @@ public class RingDevices {
      *
      * @param jsonOther
      */
-    private final void addOthers(@NonNullByDefault({}) JSONArray jsonOthers, RingAccount ringAccount) {
+    private final void addOthers(@NonNullByDefault({}) JsonArray jsonOthers, RingAccount ringAccount) {
         others = new ArrayList<>();
         for (Object obj : jsonOthers) {
-            Other other = new Other((JSONObject) obj);
+            Other other = new Other((JsonObject) obj);
             other.setRingAccount(ringAccount);
             others.add(other);
         }
