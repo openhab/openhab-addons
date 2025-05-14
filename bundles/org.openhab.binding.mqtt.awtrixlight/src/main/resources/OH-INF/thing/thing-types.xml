@@ -530,10 +530,6 @@
 		<label>Play Melody</label>
 		<description>Name of the melody file in the MELODIES folder</description>
 		<category>text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="rtttl">
@@ -541,10 +537,6 @@
 		<label>Play RTTTL</label>
 		<description>Ring Tone Text Transfer Language (RTTTL) compliant sound string</description>
 		<category>text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
