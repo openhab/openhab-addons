@@ -78,7 +78,7 @@ public class ShellyDeviceProfile {
     public int numRelays = 0; // number of relays/outputs
     public int numRollers = 0; // number of Rollers, usually 1
     public boolean isRoller = false; // true for Shelly2 in roller mode
-    public boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
+    public boolean isDimmer = false; // true for a Shelly Dimmer
     public int numInputs = 0; // number of inputs
 
     public int numMeters = 0;
@@ -203,7 +203,9 @@ public class ShellyDeviceProfile {
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
+                || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERG3)
                 || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR)
+                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERG3_STR)
                 || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMER10V_STR);
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
@@ -265,8 +267,6 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_DIMMER_CONTROL;
         } else if (isRoller) {
             return numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-        } else if (isDimmer) {
-            return CHANNEL_GROUP_RELAY_CONTROL;
         } else if (hasRelays) {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
@@ -311,6 +311,7 @@ public class ShellyDeviceProfile {
             return ""; // RGBW2 has only 1 channel
         } else if (isRoller || isDimmer) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
+            // Dimmer has up to 2 inputs to control light
             return String.valueOf(idx);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
