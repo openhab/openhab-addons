@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,6 @@ public abstract class AbstractProvider<L extends SubscriptionListener> {
         }
 
         Set<L> listenersForSubscription = subscriptionToListeners.get(subscription);
-
         boolean isLastDistinctSubscription = false;
         if (listenersForSubscription != null) {
             listenersForSubscription.remove(listener);

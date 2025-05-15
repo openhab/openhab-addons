@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.insteon.internal.device;
 
 import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,10 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceFeature.QueryStatus;
 import org.openhab.binding.insteon.internal.device.database.LinkDB;
-import org.openhab.binding.insteon.internal.device.database.LinkDBChange;
 import org.openhab.binding.insteon.internal.device.database.LinkDBRecord;
-import org.openhab.binding.insteon.internal.device.database.ModemDB;
-import org.openhab.binding.insteon.internal.device.database.ModemDBChange;
 import org.openhab.binding.insteon.internal.device.database.ModemDBEntry;
 import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.DeviceTypeRenamer;
@@ -66,7 +62,6 @@ import org.openhab.core.types.UnDefType;
 public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandler> {
     private static final int BCAST_STATE_TIMEOUT = 2000; // in milliseconds
     private static final int DEFAULT_HEARTBEAT_TIMEOUT = 1440; // in minutes
-    private static final int FAILED_MSG_COUNT_THRESHOLD = 5;
 
     private InsteonEngine engine = InsteonEngine.UNKNOWN;
     private LinkDB linkDB;
@@ -76,7 +71,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     private Map<Msg, DeviceRequest> deferredQueueHash = new HashMap<>();
     private Map<Byte, Long> lastBroadcastReceived = new HashMap<>();
     private Map<Integer, GroupMessageStateMachine> groupState = new HashMap<>();
-    private volatile int failedMsgCount = 0;
     private volatile long lastMsgReceived = 0L;
 
     public InsteonDevice() {
@@ -143,10 +137,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
 
     public @Nullable State getFeatureState(String type, int group) {
         return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getState).orElse(null);
-    }
-
-    public boolean isResponding() {
-        return failedMsgCount < FAILED_MSG_COUNT_THRESHOLD;
     }
 
     public boolean isBatteryPowered() {
@@ -444,35 +434,21 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             }
             return;
         }
-        // store current responding state
-        boolean isPrevResponding = isResponding();
         // handle message depending if failure report or not
         if (msg.isFailureReport()) {
             getFeatures().stream().filter(feature -> feature.isMyDirectAckOrNack(msg)).findFirst()
                     .ifPresent(feature -> {
                         logger.debug("got a failure report reply of direct for {}", feature.getName());
-                        // increase failed message counter
-                        failedMsgCount++;
-                        // mark feature queried as processed and never queried
-                        setFeatureQueried(null);
-                        feature.setQueryMessage(null);
-                        feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
-                        // poll feature again if device is responding
-                        if (isResponding()) {
-                            feature.doPoll(0L);
-                        }
+                        // notify feature queried failed
+                        featureQueriedFailed(feature);
                     });
         } else {
             // update non-status features
             getFeatures().stream().filter(feature -> !feature.isStatusFeature() && feature.handleMessage(msg))
                     .findFirst().ifPresent(feature -> {
                         logger.trace("handled reply of direct for {}", feature.getName());
-                        // reset failed message counter
-                        failedMsgCount = 0;
-                        // mark feature queried as processed and answered
-                        setFeatureQueried(null);
-                        feature.setQueryMessage(null);
-                        feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
+                        // notify feature queried was answered
+                        featureQueriedAnswered(feature);
                     });
             // update all status features (e.g. device last update time)
             getFeatures().stream().filter(DeviceFeature::isStatusFeature)
@@ -484,10 +460,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             // add poll delay for non-replayed all link broadcast allowing cleanup msg to be be processed beforehand
             long delay = msg.isAllLinkBroadcast() && !msg.isAllLinkSuccessReport() && !msg.isReplayed() ? 1500L : 0L;
             doPoll(delay);
-        }
-        // notify if responding state changed
-        if (isPrevResponding != isResponding()) {
-            statusChanged();
         }
     }
 
@@ -642,11 +614,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             // create modem db record
             ModemDBRecord modemDBRecord = ModemDBRecord.create(address, link.getGroup(), !link.isController(),
                     !link.isController() ? productData.getRecordData() : new byte[3]);
-            // create default link commands
-            List<Msg> commands = link.getCommands().stream().map(command -> command.getMessage(this))
-                    .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
             // add default link
-            addDefaultLink(new DefaultLink(name, linkDBRecord, modemDBRecord, commands));
+            addDefaultLink(new DefaultLink(name, linkDBRecord, modemDBRecord));
         });
     }
 
@@ -668,14 +637,16 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      *
      * @return map of missing link db records based on default links
      */
-    public Map<String, LinkDBChange> getMissingDeviceLinks() {
-        Map<String, LinkDBChange> links = new LinkedHashMap<>();
+    public Map<String, LinkDBRecord> getMissingDeviceLinks() {
+        Map<String, LinkDBRecord> links = new LinkedHashMap<>();
         if (linkDB.isComplete() && hasModemDBEntry()) {
+            int linkCount = getDefaultLinks().size();
             for (DefaultLink link : getDefaultLinks()) {
                 LinkDBRecord record = link.getLinkDBRecord();
-                if ((record.getComponentId() > 0 && !linkDB.hasComponentIdRecord(record.getComponentId(), true))
-                        || !linkDB.hasGroupRecord(record.getGroup(), true)) {
-                    links.put(link.getName(), LinkDBChange.forAdd(record));
+                if ((linkCount > 1 && record.getComponentId() > 0
+                        && !linkDB.hasComponentIdRecord(record.getComponentId(), record.isController()))
+                        || !linkDB.hasGroupRecord(record.getGroup(), record.isController())) {
+                    links.put(link.getName(), record);
                 }
             }
         }
@@ -687,14 +658,16 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      *
      * @return map of missing modem db records based on default links
      */
-    public Map<String, ModemDBChange> getMissingModemLinks() {
-        Map<String, ModemDBChange> links = new LinkedHashMap<>();
+    public Map<String, ModemDBRecord> getMissingModemLinks() {
+        Map<String, ModemDBRecord> links = new LinkedHashMap<>();
         InsteonModem modem = getModem();
         if (modem != null && modem.getDB().isComplete() && hasModemDBEntry()) {
+            State monitorMode = modem.getFeatureState(FEATURE_MONITOR_MODE);
             for (DefaultLink link : getDefaultLinks()) {
                 ModemDBRecord record = link.getModemDBRecord();
-                if (!modem.getDB().hasRecord(record.getAddress(), record.getGroup(), record.isController())) {
-                    links.put(link.getName(), ModemDBChange.forAdd(record));
+                if ((OnOffType.OFF.equals(monitorMode) || record.isController())
+                        && !modem.getDB().hasRecord(record.getAddress(), record.getGroup(), record.isController())) {
+                    links.put(link.getName(), record);
                 }
             }
         }
@@ -721,56 +694,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                     "device {} has missing default links {}, "
                             + "run 'insteon device addMissingLinks' command via openhab console to fix.",
                     address, links);
-        }
-    }
-
-    /**
-     * Adds missing links to link db for this device
-     */
-    public void addMissingDeviceLinks() {
-        if (getDefaultLinks().isEmpty()) {
-            return;
-        }
-        List<LinkDBChange> changes = getMissingDeviceLinks().values().stream().distinct().toList();
-        if (changes.isEmpty()) {
-            logger.debug("no missing default links from link db to add for {}", address);
-        } else {
-            logger.trace("adding missing default links to link db for {}", address);
-            linkDB.clearChanges();
-            changes.forEach(linkDB::addChange);
-            linkDB.update();
-        }
-
-        InsteonModem modem = getModem();
-        if (modem != null) {
-            getMissingDeviceLinks().keySet().stream().map(this::getDefaultLink).filter(Objects::nonNull)
-                    .map(Objects::requireNonNull).flatMap(link -> link.getCommands().stream()).forEach(msg -> {
-                        try {
-                            modem.writeMessage(msg);
-                        } catch (IOException e) {
-                            logger.warn("message write failed for msg: {}", msg, e);
-                        }
-                    });
-        }
-    }
-
-    /**
-     * Adds missing links to modem db for this device
-     */
-    public void addMissingModemLinks() {
-        InsteonModem modem = getModem();
-        if (modem == null || getDefaultLinks().isEmpty()) {
-            return;
-        }
-        List<ModemDBChange> changes = getMissingModemLinks().values().stream().distinct().toList();
-        if (changes.isEmpty()) {
-            logger.debug("no missing default links from modem db to add for {}", address);
-        } else {
-            logger.trace("adding missing default links to modem db for {}", address);
-            ModemDB modemDB = modem.getDB();
-            modemDB.clearChanges();
-            changes.forEach(modemDB::addChange);
-            modemDB.update();
         }
     }
 
@@ -948,18 +871,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     /**
-     * Notifies that the status has changed for this device
-     */
-    public void statusChanged() {
-        logger.trace("status for {} has changed", address);
-
-        InsteonDeviceHandler handler = getHandler();
-        if (handler != null) {
-            handler.updateStatus();
-        }
-    }
-
-    /**
      * Factory method for creating a InsteonDevice from a device address, modem and cache
      *
      * @param address the device address
@@ -980,7 +891,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 device.setFlags(deviceType.getFlags());
             }
             int location = productData.getFirstRecordLocation();
-            if (location != LinkDBRecord.LOCATION_ZERO) {
+            if (location != 0) {
                 device.getLinkDB().setFirstRecordLocation(location);
             }
             device.setProductData(productData);

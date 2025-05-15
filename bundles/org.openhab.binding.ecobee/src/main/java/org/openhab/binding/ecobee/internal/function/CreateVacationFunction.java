@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,8 +51,8 @@ public final class CreateVacationFunction extends AbstractFunction {
         if (convertedCoolHoldTemp == null || convertedHeatHoldTemp == null) {
             throw new IllegalArgumentException("coolHoldTemp or heatHoldTemp are not proper QuantityTypes");
         }
-        params.put("coolHoldTemp", Integer.valueOf(convertedCoolHoldTemp.intValue()));
-        params.put("heatHoldTemp", Integer.valueOf(convertedHeatHoldTemp.intValue()));
+        params.put("coolHoldTemp", Integer.valueOf(convertedCoolHoldTemp.intValue() * 10));
+        params.put("heatHoldTemp", Integer.valueOf(convertedHeatHoldTemp.intValue() * 10));
 
         if (startDateTime != null) {
             params.put("startDate", YMD.format(startDateTime));

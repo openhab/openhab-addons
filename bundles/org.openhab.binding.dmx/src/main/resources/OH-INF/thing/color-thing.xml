@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>DMX Color (RGB) Dimmer</label>
 		<description>A RGB capable dimmer</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness_r" typeId="brightness"/>
 			<channel id="brightness_g" typeId="brightness"/>

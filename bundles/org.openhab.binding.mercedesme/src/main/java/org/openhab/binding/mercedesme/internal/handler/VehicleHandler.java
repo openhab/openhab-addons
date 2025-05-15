@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -216,7 +216,7 @@ public class VehicleHandler extends BaseThingHandler {
         var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
-        String pin = accountHandler.get().config.get().pin;
+        String pin = accountHandler.get().config.pin;
         if (group == null) {
             logger.trace("No command {} found for {}", command, channel);
             return;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.net.URI;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.measure.Unit;
@@ -29,6 +30,7 @@ import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBody;
@@ -84,20 +86,33 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateChannels();
     }
 
+    private void initializeBatteryControl(String hostname, String username, String password) {
+        if (hostname != null && username != null && password != null) {
+            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + "/"), username,
+                    password);
+        } else {
+            batteryControl = null;
+        }
+    }
+
     @Override
     public void initialize() {
         config = getConfigAs(FroniusBaseDeviceConfiguration.class);
         FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
-        if (bridgeConfig.username != null && bridgeConfig.password != null) {
-            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + bridgeConfig.hostname + "/"),
-                    bridgeConfig.username, bridgeConfig.password);
-        }
+        initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
         super.initialize();
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(FroniusSymoInverterActions.class);
+    }
+
+    @Override
+    public void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleBridgeConfigurationUpdate(configurationParameters);
+        FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
+        initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
     }
 
     private @Nullable FroniusBatteryControl getBatteryControl() {
@@ -115,6 +130,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to reset battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to reset battery control: Invalid username or password");
             }
         }
         return false;
@@ -128,6 +145,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to hold battery charge", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set battery control to hold battery charge: Invalid username or password");
             }
         }
         return false;
@@ -141,6 +160,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add hold battery charge schedule to battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn(
+                        "Failed to add hold battery charge schedule to battery control: Invalid username or password");
             }
         }
         return false;
@@ -154,6 +176,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to force battery charge", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set battery control to force battery charge: Invalid username or password");
             }
         }
         return false;
@@ -167,6 +191,26 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add forced battery charge schedule to battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn(
+                        "Failed to add forced battery charge schedule to battery control: Invalid username or password");
+            }
+        }
+        return false;
+    }
+
+    public boolean setBackupReservedBatteryCapacity(int percent) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.setBackupReservedCapacity(percent);
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("Failed to set backup reserved battery capacity: {}", e.getMessage());
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to set backup reserved battery capacity", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set backup reserved battery capacity: Invalid username or password");
             }
         }
         return false;

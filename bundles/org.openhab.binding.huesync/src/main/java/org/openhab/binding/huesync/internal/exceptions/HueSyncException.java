@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.huesync.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.huesync.internal.i18n.HueSyncLocalizer;
+import org.openhab.binding.huesync.internal.i18n.ResourceHelper;
 
 /**
  * Base class for all HueSyncExceptions
@@ -25,6 +25,6 @@ public abstract class HueSyncException extends Exception {
     private static final long serialVersionUID = 0L;
 
     public HueSyncException(String message) {
-        super(message.startsWith("@text") ? HueSyncLocalizer.getResourceString(message) : message);
+        super(message.startsWith("@text") ? ResourceHelper.getResourceString(message) : message);
     }
 }

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Light Group</label>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Zone</semantic-equipment-tag>
 		<channels>
 			<channel typeId="all_on" id="all_on"/>
 			<channel typeId="any_on" id="any_on"/>
@@ -33,7 +34,8 @@
 		<label>All On</label>
 		<description>"On" if all lights in this group are "On", otherwise "Off".</description>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Switch</tag>
+			<tag>Light</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -43,7 +45,8 @@
 		<label>Any On</label>
 		<description>"On" if any light in this group is "On", otherwise "Off".</description>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Switch</tag>
+			<tag>Light</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -52,7 +55,8 @@
 		<item-type>String</item-type>
 		<label>Recall Scene</label>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 

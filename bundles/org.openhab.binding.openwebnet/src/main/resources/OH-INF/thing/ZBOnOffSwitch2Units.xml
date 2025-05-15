@@ -12,7 +12,7 @@
 
 		<label>Zigbee 2-units Switch</label>
 		<description>An OpenWebNet Zigbee 2-units switch (actuator) for the control of 2 loads/lights. BTicino model: 4592</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="switch_01" typeId="switch"/>
 			<channel id="switch_02" typeId="switch"/>

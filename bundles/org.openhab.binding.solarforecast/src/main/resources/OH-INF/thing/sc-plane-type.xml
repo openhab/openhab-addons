@@ -11,13 +11,18 @@
 
 		<label>Solcast PV Plane</label>
 		<description>One PV Plane of Multi Plane Bridge</description>
-
+		<semantic-equipment-tag>SolarPanel</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="average" typeId="average-values"/>
 			<channel-group id="optimistic" typeId="optimistic-values"/>
 			<channel-group id="pessimistic" typeId="pessimistic-values"/>
+			<channel-group id="update" typeId="update-values"/>
 			<channel-group id="raw" typeId="raw-values"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:solarforecast:sc-plane"/>
 	</thing-type>

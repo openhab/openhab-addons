@@ -118,6 +118,7 @@ The PLEX Player supports the following channels:
 | ratingKey            | String   | RO         | The unique key in the Plex library identifying the media that is playing                                         |
 | parentRatingKey      | String   | RO         | The unique key in the Plex library identifying the parent (TV show season or album) of the media that is playing |
 | grandparentRatingKey | String   | RO         | The unique key in the Plex library identifying the grandparent (TV show) of the media that is playing            |
+| user                 | String   | RO         | The user title                                                          |
 
 ## Full Example
 

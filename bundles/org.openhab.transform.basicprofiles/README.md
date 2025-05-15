@@ -1,6 +1,18 @@
 # Basic Profiles
 
-This bundle provides a list of useful Profiles.
+This bundle provides a list of useful Profiles:
+
+| Profile                                                         | Description                                                                                  |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [Generic Command Profile](#generic-command-profile)             | Sends a Command towards the Item when an event is triggered                                  |
+| [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                             |
+| [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skip a number of State changes                                                    |
+| [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands/state updates                                              |
+| [Invert / Negate Profile](#invert--negate-profile)              | Inverts or negate a Command / State                                                          |
+| [Round Profile](#round-profile)                                 | Reduces the number of decimal places from input data                                         |
+| [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
+| [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
+| [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
 
 ## Generic Command Profile
 
@@ -206,7 +218,7 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
 - An item name, which will be evaluated to its state.
 - A type constant, such as `ON`, `OFF`, `UNDEF`, `NULL`, `OPEN`, `CLOSED`, `PLAY`, `PAUSE`, `UP`, `DOWN`, etc.
   Note that these are unquoted.
-- A String value, enclosed with single quotes, e.g. `'ON'`.
+- A String value, enclosed with single or double quotes, e.g. `'ON'`, `"FOO"`.
   A string value is different to the actual `OnOffType.ON`.
   To compare against an actual OnOffType, use an unquoted `ON`.
 - A plain number to represent a `DecimalType`.
@@ -217,8 +229,9 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
     For example, with an initial data of `10`, a new data of `12` or `8` would both result in a $DELTA of `2`.
   - `$DELTA_PERCENT` to represent the difference in percentage.
     It is calculated as `($DELTA / current_data) * 100`.
-    Note that this can also be done by omitting the `LHS_OPERAND` and using a number followed with a percent sign `%` as the `RHS_OPERAND`.
-    See the example below.
+    Note in most cases, this check can be written without `$DELTA_PERCENT`, e.g. `> 5%`. It is equivalent to `$DELTA_PERCENT > 5`.
+    However, when the incoming value from the binding is a Percent Quantity Type, for example a Humidity data in %, the `$DELTA_PERCENT` must be explicitly written in order to perform a delta percent check.
+    See the examples below.
   - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
   - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
   - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.
@@ -228,6 +241,12 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
   By default, 5 samples of the previous values are kept.
   This can be customized by specifying the "window size" or sample count applicable to the function, e.g. `$MEDIAN(10)` will return the median of the last 10 values.
   All the functions except `$DELTA` support a custom window size.
+
+In the case of comparisons and calculations involving `QuantityType` values, both operands, whether they are Item states, the incoming value, or constants, must be of the same type and have compatible units.
+In other words a comparison between a `QuantityType` operand and an incoming `DecimalType` value (or vice versa) will fail.
+All `QuantityType` values are converted to the Unit of the linked Item before the calculation and/or comparison is done.
+So if the binding sends a value that cannot be converted to the Unit of the linked Item, then that value is excluded.
+e.g. if the linked item has a Unit of `Units.METRE` and the binding sends a value of `Units.CELSIUS` then the value is ignored.
 
 The state of one item can be compared against the state of another item by having item names on both sides of the comparison, e.g.: `Item1 > Item2`.
 When `LHS_OPERAND` is omitted, e.g. `> 10, < 100`, the comparisons are applied against the input data from the binding.
@@ -284,9 +303,24 @@ Number:Temperature BoilerTemperature {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 10" ]
 }
 
-// Or more succinctly:
+// Or more succinctly, the $DELTA_PERCENT is inferred here
 Number:Temperature BoilerTemperature {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="> 10%" ]
+}
+```
+
+When the incoming value from the binding is a Percent Quantity Type:
+
+```java
+// This performs a value comparison, not a delta percent comparison.
+// Because the incoming value is a Percent Quantity, it isn't inferred as a $DELTA_PERCENT check.
+Number:Dimensionless Humidity {
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="> 0%, <= 100%" ]
+}
+
+// To actually perform a $DELTA_PERCENT check against a Percent Quantity data, specify it explicitly
+Number:Dimensionless Humidity {
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5%" ]
 }
 ```
 

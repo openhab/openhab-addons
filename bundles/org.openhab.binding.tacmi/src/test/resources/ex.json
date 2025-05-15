@@ -1,0 +1,324 @@
+{
+	"Header": {
+		"Version": 5,
+		"Device": "87",
+		"Timestamp": 1664795104
+	},
+	"Data": {
+		"Inputs": [
+			{
+				"Number": 1,
+				"AD": "A",
+				"Value": {
+					"Value": 50.2,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 2,
+				"AD": "A",
+				"Value": {
+					"Value": 45.6,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 3,
+				"AD": "A",
+				"Value": {
+					"Value": 39.4,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 4,
+				"AD": "A",
+				"Value": {
+					"Value": 9999.9,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 5,
+				"AD": "A",
+				"Value": {
+					"Value": 12.2,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 6,
+				"AD": "A",
+				"Value": {
+					"Value": 29.3,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 7,
+				"AD": "A",
+				"Value": {
+					"Value": 39.2,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 8,
+				"AD": "A",
+				"Value": {
+					"Value": 48.8,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 9,
+				"AD": "A",
+				"Value": {
+					"Value": 40.4,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 10,
+				"AD": "A",
+				"Value": {
+					"Value": 9999.9,
+					"Unit": "1"
+				}
+			},
+			{
+				"Number": 11,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 12,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 13,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 14,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 15,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 16,
+				"AD": "D",
+				"Value": {
+					"Value": 1,
+					"Unit": "43"
+				}
+			}
+		],
+		"Outputs": [
+			{
+				"Number": 5,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 8,
+				"AD": "D",
+				"Value": {
+					"Value": 1,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 9,
+				"AD": "D",
+				"Value": {
+					"Value": 1,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 10,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 11,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 12,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 13,
+				"AD": "A",
+				"Value": {
+					"State": 0,
+					"Value": 0.00,
+					"Unit": "13"
+				}
+			},
+			{
+				"Number": 14,
+				"AD": "A",
+				"Value": {
+					"State": 0,
+					"Value": 0.00,
+					"Unit": "13"
+				}
+			},
+			{
+				"Number": 15,
+				"AD": "A",
+				"Value": {
+					"State": 0,
+					"Value": 0.00,
+					"Unit": "13"
+				}
+			}
+		],
+		"General": [
+			{
+				"Number": 1,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 2,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "44"
+				}
+			},
+			{
+				"Number": 3,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "44"
+				}
+			},
+			{
+				"Number": 4,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "44"
+				}
+			},
+			{
+				"Number": 5,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "44"
+				}
+			},
+			{
+				"Number": 6,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "44"
+				}
+			},
+			{
+				"Number": 7,
+				"AD": "A",
+				"Value": {
+					"Value": 50.90,
+					"Unit": "21"
+				}
+			},
+			{
+				"Number": 8,
+				"AD": "A",
+				"Value": {
+					"Value": 1,
+					"Unit": "0"
+				}
+			},
+			{
+				"Number": 9,
+				"AD": "D",
+				"Value": {
+					"Value": 1,
+					"Unit": "44"
+				}
+			},
+			{
+				"Number": 10,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 11,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 12,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			},
+			{
+				"Number": 13,
+				"AD": "D",
+				"Value": {
+					"Value": 0,
+					"Unit": "43"
+				}
+			}
+		]
+	},
+	"Status": "OK",
+	"Status code": 0
+}

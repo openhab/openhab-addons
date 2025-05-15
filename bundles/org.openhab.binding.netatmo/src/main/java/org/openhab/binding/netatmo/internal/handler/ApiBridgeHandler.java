@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -216,7 +216,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/conf-error-grant-needed [ \"%s\" ]".formatted(servlet.getPath()));
+                "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
+                        .formatted(servlet.getPath()));
         connectApi.dispose();
     }
 

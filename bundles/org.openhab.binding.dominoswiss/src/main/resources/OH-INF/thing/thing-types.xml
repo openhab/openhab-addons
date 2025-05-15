@@ -6,6 +6,7 @@
 	<bridge-type id="egate">
 		<label>Dominoswiss EGate Server</label>
 		<description>This is a Dominoswiss EGate Server instance.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
@@ -26,6 +27,7 @@
 		</supported-bridge-type-refs>
 		<label>Blind</label>
 		<description>Provides various control commands for Dominoswiss receivers</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="pulseUp" typeId="pulseUp"/>
 			<channel id="pulseDown" typeId="pulseDown"/>

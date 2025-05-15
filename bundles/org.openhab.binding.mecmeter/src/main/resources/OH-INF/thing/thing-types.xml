@@ -7,7 +7,7 @@
 	<thing-type id="meter">
 		<label>mecMeter</label>
 		<description>Power Meter from MEC</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general_group" typeId="general_group"/>
 			<channel-group id="voltage_group" typeId="voltage_group"/>
