@@ -18,11 +18,10 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 
 /**
  * A MQTT alarm control panel, following the https://www.home-assistant.io/components/alarm_control_panel.mqtt/
@@ -34,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.ChannelConfiguration> {
+public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Configuration> {
     public static final String STATE_CHANNEL_ID = "state";
     public static final String SWITCH_DISARM_CHANNEL_ID = "disarm";
     public static final String SWITCH_ARM_HOME_CHANNEL_ID = "armhome";
@@ -86,40 +85,67 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Alarm");
+    public static class Configuration extends EntityConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Alarm");
         }
 
-        protected @Nullable String code;
+        List<String> getSupportedFeatures() {
+            return getStringList("supported_features");
+        }
 
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
+        Value getCommandTemplate() {
+            return getValue("value_template");
+        }
 
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("payload_arm_away")
-        protected String payloadArmAway = PAYLOAD_ARM_AWAY;
-        @SerializedName("payload_arm_home")
-        protected String payloadArmHome = PAYLOAD_ARM_HOME;
-        @SerializedName("payload_arm_night")
-        protected String payloadArmNight = PAYLOAD_ARM_NIGHT;
-        @SerializedName("payload_arm_vacation")
-        protected String payloadArmVacation = PAYLOAD_ARM_VACATION;
-        @SerializedName("payload_arm_custom_bypass")
-        protected String payloadArmCustomBypass = PAYLOAD_ARM_CUSTOM_BYPASS;
-        @SerializedName("payload_disarm")
-        protected String payloadDisarm = PAYLOAD_DISARM;
-        @SerializedName("payload_trigger")
-        protected String payloadTrigger = PAYLOAD_TRIGGER;
+        String getCommandTopic() {
+            return getString("command_topic");
+        }
 
-        @SerializedName("supported_features")
-        protected List<String> supportedFeatures = List.of(FEATURE_ARM_HOME, FEATURE_ARM_AWAY, FEATURE_ARM_NIGHT,
-                FEATURE_ARM_VACATION, FEATURE_ARM_CUSTOM_BYPASS, FEATURE_TRIGGER);
+        String getPayloadArmAway() {
+            return getString("payload_arm_away");
+        }
+
+        String getPayloadArmHome() {
+            return getString("payload_arm_home");
+        }
+
+        String getPayloadArmNight() {
+            return getString("payload_arm_night");
+        }
+
+        String getPayloadArmVacation() {
+            return getString("payload_arm_vacation");
+        }
+
+        String getPayloadArmCustomBypass() {
+            return getString("payload_arm_custom_bypass");
+        }
+
+        String getPayloadDisarm() {
+            return getString("payload_disarm");
+        }
+
+        String getPayloadTrigger() {
+            return getString("payload_trigger");
+        }
+
+        boolean isRetain() {
+            return getBoolean("retain");
+        }
+
+        String getStateTopic() {
+            return getString("state_topic");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public AlarmControlPanel(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
         Map<String, String> stateEnum = new LinkedHashMap<>();
         stateEnum.put(STATE_DISARMED, STATE_DISARMED);
@@ -128,44 +154,43 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         stateEnum.put(STATE_DISARMING, STATE_DISARMING);
         stateEnum.put(STATE_PENDING, STATE_PENDING);
 
-        String commandTopic = channelConfiguration.commandTopic;
         Map<String, String> commandEnum = new LinkedHashMap<>();
-        if (commandTopic != null) {
-            commandEnum.put(PAYLOAD_DISARM, channelConfiguration.payloadDisarm);
-        }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_HOME)) {
+        commandEnum.put(PAYLOAD_DISARM, config.getPayloadDisarm());
+        List<String> supportedFeatures = config.getSupportedFeatures();
+        if (supportedFeatures.contains(FEATURE_ARM_HOME)) {
             stateEnum.put(STATE_ARMED_HOME, STATE_ARMED_HOME);
-            commandEnum.put(PAYLOAD_ARM_HOME, channelConfiguration.payloadArmHome);
+            commandEnum.put(PAYLOAD_ARM_HOME, config.getPayloadArmHome());
         }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_AWAY)) {
+        if (supportedFeatures.contains(FEATURE_ARM_AWAY)) {
             stateEnum.put(STATE_ARMED_AWAY, STATE_ARMED_AWAY);
-            commandEnum.put(PAYLOAD_ARM_AWAY, channelConfiguration.payloadArmAway);
+            commandEnum.put(PAYLOAD_ARM_AWAY, config.getPayloadArmAway());
         }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_NIGHT)) {
+        if (supportedFeatures.contains(FEATURE_ARM_NIGHT)) {
             stateEnum.put(STATE_ARMED_NIGHT, STATE_ARMED_NIGHT);
-            commandEnum.put(PAYLOAD_ARM_NIGHT, channelConfiguration.payloadArmNight);
+            commandEnum.put(PAYLOAD_ARM_NIGHT, config.getPayloadArmNight());
         }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_VACATION)) {
+        if (supportedFeatures.contains(FEATURE_ARM_VACATION)) {
             stateEnum.put(STATE_ARMED_VACATION, STATE_ARMED_VACATION);
-            commandEnum.put(PAYLOAD_ARM_VACATION, channelConfiguration.payloadArmVacation);
+            commandEnum.put(PAYLOAD_ARM_VACATION, config.getPayloadArmVacation());
         }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_CUSTOM_BYPASS)) {
+        if (supportedFeatures.contains(FEATURE_ARM_CUSTOM_BYPASS)) {
             stateEnum.put(STATE_ARMED_CUSTOM_BYPASS, STATE_ARMED_CUSTOM_BYPASS);
-            commandEnum.put(PAYLOAD_ARM_CUSTOM_BYPASS, channelConfiguration.payloadArmCustomBypass);
+            commandEnum.put(PAYLOAD_ARM_CUSTOM_BYPASS, config.getPayloadArmCustomBypass());
         }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_TRIGGER)) {
-            commandEnum.put(PAYLOAD_TRIGGER, channelConfiguration.payloadTrigger);
+        if (supportedFeatures.contains(FEATURE_TRIGGER)) {
+            commandEnum.put(PAYLOAD_TRIGGER, config.getPayloadTrigger());
         }
 
         TextValue value = new TextValue(stateEnum, commandEnum, STATE_LABELS, COMMAND_LABELS);
-        var builder = buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate());
-
-        if (commandTopic != null) {
-            builder.commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos());
-        }
-        builder.build();
+        buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
+                componentContext.getUpdateListener())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos()). // TODO: use
+                                                                                             // getCommandTemplate(),
+                                                                                             // but we need to set the
+                                                                                             // `action` and `code`
+                                                                                             // variables in order to
+                                                                                             // use it
+                stateTopic(config.getStateTopic(), config.getValueTemplate()).build();
 
         finalizeChannels();
     }
