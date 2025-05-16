@@ -631,7 +631,14 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 updateApp();
             }
         }
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        ThingStatus bridgeStatus = getBridgeStatus().getStatus();
+        if (ThingStatus.ONLINE == bridgeStatus) {
+            updateStatus(ThingStatus.ONLINE);
+        } else if (ThingStatus.OFFLINE == bridgeStatus) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        }
         Future<?> localJob = this.finishInitJob;
         if (localJob != null) {
             localJob.cancel(true);

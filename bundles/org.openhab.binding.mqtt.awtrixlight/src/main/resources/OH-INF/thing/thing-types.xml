@@ -34,9 +34,15 @@
 				<autoUpdatePolicy>recommend</autoUpdatePolicy>
 			</channel>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
-			<channel id="indicator-1" typeId="indicator"/>
-			<channel id="indicator-2" typeId="indicator"/>
-			<channel id="indicator-3" typeId="indicator"/>
+			<channel id="indicator-1" typeId="indicator">
+				<label>Indicator 1</label>
+			</channel>
+			<channel id="indicator-2" typeId="indicator">
+				<label>Indicator 2</label>
+			</channel>
+			<channel id="indicator-3" typeId="indicator">
+				<label>Indicator 3</label>
+			</channel>
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="lux" typeId="lux"/>
 			<channel id="rssi" typeId="rssi"/>
@@ -49,6 +55,7 @@
 			<property name="firmware"></property>
 			<property name="uniqueId"></property>
 			<property name="vendor"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>uniqueId</representation-property>
 		<config-description-ref uri="thing-type:mqtt:awtrix-clock"/>
@@ -63,6 +70,8 @@
 		<category>screen</category>
 		<channels>
 			<channel id="active" typeId="system.power">
+				<label>App Active</label>
+				<description>App is removed from rotation while inactive</description>
 				<autoUpdatePolicy>recommend</autoUpdatePolicy>
 			</channel>
 			<channel id="reset" typeId="reset">
@@ -111,6 +120,7 @@
 		</channels>
 		<properties>
 			<property name="appid"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>appid</representation-property>
 		<config-description-ref uri="thing-type:mqtt:awtrix-app"/>
