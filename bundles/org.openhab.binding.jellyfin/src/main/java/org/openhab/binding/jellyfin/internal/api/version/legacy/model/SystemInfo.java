@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -188,7 +186,7 @@ public class SystemInfo {
      * 
      * @return serverName
      */
-    Nullable
+    @javax.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SERVER_NAME)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 

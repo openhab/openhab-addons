@@ -66,7 +66,7 @@
       <artifactId>spring-webflux</artifactId>
       <version>${spring-webflux-version}</version>
     </dependency>
-  
+
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>annotations</artifactId>
