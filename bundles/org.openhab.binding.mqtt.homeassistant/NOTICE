@@ -11,3 +11,7 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+Parts of this code (src/main/python/) have been forked from https://github.com/home-assistant/core,
+and are licensed under the Apache License 2.0 which is available at
+https://www.apache.org/licenses/LICENSE-2.0
