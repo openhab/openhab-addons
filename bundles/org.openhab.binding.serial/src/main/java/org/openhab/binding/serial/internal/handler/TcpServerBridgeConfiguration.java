@@ -18,39 +18,33 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Class describing the serial bridge user configuration
  *
- * @author Mike Major - Initial contribution
+ * @author Roland Tapken - Initial contribution
  */
 @NonNullByDefault
-public class SerialBridgeConfiguration extends CommonBridgeConfiguration {
+public class TcpServerBridgeConfiguration extends CommonBridgeConfiguration {
     /**
-     * Serial port name
+     * IP address or hostname
      */
-    public @Nullable String serialPort;
+    public @Nullable String bindAddress = "0.0.0.0";
 
     /**
-     * Serial port baud rate
+     * TCP Port
      */
-    public int baudRate = 9600;
+    public int port = 0;
 
     /**
-     * Serial port data bits
+     * Socket timeout in seconds
      */
-    public int dataBits = 8;
+    public int timeout = 0;
 
     /**
-     * Serial port parity
+     * Keep Alive
      */
-    public String parity = "N";
-
-    /**
-     * Serial port stop bits
-     */
-    public String stopBits = "1";
+    public boolean keepAlive = false;
 
     @Override
     public String toString() {
-        return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudRate + ", Databits="
-                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + ", charset=" + charset + ", eolPattern="
-                + eolPattern + "]";
+        return "TcpBridgeConfiguration [BindAddress=" + bindAddress + ", Port=" + port + ", timeout=" + timeout
+                + ", keepAlive=" + keepAlive + ", charset=" + charset + ", eolPattern=" + eolPattern + "]";
     }
 }
