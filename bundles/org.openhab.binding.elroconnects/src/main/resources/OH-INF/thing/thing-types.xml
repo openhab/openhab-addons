@@ -251,6 +251,9 @@
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="alarm">
@@ -336,12 +339,20 @@
 		<item-type>Switch</item-type>
 		<label>Mute Alarm</label>
 		<description>Mute</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="testalarm">
 		<item-type>Switch</item-type>
 		<label>Test Alarm</label>
 		<description>Trigger alarm test sound</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="temperature">

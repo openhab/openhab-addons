@@ -38,6 +38,10 @@
 		<item-type>String</item-type>
 		<label>Inverter Workmode</label>
 		<description>Inverter Workmode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="0">Waiting</option>
@@ -61,6 +65,10 @@
 		<item-type>String</item-type>
 		<label>Inverter Workmode</label>
 		<description>Inverter Workmode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="100">Waiting</option>
@@ -85,6 +93,10 @@
 		<label>Last Retrieve Time Stamp</label>
 		<description>Last time with a successful retrieval of data</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="yyyy-MM-dd HH:mm:ss" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-data-type" advanced="true">
@@ -115,6 +127,10 @@
 		<item-type>String</item-type>
 		<label>Charger Mode</label>
 		<description>Charger Mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="0">Stop</option>
