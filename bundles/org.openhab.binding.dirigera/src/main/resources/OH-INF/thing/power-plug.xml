@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="power-plug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Power Plug</label>
+		<description>Power plug with control of power state, startup behavior, hardware on/off button and status light</description>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Plug Powered</label>
+				<description>Power state of plug </description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="disable-status-light" typeId="disable-status-light"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="startup" typeId="startup"/>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>
