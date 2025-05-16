@@ -138,8 +138,9 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
                 logger.debug("Writing to read-only channel {} not permitted", channelUID);
             }
 
-            if (refreshingUrlCache != null)
+            if (refreshingUrlCache != null) {
                 refreshingUrlCache.run(scheduler);
+            }
         }
     }
 
