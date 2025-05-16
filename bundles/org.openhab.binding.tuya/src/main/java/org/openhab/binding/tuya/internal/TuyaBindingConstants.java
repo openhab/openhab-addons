@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -72,7 +73,8 @@ public class TuyaBindingConstants {
 
         try (InputStreamReader reader = new InputStreamReader(resource)) {
             Gson gson = new Gson();
-            Type schemaListType = TypeToken.getParameterized(Map.class, String.class, SchemaDp.class).getType();
+            Type schemaListType = TypeToken.getParameterized(LinkedHashMap.class, String.class, SchemaDp.class)
+                    .getType();
             Type schemaType = TypeToken.getParameterized(Map.class, String.class, schemaListType).getType();
             return Objects.requireNonNull(gson.fromJson(reader, schemaType));
         } catch (IOException e) {
