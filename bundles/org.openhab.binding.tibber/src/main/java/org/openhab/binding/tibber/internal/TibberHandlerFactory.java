@@ -17,12 +17,15 @@ import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TibberHandlerFactory} is responsible for creating things and thing
@@ -33,6 +36,12 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.tibber", service = ThingHandlerFactory.class)
 public class TibberHandlerFactory extends BaseThingHandlerFactory {
+    private final HttpClientFactory httpFactory;
+
+    @Activate
+    public TibberHandlerFactory(final @Reference HttpClientFactory httpFactory) {
+        this.httpFactory = httpFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,7 +52,7 @@ public class TibberHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(TIBBER_THING_TYPE)) {
-            return new TibberHandler(thing);
+            return new TibberHandler(thing, httpFactory.getCommonHttpClient());
         } else {
             return null;
         }

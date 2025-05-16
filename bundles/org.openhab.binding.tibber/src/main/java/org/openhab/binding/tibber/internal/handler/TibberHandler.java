@@ -34,7 +34,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -80,8 +79,8 @@ public class TibberHandler extends BaseThingHandler {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
     private final Logger logger = LoggerFactory.getLogger(TibberHandler.class);
     private final Properties httpHeader = new Properties();
+    private final HttpClient httpClient;
     private TibberConfiguration tibberConfig = new TibberConfiguration();
-    private @Nullable SslContextFactory sslContextFactory;
     private @Nullable TibberWebSocketListener socket;
     private @Nullable Session session;
     private @Nullable WebSocketClient client;
@@ -92,8 +91,9 @@ public class TibberHandler extends BaseThingHandler {
     private @Nullable String versionString;
     private @Nullable LocalDateTime lastWebSocketMessage;
 
-    public TibberHandler(Thing thing) {
+    public TibberHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -438,11 +438,7 @@ public class TibberHandler extends BaseThingHandler {
                 }
                 client.destroy();
             }
-            sslContextFactory = new SslContextFactory.Client(true);
-            sslContextFactory.setTrustAll(true);
-            sslContextFactory.setEndpointIdentificationAlgorithm(null);
-
-            client = new WebSocketClient(new HttpClient(sslContextFactory));
+            client = new WebSocketClient(httpClient);
             client.setMaxIdleTimeout(30 * 1000);
             this.client = client;
 
