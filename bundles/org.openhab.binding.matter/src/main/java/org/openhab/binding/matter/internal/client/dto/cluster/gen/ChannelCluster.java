@@ -344,14 +344,14 @@ public class ChannelCluster extends BaseCluster {
          */
         public Integer limit; // uint16
         /**
-         * This field shall indicate the cursor that pinpoints the start of the upcoming data page. In a Cursor- based
+         * This field shall indicate the cursor that pinpoints the start of the upcoming data page. In a Cursor-based
          * pagination system, the field acts as a reference point, ensuring the set of results corresponds directly to
          * the data following the specified cursor. In a Offset-based pagination system, the field, along with limit,
          * indicate the offset from which entries in the program guide will be retrieved.
          */
         public String after; // string
         /**
-         * This field shall indicate the cursor that pinpoints the end of the upcoming data page. In a Cursor- based
+         * This field shall indicate the cursor that pinpoints the end of the upcoming data page. In a Cursor-based
          * pagination system, the field acts as a reference point, ensuring the set of results corresponds directly to
          * the data preceding the specified cursor. In a Offset-based pagination system, the field, along with limit,
          * indicate the offset from which entries in the program guide will be retrieved.
@@ -503,6 +503,10 @@ public class ChannelCluster extends BaseCluster {
 
     public ChannelCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1284, "Channel");
+    }
+
+    protected ChannelCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

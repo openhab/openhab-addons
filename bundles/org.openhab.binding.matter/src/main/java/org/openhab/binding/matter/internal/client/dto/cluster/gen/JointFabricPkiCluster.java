@@ -102,6 +102,10 @@ public class JointFabricPkiCluster extends BaseCluster {
         super(nodeId, endpointId, 1875, "JointFabricPki");
     }
 
+    protected JointFabricPkiCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command shall be generated and executed during the Joint Commissioning Method steps and subsequently respond

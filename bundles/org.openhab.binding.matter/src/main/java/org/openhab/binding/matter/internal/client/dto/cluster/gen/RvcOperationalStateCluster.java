@@ -25,62 +25,11 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class RvcOperationalStateCluster extends BaseCluster {
+public class RvcOperationalStateCluster extends OperationalStateCluster {
 
     public static final int CLUSTER_ID = 0x0061;
     public static final String CLUSTER_NAME = "RvcOperationalState";
     public static final String CLUSTER_PREFIX = "rvcOperationalState";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
-    // Structs
-
-    /**
-     * The OperationalStateStruct is used to indicate a possible state of the device.
-     */
-    public class OperationalStateStruct {
-        /**
-         * This shall be populated with a value from the OperationalStateEnum.
-         */
-        public OperationalStateEnum operationalStateId; // OperationalStateEnum
-        /**
-         * This field shall be present if the OperationalStateID is from the set reserved for Manufacturer Specific
-         * States, otherwise it shall NOT be present. If present, this shall contain a human-readable description of the
-         * operational state.
-         */
-        public String operationalStateLabel; // string
-
-        public OperationalStateStruct(OperationalStateEnum operationalStateId, String operationalStateLabel) {
-            this.operationalStateId = operationalStateId;
-            this.operationalStateLabel = operationalStateLabel;
-        }
-    }
-
-    public class ErrorStateStruct {
-        /**
-         * This shall be populated with a value from the ErrorStateEnum.
-         */
-        public ErrorStateEnum errorStateID; // ErrorStateEnum
-        /**
-         * This field shall be present if the ErrorStateID is from the set reserved for Manufacturer Specific Errors,
-         * otherwise it shall NOT be present. If present, this shall contain a human-readable description of the
-         * ErrorStateID; e.g. for a manufacturer specific ErrorStateID of &quot;0x80&quot; the ErrorStateLabel may
-         * contain &quot;My special error&quot;.
-         */
-        public String errorStateLabel; // string
-        /**
-         * This shall be a human-readable string that provides details about the error condition. As an example, if the
-         * ErrorStateID indicates that the device is a Robotic Vacuum that is stuck, the ErrorStateDetails contains
-         * &quot;left wheel blocked&quot;.
-         */
-        public String errorStateDetails; // string
-
-        public ErrorStateStruct(ErrorStateEnum errorStateID, String errorStateLabel, String errorStateDetails) {
-            this.errorStateID = errorStateID;
-            this.errorStateLabel = errorStateLabel;
-            this.errorStateDetails = errorStateDetails;
-        }
-    }
 
     // Enums
     /**
@@ -165,6 +114,10 @@ public class RvcOperationalStateCluster extends BaseCluster {
         super(nodeId, endpointId, 97, "RvcOperationalState");
     }
 
+    protected RvcOperationalStateCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * On receipt of this command, the device shall start seeking the charging dock, if possible in the current state of
@@ -185,7 +138,6 @@ public class RvcOperationalStateCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

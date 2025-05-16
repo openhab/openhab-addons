@@ -116,9 +116,9 @@ public class ContentControlCluster extends BaseCluster {
      * Indicates whether the playback of unrated content is allowed when the Content Control feature is activated. If
      * this attribute equals FALSE, then playback of unrated content shall be permitted. Otherwise, the media device
      * shall prevent the playback of unrated content.
-     * When this attribute changes, the device SHOULD make the user aware of any limits of this feature. For example, if
-     * the feature does not control content within apps, then the device should make this clear to the user when the
-     * attribute changes.
+     * When this attribute changes, the device SHOULD make the user aware of any limits of this feature.
+     * For example, if the feature does not control content within apps, then the device should make this clear to the
+     * user when the attribute changes.
      */
     public Boolean blockUnrated; // 7 bool R V
     /**
@@ -393,6 +393,10 @@ public class ContentControlCluster extends BaseCluster {
         super(nodeId, endpointId, 1295, "ContentControl");
     }
 
+    protected ContentControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * The purpose of this command is to update the PIN used for protecting configuration of the content control
@@ -530,9 +534,8 @@ public class ContentControlCluster extends BaseCluster {
 
     /**
      * The purpose of this command is to set BlockChannelList attribute.
-     * Upon receipt of the AddBlockChannels command, the media device shall check if the channels
-     * passed in this command are valid. If the channel is invalid, then a response with InvalidChannel error Status
-     * shall be returned.
+     * Upon receipt of the AddBlockChannels command, the media device shall check if the channels passed in this command
+     * are valid. If the channel is invalid, then a response with InvalidChannel error Status shall be returned.
      * If there is at least one channel in Channels field which is not in the BlockChannelList attribute, the media
      * device shall process the request by adding these new channels into the BlockChannelList attribute and return a
      * successful Status Response. During this process, the media device shall assign one unique index to
@@ -567,8 +570,7 @@ public class ContentControlCluster extends BaseCluster {
      * The purpose of this command is to set applications to the BlockApplicationList attribute.
      * Upon receipt of the AddBlockApplications command, the media device shall check if the Applications passed in this
      * command are installed. If there is an application in Applications field which is not identified by media device,
-     * then a response with UnidentifiableApplication error Status may be
-     * returned.
+     * then a response with UnidentifiableApplication error Status may be returned.
      * If there is one or more applications which are not present in BlockApplicationList attribute, the media device
      * shall process the request by adding the new application to the BlockApplicationList attribute and return a
      * successful Status Response.

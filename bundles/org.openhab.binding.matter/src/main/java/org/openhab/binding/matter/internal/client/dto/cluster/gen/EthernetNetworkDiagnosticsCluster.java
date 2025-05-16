@@ -148,6 +148,10 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
         super(nodeId, endpointId, 55, "EthernetNetworkDiagnostics");
     }
 
+    protected EthernetNetworkDiagnosticsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Reception of this command shall reset the following attributes to 0:

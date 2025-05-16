@@ -113,7 +113,7 @@ public class IcdManagementCluster extends BaseCluster {
      */
     public String userActiveModeTriggerInstruction; // 7 string R V
     /**
-     * Indicates the operating mode of the ICD as specified in the OperatingModeEnum.
+     * This attribute shall indicate the operating mode of the ICD as specified in the OperatingModeEnum.
      * • If the ICD is operating as a LIT ICD, OperatingMode shall be LIT.
      * • If the ICD is operating as a SIT ICD, OperatingMode shall be SIT.
      */
@@ -121,7 +121,7 @@ public class IcdManagementCluster extends BaseCluster {
     /**
      * Indicates the maximum time in seconds between two Check-In messages when back-off is active. The
      * MaximumCheckInBackoff shall NOT be smaller than the IdleModeDuration.
-     * If the MaximumCheckInBackoff is equal to the IdleModeDuration, it means the ICD does notback- off.
+     * If the MaximumCheckInBackoff is equal to the IdleModeDuration, it means the ICD does not back-off.
      */
     public Integer maximumCheckInBackoff; // 9 uint32 R V
     // Structs
@@ -144,9 +144,9 @@ public class IcdManagementCluster extends BaseCluster {
          * Granting Algorithm.
          * For example, if the MonitoredSubject is Node ID 0x1111_2222_3333_AAAA, and one of the subscribers to the
          * server on the entry’s associated fabric bears that Node ID, then the entry matches.
-         * Another example is if the MonitoredSubject has the value 0xFFFF_FFFD_AA12_0002, and one of the
-         * subscribers to the server on the entry’s associated fabric bears the CASE Authenticated TAG value 0xAA12 and
-         * the version 0x0002 or higher within its NOC, then the entry matches.
+         * Another example is if the MonitoredSubject has the value 0xFFFF_FFFD_AA12_0002, and one of the subscribers to
+         * the server on the entry’s associated fabric bears the CASE Authenticated TAG value 0xAA12 and the version
+         * 0x0002 or higher within its NOC, then the entry matches.
          */
         public BigInteger monitoredSubject; // subject-id
         public String key; //
@@ -297,6 +297,10 @@ public class IcdManagementCluster extends BaseCluster {
 
     public IcdManagementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 70, "IcdManagement");
+    }
+
+    protected IcdManagementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

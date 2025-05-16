@@ -80,7 +80,8 @@ public class LevelControlCluster extends BaseCluster {
      */
     public Integer maxLevel; // 3 uint8 R V
     /**
-     * Indicates the frequency at which the device is at CurrentLevel. A CurrentFrequency of 0 is unknown.
+     * This attribute shall indicate the frequency at which the device is at CurrentLevel. A CurrentFrequency of 0 is
+     * unknown.
      * Changes to this attribute shall only be marked as reportable in the following cases:
      * • At most once per second, or
      * • At the start of the movement/transition, or
@@ -237,7 +238,7 @@ public class LevelControlCluster extends BaseCluster {
         public boolean lighting;
         /**
          * Frequency
-         * NOTE The Frequency feature is provisional.
+         * Supports frequency attributes and behavior.
          */
         public boolean frequency;
 
@@ -250,6 +251,10 @@ public class LevelControlCluster extends BaseCluster {
 
     public LevelControlCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 8, "LevelControl");
+    }
+
+    protected LevelControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

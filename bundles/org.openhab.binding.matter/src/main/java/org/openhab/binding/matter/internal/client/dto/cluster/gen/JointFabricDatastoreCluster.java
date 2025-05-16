@@ -22,15 +22,15 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
- * JointFabricDatastoreCluster
+ * JointFabricDatastore
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class JointFabricDatastoreClusterCluster extends BaseCluster {
+public class JointFabricDatastoreCluster extends BaseCluster {
 
     public static final int CLUSTER_ID = 0x0752;
-    public static final String CLUSTER_NAME = "JointFabricDatastoreCluster";
-    public static final String CLUSTER_PREFIX = "jointFabricDatastoreCluster";
+    public static final String CLUSTER_NAME = "JointFabricDatastore";
+    public static final String CLUSTER_PREFIX = "jointFabricDatastore";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_ANCHOR_ROOT_CA = "anchorRootCa";
     public static final String ATTRIBUTE_ANCHOR_NODE_ID = "anchorNodeId";
@@ -375,8 +375,12 @@ public class JointFabricDatastoreClusterCluster extends BaseCluster {
         }
     }
 
-    public JointFabricDatastoreClusterCluster(BigInteger nodeId, int endpointId) {
-        super(nodeId, endpointId, 1874, "JointFabricDatastoreCluster");
+    public JointFabricDatastoreCluster(BigInteger nodeId, int endpointId) {
+        super(nodeId, endpointId, 1874, "JointFabricDatastore");
+    }
+
+    protected JointFabricDatastoreCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

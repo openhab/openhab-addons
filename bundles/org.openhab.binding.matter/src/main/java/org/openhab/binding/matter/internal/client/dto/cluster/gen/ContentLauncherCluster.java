@@ -41,8 +41,8 @@ public class ContentLauncherCluster extends BaseCluster {
     public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * This attribute shall provide a list of content types supported by the Video Player or Content App
-     * in the form of entries in the HTTP &quot;Accept&quot; request header.
+     * This attribute shall provide a list of content types supported by the Video Player or Content App in the form of
+     * entries in the HTTP &quot;Accept&quot; request header.
      */
     public List<String> acceptHeader; // 0 list R V
     /**
@@ -148,14 +148,14 @@ public class ContentLauncherCluster extends BaseCluster {
         /**
          * This field shall indicate the color, in RGB or RGBA, used for styling different Video Player sections like
          * Logo, Watermark, etc. The value shall conform to the 6-digit or 8-digit format defined for CSS sRGB
-         * hexadecimal color notation [https://www.w3.org/TR/css-color-4/#hex-notation]. Examples:
+         * hexadecimal color notation. Examples:
          * • #76DE19 for R&#x3D;0x76, G&#x3D;0xDE, B&#x3D;0x19, A absent
          * • #76DE1980 for R&#x3D;0x76, G&#x3D;0xDE, B&#x3D;0x19, A&#x3D;0x80
          */
         public String color; // string
         /**
-         * This field shall indicate the size of the image used for Styling different Video Player sections like
-         * Logo, Watermark etc.
+         * This field shall indicate the size of the image used for Styling different Video Player sections like Logo,
+         * Watermark etc.
          */
         public DimensionStruct size; // DimensionStruct
 
@@ -197,17 +197,17 @@ public class ContentLauncherCluster extends BaseCluster {
         /**
          * This field shall indicate watermark shown when the media is playing.
          */
-        public StyleInformationStruct waterMark; // StyleInformationStruct
+        public StyleInformationStruct watermark; // StyleInformationStruct
 
         public BrandingInformationStruct(String providerName, StyleInformationStruct background,
                 StyleInformationStruct logo, StyleInformationStruct progressBar, StyleInformationStruct splash,
-                StyleInformationStruct waterMark) {
+                StyleInformationStruct watermark) {
             this.providerName = providerName;
             this.background = background;
             this.logo = logo;
             this.progressBar = progressBar;
             this.splash = splash;
-            this.waterMark = waterMark;
+            this.watermark = watermark;
         }
     }
 
@@ -417,6 +417,10 @@ public class ContentLauncherCluster extends BaseCluster {
 
     public ContentLauncherCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1290, "ContentLauncher");
+    }
+
+    protected ContentLauncherCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

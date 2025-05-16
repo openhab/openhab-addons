@@ -49,9 +49,9 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public List<GroupKeyMapStruct> groupKeyMap; // 0 list RW F VM
     /**
      * This attribute is a list of GroupInfoMapStruct entries. Each entry provides read-only information about how a
-     * given logical Group ID maps to a particular set of endpoints, and a name for the group.
-     * The content of this attribute reflects data managed via the Groups cluster (see AppClusters), and is in general
-     * terms referred to as the &#x27;node-wide Group Table&#x27;.
+     * given logical Group ID maps to a particular set of endpoints, and a name for the group. The content of this
+     * attribute reflects data managed via the Groups cluster (see AppClusters), and is in general terms referred to as
+     * the &#x27;node-wide Group Table&#x27;.
      * The GroupTable shall NOT contain any entry whose GroupInfoMapStruct has an empty Endpoints list. If a RemoveGroup
      * or RemoveAllGroups command causes the removal of a group mapping from its last mapped endpoint, the entire
      * GroupTable entry for that given GroupId shall be removed.
@@ -139,8 +139,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
          * The PerGroupID method maximizes filtering of multicast messages, so that receiving nodes receive only
          * multicast messages for groups to which they are subscribed.
          * The AllNodes method minimizes the number of multicast addresses to which a receiver node needs to subscribe.
-         * NOTE
-         * Support for GroupKeyMulticastPolicy is provisional. Correct default behavior is that implied by value
+         * &gt; [!NOTE]
+         * &gt; Support for GroupKeyMulticastPolicy is provisional. Correct default behavior is that implied by value
          * PerGroupID.
          */
         public GroupKeyMulticastPolicyEnum groupKeyMulticastPolicy; // GroupKeyMulticastPolicyEnum
@@ -249,11 +249,15 @@ public class GroupKeyManagementCluster extends BaseCluster {
         super(nodeId, endpointId, 63, "GroupKeyManagement");
     }
 
+    protected GroupKeyManagementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command is used by Administrators to set the state of a given Group Key Set, including atomically updating
      * the state of all epoch keys.
-     * Effect on Receipt
+     * ### Effect on Receipt
      * The following validations shall be done against the content of the GroupKeySet field:
      * • If the EpochKey0 field is null or its associated EpochStartTime0 field is null, then this command shall fail
      * with an INVALID_COMMAND status code responded to the client.
@@ -282,12 +286,11 @@ public class GroupKeyManagementCluster extends BaseCluster {
      * • If exactly one of the EpochKey2 or EpochStartTime2 is null, rather than both being null, or neither being null,
      * then this command shall fail with an INVALID_COMMAND status code responded to the client.
      * If there exists a Group Key Set associated with the accessing fabric which has the same GroupKeySetID as that
-     * provided in the GroupKeySet field, then the contents of that group key set shall be
-     * replaced. A replacement shall be done by executing the equivalent of entirely removing the previous Group Key Set
-     * with the given GroupKeySetID, followed by an addition of a Group Key Set with the provided configuration.
-     * Otherwise, if the GroupKeySetID did not match an existing entry, a new Group Key Set associated with the
-     * accessing fabric shall be created with the provided data. The Group Key Set shall be written to non-volatile
-     * storage.
+     * provided in the GroupKeySet field, then the contents of that group key set shall be replaced. A replacement shall
+     * be done by executing the equivalent of entirely removing the previous Group Key Set with the given GroupKeySetID,
+     * followed by an addition of a Group Key Set with the provided configuration. Otherwise, if the GroupKeySetID did
+     * not match an existing entry, a new Group Key Set associated with the accessing fabric shall be created with the
+     * provided data. The Group Key Set shall be written to non-volatile storage.
      * Upon completion, this command shall send a status code back to the initiator:
      * • If the Group Key Set was properly installed or updated on the Node, the status code shall be set to SUCCESS.
      * • If there are insufficient resources on the receiver to store an additional Group Key Set, the status code shall
@@ -304,7 +307,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
 
     /**
      * This command is used by Administrators to read the state of a given Group Key Set.
-     * Effect on Receipt
+     * ### Effect on Receipt
      * If there exists a Group Key Set associated with the accessing fabric which has the same GroupKeySetID as that
      * provided in the GroupKeySetID field, then the contents of that Group Key Set shall be sent in a
      * KeySetReadResponse command, but with the EpochKey0, EpochKey1 and EpochKey2 fields replaced by null.
@@ -321,7 +324,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
 
     /**
      * This command is used by Administrators to remove all state of a given Group Key Set.
-     * Effect on Receipt
+     * ### Effect on Receipt
      * If there exists a Group Key Set associated with the accessing fabric which has the same GroupKeySetID as that
      * provided in the GroupKeySetID field, then the contents of that Group Key Set shall be removed, including all
      * epoch keys it contains.
@@ -345,7 +348,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
     /**
      * This command is used by Administrators to query a list of all Group Key Sets associated with the accessing
      * fabric.
-     * Effect on Receipt
+     * ### Effect on Receipt
      * Upon receipt, this command shall iterate all stored GroupKeySetStruct associated with the accessing fabric and
      * generate a KeySetReadAllIndicesResponse command containing the list of GroupKeySetID values from those structs.
      */

@@ -145,12 +145,16 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
         super(nodeId, endpointId, 52, "SoftwareDiagnostics");
     }
 
+    protected SoftwareDiagnosticsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Receipt of this command shall reset the following values which track high and lower watermarks:
      * • The StackFreeMinimum field of the ThreadMetrics attribute
      * • The CurrentHeapHighWatermark attribute This command has no payload.
-     * Effect on Receipt
+     * ### Effect on Receipt
      * On receipt of this command, the Node shall make the following modifications to attributes it supports:
      * If implemented, the server shall set the value of the CurrentHeapHighWatermark attribute to the value of the
      * CurrentHeapUsed attribute.

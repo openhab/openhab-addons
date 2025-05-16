@@ -59,6 +59,10 @@ public class BooleanStateCluster extends BaseCluster {
         super(nodeId, endpointId, 69, "BooleanState");
     }
 
+    protected BooleanStateCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

@@ -109,9 +109,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public Integer channel; // 0 uint16 R V
     /**
      * The RoutingRole attribute shall indicate the role that this Node has within the routing of messages through the
-     * Thread network, as defined by RoutingRoleEnum. The potential roles are defined
-     * in the following table. A value of null shall indicate that the Thread interface is not currently configured or
-     * operational.
+     * Thread network, as defined by RoutingRoleEnum. The potential roles are defined in the following table. A value of
+     * null shall indicate that the Thread interface is not currently configured or operational.
      */
     public RoutingRoleEnum routingRole; // 1 RoutingRoleEnum R V
     /**
@@ -253,10 +252,10 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      */
     public Integer txAckedCount; // 26 uint32 R V
     /**
-     * The TxNoAckRequestedCount attribute shall indicate the total number of unique MAC frame
-     * transmission requests without requested acknowledgment. The TxNoAckRequestedCount attribute shall only be
-     * incremented by 1 for each MAC transmission request that is does not request acknowledgement regardless of the
-     * amount of CCA failures, CSMA-CA attempts, or retransmissions.
+     * The TxNoAckRequestedCount attribute shall indicate the total number of unique MAC frame transmission requests
+     * without requested acknowledgment. The TxNoAckRequestedCount attribute shall only be incremented by 1 for each MAC
+     * transmission request that is does not request acknowledgement regardless of the amount of CCA failures, CSMA-CA
+     * attempts, or retransmissions.
      */
     public Integer txNoAckRequestedCount; // 27 uint32 R V
     /**
@@ -301,10 +300,10 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      */
     public Integer txRetryCount; // 33 uint32 R V
     /**
-     * The TxDirectMaxRetryExpiryCount attribute shall indicate the total number of unique MAC
-     * transmission packets that meet maximal retry limit for direct packets. The TxDirectMaxRetryExpiryCount attribute
-     * shall only be incremented by 1 for each unique MAC transmission packets that meets the maximal retry limit for
-     * direct packets. This value shall only be reset upon a Node reboot.
+     * The TxDirectMaxRetryExpiryCount attribute shall indicate the total number of unique MAC transmission packets that
+     * meet maximal retry limit for direct packets. The TxDirectMaxRetryExpiryCount attribute shall only be incremented
+     * by 1 for each unique MAC transmission packets that meets the maximal retry limit for direct packets. This value
+     * shall only be reset upon a Node reboot.
      */
     public Integer txDirectMaxRetryExpiryCount; // 34 uint32 R V
     /**
@@ -348,8 +347,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      */
     public Integer rxBroadcastCount; // 41 uint32 R V
     /**
-     * The RxDataCount attribute shall indicate the total number of received unique MAC Data frames.
-     * This value shall only be reset upon a Node reboot.
+     * The RxDataCount attribute shall indicate the total number of received unique MAC Data frames. This value shall
+     * only be reset upon a Node reboot.
      */
     public Integer rxDataCount; // 42 uint32 R V
     /**
@@ -396,8 +395,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public Integer rxErrNoFrameCount; // 50 uint32 R V
     /**
      * The RxErrUnknownNeighborCount attribute shall indicate the total number of received unique MAC frame requests
-     * that have been dropped as a result of originating from an unknown neighbor
-     * device. This value shall only be reset upon a Node reboot.
+     * that have been dropped as a result of originating from an unknown neighbor device. This value shall only be reset
+     * upon a Node reboot.
      */
     public Integer rxErrUnknownNeighborCount; // 51 uint32 R V
     /**
@@ -846,6 +845,10 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
 
     public ThreadNetworkDiagnosticsCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 53, "ThreadNetworkDiagnostics");
+    }
+
+    protected ThreadNetworkDiagnosticsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

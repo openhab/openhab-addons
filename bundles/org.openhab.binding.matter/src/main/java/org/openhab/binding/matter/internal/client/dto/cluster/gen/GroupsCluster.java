@@ -71,6 +71,10 @@ public class GroupsCluster extends BaseCluster {
         super(nodeId, endpointId, 4, "Groups");
     }
 
+    protected GroupsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * The AddGroup command allows a client to add group membership in a particular group for the server endpoint.

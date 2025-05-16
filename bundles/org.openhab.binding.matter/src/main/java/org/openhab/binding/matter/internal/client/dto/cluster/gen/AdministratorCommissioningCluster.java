@@ -44,8 +44,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
      * Indicates whether a new Commissioning window has been opened by an Administrator, using either the
      * OpenCommissioningWindow command or the OpenBasicCommissioningWindow command.
      * This attribute shall revert to WindowNotOpen upon expiry of a commissioning window.
-     * NOTE
-     * An initial commissioning window is not opened using either the OpenCommissioningWindow command or the
+     * &gt; [!NOTE]
+     * &gt; An initial commissioning window is not opened using either the OpenCommissioningWindow command or the
      * OpenBasicCommissioningWindow command, and therefore this attribute shall be set to WindowNotOpen on initial
      * commissioning.
      */
@@ -135,6 +135,10 @@ public class AdministratorCommissioningCluster extends BaseCluster {
         super(nodeId, endpointId, 60, "AdministratorCommissioning");
     }
 
+    protected AdministratorCommissioningCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command is used by a current Administrator to instruct a Node to go into commissioning mode. The Enhanced
@@ -142,9 +146,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
      * The current Administrator MUST specify a timeout value for the duration of the OpenCommissioningWindow command.
      * When the OpenCommissioningWindow command expires or commissioning completes, the Node shall remove the Passcode
      * by deleting the PAKE passcode verifier as well as stop publishing the DNS-SD record corresponding to this command
-     * as described in Section 4.3.1, “Commissionable
-     * Node Discovery”. The commissioning into a new Fabric completes when the Node successfully receives a
-     * CommissioningComplete command, see Section 5.5, “Commissioning Flows”.
+     * as described in Section 4.3.1, “Commissionable Node Discovery”. The commissioning into a new Fabric completes
+     * when the Node successfully receives a CommissioningComplete command, see Section 5.5, “Commissioning Flows”.
      * The parameters for OpenCommissioningWindow command are as follows:
      * A current Administrator may invoke this command to put a node in commissioning mode for the next Administrator.
      * On completion, the command shall return a cluster specific status code from the Section 11.19.6, “Status Codes”
@@ -212,8 +215,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
      * If no commissioning window was open at time of receipt, this command shall fail with a cluster specific status
      * code of WindowNotOpen.
      * If the commissioning window was open and the fail-safe was armed when this command is received, the device shall
-     * immediately expire the fail-safe and perform the cleanup steps outlined
-     * in Section 11.10.7.2.2, “Behavior on expiry of Fail-Safe timer”.
+     * immediately expire the fail-safe and perform the cleanup steps outlined in Section 11.10.7.2.2, “Behavior on
+     * expiry of Fail-Safe timer”.
      */
     public static ClusterCommand revokeCommissioning() {
         return new ClusterCommand("revokeCommissioning");

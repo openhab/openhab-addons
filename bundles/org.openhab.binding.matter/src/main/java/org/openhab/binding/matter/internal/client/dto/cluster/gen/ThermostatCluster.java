@@ -117,7 +117,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * Indicates the absolute minimum level that the heating setpoint may be set to. This is a limitation imposed by the
      * manufacturer.
-     * Refer to Setpoint Limits for constraints
+     * ### Refer to Setpoint Limits for constraints
      */
     public Integer absMinHeatSetpointLimit; // 3 temperature R V
     public Integer absMaxHeatSetpointLimit; // 4 temperature R V
@@ -125,7 +125,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * Indicates the absolute maximum level that the cooling setpoint may be set to. This is a limitation imposed by the
      * manufacturer.
-     * Refer to Setpoint Limits for constraints
+     * ### Refer to Setpoint Limits for constraints
      */
     public Integer absMaxCoolSetpointLimit; // 6 temperature R V
     /**
@@ -149,8 +149,8 @@ public class ThermostatCluster extends BaseCluster {
      * If a Thermostat client attempts to write LocalTemperatureCalibration attribute to an unsupported value (e.g., out
      * of the range supported by the Thermostat server), the Thermostat server shall respond with a status of SUCCESS
      * and set the value of LocalTemperatureCalibration to the upper or lower limit reached.
-     * NOTE
-     * Prior to revision 8 of this cluster specification the value of this attribute was constrained to a range of
+     * &gt; [!NOTE]
+     * &gt; Prior to revision 8 of this cluster specification the value of this attribute was constrained to a range of
      * -2.5°C to 2.5°C.
      */
     public Integer localTemperatureCalibration; // 16 SignedTemperature RW VM
@@ -170,8 +170,8 @@ public class ThermostatCluster extends BaseCluster {
      * Indicates the heating mode setpoint when the room is occupied. Refer to Setpoint Limits for constraints.
      * If an attempt is made to set this attribute to a value greater than MaxHeatSetpointLimit or less than
      * MinHeatSetpointLimit, a response with the status code CONSTRAINT_ERROR shall be returned.
-     * If this attribute is set to a value that is greater than
-     * Band), the value of OccupiedCoolingSetpoint shall be adjusted to (OccupiedHeatingSetpoint + MinSetpointDeadBand).
+     * If this attribute is set to a value that is greater than (OccupiedCoolingSetpoint - MinSetpointDeadBand), the
+     * value of OccupiedCoolingSetpoint shall be adjusted to (OccupiedHeatingSetpoint + MinSetpointDeadBand).
      * If the occupancy status of the room is unknown, this attribute shall be used as the heating mode setpoint.
      * If a client changes the value of this attribute, the server supports the PRES feature, and the server either does
      * not support the OCC feature or the Occupied bit is set on the Occupancy attribute, the value of the
@@ -194,8 +194,7 @@ public class ThermostatCluster extends BaseCluster {
      * If an attempt is made to set this attribute to a value greater than MaxHeatSetpointLimit or less than
      * MinHeatSetpointLimit, a response with the status code CONSTRAINT_ERROR shall be returned.
      * If this attribute is set to a value that is greater than (UnoccupiedCoolingSetpoint - MinSetpointDeadBand), the
-     * value of UnoccupiedCoolingSetpoint shall be adjusted to
-     * + MinSetpointDeadBand).
+     * value of UnoccupiedCoolingSetpoint shall be adjusted to (UnoccupiedHeatingSetpoint + MinSetpointDeadBand).
      * If the occupancy status of the room is unknown, this attribute shall NOT be used.
      * If a client changes the value of this attribute, the server supports the PRES and OCC features, and the Occupied
      * bit is not set on the Occupancy attribute, the value of the ActivePresetHandle attribute shall be set to null.
@@ -244,10 +243,9 @@ public class ThermostatCluster extends BaseCluster {
      * On devices which support the AUTO feature, this attribute shall indicate the minimum difference between the Heat
      * Setpoint and the Cool Setpoint.
      * Refer to Setpoint Limits for constraints.
-     * NOTE
-     * Prior to revision 8 of this cluster specification the value of this attribute was constrained to a range of 0°C
-     * to 2.5°C.
-     * NOTE
+     * &gt; [!NOTE]
+     * &gt; Prior to revision 8 of this cluster specification the value of this attribute was constrained to a range of
+     * 0°C to 2.5°C.
      * For backwards compatibility, this attribute is optionally writeable. However any writes to this attribute shall
      * be silently ignored.
      */
@@ -302,7 +300,7 @@ public class ThermostatCluster extends BaseCluster {
      * setpoint hold for a specific duration, it SHOULD also implement the TemperatureSetpointHoldDuration attribute.
      * If the server supports a setpoint hold for a specific duration, it SHOULD also implement the
      * SetpointHoldExpiryTimestamp attribute.
-     * If this attribute is updated to SetpointHoldOn and the TemperatureSetpointHoldDuration has a non- null value and
+     * If this attribute is updated to SetpointHoldOn and the TemperatureSetpointHoldDuration has a non-null value and
      * the SetpointHoldExpiryTimestamp is supported, the server shall update the SetpointHoldExpiryTimestamp with a
      * value of current UTC timestamp, in seconds, plus the value in TemperatureSetpointHoldDuration multiplied by 60.
      * If this attribute is updated to SetpointHoldOff and the SetpointHoldExpiryTimestamp is supported, the server
@@ -329,8 +327,9 @@ public class ThermostatCluster extends BaseCluster {
      * not support the ScheduleConfiguration feature.
      * When ScheduleActive is not set, the setpoint is altered only by manual up/down changes at the thermostat or
      * remotely, not by internal schedule programming.
-     * NOTE
-     * Modifying the ScheduleActive bit does not clear or delete previous weekly schedule programming configurations.
+     * &gt; [!NOTE]
+     * &gt; Modifying the ScheduleActive bit does not clear or delete previous weekly schedule programming
+     * configurations.
      */
     public ProgrammingOperationModeBitmap thermostatProgrammingOperationMode; // 37 ProgrammingOperationModeBitmap RW VM
     /**
@@ -362,7 +361,8 @@ public class ThermostatCluster extends BaseCluster {
      * Indicates the amount that the Thermostat server will allow the Calculated Local Temperature to float above the
      * OccupiedCoolingSetpoint (i.e., OccupiedCoolingSetpoint + OccupiedSetback) or below the OccupiedHeatingSetpoint
      * setpoint (i.e., OccupiedHeatingSetpoint – OccupiedSetback) before initiating a state change to bring the
-     * temperature back to the user’s desired setpoint. This attribute is sometimes also referred to as the “span.”
+     * temperature back to the user’s
+     * desired setpoint. This attribute is sometimes also referred to as the “span.”
      * The purpose of this attribute is to allow remote configuration of the span between the desired setpoint and the
      * measured temperature to help prevent over-cycling and reduce energy bills, though this may result in lower
      * comfort on the part of some users.
@@ -1040,8 +1040,8 @@ public class ThermostatCluster extends BaseCluster {
     }
 
     /**
-     * NOTE
-     * CoolingAndHeating
+     * &gt; [!NOTE]
+     * &gt; CoolingAndHeating
      * A thermostat indicating it supports CoolingAndHeating (or CoolingAndHeatingWithReheat) SHOULD be able to request
      * heating or cooling on demand and will usually support the Auto SystemMode.
      * Systems which support cooling or heating, requiring external intervention to change modes or where the whole
@@ -1515,6 +1515,10 @@ public class ThermostatCluster extends BaseCluster {
 
     public ThermostatCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 513, "Thermostat");
+    }
+
+    protected ThermostatCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

@@ -58,6 +58,10 @@ public class AccountLoginCluster extends BaseCluster {
         super(nodeId, endpointId, 1294, "AccountLogin");
     }
 
+    protected AccountLoginCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * The purpose of this command is to determine if the active user account of the given Content App matches the
@@ -65,8 +69,8 @@ public class AccountLoginCluster extends BaseCluster {
      * password-authenticated session establishment (PASE) with the Commissionee.
      * For example, a Video Player with a Content App Platform may invoke this command on one of its Content App
      * endpoints to facilitate commissioning of a Phone App made by the same vendor as the Content App. If the accounts
-     * match, then the Content App may return a setup code that can be used
-     * by the Video Player to commission the Phone App without requiring the user to physically input a setup code.
+     * match, then the Content App may return a setup code that can be used by the Video Player to commission the Phone
+     * App without requiring the user to physically input a setup code.
      * The account match is determined by the Content App using a method which is outside the scope of this
      * specification and will typically involve a central service which is in communication with both the Content App
      * and the Commissionee. The GetSetupPIN command is needed in order to provide the Commissioner/Admin with a Setup

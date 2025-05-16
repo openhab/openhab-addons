@@ -114,6 +114,10 @@ public class DiagnosticLogsCluster extends BaseCluster {
         super(nodeId, endpointId, 50, "DiagnosticLogs");
     }
 
+    protected DiagnosticLogsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Reception of this command starts the process of retrieving diagnostic logs from a Node.

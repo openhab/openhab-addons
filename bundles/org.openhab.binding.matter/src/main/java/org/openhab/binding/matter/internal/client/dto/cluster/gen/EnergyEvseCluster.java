@@ -66,11 +66,11 @@ public class EnergyEvseCluster extends BaseCluster {
      * as communicated between the EVSE and the vehicle through the pilot signal.
      * The State attribute shall change when the EVSE detects change of condition of the EV (plugged in or unplugged,
      * whether the vehicle is asking for demand or not, and if it is charging or discharging).
-     * NOTE
-     * SessionEnding is not really a state but a transition. However, the transition period may take a few seconds and
-     * is useful for some clean up purposes.
-     * The Fault state is used to indicate that the FaultState attribute is not NoError.
-     * A null value shall indicate that the state cannot be determined.
+     * &gt; [!NOTE]
+     * &gt; SessionEnding is not really a state but a transition. However, the transition period may take a few seconds
+     * and is useful for some clean up purposes.
+     * The Fault state is used to indicate that the FaultState attribute is not NoError. A null value shall indicate
+     * that the state cannot be determined.
      */
     public StateEnum state; // 0 StateEnum R V
     /**
@@ -109,8 +109,8 @@ public class EnergyEvseCluster extends BaseCluster {
      */
     public BigInteger circuitCapacity; // 5 amperage-mA R V
     /**
-     * Indicates the minimum current that can be delivered by the EVSE to the EV.
-     * The attribute can be set using the EnableCharging command.
+     * Indicates the minimum current that can be delivered by the EVSE to the EV. The attribute can be set using the
+     * EnableCharging command.
      */
     public BigInteger minimumChargeCurrent; // 6 amperage-mA R V
     /**
@@ -141,8 +141,8 @@ public class EnergyEvseCluster extends BaseCluster {
      * charging rate. This may be desirable if the home owner has a solar PV or battery storage system which may only be
      * able to deliver a limited amount of power. The consumer can manually control how much they allow the EV to take.
      * This attribute value shall be limited by the EVSE to be in the range of:
-     * MinimumChargeCurrent &lt;&#x3D; UserMaximumChargeCurrent &lt;&#x3D; MaximumChargeCurrent
-     * where MinimumChargeCurrent and MaximumChargeCurrent are the values received in the EnableCharging command.
+     * MinimumChargeCurrent &lt;&#x3D; UserMaximumChargeCurrent &lt;&#x3D; MaximumChargeCurrent where
+     * MinimumChargeCurrent and MaximumChargeCurrent are the values received in the EnableCharging command.
      * Its default value SHOULD be initialized to the same as the CircuitCapacity attribute. This value shall be
      * persisted across reboots to ensure it does not cause charging issues during temporary power failures.
      */
@@ -181,9 +181,9 @@ public class EnergyEvseCluster extends BaseCluster {
     public BigInteger nextChargeRequiredEnergy; // 37 energy-mWh R V
     /**
      * Indicates the target SoC the EVSE is going to attempt to reach when the vehicle is next charged.
-     * A null value indicates that there is no scheduled charging
-     * Manual mode tag), or that the vehicle is not plugged in with the SupplyState indicating that charging is enabled,
-     * or that the next ChargingTargetStruct is using the AddedEnergy value to charge the vehicle.
+     * A null value indicates that there is no scheduled charging (for example, the EVSE Mode is set to use Manual mode
+     * tag), or that the vehicle is not plugged in with the SupplyState indicating that charging is enabled, or that the
+     * next ChargingTargetStruct is using the AddedEnergy value to charge the vehicle.
      * If the SOC feature is not supported, only the values null and 100% are supported.
      */
     public Integer nextChargeTargetSoC; // 38 percent R V
@@ -199,7 +199,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213
      * Example:
      * ApproxEVEfficiency (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000)
-     * AddedEnergy (Wh): 10,000
+     * ### AddedEnergy (Wh): 10,000
      * AddedRange (km) &#x3D; 10,000 x 4800 / 1,000,000 &#x3D; 48 km
      * AddedRange (Miles) &#x3D; AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x
      * 0.6213
@@ -456,8 +456,8 @@ public class EnergyEvseCluster extends BaseCluster {
          * If the EVSE does not support the SOC feature or cannot obtain the SoC of the vehicle:
          * • the AddedEnergy field shall take precedence over the TargetSoC field, and if the EVSE does not support the
          * SOC feature then the TargetSoC field may only take the values null or 100%.
-         * • if the AddedEnergy field has not been provided, the EVSE SHOULD assume the vehicle is empty
-         * and charge until the vehicle stops demanding a charge.
+         * • if the AddedEnergy field has not been provided, the EVSE SHOULD assume the vehicle is empty and charge
+         * until the vehicle stops demanding a charge.
          */
         public Integer targetSoC; // percent
         /**
@@ -471,10 +471,10 @@ public class EnergyEvseCluster extends BaseCluster {
          * vehicle stops demanding charge (i.e. it is full). Therefore the maximum value should be set based on typical
          * battery size of the vehicles on the market (e.g. 70000Wh), however this is up to the client to carefully
          * choose a value.
-         * NOTE
-         * If the EVSE can obtain the Battery Capacity of the vehicle, it SHOULD NOT limit this AddedEnergy value to the
-         * Battery Capacity of the vehicle, since the EV may also require energy for heating and cooling of the battery
-         * during charging, or for heating or cooling the cabin.
+         * &gt; [!NOTE]
+         * &gt; If the EVSE can obtain the Battery Capacity of the vehicle, it SHOULD NOT limit this AddedEnergy value
+         * to the Battery Capacity of the vehicle, since the EV may also require energy for heating and cooling of the
+         * battery during charging, or for heating or cooling the cabin.
          */
         public BigInteger addedEnergy; // energy-mWh
 
@@ -720,6 +720,10 @@ public class EnergyEvseCluster extends BaseCluster {
 
     public EnergyEvseCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 153, "EnergyEvse");
+    }
+
+    protected EnergyEvseCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

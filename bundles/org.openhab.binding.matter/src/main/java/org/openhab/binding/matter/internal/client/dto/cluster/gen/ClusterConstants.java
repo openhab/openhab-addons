@@ -56,8 +56,8 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_ACCESSCONTROL_ACCESSCONTROLENTRIESPERFABRIC = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_ACCESSCONTROL_ACCESSCONTROLENTRIESPERFABRIC);
 
-    public static final String CHANNEL_NAME_ACCESSCONTROL_COMMISSIONINGARL = "CommissioningArL";
-    public static final String CHANNEL_LABEL_ACCESSCONTROL_COMMISSIONINGARL = "Commissioning Ar L";
+    public static final String CHANNEL_NAME_ACCESSCONTROL_COMMISSIONINGARL = "CommissioningArl";
+    public static final String CHANNEL_LABEL_ACCESSCONTROL_COMMISSIONINGARL = "Commissioning Arl";
     public static final String CHANNEL_ID_ACCESSCONTROL_COMMISSIONINGARL = "accesscontrol-commissioningarl";
     public static final ChannelTypeUID CHANNEL_ACCESSCONTROL_COMMISSIONINGARL = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_ACCESSCONTROL_COMMISSIONINGARL);
@@ -2104,60 +2104,60 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_ILLUMINANCEMEASUREMENT_LIGHTSENSORTYPE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_ILLUMINANCEMEASUREMENT_LIGHTSENSORTYPE);
 
-    // JointFabricDatastoreCluster Cluster
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_ANCHORROOTCA = "AnchorRootCa";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_ANCHORROOTCA = "Anchor Root Ca";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ANCHORROOTCA = "jointfabricdatastorecluster-anchorrootca";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_ANCHORROOTCA = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ANCHORROOTCA);
+    // JointFabricDatastore Cluster
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ANCHORROOTCA = "AnchorRootCa";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ANCHORROOTCA = "Anchor Root Ca";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_ANCHORROOTCA = "jointfabricdatastore-anchorrootca";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ANCHORROOTCA = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ANCHORROOTCA);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_ANCHORNODEID = "AnchorNodeId";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_ANCHORNODEID = "Anchor Node Id";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ANCHORNODEID = "jointfabricdatastorecluster-anchornodeid";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_ANCHORNODEID = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ANCHORNODEID);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ANCHORNODEID = "AnchorNodeId";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ANCHORNODEID = "Anchor Node Id";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_ANCHORNODEID = "jointfabricdatastore-anchornodeid";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ANCHORNODEID = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ANCHORNODEID);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_ANCHORVENDORID = "AnchorVendorId";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_ANCHORVENDORID = "Anchor Vendor Id";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ANCHORVENDORID = "jointfabricdatastorecluster-anchorvendorid";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_ANCHORVENDORID = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ANCHORVENDORID);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ANCHORVENDORID = "AnchorVendorId";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ANCHORVENDORID = "Anchor Vendor Id";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_ANCHORVENDORID = "jointfabricdatastore-anchorvendorid";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ANCHORVENDORID = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ANCHORVENDORID);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_FRIENDLYNAME = "FriendlyName";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_FRIENDLYNAME = "Friendly Name";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_FRIENDLYNAME = "jointfabricdatastorecluster-friendlyname";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_FRIENDLYNAME = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_FRIENDLYNAME);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_FRIENDLYNAME = "FriendlyName";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_FRIENDLYNAME = "Friendly Name";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_FRIENDLYNAME = "jointfabricdatastore-friendlyname";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_FRIENDLYNAME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_FRIENDLYNAME);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_GROUPKEYSETLIST = "GroupKeySetList";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_GROUPKEYSETLIST = "Group Key Set List";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_GROUPKEYSETLIST = "jointfabricdatastorecluster-groupkeysetlist";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_GROUPKEYSETLIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_GROUPKEYSETLIST);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_GROUPKEYSETLIST = "GroupKeySetList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_GROUPKEYSETLIST = "Group Key Set List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_GROUPKEYSETLIST = "jointfabricdatastore-groupkeysetlist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_GROUPKEYSETLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_GROUPKEYSETLIST);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_GROUPLIST = "GroupList";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_GROUPLIST = "Group List";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_GROUPLIST = "jointfabricdatastorecluster-grouplist";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_GROUPLIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_GROUPLIST);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_GROUPLIST = "GroupList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_GROUPLIST = "Group List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_GROUPLIST = "jointfabricdatastore-grouplist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_GROUPLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_GROUPLIST);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_NODELIST = "NodeList";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_NODELIST = "Node List";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_NODELIST = "jointfabricdatastorecluster-nodelist";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_NODELIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_NODELIST);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_NODELIST = "NodeList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_NODELIST = "Node List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_NODELIST = "jointfabricdatastore-nodelist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_NODELIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_NODELIST);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_ADMINLIST = "AdminList";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_ADMINLIST = "Admin List";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ADMINLIST = "jointfabricdatastorecluster-adminlist";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_ADMINLIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_ADMINLIST);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ADMINLIST = "AdminList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ADMINLIST = "Admin List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_ADMINLIST = "jointfabricdatastore-adminlist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ADMINLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ADMINLIST);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORECLUSTER_STATUSENTRY = "StatusEntry";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORECLUSTER_STATUSENTRY = "Status Entry";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_STATUSENTRY = "jointfabricdatastorecluster-statusentry";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORECLUSTER_STATUSENTRY = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORECLUSTER_STATUSENTRY);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_STATUSENTRY = "StatusEntry";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_STATUSENTRY = "Status Entry";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_STATUSENTRY = "jointfabricdatastore-statusentry";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_STATUSENTRY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_STATUSENTRY);
 
     // JointFabricPki Cluster
     // KeypadInput Cluster

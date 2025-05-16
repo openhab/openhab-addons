@@ -64,6 +64,10 @@ public class ContentAppObserverCluster extends BaseCluster {
         super(nodeId, endpointId, 1296, "ContentAppObserver");
     }
 
+    protected ContentAppObserverCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt, the data field may be parsed and interpreted. Message encoding is specific to the Content App. A

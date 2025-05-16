@@ -62,9 +62,8 @@ public class MediaPlaybackCluster extends BaseCluster {
      */
     public BigInteger startTime; // 1 epoch-us R V
     /**
-     * Indicates the duration, in milliseconds, of the current media being played back
-     * or null when duration is not applicable (for example, in live streaming content with no known duration). This
-     * attribute shall never be 0.
+     * Indicates the duration, in milliseconds, of the current media being played back or null when duration is not
+     * applicable (for example, in live streaming content with no known duration). This attribute shall never be 0.
      */
     public BigInteger duration; // 2 uint64 R V
     /**
@@ -397,9 +396,9 @@ public class MediaPlaybackCluster extends BaseCluster {
         public boolean audioTracks;
         /**
          * AudioAdvance
-         * This feature is for a device or app that supports playing audio during fast and slow advance and
-         * rewind (e.g., while playback speed is not 1). A device that supports this feature may only support playing
-         * audio during certain speeds.
+         * This feature is for a device or app that supports playing audio during fast and slow advance and rewind
+         * (e.g., while playback speed is not 1). A device that supports this feature may only support playing audio
+         * during certain speeds.
          * A cluster implementing AA shall implement AS.
          */
         public boolean audioAdvance;
@@ -416,6 +415,10 @@ public class MediaPlaybackCluster extends BaseCluster {
 
     public MediaPlaybackCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1286, "MediaPlayback");
+    }
+
+    protected MediaPlaybackCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands
@@ -458,8 +461,8 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * Upon receipt, this shall cause the handler to be invoked for &quot;Next&quot;. User experience is context-
-     * specific. This will often Go forward to the next media playback item.
+     * Upon receipt, this shall cause the handler to be invoked for &quot;Next&quot;. User experience is
+     * context-specific. This will often Go forward to the next media playback item.
      */
     public static ClusterCommand next() {
         return new ClusterCommand("next");
@@ -486,9 +489,9 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * Upon receipt, this shall start playback of the media in the forward direction in case the media is
-     * currently playing in the backward direction or is not playing. If the playback is already happening in the
-     * forward direction receipt of this command shall increase the speed of the media playback.
+     * Upon receipt, this shall start playback of the media in the forward direction in case the media is currently
+     * playing in the backward direction or is not playing. If the playback is already happening in the forward
+     * direction receipt of this command shall increase the speed of the media playback.
      * Different &quot;fast-forward&quot; speeds may be reflected on the media playback device based upon the number of
      * sequential calls to this function and the capability of the device. This is to avoid needing to define every
      * speed (multiple fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to

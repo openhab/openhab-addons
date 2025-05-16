@@ -185,9 +185,9 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
         /**
          * This field shall indicate the time elapsed since boot at the beginning of the period during which the value
          * of the Energy field was measured.
-         * If this EnergyMeasurementStruct represents cumulative energy, this field shall be omitted. Otherwise, if the
-         * server had not yet determined the time in UTC at the start of the measurement
-         * period, or does not have the capability of determining the time in UTC, this field shall be indicated.
+         * If this EnergyMeasurementStruct represents cumulative energy, this field shall be omitted.
+         * Otherwise, if the server had not yet determined the time in UTC at the start of the measurement period, or
+         * does not have the capability of determining the time in UTC, this field shall be indicated.
          * Otherwise, if the server had determined the time in UTC at or before the beginning of the measurement period,
          * this field may be omitted; if it is indicated, its value shall be the time elapsed since boot at the UTC time
          * indicated in StartTimestamp.
@@ -314,6 +314,10 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
 
     public ElectricalEnergyMeasurementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 145, "ElectricalEnergyMeasurement");
+    }
+
+    protected ElectricalEnergyMeasurementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

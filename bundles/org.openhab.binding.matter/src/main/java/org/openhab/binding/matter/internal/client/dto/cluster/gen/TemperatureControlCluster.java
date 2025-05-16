@@ -117,6 +117,10 @@ public class TemperatureControlCluster extends BaseCluster {
         super(nodeId, endpointId, 86, "TemperatureControl");
     }
 
+    protected TemperatureControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     public static ClusterCommand setTemperature(Integer targetTemperature, Integer targetTemperatureLevel) {
         Map<String, Object> map = new LinkedHashMap<>();

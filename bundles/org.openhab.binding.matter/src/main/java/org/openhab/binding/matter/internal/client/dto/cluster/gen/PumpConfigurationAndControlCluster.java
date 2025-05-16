@@ -100,8 +100,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      */
     public Integer maxCompPressure; // 6 int16 R V
     /**
-     * This attribute specifies the minimum speed the pump can achieve when it is working with the Con
-     * trolMode attribute set to ConstantSpeed.
+     * This attribute specifies the minimum speed the pump can achieve when it is working with the ControlMode attribute
+     * set to ConstantSpeed.
      * Valid range is 0 to 65,534 RPM (steps of 1 RPM). Null if the value is invalid.
      */
     public Integer minConstSpeed; // 7 uint16 R V
@@ -132,14 +132,14 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     /**
      * This attribute specifies the maximum temperature the pump can maintain in the system when it is working with the
      * ControlMode attribute set to ConstantTemperature.
-     * MaxConstTemp shall be greater than or equal to MinConstTemp
-     * Valid range is –273.15 °C to 327.67 °C (steps of 0.01 °C). Null if the value is invalid.
+     * MaxConstTemp shall be greater than or equal to MinConstTemp Valid range is –273.15 °C to 327.67 °C (steps of 0.01
+     * °C). Null if the value is invalid.
      */
     public Integer maxConstTemp; // 12 int16 R V
     /**
      * This attribute specifies the activity status of the pump functions as listed in PumpStatusBitmap. Where a pump
-     * controller function is active, the corresponding bit shall be set to 1. Where a pump
-     * controller function is not active, the corresponding bit shall be set to 0.
+     * controller function is active, the corresponding bit shall be set to 1. Where a pump controller function is not
+     * active, the corresponding bit shall be set to 0.
      */
     public PumpStatusBitmap pumpStatus; // 16 PumpStatusBitmap R V
     /**
@@ -213,7 +213,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * The actual operating mode of the pump is a result of the setting of the attributes OperationMode, ControlMode and
      * the optional connection of a remote sensor. The operation and control is prioritized as shown in the scheme
      * below:
-     * Priority Scheme of Pump Operation and Control
+     * ### Priority Scheme of Pump Operation and Control
      * If this attribute is Maximum, Minimum or Local, the OperationMode attribute decides how the pump is operated.
      * If this attribute is Normal and a remote sensor is connected to the pump, the type of the remote sensor decides
      * the control mode of the pump. A connected remote pressure sensor will make the pump run in control mode Constant
@@ -485,6 +485,10 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
 
     public PumpConfigurationAndControlCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 512, "PumpConfigurationAndControl");
+    }
+
+    protected PumpConfigurationAndControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

@@ -49,8 +49,7 @@ public class FlowMeasurementCluster extends BaseCluster {
      */
     public Integer minMeasuredValue; // 1 uint16 R V
     /**
-     * Indicates the maximum value of MeasuredValue that can be measured. See
-     * Measured Value for more details.
+     * Indicates the maximum value of MeasuredValue that can be measured. See Measured Value for more details.
      * The null value indicates that the value is not available.
      */
     public Integer maxMeasuredValue; // 2 uint16 R V
@@ -61,6 +60,10 @@ public class FlowMeasurementCluster extends BaseCluster {
 
     public FlowMeasurementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1028, "FlowMeasurement");
+    }
+
+    protected FlowMeasurementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

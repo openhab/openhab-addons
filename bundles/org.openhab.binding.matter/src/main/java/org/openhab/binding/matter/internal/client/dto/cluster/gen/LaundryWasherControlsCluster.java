@@ -52,15 +52,15 @@ public class LaundryWasherControlsCluster extends BaseCluster {
      * received that is outside of the defined constraints, a CONSTRAINT_ERROR shall be sent as the response. If a value
      * is attempted to be written that doesn’t match a valid index (e.g. an index of 5 when the list has 4 values), a
      * CONSTRAINT_ERROR shall be sent as the response. If null is written to this attribute, there will be no spin speed
-     * for the selected cycle. If the value is null, there will be no spin speed on the current mode.
+     * for the
+     * selected cycle. If the value is null, there will be no spin speed on the current mode.
      */
     public Integer spinSpeedCurrent; // 1 uint8 RW VO
     /**
      * Indicates how many times a rinse cycle shall be performed on a device for the current mode of operation. A value
      * of None shall indicate that no rinse cycle will be performed. This value may be set by the client to adjust the
-     * number of rinses that are performed for
-     * the current mode of operation. If the device is not in a compatible state to accept the provided value, an
-     * INVALID_IN_STATE error shall be sent as the response.
+     * number of rinses that are performed for the current mode of operation. If the device is not in a compatible state
+     * to accept the provided value, an INVALID_IN_STATE error shall be sent as the response.
      */
     public NumberOfRinsesEnum numberOfRinses; // 2 NumberOfRinsesEnum RW VO
     /**
@@ -124,6 +124,10 @@ public class LaundryWasherControlsCluster extends BaseCluster {
 
     public LaundryWasherControlsCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 83, "LaundryWasherControls");
+    }
+
+    protected LaundryWasherControlsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

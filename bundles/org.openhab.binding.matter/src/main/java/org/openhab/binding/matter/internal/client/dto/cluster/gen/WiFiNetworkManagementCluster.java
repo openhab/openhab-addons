@@ -39,11 +39,11 @@ public class WiFiNetworkManagementCluster extends BaseCluster {
      * Indicates the SSID of the primary Wi-Fi network provided by this device.
      * A value of null shall indicate that no primary Wi-Fi network is available (e.g. because the Wi-Fi network has not
      * yet been configured by the user).
-     * NOTE
-     * The SSID in Wi-Fi is a collection of 1-32 bytes, the text encoding of which is not specified. Implementations
-     * must be careful to support transferring these byte strings without requiring a particular encoding. The most
-     * common encoding is UTF-8, however this is just a convention. Some configurations may use Latin-1 or other
-     * character sets.
+     * &gt; [!NOTE]
+     * &gt; The SSID in Wi-Fi is a collection of 1-32 bytes, the text encoding of which is not specified.
+     * Implementations must be careful to support transferring these byte strings without requiring a particular
+     * encoding. The most common encoding is UTF- 8, however this is just a convention. Some configurations may use
+     * Latin-1 or other character sets.
      */
     public OctetString ssid; // 0 octstr R V
     /**
@@ -54,16 +54,19 @@ public class WiFiNetworkManagementCluster extends BaseCluster {
      * passphrase value has become stale.
      * It is recommended that servers implement this attribute as either a timestamp or a counter. When implemented as a
      * counter it SHOULD be initialized with a random value.
-     * NOTE
-     * The passphrase itself is not exposed as an attribute to avoid its unintentional retrieval or caching by clients
-     * that use wildcard reads or otherwise routinely read all available attributes. It can be retrieved using the
-     * NetworkPassphraseRequest
-     * command.
+     * &gt; [!NOTE]
+     * &gt; The passphrase itself is not exposed as an attribute to avoid its unintentional retrieval or caching by
+     * clients that use wildcard reads or otherwise routinely read all available attributes. It can be retrieved using
+     * the NetworkPassphraseRequest command.
      */
     public BigInteger passphraseSurrogate; // 1 uint64 R M
 
     public WiFiNetworkManagementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1105, "WiFiNetworkManagement");
+    }
+
+    protected WiFiNetworkManagementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

@@ -119,6 +119,10 @@ public class DescriptorCluster extends BaseCluster {
         super(nodeId, endpointId, 29, "Descriptor");
     }
 
+    protected DescriptorCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

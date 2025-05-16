@@ -67,8 +67,7 @@ public class ModeSelectCluster extends BaseCluster {
     public List<ModeOptionStruct> supportedModes; // 2 list R V
     /**
      * This attribute represents the current mode of the server.
-     * The value of this field must match the Mode field of one of the entries in the SupportedModes
-     * attribute.
+     * The value of this field must match the Mode field of one of the entries in the SupportedModes attribute.
      */
     public Integer currentMode; // 3 uint8 R V
     /**
@@ -78,8 +77,7 @@ public class ModeSelectCluster extends BaseCluster {
      * OnModeWithPowerUp).
      * This behavior does not apply to reboots associated with OTA. After an OTA restart, the CurrentMode attribute
      * shall return to its value prior to the restart.
-     * The value of this field shall match the Mode field of one of the entries in the SupportedModes
-     * attribute.
+     * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
      * If this attribute is not implemented, or is set to the null value, it shall have no effect.
      */
     public Integer startUpMode; // 4 uint8 RW VO
@@ -87,8 +85,7 @@ public class ModeSelectCluster extends BaseCluster {
      * Indicates the value of CurrentMode that depends on the state of the On/Off cluster on the same endpoint. If this
      * attribute is not present or is set to null, it shall NOT have an effect, otherwise the CurrentMode attribute
      * shall depend on the OnOff attribute of the On/Off cluster
-     * The value of this field shall match the Mode field of one of the entries in the SupportedModes
-     * attribute.
+     * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
      */
     public Integer onMode; // 5 uint8 RW VO
     // Structs
@@ -196,6 +193,10 @@ public class ModeSelectCluster extends BaseCluster {
 
     public ModeSelectCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 80, "ModeSelect");
+    }
+
+    protected ModeSelectCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

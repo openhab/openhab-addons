@@ -68,7 +68,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * the state.
      * The value of this field shall be null if a progress indication does not apply to the current state.
      * A value of 0 shall indicate that the beginning has occurred. A value of 100 shall indicate completion.
-     * This field may be updated infrequently. Some care SHOULD be taken by Nodes to avoid over- reporting progress when
+     * This field may be updated infrequently. Some care SHOULD be taken by Nodes to avoid over-reporting progress when
      * this attribute is part of a subscription.
      */
     public Integer updateStateProgress; // 3 uint8 R V
@@ -274,6 +274,10 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
 
     public OtaSoftwareUpdateRequestorCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 42, "OtaSoftwareUpdateRequestor");
+    }
+
+    protected OtaSoftwareUpdateRequestorCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

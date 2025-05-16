@@ -208,8 +208,8 @@ public class SwitchCluster extends BaseCluster {
      * • a value of 2 when there were exactly two presses in a multi-press sequence (and the sequence has ended),
      * • a value of 3 when there were exactly three presses in a multi-press sequence (and the sequence has ended),
      * • a value of N when there were exactly N presses in a multi-press sequence (and the sequence has ended).
-     * NOTE
-     * The introduction of TotalNumberOfPressesCounted supporting the value 0 may impact clients of switches using
+     * &gt; [!NOTE]
+     * &gt; The introduction of TotalNumberOfPressesCounted supporting the value 0 may impact clients of switches using
      * cluster revision 1 since such servers would not use this value of TotalNumberOfPressesCounted to indicate an
      * aborted sequence. Clients SHOULD always act using the TotalNumberOfPressesCounted field taken into account since
      * for values from 1 to MultiPressMax, the user action that led to the event was different depending on the count.
@@ -273,6 +273,10 @@ public class SwitchCluster extends BaseCluster {
 
     public SwitchCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 59, "Switch");
+    }
+
+    protected SwitchCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

@@ -137,6 +137,10 @@ public class ApplicationLauncherCluster extends BaseCluster {
         super(nodeId, endpointId, 1292, "ApplicationLauncher");
     }
 
+    protected ApplicationLauncherCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt of this command, the server shall launch the application with optional data. The application shall
@@ -187,8 +191,7 @@ public class ApplicationLauncherCluster extends BaseCluster {
      * if any. The Status attribute shall be updated to ActiveHidden or Stopped, depending on the action taken, on the
      * Application Basic cluster of the Endpoint corresponding to the application on which the action was taken. The
      * Status attribute shall be updated on any other application whose Status may have changed as a result of this
-     * command.
-     * This command returns a Launcher Response.
+     * command. This command returns a Launcher Response.
      */
     public static ClusterCommand hideApp(ApplicationStruct application) {
         Map<String, Object> map = new LinkedHashMap<>();

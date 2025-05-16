@@ -129,6 +129,10 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
         super(nodeId, endpointId, 95, "MicrowaveOvenControl");
     }
 
+    protected MicrowaveOvenControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command is used to set the cooking parameters associated with the operation of the device. This command

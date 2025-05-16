@@ -108,6 +108,10 @@ public class AirQualityCluster extends BaseCluster {
         super(nodeId, endpointId, 91, "AirQuality");
     }
 
+    protected AirQualityCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

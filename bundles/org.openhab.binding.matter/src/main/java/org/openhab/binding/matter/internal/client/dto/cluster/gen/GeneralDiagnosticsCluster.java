@@ -82,11 +82,10 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * The ActiveHardwareFaults attribute shall indicate the set of faults currently detected by the Node. When the Node
      * detects a fault has been raised, the appropriate HardwareFaultEnum value shall be added to this list. This list
      * shall NOT contain more than one instance of a specific HardwareFaultEnum value. When the Node detects that all
-     * conditions contributing to a fault has been
-     * cleared, the corresponding HardwareFaultEnum value shall be removed from this list. An empty list shall indicate
-     * there are currently no active faults. The order of this list SHOULD have no significance. Clients interested in
-     * monitoring changes in active faults may subscribe to this attribute, or they may subscribe to
-     * HardwareFaultChange.
+     * conditions contributing to a fault has been cleared, the corresponding HardwareFaultEnum value shall be removed
+     * from this list. An empty list shall indicate there are currently no active faults. The order of this list SHOULD
+     * have no significance. Clients interested in monitoring changes in active faults may subscribe to this attribute,
+     * or they may subscribe to HardwareFaultChange.
      */
     public List<HardwareFaultEnum> activeHardwareFaults; // 5 list R V
     /**
@@ -219,9 +218,9 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
          */
         public Boolean offPremiseServicesReachableIPv6; // bool
         /**
-         * This field shall contain the current link-layer address for a 802.3 or IEEE 802.11-2020 network
-         * interface and contain the current extended MAC address for a 802.15.4 interface. The byte order of the octstr
-         * shall be in wire byte order. For addresses values less than 64 bits, the first two bytes shall be zero.
+         * This field shall contain the current link-layer address for a 802.3 or IEEE 802.11-2020 network interface and
+         * contain the current extended MAC address for a 802.15.4 interface. The byte order of the octstr shall be in
+         * wire byte order. For addresses values less than 64 bits, the first two bytes shall be zero.
          */
         public OctetString hardwareAddress; // hwadr
         /**
@@ -413,9 +412,13 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         super(nodeId, endpointId, 51, "GeneralDiagnostics");
     }
 
+    protected GeneralDiagnosticsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
-     * This command shall be supported to provide a means for certification tests to trigger some test- plan-specific
+     * This command shall be supported to provide a means for certification tests to trigger some test-plan-specific
      * events, necessary to assist in automation of device interactions for some certification test cases. This command
      * shall NOT cause any changes to the state of the device that persist after the last fabric is removed.
      * The fields for the TestEventTrigger command are as follows:

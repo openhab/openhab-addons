@@ -40,6 +40,10 @@ public class ProxyDiscoveryCluster extends BaseCluster {
         super(nodeId, endpointId, 67, "ProxyDiscovery");
     }
 
+    protected ProxyDiscoveryCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command is used during proxy discovery, as specified in Section 9.15.7, “Proxy Discovery &amp; Assignment

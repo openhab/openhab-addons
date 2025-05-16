@@ -77,7 +77,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(70, IcdManagementCluster.class);
         CLUSTER_IDS.put(3, IdentifyCluster.class);
         CLUSTER_IDS.put(1024, IlluminanceMeasurementCluster.class);
-        CLUSTER_IDS.put(1874, JointFabricDatastoreClusterCluster.class);
+        CLUSTER_IDS.put(1874, JointFabricDatastoreCluster.class);
         CLUSTER_IDS.put(1875, JointFabricPkiCluster.class);
         CLUSTER_IDS.put(1289, KeypadInputCluster.class);
         CLUSTER_IDS.put(74, LaundryDryerControlsCluster.class);

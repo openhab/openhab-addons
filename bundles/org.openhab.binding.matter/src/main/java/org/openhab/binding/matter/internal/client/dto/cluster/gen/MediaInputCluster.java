@@ -59,7 +59,7 @@ public class MediaInputCluster extends BaseCluster {
          */
         public Integer index; // uint8
         /**
-         * This field shall indicate the type of input
+         * ### This field shall indicate the type of input
          */
         public InputTypeEnum inputType; // InputTypeEnum
         /**
@@ -132,10 +132,14 @@ public class MediaInputCluster extends BaseCluster {
         super(nodeId, endpointId, 1287, "MediaInput");
     }
 
+    protected MediaInputCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
-     * Upon receipt, this command shall change the media input on the device to the input at a specific
-     * index in the Input List.
+     * Upon receipt, this command shall change the media input on the device to the input at a specific index in the
+     * Input List.
      */
     public static ClusterCommand selectInput(Integer index) {
         Map<String, Object> map = new LinkedHashMap<>();

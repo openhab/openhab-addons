@@ -62,17 +62,19 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * computed by taking the specific heat capacity of water (4182 J/kg °C) and by knowing the current temperature of
      * the water, the tank volume and target temperature.
      * For example, if the target temperature was 60°C, the current temperature was 20°C and the tank volume was 100L:
-     * Mass of water &#x3D; 1kg per Litre
+     * ### Mass of water &#x3D; 1kg per Litre
      * Total Mass &#x3D; 100 x 1kg &#x3D; 100kg
      * Δ Temperature &#x3D; (target temperature - current temperature)
      * &#x3D; (60°C - 20°C) &#x3D; 40°C
-     * Energy required to
+     * ### Energy required to
      * heat the water to 60°C &#x3D; 4182 x 40 x 100 &#x3D; 16,728,000 J
      * Converting Joules in to Wh of heat (divide by 3600):
+     * &#x3D; 16,728,000 J / 3600
+     * &#x3D; 4647 Wh (4.65kWh)
      * If the TankPercent feature is supported, then this estimate shall also take into account the percentage of the
      * water in the tank which is already hot.
-     * NOTE
-     * The electrical energy required to heat the water depends on the heating system used to heat the water. For
+     * &gt; [!NOTE]
+     * &gt; The electrical energy required to heat the water depends on the heating system used to heat the water. For
      * example, a direct electric immersion heating element can be close to 100% efficient, so the electrical energy
      * needed to heat the hot water is nearly the same as the EstimatedHeatEnergyRequired. However some forms of
      * heating, such as an air-source heat pump which extracts heat from ambient air, requires much less electrical
@@ -97,12 +99,11 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * TankPercentage &#x3D; int(((current temperature - COLD_WATER_TEMP) / (target temperature - COLD_WATER_TEMP)) *
      * 100)
      * TankPercentage &#x3D; min( max(TankPercentage,0), 100)
-     * TankPercentage &#x3D; 50%
+     * ### TankPercentage &#x3D; 50%
      */
     public Integer tankPercentage; // 4 percent R V
     /**
-     * Indicates whether the Boost, as triggered by a Boost command, is currently
-     * Active or Inactive.
+     * Indicates whether the Boost, as triggered by a Boost command, is currently Active or Inactive.
      * See Boost and CancelBoost commands for more details.
      */
     public BoostStateEnum boostState; // 5 BoostStateEnum R V
@@ -244,6 +245,10 @@ public class WaterHeaterManagementCluster extends BaseCluster {
 
     public WaterHeaterManagementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 148, "WaterHeaterManagement");
+    }
+
+    protected WaterHeaterManagementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

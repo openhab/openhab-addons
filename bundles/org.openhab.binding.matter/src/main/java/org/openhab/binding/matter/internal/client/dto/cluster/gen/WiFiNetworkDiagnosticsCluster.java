@@ -294,6 +294,10 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         super(nodeId, endpointId, 54, "WiFiNetworkDiagnostics");
     }
 
+    protected WiFiNetworkDiagnosticsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Reception of this command shall reset the following attributes to 0:

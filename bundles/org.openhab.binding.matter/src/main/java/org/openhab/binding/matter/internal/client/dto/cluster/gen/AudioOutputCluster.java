@@ -123,6 +123,10 @@ public class AudioOutputCluster extends BaseCluster {
         super(nodeId, endpointId, 1291, "AudioOutput");
     }
 
+    protected AudioOutputCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt, this shall change the output on the device to the output at a specific index in the Output List.

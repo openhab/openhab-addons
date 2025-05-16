@@ -61,6 +61,10 @@ public class TemperatureMeasurementCluster extends BaseCluster {
         super(nodeId, endpointId, 1026, "TemperatureMeasurement");
     }
 
+    protected TemperatureMeasurementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

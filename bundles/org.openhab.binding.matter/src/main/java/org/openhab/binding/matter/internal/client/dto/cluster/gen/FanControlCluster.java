@@ -316,6 +316,10 @@ public class FanControlCluster extends BaseCluster {
         super(nodeId, endpointId, 514, "FanControl");
     }
 
+    protected FanControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command speeds up or slows down the fan, in steps, without the client having to know the fan speed. This

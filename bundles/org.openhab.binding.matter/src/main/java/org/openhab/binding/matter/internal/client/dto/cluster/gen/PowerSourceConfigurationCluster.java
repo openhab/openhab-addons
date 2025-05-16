@@ -49,6 +49,10 @@ public class PowerSourceConfigurationCluster extends BaseCluster {
         super(nodeId, endpointId, 46, "PowerSourceConfiguration");
     }
 
+    protected PowerSourceConfigurationCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

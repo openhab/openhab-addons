@@ -98,12 +98,12 @@ public class PowerSourceCluster extends BaseCluster {
      */
     public Integer wiredAssessedInputFrequency; // 4 uint16 R V
     /**
-     * Indicates the type of current the Node expects to be provided by the hard- wired source as specified in
+     * Indicates the type of current the Node expects to be provided by the hard-wired source as specified in
      * WiredCurrentTypeEnum.
      */
     public WiredCurrentTypeEnum wiredCurrentType; // 5 WiredCurrentTypeEnum R V
     /**
-     * Indicates the assessed instantaneous current draw of the Node on the hard- wired source, in mA (milliamps). A
+     * Indicates the assessed instantaneous current draw of the Node on the hard-wired source, in mA (milliamps). A
      * value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not
      * connected, but the Node is still able to assess a value, then the assessed value may be reported.
      */
@@ -169,7 +169,7 @@ public class PowerSourceCluster extends BaseCluster {
      */
     public Boolean batReplacementNeeded; // 15 bool R V
     /**
-     * Indicates the replaceability of the battery as specified in BatReplaceabilityEnum.
+     * This attribute shall indicate the replaceability of the battery as specified in BatReplaceabilityEnum.
      */
     public BatReplaceabilityEnum batReplaceability; // 16 BatReplaceabilityEnum R V
     /**
@@ -183,8 +183,7 @@ public class PowerSourceCluster extends BaseCluster {
      * instance of a specific BatFaultEnum value. When the Node detects all conditions contributing to a fault have been
      * cleared, the corresponding BatFaultEnum value shall be removed from this list. An empty list shall indicate there
      * are currently no active faults. The order of this list SHOULD have no significance. Clients interested in
-     * monitoring changes in active faults may subscribe to this attribute, or they may subscribe to Bat
-     * FaultChange.
+     * monitoring changes in active faults may subscribe to this attribute, or they may subscribe to BatFaultChange.
      */
     public List<BatFaultEnum> activeBatFaults; // 18 list R V
     /**
@@ -261,10 +260,8 @@ public class PowerSourceCluster extends BaseCluster {
      * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
      * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
      * by any instance of this cluster.
-     * Empty list examples
      * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
      * power for the node. In both these common cases, for each cluster instance described, the list is empty.
-     * Populated list example
      * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
      * back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the
      * mains power, because it indicates the entire node, but the Power Source cluster instance associated with the
@@ -726,6 +723,10 @@ public class PowerSourceCluster extends BaseCluster {
 
     public PowerSourceCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 47, "PowerSource");
+    }
+
+    protected PowerSourceCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

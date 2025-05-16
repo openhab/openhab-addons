@@ -117,6 +117,10 @@ public class TargetNavigatorCluster extends BaseCluster {
         super(nodeId, endpointId, 1285, "TargetNavigator");
     }
 
+    protected TargetNavigatorCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt, this shall navigation the UX to the target identified.

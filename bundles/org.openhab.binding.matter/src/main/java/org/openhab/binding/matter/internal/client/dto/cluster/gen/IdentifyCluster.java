@@ -135,6 +135,10 @@ public class IdentifyCluster extends BaseCluster {
         super(nodeId, endpointId, 3, "Identify");
     }
 
+    protected IdentifyCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command starts or stops the receiving device identifying itself.

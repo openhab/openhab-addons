@@ -477,13 +477,17 @@ public class TimeSynchronizationCluster extends BaseCluster {
         super(nodeId, endpointId, 56, "TimeSynchronization");
     }
 
+    protected TimeSynchronizationCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command may be issued by Administrator to set the time. If the Commissioner does not have a valid time
      * source, it may send a Granularity of NoTimeGranularity.
      * Upon receipt of this command, the node may update its UTCTime attribute to match the time specified in the
-     * command, if the stated Granularity and TimeSource are acceptable. The node shall
-     * update its UTCTime attribute if its current Granularity is NoTimeGranularity.
+     * command, if the stated Granularity and TimeSource are acceptable. The node shall update its UTCTime attribute if
+     * its current Granularity is NoTimeGranularity.
      * If the time is updated, the node shall also update its Granularity attribute based on the granularity specified
      * in the command and the expected clock drift of the node. This SHOULD normally be one level lower than the stated
      * command Granularity. It shall also update its TimeSource attribute to Admin. It shall also update its Last Known
@@ -549,8 +553,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
 
     /**
      * This command is used to set the DST offsets for a node.
-     * • If the length of DSTOffset is larger than DSTOffsetListMaxSize, the node shall respond with
-     * RESOURCE_EXHAUSTED.
+     * • If the length of DSTOffset is larger than DSTOffsetListMaxSize, the node shall respond with RESOURCE_EXHAUSTED.
      * • Else if the list entries do not conform to the list requirements for DSTOffset attribute, the node shall
      * respond with CONSTRAINT_ERROR.
      * If there are no errors in the list, the DSTOffset field shall be copied to the DSTOffset attribute.

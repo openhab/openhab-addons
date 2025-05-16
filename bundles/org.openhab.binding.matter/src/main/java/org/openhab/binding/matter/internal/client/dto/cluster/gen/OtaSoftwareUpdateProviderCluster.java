@@ -127,6 +127,10 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         super(nodeId, endpointId, 41, "OtaSoftwareUpdateProvider");
     }
 
+    protected OtaSoftwareUpdateProviderCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt, this command shall trigger an attempt to find an updated Software Image by the OTA Provider to

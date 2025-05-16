@@ -24,16 +24,11 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class RefrigeratorAlarmCluster extends BaseCluster {
+public class RefrigeratorAlarmCluster extends AlarmBaseCluster {
 
     public static final int CLUSTER_ID = 0x0057;
     public static final String CLUSTER_NAME = "RefrigeratorAlarm";
     public static final String CLUSTER_PREFIX = "refrigeratorAlarm";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-    public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
-    public FeatureMap featureMap; // 65532 FeatureMap
 
     // Bitmaps
     public static class AlarmBitmap {
@@ -44,20 +39,17 @@ public class RefrigeratorAlarmCluster extends BaseCluster {
         }
     }
 
-    public static class FeatureMap {
-        public FeatureMap() {
-        }
-    }
-
     public RefrigeratorAlarmCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 87, "RefrigeratorAlarm");
+    }
+
+    protected RefrigeratorAlarmCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
-        str += "featureMap : " + featureMap + "\n";
         return str;
     }
 }

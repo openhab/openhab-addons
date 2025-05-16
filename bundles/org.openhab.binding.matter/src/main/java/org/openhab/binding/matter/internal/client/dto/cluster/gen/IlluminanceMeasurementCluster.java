@@ -96,6 +96,10 @@ public class IlluminanceMeasurementCluster extends BaseCluster {
         super(nodeId, endpointId, 1024, "IlluminanceMeasurement");
     }
 
+    protected IlluminanceMeasurementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

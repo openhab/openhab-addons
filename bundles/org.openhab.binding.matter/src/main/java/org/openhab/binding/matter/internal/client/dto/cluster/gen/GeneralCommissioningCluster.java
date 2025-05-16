@@ -73,8 +73,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * LocationCapability is statically set by the manufacturer and indicates if this Node needs to be told an exact
      * RegulatoryLocation. For example a Node which is &quot;Indoor Only&quot; would not be certified for outdoor use at
      * all, and thus there is no need for a commissioner to set or ask the user about whether the device will be used
-     * inside or outside. However a device which states its capability is
-     * &quot;Indoor/Outdoor&quot; means it would like clarification if possible.
+     * inside or outside. However a device which states its capability is &quot;Indoor/Outdoor&quot; means it would like
+     * clarification if possible.
      * For Nodes without radio network interfaces (e.g. Ethernet-only devices), the value IndoorOutdoor shall always be
      * used.
      * The default value of the RegulatoryConfig attribute is the value of LocationCapability attribute. This means
@@ -82,8 +82,9 @@ public class GeneralCommissioningCluster extends BaseCluster {
      */
     public RegulatoryLocationTypeEnum locationCapability; // 3 RegulatoryLocationTypeEnum R V
     /**
-     * Indicates whether this device supports &quot;concurrent connection flow&quot; commissioning mode (see Section
-     * 5.5, “Commissioning Flows”). If false, the device only supports &quot;non-concurrent connection flow&quot; mode.
+     * This attribute shall indicate whether this device supports &quot;concurrent connection flow&quot; commissioning
+     * mode (see Section 5.5, “Commissioning Flows”). If false, the device only supports &quot;non-concurrent connection
+     * flow&quot; mode.
      */
     public Boolean supportsConcurrentConnection; // 4 bool R V
     /**
@@ -259,8 +260,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * Attribute and the TCAcceptedVersion Attribute fields respectively.
      * This command shall result in success with an ErrorCode value of OK in the SetTCAcknowledgementsResponse if all
      * required terms were accepted by the user. Specifically, all bits have a value of 1 in TCAcknowledgements whose
-     * ordinal is marked as required in the file located at EnhancedSe
-     * tupFlowTCUrl.
+     * ordinal is marked as required in the file located at EnhancedSetupFlowTCUrl.
      * If the TCVersion field is less than the TCMinRequiredVersion, then the ErrorCode of TCMinVersionNotMet shall be
      * returned and TCAcknowledgements shall remain unchanged.
      * If TCVersion is greater than or equal to TCMinRequiredVersion, but the TCUserResponse value indicates that not
@@ -274,6 +274,10 @@ public class GeneralCommissioningCluster extends BaseCluster {
 
     public GeneralCommissioningCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 48, "GeneralCommissioning");
+    }
+
+    protected GeneralCommissioningCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands
@@ -294,7 +298,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * • If ExpiryLengthSeconds is non-zero and the fail-safe timer was not currently armed, then the fail-safe timer
      * shall be armed for that duration.
      * • If ExpiryLengthSeconds is non-zero and the fail-safe timer was currently armed, and the accessing Fabric
-     * matches the fail-safe context’s associated Fabric, then the fail-safe timer shall be re- armed to expire in
+     * matches the fail-safe context’s associated Fabric, then the fail-safe timer shall be re-armed to expire in
      * ExpiryLengthSeconds.
      * • Otherwise, the command shall leave the current fail-safe state unchanged and immediately respond with
      * ArmFailSafeResponse containing an ErrorCode value of BusyWithOtherAdmin, indicating a likely conflict between
@@ -380,10 +384,10 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * others), then setting regulatory information outside a valid country or location shall still set the Location
      * attribute reflected by the Basic Information Cluster configuration, but the SetRegulatoryConfigResponse replied
      * shall have the ErrorCode field set to ValueOutsideRange error.
-     * If the LocationCapability attribute is not Indoor/Outdoor and the NewRegulatoryConfig value
-     * received does not match either the Indoor or Outdoor fixed value in LocationCapability, then the
-     * SetRegulatoryConfigResponse replied shall have the ErrorCode field set to ValueOutsideRange error and the
-     * RegulatoryConfig attribute and associated internal radio configuration shall remain unchanged.
+     * If the LocationCapability attribute is not Indoor/Outdoor and the NewRegulatoryConfig value received does not
+     * match either the Indoor or Outdoor fixed value in LocationCapability, then the SetRegulatoryConfigResponse
+     * replied shall have the ErrorCode field set to ValueOutsideRange error and the RegulatoryConfig attribute and
+     * associated internal radio configuration shall remain unchanged.
      * If the LocationCapability attribute is set to Indoor/Outdoor, then the RegulatoryConfig attribute shall be set to
      * match the NewRegulatoryConfig field.
      * On successful execution of the command, the ErrorCode field of the SetRegulatoryConfigResponse shall be set to
@@ -416,8 +420,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * Administrator operations requiring usage of the Fail Safe timer. It ensures that the Server is configured in a
      * state such that it still has all necessary elements to be fully operable within a Fabric, such as ACL entries
      * (see Section 9.10, “Access Control Cluster”) and operational credentials (see Section 6.4, “Node Operational
-     * Credentials Specification”), and that the Node is reachable using CASE
-     * (CASE)”) over an operational network.
+     * Credentials Specification”), and that the Node is reachable using CASE (see Section 4.14.2, “Certificate
+     * Authenticated Session Establishment (CASE)”) over an operational network.
      * An ErrorCode of NoFailSafe shall be responded to the invoker if the CommissioningComplete command was received
      * when no Fail-Safe context exists.
      * If Terms and Conditions are required, then an ErrorCode of TCAcknowledgementsNotReceived shall be responded to

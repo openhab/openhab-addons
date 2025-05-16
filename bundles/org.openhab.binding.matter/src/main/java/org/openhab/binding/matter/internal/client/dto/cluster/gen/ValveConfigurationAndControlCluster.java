@@ -269,6 +269,11 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
         super(nodeId, endpointId, 129, "ValveConfigurationAndControl");
     }
 
+    protected ValveConfigurationAndControlCluster(BigInteger nodeId, int endpointId, int clusterId,
+            String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command is used to set the valve to its open position.

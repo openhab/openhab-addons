@@ -486,6 +486,10 @@ public class WindowCoveringCluster extends BaseCluster {
         super(nodeId, endpointId, 258, "WindowCovering");
     }
 
+    protected WindowCoveringCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt of this command, the window covering will adjust its position so the physical lift/slide and tilt is
@@ -500,7 +504,8 @@ public class WindowCoveringCluster extends BaseCluster {
      * • CurrentPositionLiftPercent100ths attribute shall be 0.00%.
      * • CurrentPositionLiftPercentage attribute shall be 0%.
      * • CurrentPositionTiltPercent100ths attribute shall be 0.00%.
-     * • CurrentPositionTiltPercentage attribute shall be 0%. if the AbsolutePosition feature is supported:
+     * • CurrentPositionTiltPercentage attribute shall be 0%.
+     * if the AbsolutePosition feature is supported:
      * • CurrentPositionLift attribute shall be equal to the InstalledOpenLimitLift attribute.
      * • CurrentPositionTilt attribute shall be equal to the InstalledOpenLimitTilt attribute.
      */
@@ -521,7 +526,8 @@ public class WindowCoveringCluster extends BaseCluster {
      * • CurrentPositionLiftPercent100ths attribute shall be 100.00%.
      * • CurrentPositionLiftPercentage attribute shall be 100%.
      * • CurrentPositionTiltPercent100ths attribute shall be 100.00%.
-     * • CurrentPositionTiltPercentage attribute shall be 100%. if the AbsolutePosition feature is supported:
+     * • CurrentPositionTiltPercentage attribute shall be 100%.
+     * if the AbsolutePosition feature is supported:
      * • CurrentPositionLift attribute shall be equal to the InstalledClosedLimitLift attribute.
      * • CurrentPositionTilt attribute shall be equal to the InstalledClosedLimitTilt attribute.
      */

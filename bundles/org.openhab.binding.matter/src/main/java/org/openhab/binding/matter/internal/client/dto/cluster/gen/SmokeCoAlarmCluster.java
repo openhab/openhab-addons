@@ -81,7 +81,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      */
     public MuteStateEnum deviceMuted; // 4 MuteStateEnum R V
     /**
-     * Indicates whether the device self-test is currently activated. If the device self- test is activated, this
+     * Indicates whether the device self-test is currently activated. If the device self-test is activated, this
      * attribute shall be set to True, otherwise it shall be set to False.
      */
     public Boolean testInProgress; // 5 bool R V
@@ -294,9 +294,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         }
     }
 
-    /**
-     * This value shall indicate that this alarm is not alarming.
-     */
     public enum ExpressedStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
         SMOKE_ALARM(1, "SmokeAlarm"),
@@ -373,9 +370,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         }
     }
 
-    /**
-     * This value shall indicate that the smoke sensor has nominal contamination levels, no customer action is required.
-     */
     public enum ContaminationStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
         LOW(1, "Low"),
@@ -422,6 +416,10 @@ public class SmokeCoAlarmCluster extends BaseCluster {
 
     public SmokeCoAlarmCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 92, "SmokeCoAlarm");
+    }
+
+    protected SmokeCoAlarmCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

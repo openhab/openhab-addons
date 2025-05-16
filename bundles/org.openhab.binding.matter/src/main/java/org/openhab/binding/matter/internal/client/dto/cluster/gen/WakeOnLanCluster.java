@@ -42,10 +42,10 @@ public class WakeOnLanCluster extends BaseCluster {
      */
     public String macAddress; // 0 string R V
     /**
-     * Indicates the current link-local address of the device. Only 128-bit IPv6 link- local addresses shall be used for
+     * Indicates the current link-local address of the device. Only 128-bit IPv6 link-local addresses shall be used for
      * this attribute.
-     * NOTE
-     * Some companies may consider MAC Address to be protected data subject to PII handling considerations and will
+     * &gt; [!NOTE]
+     * &gt; Some companies may consider MAC Address to be protected data subject to PII handling considerations and will
      * therefore choose not to include it or read it. The MAC Address can often be determined using ARP in IPv4 or NDP
      * in IPv6.
      */
@@ -53,6 +53,10 @@ public class WakeOnLanCluster extends BaseCluster {
 
     public WakeOnLanCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1283, "WakeOnLan");
+    }
+
+    protected WakeOnLanCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

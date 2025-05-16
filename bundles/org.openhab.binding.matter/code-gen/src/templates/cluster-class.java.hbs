@@ -29,9 +29,9 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class {{asUpperCamelCase name}}Cluster extends BaseCluster {
+public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster extends {{#if type}}{{asUpperCamelCase type}}Cluster{{else}}BaseCluster{{/if}} {
 
-public static final int CLUSTER_ID = {{asHex id 4}};
+    {{#if id}}public static final int CLUSTER_ID = {{asHex id 4}};{{else}}{{/if}}
     public static final String CLUSTER_NAME = "{{asUpperCamelCase name}}";
     public static final String CLUSTER_PREFIX = "{{asLowerCamelCase name}}";
 {{#each attributes }}
@@ -141,12 +141,14 @@ public static final int CLUSTER_ID = {{asHex id 4}};
         }
     }
 {{/each}}
-
+{{#if id}}
     public {{asUpperCamelCase name}}Cluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, {{id}}, "{{asUpperCamelCase name}}");
     }
-
-    
+{{/if}}
+    protected {{asUpperCamelCase name}}Cluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
 {{#each commands }}
 {{#if (isFirstElement @index)}}
     //commands

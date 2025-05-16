@@ -245,6 +245,10 @@ public class OnOffCluster extends BaseCluster {
         super(nodeId, endpointId, 6, "OnOff");
     }
 
+    protected OnOffCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     public static ClusterCommand off() {
         return new ClusterCommand("off");

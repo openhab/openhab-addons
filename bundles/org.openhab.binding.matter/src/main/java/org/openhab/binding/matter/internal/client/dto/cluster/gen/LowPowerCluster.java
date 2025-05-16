@@ -38,6 +38,10 @@ public class LowPowerCluster extends BaseCluster {
         super(nodeId, endpointId, 1288, "LowPower");
     }
 
+    protected LowPowerCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command shall put the device into low power mode.

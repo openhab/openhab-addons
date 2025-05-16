@@ -86,9 +86,9 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
          * PanChange
          * This feature shall indicate the ability of the Border Router to change its already configured PAN to another,
          * by setting a pending dataset.
-         * NOTE
-         * This feature flag can be used to protect an already-configured network from accidental configuration change,
-         * e.g. when the Thread Border Router serves non-Matter devices that do not support PAN change for an
+         * &gt; [!NOTE]
+         * &gt; This feature flag can be used to protect an already-configured network from accidental configuration
+         * change, e.g. when the Thread Border Router serves non- Matter devices that do not support PAN change for an
          * implementation-specific reason.
          */
         public boolean panChange;
@@ -100,6 +100,11 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
 
     public ThreadBorderRouterManagementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1106, "ThreadBorderRouterManagement");
+    }
+
+    protected ThreadBorderRouterManagementCluster(BigInteger nodeId, int endpointId, int clusterId,
+            String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

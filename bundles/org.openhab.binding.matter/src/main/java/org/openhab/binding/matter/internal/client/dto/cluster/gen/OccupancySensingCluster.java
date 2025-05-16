@@ -58,12 +58,11 @@ public class OccupancySensingCluster extends BaseCluster {
     public OccupancySensorTypeBitmap occupancySensorTypeBitmap; // 2 OccupancySensorTypeBitmap R V
     /**
      * This attribute shall specify the time delay, in seconds, before the sensor changes to its unoccupied state after
-     * the last detection of occupancy in the sensed area. This is equivalent to the legacy *OccupiedToUnoccupiedDelay
-     * attributes.
+     * the last detection of occupancy in the sensed area. This is equivalent to the legacy
+     * OccupiedToUnoccupiedDelay attributes.
      * The value of HoldTime shall be within the limits provided in the HoldTimeLimits attribute, i.e. HoldTimeMin
-     * &lt;&#x3D; HoldTime &lt;&#x3D; HoldTimeMax
-     * Low values of HoldTime SHOULD be avoided since they could lead to many reporting messages. A value 0 for HoldTime
-     * shall NOT be used.
+     * &lt;&#x3D; HoldTime &lt;&#x3D; HoldTimeMax Low values of HoldTime SHOULD be avoided since they could lead to many
+     * reporting messages. A value 0 for HoldTime shall NOT be used.
      * The figure below illustrates this with an example of how this attribute is used for a PIR sensor. It uses
      * threshold detection to generate an &quot;internal detection&quot; signal, which needs post-processing to become
      * usable for transmission (traffic shaping). The bit in the Occupancy attribute will be set to 1 when the internal
@@ -75,7 +74,6 @@ public class OccupancySensingCluster extends BaseCluster {
      * results in a single period of the bit in the Occupancy attribute being 1. The bit in the Occupancy attribute will
      * be set to 1 from the start of the first period where the PIR signal exceeds the threshold until HoldTime after
      * the last moment where the PIR exceeded the threshold.
-     * Figure 13. Processing of PIR signal towards Occupancy attribute using HoldTime
      */
     public Integer holdTime; // 3 uint16 RW VM
     /**
@@ -172,10 +170,9 @@ public class OccupancySensingCluster extends BaseCluster {
 
     // Enums
     /**
-     * NOTE
-     * This enum is as defined in ClusterRevision 4 and its definition shall NOT be
-     * extended; the feature flags provide the sensor modality (or modalities) for later cluster revisions. See Backward
-     * Compatibility section.
+     * &gt; [!NOTE]
+     * &gt; This enum is as defined in ClusterRevision 4 and its definition shall NOT be extended; the feature flags
+     * provide the sensor modality (or modalities) for later cluster revisions. See Backward Compatibility section.
      */
     public enum OccupancySensorTypeEnum implements MatterEnum {
         PIR(0, "Pir"),
@@ -217,9 +214,9 @@ public class OccupancySensingCluster extends BaseCluster {
     }
 
     /**
-     * NOTE
-     * This enum is as defined in ClusterRevision 4 and its definition shall NOT be extended; the feature flags provide
-     * the sensor modality (or modalities) for later cluster revisions. See Backward Compatibility section.
+     * &gt; [!NOTE]
+     * &gt; This enum is as defined in ClusterRevision 4 and its definition shall NOT be extended; the feature flags
+     * provide the sensor modality (or modalities) for later cluster revisions. See Backward Compatibility section.
      */
     public static class OccupancySensorTypeBitmap {
         public boolean pir;
@@ -256,7 +253,7 @@ public class OccupancySensingCluster extends BaseCluster {
         public boolean physicalContact;
         /**
          * ActiveInfrared
-         * Supports sensing using Active InfraRed measurement (e.g. time-of- flight or transflective/reflective IR
+         * Supports sensing using Active InfraRed measurement (e.g. time-of-flight or transflective/reflec tive IR
          * sensing)
          */
         public boolean activeInfrared;
@@ -291,6 +288,10 @@ public class OccupancySensingCluster extends BaseCluster {
 
     public OccupancySensingCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1030, "OccupancySensing");
+    }
+
+    protected OccupancySensingCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

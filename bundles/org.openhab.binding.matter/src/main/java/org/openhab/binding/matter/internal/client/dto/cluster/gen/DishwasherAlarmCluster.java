@@ -24,14 +24,11 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class DishwasherAlarmCluster extends BaseCluster {
+public class DishwasherAlarmCluster extends AlarmBaseCluster {
 
     public static final int CLUSTER_ID = 0x005D;
     public static final String CLUSTER_NAME = "DishwasherAlarm";
     public static final String CLUSTER_PREFIX = "dishwasherAlarm";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Bitmaps
     public static class AlarmBitmap {
@@ -57,10 +54,13 @@ public class DishwasherAlarmCluster extends BaseCluster {
         super(nodeId, endpointId, 93, "DishwasherAlarm");
     }
 
+    protected DishwasherAlarmCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

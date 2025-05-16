@@ -83,6 +83,10 @@ public class PowerTopologyCluster extends BaseCluster {
         super(nodeId, endpointId, 156, "PowerTopology");
     }
 
+    protected PowerTopologyCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

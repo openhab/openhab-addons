@@ -76,9 +76,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * Indicates the maximum duration taken, in seconds, by the network interface on this cluster server instance to
      * report a successful or failed network connection indication. This maximum time shall account for all operations
-     * needed until a successful network connection is
-     * deemed to have occurred, including, for example, obtaining IP addresses, or the execution of necessary internal
-     * retries.
+     * needed until a successful network connection is deemed to have occurred, including, for example, obtaining IP
+     * addresses, or the execution of necessary internal retries.
      */
     public Integer connectMaxTimeSeconds; // 3 uint8 R V
     /**
@@ -159,13 +158,13 @@ public class NetworkCommissioningCluster extends BaseCluster {
          * • Network interface instance name at operating system (or equivalent unique name) for Ethernet.
          * The semantics of the NetworkID field therefore varies between network types accordingly. It contains SSID for
          * Wi-Fi networks, Extended PAN ID (XPAN ID) for Thread networks and netif name for Ethernet networks.
-         * NOTE
-         * SSID in Wi-Fi is a collection of 1-32 bytes, the text encoding of which is not specified. Implementations
-         * must be careful to support reporting byte strings without requiring a particular encoding for transfer. Only
-         * the commissioner should try to potentially decode the bytes. The most common encoding is UTF-8, however this
-         * is just a convention. Some configurations may use Latin-1 or other character sets. A commissioner may decode
-         * using UTF-8, replacing encoding errors with &quot;?&quot; at the application level while retaining the
-         * underlying representation.
+         * &gt; [!NOTE]
+         * &gt; SSID in Wi-Fi is a collection of 1-32 bytes, the text encoding of which is not specified.
+         * Implementations must be careful to support reporting byte strings without requiring a particular encoding for
+         * transfer. Only the commissioner should try to potentially decode the bytes. The most common encoding is
+         * UTF-8, however this is just a convention. Some configurations may use Latin-1 or other character sets. A
+         * commissioner may decode using UTF-8, replacing encoding errors with &quot;?&quot; at the application level
+         * while retaining the underlying representation.
          * XPAN ID is a big-endian 64-bit unsigned number, represented on the first 8 octets of the octet string.
          */
         public OctetString networkId; // octstr
@@ -329,10 +328,10 @@ public class NetworkCommissioningCluster extends BaseCluster {
     }
 
     /**
-     * The ThreadCapabilitiesBitmap encodes the supported Thread features and capabilities of a Thread- enabled network
+     * The ThreadCapabilitiesBitmap encodes the supported Thread features and capabilities of a Thread-enabled network
      * interface.
-     * NOTE
-     * The valid combinations of capabilities are restricted and dependent on Thread version.
+     * &gt; [!NOTE]
+     * &gt; The valid combinations of capabilities are restricted and dependent on Thread version.
      */
     public static class ThreadCapabilitiesBitmap {
         public boolean isBorderRouterCapable;
@@ -379,6 +378,10 @@ public class NetworkCommissioningCluster extends BaseCluster {
 
     public NetworkCommissioningCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 49, "NetworkCommissioning");
+    }
+
+    protected NetworkCommissioningCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands
@@ -472,8 +475,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
 
     /**
      * This command shall remove the network configuration from the Cluster if there was already a network configuration
-     * with the same NetworkID. The relative order of the entries in the Networks
-     * attribute shall remain unchanged, except for the removal of the requested network configuration.
+     * with the same NetworkID. The relative order of the entries in the Networks attribute shall remain unchanged,
+     * except for the removal of the requested network configuration.
      * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
      * with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * If the Networks attribute does not contain a matching entry, the command shall immediately respond with
@@ -526,14 +529,14 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * Even after successfully connecting to a network, the configuration shall revert to the prior state of
      * configuration if the CommissioningComplete command (see CommissioningComplete) is not successfully invoked before
      * expiry of the Fail-Safe timer.
-     * When non-concurrent commissioning is being used by a Commissioner or Administrator, the Con
-     * nectNetworkResponse shall be sent with the NetworkingStatus field set to Success prior to closing the
-     * commissioning channel, even if not yet connected to the operational network, unless the device would be incapable
-     * of joining that network, in which case the usual failure path described in the prior paragraphs shall be
-     * followed. Once the commissioning channel is closed, the operational channel will be started. It is possible that
-     * the only method to determine success of the operation is operational discovery of the Node on the new operational
-     * network. Therefore, before invoking the ConnectNetwork command, the client SHOULD re-invoke the Arm Fail-Safe
-     * command with a duration that meets the following:
+     * When non-concurrent commissioning is being used by a Commissioner or Administrator, the ConnectNetworkResponse
+     * shall be sent with the NetworkingStatus field set to Success prior to closing the commissioning channel, even if
+     * not yet connected to the operational network, unless the device would be incapable of joining that network, in
+     * which case the usual failure path described in the prior paragraphs shall be followed. Once the commissioning
+     * channel is closed, the operational channel will be started. It is possible that the only method to determine
+     * success of the operation is operational discovery of the Node on the new operational network. Therefore, before
+     * invoking the ConnectNetwork command, the client SHOULD re-invoke the Arm Fail-Safe command with a duration that
+     * meets the following:
      * 1. Sufficient time to meet the minimum required time (see ConnectMaxTimeSeconds) that may be taken by the server
      * to connect to the desired network.
      * 2. Sufficient time to account for possible message-layer retries when a response is requested.

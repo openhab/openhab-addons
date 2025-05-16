@@ -74,9 +74,9 @@ public class BallastConfigurationCluster extends BaseCluster {
      * This attribute shall specify the light output of the ballast according to the dimming light curve (see Dimming
      * Curve) when the Level Control Cluster’s CurrentLevel attribute equals to 254 (and the On/Off Cluster’s OnOff
      * attribute equals to TRUE).
-     * The value of this attribute shall be both less than or equal to PhysicalMaxLevel and greater than
-     * or equal to MinLevel. If an attempt is made to set this attribute to a level where these conditions are not met,
-     * a response shall be returned with status code set to CONSTRAINT_ERROR, and the level shall NOT be set.
+     * The value of this attribute shall be both less than or equal to PhysicalMaxLevel and greater than or equal to
+     * MinLevel. If an attempt is made to set this attribute to a level where these conditions are not met, a response
+     * shall be returned with status code set to CONSTRAINT_ERROR, and the level shall NOT be set.
      */
     public Integer maxLevel; // 17 uint8 RW VM
     /**
@@ -89,7 +89,7 @@ public class BallastConfigurationCluster extends BaseCluster {
      * This attribute shall specify the multiplication factor, as a percentage, to be applied to the configured light
      * output of the lamps. A typical use for this attribute is to compensate for reduction in efficiency over the
      * lifetime of a lamp.
-     * The light output is given by
+     * ### The light output is given by
      * actual light output &#x3D; configured light output x BallastFactorAdjustment / 100%
      * The range for this attribute is manufacturer dependent. If an attempt is made to set this attribute to a level
      * that cannot be supported, a response shall be returned with status code set to CONSTRAINT_ERROR, and the level
@@ -125,7 +125,6 @@ public class BallastConfigurationCluster extends BaseCluster {
     /**
      * This attribute shall specify which attributes may cause an alarm notification to be generated. Ain each bit
      * position means that its associated attribute is able to generate an alarm.
-     * NOTE All alarms are also logged in the alarm table – see Alarms cluster.
      */
     public LampAlarmModeBitmap lampAlarmMode; // 52 LampAlarmModeBitmap RW VM
     /**
@@ -175,6 +174,10 @@ public class BallastConfigurationCluster extends BaseCluster {
 
     public BallastConfigurationCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 769, "BallastConfiguration");
+    }
+
+    protected BallastConfigurationCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

@@ -232,6 +232,10 @@ public class OperationalCredentialsCluster extends BaseCluster {
         super(nodeId, endpointId, 62, "OperationalCredentials");
     }
 
+    protected OperationalCredentialsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command shall be generated to request the Attestation Information, in the form of an AttestationResponse
@@ -325,7 +329,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * A Commissioner or Administrator shall issue this command after issuing the CSRRequest Command and receiving its
      * response.
      * A Commissioner or Administrator SHOULD issue this command after performing the Attestation Procedure.
-     * Effect When Received
+     * ### Effect When Received
      * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
      * with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * If a prior UpdateNOC or AddNOC command was successfully executed within the fail-safe timer period, then this
@@ -395,7 +399,6 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * This command is used by Administrators to remove a given Fabric and delete all associated fabric-scoped data.
      * If the given Fabric being removed is the last one to reference a given Trusted Root CA Certificate stored in the
      * Trusted Root Certificates list, then that Trusted Root Certificate shall be removed.
-     * WARNING
      * This command, if referring to an already existing Fabric not under the control of the invoking Administrator,
      * shall ONLY be invoked after obtaining some form of explicit user consent through some method executed by the
      * Administrator or Commissioner. This method of obtaining consent SHOULD employ as much data as possible about the
@@ -422,8 +425,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
      * with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * If a prior AddTrustedRootCertificate command was successfully invoked within the fail-safe timer period, which
-     * would cause the new invocation to add a second root certificate within a given fail-
-     * safe timer period, then this command shall fail with a CONSTRAINT_ERROR status code sent back to the initiator.
+     * would cause the new invocation to add a second root certificate within a given fail-safe timer period, then this
+     * command shall fail with a CONSTRAINT_ERROR status code sent back to the initiator.
      * If a prior UpdateNOC or AddNOC command was successfully executed within the fail-safe timer period, then this
      * command shall fail with a CONSTRAINT_ERROR status code sent back to the initiator.
      * If the certificate from the RootCACertificate field fails any validity checks, not fulfilling all the

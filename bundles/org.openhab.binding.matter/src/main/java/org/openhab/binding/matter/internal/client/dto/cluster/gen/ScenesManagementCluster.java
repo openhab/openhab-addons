@@ -50,7 +50,7 @@ public class ScenesManagementCluster extends BaseCluster {
     public BigInteger lastConfiguredBy; // 0 node-id R V
     /**
      * Indicates the number of entries in the Scene Table on this endpoint. This is the total across all fabrics; note
-     * that a single fabric cannot use all those entries (see Handling of fabric- scoping). The minimum size of this
+     * that a single fabric cannot use all those entries (see Handling of fabric-scoping). The minimum size of this
      * table, (i.e., the minimum number of scenes to support across all fabrics per endpoint) shall be 16, unless a
      * device type in which this cluster is used, defines a larger value in the device type definition.
      */
@@ -125,8 +125,8 @@ public class ScenesManagementCluster extends BaseCluster {
          * ### 1.4.7.3.2. ValueUnsigned8, ValueSigned8, ValueUnsigned16, ValueSigned16, ValueUnsigned32, ValueSigned32,
          * ValueUnsigned64, ValueSigned64 Fields
          * These fields shall indicate the attribute value as part of an extension field set, associated with a given
-         * AttributeID under an ExtensionFieldSetStruct’s ClusterID. Which of the fields is used shall
-         * be determined by the type of the attribute indicated by AttributeID as follows:
+         * AttributeID under an ExtensionFieldSetStruct’s ClusterID. Which of the fields is used shall be determined by
+         * the type of the attribute indicated by AttributeID as follows:
          * • Data types bool, map8, and uint8 shall map to ValueUnsigned8.
          * • Data types int8 shall map to ValueSigned8.
          * • Data types map16 and uint16 shall map to ValueUnsigned16.
@@ -278,6 +278,10 @@ public class ScenesManagementCluster extends BaseCluster {
 
     public ScenesManagementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 98, "ScenesManagement");
+    }
+
+    protected ScenesManagementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

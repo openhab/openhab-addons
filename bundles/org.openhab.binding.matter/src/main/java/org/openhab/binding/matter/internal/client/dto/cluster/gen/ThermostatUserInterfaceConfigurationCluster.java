@@ -134,6 +134,11 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         super(nodeId, endpointId, 516, "ThermostatUserInterfaceConfiguration");
     }
 
+    protected ThermostatUserInterfaceConfigurationCluster(BigInteger nodeId, int endpointId, int clusterId,
+            String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

@@ -198,6 +198,10 @@ public class KeypadInputCluster extends BaseCluster {
         super(nodeId, endpointId, 1289, "KeypadInput");
     }
 
+    protected KeypadInputCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * Upon receipt, this shall process a keycode as input to the media endpoint.

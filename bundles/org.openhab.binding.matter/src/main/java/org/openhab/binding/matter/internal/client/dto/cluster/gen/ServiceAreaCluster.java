@@ -53,10 +53,10 @@ public class ServiceAreaCluster extends BaseCluster {
      * If the SupportedMaps attribute is empty, each entry in this list shall have a unique value for the AreaInfo field
      * and shall have the MapID field set to null.
      * An empty value indicates that the device is currently unable to provide the list of supported areas.
-     * NOTE
-     * due to the maximum size of this list and to the fact that the entries may include strings (see LocationName),
-     * care must be taken by implementers to avoid creating a data structure that is overly large, which can result in
-     * significant latency in accessing this attribute.
+     * &gt; [!NOTE]
+     * &gt; due to the maximum size of this list and to the fact that the entries may include strings (see
+     * LocationName), care must be taken by implementers to avoid creating a data structure that is overly large, which
+     * can result in significant latency in accessing this attribute.
      * The value of this attribute may change at any time via an out-of-band interaction outside of the server, such as
      * interactions with a user interface, or due to internal device changes.
      * When removing entries in the SupportedAreas attribute list the server shall adjust the values of the
@@ -93,17 +93,17 @@ public class ServiceAreaCluster extends BaseCluster {
      * If empty, that indicates that the device is currently unable to provide this information. Each entry in this list
      * shall have a unique value for the MapID field.
      * Each entry in this list shall have a unique value for the Name field.
-     * NOTE
-     * due to the maximum size of this list and to the fact that the entries may include strings (see the Name field of
-     * the MapStruct data type), care must be taken by implementers to avoid creating a data structure that is overly
-     * large, which can result in significant latency in accessing this attribute.
+     * &gt; [!NOTE]
+     * &gt; due to the maximum size of this list and to the fact that the entries may include strings (see the Name
+     * field of the MapStruct data type), care must be taken by implementers to avoid creating a data structure that is
+     * overly large, which can result in significant latency in accessing this attribute.
      * The value of this attribute may change at any time via an out-of-band interaction outside of the server, such as
      * interactions with a user interface.
      * When updating the SupportedMaps attribute list by deleting entries, or by setting the attribute to an empty list,
      * the SupportedLocations attribute shall be updated such that all entries in that list meet the constraints
-     * indicated in the description of the SupportedLocations attribute. This may result in
-     * the server removing entries from the SupportedAreas attribute list. See the SupportedAreas attribute description
-     * for the implications of changing that attribute.
+     * indicated in the description of the SupportedLocations attribute. This may result in the server removing entries
+     * from the SupportedAreas attribute list. See the SupportedAreas attribute description for the implications of
+     * changing that attribute.
      * The SupportedMaps attribute list changes mentioned above SHOULD NOT be allowed while the device is operating, to
      * reduce the impact on the clients, and the potential confusion for the users.
      */
@@ -126,8 +126,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * area which is currently being serviced, or the area which is currently traversed by the device. For example, a
      * camera device may use this attribute to indicate which area it currently takes video of (serviced area) or which
      * area it currently has in view but not taking video of (e.g. an area which is traversed while panning).
-     * NOTE
-     * A device may traverse an area regardless of the status of the area (pending, skipped, or completed).
+     * &gt; [!NOTE]
+     * &gt; A device may traverse an area regardless of the status of the area (pending, skipped, or completed).
      * If a device can simultaneously operate at multiple areas, such as in the case of a sensor that can monitor
      * multiple areas at the same time, the CurrentArea attribute shall NOT be implemented, since it doesn’t apply. Else
      * this attribute shall be optionally implemented.
@@ -151,9 +151,9 @@ public class ServiceAreaCluster extends BaseCluster {
      * • when it changes to or from 0
      * • when it decreases
      * • when it changes to or from null
-     * NOTE
-     * If the device is capable of pausing its operation, this attribute may be set to null, to indicate that completion
-     * time is unknown, or increment the value while being in the paused state.
+     * &gt; [!NOTE]
+     * &gt; If the device is capable of pausing its operation, this attribute may be set to null, to indicate that
+     * completion time is unknown, or increment the value while being in the paused state.
      */
     public Integer estimatedEndTime; // 4 epoch-s R V
     /**
@@ -175,8 +175,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * When the device finishes operating, successfully or not, it shall NOT change the Progress attribute, except in
      * the case of an unexpected end of operation as described above, or due to changes to the SupportedMaps or
      * SupportedAreas attributes, so the clients can retrieve the progress information at that time.
-     * NOTE
-     * if the device implements the Operational Status cluster, or a derivation of it, in case the device fails to
+     * &gt; [!NOTE]
+     * &gt; if the device implements the Operational Status cluster, or a derivation of it, in case the device fails to
      * service any locations in the SelectedAreas list before ending the operation, it SHOULD use the Operational Status
      * cluster to indicate that the device was unable to complete the operation (see the UnableToCompleteOperation error
      * from that cluster specification). The clients SHOULD then read the Progress attribute, and indicate which areas
@@ -301,9 +301,9 @@ public class ServiceAreaCluster extends BaseCluster {
          * This field shall contain data describing the area.
          * This SHOULD be used by clients to determine the name and/or the full, or the partial, semantics of a certain
          * area.
-         * NOTE
-         * If any entries on the SupportedAreas attribute’s list have the AreaInfo field missing the semantic data, the
-         * client may remind the user to assign the respective data.
+         * &gt; [!NOTE]
+         * &gt; If any entries on the SupportedAreas attribute’s list have the AreaInfo field missing the semantic data,
+         * the client may remind the user to assign the respective data.
          */
         public AreaInfoStruct areaInfo; // AreaInfoStruct
 
@@ -334,8 +334,8 @@ public class ServiceAreaCluster extends BaseCluster {
          * including any time spent while paused.
          * A value of null indicates that the total operational time is unknown.
          * There may be cases where the total operational time exceeds the maximum value that can be conveyed by this
-         * attribute, and in such instances this attribute shall be populated with null.
-         * Null if the Status field is not set to Completed or Skipped.
+         * attribute, and in such instances this attribute shall be populated with null. Null if the Status field is not
+         * set to Completed or Skipped.
          */
         public Integer totalOperationalTime; // elapsed-s
         /**
@@ -465,6 +465,10 @@ public class ServiceAreaCluster extends BaseCluster {
 
     public ServiceAreaCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 336, "ServiceArea");
+    }
+
+    protected ServiceAreaCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     // commands

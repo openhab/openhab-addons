@@ -93,7 +93,9 @@ public class EndpointHandler extends MatterBaseThingHandler {
         BaseCluster basicInfoObject = endpoint.clusters.get(BridgedDeviceBasicInformationCluster.CLUSTER_NAME);
         if (basicInfoObject != null) {
             BridgedDeviceBasicInformationCluster basicInfo = (BridgedDeviceBasicInformationCluster) basicInfoObject;
-            reachable = !"false".equals(basicInfo.reachable);
+            if (basicInfo.reachable != null) {
+                reachable = basicInfo.reachable;
+            }
         }
         if (reachable) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {

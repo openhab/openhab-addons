@@ -136,6 +136,10 @@ public class ApplicationBasicCluster extends BaseCluster {
         super(nodeId, endpointId, 1293, "ApplicationBasic");
     }
 
+    protected ApplicationBasicCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

@@ -227,8 +227,7 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
     public List<HarmonicMeasurementStruct> harmonicCurrents; // 15 list R V
     /**
      * This shall indicate a list of HarmonicMeasurementStruct values, with each HarmonicMeasurementStruct representing
-     * the most recent phase of the harmonic current reading for the harmonic
-     * order specified by Order.
+     * the most recent phase of the harmonic current reading for the harmonic order specified by Order.
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
      * publication of deltas considered not meaningful.
      * The server shall NOT mark this attribute ready for report if the last time this was done was more recently than 1
@@ -251,8 +250,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * This shall indicate the most recent NeutralCurrent reading in milliamps (mA). Typically this is a derived value,
      * taking the magnitude of the vector sum of phase currents.
      * If the neutral current cannot be measured or derived, a value of null shall be returned.
-     * A positive value represents an imbalance between the phase currents when power is imported. A negative value
-     * represents an imbalance between the phase currents when power is exported.
+     * A positive value represents an imbalance between the phase currents when power is imported.
+     * A negative value represents an imbalance between the phase currents when power is exported.
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
      * publication of deltas considered not meaningful.
      * The server shall NOT mark this attribute ready for report if the last time this was done was more recently than 1
@@ -380,8 +379,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
          * For the Harmonic Currents attribute, this value is the most recently measured harmonic current reading in
          * milliamps (mA). A positive value indicates that the measured harmonic current is positive, and a negative
          * value indicates that the measured harmonic current is negative.
-         * For the Harmonic Phases attribute, this value is the most recent phase of the given harmonic order
-         * in millidegrees (mDeg). A positive value indicates that the measured phase is leading, and a negative value
+         * For the Harmonic Phases attribute, this value is the most recent phase of the given harmonic order in
+         * millidegrees (mDeg). A positive value indicates that the measured phase is leading, and a negative value
          * indicates that the measured phase is lagging.
          * If this measurement is not currently available, a value of null shall be returned.
          */
@@ -458,6 +457,10 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
 
     public ElectricalPowerMeasurementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 144, "ElectricalPowerMeasurement");
+    }
+
+    protected ElectricalPowerMeasurementCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
     }
 
     @Override

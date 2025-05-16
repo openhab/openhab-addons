@@ -88,6 +88,10 @@ public class LaundryDryerControlsCluster extends BaseCluster {
         super(nodeId, endpointId, 74, "LaundryDryerControls");
     }
 
+    protected LaundryDryerControlsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

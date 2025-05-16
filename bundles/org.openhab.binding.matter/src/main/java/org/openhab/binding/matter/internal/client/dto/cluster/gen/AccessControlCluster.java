@@ -40,7 +40,7 @@ public class AccessControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_SUBJECTS_PER_ACCESS_CONTROL_ENTRY = "subjectsPerAccessControlEntry";
     public static final String ATTRIBUTE_TARGETS_PER_ACCESS_CONTROL_ENTRY = "targetsPerAccessControlEntry";
     public static final String ATTRIBUTE_ACCESS_CONTROL_ENTRIES_PER_FABRIC = "accessControlEntriesPerFabric";
-    public static final String ATTRIBUTE_COMMISSIONING_AR_L = "commissioningArL";
+    public static final String ATTRIBUTE_COMMISSIONING_ARL = "commissioningArl";
     public static final String ATTRIBUTE_ARL = "arl";
 
     public Integer clusterRevision; // 65533 ClusterRevision
@@ -96,7 +96,7 @@ public class AccessControlCluster extends BaseCluster {
      * See Section 9.10.4.2.1, “Managed Device Feature Usage Restrictions” for limitations on the use of access
      * restrictions.
      */
-    public List<CommissioningAccessRestrictionEntryStruct> commissioningArL; // 5 list R V
+    public List<CommissioningAccessRestrictionEntryStruct> commissioningArl; // 5 list R V
     /**
      * This attribute shall provide the set of AccessRestrictionEntryStruct applied to the associated fabric on a
      * managed device.
@@ -252,17 +252,14 @@ public class AccessControlCluster extends BaseCluster {
          * key-value pairs:
          * • The query shall use the &amp; delimiter between key/value pairs.
          * • The key-value pairs shall in the format name&#x3D;&lt;value&gt; where name is the key name, and
-         * &lt;value&gt;
-         * is the contents of the value encoded with proper URL-encoded escaping.
+         * &lt;value&gt; is the contents of the value encoded with proper URL-encoded escaping.
          * • If key MTcu is present, it shall have a value of &quot;_&quot; (i.e. MTcu&#x3D;_). This is the
-         * &quot;callback URL
-         * backUrl) placeholder&quot;.
+         * &quot;callback URL (CallbackUrl) placeholder&quot;.
          * • Any key whose name begins with MT not mentioned in the previous bullets shall be reserved for future use by
          * this specification. Manufacturers shall NOT include query keys starting with MT in the ARLRequestFlowUrl
          * unless they are referenced by a version of this specification.
          * Any other element in the ARLRequestFlowUrl query field not covered by the above rules, as well as the
          * fragment field (if present), shall remain including the order of query key/value pairs present.
-         * Expansion of ARLRequestFlowUrl by client
          * Once the URL is obtained, it shall be expanded to form a final URL (ExpandedARLRequestFlowUrl) by proceeding
          * with the following substitution algorithm on the original ARLRequestFlowUrl:
          * 1. If key MTcu is present, compute the CallbackUrl desired (see Section 9.10.9.3.5, “CallbackUrl format for
@@ -287,10 +284,9 @@ public class AccessControlCluster extends BaseCluster {
          * URL-encoded escaping.
          * • Any key whose name begins with MT not mentioned in the previous bullets shall be reserved for future use by
          * this specification.
-         * Any other element in the CallbackUrl query field not covered by the above rules, as well as the frag
-         * ment field (if present), shall remain as provided by the client through embedding within the
+         * Any other element in the CallbackUrl query field not covered by the above rules, as well as the fragment
+         * field (if present), shall remain as provided by the client through embedding within the
          * ExpandedARLRequestFlowUrl, including the order of query key/value pairs present.
-         * ### Expansion of CallbackUrl by the manufacturer custom flow
          * Once the CallbackUrl is obtained by the manufacturer flow, it may be expanded to form a final
          * ExpandedARLRequestCallbackUrl URL to be used by proceeding with the following substitution algorithm on the
          * provided CallbackUrl:
@@ -308,7 +304,7 @@ public class AccessControlCluster extends BaseCluster {
          * A manufacturer custom flow having received an ExpandedARLRequestFlowUrl SHOULD attempt to open the
          * ExpandedARLRequestCallbackUrl, on completion of the request, if an ExpandedARLRequestCallbackUrl was computed
          * from the CallbackUrl and opening such a URL is supported.
-         * Examples of ARLRequestFlowUrl URLs
+         * ### Examples of ARLRequestFlowUrl URLs
          * Below are some examples of valid ExpandedARLRequestFlowUrl for several valid values of ARLRequestFlowUrl, as
          * well as some examples of invalid values of ARLRequestFlowUrl:
          * • Invalid URL with no query string: http scheme is not allowed:
@@ -327,7 +323,7 @@ public class AccessControlCluster extends BaseCluster {
          * https://client.domain.example/cb?token&#x3D;mAsJ6_vqbr-vjDiG_w%3D%3D&amp;MTaer&#x3D;_
          * ▪ After expansion of the CallbackUrl (MTcu key) into an ExpandedCallbackUrl, with an example return access
          * extension completion status of Success, the ExpandedARLRequestCallbackUrl would be:
-         * https://client.domain.example/cb?token&#x3D;mAsJ6_vqbr- vjDiG_w%3D%3D&amp;MTaer&#x3D;Success
+         * https://client.domain.example/cb?token&#x3D;mAsJ6_vqbr-vjDiG_w%3D%3D&amp;MTaer&#x3D;Success
          * Note that the MTcu key/value pair was initially provided URL-encoded within the ExpandedARLRequestFlowUrl URL
          * and the MTaer&#x3D;_ key/value pair placeholder now contains a substituted returned completion status.
          * • Invalid URL, due to MTza&#x3D;79 key/value pair in reserved MT-prefixed keys reserved for future use:
@@ -360,14 +356,12 @@ public class AccessControlCluster extends BaseCluster {
     public class AccessControlEntryStruct {
         /**
          * The privilege field shall specify the level of privilege granted by this Access Control Entry.
-         * NOTE The Proxy View privilege is provisional.
          * Each privilege builds upon its predecessor, expanding the set of actions that can be performed upon a Node.
          * Administer is the highest privilege, and is special as it pertains to the administration of privileges
          * itself, via the Access Control Cluster.
          * When a Node is granted a particular privilege, it is also implicitly granted all logically lower privilege
          * levels as well. The following diagram illustrates how the higher privilege levels subsume the lower privilege
          * levels:
-         * Figure 46. Access Control Privilege Levels
          * Individual clusters shall define whether attributes are readable, writable, or both readable and writable.
          * Clusters also shall define which privilege is minimally required to be able to perform a particular read or
          * write action on those attributes, or invoke particular commands. Device type specifications may further
@@ -387,7 +381,6 @@ public class AccessControlCluster extends BaseCluster {
          * An attempt to create an entry with more subjects than the node can support shall result in a
          * RESOURCE_EXHAUSTED error and the entry shall NOT be created.
          * ### Subject ID shall be of type uint64 with semantics depending on the entry’s AuthMode as follows:
-         * Subject Semantics
          * An empty subjects list indicates a wildcard; that is, this entry shall grant access to any Node that
          * successfully authenticates via AuthMode. The subjects list shall NOT be empty if the entry’s AuthMode is
          * PASE.
@@ -413,7 +406,6 @@ public class AccessControlCluster extends BaseCluster {
          * A single target shall contain at least one field (Cluster, Endpoint, or DeviceType), and shall NOT contain
          * both an Endpoint field and a DeviceType field.
          * A target grants access based on the presence of fields as follows:
-         * Target Semantics
          * An empty targets list indicates a wildcard: that is, this entry shall grant access to all cluster instances
          * on all endpoints on this Node.
          */
@@ -433,8 +425,8 @@ public class AccessControlCluster extends BaseCluster {
 
     public class AccessControlExtensionStruct {
         /**
-         * This field may be used by manufacturers to store arbitrary TLV-encoded data related to a fabric’s
-         * Access Control Entries.
+         * This field may be used by manufacturers to store arbitrary TLV-encoded data related to a fabric’s Access
+         * Control Entries.
          * The contents shall consist of a top-level anonymous list; each list element shall include a profile-specific
          * tag encoded in fully-qualified form.
          * Administrators may iterate over this list of elements, and interpret selected elements at their discretion.
@@ -562,8 +554,8 @@ public class AccessControlCluster extends BaseCluster {
     }
 
     /**
-     * Proxy View Value
-     * This value implicitly grants View privileges
+     * ### Proxy View Value
+     * ### This value implicitly grants View privileges
      */
     public enum AccessControlEntryPrivilegeEnum implements MatterEnum {
         VIEW(1, "View"),
@@ -711,6 +703,10 @@ public class AccessControlCluster extends BaseCluster {
         super(nodeId, endpointId, 31, "AccessControl");
     }
 
+    protected AccessControlCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command signals to the service associated with the device vendor that the fabric administrator would like a
@@ -744,7 +740,7 @@ public class AccessControlCluster extends BaseCluster {
         str += "subjectsPerAccessControlEntry : " + subjectsPerAccessControlEntry + "\n";
         str += "targetsPerAccessControlEntry : " + targetsPerAccessControlEntry + "\n";
         str += "accessControlEntriesPerFabric : " + accessControlEntriesPerFabric + "\n";
-        str += "commissioningArL : " + commissioningArL + "\n";
+        str += "commissioningArl : " + commissioningArl + "\n";
         str += "arl : " + arl + "\n";
         return str;
     }

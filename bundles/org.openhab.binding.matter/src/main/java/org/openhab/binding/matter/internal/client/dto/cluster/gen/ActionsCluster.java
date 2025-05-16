@@ -370,6 +370,10 @@ public class ActionsCluster extends BaseCluster {
         super(nodeId, endpointId, 37, "Actions");
     }
 
+    protected ActionsCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     // commands
     /**
      * This command triggers an action (state change) on the involved endpoints, in a &quot;fire and forget&quot;

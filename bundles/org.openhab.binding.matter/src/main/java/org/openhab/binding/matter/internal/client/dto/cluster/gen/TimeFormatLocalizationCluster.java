@@ -135,6 +135,10 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
         super(nodeId, endpointId, 44, "TimeFormatLocalization");
     }
 
+    protected TimeFormatLocalizationCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";

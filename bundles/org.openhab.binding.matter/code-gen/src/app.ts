@@ -333,31 +333,6 @@ const clusters: ExtendedClusterElement[] = (matterData.children as ClusterElemen
     const structs = (cluster.children || [])
         .filter(dt => dt.type === 'struct' || dt.tag === 'event')
         .map(dt => typeMapper(typeMapping, dt as AnyValueElement));
-    if (cluster.type) {
-        function combineArray(array1: any[] | undefined, array2: any[] | undefined) {
-            if (!array1 || !array2) {
-                return;
-            }
-            array2.forEach(item => {
-                const child = array1.find( c => c.name == item.name)
-                if (!child) {
-                    array1.push(item);
-                }
-            });
-        }
-        const parent = matterData.children.find(c => c.name == cluster.type);
-        if (parent) {
-            let pDataType = parent.children?.filter(c => c.tag == 'datatype') as DatatypeElement[];
-            combineArray(dataTypes, pDataType)
-            let pMaps = parent.children?.filter(c => c.type?.startsWith('map')) as ClusterElement.Child[];
-            combineArray(maps, pMaps)
-            let pEnums = parent.children?.filter(c => c.type?.startsWith('enum')) as ClusterElement.Child[];
-            combineArray(enums, pEnums)
-            let pStructs = parent.children?.filter(dt => dt.type == 'struct').map(dt => typeMapper(typeMapping, dt as AnyValueElement)) as any[]
-            combineArray(structs, pStructs)
-        }
-    }
-
     dataTypes?.forEach(dt => {
         if (dt.type && dt.type.indexOf('.') > 0) {
             return typeMapping.set(dt.name, dt.type)
@@ -365,11 +340,21 @@ const clusters: ExtendedClusterElement[] = (matterData.children as ClusterElemen
         return matterNativeTypeToJavaNativeType(dt) && typeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt))
     });
 
+    // if the cluster has a type, then the java class will extend this type (which is another cluster)
+    const parent = cluster.type ? matterData.children.find(c => c.name == cluster.type) : undefined;
+
     const attributes = cluster.children?.filter(c => c.tag == 'attribute')?.filter((element, index, self) => {
-        //remove duplicates
+        //remove duplicates, not sure why they exist in the model
         const dupIndex = self.findIndex(e => e.name === element.name)
         if (dupIndex != index) {
             if (element.conformance?.toString().startsWith('[!')) {
+                return false;
+            }
+        }
+        // if the parent cluster has an attribute with the same name, then don't include it as we need to use the parent's attribute
+        if (parent) {
+            const parentAttr = parent.children?.filter(c => c.tag == 'attribute')?.find(c => c.name == element.name)
+            if (parentAttr) {
                 return false;
             }
         }
@@ -519,9 +504,6 @@ const clusterConstantsClass = clusterConstantsTemplate({ clusters: clusters });
 fs.writeFileSync(`out/ClusterConstants.java`, clusterConstantsClass);
 
 clusters.forEach(cluster => {
-    if (cluster.id == undefined) {
-        return;
-    }
     const javaCode = clusterTemplate(cluster);
     fs.writeFileSync(`out/${cluster.name}Cluster.java`, javaCode);
 });
