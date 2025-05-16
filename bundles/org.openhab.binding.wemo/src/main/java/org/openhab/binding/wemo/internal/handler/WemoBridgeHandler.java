@@ -14,9 +14,11 @@ package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -24,6 +26,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,5 +68,10 @@ public class WemoBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Not needed, all commands are handled in the {@link WemoLightHandler}
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(WemoLinkDiscoveryService.class);
     }
 }
