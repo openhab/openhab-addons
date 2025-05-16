@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -432,7 +433,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             if (schema == null) {
                 if (!schemaDps.isEmpty()) {
                     // fallback to retrieved schema
-                    schema = schemaDps.stream().collect(Collectors.toMap(s -> s.code, s -> s));
+                    schema = schemaDps.stream()
+                            .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "No channels added and schema not found.");
@@ -479,7 +481,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        Map<String, Channel> channels = new HashMap<>(schema.entrySet().stream().map(e -> {
+        Map<String, Channel> channels = new LinkedHashMap<>(schema.entrySet().stream().map(e -> {
             String channelId = e.getKey();
             SchemaDp schemaDp = e.getValue();
 
