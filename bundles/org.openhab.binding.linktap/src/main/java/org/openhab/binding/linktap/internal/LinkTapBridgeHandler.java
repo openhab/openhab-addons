@@ -143,6 +143,10 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         return Objects.nonNull(result) ? result : key;
     }
 
+    public int getResponseTimeout() {
+        return config.gatewayResponseTimeout;
+    }
+
     private void startGwPolling() {
         synchronized (schedulerLock) {
             cancelGwPolling();
@@ -379,7 +383,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             }
             final String reqData = LinkTapBindingConstants.GSON.toJson(req);
             logger.debug("{} = APP BRIDGE -> GW -> Request {}", uid, reqData);
-            final String respData = api.sendRequest(host, reqData);
+            final String respData = api.sendRequest(host, getResponseTimeout(), reqData);
             logger.debug("{} = APP BRIDGE -> GW -> Response {}", uid, respData);
             final GatewayDeviceResponse gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
                     GatewayDeviceResponse.class);
@@ -429,7 +433,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final WebServerApi api = WebServerApi.getInstance();
         api.setHttpClient(httpClientProvider.getHttpClient());
         try {
-            final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey);
+            final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey, getResponseTimeout());
             if (!bridgeProps.isEmpty()) {
                 final String readGwId = bridgeProps.get(BRIDGE_PROP_GW_ID);
                 if (readGwId != null) {
@@ -439,7 +443,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 currentProps.putAll(bridgeProps);
                 updateProperties(currentProps);
             } else {
-                if (!api.unlockWebInterface(bridgeKey, config.username, config.password)) {
+                if (!api.unlockWebInterface(bridgeKey, getResponseTimeout(), config.username, config.password)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             getLocalizedText("bridge.error.check-credentials"));
                     return;
@@ -481,13 +485,13 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final String servletEp = BindingServlet.getServletAddress(localServerAddr,
                     getLocalizedText("warning.no-http-server-port"));
             final Optional<String> servletEpOpt = (!servletEp.isEmpty()) ? Optional.of(servletEp) : Optional.empty();
-            api.configureBridge(hostname, Optional.of(config.enableMDNS), Optional.of(config.enableJSONComms),
-                    servletEpOpt);
+            api.configureBridge(hostname, getResponseTimeout(), Optional.of(config.enableMDNS),
+                    Optional.of(config.enableJSONComms), servletEpOpt);
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
 
-            // Ensure we have a response with data in if not schedule a reconnect in 15 seconds, theres no reason
+            // Ensure we have a response with data in if not schedule a reconnect in 15 seconds, there's no reason
             // for a gateway with no devices.
             if (!getGatewayConfigurationFreshCheck()) {
                 logger.debug("{}", getLocalizedText("bridge.info.awaiting-init"));
@@ -532,7 +536,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleReconnect() {
-        scheduleReconnect(15);
+        scheduleReconnect(getResponseTimeout() * 5); // 5 is due to the number of req/resp required for
+                                                     // connection
     }
 
     public void attemptReconnectIfNeeded() {

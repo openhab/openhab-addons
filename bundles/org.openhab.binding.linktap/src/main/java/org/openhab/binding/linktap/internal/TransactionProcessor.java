@@ -239,7 +239,7 @@ public final class TransactionProcessor {
             final String payloadJson = GSON.toJson(request);
             logger.debug("{} = APP -> GW Request {} -> Payload {}", uid, targetHost, payloadJson);
 
-            String response = API.sendRequest(targetHost, GSON.toJson(request));
+            String response = API.sendRequest(targetHost, handler.getResponseTimeout(), GSON.toJson(request));
             logger.debug("{} = APP -> GW Response {} -> Payload {}", uid, targetHost, response.trim());
             GatewayDeviceResponse gatewayFrame = GSON.fromJson(response, GatewayDeviceResponse.class);
 
