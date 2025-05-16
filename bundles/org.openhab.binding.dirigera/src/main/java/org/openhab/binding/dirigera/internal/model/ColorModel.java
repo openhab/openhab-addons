@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,31 +132,30 @@ public class ColorModel {
         if (entry == null) {
             entry = MAPPING_TEMPERETATURE_RGB.floorEntry((int) kelvin);
             if (entry == null) {
-                LOGGER.info("DIRIGERA COLOR_MODEL no rgb mapping found for {}", kelvin);
+                // this path cannot be entered if tables isn't empty which is prevent by init call
+                LOGGER.warn("DIRIGERA COLOR_MODEL no rgb mapping found for {}", kelvin);
                 return new HSBType();
             }
         }
         int encoded = entry.getValue();
         int[] rgb = decodeRGBValue(encoded);
-        return HSBType.fromRGB(rgb[0], rgb[1], rgb[2]);
+        return ColorUtil.rgbToHsb(rgb);
     }
 
     public static long hsb2Kelvin(HSBType hsb) {
         init();
         HSBType compare = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
         int rgb[] = ColorUtil.hsbToRgb(compare);
-        // return (MAPPING_RGB_TEMPERETATURE.ceilingEntry(encodeRGBValue(rgb)).getValue()
-        // + MAPPING_RGB_TEMPERETATURE.floorEntry(encodeRGBValue(rgb)).getValue()) / 2;
         int key = encodeRGBValue(rgb);
         Entry<Integer, Integer> entry = MAPPING_RGB_TEMPERETATURE.ceilingEntry(key);
         if (entry == null) {
             entry = MAPPING_RGB_TEMPERETATURE.floorEntry(key);
             if (entry == null) {
-                LOGGER.info("DIRIGERA COLOR_MODEL no kelvin mapping found for {}", compare);
+                // this path cannot be entered if tables isn't empty which is prevent by init call
+                LOGGER.warn("DIRIGERA COLOR_MODEL no kelvin mapping found for {}", compare);
                 return -1;
             }
         }
-
         return entry.getValue();
     }
 

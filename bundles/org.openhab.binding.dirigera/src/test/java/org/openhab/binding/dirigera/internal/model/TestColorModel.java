@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,22 +61,27 @@ class TestColorModel {
     void testKelvinToHSB() {
         TemperatureLightHandlerMock handler = new TemperatureLightHandlerMock();
         HSBType hsb = ColorModel.kelvin2Hsb(6200);
-        long kelvin = ColorModel.hsb2Kelvin(hsb);
-        assertEquals(0, handler.getPercent(kelvin), "Below boundary");
+        long kelvinCalculated = ColorModel.hsb2Kelvin(hsb);
+        assertEquals(0, handler.getPercent(kelvinCalculated), "Below boundary");
 
         hsb = ColorModel.kelvin2Hsb(1000);
-        kelvin = ColorModel.hsb2Kelvin(hsb);
-        assertEquals(100, handler.getPercent(kelvin), "Above boundary");
+        kelvinCalculated = ColorModel.hsb2Kelvin(hsb);
+        assertEquals(100, handler.getPercent(kelvinCalculated), "Above boundary");
 
         hsb = ColorModel.kelvin2Hsb(2200 + 900);
-        kelvin = ColorModel.hsb2Kelvin(hsb);
-        assertEquals(50, handler.getPercent(kelvin), 2, "Middle ~50% temperature");
+        kelvinCalculated = ColorModel.hsb2Kelvin(hsb);
+        assertEquals(50, handler.getPercent(kelvinCalculated), 2, "Middle ~50% temperature");
 
-        for (int i = 2000; i < 6501; i++) {
-            hsb = ColorModel.kelvin2Hsb(i);
-            kelvin = ColorModel.hsb2Kelvin(hsb);
+        for (int kelvinInput = 2000; kelvinInput < 6501; kelvinInput++) {
+            hsb = ColorModel.kelvin2Hsb(kelvinInput);
+            kelvinCalculated = ColorModel.hsb2Kelvin(hsb);
             // assure all values has max difference of 50
-            assertEquals(i, kelvin, 50, "Diff " + (i - kelvin));
+            assertEquals(kelvinInput, kelvinCalculated, 50, "Diff " + (kelvinInput - kelvinCalculated));
         }
+
+        // test if kelvin is matching with IKEA TRADFRI bulb values
+        hsb = ColorModel.kelvin2Hsb(2200);
+        assertEquals(29.7, hsb.getHue().doubleValue(), 0.1, "Hue for 2200 K");
+        assertEquals(84.7, hsb.getSaturation().doubleValue(), 0.1, "Saturation for 2200 K");
     }
 }
