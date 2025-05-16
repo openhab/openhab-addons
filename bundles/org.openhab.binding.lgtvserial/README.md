@@ -134,7 +134,7 @@ Here is the list of all the LG TV commands added to the binding, in channel type
 
 ## Not added or linked commands
 
-The following commands/channels are not currently implemented in the binding but the commands could be sent via the `raw` channel.
+The following commands/channels are not currently implemented in the binding but the commands could be [sent via the raw channel](#using-raw-channel-via-rules-example).
 
 | Channel ID         | Command | Description
 |--------------------|---------|------------------------------------------------------------------------------------------------------------|
