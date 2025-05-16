@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Automower Binding</name>
-	<description>Binding to interact with Husquvarna Automower robots.</description>
+	<description>Binding for Husqvarna Automower® robotic lawn mowers</description>
 	<connection>cloud</connection>
 
 </addon:addon>

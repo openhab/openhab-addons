@@ -59,6 +59,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_OVERRIDE_ACTION = GROUP_STATUS + "override-action";
     public static final String CHANNEL_STATUS_RESTRICTED_REASON = GROUP_STATUS + "restricted-reason";
     public static final String CHANNEL_STATUS_EXTERNAL_REASON = GROUP_STATUS + "external-reason";
+    public static final String CHANNEL_STATUS_POSITION = GROUP_STATUS + "position";
 
     // List of all setting Channel ids
     public static final String GROUP_SETTING = "setting#";
@@ -118,12 +119,6 @@ public class AutomowerBindingConstants {
                     new ChannelTypeUID(BINDING_ID, "calendarTaskWorkAreaIdType"),
                     new ChannelTypeUID(BINDING_ID, "workareaNameType")));
 
-    // Position Channel ids
-    public static final String GROUP_POSITION = "position#";
-
-    public static final String CHANNEL_POSITION_LAST = GROUP_POSITION + "last";
-    public static final String CHANNEL_POSITION = "pos";
-
     // Stayout Zones Channel ids
     public static final String GROUP_STAYOUTZONE = "stayoutzone#";
 
@@ -154,13 +149,11 @@ public class AutomowerBindingConstants {
     // Messages Channel ids
     public static final String GROUP_MESSAGE = "message#";
 
-    public static final ArrayList<String> CHANNEL_MESSAGE = new ArrayList<>(
-            List.of("msg-timestamp", "msg-code", "msg-text", "msg-severity", "msg-gps-position"));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_MESSAGE = new ArrayList<>(List.of(
-            new ChannelTypeUID(BINDING_ID, "messageTimeType"), new ChannelTypeUID(BINDING_ID, "messageCodeType"),
-            new ChannelTypeUID(BINDING_ID, "messageType"), new ChannelTypeUID(BINDING_ID, "messageSeverityType"),
-            new ChannelTypeUID(BINDING_ID, "messagePositionType")));
+    public static final String CHANNEL_MESSAGE_TIMESTAMP = GROUP_MESSAGE + "msg-timestamp";
+    public static final String CHANNEL_MESSAGE_CODE = GROUP_MESSAGE + "msg-code";
+    public static final String CHANNEL_MESSAGE_TEXT = GROUP_MESSAGE + "msg-text";
+    public static final String CHANNEL_MESSAGE_SEVERITY = GROUP_MESSAGE + "msg-severity";
+    public static final String CHANNEL_MESSAGE_GPS_POSITION = GROUP_MESSAGE + "msg-gps-position";
 
     // Command Channel ids
     public static final String GROUP_COMMAND = "command#";
@@ -189,11 +182,10 @@ public class AutomowerBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "workAreaType");
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE = new ChannelTypeUID(BINDING_ID,
             "errorConfirmableType");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "positionType");
     public static final ChannelTypeUID CHANNEL_TYPE_SETTING_HEADLIGHT_MODE = new ChannelTypeUID(BINDING_ID,
             "settingHeadlightModeType");
 
-    public static final ChannelTypeUID CHANNEL_TYPE_POSITION_LAST = new ChannelTypeUID(BINDING_ID, "lastPositionType");
-    public static final ChannelTypeUID CHANNEL_TYPE_POSITION = new ChannelTypeUID(BINDING_ID, "positionType");
     public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
             "zoneDirtyType");
 
