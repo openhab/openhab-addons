@@ -25,6 +25,12 @@
 				<description>Determines if the binding shall use oAuth RFC-8628 authentication</description>
 			</parameter>
 
+			<parameter name="rfcWithUser" type="boolean" required="false">
+				<label>RFC-8628 with User</label>
+				<description>Determines if the user name is included in the oAuth RFC-8628 authentication</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="username" type="text" required="false">
 				<label>User Name</label>
 				<description>User name of tado login used for API access</description>
@@ -35,6 +41,12 @@
 				<label>Password</label>
 				<description>Password of tado login used for API access</description>
 				<context>password</context>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="homeId" type="integer" required="false">
+				<label>Home Id</label>
+				<description>Selects the Home Id to be used (only needed if there are multiple homes)</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
