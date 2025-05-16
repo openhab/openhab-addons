@@ -342,6 +342,14 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
   - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
   - .rawState ⇒ `HostState`
+  - .previousState ⇒ `string|null`: Previous state as string, or `null` if not available
+  - .previousNumericState ⇒ `number|null`: Previous state as number, if state can be represented as number, or `null` if that's not the case or not available
+  - .previousQuantityState ⇒ [`Quantity|null`](#quantity): Previous item state as Quantity or `null` if state is not Quantity-compatible, without unit or not available
+  - .previousRawState ⇒ `HostState`
+  - .lastStateUpdateTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last updated as ZonedDateTime or `null` if not available
+  - .lastStateUpdateInstant ⇒ [`time.Instant`](#time): The time the state was last updated as Instant or `null` if not available
+  - .lastStateChangeTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last changed as ZonedDateTime or `null` if not available
+  - .lastStateChangeInstant ⇒ [`time.Instant`](#time): The time the state was last changed as Instant or `null` if not available
   - .members ⇒ `Array[Item]`
   - .descendents ⇒ `Array[Item]`
   - .isUninitialized ⇒ `boolean`
