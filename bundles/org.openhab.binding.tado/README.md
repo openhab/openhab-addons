@@ -14,15 +14,13 @@ The binding will automatically discover this thing and place it in the Inbox.
 It must be authenticated before it will actually go online.
 Authenticatation is done online via the OAuth Device Code Grant Flow (RFC-8628) authentication process via the link provided at `http://[openhab-ip-address]:8080/tado`.
 
-| Parameter     | Optional | Description                                                                        |
-|---------------|----------|------------------------------------------------------------------------------------|
-| `rfcWithUser` | yes      | Determines if the user name shall be included in the oAuth RFC-8628 authentication |
-| `username`    | yes      | Username used for account log in at [my.tado](https://my.tado.com)                 |
-| `homeId`      | yes      | Selects the Home Id to use (only needed if the account has more than one home)     |
+| Parameter     | Optional | Description                                                                                                      |
+|---------------|----------|------------------------------------------------------------------------------------------------------------------|
+| `username`    | yes      | Username used for log in at [my.tado](https://my.tado.com) (only needed if you have more than one tado° account) |
+| `homeId`      | yes      | Selects the Home Id to use (only needed if the account has more than one home in it)                             |
 
-The `rfcWithUser` setting is only needed if you have more than one tado° account.
-It forces the binding to use different authentication tokens for each respective account `username`.
-So if you have Bridge Things for more than one tado° account, then for each Bridge `rfcWithUser` must be `true` and its `username` must be the respective account user name.
+The `username` setting is only needed if you have more than one tado° account.
+It allows the binding to use different authentication tokens for each respective account.
 
 The `homeId` is only needed if you have more than one home under a given tado° account.
 It forces the binding to read and write the data for the respective Home Id.

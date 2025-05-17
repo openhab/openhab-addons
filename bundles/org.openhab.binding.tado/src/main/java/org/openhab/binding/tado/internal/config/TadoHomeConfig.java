@@ -23,6 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class TadoHomeConfig {
     public @Nullable String username;
-    public @Nullable Boolean rfcWithUser;
     public @Nullable Integer homeId;
 }
