@@ -15,7 +15,6 @@ package org.openhab.binding.energidataservice.internal.provider.cache;
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -46,7 +45,7 @@ public class DatahubPriceSubscriptionCache
     }
 
     public DatahubPriceSubscriptionCache(Clock clock) {
-        super(clock, Duration.ofHours(1));
+        super(clock);
     }
 
     /**
