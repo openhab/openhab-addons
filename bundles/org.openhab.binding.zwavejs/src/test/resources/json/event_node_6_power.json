@@ -1,0 +1,17 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "value updated",
+        "nodeId": 6,
+        "args": {
+            "commandClassName": "Multilevel Sensor",
+            "commandClass": 49,
+            "property": "Power",
+            "endpoint": 0,
+            "newValue": 62.4,
+            "prevValue": 53.7,
+            "propertyName": "Power"
+        }
+    }
+}
