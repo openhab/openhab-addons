@@ -261,6 +261,4 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(getBatterylow()).append(",").append(getSwitch()).append(",").append(getSimpleOnOffUnit())
                 .append(",").append(getPowermeter()).append(",").append(getHkr()).append(",").toString();
     }
-
-    public transient boolean isLinked;
 }
