@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -21,7 +21,7 @@ public class Endpoint {
     public int nodeId;
     public int index;
     public DeviceClass deviceClass;
-    public ArrayList<CommandClass> commandClasses;
+    public List<CommandClass> commandClasses;
     public int installerIcon;
     public int userIcon;
 }
