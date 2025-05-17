@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -226,10 +225,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             int pollingInterval = configuration.pollingInterval;
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null && pollingInterval > 0) {
-                pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    tuyaDevice.refreshStatus(
-                            Stream.concat(dpToChannelId.keySet().stream(), dp2ToChannelId.keySet().stream()).toList());
-                }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                pollingJob = scheduler.scheduleWithFixedDelay(tuyaDevice::refreshStatus, pollingInterval,
+                        pollingInterval, TimeUnit.SECONDS);
             }
 
             // start learning code if thing is online and presents 'ir-code' channel

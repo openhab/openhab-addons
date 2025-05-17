@@ -132,12 +132,11 @@ public class TuyaDevice implements ChannelFutureListener {
         }
     }
 
-    public void refreshStatus(List<Integer> dps) {
-        MessageWrapper<?> m = new MessageWrapper<>(DP_REFRESH, Map.of("dpId", dps));
+    public void refreshStatus() {
+        MessageWrapper<?> m = new MessageWrapper<>(DP_REFRESH, Map.of("dpId", List.of(4, 5, 6, 18, 19, 20)));
         Channel channel = this.channel;
         if (channel != null) {
             channel.writeAndFlush(m);
-            requestStatus();
         } else {
             logger.warn("{}: Refreshing status failed. Device is not connected.", deviceId);
         }
