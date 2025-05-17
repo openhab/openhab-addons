@@ -70,7 +70,6 @@ import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -508,20 +507,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 return Map.entry("", ChannelBuilder.create(channelUID).build());
             }
 
-            if (schemaDp.label.isEmpty()) {
-                schemaDp.label = schemaDp.code;
-
-                String label = StringUtils.capitalizeByWhitespace(schemaDp.code.replaceAll("_", " "));
-                if (label != null) {
-                    label = label.trim();
-                    if (!label.isEmpty()) {
-                        schemaDp.label = label;
-                    }
-                }
-            }
-
-            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID)
-                    .withLabel(schemaDp.label).withConfiguration(new Configuration(configuration)).build());
+            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID).withLabel(channelId)
+                    .withConfiguration(new Configuration(configuration)).build());
         }).filter(c -> !c.getKey().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         List<String> channelSuffixes = List.of("", "_1", "_2");
