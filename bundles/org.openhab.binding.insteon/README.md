@@ -65,41 +65,44 @@ The default poll interval of 300 seconds has been tested and found to be a good 
 
 ### `hub1`
 
-| Parameter                   | Default | Required | Description                                                            |
-| --------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
-| hostname                    |         |   Yes    | Network address of the hub.                                            |
-| port                        |  9761   |    No    | Network port of the hub.                                               |
-| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                       |
-| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
-| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.          |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| hostname                       |         |   Yes    | Network address of the hub.                                               |
+| port                           |  9761   |    No    | Network port of the hub.                                                  |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the hub database but not configured.    |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.     |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 >NOTE: Use this bridge to connect to a networked PLM via ser2net.
 
 ### `hub2`
 
-| Parameter                     | Default | Required | Description                                                            |
-| ----------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
-| hostname                      |         |   Yes    | Network address of the hub.                                            |
-| port                          |  25105  |    No    | Network port of the hub.                                               |
-| username                      |         |   Yes    | Username to access the hub.                                            |
-| password                      |         |   Yes    | Password to access the hub.                                            |
-| hubPollIntervalInMilliseconds |  1000   |    No    | Hub poll interval in milliseconds.                                     |
-| devicePollIntervalInSeconds   |   300   |    No    | Device poll interval in seconds.                                       |
-| deviceDiscoveryEnabled        |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled         |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
-| deviceSyncEnabled             |  false  |    No    | Synchronize related devices based on their all-link database.          |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| hostname                       |         |   Yes    | Network address of the hub.                                               |
+| port                           |  25105  |    No    | Network port of the hub.                                                  |
+| username                       |         |   Yes    | Username to access the hub.                                               |
+| password                       |         |   Yes    | Password to access the hub.                                               |
+| hubPollIntervalInMilliseconds  |  1000   |    No    | Hub poll interval in milliseconds.                                        |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the hub database but not configured.    |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.     |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 ### `plm`
 
-| Parameter                   | Default | Required | Description                                                              |
-| --------------------------- | :-----: | :------: | ------------------------------------------------------------------------ |
-| serialPort                  |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`      |
-| baudRate                    |  19200  |    No    | Serial port baud rate connected to the modem.                            |
-| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                         |
-| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the modem database but not configured. |
-| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.  |
-| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.            |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| serialPort                     |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`       |
+| baudRate                       |  19200  |    No    | Serial port baud rate connected to the modem.                             |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the modem database but not configured.  |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.   |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 ### `device`
 
@@ -1506,15 +1509,24 @@ It shouldn't be used in most cases except during initial device configuration.
 Same goes with commands, the binding will queue up commands requested on these devices and send them during the awake time window.
 Only one command per channel is queued, this mean that subsequent requests will overwrite previous ones.
 
-### Heartbeat Timeout Monitor
+### Heartbeat Timeout
 
-Sensor devices that supports heartbeat have a timeout monitor.
-If no broadcast message is received within a specific interval, the associated thing status will go offline until the binding receives a broadcast message from that device.
-The heartbeat interval on most sensor devices is hard coded as 24 hours but some have the ability to change that interval through the `heartbeat-interval` channel.
-It is enabled by default on devices that supports that feature and will be disabled on devices that have the ability to turn off their heartbeat through the `heartbeat-on-off` channel.
-It is important that the heartbeat group (typically 4) is linked properly to the modem by using the `insteon device addMissingLinks` console command.
-Otherwise, if the link is missing, the timeout monitor will be disabled.
-If necessary, the heartbeat timeout monitor can be manually reset by disabling and re-enabling the associated device thing.
+Sensor devices that support heartbeats have a timeout.
+If a broadcast message is not received within a specific interval, the associated thing's status will change to offline.
+This status persists until the binding receives a broadcast message from that device.
+While most sensor devices have a hardcoded heartbeat interval of 24 hours, some allow modification via the `heartbeat-interval` channel.
+This timeout feature is enabled by default on supporting devices and disabled on devices that can have their heartbeat turned off using the `heartbeat-on-off` channel.
+Proper linking of the heartbeat group (typically group 4) to the modem is crucial; use the `insteon device addMissingLinks` console command to ensure this.
+If the link is missing, the timeout feature will be disabled.
+The heartbeat timeout can be manually reset, if necessary, by disabling and then re-enabling the associated device thing.
+
+### Response Timeout
+
+Non-battery powered devices have a response timeout.
+If a successful response message is not received within a specific interval, the associated thing's status will change to offline.
+While the device is offline, the binding will ignore commands sent to it.
+This status persists until a valid response is received.
+The response timeout can be increased from 30 minutes (default) up to 6 hours by updating the associated bridge parameter `deviceResponseTimeoutInMinutes`.
 
 ## Related Devices
 

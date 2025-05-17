@@ -149,8 +149,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         }
     }
 
-    public boolean isResponding() {
-        return failedRequestCount < FAILED_REQUEST_THRESHOLD;
+    public boolean isOnline() {
+        return Optional.ofNullable(handler).map(InsteonThingHandler::isOnline).orElse(false);
     }
 
     public void setModem(@Nullable InsteonModem modem) {
@@ -592,17 +592,12 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param feature the feature queried
      */
     protected void featureQueriedAnswered(DeviceFeature feature) {
-        int prevCount = failedRequestCount;
         // reset failed request count
         failedRequestCount = 0;
         // mark feature queried as processed and answered
         setFeatureQueried(null);
         feature.setQueryMessage(null);
         feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
-        // notify status changed if failed request count was above threshold
-        if (prevCount >= FAILED_REQUEST_THRESHOLD) {
-            statusChanged();
-        }
     }
 
     /**
@@ -620,8 +615,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         setFeatureQueried(null);
         feature.setQueryMessage(null);
         feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
-        // resend feature query message if defined and device is responding
-        if (msg != null && isResponding()) {
+        // resend feature query message if defined and failed request count is below threshold
+        if (msg != null && failedRequestCount < FAILED_REQUEST_THRESHOLD) {
             sendMessage(msg.copy(), feature, 0L);
         }
     }
@@ -636,10 +631,6 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         failedRequestCount++;
         // notify feature queried expired
         featureQueriedExpired(feature);
-        // notify status changed if failed request count at threshold
-        if (failedRequestCount == FAILED_REQUEST_THRESHOLD) {
-            statusChanged();
-        }
     }
 
     /**

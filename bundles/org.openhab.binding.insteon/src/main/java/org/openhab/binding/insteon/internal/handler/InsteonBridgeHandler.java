@@ -120,6 +120,10 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
         return getBridgeConfig().getDevicePollInterval();
     }
 
+    public int getDeviceResponseTimeout() {
+        return getBridgeConfig().getDeviceResponseTimeout();
+    }
+
     public boolean isDeviceDiscoveryEnabled() {
         return getBridgeConfig().isDeviceDiscoveryEnabled();
     }
