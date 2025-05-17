@@ -75,7 +75,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws ShellyApiException {
         // Process command
         String groupName = getString(channelUID.getGroupId());
-        Integer rIndex = 0;
+        int rIndex = 0;
         if (groupName.startsWith(CHANNEL_GROUP_RELAY_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_RELAY_CONTROL.length()) {
             rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_RELAY_CONTROL)) - 1;
@@ -104,8 +104,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             case CHANNEL_ROL_CONTROL_POS:
             case CHANNEL_ROL_CONTROL_CONTROL:
                 logger.debug("{}: Roller command/position {}", thingName, command);
-                handleRoller(command, groupName, rIndex,
-                        channelUID.getIdWithoutGroup().equals(CHANNEL_ROL_CONTROL_CONTROL));
+                handleRoller(command, rIndex, channelUID.getIdWithoutGroup().equals(CHANNEL_ROL_CONTROL_CONTROL));
 
                 // request updates the next 45sec to update roller position after it stopped
                 if (!autoCoIoT && !profile.isGen2) {
@@ -156,7 +155,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @throws ShellyApiException
      */
     private void handleBrightness(Command command, Integer index) throws ShellyApiException {
-        Integer value = -1;
+        int value = -1;
         if (command instanceof PercentType percentCommand) { // Dimmer
             value = percentCommand.intValue();
         } else if (command instanceof DecimalType decimalCommand) { // Number
@@ -213,15 +212,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * Handle Roller Commands
      *
      * @param command from handleCommand()
-     * @param groupName relay, roller...
      * @param index relay number
      * @param isControl true: is the Rollershutter channel, false: rollerpos channel
      * @throws ShellyApiException
      */
-    private void handleRoller(Command command, String groupName, Integer index, boolean isControl)
-            throws ShellyApiException {
-        int position = -1;
-
+    private void handleRoller(Command command, Integer index, boolean isControl) throws ShellyApiException {
         if ((command instanceof UpDownType) || (command instanceof OnOffType)) {
             ShellyRollerStatus rstatus = api.getRollerStatus(index);
 
@@ -244,7 +239,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
                             shpos);
                     api.setRollerPos(index, shpos);
-                    position = shpos;
                 } else {
                     api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
                 }
@@ -257,7 +251,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
                             config.favoriteDOWN, shpos);
                     api.setRollerPos(index, shpos);
-                    position = shpos;
                 } else {
                     api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_CLOSE);
                 }
@@ -267,13 +260,15 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_STOP);
         } else {
             logger.debug("{}: Set roller to position {}", thingName, command);
+
+            int position = -1;
             if (command instanceof PercentType percentCommand) {
                 position = percentCommand.intValue();
             } else if (command instanceof DecimalType decimalCommand) {
                 position = decimalCommand.intValue();
             } else {
                 throw new IllegalArgumentException(
-                        "Invalid value type for roller control/position" + command.getClass().toString());
+                        "Invalid value type for roller control/position" + command.getClass());
             }
 
             // take position from RollerShutter control and map to Shelly positon

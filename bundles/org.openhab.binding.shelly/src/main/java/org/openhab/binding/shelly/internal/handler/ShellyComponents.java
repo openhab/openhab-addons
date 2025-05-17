@@ -569,8 +569,7 @@ public class ShellyComponents {
         return updated;
     }
 
-    public static boolean updateRGBW(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
-            throws ShellyApiException {
+    public static boolean updateRGBW(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus) {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
         if (profile.isRGBW2) {

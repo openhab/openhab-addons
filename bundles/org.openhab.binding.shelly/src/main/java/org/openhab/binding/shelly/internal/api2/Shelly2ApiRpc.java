@@ -626,7 +626,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     getThing().setThingOnline();
                 }
 
-                boolean updated = false;
                 ShellyDeviceProfile profile = getProfile();
                 ShellySettingsStatus status = profile.status;
                 if (params.sys != null) {
@@ -636,7 +635,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     status.uptime = params.sys.uptime;
                 }
                 status.temperature = SHELLY_API_INVTEMP; // mark invalid
-                updated |= fillDeviceStatus(status, message.params, true);
+
+                boolean updated = fillDeviceStatus(status, message.params, true);
                 if (getDouble(status.temperature) == SHELLY_API_INVTEMP) {
                     // no device temp available
                     status.temperature = null;

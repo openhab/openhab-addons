@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
@@ -265,7 +264,7 @@ public class ShellyUtils {
         if (value == null) {
             return UnDefType.NULL;
         }
-        BigDecimal bd = new BigDecimal(value.doubleValue());
+        BigDecimal bd = BigDecimal.valueOf(value);
         return toQuantityType(bd.setScale(digits, RoundingMode.HALF_UP), unit);
     }
 
@@ -284,11 +283,7 @@ public class ShellyUtils {
     }
 
     public static String urlEncode(String input) {
-        try {
-            return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            return input;
-        }
+        return URLEncoder.encode(input, StandardCharsets.UTF_8);
     }
 
     public static double now() {
@@ -328,12 +323,11 @@ public class ShellyUtils {
 
     public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
         return !profile.isRGBW2 || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
+                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId;
     }
 
     public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
+        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_CHANNEL + channelId;
     }
 
     public static DecimalType mapSignalStrength(int dbm) {
