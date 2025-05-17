@@ -42,6 +42,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -70,6 +71,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     private static final List<String> MQTT_TOPICS = CONFIG_TOPICS.stream()
             .map(AbstractHomeAssistantTests::configTopicToMqtt).collect(Collectors.toList());
 
+    private @Mock @NonNullByDefault({}) BaseThingHandlerFactory thingHandlerFactory;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
     private @NonNullByDefault({}) HomeAssistantThingHandler thingHandler;
     private @NonNullByDefault({}) HomeAssistantThingHandler nonSpyThingHandler;
@@ -88,8 +90,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     }
 
     protected void setupThingHandler() {
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
@@ -357,8 +360,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
     @Test
     public void testDuplicateChannelId() {
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
@@ -413,8 +417,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
     @Test
     public void testDuplicateChannelIdComplex() {
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;

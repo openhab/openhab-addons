@@ -47,6 +47,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelKind;
@@ -67,6 +68,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     private static final int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    protected @Mock @NonNullByDefault({}) BaseThingHandlerFactory thingHandlerFactory;
     private @NonNullByDefault({}) LatchThingHandler thingHandler;
     protected @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
@@ -85,8 +87,9 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
-        thingHandler = new LatchThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new LatchThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
@@ -361,11 +364,12 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         private @Nullable CountDownLatch latch;
         private @Nullable AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> discoveredComponent;
 
-        public LatchThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
+        public LatchThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
+                MqttChannelTypeProvider channelTypeProvider,
                 MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
                 UnitProvider unitProvider, int subscribeTimeout, int attributeReceiveTimeout) {
-            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry, new Jinjava(),
-                    unitProvider, subscribeTimeout, attributeReceiveTimeout);
+            super(thing, thingHandlerFactory, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry,
+                    new Jinjava(), unitProvider, subscribeTimeout, attributeReceiveTimeout);
         }
 
         @Override
