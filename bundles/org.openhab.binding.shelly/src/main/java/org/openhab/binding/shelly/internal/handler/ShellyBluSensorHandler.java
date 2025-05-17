@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CONFIG_DEVICEADDRESS;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_DEV_GEN;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_DEV_NAME;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_DEV_TYPE;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_GW_DEVICE;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.util.Map;
@@ -28,8 +32,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,49 +59,36 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
     }
 
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
-        String model = substringBefore(getString(e.data.name), "-").toUpperCase();
+        String model = ShellyUtils.substringBefore(ShellyUtils.getString(e.data.name), "-").toUpperCase();
         String mac = e.data.addr.replaceAll(":", "");
-        String ttype = "";
+
         LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
-        ThingTypeUID tuid;
-        switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                ttype = THING_TYPE_SHELLYBLUBUTTON_STR;
-                tuid = THING_TYPE_SHELLYBLUBUTTON;
-                break;
-            case SHELLYDT_BLUDW:
-                ttype = THING_TYPE_SHELLYBLUDW_STR;
-                tuid = THING_TYPE_SHELLYBLUDW;
-                break;
-            case SHELLYDT_BLUMOTION:
-                ttype = THING_TYPE_SHELLYBLUMOTION_STR;
-                tuid = THING_TYPE_SHELLYBLUMOTION;
-                break;
-            case SHELLYDT_BLUHT:
-                ttype = THING_TYPE_SHELLYBLUHT_STR;
-                tuid = THING_TYPE_SHELLYBLUHT;
-                break;
-            default:
+        String thingType = switch (model) {
+            case SHELLYDT_BLUBUTTON -> THING_TYPE_SHELLYBLUBUTTON_STR;
+            case SHELLYDT_BLUDW -> THING_TYPE_SHELLYBLUDW_STR;
+            case SHELLYDT_BLUMOTION -> THING_TYPE_SHELLYBLUMOTION_STR;
+            case SHELLYDT_BLUHT -> THING_TYPE_SHELLYBLUHT_STR;
+            default -> {
                 LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
-                return;
+                yield null;
+            }
+        };
+
+        if (thingType != null) {
+            String serviceName = ShellyDeviceProfile.buildBluServiceName(ShellyUtils.getString(e.data.name), mac);
+
+            Map<String, Object> properties = new TreeMap<>();
+            properties.put(PROPERTY_MODEL_ID, model);
+            properties.put(PROPERTY_SERVICE_NAME, serviceName);
+            properties.put(PROPERTY_DEV_NAME, ShellyUtils.getString(e.data.name));
+            properties.put(PROPERTY_DEV_TYPE, thingType);
+            properties.put(PROPERTY_DEV_GEN, "BLU");
+            properties.put(PROPERTY_GW_DEVICE, ShellyUtils.getString(gateway));
+            properties.put(CONFIG_DEVICEADDRESS, mac);
+
+            if (thingTable != null) {
+                thingTable.discoveredResult(model, serviceName, mac, properties);
+            }
         }
-        String serviceName = ShellyDeviceProfile.buildBluServiceName(getString(e.data.name), mac);
-
-        Map<String, Object> properties = new TreeMap<>();
-        addProperty(properties, PROPERTY_MODEL_ID, model);
-        addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
-        addProperty(properties, PROPERTY_DEV_NAME, e.data.name);
-        addProperty(properties, PROPERTY_DEV_TYPE, ttype);
-        addProperty(properties, PROPERTY_DEV_GEN, "BLU");
-        addProperty(properties, PROPERTY_GW_DEVICE, gateway);
-        addProperty(properties, CONFIG_DEVICEADDRESS, mac);
-
-        if (thingTable != null) {
-            thingTable.discoveredResult(tuid, model, serviceName, mac, properties);
-        }
-    }
-
-    private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
-        properties.put(key, value != null ? value : "");
     }
 }
