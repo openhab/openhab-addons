@@ -1,0 +1,2333 @@
+{
+    "type": "result",
+    "success": true,
+    "result": {
+        "state": {
+            "driver": {
+                "logConfig": {
+                    "enabled": true,
+                    "level": "debug",
+                    "logToFile": true,
+                    "maxFiles": 7,
+                    "filename": "C:\\Users\\leosi\\AppData\\Roaming\\npm\\node_modules\\zwave-js-ui\\store\\logs\\zwavejs_%DATE%.log",
+                    "forceConsole": false
+                },
+                "statisticsEnabled": true
+            },
+            "controller": {
+                "type": 7,
+                "homeId": 3474855839,
+                "ownNodeId": 1,
+                "isUsingHomeIdFromOtherNetwork": false,
+                "isSISPresent": true,
+                "wasRealPrimary": true,
+                "manufacturerId": 0,
+                "productType": 4,
+                "productId": 4,
+                "supportedFunctionTypes": [
+                    2,
+                    3,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    16,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    28,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36,
+                    39,
+                    40,
+                    41,
+                    42,
+                    44,
+                    46,
+                    55,
+                    56,
+                    57,
+                    58,
+                    59,
+                    60,
+                    63,
+                    65,
+                    66,
+                    68,
+                    69,
+                    70,
+                    71,
+                    72,
+                    73,
+                    74,
+                    75,
+                    77,
+                    79,
+                    80,
+                    81,
+                    83,
+                    84,
+                    85,
+                    86,
+                    87,
+                    88,
+                    94,
+                    95,
+                    96,
+                    97,
+                    98,
+                    99,
+                    101,
+                    104,
+                    128,
+                    144,
+                    146,
+                    147,
+                    152,
+                    160,
+                    162,
+                    164,
+                    165,
+                    166,
+                    168,
+                    169,
+                    171,
+                    189,
+                    190,
+                    191,
+                    210,
+                    211,
+                    212,
+                    214,
+                    215,
+                    216,
+                    217,
+                    218,
+                    219,
+                    220,
+                    221,
+                    222,
+                    223,
+                    231,
+                    232
+                ],
+                "sucNodeId": 1,
+                "supportsTimers": false,
+                "statistics": {
+                    "messagesTX": 92,
+                    "messagesRX": 197,
+                    "messagesDroppedRX": 0,
+                    "NAK": 0,
+                    "CAN": 0,
+                    "timeoutACK": 0,
+                    "timeoutResponse": 0,
+                    "timeoutCallback": 0,
+                    "messagesDroppedTX": 0,
+                    "backgroundRSSI": {
+                        "channel0": {
+                            "current": -108,
+                            "average": -110
+                        },
+                        "channel1": {
+                            "current": -106,
+                            "average": -107
+                        },
+                        "channel2": {
+                            "current": -106,
+                            "average": -107
+                        },
+                        "channel3": {
+                            "current": 127,
+                            "average": 0
+                        },
+                        "timestamp": 1733315951253
+                    }
+                },
+                "inclusionState": 0,
+                "sdkVersion": "7.21.5",
+                "firmwareVersion": "7.21",
+                "isPrimary": true,
+                "isSUC": true,
+                "nodeType": 0,
+                "rfRegion": 0,
+                "status": 0,
+                "isRebuildingRoutes": false,
+                "supportsLongRange": false,
+                "maxLongRangePowerlevel": 14,
+                "longRangeChannel": 255,
+                "supportsLongRangeAutoChannelSelection": true
+            },
+            "nodes": [
+                {
+                    "nodeId": 1,
+                    "index": 0,
+                    "status": 4,
+                    "ready": true,
+                    "isListening": true,
+                    "isRouting": true,
+                    "manufacturerId": 0,
+                    "productId": 4,
+                    "productType": 4,
+                    "firmwareVersion": "7.21.5",
+                    "deviceConfig": {
+                        "filename": "C:\\Users\\leosi\\AppData\\Roaming\\npm\\node_modules\\zwave-js-ui\\node_modules\\@zwave-js\\config\\config\\devices\\0x0000\\700_800_series_controller.json",
+                        "isEmbedded": true,
+                        "manufacturer": "Silicon Labs",
+                        "manufacturerId": 0,
+                        "label": "700/800 Series",
+                        "description": "USB Controller",
+                        "devices": [
+                            {
+                                "productType": 4,
+                                "productId": 4
+                            }
+                        ],
+                        "firmwareVersion": {
+                            "min": "0.0",
+                            "max": "255.255"
+                        },
+                        "preferred": false,
+                        "metadata": {
+                            "comments": []
+                        }
+                    },
+                    "label": "700/800 Series",
+                    "interviewAttempts": 0,
+                    "endpoints": [
+                        {
+                            "nodeId": 1,
+                            "index": 0,
+                            "deviceClass": {
+                                "basic": {
+                                    "key": 2,
+                                    "label": "Static Controller"
+                                },
+                                "generic": {
+                                    "key": 2,
+                                    "label": "Static Controller"
+                                },
+                                "specific": {
+                                    "key": 1,
+                                    "label": "PC Controller"
+                                }
+                            },
+                            "commandClasses": []
+                        }
+                    ],
+                    "values": [],
+                    "isFrequentListening": false,
+                    "maxDataRate": 100000,
+                    "supportedDataRates": [
+                        40000,
+                        100000
+                    ],
+                    "protocolVersion": 3,
+                    "supportsBeaming": true,
+                    "supportsSecurity": false,
+                    "deviceClass": {
+                        "basic": {
+                            "key": 2,
+                            "label": "Static Controller"
+                        },
+                        "generic": {
+                            "key": 2,
+                            "label": "Static Controller"
+                        },
+                        "specific": {
+                            "key": 1,
+                            "label": "PC Controller"
+                        }
+                    },
+                    "interviewStage": "Complete",
+                    "deviceDatabaseUrl": "https://devices.zwave-js.io/?jumpTo=0x0000:0x0004:0x0004:7.21.5",
+                    "statistics": {
+                        "commandsTX": 0,
+                        "commandsRX": 0,
+                        "commandsDroppedRX": 0,
+                        "commandsDroppedTX": 0,
+                        "timeoutResponse": 0
+                    },
+                    "isControllerNode": true,
+                    "keepAwake": false,
+                    "protocol": 0
+                },
+                {
+                    "nodeId": 3,
+                    "index": 0,
+                    "installerIcon": 1792,
+                    "userIcon": 1792,
+                    "status": 4,
+                    "ready": true,
+                    "isListening": true,
+                    "isRouting": true,
+                    "isSecure": false,
+                    "manufacturerId": 600,
+                    "productId": 4135,
+                    "productType": 512,
+                    "firmwareVersion": "2.23.0",
+                    "zwavePlusVersion": 1,
+                    "deviceConfig": {
+                        "filename": "C:\\Users\\leosi\\AppData\\Roaming\\npm\\node_modules\\zwave-js-ui\\node_modules\\@zwave-js\\config\\config\\devices\\0x0258\\nas-wr01ze.json",
+                        "isEmbedded": true,
+                        "manufacturer": "Shenzhen Neo Electronics Co., Ltd.",
+                        "manufacturerId": 600,
+                        "label": "NAS-WR01ZE",
+                        "description": "Wall Plug Switch",
+                        "devices": [
+                            {
+                                "productType": 256,
+                                "productId": 4135
+                            },
+                            {
+                                "productType": 512,
+                                "productId": 4135
+                            },
+                            {
+                                "productType": 768,
+                                "productId": 4135
+                            }
+                        ],
+                        "firmwareVersion": {
+                            "min": "0.0",
+                            "max": "255.255"
+                        },
+                        "preferred": false,
+                        "paramInformation": {
+                            "_map": {}
+                        },
+                        "metadata": {
+                            "comments": {
+                                "level": "warning",
+                                "text": "This device is buggy and sends large negative Meter Reports from time to time."
+                            }
+                        }
+                    },
+                    "label": "NAS-WR01ZE",
+                    "interviewAttempts": 0,
+                    "endpoints": [
+                        {
+                            "nodeId": 3,
+                            "index": 0,
+                            "installerIcon": 1792,
+                            "userIcon": 1792,
+                            "deviceClass": {
+                                "basic": {
+                                    "key": 4,
+                                    "label": "Routing End Node"
+                                },
+                                "generic": {
+                                    "key": 16,
+                                    "label": "Binary Switch"
+                                },
+                                "specific": {
+                                    "key": 1,
+                                    "label": "Binary Power Switch"
+                                }
+                            },
+                            "commandClasses": [
+                                {
+                                    "id": 94,
+                                    "name": "Z-Wave Plus Info",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 152,
+                                    "name": "Security",
+                                    "version": 1,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 159,
+                                    "name": "Security 2",
+                                    "version": 1,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 85,
+                                    "name": "Transport Service",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 115,
+                                    "name": "Powerlevel",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 134,
+                                    "name": "Version",
+                                    "version": 3,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 133,
+                                    "name": "Association",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 142,
+                                    "name": "Multi Channel Association",
+                                    "version": 3,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 89,
+                                    "name": "Association Group Information",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 114,
+                                    "name": "Manufacturer Specific",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 90,
+                                    "name": "Device Reset Locally",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 37,
+                                    "name": "Binary Switch",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 50,
+                                    "name": "Meter",
+                                    "version": 4,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 113,
+                                    "name": "Notification",
+                                    "version": 8,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 112,
+                                    "name": "Configuration",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 108,
+                                    "name": "Supervision",
+                                    "version": 1,
+                                    "isSecure": false
+                                }
+                            ]
+                        }
+                    ],
+                    "values": [
+                        {
+                            "endpoint": 0,
+                            "commandClass": 37,
+                            "commandClassName": "Binary Switch",
+                            "property": "currentValue",
+                            "propertyName": "currentValue",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current value",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": true
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 37,
+                            "commandClassName": "Binary Switch",
+                            "property": "targetValue",
+                            "propertyName": "targetValue",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Target value",
+                                "valueChangeOptions": [
+                                    "transitionDuration"
+                                ],
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": true
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "value",
+                            "propertyKey": 65537,
+                            "propertyName": "value",
+                            "propertyKeyName": "Electric_kWh_Consumed",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Electric Consumption [kWh]",
+                                "ccSpecific": {
+                                    "meterType": 1,
+                                    "scale": 0,
+                                    "rateType": 1
+                                },
+                                "unit": "kWh",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": -21474769.19
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "value",
+                            "propertyKey": 66049,
+                            "propertyName": "value",
+                            "propertyKeyName": "Electric_W_Consumed",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Electric Consumption [W]",
+                                "ccSpecific": {
+                                    "meterType": 1,
+                                    "scale": 2,
+                                    "rateType": 1
+                                },
+                                "unit": "W",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "value",
+                            "propertyKey": 66561,
+                            "propertyName": "value",
+                            "propertyKeyName": "Electric_V_Consumed",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Electric Consumption [V]",
+                                "ccSpecific": {
+                                    "meterType": 1,
+                                    "scale": 4,
+                                    "rateType": 1
+                                },
+                                "unit": "V",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 228.5
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "value",
+                            "propertyKey": 66817,
+                            "propertyName": "value",
+                            "propertyKeyName": "Electric_A_Consumed",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Electric Consumption [A]",
+                                "ccSpecific": {
+                                    "meterType": 1,
+                                    "scale": 5,
+                                    "rateType": 1
+                                },
+                                "unit": "A",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "reset",
+                            "propertyName": "reset",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": false,
+                                "writeable": true,
+                                "label": "Reset accumulated values",
+                                "states": {
+                                    "true": "Reset"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 1,
+                            "propertyName": "State After Power Failure",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "State After Power Failure",
+                                "default": 1,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Always off",
+                                    "1": "Previous state"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 2,
+                            "propertyName": "Button",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Button",
+                                "default": 1,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disable",
+                                    "1": "Enable"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 3,
+                            "propertyName": "LED Indicator",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "LED Indicator",
+                                "default": 1,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disable",
+                                    "1": "Enable"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 4,
+                            "propertyName": "Auto-Off",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Auto-Off",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disable",
+                                    "1": "Enable"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 5,
+                            "propertyName": "Auto-Off Delay",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Delay time after the plug is switched off",
+                                "label": "Auto-Off Delay",
+                                "default": 120,
+                                "min": 0,
+                                "max": 32767,
+                                "unit": "minutes",
+                                "valueSize": 2,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 120
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 6,
+                            "propertyName": "Send Meter Reports",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Send Meter Reports",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disable",
+                                    "1": "Enable"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 7,
+                            "propertyName": "Meter Report Interval",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Meter Report Interval",
+                                "default": 300,
+                                "min": 30,
+                                "max": 32767,
+                                "unit": "seconds",
+                                "valueSize": 2,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 300
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 8,
+                            "propertyName": "Overcurrent Protection Threshold",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Threshold at which the plug enters overcurrent protection mode",
+                                "label": "Overcurrent Protection Threshold",
+                                "default": 16,
+                                "min": 1,
+                                "max": 16,
+                                "unit": "A",
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 16
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 9,
+                            "propertyName": "Current Report Threshold",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Change in current consumption that triggers a report",
+                                "label": "Current Report Threshold",
+                                "default": 50,
+                                "min": 1,
+                                "max": 1600,
+                                "unit": "0.01 A",
+                                "valueSize": 2,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 50
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 10,
+                            "propertyName": "Overcurrent Alarm Threshold",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Threshold at which the plug sends an overcurrent notification",
+                                "label": "Overcurrent Alarm Threshold",
+                                "default": 13,
+                                "min": 1,
+                                "max": 16,
+                                "unit": "A",
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 13
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "Power Management",
+                            "propertyKey": "Over-load status",
+                            "propertyName": "Power Management",
+                            "propertyKeyName": "Over-load status",
+                            "ccVersion": 8,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Over-load status",
+                                "ccSpecific": {
+                                    "notificationType": 8
+                                },
+                                "min": 0,
+                                "max": 255,
+                                "states": {
+                                    "0": "idle",
+                                    "8": "Over-load detected"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "alarmType",
+                            "propertyName": "alarmType",
+                            "ccVersion": 8,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Alarm Type",
+                                "min": 0,
+                                "max": 255,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "alarmLevel",
+                            "propertyName": "alarmLevel",
+                            "ccVersion": 8,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Alarm Level",
+                                "min": 0,
+                                "max": 255,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "productId",
+                            "propertyName": "productId",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Product ID",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 4135
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "productType",
+                            "propertyName": "productType",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Product type",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 512
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "manufacturerId",
+                            "propertyName": "manufacturerId",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Manufacturer ID",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 600
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "hardwareVersion",
+                            "propertyName": "hardwareVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave chip hardware version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 16
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "firmwareVersions",
+                            "propertyName": "firmwareVersions",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string[]",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave chip firmware versions",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                "2.23"
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "protocolVersion",
+                            "propertyName": "protocolVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave protocol version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "6.4"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "libraryType",
+                            "propertyName": "libraryType",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Library type",
+                                "states": {
+                                    "0": "Unknown",
+                                    "1": "Static Controller",
+                                    "2": "Controller",
+                                    "3": "Enhanced Slave",
+                                    "4": "Slave",
+                                    "5": "Installer",
+                                    "6": "Routing Slave",
+                                    "7": "Bridge Controller",
+                                    "8": "Device under Test",
+                                    "9": "N/A",
+                                    "10": "AV Remote",
+                                    "11": "AV Device"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 3
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "applicationBuildNumber",
+                            "propertyName": "applicationBuildNumber",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Application build number",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 52445
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "applicationVersion",
+                            "propertyName": "applicationVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Application version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "2.23.0"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "zWaveProtocolBuildNumber",
+                            "propertyName": "zWaveProtocolBuildNumber",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave protocol build number",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 91
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "zWaveProtocolVersion",
+                            "propertyName": "zWaveProtocolVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave protocol version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "6.4.0"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "hostInterfaceBuildNumber",
+                            "propertyName": "hostInterfaceBuildNumber",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Serial API build number",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "hostInterfaceVersion",
+                            "propertyName": "hostInterfaceVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Serial API version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "unused"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "applicationFrameworkBuildNumber",
+                            "propertyName": "applicationFrameworkBuildNumber",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave application framework API build number",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 52445
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "applicationFrameworkAPIVersion",
+                            "propertyName": "applicationFrameworkAPIVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave application framework API version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "4.1.2"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "sdkVersion",
+                            "propertyName": "sdkVersion",
+                            "ccVersion": 3,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "SDK version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "6.81.3"
+                        }
+                    ],
+                    "isFrequentListening": false,
+                    "maxDataRate": 100000,
+                    "supportedDataRates": [
+                        40000,
+                        100000
+                    ],
+                    "protocolVersion": 3,
+                    "supportsBeaming": true,
+                    "supportsSecurity": false,
+                    "nodeType": 1,
+                    "zwavePlusNodeType": 0,
+                    "zwavePlusRoleType": 5,
+                    "deviceClass": {
+                        "basic": {
+                            "key": 4,
+                            "label": "Routing End Node"
+                        },
+                        "generic": {
+                            "key": 16,
+                            "label": "Binary Switch"
+                        },
+                        "specific": {
+                            "key": 1,
+                            "label": "Binary Power Switch"
+                        }
+                    },
+                    "interviewStage": "Complete",
+                    "deviceDatabaseUrl": "https://devices.zwave-js.io/?jumpTo=0x0258:0x0200:0x1027:2.23.0",
+                    "statistics": {
+                        "commandsTX": 0,
+                        "commandsRX": 3,
+                        "commandsDroppedRX": 0,
+                        "commandsDroppedTX": 0,
+                        "timeoutResponse": 0,
+                        "lastSeen": "2024-11-29T12:07:37.709Z",
+                        "nlwr": {
+                            "repeaters": [],
+                            "protocolDataRate": 2
+                        }
+                    },
+                    "highestSecurityClass": -1,
+                    "isControllerNode": false,
+                    "keepAwake": false,
+                    "lastSeen": "2024-11-29T12:07:37.709Z",
+                    "protocol": 0
+                },
+                {
+                    "nodeId": 5,
+                    "index": 0,
+                    "status": 3,
+                    "ready": false,
+                    "isListening": true,
+                    "isRouting": true,
+                    "isSecure": false,
+                    "interviewAttempts": 1,
+                    "endpoints": [
+                        {
+                            "nodeId": 5,
+                            "index": 0,
+                            "deviceClass": {
+                                "basic": {
+                                    "key": 4,
+                                    "label": "Routing End Node"
+                                },
+                                "generic": {
+                                    "key": 16,
+                                    "label": "Binary Switch"
+                                },
+                                "specific": {
+                                    "key": 1,
+                                    "label": "Binary Power Switch"
+                                }
+                            },
+                            "commandClasses": [
+                                {
+                                    "id": 94,
+                                    "name": "Z-Wave Plus Info",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 152,
+                                    "name": "Security",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 159,
+                                    "name": "Security 2",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 85,
+                                    "name": "Transport Service",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 115,
+                                    "name": "Powerlevel",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 134,
+                                    "name": "Version",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 133,
+                                    "name": "Association",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 142,
+                                    "name": "Multi Channel Association",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 89,
+                                    "name": "Association Group Information",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 114,
+                                    "name": "Manufacturer Specific",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 90,
+                                    "name": "Device Reset Locally",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 37,
+                                    "name": "Binary Switch",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 50,
+                                    "name": "Meter",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 113,
+                                    "name": "Notification",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 112,
+                                    "name": "Configuration",
+                                    "version": 0,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 108,
+                                    "name": "Supervision",
+                                    "version": 0,
+                                    "isSecure": false
+                                }
+                            ]
+                        }
+                    ],
+                    "values": [],
+                    "isFrequentListening": false,
+                    "maxDataRate": 100000,
+                    "supportedDataRates": [
+                        40000,
+                        100000
+                    ],
+                    "protocolVersion": 3,
+                    "supportsBeaming": true,
+                    "supportsSecurity": false,
+                    "nodeType": 1,
+                    "deviceClass": {
+                        "basic": {
+                            "key": 4,
+                            "label": "Routing End Node"
+                        },
+                        "generic": {
+                            "key": 16,
+                            "label": "Binary Switch"
+                        },
+                        "specific": {
+                            "key": 1,
+                            "label": "Binary Power Switch"
+                        }
+                    },
+                    "interviewStage": "ProtocolInfo",
+                    "statistics": {
+                        "commandsTX": 0,
+                        "commandsRX": 0,
+                        "commandsDroppedRX": 0,
+                        "commandsDroppedTX": 0,
+                        "timeoutResponse": 0
+                    },
+                    "highestSecurityClass": -1,
+                    "isControllerNode": false,
+                    "keepAwake": false,
+                    "lastSeen": "2024-12-03T22:09:40.291Z",
+                    "protocol": 0
+                },
+                {
+                    "nodeId": 6,
+                    "index": 0,
+                    "status": 4,
+                    "ready": true,
+                    "isListening": true,
+                    "isRouting": true,
+                    "isSecure": false,
+                    "manufacturerId": 271,
+                    "productId": 4096,
+                    "productType": 1536,
+                    "firmwareVersion": "25.25",
+                    "deviceConfig": {
+                        "filename": "C:\\Users\\leosi\\AppData\\Roaming\\npm\\node_modules\\zwave-js-ui\\node_modules\\@zwave-js\\config\\config\\devices\\0x010f\\fgwp101.json",
+                        "isEmbedded": true,
+                        "manufacturer": "Fibargroup",
+                        "manufacturerId": 271,
+                        "label": "FGWPE/F-101",
+                        "description": "Metered Wall Plug Switch",
+                        "devices": [
+                            {
+                                "productType": 1536,
+                                "productId": 4096
+                            },
+                            {
+                                "productType": 1536,
+                                "productId": 16384
+                            }
+                        ],
+                        "firmwareVersion": {
+                            "min": "0.0",
+                            "max": "255.255"
+                        },
+                        "preferred": false,
+                        "associations": {},
+                        "paramInformation": {
+                            "_map": {}
+                        }
+                    },
+                    "label": "FGWPE/F-101",
+                    "interviewAttempts": 1,
+                    "endpoints": [
+                        {
+                            "nodeId": 6,
+                            "index": 0,
+                            "deviceClass": {
+                                "basic": {
+                                    "key": 4,
+                                    "label": "Routing End Node"
+                                },
+                                "generic": {
+                                    "key": 16,
+                                    "label": "Binary Switch"
+                                },
+                                "specific": {
+                                    "key": 0,
+                                    "label": "Unused"
+                                }
+                            },
+                            "commandClasses": [
+                                {
+                                    "id": 114,
+                                    "name": "Manufacturer Specific",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 134,
+                                    "name": "Version",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 112,
+                                    "name": "Configuration",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 133,
+                                    "name": "Association",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 142,
+                                    "name": "Multi Channel Association",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 37,
+                                    "name": "Binary Switch",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 115,
+                                    "name": "Powerlevel",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 50,
+                                    "name": "Meter",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 49,
+                                    "name": "Multilevel Sensor",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 122,
+                                    "name": "Firmware Update Meta Data",
+                                    "version": 1,
+                                    "isSecure": false
+                                }
+                            ]
+                        }
+                    ],
+                    "values": [
+                        {
+                            "endpoint": 0,
+                            "commandClass": 37,
+                            "commandClassName": "Binary Switch",
+                            "property": "currentValue",
+                            "propertyName": "currentValue",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current value",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": true
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 37,
+                            "commandClassName": "Binary Switch",
+                            "property": "targetValue",
+                            "propertyName": "targetValue",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Target value",
+                                "valueChangeOptions": [
+                                    "transitionDuration"
+                                ],
+                                "stateful": true,
+                                "secret": false
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 49,
+                            "commandClassName": "Multilevel Sensor",
+                            "property": "Power",
+                            "propertyName": "Power",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Power",
+                                "ccSpecific": {
+                                    "sensorType": 4,
+                                    "scale": 0
+                                },
+                                "unit": "W",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "value",
+                            "propertyKey": 65537,
+                            "propertyName": "value",
+                            "propertyKeyName": "Electric_kWh_Consumed",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Electric Consumption [kWh]",
+                                "ccSpecific": {
+                                    "meterType": 1,
+                                    "scale": 0,
+                                    "rateType": 1
+                                },
+                                "unit": "kWh",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 881.95
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "value",
+                            "propertyKey": 66049,
+                            "propertyName": "value",
+                            "propertyKeyName": "Electric_W_Consumed",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Electric Consumption [W]",
+                                "ccSpecific": {
+                                    "meterType": 1,
+                                    "scale": 2,
+                                    "rateType": 1
+                                },
+                                "unit": " W",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 50,
+                            "commandClassName": "Meter",
+                            "property": "reset",
+                            "propertyName": "reset",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": false,
+                                "writeable": true,
+                                "label": "Reset accumulated values",
+                                "states": {
+                                    "true": "Reset"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 1,
+                            "propertyName": "Always On Function",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Once activated, Wall Plug will keep a connected device ...",
+                                "label": "Always On Function",
+                                "default": 1,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Activated",
+                                    "1": "Inactive"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 16,
+                            "propertyName": "State After Power Failure",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "State After Power Failure",
+                                "default": 1,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Always off",
+                                    "1": "Previous state"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 34,
+                            "propertyName": "Reaction to Alarms",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Define Z-Wave network alarms to which the Wall Plug will respond.",
+                                "label": "Reaction to Alarms",
+                                "default": 63,
+                                "min": 0,
+                                "max": 63,
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 63
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 35,
+                            "propertyName": "Response to Alarms",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Parameter defines how the Wall Plug will respond to alarms ...",
+                                "label": "Response to Alarms",
+                                "default": 0,
+                                "min": 0,
+                                "max": 3,
+                                "states": {
+                                    "0": "No reaction",
+                                    "1": "Turn on",
+                                    "2": "Turn off",
+                                    "3": "Cycle on/off"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 39,
+                            "propertyName": "Alarm Duration",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Wall Plug's alarm mode duration. If a device sending an ...",
+                                "label": "Alarm Duration",
+                                "default": 600,
+                                "min": 1,
+                                "max": 65535,
+                                "valueSize": 2,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 600
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 40,
+                            "propertyName": "Immediate Power Report",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Parameter defines by how much power load must change ...",
+                                "label": "Immediate Power Report",
+                                "default": 80,
+                                "min": 1,
+                                "max": 100,
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 80
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 42,
+                            "propertyName": "Standard Power Load Report",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Parameter defines by how much power load must change ..",
+                                "label": "Standard Power Load Report",
+                                "default": 15,
+                                "min": 1,
+                                "max": 100,
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 15
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 43,
+                            "propertyName": "Power Reporting Frequency",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "This parameter defines how frequently standard power ...",
+                                "label": "Power Reporting Frequency",
+                                "default": 30,
+                                "min": 1,
+                                "max": 255,
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 30
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 45,
+                            "propertyName": "Changes in Energy Consumed by Controlled Devices",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Changes in Energy Consumed by Controlled Devices",
+                                "default": 1,
+                                "min": 1,
+                                "max": 255,
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 10
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 47,
+                            "propertyName": "Time Between Reports On Power/energy Consumption",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Time Between Reports On Power/energy Consumption",
+                                "default": 3600,
+                                "min": 1,
+                                "max": 65534,
+                                "valueSize": 2,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 3600
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 49,
+                            "propertyName": "Metering Energy Consumed by the Wall Plug Itself",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "This parameter determines whether energy metering ...",
+                                "label": "Metering Energy Consumed by the Wall Plug Itself",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Inactive",
+                                    "1": "Activated"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 50,
+                            "propertyName": "DOWN Value",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Lower power threshold, used in parameter 52.",
+                                "label": "DOWN Value",
+                                "default": 300,
+                                "min": 0,
+                                "max": 65535,
+                                "valueSize": 2,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 300
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 51,
+                            "propertyName": "UP Value",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Upper power threshold, used in parameter 52.",
+                                "label": "UP Value",
+                                "default": 500,
+                                "min": 0,
+                                "max": 65535,
+                                "valueSize": 2,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 500
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 52,
+                            "propertyName": "Action in Case Defined Power Values Exceeded",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Parameter defines the way 2nd association group devices ...",
+                                "label": "Action in Case Defined Power Values Exceeded",
+                                "default": 6,
+                                "min": 0,
+                                "max": 6,
+                                "states": {
+                                    "0": "Function inactive",
+                                    "1": "Turn devices on when power below down",
+                                    "2": "Turn devices off when power below down",
+                                    "3": "Turn devices on when power above up",
+                                    "4": "Turn devices off when power above up",
+                                    "5": "Turn devices on when power below down and off",
+                                    "6": "Turn devices off when power below down"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 6
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 60,
+                            "propertyName": "Power Load to Make Red Ring Flash Violet",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Function is active only when parameter 61 is set to 0 or 1.",
+                                "label": "Power Load to Make Red Ring Flash Violet",
+                                "default": 25000,
+                                "min": 0,
+                                "max": 65535,
+                                "valueSize": 2,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 25000
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 61,
+                            "propertyName": "LED Color When Device Is On",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "LED Color When Device Is On",
+                                "default": 1,
+                                "min": 0,
+                                "max": 9,
+                                "states": {
+                                    "0": "LED will use predefined steps depending on power",
+                                    "1": "LED will use continuous color depending on power",
+                                    "2": "White illumination",
+                                    "3": "Red illumination",
+                                    "4": "Green illumination",
+                                    "5": "Blue illumination",
+                                    "6": "Yellow illumination",
+                                    "7": "Cyan illumination",
+                                    "8": "Magenta illumination",
+                                    "9": "NO illumination"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 62,
+                            "propertyName": "LED Color When Device Is Off",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "LED Color When Device Is Off",
+                                "default": 8,
+                                "min": 0,
+                                "max": 8,
+                                "states": {
+                                    "0": "LED ring illuminated with color before turned off",
+                                    "1": "White illumination",
+                                    "2": "Red illumination",
+                                    "3": "Green illumination",
+                                    "4": "Blue illumination",
+                                    "5": "Yellow illumination",
+                                    "6": "Cyan illumination",
+                                    "7": "Magenta illumination",
+                                    "8": "NO illumination"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 8
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 63,
+                            "propertyName": "LED Color When Z Wave Alarm",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "LED Color When Z Wave Alarm",
+                                "default": 1,
+                                "min": 0,
+                                "max": 9,
+                                "states": {
+                                    "0": "No change in color",
+                                    "1": "LED flashes red blue white",
+                                    "2": "White illumination",
+                                    "3": "Red illumination",
+                                    "4": "Green illumination",
+                                    "5": "Blue illumination",
+                                    "6": "Yellow illumination",
+                                    "7": "Cyan illumination",
+                                    "8": "Magenta illumination",
+                                    "9": "NO illumination"
+                                },
+                                "valueSize": 1,
+                                "format": 0,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 70,
+                            "propertyName": "Overload Safety Switch",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "This function allows for turning off the controlled device...",
+                                "label": "Overload Safety Switch",
+                                "default": 65535,
+                                "min": 0,
+                                "max": 65535,
+                                "valueSize": 2,
+                                "format": 1,
+                                "allowManualEntry": true,
+                                "isFromConfig": true
+                            },
+                            "value": 65535
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "productId",
+                            "propertyName": "productId",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Product ID",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 4096
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "productType",
+                            "propertyName": "productType",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Product type",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 1536
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "manufacturerId",
+                            "propertyName": "manufacturerId",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Manufacturer ID",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 271
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "firmwareVersions",
+                            "propertyName": "firmwareVersions",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "string[]",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave chip firmware versions",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                "25.25"
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "protocolVersion",
+                            "propertyName": "protocolVersion",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave protocol version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "3.52"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "libraryType",
+                            "propertyName": "libraryType",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Library type",
+                                "states": {
+                                    "0": "Unknown",
+                                    "1": "Static Controller",
+                                    "2": "Controller",
+                                    "3": "Enhanced Slave",
+                                    "4": "Slave",
+                                    "5": "Installer",
+                                    "6": "Routing Slave",
+                                    "7": "Bridge Controller",
+                                    "8": "Device under Test",
+                                    "9": "N/A",
+                                    "10": "AV Remote",
+                                    "11": "AV Device"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 3
+                        }
+                    ],
+                    "isFrequentListening": false,
+                    "maxDataRate": 40000,
+                    "supportedDataRates": [
+                        40000
+                    ],
+                    "protocolVersion": 3,
+                    "supportsBeaming": true,
+                    "supportsSecurity": false,
+                    "nodeType": 1,
+                    "deviceClass": {
+                        "basic": {
+                            "key": 4,
+                            "label": "Routing End Node"
+                        },
+                        "generic": {
+                            "key": 16,
+                            "label": "Binary Switch"
+                        },
+                        "specific": {
+                            "key": 0,
+                            "label": "Unused"
+                        }
+                    },
+                    "interviewStage": "Complete",
+                    "deviceDatabaseUrl": "https://devices.zwave-js.io/?jumpTo=0x010f:0x0600:0x1000:25.25",
+                    "statistics": {
+                        "commandsTX": 50,
+                        "commandsRX": 47,
+                        "commandsDroppedRX": 0,
+                        "commandsDroppedTX": 0,
+                        "timeoutResponse": 0,
+                        "rtt": 22.9,
+                        "lastSeen": "2024-12-04T12:13:05.790Z",
+                        "rssi": -80,
+                        "lwr": {
+                            "protocolDataRate": 2,
+                            "repeaters": [],
+                            "rssi": -79,
+                            "repeaterRSSI": []
+                        }
+                    },
+                    "highestSecurityClass": -1,
+                    "isControllerNode": false,
+                    "keepAwake": false,
+                    "lastSeen": "2024-12-04T12:13:05.790Z",
+                    "protocol": 0
+                }
+            ]
+        }
+    }
+}
