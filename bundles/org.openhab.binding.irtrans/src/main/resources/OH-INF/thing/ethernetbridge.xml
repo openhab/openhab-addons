@@ -48,6 +48,10 @@
 		<label>Blaster Channel</label>
 		<description>The Blaster Channel allows to send (filtered) infrared commands over the specified blaster led of the
 			transceiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<config-description>
 			<parameter name="led" type="text" required="true">
 				<label>Led</label>
@@ -71,6 +75,10 @@
 		<label>Receiver Channel</label>
 		<description>The Receiver Channel allows to receive (filtered) infrared commands on the receiver led of the
 			transceiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<config-description>
 			<parameter name="remote" type="text" required="true">
 				<label>Remote</label>

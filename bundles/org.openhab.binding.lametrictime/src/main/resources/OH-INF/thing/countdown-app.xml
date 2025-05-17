@@ -29,11 +29,19 @@
 		<item-type>Number</item-type>
 		<label>Duration</label>
 		<description>Set the duration of the timer in seconds</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="countdownCommandType">
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>Send a command to the timer app</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="start">Start</option>

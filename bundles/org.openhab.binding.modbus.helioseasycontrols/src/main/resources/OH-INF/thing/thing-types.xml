@@ -321,6 +321,10 @@
 		<item-type>Switch</item-type>
 		<label>Enable/Disable</label>
 		<description>Used for functionality that can be enabled or disabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="minFanStage" advanced="true">
@@ -335,6 +339,10 @@
 		<item-type>Switch</item-type>
 		<label>On/Off</label>
 		<description>Used for configurations that can be on or off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="humidityControlSetValue" advanced="true">

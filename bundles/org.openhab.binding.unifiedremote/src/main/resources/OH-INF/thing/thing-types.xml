@@ -34,12 +34,20 @@
 		<item-type>String</item-type>
 		<label>Mouse Move Channel</label>
 		<description>Relative mouse control on the server host</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="send-key-channel">
 		<item-type>String</item-type>
 		<label>Toggle Key Channel</label>
 		<description>Toggle Key</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<!-- MOUSE -->
