@@ -37,7 +37,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSActions.class);
-    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager.getScheduledPool(BindingConstants.BINDING_ID);
+    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
+            .getScheduledPool(BindingConstants.BINDING_ID);
     private @Nullable ZwaveJSBridgeHandler handler;
 
     @RuleAction(label = "start inclusion", description = "Put the controller for 30s in network wide inclusion mode")
