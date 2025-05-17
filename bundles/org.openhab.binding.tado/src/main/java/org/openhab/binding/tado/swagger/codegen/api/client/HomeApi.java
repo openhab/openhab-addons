@@ -26,9 +26,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
-import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomePresence;
@@ -49,15 +47,15 @@ import com.google.gson.reflect.TypeToken;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class HomeApi {
-    private static final HttpClient CLIENT = new HttpClient(new SslContextFactory());
+    private static final HttpClient CLIENT = new HttpClient(new SslContextFactory.Client());
 
     private String baseUrl = "https://my.tado.com/api/v2";
     private int timeout = 5000;
 
     private Gson gson;
-    private Authorizer authorizer;
+    private OAuthorizerV2 authorizer;
 
-    public HomeApi(Gson gson, Authorizer authorizer) {
+    public HomeApi(Gson gson, OAuthorizerV2 authorizer) {
         this.gson = gson;
         this.authorizer = authorizer;
     }
