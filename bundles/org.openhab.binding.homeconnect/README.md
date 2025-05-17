@@ -17,17 +17,17 @@ Supported devices: dishwasher, washer, washer / dryer combination, dryer, oven, 
 
 #### experimental support
 
-| Home appliance | Thing Type ID |
-| --------------- | ------------ |
-| Dishwasher | dishwasher |
-| Washer | washer |
-| Washer / Dryer combination | washerdryer |
-| Dryer | dryer |
-| Oven | oven |
-| Hood | hood |
-| Cooktop | hob |
-| Refrigerator Freezer | fridgefreezer |
-| Coffee Machine | coffeemaker |
+| Home appliance             | Thing Type ID |
+| -------------------------- | ------------- |
+| Dishwasher                 | dishwasher    |
+| Washer                     | washer        |
+| Washer / Dryer combination | washerdryer   |
+| Dryer                      | dryer         |
+| Oven                       | oven          |
+| Hood                       | hood          |
+| Cooktop                    | hob           |
+| Refrigerator Freezer       | fridgefreezer |
+| Coffee Machine             | coffeemaker   |
 
 > **INFO:** Currently the Home Connect API does not support all appliance programs. Please check if your desired program is available (e.g. <https://developer.home-connect.com/docs/washing-machine/supported_programs_and_options>).
 
@@ -39,7 +39,7 @@ After the bridge has been added and authorized, devices are discovered automatic
 
 | Channel Type ID | Item Type | Read only | Description | Available on thing |
 | --------------- | --------- | --------- | ----------- | ------------------ |
-| power_state | Switch | false | This setting describes the current power state of the home appliance. | dishwasher, oven, coffeemaker, hood, hob  |
+| power_state | Switch | false | This setting describes the current power state of the home appliance. | dishwasher, oven, coffeemaker, hood, hob, washer, washerdryer  |
 | door_state | Contact | true | This status describes the door state of a home appliance. A status change is either triggered by the user operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking the door). | dishwasher, washer, washerdryer, dryer, oven, fridgefreezer |
 | operation_state | String | true | This status describes the operation state of the home appliance. | dishwasher, washer, washerdryer, dryer, oven, hood, hob, coffeemaker |
 | remote_start_allowance_state | Switch | true  | This status indicates whether the remote program start is enabled. This can happen due to a programmatic change (only disabling), or manually by the user changing the flag locally on the home appliance, or automatically after a certain duration - usually in 24 hours. | dishwasher, washer, washerdryer, dryer, oven, hood, coffeemaker |
