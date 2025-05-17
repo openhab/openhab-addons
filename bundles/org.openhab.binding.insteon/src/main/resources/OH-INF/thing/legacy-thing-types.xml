@@ -119,7 +119,7 @@
 		<label>AC Delay</label>
 		<tags>
 			<tag>Control</tag>
-			<tag>Airconditioning</tag>
+			<tag>Duration</tag>
 		</tags>
 	</channel-type>
 
@@ -136,8 +136,8 @@
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
 		</tags>
 	</channel-type>
 
@@ -145,8 +145,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Percent</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
 		</tags>
 	</channel-type>
 
@@ -154,8 +154,8 @@
 		<item-type>Number</item-type>
 		<label>Battery Watermark Level</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
 		</tags>
 	</channel-type>
 
@@ -263,7 +263,7 @@
 		<label>Broadcast On/Off</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
@@ -405,7 +405,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
 	</channel-type>
@@ -414,7 +414,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity High</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Humidity</tag>
 		</tags>
 	</channel-type>
@@ -423,7 +423,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity Low</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Humidity</tag>
 		</tags>
 	</channel-type>
@@ -432,7 +432,7 @@
 		<item-type>Number</item-type>
 		<label>Is Cooling</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Airconditioning</tag>
 		</tags>
 	</channel-type>
@@ -749,7 +749,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 	</channel-type>
@@ -758,7 +758,7 @@
 		<item-type>Number</item-type>
 		<label>Temperature Level</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 	</channel-type>
@@ -786,7 +786,7 @@
 		<item-type>Number:Power</item-type>
 		<label>Watts</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 	</channel-type>

@@ -60,7 +60,7 @@
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -598,7 +598,7 @@
 		<description>Toggle the sprinkler program. When needed, activate the previous/next valve.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -608,7 +608,7 @@
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -618,7 +618,7 @@
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -628,7 +628,7 @@
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
