@@ -95,7 +95,9 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoHomeConfig.class);
-        String user = configuration.username instanceof String name && !name.isBlank() ? name : null;
+        String user = Boolean.TRUE.equals(configuration.rfcWithUser)
+                ? configuration.username instanceof String name && !name.isBlank() ? name : null
+                : null;
 
         OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, user);
         oAuthClientService.addAccessTokenRefreshListener(this);
