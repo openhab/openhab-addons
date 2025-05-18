@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - Use HttpClientFactory
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.tibber", service = ThingHandlerFactory.class)

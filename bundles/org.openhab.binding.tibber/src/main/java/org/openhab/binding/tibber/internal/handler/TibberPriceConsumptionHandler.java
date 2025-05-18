@@ -26,24 +26,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TibberPriceConsumptionHandler {
 
-    public InputStream connectionInputStream(String homeId) {
+    private InputStream connectionInputStream(String homeId) {
         String connectionquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId + "\\\") {id }}}\"}";
         return new ByteArrayInputStream(connectionquery.getBytes(StandardCharsets.UTF_8));
     }
 
-    public InputStream getInputStream(String homeId) {
+    private InputStream getInputStream(String homeId) {
         String query = "{\"query\": \"{viewer {home (id: \\\"" + homeId
                 + "\\\") {currentSubscription {priceInfo {current {total startsAt level } tomorrow { startsAt total level } today { startsAt total level }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
         return new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
     }
 
-    public InputStream getRealtimeInputStream(String homeId) {
+    private InputStream getRealtimeInputStream(String homeId) {
         String realtimeenabledquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId
                 + "\\\") {features {realTimeConsumptionEnabled }}}}\"}";
         return new ByteArrayInputStream(realtimeenabledquery.getBytes(StandardCharsets.UTF_8));
     }
 
-    public InputStream getWebsocketUrl() {
+    private InputStream getWebsocketUrl() {
         String websocketquery = "{\"query\": \"{viewer {websocketSubscriptionUrl }}\"}";
         return new ByteArrayInputStream(websocketquery.getBytes(StandardCharsets.UTF_8));
     }
