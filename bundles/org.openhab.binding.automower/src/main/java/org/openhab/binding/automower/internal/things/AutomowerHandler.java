@@ -788,8 +788,14 @@ public class AutomowerHandler extends BaseThingHandler {
         updateAutomowerState();
     }
 
-    private String restrictedState(RestrictedReason reason) {
-        return "RESTRICTED_" + reason.name();
+    private String restrictedState(@Nullable RestrictedReason reason) {
+        String restrictedReason;
+        if (reason == null) {
+            restrictedReason = "RESTRICTED";
+        } else {
+            restrictedReason = "RESTRICTED_" + reason.name();
+        }
+        return restrictedReason;
     }
 
     private @Nullable String getErrorMessage(int errorCode) {
