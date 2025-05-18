@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.measure.Unit;
@@ -1266,6 +1267,83 @@ public abstract class MessageHandler extends BaseFeatureHandler {
     }
 
     /**
+     * I/O linc relay switch on message handler
+     */
+    public static class IOLincRelaySwitchOnMsgHandler extends SwitchOnMsgHandler {
+        IOLincRelaySwitchOnMsgHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        public void handleMessage(byte cmd1, Msg msg) {
+            State state = getInsteonDevice().getFeatureState(FEATURE_RELAY_SENSOR_FOLLOW);
+            // handle message only if relay sensor follow is on
+            if (OnOffType.ON.equals(state)) {
+                super.handleMessage(cmd1, msg);
+            }
+        }
+    }
+
+    /**
+     * I/O linc relay switch off message handler
+     */
+    public static class IOLincRelaySwitchOffMsgHandler extends SwitchOffMsgHandler {
+        IOLincRelaySwitchOffMsgHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        public void handleMessage(byte cmd1, Msg msg) {
+            State state = getInsteonDevice().getFeatureState(FEATURE_RELAY_SENSOR_FOLLOW);
+            // handle message only if relay sensor follow is on
+            if (OnOffType.ON.equals(state)) {
+                super.handleMessage(cmd1, msg);
+            }
+        }
+    }
+
+    /**
+     * I/O linc relay switch reply message handler
+     */
+    public static class IOLincRelaySwitchReplyHandler extends SwitchRequestReplyHandler {
+        private static final int DEFAULT_DURATION = 2;
+
+        IOLincRelaySwitchReplyHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        public void handleMessage(byte cmd1, Msg msg) {
+            super.handleMessage(cmd1, msg);
+            // trigger poll with delay based on momentary duration if not status reply and relay mode not latching
+            if (feature.getQueryCommand() != 0x19 && getRelayMode() != IOLincRelayMode.LATCHING) {
+                long delay = getPollDelay();
+                feature.triggerPoll(delay);
+            }
+        }
+
+        private @Nullable IOLincRelayMode getRelayMode() {
+            try {
+                State state = getInsteonDevice().getFeatureState(FEATURE_RELAY_MODE);
+                if (state instanceof StringType mode) {
+                    return IOLincRelayMode.valueOf(mode.toString());
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+            return null;
+        }
+
+        private long getPollDelay() {
+            double delay = DEFAULT_DURATION;
+            State state = getInsteonDevice().getFeatureState(FEATURE_MOMENTARY_DURATION);
+            if (state instanceof QuantityType<?> duration) {
+                delay = Objects.requireNonNullElse(duration.toInvertibleUnit(Units.SECOND), duration).doubleValue();
+            }
+            return (long) (delay * 1000);
+        }
+    }
+
+    /**
      * I/O linc momentary duration message handler
      */
     public static class IOLincMomentaryDurationMsgHandler extends CustomMsgHandler {
@@ -1275,17 +1353,17 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         protected @Nullable State getState(byte cmd1, double value) {
-            int duration = getDuration((int) value);
+            double duration = getDuration((int) value);
             return new QuantityType<Time>(duration, Units.SECOND);
         }
 
-        private int getDuration(int value) {
-            int prescaler = value >> 8; // high byte
+        private double getDuration(int value) {
+            int multiplier = Math.max(value >> 8, 1); // high byte
             int delay = value & 0xFF; // low byte
             if (delay == 0) {
                 delay = 255;
             }
-            return delay * prescaler / 10;
+            return delay * multiplier / 10.0;
         }
     }
 

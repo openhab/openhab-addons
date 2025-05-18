@@ -298,8 +298,9 @@ In order to determine which channels a device supports, check the device in the 
 | program-lock          | Switch               |     R/W     | Local Programming Lock       |
 | pump                  | Switch               |     R/W     | Pump Control                 |
 | ramp-rate             | Number:Time          |     R/W     | Ramp Rate                    |
-| relay-mode            | String               |     R/W     | Output Relay Mode            |
-| relay-sensor-follow   | Switch               |     R/W     | Output Relay Sensor Follow   |
+| relay-mode            | String               |     R/W     | Relay Mode                   |
+| relay-sensor-follow   | Switch               |     R/W     | Relay Sensor Follow          |
+| relay-sensor-inverted | Switch               |     R/W     | Relay Sensor Inverted        |
 | resume-dim            | Switch               |     R/W     | Resume Dim Level             |
 | reverse-direction     | Switch               |     R/W     | Reverse Motor Direction      |
 | rollershutter         | Rollershutter        |     R/W     | Rollershutter                |
@@ -1122,20 +1123,32 @@ OFF=unlocked
 
 ### I/O Linc (garage door openers)
 
-The I/O Linc devices are really two devices in one: a relay and a contact.
+The I/O Linc devices are really two devices in one: an output relay and an input contact sensor.
 To control the relay, link the modem as a controller using the set buttons as described in the instructions.
-To get the status of the contact, the modem must also be linked as a responder to the I/O Linc.
-The I/O Linc has a feature to invert the contact or match the contact when it sends commands to any linked responders.
-This is based on the status of the contact when it is linked, and was intended for controlling other devices with the contact.
-The binding expects the contact to be inverted to work properly.
-Ensure the contact is OFF (status LED is dark/garage door open) when linking the modem as a responder to the I/O Linc in order for it to function properly.
+To get the state of the relay and sensor, the modem must also be linked as a responder to the I/O Linc.
+The contact state is based on the sensor state at the time it is linked.
+To invert the state, either relink the modem as a responder with the sensor state inverted, or toggle the channel `relay-sensor-inverted`.
+By default, the device is inverted where an on command is sent when the sensor is closed, and off when open.
+For a garage door opener, ensure the input sensor is closed (status LED off) during the linking process.
 
 ##### Items
 
 ```java
-Switch  garageDoorOpener  "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
-Contact garageDoorContact "door contact [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
+Switch  garageDoorOpener                 "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
+Contact garageDoorContact                "door contact [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
+String  garageDoorRelayMode              "door relay mode"                    { channel="insteon:device:home:aabbcc:relay-mode" }
+Switch  garageDoorRelaySensorInverted    "door relay sensor inverted"         { channel="insteon:device:home:aabbcc:relay-sensor-inverted" }
 ```
+
+<details>
+  <summary>Legacy</summary>
+
+  ```java
+  Switch  garageDoorOpener  "door opener"                        { channel="insteon:device:home:AABBCC:switch" }
+  Contact garageDoorContact "door contact [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact" }
+  ```
+
+</details>
 
 and create a file "contact.map" in the transforms directory with these entries:
 
@@ -1144,11 +1157,6 @@ OPEN=open
 CLOSED=closed
 -=unknown
 ```
-
-> NOTE: If the I/O Linc contact status appears delayed, or returns the wrong value when the sensor changes states, the contact was likely ON (status LED lit) when the modem was linked as a responder.
-Examples of this behavior would include: The status remaining CLOSED for up to 3 minutes after the door is opened, or the status remains OPEN for up to three minutes after the garage is opened and immediately closed again.
-To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off).
-That would be with the door open when using the Insteon garage kit.
 
 ### Fan Controllers
 
