@@ -169,7 +169,7 @@ public class EnedisHttpApi {
                 if (!data.isEmpty()) {
                     try {
                         T result = Objects.requireNonNull(gson.fromJson(data, clazz));
-                        logger.debug("getData success {}: {}", clazz.getName(), url);
+                        logger.trace("getData success {}: {}", clazz.getName(), url);
                         return result;
                     } catch (JsonSyntaxException e) {
                         logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);

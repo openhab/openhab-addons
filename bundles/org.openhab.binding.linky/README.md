@@ -42,11 +42,12 @@ If you select enedis-web bridge, you will need :
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To provide your credentials: username, password, and InternalAuthId.
 
-      | Parameter      | Description                      |
-      |----------------|----------------------------------|
-      | username       | Your Enedis platform username.   |
-      | password       | Your Enedis platform password.   |
-      | internalAuthId | The internal authentication ID.  |
+      | Parameter      | Description                                |
+      |----------------|--------------------------------------------|
+      | username       | Your Enedis platform username.             |
+      | password       | Your Enedis platform password.             |
+      | internalAuthId | The internal authentication ID.            |
+	  | timezone       | The timezone at the location of your linky |
 
     This version is compatible with the latest Enedis Web API (deployed from June 2020). To bypass the captcha login, log in via a standard browser (e.g., Chrome, Firefox) and retrieve the user cookies (internalAuthId).
 
@@ -61,7 +62,9 @@ If you select enedis-web bridge, you will need :
     7. Log out from your Enedis account.
     8. Repeat steps 1-2. This time, open the developer tools window (F12) and select the "Storage" tab.
     9. Under "Cookies", select "https://mon-compte-client.enedis.fr/". Locate the "internalAuthId" entry and copy its value into your OpenHAB configuration.
-
+	
+	A new timezone parameter has been introduced. If you don't put a value, it will default to the timezone of your openHAB installation. 
+	This parameter can be useful if you read data from a Linky in a different timezone.
 
     ```java
     Bridge linky:enedis-web:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]

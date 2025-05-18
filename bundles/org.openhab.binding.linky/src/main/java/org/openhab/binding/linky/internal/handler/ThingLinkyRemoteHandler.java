@@ -48,7 +48,6 @@ import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.types.LinkyException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -80,14 +79,12 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
-    private final TimeZoneProvider timeZoneProvider;
-    private ZoneId zoneId = ZoneId.systemDefault();
-
     private static final Random RANDOM_NUMBERS = new Random();
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
+    private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyRemoteHandler.class);
 
     private final ExpiringDayCache<MetaData> metaData;
@@ -95,6 +92,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
     private final ExpiringDayCache<MeterReading> loadCurveConsumption;
 
+    private ZoneId zoneId = ZoneId.systemDefault();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
     private double divider = 1.00;
@@ -131,12 +129,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     return meterReading;
                 });
 
-        // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
-        // is not needed by the binding. This is only a workaround to an API bug that will return
-        // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not yet
-        // available.
-        // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the data
-        // is not yet available.
+        // We request data for yesterday and the day before yesterday
+        // even if the data for the day before yesterday
+        // This is only a workaround to an API bug that will return INTERNAL_SERVER_ERROR rather
+        // than the expected data with a NaN value when the data for yesterday is not yet available.
+        // By requesting two days, the API is not failing and you get the expected NaN value for yesterday
+        // when the data is not yet available.
         this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
@@ -165,18 +163,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     public synchronized void initialize() {
         logger.debug("Initializing Linky handler for {}", config.prmId);
 
-        // update the timezone if not set to default to openhab default timezone
-        Configuration thingConfig = getConfig();
-
-        if ("".equals(config.timezone)) {
-            zoneId = this.timeZoneProvider.getTimeZone();
-            thingConfig.put("timezone", zoneId.getId());
-        } else {
-            zoneId = ZoneId.of(config.timezone);
-        }
-
-        saveConfiguration(thingConfig);
-
         // reread config to update timezone field
         config = getConfigAs(LinkyThingRemoteConfiguration.class);
 
@@ -192,6 +178,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             updateStatus(ThingStatus.UNKNOWN);
 
             if (config.seemsValid()) {
+                if (config.timezone.isBlank()) {
+                    zoneId = this.timeZoneProvider.getTimeZone();
+                } else {
+                    zoneId = ZoneId.of(config.timezone);
+                }
+
                 bridgeHandler.registerNewPrmId(config.prmId);
                 pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
             } else {
@@ -822,9 +814,5 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         } catch (Exception e) {
             logger.error("error during logData", e);
         }
-    }
-
-    public void saveConfiguration(Configuration config) {
-        updateConfiguration(config);
     }
 }
