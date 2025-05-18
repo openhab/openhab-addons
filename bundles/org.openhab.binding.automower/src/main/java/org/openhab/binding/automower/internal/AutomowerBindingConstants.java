@@ -159,6 +159,7 @@ public class AutomowerBindingConstants {
     public static final String GROUP_COMMAND = "command#";
 
     public static final String CHANNEL_COMMAND_START = GROUP_COMMAND + "start";
+    public static final String CHANNEL_COMMAND_START_IN_WORK_AREA = GROUP_COMMAND + "start_in_work_area";
     public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMAND + "resume_schedule";
     public static final String CHANNEL_COMMAND_PAUSE = GROUP_COMMAND + "pause";
     public static final String CHANNEL_COMMAND_PARK = GROUP_COMMAND + "park";

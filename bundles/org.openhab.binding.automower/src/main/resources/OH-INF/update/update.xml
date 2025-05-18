@@ -309,6 +309,11 @@
 			<remove-channel id="message#50-msg-text"/>
 			<remove-channel id="message#50-msg-severity"/>
 			<remove-channel id="message#50-msg-gps-position"/>
+
+			<!-- Positions -->
+			<add-channel id="start_in_work_area" groupIds="command">
+				<type>automower:startInWorkArea</type>
+			</add-channel>
 		</instruction-set>
 
 		<instruction-set targetVersion="1">

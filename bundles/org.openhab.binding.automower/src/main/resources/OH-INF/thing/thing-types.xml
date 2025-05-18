@@ -221,6 +221,7 @@
 		<label>Commands</label>
 		<channels>
 			<channel id="start" typeId="start"/>
+			<channel id="start_in_work_area" typeId="startInWorkArea"/>
 			<channel id="resume_schedule" typeId="resumeSchedule"/>
 			<channel id="pause" typeId="pause"/>
 			<channel id="park" typeId="park"/>
@@ -276,7 +277,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="NONE">No inactive reason</option>
-				<option value="PLANNING">The Automower® is planning a path or a work area</option>
+				<option value="PLANNING">The Automower® is planning a path or a Work Area</option>
 				<option value="SEARCHING_FOR_SATELLITES">Waiting for fix when using EPOS</option>
 			</options>
 		</state>
@@ -301,7 +302,7 @@
 				<option value="RESTRICTED_DAILY_LIMIT">Restricted by daily limit</option>
 				<option value="RESTRICTED_FOTA">Restricted by FOTA transfer</option>
 				<option value="RESTRICTED_FROST">Restricted by frost sensor</option>
-				<option value="RESTRICTED_ALL_WORK_AREAS_COMPLETED">Restricted: All work areas completed</option>
+				<option value="RESTRICTED_ALL_WORK_AREAS_COMPLETED">Restricted: All Work Areas completed</option>
 				<option value="RESTRICTED_EXTERNAL">Restricted by external reason</option>
 				<option value="OFF">Off</option>
 				<option value="STOPPED">Stopped: Manual intervention required</option>
@@ -315,14 +316,14 @@
 	<channel-type id="workAreaIdType" advanced="true">
 		<item-type>Number</item-type>
 		<label>Work Area Id</label>
-		<description>Id of the active work area</description>
+		<description>Id of the active Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="workAreaType">
 		<item-type>String</item-type>
 		<label>Work Area Name</label>
-		<description>Name of the active work area</description>
+		<description>Name of the active Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -409,7 +410,7 @@
 				<option value="DAILY_LIMIT">Restricted by daily limit</option>
 				<option value="FOTA">Restricted by FOTA transfer</option>
 				<option value="FROST">Restricted by frost sensor</option>
-				<option value="ALL_WORK_AREAS_COMPLETED">Restricted: All work areas completed</option>
+				<option value="ALL_WORK_AREAS_COMPLETED">Restricted: All Work Areas completed</option>
 				<option value="EXTERNAL">Restricted by external reason</option>
 			</options>
 		</state>
@@ -614,41 +615,41 @@
 	<channel-type id="workareaIdType" advanced="true">
 		<item-type>Number</item-type>
 		<label>Work Area Id</label>
-		<description>Id of the work area</description>
+		<description>Id of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="workareaNameType" advanced="true">
 		<item-type>String</item-type>
 		<label>Work Area Name</label>
-		<description>Name of the work area</description>
+		<description>Name of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="workareaCuttingHeightType" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting Height</label>
-		<description>Cutting height of the work area, range: 0-100</description>
+		<description>Cutting height of the Work Area, range: 0-100</description>
 		<state pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="workareaEnabledType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Work Area Enabled</label>
-		<description>If the work area is enabled or disabled</description>
+		<description>If the Work Area is enabled or disabled</description>
 	</channel-type>
 
 	<channel-type id="workareaProgressType" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Work Area Progress</label>
-		<description>The progress on a work area. EPOS Automower® and systematic mowing work areas only</description>
+		<description>The progress on a Work Area. EPOS Automower® and systematic mowing Work Areas only</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="workareaLastTimeCompletedType" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Time Completed</label>
-		<description>Timestamp when the work area was last completed. EPOS Automower® and systematic mowing work areas only</description>
+		<description>Timestamp when the Work Area was last completed. EPOS Automower® and systematic mowing Work Areas only</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -694,6 +695,14 @@
 		<label>Start with Duration</label>
 		<description>Start the Automower® for the given duration, overriding the schedule</description>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
+	</channel-type>
+
+	<channel-type id="startInWorkArea">
+		<item-type>Number</item-type>
+		<label>Start in Work Area</label>
+		<description>Start the Automower® in the given Work Area, overriding the schedule. The Automower® will continue
+			forever</description>
+		<state pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="resumeSchedule">

@@ -99,7 +99,6 @@ import com.google.gson.JsonObject;
 public class AutomowerHandler extends BaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AUTOMOWER);
     private static final String NO_ID = "NO_ID";
-    private static final long DEFAULT_COMMAND_DURATION_MIN = 60;
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.MINUTES.toSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
@@ -210,9 +209,13 @@ public class AutomowerHandler extends BaseThingHandler {
                 } else if (GROUP_COMMAND.startsWith(groupId)) {
                     AutomowerCommand.fromChannelUID(channelUID).ifPresent(commandName -> {
                         logger.debug("Sending command '{}'", commandName);
-                        getCommandValue(command).ifPresentOrElse(
-                                duration -> sendAutomowerCommand(commandName, duration),
-                                () -> sendAutomowerCommand(commandName));
+                        getCommandValue(command).ifPresentOrElse(param -> {
+                            if (commandName == AutomowerCommand.START_IN_WORK_AREA) {
+                                sendAutomowerCommand(commandName, param, null);
+                            } else {
+                                sendAutomowerCommand(commandName, param);
+                            }
+                        }, () -> sendAutomowerCommand(commandName));
 
                         updateState(channelUID, OnOffType.OFF);
                     });
@@ -221,9 +224,9 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private Optional<Integer> getCommandValue(Type type) {
+    private Optional<Long> getCommandValue(Type type) {
         if (type instanceof DecimalType command) {
-            return Optional.of(command.intValue());
+            return Optional.of(command.longValue());
         }
         return Optional.empty();
     }
@@ -382,30 +385,43 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends a command to the automower with the default duration of 60min
+     * Sends a command to the automower that requires no parameter
      *
-     * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
-     *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
+     * @param command The command that should be sent
      */
     public void sendAutomowerCommand(AutomowerCommand command) {
-        sendAutomowerCommand(command, DEFAULT_COMMAND_DURATION_MIN);
+        sendAutomowerCommand(command, null, null);
+    }
+
+    /**
+     * Sends a command to the automower that requires a duration
+     *
+     * @param command The command that should be sent
+     * @param commandDurationMinutes The duration of the command in minutes. This is only evaluated for "Start",
+     *            "StartInWorkArea" and "Park" commands
+     */
+    public void sendAutomowerCommand(AutomowerCommand command, long commandDurationMinutes) {
+        sendAutomowerCommand(command, null, commandDurationMinutes);
     }
 
     /**
      * Sends a command to the automower with the given duration
      *
-     * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
-     *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
-     * @param commandDurationMinutes The duration of the command in minutes. This is only evaluated for "Start" and
-     *            "Park" commands
+     * @param command The command that should be sent. Valid values are: "Start", "StartInWorkArea", "ResumeSchedule",
+     *            "Pause", "Park", "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
+     * @param commandWorkAreaId The work area id to be used for the command. This is only evaluated for
+     *            "StartInWorkArea" command
+     * @param commandDurationMinutes The duration of the command in minutes. This is only evaluated for "Start",
+     *            "StartInWorkArea" and "Park" commands
      */
-    public void sendAutomowerCommand(AutomowerCommand command, long commandDurationMinutes) {
-        logger.debug("Sending command '{} {}'", command.getCommand(), commandDurationMinutes);
+    public void sendAutomowerCommand(AutomowerCommand command, @Nullable Long commandWorkAreaId,
+            @Nullable Long commandDurationMinutes) {
+        logger.debug("Sending command '{} {} {}'", command.getCommand(), commandWorkAreaId, commandDurationMinutes);
         String id = automowerId.get();
         try {
             AutomowerBridge automowerBridge = getAutomowerBridge();
             if (automowerBridge != null) {
-                automowerBridge.sendAutomowerCommand(id, command, commandDurationMinutes);
+                automowerBridge.sendAutomowerCommand(id, command, commandWorkAreaId, commandDurationMinutes);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }

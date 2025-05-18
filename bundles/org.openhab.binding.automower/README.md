@@ -46,8 +46,8 @@ In addition to periodic polling, the binding also receives event-triggered notif
 | status#activity                       | String               | R   | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                                                                                                                                                    | false |
 | status#inactive-reason                | String               | R   | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               | false |
 | status#state                          | String               | R   | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)                                                                                                                                       | false |
-| status#work-area-id<sup id="a1">[1](#f1)</sup> | Number      | R   | Id of the active work area                                                                                     | true  |
-| status#work-area<sup id="a1">[1](#f1)</sup>    | String      | R   | Name of the active work area                                                                                   | false |
+| status#work-area-id<sup id="a1">[1](#f1)</sup> | Number      | R   | Id of the active Work Area                                                                                     | true  |
+| status#work-area<sup id="a1">[1](#f1)</sup>    | String      | R   | Name of the active Work Area                                                                                   | false |
 | status#last-update                    | DateTime             | R   | The time when the Automower® sent the last update                                                              | false |
 | status#last-poll-update               | DateTime             | R   | The time when the binding polled the last update from the cloud                                                | true  |
 | status#poll-update                    | Switch               | R/W | Poll Automower® status update from the cloud (`sendCommand(ON)`)                                               | true  |
@@ -129,12 +129,12 @@ These channels hold the different Work Area configurations.
 
 | channel                                                                                                   | type                  | access mode | description                                         | advanced |
 |-----------------------------------------------------------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
-| workarea#\<x\>-area-id<sup id="a1">[1](#f1)</sup>                                                         | Number                | R           | Id of the work area                                 | false    |
-| workarea#\<x\>-area-name<sup id="a1">[1](#f1)</sup>                                                       | String                | R           | Name of the work area                               | false    |
-| workarea#\<x\>-area-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height of the work area in percent. 0-100   | false    |
-| workarea#\<x\>-area-enabled<sup id="a1">[1](#f1)</sup>                                                    | Switch                | R/W         | If the work area is enabled or disabled             | false    |
-| workarea#\<x\>-area-progress<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a work area                         | true     |
-| workarea#\<x\>-area-last-time-completed<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the work area was last completed     | true     |
+| workarea#\<x\>-area-id<sup id="a1">[1](#f1)</sup>                                                         | Number                | R           | Id of the Work Area                                 | false    |
+| workarea#\<x\>-area-name<sup id="a1">[1](#f1)</sup>                                                       | String                | R           | Name of the Work Area                               | false    |
+| workarea#\<x\>-area-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height of the Work Area in percent. 0-100   | false    |
+| workarea#\<x\>-area-enabled<sup id="a1">[1](#f1)</sup>                                                    | Switch                | R/W         | If the Work Area is enabled or disabled             | false    |
+| workarea#\<x\>-area-progress<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a Work Area                         | true     |
+| workarea#\<x\>-area-last-time-completed<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the Work Area was last completed     | true     |
 
 \<x\> ... 01-#workareas
 
@@ -169,21 +169,22 @@ Command channels that trigger actions.
 
 The following actions are available for `automower` things:
 
-| action name                | arguments        | description                                                                                            |
-|----------------------------|------------------|--------------------------------------------------------------------------------------------------------|
-| start                      | `duration (int)` | Start the Automower® for the given duration (minutes), overriding the schedule                         |
-| pause                      | -                | Pause the Automower® at the current location until manual resume                                       |
-| parkUntilNextSchedule      | -                | Park the Automower®, fully charge it and start afterwards according to the schedule                    |
-| parkUntilFurtherNotice     | -                | Park the Automower® until it is started again by the start action/command or the schedule gets resumed |
-| park                       | `duration (int)` | Park the Automower® for the given duration (minutes), overriding the schedule                          |
-| resumeSchedule             | -                | Resume the schedule of the Automower®                                                                  |
-| confirmError               | -                | Confirm current non fatal error                                                                        |
-| resetCuttingBladeUsageTime | -                | Reset the cutting blade usage time                                                                     |
-| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                         |
-| setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                          |
-| setStayOutZone             | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone                    |
-| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the Automower® doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per work area) |
-| poll                       | -                | Poll Automower® status update from the cloud                                                           |
+| action name                | arguments         | description                                                                                            |
+|----------------------------|-------------------|--------------------------------------------------------------------------------------------------------|
+| start                      | `duration (long)` | Start the Automower® for the given duration (minutes), overriding the schedule                         |
+| startInWorkArea            | `workAreaId (long)`<br/>`duration (long)` | Start the Automower® in the given Work Area for the given duration (minutes), overriding the schedule. If duration is skipped the Automower® will continue forever   |
+| pause                      | -                 | Pause the Automower® at the current location until manual resume                                       |
+| park                       | `duration (long)` | Park the Automower® for the given duration (minutes), overriding the schedule                          |
+| parkUntilNextSchedule      | -                 | Park the Automower®, fully charge it and start afterwards according to the schedule                    |
+| parkUntilFurtherNotice     | -                 | Park the Automower® until it is started again by the start action/command or the schedule gets resumed |
+| resumeSchedule             | -                 | Resume the schedule of the Automower®                                                                  |
+| confirmError               | -                 | Confirm current non fatal error                                                                        |
+| resetCuttingBladeUsageTime | -                 | Reset the cutting blade usage time                                                                     |
+| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                       | Update Automower® settings                         |
+| setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`       | Update Work Area settings                          |
+| setStayOutZone             | `String zoneId`<br/>`boolean enable`                                  | Enable or disable stay-out zone                    |
+| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the Automower® doesn't support Work Areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per Work Area) |
+| poll                       | -                 | Poll Automower® status update from the cloud                                                           |
 
 ## Full Example
 
@@ -259,4 +260,4 @@ end
 ## Footnotes
 
 - <b id="f1">1)</b> ... Channel availability depends on Automower® capabilities [↩](#a1)
-- <b id="f2">2)</b> ... Channel available for EPOS Automower® and systematic mowing work areas only [↩](#a2)
+- <b id="f2">2)</b> ... Channel available for EPOS Automower® and systematic mowing Work Area only [↩](#a2)
