@@ -165,11 +165,10 @@ public class DataTransportService {
     }
 
     public String getEconoMode() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getEconoMode().getValue();
-        } catch (Exception e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL)) //
+                .map(ManagementPoint::getEconoMode) //
+                .map(GatwaySubValueString::getValue) //
+                .orElse(null);
     }
 
     public void setEconoMode(Enums.OnOff value) {
@@ -177,20 +176,21 @@ public class DataTransportService {
     }
 
     public String getUnitName() {
-        try {
-            return getManagementPoint(managementPointType).getNameValue();
-        } catch (Exception e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(managementPointType)) //
+                .map(ManagementPoint::getNameValue) //
+                .orElse(null);
     }
 
     public Number getCurrentTemperatureSet() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getRoomTemperature().getValue();
-        } catch (Exception e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)) //
+                .map(ManagementPoint::getTemperatureControl) //
+                .map(TemperatureControl::getValue) //
+                .map(TemperatureControlValue::getOperationModes) //
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints) //
+                .map(Setpoints::getRoomTemperature) //
+                .map(IconID::getValue) //
+                .orElse(null);
     }
 
     public void setCurrentTemperatureSet(float value) {
@@ -200,40 +200,51 @@ public class DataTransportService {
     }
 
     public Number getCurrentTemperatureSetMin() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getRoomTemperature().getMinValue();
-        } catch (Exception e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)) //
+                .map(ManagementPoint::getTemperatureControl) //
+                .map(TemperatureControl::getValue) //
+                .map(TemperatureControlValue::getOperationModes) //
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints) //
+                .map(Setpoints::getRoomTemperature) //
+                .map(IconID::getMinValue) //
+                .orElse(null);
     }
 
     public Number getCurrentTemperatureSetMax() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getRoomTemperature().getMaxValue();
-        } catch (Exception e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)) //
+                .map(ManagementPoint::getTemperatureControl) //
+                .map(TemperatureControl::getValue) //
+                .map(TemperatureControlValue::getOperationModes) //
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints) //
+                .map(Setpoints::getRoomTemperature) //
+                .map(IconID::getMaxValue) //
+                .orElse(null);
     }
 
     public Number getCurrentTemperatureSetStep() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getRoomTemperature().getStepValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)) //
+                .map(ManagementPoint::getTemperatureControl) //
+                .map(TemperatureControl::getValue) //
+                .map(TemperatureControlValue::getOperationModes) //
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints) //
+                .map(Setpoints::getRoomTemperature) //
+                .map(IconID::getStepValue) //
+                .orElse(null);
     }
 
     public Number getCurrentTankTemperatureSet() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
-                    .getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)) //
+                .map(ManagementPoint::getTemperatureControl) //
+                .map(TemperatureControl::getValue) //
+                .map(TemperatureControlValue::getOperationModes) //
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints) //
+                .map(Setpoints::getdomesticHotWaterTemperature)//
+                .map(IconID::getValue) //
+                .orElse(null);
     }
 
     public void setCurrentTankTemperatureSet(float value) {
@@ -243,42 +254,51 @@ public class DataTransportService {
     }
 
     public Number getCurrentTankTemperatureSetMin() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
-                    .getMinValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getTemperatureControl)//
+                .map(TemperatureControl::getValue)//
+                .map(TemperatureControlValue::getOperationModes)//
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints)//
+                .map(Setpoints::getdomesticHotWaterTemperature)//
+                .map(IconID::getMinValue) //
+                .orElse(null);
     }
 
     public Number getCurrentTankTemperatureSetMax() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
-                    .getMaxValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getTemperatureControl)//
+                .map(TemperatureControl::getValue)//
+                .map(TemperatureControlValue::getOperationModes)//
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints)//
+                .map(Setpoints::getdomesticHotWaterTemperature)//
+                .map(IconID::getMaxValue) //
+                .orElse(null);
     }
 
     public Number getCurrentTankTemperatureSetStep() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
-                    .getStepValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getTemperatureControl)//
+                .map(TemperatureControl::getValue)//
+                .map(TemperatureControlValue::getOperationModes)//
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints)//
+                .map(Setpoints::getdomesticHotWaterTemperature)//
+                .map(IconID::getStepValue) //
+                .orElse(null);
     }
 
     public Number getSetpointLeavingWaterTemperature() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getLeavingWaterTemperature().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getTemperatureControl)//
+                .map(TemperatureControl::getValue)//
+                .map(TemperatureControlValue::getOperationModes)//
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints)//
+                .map(Setpoints::getLeavingWaterTemperature)//
+                .map(IconID::getStepValue) //
+                .orElse(null);
     }
 
     public void setSetpointLeavingWaterTemperature(float value) {
@@ -287,12 +307,15 @@ public class DataTransportService {
     }
 
     public Number getSetpointLeavingWaterOffset() {
-        try {
-            return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
-                    .getOperationMode(getCurrentOperationMode()).getSetpoints().getLeavingWaterOffset().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getTemperatureControl)//
+                .map(TemperatureControl::getValue)//
+                .map(TemperatureControlValue::getOperationModes)//
+                .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
+                .map(OpertationMode::getSetpoints)//
+                .map(Setpoints::getLeavingWaterOffset)//
+                .map(IconID::getValue) //
+                .orElse(null);
     }
 
     public void setSetpointLeavingWaterOffset(float value) {
@@ -300,61 +323,55 @@ public class DataTransportService {
     }
 
     public Number getIndoorTemperature() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue().getRoomTemperature()
-                    .getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getSensoryData)//
+                .map(SensoryData::getValue)//
+                .map(SensoryDataValue::getRoomTemperature)//
+                .map(IconID::getValue).orElse(null);
     }
 
     public Number getLeavingWaterTemperature() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue().getLeavingWaterTemperature()
-                    .getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getSensoryData)//
+                .map(SensoryData::getValue)//
+                .map(SensoryDataValue::getLeavingWaterTemperature)//
+                .map(IconID::getValue).orElse(null);
     }
 
     public Number getTankTemperature() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue().getTankTemperature()
-                    .getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getSensoryData)//
+                .map(SensoryData::getValue)//
+                .map(SensoryDataValue::getTankTemperature)//
+                .map(IconID::getValue).orElse(null);
     }
 
     public Number getIndoorHumidity() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getSensoryData().getValue()
-                    .getRoomHumidity().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getSensoryData)//
+                .map(SensoryData::getValue)//
+                .map(SensoryDataValue::getRoomHumidity)//
+                .map(IconID::getValue).orElse(null);
     }
 
     public ZonedDateTime getTimeStamp() {
-        try {
-            return ZonedDateTime.parse(unit.getTimestamp());
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(ZonedDateTime.parse(unit.getTimestamp()))//
+                .orElse(null);
     }
 
     public Number getOutdoorTemperature() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getSensoryData().getValue()
-                    .getOutdoorTemperature().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+                .map(ManagementPoint::getSensoryData)//
+                .map(SensoryData::getValue)//
+                .map(SensoryDataValue::getOutdoorTemperature)//
+                .map(IconID::getValue).orElse(null);
     }
 
     public Number getTargetTemperatur() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
-                .map(ManagementPoint::getTargetTemperature).map(IconID::getValue).orElse(null);
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getTargetTemperature)//
+                .map(IconID::getValue)//
+                .orElse(null);
     }
 
     public void setTargetTemperatur(float value) {
@@ -362,35 +379,31 @@ public class DataTransportService {
     }
 
     public Number getTargetTemperaturMax() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getMaxValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getTargetTemperature)//
+                .map(IconID::getMaxValue)//
+                .orElse(null);
     }
 
     public Number getTargetTemperaturMin() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getMinValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getTargetTemperature)//
+                .map(IconID::getMinValue)//
+                .orElse(null);
     }
 
     public Number getTargetTemperaturStep() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getStepValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getTargetTemperature)//
+                .map(IconID::getStepValue)//
+                .orElse(null);
     }
 
     public String getStreamerMode() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getStreamerMode().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getStreamerMode)//
+                .map(GatwaySubValueString::getValue)//
+                .orElse(null);
     }
 
     public void setStreamerMode(Enums.OnOff value) {
@@ -398,27 +411,24 @@ public class DataTransportService {
     }
 
     public String getHolidayMode() {
-        try {
-            return getManagementPoint(this.managementPointType).getHolidayMode().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getHolidayMode)//
+                .map(HolidayMode::getValue)//
+                .orElse(null);
     }
 
     public Boolean getIsHolidayModeActive() {
-        try {
-            return getManagementPoint(this.managementPointType).getisHolidayModeActive().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getisHolidayModeActive)//
+                .map(GatwaySubValueBoolean::getValue)//
+                .orElse(null);
     }
 
     public Boolean getIsPowerfulModeActive() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsPowerfulModeActive().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getisHolidayModeActive)//
+                .map(GatwaySubValueBoolean::getValue)//
+                .orElse(null);
     }
 
     public void setHolidayMode(Enums.OnOff value) {
@@ -426,12 +436,12 @@ public class DataTransportService {
     }
 
     public Enums.DemandControl getDemandControl() {
-        try {
-            return Enums.DemandControl.fromValue(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL)
-                    .getDemandControl().getValue().getCurrentMode().getValue());
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getDemandControl)//
+                .map(DemandControl::getValue)//
+                .map(DemandControlValue::getCurrentMode).map(GatwaySubValueString::getValue)
+                .map(Enums.DemandControl::fromValue)//
+                .orElse(null);
     }
 
     public void setDemandControl(Enums.DemandControl value) {
@@ -439,39 +449,40 @@ public class DataTransportService {
     }
 
     public Integer getDemandControlFixedValue() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
-                    .getFixedValues().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getDemandControl)//
+                .map(DemandControl::getValue)//
+                .map(DemandControlValue::getModes)//
+                .map(DemandControlModes::getFixedValues)//
+                .map(DemandControlModesFixed::getValue).orElse(null);
     }
 
     public Integer getDemandControlFixedStepValue() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
-                    .getFixedValues().getStepValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getDemandControl)//
+                .map(DemandControl::getValue)//
+                .map(DemandControlValue::getModes)//
+                .map(DemandControlModes::getFixedValues)//
+                .map(DemandControlModesFixed::getStepValue)//
+                .orElse(null);
     }
 
     public Integer getDemandControlFixedMinValue() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
-                    .getFixedValues().getMinValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getDemandControl)//
+                .map(DemandControl::getValue)//
+                .map(DemandControlValue::getModes)//
+                .map(DemandControlModes::getFixedValues)//
+                .map(DemandControlModesFixed::getMinValue).orElse(null);
     }
 
     public Integer getDemandControlFixedMaxValue() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
-                    .getFixedValues().getMaxValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getDemandControl)//
+                .map(DemandControl::getValue)//
+                .map(DemandControlValue::getModes)//
+                .map(DemandControlModes::getFixedValues)//
+                .map(DemandControlModesFixed::getMaxValue).orElse(null);
     }
 
     public void setDemandControlFixedValue(Integer value) {
@@ -479,245 +490,180 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionCoolingDay() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
-                    .getElectrical().getCooling().getDay();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getConsumptionData)//
+                .map(ConsumptionData::getValue)//
+                .map(ConsumptionDataValue::getElectrical)//
+                .map(Electrical::getCooling)//
+                .map(Ing::getDay)//
+                .orElse(null);
     }
 
     public Float[] getConsumptionCoolingWeek() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
-                    .getElectrical().getCooling().getWeek();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getConsumptionData)//
+                .map(ConsumptionData::getValue)//
+                .map(ConsumptionDataValue::getElectrical)//
+                .map(Electrical::getCooling)//
+                .map(Ing::getWeek)//
+                .orElse(null);
     }
 
     public Float[] getConsumptionCoolingMonth() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
-                    .getElectrical().getCooling().getMonth();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getConsumptionData)//
+                .map(ConsumptionData::getValue)//
+                .map(ConsumptionDataValue::getElectrical)//
+                .map(Electrical::getCooling)//
+                .map(Ing::getMonth)//
+                .orElse(null);
     }
 
     public Float[] getConsumptionHeatingDay() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
-                    .getElectrical().getHeating().getDay();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getConsumptionData)//
+                .map(ConsumptionData::getValue)//
+                .map(ConsumptionDataValue::getElectrical)//
+                .map(Electrical::getHeating)//
+                .map(Ing::getDay)//
+                .orElse(null);
     }
 
     public Float[] getConsumptionHeatingWeek() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
-                    .getElectrical().getHeating().getWeek();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getConsumptionData)//
+                .map(ConsumptionData::getValue)//
+                .map(ConsumptionDataValue::getElectrical)//
+                .map(Electrical::getHeating)//
+                .map(Ing::getWeek)//
+                .orElse(null);
     }
 
     public Float[] getConsumptionHeatingMonth() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
-                    .getElectrical().getHeating().getMonth();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+                .map(ManagementPoint::getConsumptionData)//
+                .map(ConsumptionData::getValue)//
+                .map(ConsumptionDataValue::getElectrical)//
+                .map(Electrical::getHeating)//
+                .map(Ing::getMonth)//
+                .orElse(null);
     }
 
-    /* GateWay data */
-
     public Boolean getDaylightSavingTimeEnabled() {
-        try {
-            return getManagementPoint(this.managementPointType).getDaylightSavingTimeEnabled().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getDaylightSavingTimeEnabled).map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public String getFirmwareVerion() {
-        try {
-            return getManagementPoint(this.managementPointType).getFirmwareVersion().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getFirmwareVersion).map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public Boolean getIsFirmwareUpdateSupported() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsFirmwareUpdateSupported().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getIsFirmwareUpdateSupported).map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public Boolean getIsInErrorState() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsInErrorState().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getIsInErrorState)
+                .map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public String getErrorCode() {
-        try {
-            return getManagementPoint(this.managementPointType).getErrorCode().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getErrorCode)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public Boolean getIsInEmergencyState() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsInEmergencyState().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getIsInEmergencyState).map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public Boolean getIsInInstallerState() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsInInstallerState().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getIsInInstallerState).map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public Boolean getIsInWarningState() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsInWarningState().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getIsInWarningState).map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public Boolean getIsLedEnabled() {
-        try {
-            return getManagementPoint(this.managementPointType).getIsLedEnabled().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getIsLedEnabled)
+                .map(GatwaySubValueBoolean::getValue).orElse(null);
     }
 
     public String getRegionCode() {
-        try {
-            return getManagementPoint(this.managementPointType).getRegionCode().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getRegionCode)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getSerialNumber() {
-        try {
-            return getManagementPoint(this.managementPointType).getSerialNumber().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getSerialNumber)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getSsid() {
-        try {
-            return getManagementPoint(this.managementPointType).getSsid().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getSsid)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getTimeZone() {
-        try {
-            return getManagementPoint(this.managementPointType).getTimeZone().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getTimeZone)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getWifiConectionSSid() {
-        try {
-            return getManagementPoint(this.managementPointType).getWifiConnectionSSID().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getWifiConnectionSSID).map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public Integer getWifiConectionStrength() {
-        try {
-            return getManagementPoint(this.managementPointType).getWifiConnectionStrength().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getWifiConnectionStrength).map(GatwaySubValueInteger::getValue).orElse(null);
     }
 
     public String getModelInfo() {
-        try {
-            return getManagementPoint(this.managementPointType).getModelInfo().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getModelInfo)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getSoftwareVersion() {
-        try {
-            return getManagementPoint(this.managementPointType).getSoftwareVersion().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))
+                .map(ManagementPoint::getSoftwareVersion).map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getEepromVerion() {
-        try {
-            return getManagementPoint(this.managementPointType).getEepromVersion().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getEepromVersion)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public String getDryKeepSetting() {
-        try {
-            return getManagementPoint(this.managementPointType).getDryKeepSetting().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getDryKeepSetting)
+                .map(GatwaySubValueString::getValue).orElse(null);
     }
 
     public Number getFanMotorRotationSpeed() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue().getFanMotorRotationSpeed()
-                    .getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getSensoryData)
+                .map(SensoryData::getValue).map(SensoryDataValue::getFanMotorRotationSpeed).map(IconID::getValue)
+                .orElse(null);
     }
 
     public Number getDeltaD() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue().getDeltaD().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getSensoryData)
+                .map(SensoryData::getValue).map(SensoryDataValue::getDeltaD).map(IconID::getValue).orElse(null);
     }
 
     public Number getHeatExchangerTemperature() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue()
-                    .getHeatExchangerTemperature().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getSensoryData)
+                .map(SensoryData::getValue).map(SensoryDataValue::getHeatExchangerTemperature).map(IconID::getValue)
+                .orElse(null);
     }
 
     public Number getSuctionTemperature() {
-        try {
-            return getManagementPoint(this.managementPointType).getSensoryData().getValue().getSuctionTemperature()
-                    .getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getSensoryData)
+                .map(SensoryData::getValue).map(SensoryDataValue::getSuctionTemperature).map(IconID::getValue)
+                .orElse(null);
     }
 }
