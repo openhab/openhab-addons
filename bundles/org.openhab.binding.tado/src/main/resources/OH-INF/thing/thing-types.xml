@@ -20,15 +20,15 @@
 		</properties>
 
 		<config-description>
-			<parameter name="username" type="text" required="false">
-				<label>User Name</label>
-				<description>Selects the tado° account to be used if there is more than one account.</description>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="rfcWithUser" type="boolean" required="false">
 				<label>RFC-8628 with User</label>
 				<description>Determines if the user name is included in the oAuth RFC-8628 authentication</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false">
+				<label>User Name</label>
+				<description>Selects the tado° account to be used if there is more than one account.</description>
 				<advanced>true</advanced>
 			</parameter>
 
