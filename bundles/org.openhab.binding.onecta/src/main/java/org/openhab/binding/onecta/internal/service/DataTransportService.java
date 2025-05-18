@@ -297,7 +297,7 @@ public class DataTransportService {
                 .map(modes -> modes.getOperationMode(getCurrentOperationMode())) //
                 .map(OpertationMode::getSetpoints)//
                 .map(Setpoints::getLeavingWaterTemperature)//
-                .map(IconID::getStepValue) //
+                .map(IconID::getValue) //
                 .orElse(null);
     }
 
@@ -360,11 +360,12 @@ public class DataTransportService {
     }
 
     public Number getOutdoorTemperature() {
-        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
                 .map(ManagementPoint::getSensoryData)//
                 .map(SensoryData::getValue)//
                 .map(SensoryDataValue::getOutdoorTemperature)//
-                .map(IconID::getValue).orElse(null);
+                .map(IconID::getValue)//
+                .orElse(null);
     }
 
     public Number getTargetTemperatur() {
@@ -411,21 +412,21 @@ public class DataTransportService {
     }
 
     public String getHolidayMode() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getHolidayMode)//
                 .map(HolidayMode::getValue)//
                 .orElse(null);
     }
 
     public Boolean getIsHolidayModeActive() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getisHolidayModeActive)//
                 .map(GatwaySubValueBoolean::getValue)//
                 .orElse(null);
     }
 
     public Boolean getIsPowerfulModeActive() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getisHolidayModeActive)//
                 .map(GatwaySubValueBoolean::getValue)//
                 .orElse(null);
