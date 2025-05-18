@@ -55,6 +55,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Rest
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.State;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZone;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZones;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.WorkArea;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -1127,20 +1128,21 @@ public class AutomowerHandler extends BaseThingHandler {
             /* Update StayOutZones channels */
             i = 0;
             if (capabilities.hasStayOutZones()) {
-                updateState(CHANNEL_STAYOUTZONE_DIRTY,
-                        OnOffType.from(mower.getAttributes().getStayOutZones().isDirty()));
+                StayOutZones stayOutZones = mower.getAttributes().getStayOutZones();
+                if (stayOutZones != null) {
+                    updateState(CHANNEL_STAYOUTZONE_DIRTY,
+                        OnOffType.from(stayOutZones.isDirty()));
 
-                if (mower.getAttributes().getStayOutZones() != null) {
-                    List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
-                    if (stayOutZones != null) {
-                        for (; i < stayOutZones.size(); i++) {
+                    List<StayOutZone> stayOutZoneList = mower.getAttributes().getStayOutZones().getZones();
+                    if (stayOutZoneList != null) {
+                        for (; i < stayOutZoneList.size(); i++) {
                             int j = 0;
                             updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                    new StringType(stayOutZones.get(i).getId()));
+                                    new StringType(stayOutZoneList.get(i).getId()));
                             updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                    new StringType(stayOutZones.get(i).getName()));
+                                    new StringType(stayOutZoneList.get(i).getName()));
                             updateIndexedState(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j++),
-                                    OnOffType.from(stayOutZones.get(i).isEnabled()));
+                                    OnOffType.from(stayOutZoneList.get(i).isEnabled()));
                         }
                     }
                 }
