@@ -21,7 +21,6 @@
 			<channel id="temperature" typeId="battery-temperature"/>
 			<channel id="voltage" typeId="battery-voltage"/>
 			<channel id="current" typeId="battery-current"/>
-			<!-- TODO: SOH -->
 			<channel id="charger-type" typeId="battery-charger-type"/>
 			<channel id="charge-limit" typeId="battery-charge-limit"/>
 			<channel id="discharge-limit" typeId="battery-discharge-limit"/>
@@ -35,7 +34,6 @@
 			<channel id="temperature" typeId="battery-temperature"/>
 			<channel id="voltage" typeId="battery-voltage"/>
 			<channel id="current" typeId="battery-current"/>
-			<!-- TODO: SOH -->
 			<channel id="charger-type" typeId="battery-charger-type"/>
 			<channel id="charge-limit" typeId="battery-charge-limit"/>
 			<channel id="discharge-limit" typeId="battery-discharge-limit"/>
