@@ -7,7 +7,7 @@
 	<thing-type id="linky">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="enedis"/>
-			<bridge-type-ref id="enedis-web"/>
+            <bridge-type-ref id="enedis-api"/>
 			<bridge-type-ref id="my-electrical-data"/>
 		</supported-bridge-type-refs>
 

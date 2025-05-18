@@ -31,8 +31,8 @@ public class LinkyBindingConstants {
     public static final String BINDING_ID = "linky";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_API_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis");
-    public static final ThingTypeUID THING_TYPE_API_WEB_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis-web");
+    public static final ThingTypeUID THING_TYPE_API_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis-api");
+    public static final ThingTypeUID THING_TYPE_API_WEB_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis");
     public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,
             "my-electrical-data");
     public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");

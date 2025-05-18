@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="enedis">
-		<label>Enedis Bridge</label>
+	<bridge-type id="enedis-api">
+		<label>Enedis API Bridge</label>
 		<description>
 			Provides your energy consumption data.
 			In order to receive the data, you must activate your account at
