@@ -231,7 +231,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
         }
     }
 
-    abstract protected Optional<JsonObject> convertCommand(String channelId, Command command);
+    protected abstract Optional<JsonObject> convertCommand(String channelId, Command command);
 
-    abstract protected Optional<String> extractGroupKeyFromMqttMessage(JsonObject payload);
+    protected abstract Optional<String> extractGroupKeyFromMqttMessage(JsonObject payload);
 }

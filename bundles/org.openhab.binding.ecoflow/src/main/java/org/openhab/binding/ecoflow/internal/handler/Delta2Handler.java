@@ -40,25 +40,26 @@ import com.google.gson.JsonObject;
 public class Delta2Handler extends AbstractEcoflowHandler {
     private int nextControlId = 1;
 
-    private static ValueConverter PERCENT_DECIMAL_CONVERTER = value -> new DecimalType(value.getAsNumber());
-    private static ValueConverter PERCENT_DIMMER_CONVERTER = value -> new PercentType(value.getAsInt());
-    private static ValueConverter SWITCH_CONVERTER = value -> value.getAsInt() != 0 ? OnOffType.ON : OnOffType.OFF;
+    private static final ValueConverter PERCENT_DECIMAL_CONVERTER = value -> new DecimalType(value.getAsNumber());
+    private static final ValueConverter PERCENT_DIMMER_CONVERTER = value -> new PercentType(value.getAsInt());
+    private static final ValueConverter SWITCH_CONVERTER = value -> value.getAsInt() != 0 ? OnOffType.ON
+            : OnOffType.OFF;
 
-    private static ValueConverter CHARGER_TYPE_CONVERTER = value -> switch (value.getAsInt()) {
+    private static final ValueConverter CHARGER_TYPE_CONVERTER = value -> switch (value.getAsInt()) {
         case 1 -> new StringType("ac");
         case 2 -> new StringType("dc");
         case 3 -> new StringType("solar");
         default -> UnDefType.NULL;
     };
 
-    private static ValueConverter SOLAR_INPUT_STATE_CONVERTER = value -> switch (value.getAsInt()) {
+    private static final ValueConverter SOLAR_INPUT_STATE_CONVERTER = value -> switch (value.getAsInt()) {
         case 0 -> new StringType("disabled");
         case 1 -> new StringType("charging");
         case 2 -> new StringType("standby");
         default -> UnDefType.NULL;
     };
 
-    private static ValueConverter SOLAR_INPUT_TYPE_CONVERTER = value -> switch (value.getAsInt()) {
+    private static final ValueConverter SOLAR_INPUT_TYPE_CONVERTER = value -> switch (value.getAsInt()) {
         case 0 -> new StringType("none");
         case 1 -> new StringType("dc");
         case 2 -> new StringType("solar");

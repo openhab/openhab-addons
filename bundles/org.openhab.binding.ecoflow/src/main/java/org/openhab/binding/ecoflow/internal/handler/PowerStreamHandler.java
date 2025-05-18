@@ -38,7 +38,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class PowerStreamHandler extends AbstractEcoflowHandler {
-    private static ValueConverter INVERTER_STATUS_CONVERTER = value -> {
+    private static final ValueConverter INVERTER_STATUS_CONVERTER = value -> {
         return switch (value.getAsInt()) {
             case 1 -> new StringType("idle");
             case 2 -> new StringType("starting");
@@ -47,11 +47,12 @@ public class PowerStreamHandler extends AbstractEcoflowHandler {
             default -> UnDefType.NULL;
         };
     };
-    private static ValueConverter SUPPLY_PRIORITY_CONVERTER = //
+    private static final ValueConverter SUPPLY_PRIORITY_CONVERTER = //
             value -> new StringType(value.getAsInt() > 0 ? "prioIsStorage" : "prioIsSupply");
-    private static ValueConverter INV_SWITCH_CONVERTER = value -> value.getAsInt() != 0 ? OnOffType.OFF : OnOffType.ON;
-    private static ValueConverter PERCENT_DECIMAL_CONVERTER = value -> new DecimalType(value.getAsNumber());
-    private static ValueConverter PERCENT_DIMMER_CONVERTER = value -> new PercentType(value.getAsInt());
+    private static final ValueConverter INV_SWITCH_CONVERTER = value -> value.getAsInt() != 0 ? OnOffType.OFF
+            : OnOffType.ON;
+    private static final ValueConverter PERCENT_DECIMAL_CONVERTER = value -> new DecimalType(value.getAsNumber());
+    private static final ValueConverter PERCENT_DIMMER_CONVERTER = value -> new PercentType(value.getAsInt());
 
     private static final List<ChannelMapping> MAPPINGS = List.of(
             new ChannelMapping("20_1", "invStatue", CHANNEL_ID_INV_STATUS, INVERTER_STATUS_CONVERTER),

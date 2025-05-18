@@ -170,7 +170,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     private void initApi() {
         try {
             EcoflowApiConfiguration config = getConfigAs(EcoflowApiConfiguration.class);
-            EcoflowApi api = EcoflowApi.create(httpClient, config.accessKey, config.secretKey);
+            EcoflowApi api = new EcoflowApi(httpClient, config.accessKey, config.secretKey);
 
             api.getDeviceList(); // dummy call to see whether login data is correct
 

@@ -53,17 +53,13 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class EcoflowApi {
-    public static EcoflowApi create(HttpClient httpClient, String accessKey, String secretKey) {
-        return new EcoflowApi(httpClient, accessKey, secretKey);
-    }
-
     private final HttpClient httpClient;
     private final String accessKey;
     private final String secretKey;
     private final Random random = new Random();
     private final Gson gson = new Gson();
 
-    private EcoflowApi(HttpClient httpClient, String accessKey, String secretKey) {
+    public EcoflowApi(HttpClient httpClient, String accessKey, String secretKey) {
         this.httpClient = httpClient;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
@@ -128,13 +124,10 @@ public class EcoflowApi {
         int nonce = random.nextInt(900000) + 100000; // 100000..999999
         long timestamp = System.currentTimeMillis();
 
-        Map<String, String> headerParams = new TreeMap<String, String>() {
-            {
-                put("accessKey", accessKey);
-                put("nonce", String.valueOf(nonce));
-                put("timestamp", String.valueOf(timestamp));
-            }
-        };
+        Map<String, String> headerParams = new TreeMap<String, String>();
+        headerParams.put("accessKey", accessKey);
+        headerParams.put("nonce", String.valueOf(nonce));
+        headerParams.put("timestamp", String.valueOf(timestamp));
 
         final String signingData;
         if (payload != null && !payload.isEmpty()) {

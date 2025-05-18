@@ -20,6 +20,8 @@ import org.eclipse.jetty.client.api.Response;
  */
 @NonNullByDefault
 public class EcoflowApiException extends Exception {
+    public static final long serialVersionUID = -3954265654869396363L;
+
     public EcoflowApiException(String reason) {
         super(reason);
     }
