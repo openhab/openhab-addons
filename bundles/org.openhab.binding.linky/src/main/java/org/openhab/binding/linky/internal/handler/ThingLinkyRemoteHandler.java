@@ -48,6 +48,7 @@ import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.types.LinkyException;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -814,5 +815,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         } catch (Exception e) {
             logger.error("error during logData", e);
         }
+    }
+
+    public void saveConfiguration(Configuration config) {
+        updateConfiguration(config);
     }
 }
