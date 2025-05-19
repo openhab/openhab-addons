@@ -45,7 +45,6 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +85,7 @@ public class TibberWebsocket {
         client.setMaxIdleTimeout(30 * 1000);
 
         ClientUpgradeRequest newRequest = new ClientUpgradeRequest();
-        newRequest.setHeader(HttpHeader.USER_AGENT.asString(), "openHAB/Tibber "
-                + FrameworkUtil.getBundle(this.getClass()).getVersion().toString() + " Tibber driver " + TIBBER_DRIVER);
+        newRequest.setHeader(HttpHeader.USER_AGENT.asString(), AGENT_VERSION);
         newRequest.setHeader(HttpHeader.AUTHORIZATION.asString(), "Bearer " + config.token);
         newRequest.setSubProtocols("graphql-transport-ws");
 

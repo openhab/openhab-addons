@@ -18,12 +18,14 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * The {@link TibberTest} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - Enhance used constants
  */
 @NonNullByDefault
 public class TibberBindingConstants {
@@ -34,8 +36,12 @@ public class TibberBindingConstants {
     // Tibber base URL for queries and mutations
     public static final String BASE_URL = "https://api.tibber.com/v1-beta/gql";
 
-    // Tibber driver version
+    // fulfill https://developer.tibber.com/docs/guides/calling-api
+    // Clients must set the User-Agent HTTP header when calling the GraphQL API. Both platform and driver version
+    // must be indicated. E.g. Homey/10.0.0 com.tibber/1.8.3.
     public static final String TIBBER_DRIVER = "com.tibber/1.8.3";
+    public static final String AGENT_VERSION = "openHAB/"
+            + FrameworkUtil.getBundle(TibberBindingConstants.class).getVersion().toString() + " " + TIBBER_DRIVER;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID TIBBER_THING_TYPE = new ThingTypeUID(BINDING_ID, "tibberapi");
