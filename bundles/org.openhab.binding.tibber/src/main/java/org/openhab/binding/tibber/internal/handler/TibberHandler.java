@@ -33,7 +33,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -50,7 +49,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.TimeSeries;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,23 +72,19 @@ public class TibberHandler extends BaseThingHandler {
     private final TreeMap<Instant, Double> spotPriceMap = new TreeMap<>();
     private final TreeMap<Instant, String> spotPriceLevelMap = new TreeMap<>();
     private final HttpClient httpClient;
-    private final TimeZoneProvider timeZoneProvider;
     private final Storage<String> storage;
     private final CronScheduler cron;
 
     private TibberConfiguration tibberConfig = new TibberConfiguration();
     private Optional<ScheduledFuture<?>> websocketWatchdog = Optional.empty();
-    private Optional<ScheduledCompletableFuture<?>> cron15 = Optional.empty();
     private Optional<ScheduledCompletableFuture<?>> cronDaily = Optional.empty();
     private Optional<TibberWebsocket> webSocket = Optional.empty();
     private Optional<Boolean> realtimeEnabled = Optional.empty();
     private int retryCounter = 0;
 
-    public TibberHandler(Thing thing, HttpClient httpClient, CronScheduler cron, Storage<String> storage,
-            TimeZoneProvider timeZoneProvider) {
+    public TibberHandler(Thing thing, HttpClient httpClient, CronScheduler cron, Storage<String> storage) {
         super(thing);
         this.httpClient = httpClient;
-        this.timeZoneProvider = timeZoneProvider;
         this.cron = cron;
         this.storage = storage;
     }
@@ -117,10 +111,6 @@ public class TibberHandler extends BaseThingHandler {
             job.cancel(true);
         });
         cronDaily = Optional.empty();
-        cron15.ifPresent(job -> {
-            job.cancel(true);
-        });
-        cron15 = Optional.empty();
         websocketWatchdog.ifPresent(job -> {
             job.cancel(true);
         });
@@ -135,11 +125,7 @@ public class TibberHandler extends BaseThingHandler {
     public Request getRequest() {
         Request req = httpClient.POST(BASE_URL).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token);
-        // fulfill https://developer.tibber.com/docs/guides/calling-api
-        // Clients must set the User-Agent HTTP header when calling the GraphQL API. Both platform and driver version
-        // must be indicated. E.g. Homey/10.0.0 com.tibber/1.8.3.
-        req.header(HttpHeader.USER_AGENT, "openHAB/Tibber "
-                + FrameworkUtil.getBundle(this.getClass()).getVersion().toString() + " Tibber driver " + TIBBER_DRIVER);
+        req.header(HttpHeader.USER_AGENT, AGENT_VERSION);
 
         req.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
         req.header("cache-control", "no-cache");
@@ -174,9 +160,6 @@ public class TibberHandler extends BaseThingHandler {
                                 .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, hour)));
                     }
 
-                    // start cron
-                    scheduler.schedule(this::updateCurrentSpotPrice, 0, TimeUnit.MINUTES);
-                    cron15 = Optional.of(cron.schedule(this::updateCurrentSpotPrice, CRON_15_MINUTES));
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Status: " + responseStatus + " - " + initResponse);
@@ -212,32 +195,6 @@ public class TibberHandler extends BaseThingHandler {
                         isRealtimeEnabled(), liveChannelsLinked());
             });
         }
-    }
-
-    /**
-     * Function called each minute to update prices.
-     * Strategy:
-     * - each minute current price and price level updated from cache
-     * - check for hour switch and try to receive tomorrow prices
-     */
-    // public void updatePriceInfo() {
-    // updatePricesOld();
-    // Request priceRequest = getRequest();
-    // String body = String.format(PRICE_QUERY, tibberConfig.homeid);
-    // priceRequest.content(new StringContentProvider(body, "utf-8"));
-    // try {
-    // ContentResponse cr = priceRequest.send();
-    // int responseStatus = cr.getStatus();
-    // String jsonResponse = cr.getContentAsString();
-    // logger.trace("updatePrices response {} - {}", responseStatus, jsonResponse);
-    // JsonObject rootJsonObject = (JsonObject) JsonParser.parseString(jsonResponse);
-    // } catch (InterruptedException | TimeoutException | ExecutionException e) {
-    // logger.info("Price info update failed {}", e.getMessage());
-    // }
-    // }
-
-    public void updateCurrentSpotPrice() {
-        logger.info("Current price info update ");
     }
 
     private void updateSpotPrices() {
