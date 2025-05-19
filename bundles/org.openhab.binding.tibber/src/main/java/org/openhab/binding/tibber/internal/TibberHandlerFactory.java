@@ -17,7 +17,11 @@ import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -37,11 +41,18 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.tibber", service = ThingHandlerFactory.class)
 public class TibberHandlerFactory extends BaseThingHandlerFactory {
+    private final TimeZoneProvider timeZoneProvider;
     private final HttpClientFactory httpFactory;
+    private final Storage<String> storage;
+    private final CronScheduler cron;
 
     @Activate
-    public TibberHandlerFactory(final @Reference HttpClientFactory httpFactory) {
+    public TibberHandlerFactory(final @Reference HttpClientFactory httpFactory, final @Reference CronScheduler cron,
+            final @Reference StorageService storageService, final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpFactory = httpFactory;
+        this.timeZoneProvider = timeZoneProvider;
+        this.cron = cron;
+        this.storage = storageService.getStorage(BINDING_ID);
     }
 
     @Override
@@ -53,7 +64,7 @@ public class TibberHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(TIBBER_THING_TYPE)) {
-            return new TibberHandler(thing, httpFactory.getCommonHttpClient());
+            return new TibberHandler(thing, httpFactory.getCommonHttpClient(), cron, storage, timeZoneProvider);
         } else {
             return null;
         }
