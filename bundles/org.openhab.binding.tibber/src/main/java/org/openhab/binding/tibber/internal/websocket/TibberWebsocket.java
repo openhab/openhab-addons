@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,12 @@ import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -32,8 +37,10 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
@@ -55,6 +62,7 @@ import com.google.gson.JsonParser;
 @WebSocket
 public class TibberWebsocket {
     private final Logger logger = LoggerFactory.getLogger(TibberWebsocket.class);
+    private final Map<String, Instant> pingPongMap = new HashMap<>();
     private final TibberConfiguration config;
     private final HttpClient httpClient;
     private final TibberHandler handler;
@@ -73,6 +81,7 @@ public class TibberWebsocket {
             logger.trace("Tibber Websocket already running");
             return;
         }
+        pingPongMap.clear();
         WebSocketClient client = new WebSocketClient(httpClient);
         client.setMaxIdleTimeout(30 * 1000);
 
@@ -102,7 +111,7 @@ public class TibberWebsocket {
                 ContentResponse response = websocketUrlRequest.send();
                 int responseStatus = response.getStatus();
                 String jsonResponse = response.getContentAsString();
-                logger.trace("isRealtimeEnabled response {} - {}", responseStatus, jsonResponse);
+                logger.trace("getSubscriptionUrl response {} - {}", responseStatus, jsonResponse);
                 if (response.getStatus() == 200) {
                     JsonObject wsobject = (JsonObject) JsonParser.parseString(jsonResponse);
                     JsonObject dataObject = wsobject.getAsJsonObject("data");
@@ -111,7 +120,9 @@ public class TibberWebsocket {
                         if (viewerObject != null) {
                             JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
                             if (subscriptionElement != null) {
-                                wsUrl = Optional.of(new URI(subscriptionElement.toString().replaceAll("^\"|\"$", "")));
+                                URI wsURI = new URI(subscriptionElement.toString().replaceAll("^\"|\"$", ""));
+                                wsUrl = Optional.of(wsURI);
+                                return wsURI;
                             }
                         }
                     }
@@ -126,6 +137,10 @@ public class TibberWebsocket {
     public void stop() {
         wsClient.ifPresentOrElse(client -> {
             try {
+                session.ifPresent(session -> {
+                    sendMessage(DISCONNECT_MESSAGE);
+                    session.close();
+                });
                 client.stop();
                 client.destroy();
             } catch (Exception e) {
@@ -135,13 +150,15 @@ public class TibberWebsocket {
                 session = Optional.empty();
             }
         }, () -> {
+            wsClient = Optional.empty();
+            session = Optional.empty();
         });
     }
 
     @OnWebSocketConnect
     public void onConnect(Session wssession) {
         session = Optional.of(wssession);
-        String connection = String.format(CONNECTION_PATH, config.token);
+        String connection = String.format(CONNECT_MESSAGE, config.token);
         sendMessage(connection);
     }
 
@@ -159,7 +176,59 @@ public class TibberWebsocket {
 
     @OnWebSocketMessage
     public void onMessage(String message) {
-        handler.newMessage(message);
+        if (message.contains("connection_ack")) {
+            logger.debug("WebSocket connected to Server");
+            String subScriptionMessage = String.format(SUBSCRIPTION_MESSAGE, config.homeid);
+            sendMessage(subScriptionMessage);
+        } else {
+            handler.newMessage(message);
+        }
+    }
+
+    @OnWebSocketFrame
+    public void onFrame(Frame frame) {
+        if (Frame.Type.PONG.equals(frame.getType())) {
+            ByteBuffer buffer = frame.getPayload();
+            byte[] bytes = new byte[frame.getPayloadLength()];
+            for (int i = 0; i < frame.getPayloadLength(); i++) {
+                bytes[i] = buffer.get(i);
+            }
+            String paylodString = new String(bytes);
+            Instant sent = pingPongMap.remove(paylodString);
+            if (sent == null) {
+                logger.debug("Websocket receiced pong without ping {}", paylodString);
+            } else {
+                // long durationMS = Duration.between(sent, Instant.now()).toMillis();
+                // logger.trace("Websocket receiced pong {} with duration {}", paylodString, durationMS);
+            }
+        } else if (Frame.Type.PING.equals(frame.getType())) {
+            session.ifPresentOrElse((session) -> {
+                ByteBuffer buffer = frame.getPayload();
+                try {
+                    session.getRemote().sendPong(buffer);
+                } catch (IOException e) {
+                    logger.warn("Websocket onPing answer exception {}", e.getMessage());
+                }
+            }, () -> {
+                logger.debug("Websocket onPing answer cannot be initiated");
+            });
+        }
+    }
+
+    public boolean isConnected() {
+        return session.isPresent() && session.get().isOpen();
+    }
+
+    public void ping() {
+        session.ifPresent(session -> {
+            try {
+                String pingId = UUID.randomUUID().toString();
+                pingPongMap.put(pingId, Instant.now());
+                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
+            } catch (IOException e) {
+                logger.warn("Websocket ping failed {}", e.getMessage());
+            }
+        });
     }
 
     private void sendMessage(String message) {
@@ -173,17 +242,5 @@ public class TibberWebsocket {
         }, () -> {
             logger.info("Websocket send message {} rejected - websocket offline", message);
         });
-    }
-
-    public void startSubscription() {
-        String query = String.format(CONNECTION_PATH, config.homeid);
-        sendMessage(query);
-    }
-
-    public boolean isConnected() {
-        if (session.isPresent()) {
-            return session.get().isOpen();
-        }
-        return false;
     }
 }

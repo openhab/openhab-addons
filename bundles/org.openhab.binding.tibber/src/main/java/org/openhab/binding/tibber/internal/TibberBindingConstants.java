@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TibberBindingConstants} class defines common constants, which are
+ * The {@link TibberTest} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Stian Kjoglum - Initial contribution
@@ -79,15 +79,28 @@ public class TibberBindingConstants {
     public static final String LIVE_MINPOWERPRODUCTION = "live_minPowerproduction";
     public static final String LIVE_MAXPOWERPRODUCTION = "live_maxPowerproduction";
 
-    public static final String CONNECTION_PATH = "{\"type\":\"connection_init\", \"payload\":{\"token\":\"%s\"}}";
-    public static final String CONNECTION_QUERY = "{\"query\": \"{viewer {home (id: \"%s\") {id }}}\"}";
-    public static final String REALTIME_QUERY = "{\"query\": \"{viewer {home (id: \"%s\") {features {realTimeConsumptionEnabled }}}}\"}";
-    public static final String PRICE_QUERY = "{\"query\": \"{viewer {home (id: \"%s\") {currentSubscription {priceInfo {current {total startsAt level } tomorrow { startsAt total level } today { startsAt total level }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
-    public static final String WEBSOCKET_URL_QUERY = "{\"query\": \"{viewer {websocketSubscriptionUrl }}\"}";
-    public static final String SUBSCRIPTION_PATH = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\"%s\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
+    public static final String HOME_ID_QUERY = "{\"query\":\"{viewer {home (id:\\\"%s\\\") {id}}}\"}";
+    public static final String REALTIME_QUERY = "{\"query\":\"{viewer {home (id:\\\"%s\\\") {features {realTimeConsumptionEnabled }}}}\"}";
+    public static final String PRICE_QUERY = "{\"query\":\"{viewer {home (id:\\\"%s\\\") {currentSubscription {priceInfo {current {total startsAt level } tomorrow { startsAt total level } today { startsAt total level }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
+    public static final String WEBSOCKET_URL_QUERY = "{\"query\":\"{viewer {websocketSubscriptionUrl }}\"}";
+
+    public static final String CONNECT_MESSAGE = "{\"type\":\"connection_init\", \"payload\":{\"token\":\"%s\"}}";
+    public static final String DISCONNECT_MESSAGE = "{\"type\":\"connection_terminate\",\"payload\":null}";
+    public static final String SUBSCRIPTION_MESSAGE = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\"%s\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
             + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n accumulatedProductionLastHour\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
 
     public static final String EMPTY = "";
+
+    public static final String CRON_15_MINUTES = "0 0/15 * ? * * *";
+    public static final String CRON_DAILY_AT = "30 0 %s ? * * *";
+
+    public static final String JSON_DATA = "data";
+    public static final String JSON_VIEWER = "viewer";
+    public static final String JSON_HOME = "home";
+    public static final String JSON_SUBSRCIPTION = "currentSubscription";
+    public static final String JSON_DAILY = "daily";
+    public static final String JSON_HOURLY = "hourly";
+    public static final String JSON_NODES = "nodes";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(TIBBER_THING_TYPE)
             .collect(Collectors.toSet());
