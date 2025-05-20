@@ -200,7 +200,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     @Override
     public void setJsonObject(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
-        logger.trace("AbstractRingDevice - setJsonObject - Updated JSON: {}", this.jsonObject.getAsString());
+        logger.trace("AbstractRingDevice - setJsonObject - Updated JSON: {}", this.jsonObject.toString());
     }
 
     @Override
