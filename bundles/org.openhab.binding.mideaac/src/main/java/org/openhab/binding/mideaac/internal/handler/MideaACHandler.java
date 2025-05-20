@@ -309,25 +309,19 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     private void energyUpdate() {
         ConnectionManager connectionManager = this.connectionManager;
-        Response response = connectionManager.getLastResponse();
 
-        // Only runs if device is ON to reduce traffic
-        if (response.getPowerState()) {
-            try {
-                CommandSet energyUpdate = new CommandSet();
-                energyUpdate.energyPoll();
-                connectionManager.sendCommand(energyUpdate, this);
-            } catch (MideaAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            } catch (MideaConnectionException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (MideaException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        } else {
-            logger.trace("AC is off, skipping energy update.");
+        try {
+            CommandSet energyUpdate = new CommandSet();
+            energyUpdate.energyPoll();
+            connectionManager.sendCommand(energyUpdate, this);
+        } catch (MideaAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (MideaConnectionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (MideaException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

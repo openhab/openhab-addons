@@ -223,8 +223,7 @@ public class CommandSetTest {
         assertEquals((byte) 0x20, commandSet.data[0x01]);
         assertEquals((byte) 0x03, commandSet.data[0x09]);
         assertEquals((byte) 0x41, commandSet.data[0x0a]);
-        assertEquals((byte) 0x02, commandSet.data[0x0b] & 0x02); // Check if bit 2 is set
-        assertEquals((byte) 0x00, commandSet.data[0x0b] & 0x80); // Check if bit 8 is cleared
+        assertEquals((byte) 0x61, commandSet.data[0x0b]);
         assertEquals((byte) 0x00, commandSet.data[0x0c]);
         assertEquals((byte) 0xff, commandSet.data[0x0d]);
         assertEquals((byte) 0x02, commandSet.data[0x0e]);
