@@ -255,8 +255,7 @@ public class CommandSet extends CommandBase {
         data[0x01] = (byte) 0x20;
         data[0x09] = (byte) 0x03;
         data[0x0a] = (byte) 0x41;
-        data[0x0b] |= 0x02; // Set
-        data[0x0b] &= ~(byte) 0x80; // Clear
+        data[0x0b] = (byte) 0x61; // Includes beep 0x40
         data[0x0c] = (byte) 0x00;
         data[0x0d] = (byte) 0xff;
         data[0x0e] = (byte) 0x02;
