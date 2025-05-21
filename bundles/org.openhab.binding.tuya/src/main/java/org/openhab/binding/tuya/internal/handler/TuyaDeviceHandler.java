@@ -69,6 +69,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -577,7 +578,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {
-        return options.stream().map(c -> new CommandOption(c, c)).toList();
+        return options.stream()
+                .map(c -> new CommandOption(c, StringUtils.capitalizeByWhitespace(c.replaceAll("_", " ")))).toList();
     }
 
     private void addSingleExpiringCache(Integer key, Object value) {
