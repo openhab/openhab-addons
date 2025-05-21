@@ -50,8 +50,9 @@ public class RingCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public void execute(String[] args, Console console) {
-        if (args[1].equals("login") && (args.length == 5)) {
-            logger.trace("Received Login Command: {} {} {} {}", args[0], args[2], args[3], args[4]);
+        if (args.length == 5 && "login".equals(args[1])) {
+            logger.trace("Received Login Command: {} [username: {}, password: {}, 2FA: {}]", args[0], args[2], "***",
+                    "***");
             Thing thing = null;
             try {
                 ThingUID thingUID = new ThingUID(args[0]);

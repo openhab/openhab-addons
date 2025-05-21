@@ -83,7 +83,7 @@ public class RingVideoServlet extends HttpServlet {
                 ipAddress = request.getRemoteAddr();
             }
             String path = request.getRequestURI().substring(0, SERVLET_VIDEO_PATH.length());
-            logger.trace("RingVideo: Reqeust from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
+            logger.trace("RingVideo: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                     request.getRemoteHost(), request.getServerPort(), request.getProtocol());
             if (!request.getMethod().equalsIgnoreCase(HttpMethod.GET.toString())) {
                 logger.error("RingVideo: Unexpected method='{}'", request.getMethod());
