@@ -21,7 +21,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -88,11 +90,15 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class BridgeHandler extends BaseBridgeHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+
+    public static final String THING_PROPERTY_SHC_GENERATION = "shcGeneration";
+    public static final String THING_PROPERTY_API_VERSIONS = "apiVersions";
+    public static final String CONFIGURATION_PARAMETER_IP_ADDRESS = "ipAddress";
+
     private static final String HTTP_CLIENT_NOT_INITIALIZED = "HttpClient not initialized";
 
     private static final Duration ROOM_CACHE_DURATION = Duration.ofMinutes(2);
-
-    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
 
     /**
      * Handler to do long polling.
@@ -286,6 +292,8 @@ public class BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            updateThingProperties();
+
             // do thing discovery after pairing
             final ThingDiscoveryService discovery = thingDiscoveryService;
             if (discovery != null) {
@@ -299,6 +307,23 @@ public class BridgeHandler extends BaseBridgeHandler {
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private void updateThingProperties() {
+        try {
+            PublicInformation publicInformation = getPublicInformation();
+            @Nullable
+            Map<String, String> properties = new HashMap<>();
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, publicInformation.macAddress);
+            properties.put(THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration);
+            properties.put(THING_PROPERTY_API_VERSIONS, publicInformation.getApiVersionsAsCommaSeparatedList());
+            updateProperties(properties);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Thread was interrupted while retrieving public information to update thing properties.", e);
+        } catch (BoschSHCException | ExecutionException | TimeoutException e) {
+            logger.warn("Error while retrieving public information to update thing properties.", e);
         }
     }
 

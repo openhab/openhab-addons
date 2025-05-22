@@ -8,6 +8,7 @@
 		extensible="string,number,number-electric-current,number-electric-potential,number-frequency,number-power,number-time,switch">
 		<label>Network UPS Tool</label>
 		<description>Network UPS Tool Thing</description>
+		<semantic-equipment-tag>UPS</semantic-equipment-tag>
 
 		<channels>
 			<channel id="batteryCharge" typeId="battery-charge"/>

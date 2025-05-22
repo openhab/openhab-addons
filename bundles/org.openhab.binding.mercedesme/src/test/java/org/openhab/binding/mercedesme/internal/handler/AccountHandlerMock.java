@@ -33,7 +33,8 @@ import org.openhab.core.thing.Bridge;
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 
 /**
- * {@link AccountHandlerMock} to retrieve and collect commands from {@link VehicleHandler}
+ * {@link AccountHandlerMock} to retrieve and collect commands from
+ * {@link VehicleHandler}
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -92,7 +93,8 @@ public class AccountHandlerMock extends AccountHandler {
         super.ws.onConnect(mock(Session.class));
     }
 
-    public void refreshToken() {
+    @Override
+    public void refresh() {
         authService.get().getToken();
     }
 }

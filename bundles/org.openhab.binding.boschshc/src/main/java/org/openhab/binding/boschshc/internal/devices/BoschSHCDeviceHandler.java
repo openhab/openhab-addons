@@ -166,10 +166,6 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
      */
     @Override
     public @Nullable String getBoschID() {
-        if (config != null) {
-            return config.id;
-        }
-
-        return null;
+        return config != null ? config.id : null;
     }
 }

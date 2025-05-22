@@ -42,6 +42,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
+    private static final String DATETIME_FORMAT = "'%Y-%m-%d %H:%M:%f'";
+
     /********
      * INIT *
      ********/
@@ -66,7 +68,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("tablePrimaryValue", "strftime('%Y-%m-%d %H:%M:%f' , 'now' , 'localtime')");
+        sqlTypes.put("tablePrimaryValue", "strftime(" + DATETIME_FORMAT + " , 'now', 'localtime')");
     }
 
     /**
@@ -130,10 +132,13 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(), "?" });
-        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
-        Object[] params = { timestamp, storedVO.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        "strftime(" + DATETIME_FORMAT + " , ?, 'unixepoch', 'localtime')" });
+
+        double epochSecondsWithMillis = date.toInstant().toEpochMilli() / 1_000.0;
+        Object[] params = { epochSecondsWithMillis, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} epochSecondsWithMillis={} value='{}'", sql, epochSecondsWithMillis,
+                storedVO.getValue());
         try {
             Yank.execute(sql, params);
         } catch (YankSQLException e) {

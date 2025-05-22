@@ -7,7 +7,7 @@
 	<thing-type id="tracker" extensible="regionDistance">
 		<label>Tracker Device</label>
 		<description>Device running tracker application</description>
-
+		<semantic-equipment-tag>Tracker</semantic-equipment-tag>
 		<channels>
 			<channel id="lastLocation" typeId="system.location"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>

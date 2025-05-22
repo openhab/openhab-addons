@@ -7,6 +7,7 @@
 	<bridge-type id="api">
 		<label>OneBusAway Service</label>
 		<description>The Service settings to talk to a OneBusAway deployment.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
 				<label>API Key</label>
