@@ -314,7 +314,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         } else {
             builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:base-channel"));
         }
-        setSemanticTags(builder, details);
+        builder = setSemanticTags(builder, details);
         return builder.isAdvanced(details.isAdvanced).build();
     }
 
