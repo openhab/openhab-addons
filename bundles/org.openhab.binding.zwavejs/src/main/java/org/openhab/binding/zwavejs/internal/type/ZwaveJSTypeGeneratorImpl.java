@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +36,10 @@ import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.ParameterOption;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -69,10 +74,23 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
-    private static final Object CHANNEL_TYPE_VERSION = "3"; // when static configuration is changed, the version must be
+    private static final Object CHANNEL_TYPE_VERSION = "4"; // when static configuration is changed, the version must be
                                                             // changed as well to force a new channel type generation
-    private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
+    private static final Map<String, SemanticTag> ITEM_TYPES_TO_PROPERTY_TAGS = new HashMap<>();
+    static {
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:ElectricCurrent", Property.CURRENT);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:ElectricPotential", Property.VOLTAGE);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Energy", Property.ENERGY);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Frequency", Property.FREQUENCY);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Illuminance", Property.ILLUMINANCE);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Power", Property.POWER);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Pressure", Property.PRESSURE);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Speed", Property.SPEED);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Temperature", Property.TEMPERATURE);
+        ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Time", Property.DURATION);
+    }
 
+    private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
     private final ThingRegistry thingRegistry;
     private final ZwaveJSChannelTypeProvider channelTypeProvider;
     private final ZwaveJSConfigDescriptionProvider configDescriptionProvider;
@@ -296,7 +314,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         } else {
             builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:base-channel"));
         }
-
+        setSemanticTags(builder, details);
         return builder.isAdvanced(details.isAdvanced).build();
     }
 
@@ -319,5 +337,225 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             logger.warn("Can't create configDescriptionURI for node {}", node.nodeId);
             return null;
         }
+    }
+
+    private static boolean match(List<String> keyWords, ChannelMetadata details) {
+        List<String> sourceTexts = details.description instanceof String description
+                ? List.of(details.label, description)
+                : List.of(details.label);
+        for (String keyWord : keyWords) {
+            String keyWordLowercase = keyWord.toLowerCase();
+            for (String sourceText : sourceTexts) {
+                String sourceTextLowercase = sourceText.toLowerCase();
+                if (sourceTextLowercase.contains(keyWordLowercase)) {
+                    return true;
+                }
+                if (sourceTextLowercase.endsWith(keyWordLowercase.stripTrailing())) {
+                    return true;
+                }
+                if (sourceTextLowercase.startsWith(keyWordLowercase.stripLeading())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private StateChannelTypeBuilder setSemanticTags(StateChannelTypeBuilder builder, ChannelMetadata details) {
+        SemanticTag point = null;
+        SemanticTag property = null;
+        switch (details.itemType) {
+            case CoreItemFactory.COLOR:
+                point = details.writable ? Point.CONTROL : Point.MEASUREMENT;
+                property = Property.COLOR;
+            case CoreItemFactory.DIMMER:
+                point = Point.CONTROL;
+                break;
+            case CoreItemFactory.STRING:
+                point = details.writable ? Point.CONTROL : Point.STATUS;
+                break;
+            case CoreItemFactory.SWITCH:
+                point = details.writable ? Point.SWITCH
+                        : match(List.of("alarm", "error", "warning", "fault"), details) ? Point.ALARM : Point.STATUS;
+                break;
+            case CoreItemFactory.CONTACT:
+                point = match(List.of("alarm", "error", "warning", "fault"), details) ? Point.ALARM : Point.STATUS;
+                property = Property.OPEN_STATE;
+                break;
+            case CoreItemFactory.DATETIME:
+                point = details.writable ? Point.CONTROL : Point.MEASUREMENT;
+                property = Property.TIMESTAMP;
+                break;
+            case CoreItemFactory.LOCATION:
+                point = Point.MEASUREMENT;
+                property = Property.GEO_LOCATION;
+                break;
+            case CoreItemFactory.PLAYER:
+                point = Point.CONTROL;
+                property = Property.MEDIA_CONTROL;
+                break;
+            case CoreItemFactory.ROLLERSHUTTER:
+                point = Point.CONTROL;
+                property = Property.OPEN_LEVEL;
+                break;
+            case CoreItemFactory.NUMBER:
+                point = details.writable ? Point.CONTROL : Point.MEASUREMENT;
+                break;
+            default:
+                // this handles the case of Number:Dimension
+                if (details.itemType.startsWith(CoreItemFactory.NUMBER)) {
+                    point = details.writable ? Point.SETPOINT : Point.MEASUREMENT;
+                    property = ITEM_TYPES_TO_PROPERTY_TAGS.get(details.itemType);
+                }
+                break;
+        }
+
+        // estimate property tag if missing
+        if (point != null && property == null) {
+            if (Point.SWITCH == point && match(List.of("mode ", "auto", "manual", "enable", "disable", "lock", " day ",
+                    "night", "standby", "lock", "away"), details)) {
+                property = Property.MODE;
+            } else if (Point.STATUS == point && match(List.of("mode ", "auto", "manual", "enable", "disable", "lock",
+                    " day ", "night", "standby", "lock", "away"), details)) {
+                property = Property.MODE;
+            } else if (match(List.of("air"), details) && match(List.of("flow"), details)) {
+                property = Property.AIRFLOW;
+            } else if (match(List.of("air"), details) && match(List.of("quality"), details)) {
+                property = Property.AIR_QUALITY;
+            } else if (match(List.of(" nox ", "no2", "no₂"), details)) {
+                property = Property.AIR_QUALITY;
+            } else if (match(List.of("aqi"), details)) {
+                property = Property.AQI;
+            } else if (match(List.of("bright", "dimm"), details)) {
+                property = Property.BRIGHTNESS;
+            } else if (match(List.of(" co ", "(co)", "monoxide"), details)) {
+                property = Property.CO;
+            } else if (match(List.of("co2", "co₂", "dioxide"), details)) {
+                property = Property.CO2;
+            } else if (match(List.of("color", "colour"), details) && match(List.of("temp"), details)) {
+                property = Property.COLOR_TEMPERATURE;
+            } else if (match(List.of("color", "colour"), details)) {
+                property = Property.COLOR;
+            } else if (match(List.of("kelvin", "mirek", "mired"), details)) {
+                property = Property.COLOR_TEMPERATURE;
+            } else if (match(List.of("duration"), details)) {
+                property = Property.DURATION;
+            } else if (match(List.of("energy"), details)) {
+                property = Property.ENERGY;
+            } else if (match(List.of("fan"), details)) {
+                property = Property.SPEED;
+            } else if (match(List.of("freq"), details)) {
+                property = Property.FREQUENCY;
+            } else if (match(List.of("gas"), details)) {
+                property = Property.GAS;
+            } else if (match(List.of("location"), details)) {
+                property = Property.GEO_LOCATION;
+            } else if (match(List.of("heat"), details)) {
+                property = Property.HEATING;
+            } else if (match(List.of("conditioning", "cooling", " ac "), details)) {
+                property = Property.AIRCONDITIONING;
+            } else if (match(List.of("humidity"), details) && !match(List.of("soil"), details)) {
+                property = Property.HUMIDITY;
+            } else if (match(List.of("light"), details) && match(List.of("level"), details)) {
+                property = Property.ILLUMINANCE;
+            } else if (match(List.of("illuminance", " lux "), details)) {
+                property = Property.ILLUMINANCE;
+            } else if (match(List.of("battery"), details) && match(List.of("low", "alarm"), details)) {
+                property = Property.LOW_BATTERY;
+            } else if (Point.ALARM == point && match(List.of("battery"), details)) {
+                property = Property.LOW_BATTERY;
+            } else if (match(List.of("battery"), details)) {
+                property = Property.ENERGY;
+            } else if (match(List.of("media", "player", "television", " tv ", "receiver"), details)) {
+                property = Property.INFO;
+            } else if (match(List.of("soil"), details) && match(List.of("humidity"), details)) {
+                property = Property.MOISTURE;
+            } else if (match(List.of("moisture"), details)) {
+                property = Property.MOISTURE;
+            } else if (match(List.of("motion", " pir "), details)) {
+                property = Property.MOTION;
+            } else if (match(List.of("noise"), details)) {
+                property = Property.NOISE;
+            } else if (match(List.of(" oil "), details)) {
+                property = Property.OIL;
+            } else if (match(List.of("open", "close", " shut "), details)
+                    && match(List.of("state", "status"), details)) {
+                property = Property.OPEN_LEVEL;
+            } else if (match(List.of("open", "close", " shut "), details)
+                    && match(List.of("level", "position"), details)) {
+                property = Property.OPEN_LEVEL;
+            } else if (match(List.of("open", "close", " shut "), details)) {
+                property = Property.OPENING;
+            } else if (match(List.of("ozone", "o3", "o₃"), details)) {
+                property = Property.OZONE;
+            } else if (match(List.of("partic", " pm ", "dust"), details)) {
+                property = Property.PARTICULATE_MATTER;
+            } else if (match(List.of("pollen"), details)) {
+                property = Property.POLLEN;
+            } else if (match(List.of("position"), details)) {
+                property = Property.POSITION;
+            } else if (match(List.of("wall"), details) && !match(List.of("socket", "outlet", "plug "), details)) {
+                property = Property.LIGHT;
+            } else if (match(List.of("light", "luminaire", "lamp", "bulb", " led "), details)) {
+                property = Property.LIGHT;
+            } else if (match(List.of("power", "on-off", " off ", "on/off", "relay", "outlet", "plug "), details)) {
+                property = Property.POWER;
+            } else if (match(List.of("presence", " occup"), details)) {
+                property = Property.PRESENCE;
+            } else if (match(List.of("pressure"), details)) {
+                property = Property.PRESSURE;
+            } else if (match(List.of("quality "), details)) {
+                property = Property.QUALITY_OF_SERVICE;
+            } else if (match(List.of("radon"), details)) {
+                property = Property.RADON;
+            } else if (match(List.of(" rain", "precip"), details)) {
+                property = Property.RAIN;
+            } else if (match(List.of("rssi"), details)) {
+                property = Property.RSSI;
+            } else if (match(List.of("signal"), details) && match(List.of("strength"), details)) {
+                property = Property.SIGNAL_STRENGTH;
+            } else if (match(List.of(" rf ", " dbw "), details)) {
+                property = Property.SIGNAL_STRENGTH;
+            } else if (match(List.of("smoke", "fire"), details)) {
+                property = Property.SMOKE;
+            } else if (match(List.of("sound", "audio", "noise", "decibel", " db ", "mute", " dba "), details)) {
+                property = Property.SOUND_VOLUME;
+            } else if (match(List.of("speed", "velocity"), details)) {
+                property = Property.SPEED;
+            } else if (match(List.of("tamper"), details)) {
+                property = Property.TAMPERED;
+            } else if (match(List.of("tilt", "vane", "slat"), details)) {
+                property = Property.TILT;
+            } else if (match(List.of("stamp "), details)) {
+                property = Property.TIMESTAMP;
+            } else if (match(List.of("violet", " uv "), details)) {
+                property = Property.ULTRAVIOLET;
+            } else if (match(List.of("ventilat", " fan "), details)) {
+                property = Property.VENTILATION;
+            } else if (match(List.of("vibration"), details)) {
+                property = Property.VIBRATION;
+            } else if (match(List.of("volatile", " voc "), details)) {
+                property = Property.VOC;
+            } else if (match(List.of("water", "leak", "flood"), details)) {
+                property = Property.WATER;
+            } else if (match(List.of("wind"), details)) {
+                property = Property.WIND;
+            } else if (match(List.of("level"), details)) {
+                property = Property.LEVEL;
+            } else if (Point.CONTROL == point && match(List.of("application", " app "), details)) {
+                property = Property.APP;
+            } else if (Point.CONTROL == point && match(List.of("channel"), details)) {
+                property = Property.CHANNEL;
+            }
+        }
+
+        if (point != null) {
+            if (property == null) {
+                builder.withTags(point);
+            } else {
+                builder.withTags(point, property);
+            }
+        }
+        return builder;
     }
 }
