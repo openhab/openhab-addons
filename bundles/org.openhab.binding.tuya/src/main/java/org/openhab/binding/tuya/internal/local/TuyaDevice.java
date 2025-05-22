@@ -20,6 +20,7 @@ import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_REFRESH;
 import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_START;
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_4;
+import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_5;
 
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class TuyaDevice implements ChannelFutureListener {
     }
 
     public void set(Map<Integer, @Nullable Object> command) {
-        CommandType commandType = (protocolVersion == V3_4) ? CONTROL_NEW : CONTROL;
+        CommandType commandType = (protocolVersion == V3_4 || protocolVersion == V3_5) ? CONTROL_NEW : CONTROL;
         MessageWrapper<?> m = new MessageWrapper<>(commandType, Map.of("dps", command));
         Channel channel = this.channel;
         if (channel != null) {
@@ -156,7 +157,7 @@ public class TuyaDevice implements ChannelFutureListener {
             // session key is device key before negotiation
             channel.attr(SESSION_KEY_ATTR).set(deviceKey);
 
-            if (protocolVersion == V3_4) {
+            if (protocolVersion == V3_4 || protocolVersion == V3_5) {
                 byte[] sessionRandom = CryptoUtil.generateRandom(16);
                 channel.attr(SESSION_RANDOM_ATTR).set(sessionRandom);
                 this.channel = channel;
