@@ -10,31 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.energidataservice.internal.api;
+package org.openhab.binding.energidataservice.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Energi Data Service dataset.
+ * Received {@link DayAheadPriceRecord} from Energi Data Service.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public enum Dataset {
-    SpotPrices("Elspotprices"),
-    DayAheadPrices("DayAheadPrices"),
-    DatahubPricelist("DatahubPricelist"),
-    CO2Emission("CO2Emis"),
-    CO2EmissionPrognosis("CO2EmisProg");
-
-    private final String name;
-
-    Dataset(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+public record DayAheadPriceRecords(int total, String filters, String dataset, DayAheadPriceRecord[] records) {
 }
