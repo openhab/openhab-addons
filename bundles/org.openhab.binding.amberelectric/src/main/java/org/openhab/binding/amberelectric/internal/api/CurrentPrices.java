@@ -35,6 +35,7 @@ public class CurrentPrices {
     public double renewables;
     public String spikeStatus = "";
     public String nemTime = "";
+    public boolean estimate;
 
     private CurrentPrices() {
     }
@@ -47,6 +48,7 @@ public class CurrentPrices {
         currentprices.nemTime = jsonObject.get("nemTime").getAsString();
         currentprices.renewables = jsonObject.get("renewables").getAsDouble();
         currentprices.spikeStatus = jsonObject.get("spikeStatus").getAsString();
+        currentprices.estimate = jsonObject.get("estimate").getAsBoolean();
         for (int i = 0; i < jsonArray.size(); i++) {
             jsonObject = jsonArray.get(i).getAsJsonObject();
             if ("general".equals(jsonObject.get("channelType").getAsString())) {
