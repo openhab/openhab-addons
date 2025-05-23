@@ -114,8 +114,8 @@ public class DeviceCache {
         }
 
         public Builder withDatabase(ModemDB modemDB) {
-            cache.database = DatabaseCache.builder().withProducts(modemDB.getProducts())
-                    .withRecords(modemDB.getRecords()).build();
+            cache.database = DatabaseCache.builder().withComplete(modemDB.isComplete())
+                    .withProducts(modemDB.getProducts()).withRecords(modemDB.getRecords()).build();
             return this;
         }
 
