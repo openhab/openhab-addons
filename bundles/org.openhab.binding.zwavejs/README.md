@@ -30,7 +30,7 @@ The configuration options include:
 | hostname              | text    | Hostname or IP address of the server                | N/A     | yes      | no       |
 | port                  | number  | Port number to access the service                   | 3000    | yes      | no       |
 | maxMessageSize        | number  | Maximum size of messages in bytes                   | 2097152 | no       | yes      |
-| configurationChannels | boolean | Expose the commandclass 'configuration' as channels | true    | no       | yes      |
+| configurationChannels | boolean | Expose the commandclass 'configuration' as channels | false   | no       | yes      |
 
 ## Thing Configuration
 
