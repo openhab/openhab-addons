@@ -44,6 +44,7 @@ public enum CommandType {
     UDP_NEW(19),
     AP_CONFIG_NEW(20),
     BROADCAST_LPV34(35),
+    REQ_DEVINFO(37),
     LAN_EXT_STREAM(40),
     LAN_GW_ACTIVE(240),
     LAN_SUB_DEV_REQUEST(241),

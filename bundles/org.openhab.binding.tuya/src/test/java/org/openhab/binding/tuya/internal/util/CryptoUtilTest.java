@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.tuya.internal.local.ProtocolVersion;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -37,7 +38,7 @@ public class CryptoUtilTest {
         byte[] remoteKey = HexUtils.hexToBytes("30633665666638323536343733353036");
         byte[] expectedSessionKey = HexUtils.hexToBytes("afe2349b17e2cc833247ccb1a52e8aae");
 
-        byte[] sessionKey = CryptoUtil.generateSessionKey(localKey, remoteKey, deviceKey);
+        byte[] sessionKey = CryptoUtil.generateSessionKey(localKey, remoteKey, deviceKey, ProtocolVersion.V3_4);
 
         assertThat(sessionKey, is(expectedSessionKey));
     }

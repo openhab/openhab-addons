@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -33,6 +34,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tuya.internal.local.ProtocolVersion;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +80,8 @@ public class CryptoUtil {
             0xbdbdf21c, 0xcabac28a, 0x53b39330, 0x24b4a3a6, 0xbad03605, 0xcdd70693, 0x54de5729, 0x23d967bf, 0xb3667a2e,
             0xc4614ab8, 0x5d681b02, 0x2a6f2b94, 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d };
     private static final int GCM_TAG_LENGTH = 16;
+    private static final int GCM_IV_LENGTH = 12;
+    private static final int SESSION_KEY_LENGTH = 16;
 
     private static final Random SECURE_RNG = new SecureRandom();
 
@@ -189,6 +193,35 @@ public class CryptoUtil {
     }
 
     /**
+     * Decrypt an AES-GCM encoded message
+     *
+     * @param data the message as array of bytes
+     * @param key the key as array of bytes
+     * @param headerData optional, the header data as array of bytes (used as AAD)
+     * @param nonce optional, the IV/nonce as array of bytes (12 bytes)
+     * @return the decrypted message as String (or null if decryption failed)
+     */
+    public static byte @Nullable [] decryptAesGcm(byte[] data, byte[] key, byte @Nullable [] headerData,
+            byte @Nullable [] nonce) {
+        try {
+            byte[] iv = new byte[GCM_IV_LENGTH];
+            System.arraycopy(Objects.requireNonNullElse(nonce, data), 0, iv, 0, GCM_IV_LENGTH);
+            SecretKey secretKey = new SecretKeySpec(key, "AES");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            GCMParameterSpec gcmIv = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmIv);
+            if (headerData != null) {
+                cipher.updateAAD(headerData);
+            }
+            return cipher.doFinal(data, GCM_IV_LENGTH, data.length - GCM_IV_LENGTH);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            LOGGER.warn("Decryption of MQ failed: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Decrypt an AES-ECB encoded message
      *
      * @param data the message as array of bytes
@@ -213,6 +246,44 @@ public class CryptoUtil {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException e) {
             LOGGER.warn("Decryption of MQ failed: {}", e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Encrypt an AES-GCM encoded message
+     *
+     * @param data the message as array of bytes
+     * @param key the key as array of bytes
+     * @param headerData optional, the header data as array of bytes (used as AAD)
+     * @param nonce optional, the IV/nonce as array of bytes (12 bytes)
+     * @return the encrypted message as array of bytes (or null if encryption failed)
+     */
+    public static byte @Nullable [] encryptAesGcm(byte[] data, byte[] key, byte @Nullable [] headerData,
+            byte @Nullable [] nonce) {
+        try {
+            byte[] iv = new byte[GCM_IV_LENGTH];
+            if (nonce != null) {
+                System.arraycopy(nonce, 0, iv, 0, GCM_IV_LENGTH);
+            } else {
+                SECURE_RNG.nextBytes(iv);
+            }
+            SecretKey secretKey = new SecretKeySpec(key, "AES");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
+            if (headerData != null) {
+                cipher.updateAAD(headerData);
+            }
+            byte[] encryptedBytes = cipher.doFinal(data);
+            byte[] result = new byte[GCM_IV_LENGTH + encryptedBytes.length];
+            System.arraycopy(iv, 0, result, 0, GCM_IV_LENGTH);
+            System.arraycopy(encryptedBytes, 0, result, GCM_IV_LENGTH, encryptedBytes.length);
+            return result;
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
+                | BadPaddingException | InvalidAlgorithmParameterException e) {
+            LOGGER.warn("Encryption of MQ failed: {}", e.getMessage());
         }
 
         return null;
@@ -267,19 +338,31 @@ public class CryptoUtil {
     }
 
     /**
-     * Generate a protocol 3.4 session key from local and remote key for a device
+     * Generate a protocol 3.4 and 3.5 session key from local and remote key for a device
      *
      * @param localKey the randomly generated local key
      * @param remoteKey the provided remote key
      * @param deviceKey the (constant) device key
-     * @return the session key for these keys
+     * @param protocol the protocol version
+     * @return the session key for these keys and protocol
      */
-    public static byte @Nullable [] generateSessionKey(byte[] localKey, byte[] remoteKey, byte[] deviceKey) {
+    public static byte @Nullable [] generateSessionKey(byte[] localKey, byte[] remoteKey, byte[] deviceKey,
+            ProtocolVersion protocol) {
         byte[] sessionKey = localKey.clone();
         for (int i = 0; i < sessionKey.length; i++) {
             sessionKey[i] = (byte) (sessionKey[i] ^ remoteKey[i]);
         }
-
-        return CryptoUtil.encryptAesEcb(sessionKey, deviceKey, false);
+        byte[] result = new byte[SESSION_KEY_LENGTH];
+        if (protocol == ProtocolVersion.V3_4) {
+            result = CryptoUtil.encryptAesEcb(sessionKey, deviceKey, false);
+        } else if (protocol == ProtocolVersion.V3_5) {
+            byte[] nonce = new byte[GCM_IV_LENGTH];
+            System.arraycopy(localKey, 0, nonce, 0, GCM_IV_LENGTH);
+            byte[] encrypted = CryptoUtil.encryptAesGcm(sessionKey, deviceKey, null, nonce);
+            if (encrypted != null) {
+                System.arraycopy(encrypted, GCM_IV_LENGTH, result, 0, SESSION_KEY_LENGTH);
+            }
+        }
+        return result;
     }
 }
