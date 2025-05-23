@@ -1,0 +1,152 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.ring.internal.data;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ring.internal.ApiConstants;
+import org.openhab.binding.ring.internal.RingAccount;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+/**
+ *
+ * @author Wim Vissers - Initial contribution
+ * @author Chris Milbert - stickupcam contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
+ */
+
+@NonNullByDefault
+public class RingDevices {
+    private @NonNullByDefault({}) List<Doorbell> doorbells;
+    private @NonNullByDefault({}) List<Stickupcam> stickupcams;
+    private @NonNullByDefault({}) List<Chime> chimes;
+    private @NonNullByDefault({}) List<Other> others;
+
+    public RingDevices(JsonObject jsonRingDevices, RingAccount ringAccount) {
+        addDoorbells((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_DOORBOTS), ringAccount);
+        addStickupCams((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_STICKUP_CAMS), ringAccount);
+        addChimes((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_CHIMES), ringAccount);
+        addOthers((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_OTHER), ringAccount);
+    }
+
+    /**
+     * Helper method to create the doorbell list.
+     *
+     * @param jsonDoorbells
+     */
+    private final void addDoorbells(@NonNullByDefault({}) JsonArray jsonDoorbells, RingAccount ringAccount) {
+        doorbells = new ArrayList<>();
+        for (Object obj : jsonDoorbells) {
+            Doorbell doorbell = new Doorbell((JsonObject) obj);
+            doorbell.setRingAccount(ringAccount);
+            doorbells.add(doorbell);
+        }
+    }
+
+    /**
+     * Retrieve the Doorbells Collection.
+     *
+     * @return
+     */
+    public Collection<Doorbell> getDoorbells() {
+        return doorbells;
+    }
+
+    /**
+     * Helper method to create the stickupcam list.
+     *
+     * @param jsonStickupcams
+     */
+    private final void addStickupCams(@NonNullByDefault({}) JsonArray jsonStickupcams, RingAccount ringAccount) {
+        stickupcams = new ArrayList<>();
+        for (Object obj : jsonStickupcams) {
+            Stickupcam stickupcam = new Stickupcam((JsonObject) obj);
+            stickupcam.setRingAccount(ringAccount);
+            stickupcams.add(stickupcam);
+        }
+    }
+
+    /**
+     * Retrieve the Stickupcams Collection.
+     *
+     * @return
+     */
+    public Collection<Stickupcam> getStickupcams() {
+        return stickupcams;
+    }
+
+    /**
+     * Helper method to create the chime list.
+     *
+     * @param jsonChimes
+     */
+    private final void addChimes(@NonNullByDefault({}) JsonArray jsonChimes, RingAccount ringAccount) {
+        chimes = new ArrayList<>();
+        for (Object obj : jsonChimes) {
+            Chime chime = new Chime((JsonObject) obj);
+            chime.setRingAccount(ringAccount);
+            chimes.add(chime);
+        }
+    }
+
+    /**
+     * Retrieve the Chimes Collection.
+     *
+     * @return
+     */
+    public Collection<Chime> getChimes() {
+        return chimes;
+    }
+
+    /**
+     * Helper method to create the other list.
+     *
+     * @param jsonOther
+     */
+    private final void addOthers(@NonNullByDefault({}) JsonArray jsonOthers, RingAccount ringAccount) {
+        others = new ArrayList<>();
+        for (Object obj : jsonOthers) {
+            Other other = new Other((JsonObject) obj);
+            other.setRingAccount(ringAccount);
+            others.add(other);
+        }
+    }
+
+    /**
+     * Retrieve the Others Collection.
+     *
+     * @return
+     */
+    public Collection<Other> getOthers() {
+        return others;
+    }
+
+    /**
+     * Retrieve a collection of all devices.
+     *
+     * @return
+     */
+    public Collection<RingDevice> getRingDevices() {
+        List<RingDevice> result = new ArrayList<>();
+        result.addAll(doorbells);
+        result.addAll(stickupcams);
+        result.addAll(chimes);
+        result.addAll(others);
+        return result;
+    }
+}
