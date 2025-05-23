@@ -154,7 +154,7 @@ There are 4 different areas of channels:
 - **Device Model**: Q1
 
 ```java
-Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true, gatewayRequestTimeout=3 ] {
+Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true, gatewayResponseTimeout=3 ] {
   Thing device TapValve1 "Outdoor Tap 1"  [ id="D71BC52E985B1200_1", name="ValveLinker_1", enableAlerts=true ]
   Thing device TapValve2 "Outdoor Tap 2"  [ id="D71BC52E985B1200_2", name="ValveLinker_2", enableAlerts=true ]
   Thing device TapValve3 "Outdoor Tap 3"  [ id="D71BC52E985B1200_3", name="ValveLinker_3", enableAlerts=true ]
