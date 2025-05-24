@@ -140,7 +140,6 @@ public class HueSyncConnection {
     // #region protected
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload,
             @Nullable Class<T> type) throws HueSyncConnectionException {
-
         return this.executeRequest(new Request(method, endpoint, payload), type);
     }
 
