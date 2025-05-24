@@ -14,16 +14,23 @@ package org.openhab.binding.automower.internal.bridge;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
+import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
+import org.openhab.binding.automower.internal.things.AutomowerHandler;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.thing.Bridge;
@@ -52,16 +59,51 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
     private final OAuthFactory oAuthFactory;
+    private @Nullable WebSocketSession webSocketSession;
 
     private @Nullable OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
     private @Nullable AutomowerBridge bridge;
     private final HttpClient httpClient;
+    private final WebSocketClient webSocketClient;
+    private boolean closing;
+    private final Map<String, AutomowerHandler> automowerHandlers;
 
-    public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
+    public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
+            WebSocketClient webSocketClient, Map<String, AutomowerHandler> automowerHandlers) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
+        this.webSocketClient = webSocketClient;
+        this.automowerHandlers = automowerHandlers;
+    }
+
+    public WebSocketClient getWebSocketClient() {
+        return webSocketClient;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    public @Nullable WebSocketSession getWebSocketSession() {
+        return webSocketSession;
+    }
+
+    public void setWebSocketSession(@Nullable WebSocketSession webSocketSession) {
+        this.webSocketSession = webSocketSession;
+    }
+
+    public boolean isClosing() {
+        return closing;
+    }
+
+    public void setClosing(boolean closing) {
+        this.closing = closing;
+    }
+
+    public @Nullable AutomowerHandler getAutomowerHandlerByThingId(@Nullable String thingId) {
+        return automowerHandlers.get(thingId);
     }
 
     private void pollAutomowers(AutomowerBridge bridge) {
@@ -79,16 +121,28 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        closing = true;
+
         AutomowerBridge currentBridge = bridge;
         if (currentBridge != null) {
             stopAutomowerBridgePolling(currentBridge);
             bridge = null;
         }
+
+        if (webSocketSession != null) {
+            try {
+                webSocketSession.close();
+            } catch (Exception e) {
+                logger.error("Failed to close WebSocket session: {}", e.getMessage());
+            }
+        }
+
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
             oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
             this.oAuthService = null;
         }
+        logger.debug("Bridge {} disposed", thing.getUID().getAsString());
     }
 
     @Override
@@ -111,10 +165,12 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                     HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);
             this.oAuthService = oAuthService;
 
-            if (bridge == null) {
+            if (this.bridge == null) {
                 AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
-                bridge = currentBridge;
+                this.bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
+
+                connectWebSocket(new AutomowerWebSocketAdapter(this, currentBridge));
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -162,6 +218,27 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         } catch (AutomowerCommunicationException e) {
             logger.debug("Bridge cannot get list of available automowers {}", e.getMessage());
             return Optional.empty();
+        }
+    }
+
+    public void connectWebSocket(AutomowerWebSocketAdapter webSocketAdapter) {
+        try {
+            if (this.bridge != null) {
+                String accessToken = this.bridge.authenticate().getAccessToken();
+                if (accessToken == null) {
+                    logger.error("No OAuth2 access token available for WebSocket connection");
+                    return;
+                }
+                String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
+                ClientUpgradeRequest request = new ClientUpgradeRequest();
+                request.setHeader("Authorization", "Bearer " + accessToken);
+                webSocketSession = (WebSocketSession) webSocketClient
+                        .connect(webSocketAdapter, URI.create(wsUrl), request).get();
+            } else {
+                logger.error("Bridge is null, cannot connect WebSocket");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to start WebSocket client: {}", e.getMessage());
         }
     }
 }
