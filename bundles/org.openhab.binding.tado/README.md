@@ -12,33 +12,29 @@ You can then monitor and control all zone types (Heating, AC, Hot Water) as well
 The `home` thing serves as bridge to the tado° cloud services.
 The binding will automatically discover this thing and place it in the Inbox.
 It must be authenticated before it will actually go online.
-There are two ways to authenticate it as follows:
+Authenticatation is done online via the OAuth Device Code Grant Flow (RFC-8628) authentication process via the link provided at `http://[openhab-ip-address]:8080/tado`.
 
-1. Online via the OAuth Device Code Grant Flow (RFC-8628) authentication process through the link provided at `http://[openhab-ip-address]:8080/tado`.
-1. Enter `username` and `password` credentials in the thing configuration parameters as shown in the table below.
+| Parameter     | Optional | Description                                                                   |
+|---------------|----------|-------------------------------------------------------------------------------|
+| `rfcWithUser` | yes      | Determines if the user name is included in the oAuth RFC-8628 authentication. |
+| `username`    | yes      | Selects the tado° account to be used if there is more than one account.       |
+| `homeId`      | yes      | Selects the Home Id to use in case of more than one home per account.         |
 
-Note: after March 15th, 2025 online authentication is the tado° preferred (or even only) method.
-In other words the `username` and `password` method has probably ceased to work after that date.
+The `rfcWithUser` and `username` settings are only needed if you have more than one tado° account.
+The `rfcWithUser` setting makes the binding use a different authentication token for each respective account `username`.
 
-| Parameter     | Optional | Description                                                                        |
-|---------------|----------|------------------------------------------------------------------------------------|
-| `useRfc8628`  | yes      | Determines if the binding shall use oAuth RFC-8628 authentication                  |
-| `rfcWithUser` | yes      | Determines if the user name shall be included in the oAuth RFC-8628 authentication |
-| `username`    | yes      | Username used to log in at [my.tado](https://my.tado.com)                          |
-| `password`    | yes      | Password of the username                                                           |
-| `homeId`      | yes      | Selects the Home Id to use (only needed if the account has multiple homes)         |
-
-The `rfcWithUser` setting is only needed if you have multiple tado° accounts.
-It forces the binding to use different authentication tokens for each respective account `username`.
-
-The `homeId` is only needed if you have multiple homes under a single tado° account.
+The `homeId` is only needed if you have more than one home under a given tado° account.
 It forces the binding to read and write the data for the respective Home Id.
-If you do not have multiple homes, the binding always uses the first and only Home Id.
+If you do not have multiple homes, the binding always uses the first and (therefore) only Home Id.
 
 Example `tado.things`
 
 ```java
-Bridge tado:home:demo [ username="mail@example.com", password="secret" ]
+// normal example with one tado° account containing one home
+Bridge tado:home:demo
+..
+// special case if you have more than one tado° account, or more than one home in an account
+Bridge tado:home:demo [ rfcWithUser=true, username="mail@example.com", homeId=1234 ]
 ```
 
 Once the `home` thing is online, the binding will discover all its respective zones and mobile devices, and place them in the Inbox.
