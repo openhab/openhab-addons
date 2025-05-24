@@ -1,0 +1,37 @@
+{
+    "type": "event",
+    "event": {
+        "source": "controller",
+        "event": "statistics updated",
+        "statistics": {
+            "messagesTX": 1030,
+            "messagesRX": 1031,
+            "messagesDroppedRX": 0,
+            "NAK": 0,
+            "CAN": 0,
+            "timeoutACK": 0,
+            "timeoutResponse": 0,
+            "timeoutCallback": 0,
+            "messagesDroppedTX": 0,
+            "backgroundRSSI": {
+                "channel0": {
+                    "current": -99,
+                    "average": -97
+                },
+                "channel1": {
+                    "current": -106,
+                    "average": -104
+                },
+                "channel2": {
+                    "current": -106,
+                    "average": -104
+                },
+                "channel3": {
+                    "current": 127,
+                    "average": 0
+                },
+                "timestamp": 1732922541970
+            }
+        }
+    }
+}
