@@ -188,6 +188,10 @@
 		<item-type>String</item-type>
 		<label>Fan Swing</label>
 		<description>Current fan swing setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="STOPPED">stopped</option>
