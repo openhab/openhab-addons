@@ -36,7 +36,6 @@ public class HueSyncConnectionTask implements Runnable {
 
     public HueSyncConnectionTask(HueSyncHandler handler, HttpClient httpClient,
             Consumer<HueSyncDeviceConnection> connectionHandler, HueSyncExceptionHandler exceptionHandler) {
-
         this.handler = handler;
         this.httpClient = httpClient;
         this.connectedHandler = connectionHandler;
