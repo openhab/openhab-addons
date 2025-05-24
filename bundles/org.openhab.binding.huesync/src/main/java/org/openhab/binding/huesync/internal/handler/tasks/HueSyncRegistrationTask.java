@@ -19,6 +19,7 @@ import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncTaskException;
 import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ public class HueSyncRegistrationTask implements Runnable {
     public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
             HueSyncConfiguration configuration, Consumer<HueSyncRegistration> registrationAccepted,
             HueSyncExceptionHandler exceptionHandler) {
-
         this.exceptionHandler = exceptionHandler;
         this.connection = connection;
         this.deviceInfo = deviceInfo;
@@ -71,7 +71,7 @@ public class HueSyncRegistrationTask implements Runnable {
                     this.deviceInfo.deviceType, id);
 
             if (id == null) {
-                throw new Exception("Device information id must not be null");
+                throw new HueSyncTaskException("Device information id must not be null");
             }
 
             registration = this.connection.registerDevice(id);
