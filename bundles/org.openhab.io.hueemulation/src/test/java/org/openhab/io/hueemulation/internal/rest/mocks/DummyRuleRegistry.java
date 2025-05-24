@@ -99,4 +99,8 @@ public class DummyRuleRegistry implements RuleRegistry {
     public Collection<Rule> getByTags(String... tags) {
         return Collections.emptyList();
     }
+
+    @Override
+    public void regenerateFromTemplate(String ruleUID) {
+    }
 }
