@@ -38,6 +38,10 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+
 /**
  * The {@link AmberElectricHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -129,37 +133,59 @@ public class AmberElectricHandler extends BaseThingHandler {
                 logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
             }
 
-            CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apiKey);
             final String electricityUnit = " AUD/kWh";
-
             updateStatus(ThingStatus.ONLINE);
             Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
-            if (unit == null) {
-                logger.trace("Currency AUD is unknown, falling back to DecimalType");
-                updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                        new DecimalType(currentPrices.elecPerKwh / 100));
-                updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                        new DecimalType(currentPrices.clPerKwh / 100));
-                updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                        new DecimalType(currentPrices.feedInPerKwh / 100));
-            } else {
-                updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                        new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + electricityUnit));
-                updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                        new QuantityType<>(currentPrices.clPerKwh / 100 + " " + electricityUnit));
-                updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                        new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + electricityUnit));
+
+            String response = webTargets.getCurrentPrices(siteID, apiKey);
+            Gson gson = new Gson();
+            JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
+            CurrentPrices currentPrices;
+            for (int i = 0; i < jsonArray.size(); i++) {
+                currentPrices = gson.fromJson(jsonArray.get(i), CurrentPrices.class);
+                if ("CurrentInterval".equals(currentPrices.type) && "general".equals(currentPrices.channelType)) {
+                    updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_STATUS,
+                            new StringType(currentPrices.descriptor));
+                    updateState(AmberElectricBindingConstants.CHANNEL_NEM_TIME, new StringType(currentPrices.nemTime));
+                    updateState(AmberElectricBindingConstants.CHANNEL_RENEWABLES,
+                            new DecimalType(currentPrices.renewables));
+                    updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
+                            OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
+                    if (unit == null) {
+                        logger.trace("Currency AUD is unknown, falling back to DecimalType");
+                        updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
+                                new DecimalType(currentPrices.perKwh / 100));
+                    } else {
+                        updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
+                                new QuantityType<>(currentPrices.perKwh / 100 + " " + electricityUnit));
+                    }
+                }
+                if ("CurrentInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
+                    updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
+                            new StringType(currentPrices.descriptor));
+                    if (unit == null) {
+                        logger.trace("Currency AUD is unknown, falling back to DecimalType");
+                        updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
+                                new DecimalType(currentPrices.perKwh / 100 * -1));
+                    } else {
+                        updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
+                                new QuantityType<>(currentPrices.perKwh / 100 + " " + electricityUnit));
+                    }
+                }
+                if ("CurrentInterval".equals(currentPrices.type)
+                        && "controlledLoad".equals(currentPrices.channelType)) {
+                    updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
+                            new StringType(currentPrices.descriptor));
+                    if (unit == null) {
+                        logger.trace("Currency AUD is unknown, falling back to DecimalType");
+                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
+                                new DecimalType(currentPrices.perKwh / 100));
+                    } else {
+                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
+                                new QuantityType<>(currentPrices.perKwh / 100 + " " + electricityUnit));
+                    }
+                }
             }
-            updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
-                    new StringType(currentPrices.clStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_STATUS,
-                    new StringType(currentPrices.elecStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
-                    new StringType(currentPrices.feedInStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_NEM_TIME, new StringType(currentPrices.nemTime));
-            updateState(AmberElectricBindingConstants.CHANNEL_RENEWABLES, new DecimalType(currentPrices.renewables));
-            updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
-                    OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
         } catch (AmberElectricCommunicationException e) {
             logger.debug("Unexpected error connecting to Amber Electric API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

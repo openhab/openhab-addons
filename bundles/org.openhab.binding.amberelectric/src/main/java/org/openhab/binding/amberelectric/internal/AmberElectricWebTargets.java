@@ -18,7 +18,6 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
 import org.openhab.binding.amberelectric.internal.api.Sites;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -46,11 +45,11 @@ public class AmberElectricWebTargets {
         return Sites.parse(response, nmi);
     }
 
-    public CurrentPrices getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
+    public String getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
         String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current";
         String response = invoke("GET", getCurrentPricesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
-        return CurrentPrices.parse(response);
+        return response;
     }
 
     protected Properties getHttpHeaders(String accessToken) {
