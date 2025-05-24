@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class HueSyncConstants {
-    
+
     public static class ENDPOINTS {
         public static final String DEVICE = "device";
         public static final String REGISTRATIONS = "registrations";
