@@ -23,14 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class HueSyncConstants {
-    public static class EXCEPTION_TYPES {
-        public static class CONNECTION {
-            public static final String UNAUTHORIZED_401 = "invalidLogin";
-            public static final String NOT_FOUND_404 = "notFound";
-            public static final String INTERNAL_SERVER_ERROR_500 = "deviceError";
-        }
-    }
-
+    
     public static class ENDPOINTS {
         public static final String DEVICE = "device";
         public static final String REGISTRATIONS = "registrations";
