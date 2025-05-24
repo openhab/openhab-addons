@@ -112,7 +112,6 @@ public class HueSyncConnection {
 
     public HueSyncConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
-
         this.host = configuration.host;
         this.port = configuration.port;
 
