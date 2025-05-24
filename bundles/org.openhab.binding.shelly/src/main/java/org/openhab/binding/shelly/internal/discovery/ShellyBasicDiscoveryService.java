@@ -40,7 +40,6 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -81,8 +80,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         thingTable.startScan();
     }
 
-    public void discoveredResult(ThingTypeUID tuid, String model, String serviceName, String address,
-            Map<String, Object> properties) {
+    public void discoveredResult(String model, String serviceName, String address, Map<String, Object> properties) {
         ThingUID uid = ShellyThingCreator.getThingUID(serviceName, model, "", true);
         logger.debug("Adding discovered thing with id {}", uid.toString());
         properties.put(PROPERTY_MAC_ADDRESS, address);

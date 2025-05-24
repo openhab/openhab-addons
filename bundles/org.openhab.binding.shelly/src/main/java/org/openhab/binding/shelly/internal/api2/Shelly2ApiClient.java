@@ -208,19 +208,48 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             boolean channelUpdate) throws ShellyApiException {
         boolean updated = false;
 
-        if (result.temperature0 != null && result.temperature0.tC != null && !getProfile().isSensor) {
+        final Shelly2DeviceStatusTempId temperature = result.temperature0;
+        if ((temperature != null) && (temperature.tC != null) && !getProfile().isSensor) {
             if (status.tmp == null) {
-                status.tmp = new ShellySensorTmp();
+                ShellySensorTmp sensor = new ShellySensorTmp();
+                sensor.tC = temperature.tC;
+                status.tmp = sensor;
             }
-            status.temperature = status.tmp.tC = result.temperature0.tC;
+            status.temperature = temperature.tC;
         }
 
         updated |= updateInputStatus(status, result, channelUpdate);
-        updated |= updateRelayStatus(status, result.switch0, channelUpdate);
-        updated |= updateRelayStatus(status, result.switch1, channelUpdate);
-        updated |= updateRelayStatus(status, result.switch2, channelUpdate);
-        updated |= updateRelayStatus(status, result.switch3, channelUpdate);
-        updated |= updateRelayStatus(status, result.switch100, channelUpdate);
+
+        final Shelly2RelayStatus switch0 = result.switch0;
+        if ((switch0 != null) && (switch0.id == null)) {
+            switch0.id = 0;
+        }
+        updated = updated || updateRelayStatus(status, switch0, channelUpdate);
+
+        final Shelly2RelayStatus switch1 = result.switch1;
+        if ((switch1 != null) && (switch1.id == null)) {
+            switch1.id = 1;
+        }
+        updated = updated || updateRelayStatus(status, switch1, channelUpdate);
+
+        final Shelly2RelayStatus switch2 = result.switch2;
+        if ((switch2 != null) && (switch2.id == null)) {
+            switch2.id = 2;
+        }
+        updated = updated || updateRelayStatus(status, switch2, channelUpdate);
+
+        final Shelly2RelayStatus switch3 = result.switch3;
+        if ((switch3 != null) && (switch3.id == null)) {
+            switch3.id = 3;
+        }
+        updated = updated || updateRelayStatus(status, switch3, channelUpdate);
+
+        final Shelly2RelayStatus switch100 = result.switch100;
+        if ((switch100 != null) && (switch100.id == null)) {
+            switch100.id = 100;
+        }
+        updated = updated || updateRelayStatus(status, switch100, channelUpdate);
+
         updated |= updateRelayStatus(status, result.pm10, channelUpdate);
         updated |= updateBreakerStatus(status, result.cb0, result.voltmeter0, channelUpdate);
         updated |= updateBreakerStatus(status, result.cb1, result.voltmeter1, channelUpdate);
@@ -274,8 +303,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sr.ison = rstatus.ison = getBool(rs.output);
         }
         if (getDouble(rs.timerStartetAt) > 0) {
-            int duration = (int) (now() - rs.timerStartetAt);
-            sr.timerRemaining = duration;
+            sr.timerRemaining = (int) (now() - rs.timerStartetAt);
         }
         if (rs.temperature != null) {
             if (status.tmp == null) {
@@ -327,7 +355,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             relayStatus.relays.set(rIdx, sr);
         }
 
-        updateMeter(status, rIdx, sm, emeter, channelUpdate);
+        updateMeter(status, rIdx, sm, emeter);
         return channelUpdate && profile.hasRelays
                 ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rIdx)
                 : false;
@@ -386,7 +414,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             relayStatus.relays.set(rIdx, sr);
         }
 
-        updateMeter(status, rIdx, sm, emeter, channelUpdate);
+        updateMeter(status, rIdx, sm, emeter);
         return channelUpdate && profile.hasRelays
                 ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rIdx)
                 : false;
@@ -406,8 +434,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return -1;
     }
 
-    private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter,
-            boolean channelUpdate) throws ShellyApiException {
+    private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter)
+            throws ShellyApiException {
         if (getProfile().numMeters == 0) {
             return;
         }
@@ -443,7 +471,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             emeter.pf = em.pf;
         }
         // Update internal structures
-        updateMeter(status, em.id, sm, emeter, channelUpdate);
+        updateMeter(status, em.id, sm, emeter);
 
         postAlarms(em.errors);
         return channelUpdate ? ShellyComponents.updateMeters(getThing(), status) : false;
@@ -490,7 +518,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             emeter.pf = em.aPF;
         }
         // Update internal structures
-        updateMeter(status, 0, sm, emeter, channelUpdate);
+        updateMeter(status, 0, sm, emeter);
 
         if (status.emeters.size() > 1) {
             sm = new ShellySettingsMeter();
@@ -515,7 +543,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 emeter.pf = em.bPF;
             }
             // Update internal structures
-            updateMeter(status, 1, sm, emeter, channelUpdate);
+            updateMeter(status, 1, sm, emeter);
         }
 
         if (status.emeters.size() > 2) {
@@ -541,7 +569,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 emeter.pf = em.cPF;
             }
             // Update internal structures
-            updateMeter(status, 2, sm, emeter, channelUpdate);
+            updateMeter(status, 2, sm, emeter);
         }
 
         return channelUpdate ? ShellyComponents.updateMeters(getThing(), status) : false;

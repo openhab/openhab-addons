@@ -79,8 +79,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         int lightId = getLightIdFromGroup(groupName);
-        logger.trace("{}: Execute command {} on channel {}, lightId={}", thingName, command, channelUID.getAsString(),
-                lightId);
+        logger.trace("{}: Execute command {} on channel {}, lightId={}", thingName, command, channelUID, lightId);
 
         try {
             ShellyColorUtils oldCol = getCurrentColors(lightId);
@@ -113,19 +112,19 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     handleFullColor(col, command);
                     break;
                 case CHANNEL_COLOR_RED:
-                    col.setRed(setColor(lightId, SHELLY_COLOR_RED, command, SHELLY_MAX_COLOR));
+                    col.setRed(setColor(SHELLY_COLOR_RED, command, SHELLY_MAX_COLOR));
                     break;
                 case CHANNEL_COLOR_GREEN:
-                    col.setGreen(setColor(lightId, SHELLY_COLOR_GREEN, command, SHELLY_MAX_COLOR));
+                    col.setGreen(setColor(SHELLY_COLOR_GREEN, command, SHELLY_MAX_COLOR));
                     break;
                 case CHANNEL_COLOR_BLUE:
-                    col.setBlue(setColor(lightId, SHELLY_COLOR_BLUE, command, SHELLY_MAX_COLOR));
+                    col.setBlue(setColor(SHELLY_COLOR_BLUE, command, SHELLY_MAX_COLOR));
                     break;
                 case CHANNEL_COLOR_WHITE:
-                    col.setWhite(setColor(lightId, SHELLY_COLOR_WHITE, command, SHELLY_MAX_COLOR));
+                    col.setWhite(setColor(SHELLY_COLOR_WHITE, command, SHELLY_MAX_COLOR));
                     break;
                 case CHANNEL_COLOR_GAIN:
-                    col.setGain(setColor(lightId, SHELLY_COLOR_GAIN, command, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
+                    col.setGain(setColor(SHELLY_COLOR_GAIN, command, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                     break;
                 case CHANNEL_BRIGHTNESS: // only in white mode
                     if (profile.inColor && !profile.isBulb) {
@@ -237,8 +236,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     String.format("0x%08X", hsb.getRGB()), hsb.toRGB()[0], hsb.toRGB()[1], hsb.toRGB()[2]);
             if (hsb.toString().contains("360,")) {
                 logger.trace("{}: need to fix the Hue value (360->0)", thingName);
-                HSBType fixHue = new HSBType(new DecimalType(0), hsb.getSaturation(), hsb.getBrightness());
-                hsb = fixHue;
+                hsb = new HSBType(new DecimalType(0), hsb.getSaturation(), hsb.getBrightness());
             }
 
             col.setRed(getColorFromHSB(hsb.getRed()));
@@ -411,7 +409,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
     }
 
-    private Integer setColor(Integer lightId, String colorName, Command command, Integer minValue, Integer maxValue)
+    private Integer setColor(String colorName, Command command, Integer minValue, Integer maxValue)
             throws ShellyApiException, IllegalArgumentException {
         Integer value = -1;
         logger.debug("{}: Set {} to {} ({})", thingName, colorName, command, command.getClass());
@@ -430,12 +428,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     "Invalid value type for " + colorName + ": " + value + " / type " + value.getClass());
         }
         validateRange(colorName, value, minValue, maxValue);
-        return value.intValue();
+        return value;
     }
 
-    private Integer setColor(Integer lightId, String colorName, Command command, Integer maxValue)
+    private Integer setColor(String colorName, Command command, Integer maxValue)
             throws ShellyApiException, IllegalArgumentException {
-        return setColor(lightId, colorName, command, 0, maxValue);
+        return setColor(colorName, command, 0, maxValue);
     }
 
     private void setFullColor(String colorGroup, ShellyColorUtils col) {
