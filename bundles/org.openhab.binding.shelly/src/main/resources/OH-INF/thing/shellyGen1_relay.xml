@@ -389,6 +389,10 @@
 		<label>@text/channel-type.shelly.rollerShutter.label</label>
 		<description>@text/channel-type.shelly.rollerShutter.description</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollerPosition" advanced="true">
@@ -486,6 +490,10 @@
 		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
 		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="meterWatts">
@@ -557,6 +565,10 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.shelly.meterReactive.label</label>
 		<description>@text/channel-type.shelly.meterReactive.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -578,6 +590,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.shelly.meterTotal.label</label>
 		<description>@text/channel-type.shelly.meterTotal.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -625,6 +641,10 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
 		<description>@text/channel-type.shelly.meterPowerFactor.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
@@ -633,6 +653,10 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.meterResetTotals.label</label>
 		<description>@text/channel-type.shelly.meterResetTotals.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ncurrent">
@@ -678,6 +702,10 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.nmismatch.label</label>
 		<description>@text/channel-type.shelly.nmismatch.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="timestamp">
@@ -696,12 +724,20 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.ledStatusDisable.label</label>
 		<description>@text/channel-type.shelly.ledStatusDisable.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ledPowerDisable">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.ledPowerDisable.label</label>
 		<description>@text/channel-type.shelly.ledPowerDisable.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lastUpdate" advanced="true">

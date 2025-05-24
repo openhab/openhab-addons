@@ -6,6 +6,10 @@
 	<channel-type id="cop-channel">
 		<item-type>Number</item-type>
 		<label>Current COP</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state pattern="%d"/>
 	</channel-type>
 	<channel-type id="cop-heating-channel">
@@ -21,48 +25,84 @@
 	<channel-type id="cop-cooling-channel">
 		<item-type>Number</item-type>
 		<label>Current COP Cooling</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Power</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-heating-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current power heating</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-drinkingwater-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Power Drinking Water</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-cooling-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current power cooling</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="electric-power-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-heating-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power Heating</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-drinkingwater-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current electric power drinking water</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-cooling-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power Cooling</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

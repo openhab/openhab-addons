@@ -8,6 +8,10 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>Speed of the ventilation fan (0-5)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -25,6 +29,10 @@
 		<label>Target Humidity</label>
 		<description>Target Humidity (30-70)</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="30">30 %</option>
@@ -60,6 +68,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Timer Time Passed</label>
 		<description>Time that has passed since set by the Timer</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -67,24 +79,40 @@
 		<item-type>Switch</item-type>
 		<label>Sleep Mode</label>
 		<description>Sleep Mode</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="boost">
 		<item-type>Switch</item-type>
 		<label>Boost</label>
 		<description>Boost</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="childLock">
 		<item-type>Switch</item-type>
 		<label>Child Lock</label>
 		<description>Child Lock</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="automatic">
 		<item-type>Switch</item-type>
 		<label>Automatic</label>
 		<description>Automatic</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -92,6 +120,10 @@
 		<label>Temperature</label>
 		<description>Current Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -100,6 +132,10 @@
 		<label>Humidity</label>
 		<description>Current Humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -107,6 +143,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Air Quality</label>
 		<description>Current Air Quality measured in PM 2.5</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -114,6 +154,10 @@
 		<item-type>Number</item-type>
 		<label>Water Level</label>
 		<description>Water Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Critical</option>
@@ -129,6 +173,10 @@
 		<item-type>Number</item-type>
 		<label>Fan RPM</label>
 		<description>Fan RPM</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d RPM" readOnly="true"/>
 	</channel-type>
 
@@ -136,6 +184,10 @@
 		<item-type>Switch</item-type>
 		<label>Cleaning Mode</label>
 		<description>Device is in cleaning mode (ON)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -143,6 +195,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Operation Time since the device was first started (in hours)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -150,6 +206,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Hygiene Disc Replacement</label>
 		<description>Time until the Hygiene Disc should be replaced (in hours)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -157,6 +217,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Cleaning Time</label>
 		<description>Time until next cleaning (in hours)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -164,6 +228,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Service Time</label>
 		<description>Service time in minutes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 

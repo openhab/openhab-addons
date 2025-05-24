@@ -9,6 +9,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="btaudio">Bluetooth Audio</option>
@@ -25,6 +29,10 @@
 		<item-type>String</item-type>
 		<label>Sound Field</label>
 		<description>Select the Sound Field for the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="clearAudio">ClearAudio+</option>

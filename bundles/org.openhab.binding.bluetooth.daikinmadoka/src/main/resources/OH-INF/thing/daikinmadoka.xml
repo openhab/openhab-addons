@@ -56,21 +56,37 @@
 	<channel-type id="brc1h_onOffStatus">
 		<item-type>Switch</item-type>
 		<label>Unit Power Status</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_cleanFilter">
 		<item-type>Switch</item-type>
 		<label>Clean Filter Indicator</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Indoor Temperature</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_outdoorTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_remoteCtrlVersion">
@@ -86,6 +102,10 @@
 	<channel-type id="brc1h_operationMode">
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="FAN">Fan</option>
@@ -101,22 +121,38 @@
 	<channel-type id="brc1h_setpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_fanSpeed">
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_homekitCurrentHeatingCoolingMode">
 		<item-type>String</item-type>
 		<label>HomeKit CurrentMode</label>
 		<description>Readonly value. Off, Heating, Cooling, Auto</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brc1h_homekitTargetHeatingCoolingMode">
 		<item-type>String</item-type>
 		<label>HomeKit Target Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="Off">Off</option>
@@ -143,24 +179,40 @@
 	<channel-type id="brc1h_eyeBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Eye Illumination Brightness</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorPowerHours">
 		<item-type>Number:Time</item-type>
 		<label>Number of hours system has been powered up</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorOperationHours">
 		<item-type>Number:Time</item-type>
 		<label>Number of hours system has been operating</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorFanHours">
 		<item-type>Number:Time</item-type>
 		<label>Number of hours fan has been operating</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

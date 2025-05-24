@@ -186,6 +186,10 @@
 		<label>Voltage</label>
 		<description>Voltage</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -194,6 +198,10 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -201,6 +209,10 @@
 		<item-type>Contact</item-type>
 		<label>Daytime</label>
 		<description>Enabled if it is daytime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="doorLock">
@@ -208,6 +220,10 @@
 		<label>Door Lock</label>
 		<description>Door lock state</description>
 		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Unlocked">Unlocked</option>
@@ -228,6 +244,10 @@
 		<label>Door Open</label>
 		<description>Door is open</description>
 		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ignition">
@@ -261,6 +281,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Current speed</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -275,6 +299,10 @@
 		<item-type>Location</item-type>
 		<label>Position</label>
 		<description>Last known position</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state pattern="%2$s°N %3$s°E %1$sm"/>
 	</channel-type>
 
@@ -289,6 +317,10 @@
 		<item-type>String</item-type>
 		<label>Position Type</label>
 		<description>Position acquisition type</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Estimate">Estimate</option>
@@ -302,6 +334,10 @@
 		<label>Time of Last Update</label>
 		<description>Last time the results were updated on the server</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="privacy">
@@ -359,6 +395,10 @@
 		<item-type>String</item-type>
 		<label>Air Conditioning</label>
 		<description>Air conditioning status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Enabled">Enabled</option>
@@ -373,6 +413,10 @@
 		<item-type>String</item-type>
 		<label>Air Conditioning Failure</label>
 		<description>Air conditioning failure cause</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Defect">Defect</option>
@@ -424,6 +468,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
 		<description>Fuel level</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -461,6 +509,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Health - Capacity</label>
 		<description>Health of the battery capacity</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -468,6 +520,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Health - Resistance</label>
 		<description>Health of the battery resistance</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -475,6 +531,10 @@
 		<item-type>String</item-type>
 		<label>Charging Status</label>
 		<description>Battery charging status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Disconnected">Disconnected</option>
@@ -490,6 +550,10 @@
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
 		<description>Battery charging mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="No">No</option>
@@ -510,6 +574,10 @@
 		<label>Charging Rate</label>
 		<description>Battery Charging Rate</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -518,6 +586,10 @@
 		<label>Charging Time Remaining</label>
 		<description>Time remaining till charged</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%tT"/>
 	</channel-type>
 
@@ -526,6 +598,10 @@
 		<label>Time Till Next Charging</label>
 		<description>Time till the next charging starts</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%tT"/>
 	</channel-type>
 

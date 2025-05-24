@@ -294,7 +294,7 @@
 		<description>Central heating 2 enabled overridden at OTGW</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
