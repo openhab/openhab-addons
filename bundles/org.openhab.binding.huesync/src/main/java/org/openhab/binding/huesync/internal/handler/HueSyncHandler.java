@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -73,15 +72,15 @@ public class HueSyncHandler extends BaseThingHandler {
     /**
      * @author Patrik Gfeller - Initial contribution, Issue #18376
      */
-    public static class TASK_TYPE {
+    public static class TASKS {
         public static final String CONNECT = "Connect";
         public static final String REGISTER = "Registration";
         public static final String POLL = "Update";
 
-        public static Map<String, Integer> DELAY_MAP = Map.ofEntries(Map.entry(TASK_TYPE.CONNECT, 0),
-                Map.entry(TASK_TYPE.REGISTER, 5), Map.entry(TASK_TYPE.POLL, 10));
-        public static Map<String, Integer> INTERVAL_MAP = Map.ofEntries(Map.entry(TASK_TYPE.CONNECT, 10),
-                Map.entry(TASK_TYPE.REGISTER, 1), Map.entry(TASK_TYPE.POLL, 10));
+        public static Map<String, Integer> DELAYS = Map.ofEntries(Map.entry(TASKS.CONNECT, 0),
+                Map.entry(TASKS.REGISTER, 5), Map.entry(TASKS.POLL, 10));
+        public static Map<String, Integer> INTERVALS = Map.ofEntries(Map.entry(TASKS.CONNECT, 10),
+                Map.entry(TASKS.REGISTER, 1), Map.entry(TASKS.POLL, 10));
     }
 
     /**
@@ -108,7 +107,6 @@ public class HueSyncHandler extends BaseThingHandler {
             if (exception instanceof HueSyncConnectionException connectionException
                     && connectionException.getInnerException() instanceof HttpResponseException responseException) {
                 httpResponseException = responseException;
-
             }
             if (exception instanceof HttpResponseException responseException) {
                 httpResponseException = responseException;
@@ -121,7 +119,7 @@ public class HueSyncHandler extends BaseThingHandler {
             ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE, detail, description);
             this.handler.thing.setStatusInfo(statusInfo);
 
-            if (!(detail == ThingStatusDetail.CONFIGURATION_PENDING && tasks.containsKey(TASK_TYPE.REGISTER))) {
+            if (!(detail == ThingStatusDetail.CONFIGURATION_PENDING && tasks.containsKey(TASKS.REGISTER))) {
                 scheduler.execute(initializeHandler());
             }
         }
@@ -175,28 +173,28 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     private synchronized void startTasks() {
-        String taskId = TASK_TYPE.POLL;
+        String taskId = TASKS.POLL;
 
         if (this.connection.isEmpty()) {
-            taskId = TASK_TYPE.CONNECT;
+            taskId = TASKS.CONNECT;
         } else if (!this.connection.get().isRegistered()) {
-            taskId = TASK_TYPE.REGISTER;
+            taskId = TASKS.REGISTER;
         }
 
         Runnable task = null;
 
-        long delay = TASK_TYPE.DELAY_MAP.get(taskId);
-        long interval = TASK_TYPE.INTERVAL_MAP.get(taskId);
+        long delay = TASKS.DELAYS.get(taskId);
+        long interval = TASKS.INTERVALS.get(taskId);
 
         this.logger.trace("startTasks - [{}, delay: {}s, interval: {}s]", taskId, delay, interval);
 
         switch (taskId) {
-            case TASK_TYPE.CONNECT -> {
+            case TASKS.CONNECT -> {
                 task = new HueSyncConnectionTask(this, this.httpClient, instance -> this.handleConnection(instance),
                         this.exceptionHandler);
                 break;
             }
-            case TASK_TYPE.POLL -> {
+            case TASKS.POLL -> {
                 ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(ThingStatus.ONLINE).build();
                 this.thing.setStatusInfo(statusInfo);
 
@@ -206,7 +204,7 @@ public class HueSyncHandler extends BaseThingHandler {
                         deviceStatus -> this.handleUpdate(deviceStatus), this.exceptionHandler);
                 break;
             }
-            case TASK_TYPE.REGISTER -> {
+            case TASKS.REGISTER -> {
                 task = new HueSyncRegistrationTask(this.connection.get(), this.deviceInfo.get(),
                         this.getHueSyncConfiguration(), registration -> this.handleRegistration(registration),
                         this.exceptionHandler);
@@ -238,11 +236,8 @@ public class HueSyncHandler extends BaseThingHandler {
     private void handleUpdate(@Nullable HueSyncUpdateTaskResult dto) {
         var result = Optional.ofNullable(dto).orElseThrow();
 
-        @NonNull
         HueSyncDeviceDetailed deviceStatus = Optional.ofNullable(result.deviceStatus).orElseThrow();
-        @NonNull
         HueSyncHdmi hdmiStatus = Optional.ofNullable(result.hdmiStatus).orElseThrow();
-        @NonNull
         HueSyncExecution execution = Optional.ofNullable(result.execution).orElseThrow();
 
         this.updateFirmwareInformation(deviceStatus);
