@@ -77,9 +77,9 @@ public class HueSyncHandler extends BaseThingHandler {
         public static final String REGISTER = "Registration";
         public static final String POLL = "Update";
 
-        public static Map<String, Integer> DELAYS = Map.ofEntries(Map.entry(TASKS.CONNECT, 0),
+        public static Map<String, Integer> delays = Map.ofEntries(Map.entry(TASKS.CONNECT, 0),
                 Map.entry(TASKS.REGISTER, 5), Map.entry(TASKS.POLL, 10));
-        public static Map<String, Integer> INTERVALS = Map.ofEntries(Map.entry(TASKS.CONNECT, 10),
+        public static Map<String, Integer> intervals = Map.ofEntries(Map.entry(TASKS.CONNECT, 10),
                 Map.entry(TASKS.REGISTER, 1), Map.entry(TASKS.POLL, 10));
     }
 
@@ -183,8 +183,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
         Runnable task = null;
 
-        long delay = TASKS.DELAYS.get(taskId);
-        long interval = TASKS.INTERVALS.get(taskId);
+        long delay = TASKS.delays.get(taskId);
+        long interval = TASKS.intervals.get(taskId);
 
         this.logger.trace("startTasks - [{}, delay: {}s, interval: {}s]", taskId, delay, interval);
 
