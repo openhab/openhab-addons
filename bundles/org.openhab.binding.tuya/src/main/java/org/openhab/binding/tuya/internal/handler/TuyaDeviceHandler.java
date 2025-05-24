@@ -16,10 +16,11 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYP
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_DIMMER;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_IR_CODE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_NUMBER;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_QUANTITY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_STRING;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_SWITCH;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.SCHEMAS;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -72,6 +74,7 @@ import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +103,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     private final EventLoopGroup eventLoopGroup;
     private DeviceConfiguration configuration = new DeviceConfiguration();
     private @Nullable TuyaDevice tuyaDevice;
-    private final List<SchemaDp> schemaDps;
+    private final Map<String, SchemaDp> schemaDps;
     private boolean oldColorMode = false;
 
     private @Nullable ScheduledFuture<?> reconnectFuture;
@@ -117,15 +120,15 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             Duration.ofSeconds(10));
     private final Map<String, State> channelStateCache = new HashMap<>();
 
-    public TuyaDeviceHandler(Thing thing, @Nullable List<SchemaDp> schemaDps, Gson gson,
+    public TuyaDeviceHandler(Thing thing, Map<String, SchemaDp> schemaDps, Gson gson,
             BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider, EventLoopGroup eventLoopGroup,
             UdpDiscoveryListener udpDiscoveryListener) {
         super(thing);
+        this.schemaDps = schemaDps;
         this.gson = gson;
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
-        this.schemaDps = Objects.requireNonNullElse(schemaDps, List.of());
     }
 
     @Override
@@ -185,6 +188,29 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     return;
                 } else if (value instanceof String string && CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
                     updateState(channelId, new DecimalType(string));
+                    return;
+                } else if ((Double.class.isAssignableFrom(value.getClass()) || value instanceof String)
+                        && CHANNEL_TYPE_UID_QUANTITY.equals(channelTypeUID)) {
+                    BigDecimal d;
+                    if (value instanceof String) {
+                        d = new BigDecimal((String) value);
+                    } else {
+                        d = new BigDecimal((double) value);
+                    }
+
+                    SchemaDp schemaDp = schemaDps.get(channelId);
+
+                    if (schemaDp != null) {
+                        d = d.movePointLeft(schemaDp.scale);
+
+                        if (!schemaDp.unit.isEmpty()) {
+                            updateState(channelId, new QuantityType<>(d.toPlainString() + " " + schemaDp.unit));
+                            return;
+                        }
+                    }
+
+                    updateState(channelId, new DecimalType(d));
+                    return;
                 } else if (Boolean.class.isAssignableFrom(value.getClass())
                         && CHANNEL_TYPE_UID_SWITCH.equals(channelTypeUID)) {
                     updateState(channelId, OnOffType.from((boolean) value));
@@ -338,6 +364,22 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         } else if (CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
             commandRequest.put(configuration.dp, command.toString());
         } else if (CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
+            if (command instanceof QuantityType quantityType) {
+                SchemaDp schemaDp = schemaDps.get(channelUID.getId());
+
+                if (schemaDp != null && !schemaDp.unit.isEmpty()) {
+                    quantityType = quantityType.toUnit(schemaDp.unit);
+                }
+
+                if (quantityType != null) {
+                    BigDecimal d = quantityType.toBigDecimal();
+                    if (schemaDp != null) {
+                        d = d.movePointRight(schemaDp.scale);
+                    }
+                    command = new DecimalType(d);
+                }
+            }
+
             if (command instanceof DecimalType decimalType) {
                 commandRequest.put(configuration.dp,
                         configuration.sendAsString ? String.format("%d", decimalType.intValue())
@@ -428,21 +470,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
         // check if we have channels and add them if available
         if (thing.getChannels().isEmpty()) {
-            // stored schemas are usually more complete
-            Map<String, SchemaDp> schema = SCHEMAS.get(configuration.productId);
-            if (schema == null) {
-                if (!schemaDps.isEmpty()) {
-                    // fallback to retrieved schema
-                    schema = schemaDps.stream()
-                            .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "No channels added and schema not found.");
-                    return;
-                }
-            }
-
-            addChannels(schema);
+            addChannels();
         }
 
         thing.getChannels().forEach(this::configureChannel);
@@ -471,7 +499,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 configuration.localKey.getBytes(StandardCharsets.UTF_8), deviceInfo.ip, deviceInfo.protocolVersion);
     }
 
-    private void addChannels(Map<String, SchemaDp> schema) {
+    private void addChannels() {
         ThingBuilder thingBuilder = editThing();
         ThingUID thingUID = thing.getUID();
         ThingHandlerCallback callback = getCallback();
@@ -481,12 +509,13 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        Map<String, Channel> channels = new LinkedHashMap<>(schema.entrySet().stream().map(e -> {
+        Map<String, Channel> channels = new LinkedHashMap<>(schemaDps.entrySet().stream().map(e -> {
             String channelId = e.getKey();
             SchemaDp schemaDp = e.getValue();
 
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-            Map<String, @Nullable Object> configuration = new HashMap<>();
+            String acceptedItemType = null;
+            Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
             configuration.put("dp", schemaDp.id);
 
             ChannelTypeUID channeltypeUID;
@@ -508,6 +537,25 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 channeltypeUID = CHANNEL_TYPE_UID_NUMBER;
                 configuration.put("min", schemaDp.min);
                 configuration.put("max", schemaDp.max);
+
+                if (schemaDp.scale > 0 || !schemaDp.unit.isEmpty()) {
+                    channeltypeUID = CHANNEL_TYPE_UID_QUANTITY;
+
+                    if (!schemaDp.unit.isEmpty()) {
+                        try {
+                            QuantityType<?> reftype = new QuantityType<>("1 " + schemaDp.unit);
+                            String dimension = UnitUtils.getDimensionName(reftype.getUnit());
+                            if (dimension != null) {
+                                acceptedItemType = "Number:" + dimension;
+                            } else {
+                                logger.warn("{} has unit \"{}\" but openHAB doesn't know the dimension", channelId,
+                                        schemaDp.unit);
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            logger.warn("{} has unit \"{}\" but that could not be parsed", channelId, schemaDp.unit);
+                        }
+                    }
+                }
             } else {
                 // e.g. type "raw", add empty channel
                 return Map.entry("", ChannelBuilder.create(channelUID).build());
@@ -525,8 +573,11 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 }
             }
 
-            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID)
-                    .withLabel(schemaDp.label).withConfiguration(new Configuration(configuration)).build());
+            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID) //
+                    .withAcceptedItemType(acceptedItemType) //
+                    .withLabel(schemaDp.label) //
+                    .withConfiguration(new Configuration(configuration)) //
+                    .build());
         }).filter(c -> !c.getKey().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         List<String> channelSuffixes = List.of("", "_1", "_2");

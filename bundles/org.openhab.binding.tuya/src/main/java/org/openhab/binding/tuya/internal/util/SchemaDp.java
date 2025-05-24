@@ -40,8 +40,10 @@ public class SchemaDp {
     public String code = "";
     public String type = "";
     public String label = "";
+    public String unit = "";
     public @Nullable Double min;
     public @Nullable Double max;
+    public Integer scale = 0;
     public @Nullable List<String> range;
 
     public static SchemaDp fromRemoteSchema(Gson gson, DeviceSchema.Description function) {
@@ -59,6 +61,8 @@ public class SchemaDp {
                     gson.fromJson(function.values.replaceAll("\\\\", ""), DeviceSchema.NumericRange.class));
             schemaDp.min = numericRange.min;
             schemaDp.max = numericRange.max;
+            schemaDp.scale = numericRange.scale;
+            schemaDp.unit = numericRange.unit;
         }
 
         return schemaDp;
