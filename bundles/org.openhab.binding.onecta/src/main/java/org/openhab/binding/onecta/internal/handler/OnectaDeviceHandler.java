@@ -166,10 +166,10 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
 
     @Override
     public void refreshDevice() {
-        logger.debug("refreshDevice : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
+            logger.debug("refreshDevice : {}", dataTransService.getUnitName());
 
             getThing().setProperty(PROPERTY_AC_NAME, dataTransService.getUnitName());
 

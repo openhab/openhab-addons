@@ -67,10 +67,10 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
     @Override
     public void refreshDevice() {
-        logger.debug("refreshGateway : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
+            logger.debug("refreshGateway : {}", dataTransService.getUnitName());
 
             getThing().setProperty(PROPERTY_GW_NAME, dataTransService.getUnitName());
 

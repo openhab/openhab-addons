@@ -100,11 +100,10 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
     @Override
     public void refreshDevice() {
-        logger.debug("refreshWatertank : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
-
+            logger.debug("refreshWatertank : {}", dataTransService.getUnitName());
             // getThing().setLabel(String.format("Daikin Onecta Unit (%s)", dataTransService.getUnitName()));
             getThing().setProperty(PROPERTY_HWT_NAME, dataTransService.getUnitName());
 

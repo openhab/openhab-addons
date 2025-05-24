@@ -69,10 +69,11 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
 
     @Override
     public void refreshDevice() {
-        logger.debug("refreshIndoorUnit : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
+            logger.debug("refreshIndoorUnit : {}", dataTransService.getUnitName());
+
             getThing().setProperty(PROPERTY_IDU_MODELINFO, getModelInfo().toString());
             getThing().setProperty(PROPERTY_IDU_SOFTWAREVERSION, getSoftwareVerion().toString());
             getThing().setProperty(PROPERTY_IDU_EEPROMVERSION, getEepromVerion().toString());
