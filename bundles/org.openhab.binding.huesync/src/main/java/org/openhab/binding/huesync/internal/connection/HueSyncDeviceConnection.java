@@ -63,7 +63,6 @@ public class HueSyncDeviceConnection {
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration,
             HueSyncExceptionHandler exceptionHandler) throws CertificateException, IOException, URISyntaxException {
-
         this.exceptionHandler = exceptionHandler;
         try {
             this.connection = new HueSyncConnection(httpClient, configuration);
