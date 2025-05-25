@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amberelectric.internal;
 
+import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.Future;
@@ -37,6 +39,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,6 +141,14 @@ public class AmberElectricHandler extends BaseThingHandler {
         }
     }
 
+    private void updatePriceTimeSeries(TimeSeries timeSeries, Instant instant, double price) {
+        final String electricityUnit = " AUD/kWh";
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
+        State state = (unit == null) ? new DecimalType(price / 100)
+                : new QuantityType<>(price / 100 + " " + electricityUnit);
+        timeSeries.add(instant, state);
+    }
+
     private void pollStatus() throws IOException {
         try {
             if (siteID.isEmpty()) {
@@ -154,8 +166,11 @@ public class AmberElectricHandler extends BaseThingHandler {
             Gson gson = new Gson();
             JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
             CurrentPrices currentPrices;
+            TimeSeries elecTimeSeries = new TimeSeries(REPLACE);
+
             for (int i = 0; i < jsonArray.size(); i++) {
                 currentPrices = gson.fromJson(jsonArray.get(i), CurrentPrices.class);
+                Instant instantStart = Instant.parse(currentPrices.startTime);
                 if ("CurrentInterval".equals(currentPrices.type) && "general".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_STATUS,
                             new StringType(currentPrices.descriptor));
@@ -165,14 +180,10 @@ public class AmberElectricHandler extends BaseThingHandler {
                     updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
                             OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
                     updatePriceChannel(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, currentPrices.perKwh);
+                    updatePriceTimeSeries(elecTimeSeries, instantStart, currentPrices.perKwh);
                 }
                 if ("ForecastInterval".equals(currentPrices.type) && "general".equals(currentPrices.channelType)) {
-                    Instant instantStart = Instant.parse(currentPrices.startTime);
-                    Instant instantEnd = Instant.parse(currentPrices.endTime);
-                    logger.info("predicted next interval {}-{} = {}, {}, {}",
-                            instantStart.atZone(timeZoneProvider.getTimeZone()),
-                            instantEnd.atZone(timeZoneProvider.getTimeZone()), currentPrices.advancedPrice.low,
-                            currentPrices.advancedPrice.predicted, currentPrices.advancedPrice.high);
+                    updatePriceTimeSeries(elecTimeSeries, instantStart, currentPrices.perKwh);
                 }
                 if ("CurrentInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
@@ -187,6 +198,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                             currentPrices.perKwh);
                 }
             }
+            sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
         } catch (AmberElectricCommunicationException e) {
             logger.debug("Unexpected error connecting to Amber Electric API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
