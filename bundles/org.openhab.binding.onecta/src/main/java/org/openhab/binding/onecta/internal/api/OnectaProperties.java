@@ -29,12 +29,12 @@ public class OnectaProperties {
 
     private static final String BASE_URL = "https://api.onecta.daikineurope.com/v1/gateway-devices/%s";
     private static final String BASE_URL_COMMAND = "/management-points/%s/characteristics/%s";
-    private static final String COMMAND_ONOFF = "onOffMode";
-    private static final String COMMAND_POWERFULMODEONOFF = "powerfulMode";
+    private static final String COMMAND_ONOFFMODE = "onOffMode";
+    private static final String COMMAND_POWERFULMODE = "powerfulMode";
     private static final String COMMAND_ECONOMODE = "econoMode";
     private static final String COMMAND_OPERATIONMODE = "operationMode";
     private static final String COMMAND_TEMPERATURECONTROL = "temperatureControl";
-    private static final String COMMAND_TARGETTEMPERATURECONTROL = "targetTemperature";
+    private static final String COMMAND_TARGETTEMPERATURE = "targetTemperature";
     private static final String COMMAND_STREAMERMODE = "streamerMode";
     private static final String COMMAND_HOLIDAYMODE = "holidayMode";
     private static final String COMMAND_SUBPATH_TEMPERATURECONTROL_ROOM = "/operationModes/%s/setpoints/roomTemperature";
@@ -55,12 +55,12 @@ public class OnectaProperties {
     }
 
     public static String getUrlOnOff(String unitId, Enums.ManagementPoint managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(), COMMAND_ONOFF);
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(), COMMAND_ONOFFMODE);
     }
 
-    public static String getUrlPowerFulModeOnOff(String unitId, Enums.ManagementPoint managementPointType) {
+    public static String getUrlPowerfulModeOnOff(String unitId, Enums.ManagementPoint managementPointType) {
         return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(),
-                COMMAND_POWERFULMODEONOFF);
+                COMMAND_POWERFULMODE);
     }
 
     public static String getEconoMode(String unitId, Enums.ManagementPoint managementPointType) {
@@ -73,7 +73,7 @@ public class OnectaProperties {
     }
 
     public static String getTargetTemperaturUrl(String unitId, String embeddedId) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_TARGETTEMPERATURECONTROL);
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_TARGETTEMPERATURE);
     }
 
     public static CommandFloat getTargetTemperaturCommand(float value) {

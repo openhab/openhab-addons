@@ -112,7 +112,7 @@ public class OnectaWaterTankHandlerTest {
         when(dataTransServiceMock.getIsInInstallerState()).thenReturn(true);
         when(dataTransServiceMock.getIsInWarningState()).thenReturn(true);
         when(dataTransServiceMock.getIsHolidayModeActive()).thenReturn(true);
-        when(dataTransServiceMock.getPowerFulModeOnOff()).thenReturn("ON");
+        when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn("ON");
         when(dataTransServiceMock.getHeatupMode()).thenReturn(Enums.HeatupMode.REHEATSCHEDULE);
         when(dataTransServiceMock.getTankTemperature()).thenReturn(19.2);
         when(dataTransServiceMock.getCurrentTankTemperatureSet()).thenReturn(20.2);
@@ -174,7 +174,7 @@ public class OnectaWaterTankHandlerTest {
         when(dataTransServiceMock.getIsInInstallerState()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getIsInWarningState()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getIsHolidayModeActive()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getPowerFulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getPowerfulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getHeatupMode()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getTankTemperature()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getCurrentTankTemperatureSet())
@@ -255,7 +255,7 @@ public class OnectaWaterTankHandlerTest {
         verify(dataTransServiceMock).setPowerOnOff(Enums.OnOff.ON);
 
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_POWERFUL_MODE), OnOffType.ON);
-        verify(dataTransServiceMock).setPowerFulModeOnOff(Enums.OnOff.ON);
+        verify(dataTransServiceMock).setPowerfulModeOnOff(Enums.OnOff.ON);
 
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_SETTEMP), new QuantityType<>("25.0"));
         verify(dataTransServiceMock).setCurrentTankTemperatureSet(25.0f);

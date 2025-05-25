@@ -146,8 +146,7 @@ public class DataTransportService {
                 .orElse(null);
     }
 
-    public String getPowerFulModeOnOff() {
-
+    public String getPowerfulModeOnOff() {
         if (getManagementPoint(managementPointType) != null
                 && getManagementPoint(managementPointType).getPowerfulMode() != null) {
             return getManagementPoint(this.managementPointType).getPowerfulMode().getValue();
@@ -160,8 +159,8 @@ public class DataTransportService {
         onectaConnectionClient.setPowerOnOff(unitId, managementPointType, value);
     }
 
-    public void setPowerFulModeOnOff(Enums.OnOff value) {
-        onectaConnectionClient.setPowerFulModeOnOff(unitId, managementPointType, value);
+    public void setPowerfulModeOnOff(Enums.OnOff value) {
+        onectaConnectionClient.setPowerfulModeOnOff(unitId, managementPointType, value);
     }
 
     public String getEconoMode() {

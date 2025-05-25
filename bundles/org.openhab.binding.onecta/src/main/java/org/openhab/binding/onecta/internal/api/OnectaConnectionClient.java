@@ -46,7 +46,7 @@ import com.google.gson.JsonArray;
  * @author Alexander Drent - Initial contributionF
  */
 @NonNullByDefault
-public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
+public class OnectaConnectionClient {
 
     private static final Logger logger = LoggerFactory.getLogger(OnectaConnectionClient.class);
     private static final String HTTPHEADER_X_API_KEY = "x-api-key";
@@ -210,10 +210,10 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         doBearerRequestPatch(getUrlOnOff(unitId, managementPointType), commandOnOf);
     }
 
-    public void setPowerFulModeOnOff(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
-        logger.debug("setPowerFulModeOnOff : {}, {}, {}", unitId, managementPointType.getValue(), value);
+    public void setPowerfulModeOnOff(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
+        logger.debug("setPowerfulModeOnOff : {}, {}, {}", unitId, managementPointType.getValue(), value);
         CommandOnOf commandOnOf = new CommandOnOf(value);
-        doBearerRequestPatch(getUrlPowerFulModeOnOff(unitId, managementPointType), commandOnOf);
+        doBearerRequestPatch(getUrlPowerfulModeOnOff(unitId, managementPointType), commandOnOf);
     }
 
     public void setEconoMode(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
@@ -260,22 +260,18 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
         switch (fanMovement) {
             case STOPPED:
                 doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.STOPPED));
-
                 doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.STOPPED));
                 break;
             case VERTICAL:
                 doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.STOPPED));
-
                 doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.SWING));
                 break;
             case HORIZONTAL:
                 doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.SWING));
-
                 doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.STOPPED));
                 break;
             case VERTICAL_AND_HORIZONTAL:
                 doBearerRequestPatch(url, getTFanDirectionHorCommand(currentMode, Enums.FanMovementHor.SWING));
-
                 doBearerRequestPatch(url, getTFanDirectionVerCommand(currentMode, Enums.FanMovementVer.SWING));
                 break;
             default:
@@ -319,14 +315,6 @@ public class OnectaConnectionClient { // implements OAuthTokenRefreshListener {
 
         doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId), getTDemandControlFixedValueCommand(value));
     }
-
-    // public String getRefreshToken() {
-    // return onectaSignInClient.getRefreshToken();
-    // }
-    //
-    // public void setRefreshToken(String refreshToken) {
-    // onectaSignInClient.setRefreshToken(refreshToken);
-    // }
 
     public void setTargetTemperatur(String unitId, String embeddedId, Float value) {
         logger.debug("setRefreshToken: {}, {}, {}", unitId, embeddedId, value);

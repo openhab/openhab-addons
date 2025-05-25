@@ -72,7 +72,7 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
                     break;
                 case CHANNEL_AC_POWERFULMODE:
                     if (command instanceof OnOffType) {
-                        dataTransService.setPowerFulModeOnOff(Enums.OnOff.valueOf(command.toString()));
+                        dataTransService.setPowerfulModeOnOff(Enums.OnOff.valueOf(command.toString()));
                     }
                     break;
                 case CHANNEL_AC_OPERATIONMODE:
@@ -179,7 +179,7 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
                 updateState(CHANNEL_AC_POWER, getPowerOnOff());
             }
             if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_POWERFULMODE)) {
-                updateState(CHANNEL_AC_POWERFULMODE, getPowerFulMode());
+                updateState(CHANNEL_AC_POWERFULMODE, getPowerfulMode());
             }
             if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_OPERATIONMODE)) {
                 updateState(CHANNEL_AC_OPERATIONMODE, getCurrentOperationMode());
@@ -341,9 +341,9 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
         }
     }
 
-    private State getPowerFulMode() {
+    private State getPowerfulMode() {
         try {
-            return OnOffType.from(dataTransService.getPowerFulModeOnOff());
+            return OnOffType.from(dataTransService.getPowerfulModeOnOff());
         } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }

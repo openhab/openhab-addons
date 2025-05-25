@@ -277,7 +277,7 @@ Switch        IsInWarningState          "Is in warning state"      <switch>     
 Switch        IsInInstallerState        "Is in installer state"    <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isininstallerstate", readOnly="true"}
 Switch        IsInEmergencyState        "Is in imergency state"    <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isinemergencystate", readOnly="true"}
 Switch        IsHolidayModeActive       "Is holiday mode active"   <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#isholidaymodeactive", readOnly="true"}
-Switch        PowerFulmode              "Powerful mode"            <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#powerfulmode", readOnly="true"}
+Switch        Powerfulmode              "Powerful mode"            <switch>         ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#powerfulmode", readOnly="true"}
 String        HeatupMode                "Heatup mode"                               ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#heatupmode", readOnly="true"}
 
 String               ErrorCode          "Error code"                                ["Point"] {channel="onecta:domesticHotWaterTank:bridge:livingroom:basic#errorcode", readOnly="true"}

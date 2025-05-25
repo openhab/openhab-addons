@@ -73,7 +73,7 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
                     break;
                 case CHANNEL_HWT_POWERFUL_MODE:
                     if (command instanceof OnOffType) {
-                        dataTransService.setPowerFulModeOnOff(Enums.OnOff.valueOf(command.toString()));
+                        dataTransService.setPowerfulModeOnOff(Enums.OnOff.valueOf(command.toString()));
                     }
                     break;
                 case CHANNEL_HWT_SETTEMP:
@@ -121,7 +121,7 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_HWT_IS_IN_WARNING_STATE, getIsInWarningState());
 
             updateState(CHANNEL_HWT_IS_HOLIDAY_MODE_ACTIVE, getIsHolidayModeActive());
-            updateState(CHANNEL_HWT_POWERFUL_MODE, getPowerFulMode());
+            updateState(CHANNEL_HWT_POWERFUL_MODE, getPowerfulMode());
 
             updateState(CHANNEL_HWT_HEATUP_MODE, getHeatupMode());
             updateState(CHANNEL_HWT_TANK_TEMPERATURE, getTankTemperatur());
@@ -240,9 +240,9 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
         }
     }
 
-    private State getPowerFulMode() {
+    private State getPowerfulMode() {
         try {
-            return OnOffType.from(this.dataTransService.getPowerFulModeOnOff());
+            return OnOffType.from(this.dataTransService.getPowerfulModeOnOff());
         } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }

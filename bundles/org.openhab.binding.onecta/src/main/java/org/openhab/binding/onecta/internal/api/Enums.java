@@ -46,7 +46,7 @@ public class Enums {
 
             LOGGER.debug("Unexpected OnOff value of \"{}\"", value);
 
-            // Default to auto
+            // Default to off
             return OFF;
         }
     }
@@ -110,7 +110,7 @@ public class Enums {
 
             LOGGER.debug("Unexpected Mode value of \"{}\"", value);
 
-            // Default to auto
+            // Default to unknown
             return UNKNOWN;
         }
     }
@@ -140,7 +140,7 @@ public class Enums {
 
             LOGGER.debug("Unexpected Mode value of \"{}\"", value);
 
-            // Default to auto
+            // Default to unknown
             return UNKNOWN;
         }
     }
@@ -282,7 +282,7 @@ public class Enums {
             }
             LOGGER.debug("Unexpected FanMovementHor value of \"{}\"", value);
 
-            // Default to stopped
+            // Default to notavailable
             return NOTAVAILABLE;
         }
     }
@@ -291,7 +291,6 @@ public class Enums {
         STOPPED("stop"),
         SWING("swing"),
         WINDNICE("windNice"),
-
         NOTAVAILABLE("notavailable");
 
         private static final Logger LOGGER = LoggerFactory.getLogger(FanMovementVer.class);
@@ -313,7 +312,7 @@ public class Enums {
             }
             LOGGER.debug("Unexpected FanMovementVer value of \"{}\"", value);
 
-            // Default to stopped
+            // Default to notavailable
             return NOTAVAILABLE;
         }
     }
@@ -377,7 +376,7 @@ public class Enums {
             }
             LOGGER.debug("Unexpected DemandControl value of \"{}\"", value);
 
-            // Default to stopped
+            // Default to off
             return OFF;
         }
     }
@@ -447,6 +446,7 @@ public class Enums {
                 case ECO_STREAMER:
                     return SpecialMode.ECO;
             }
+            // default to normal
             return NORMAL;
         }
     }

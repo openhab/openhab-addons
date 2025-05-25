@@ -12,16 +12,11 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.commands;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class CommandFloat {
-    @SerializedName("value")
     public float value;
-
-    @SerializedName("path")
     public String path;
 
     public CommandFloat(float value) {

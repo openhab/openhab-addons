@@ -87,7 +87,7 @@ public class DataTransportServiceTest {
         assertEquals(Enums.FanMovementVer.SWING, dataTransportService.getCurrentFanDirectionVer());
         assertEquals(Enums.FanMovement.VERTICAL, dataTransportService.getCurrentFanDirection());
         assertEquals("off", dataTransportService.getPowerOnOff());
-        assertEquals("off", dataTransportService.getPowerFulModeOnOff());
+        assertEquals("off", dataTransportService.getPowerfulModeOnOff());
         assertEquals("off", dataTransportService.getEconoMode());
         assertEquals("Kantoor Jeanette", dataTransportService.getUnitName());
         assertEquals((float) 20.0, dataTransportService.getCurrentTemperatureSet());
@@ -306,8 +306,8 @@ public class DataTransportServiceTest {
         dataTransportService.setPowerOnOff(Enums.OnOff.OFF);
         verify(onectaConnectionClientMock).setPowerOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
 
-        dataTransportService.setPowerFulModeOnOff(Enums.OnOff.OFF);
-        verify(onectaConnectionClientMock).setPowerFulModeOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
+        dataTransportService.setPowerfulModeOnOff(Enums.OnOff.OFF);
+        verify(onectaConnectionClientMock).setPowerfulModeOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
 
         dataTransportService.setEconoMode(Enums.OnOff.OFF);
         verify(onectaConnectionClientMock).setEconoMode(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);

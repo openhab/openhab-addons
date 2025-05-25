@@ -35,7 +35,7 @@ public class OnectaPropertiesTest {
                 OnectaProperties.getUrlOnOff(UNITID, MANAGEMENTPOINTTYPE));
         assertEquals(
                 "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/powerfulMode",
-                OnectaProperties.getUrlPowerFulModeOnOff(UNITID, MANAGEMENTPOINTTYPE));
+                OnectaProperties.getUrlPowerfulModeOnOff(UNITID, MANAGEMENTPOINTTYPE));
         assertEquals(
                 "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/econoMode",
                 OnectaProperties.getEconoMode(UNITID, MANAGEMENTPOINTTYPE));

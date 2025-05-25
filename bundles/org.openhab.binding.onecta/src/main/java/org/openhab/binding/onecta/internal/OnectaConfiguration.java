@@ -70,10 +70,6 @@ public class OnectaConfiguration {
         OnectaConfiguration.openHabOAuthTokenRefresher = openHabOAuthTokenRefresher;
     }
 
-    // public static OnectaSignInClient getOnectaSignInClient() {
-    // return onectaSignInClient;
-    // }
-
     public static OnectaConnectionClient getOnectaConnectionClient() {
         return onectaConnectionClient;
     }

@@ -143,7 +143,7 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
 
         when(dataTransServiceMock.getPowerOnOff()).thenReturn("ON");
-        when(dataTransServiceMock.getPowerFulModeOnOff()).thenReturn("ON");
+        when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn("ON");
         when(dataTransServiceMock.getCurrentOperationMode()).thenReturn(Enums.OperationMode.HEAT);
         when(dataTransServiceMock.getCurrentTemperatureSet()).thenReturn(19.2);
         when(dataTransServiceMock.getCurrentTemperatureSetMin()).thenReturn(10.2);
@@ -368,7 +368,7 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
 
         when(dataTransServiceMock.getPowerOnOff()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getPowerFulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getPowerfulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getCurrentOperationMode()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getCurrentTemperatureSet()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getCurrentTemperatureSetMin())
@@ -527,7 +527,7 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
 
         lenient().when(dataTransServiceMock.getPowerOnOff()).thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getPowerFulModeOnOff())
+        lenient().when(dataTransServiceMock.getPowerfulModeOnOff())
                 .thenThrow(new RuntimeException("Simulating exception"));
         lenient().when(dataTransServiceMock.getCurrentOperationMode())
                 .thenThrow(new RuntimeException("Simulating exception"));
@@ -631,7 +631,7 @@ public class OnectaDeviceHandlerTest {
         verify(dataTransServiceMock).setPowerOnOff(Enums.OnOff.ON);
 
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_POWERFULMODE), OnOffType.ON);
-        verify(dataTransServiceMock).setPowerFulModeOnOff(Enums.OnOff.ON);
+        verify(dataTransServiceMock).setPowerfulModeOnOff(Enums.OnOff.ON);
 
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_OPERATIONMODE),
                 new StringType("DEHUMIDIFIER"));
