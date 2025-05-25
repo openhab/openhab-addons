@@ -85,7 +85,6 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     private ColorUpdateState xyState = ColorUpdateState.READY;
     private ColorUpdateState colorTemperatureState = ColorUpdateState.READY;
 
-    @SuppressWarnings("null")
     public ColorControlConverter(ColorControlCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);

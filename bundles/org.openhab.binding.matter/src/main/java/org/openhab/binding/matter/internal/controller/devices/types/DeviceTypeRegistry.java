@@ -56,7 +56,6 @@ public class DeviceTypeRegistry {
      * @param endpointNumber The endpoint number
      * @return The device type
      */
-    @SuppressWarnings("null")
     public static DeviceType createDeviceType(Integer deviceTypeId, MatterBaseThingHandler handler,
             Integer endpointNumber) {
         Class<? extends DeviceType> clazz = DEVICE_TYPES.get(deviceTypeId);

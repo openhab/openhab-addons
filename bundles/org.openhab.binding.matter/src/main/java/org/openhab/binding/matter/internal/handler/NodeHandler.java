@@ -149,7 +149,6 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     }
 
     @Override
-    @SuppressWarnings("null")
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof EndpointHandler handler) {
             bridgedEndpoints.entrySet().removeIf(entry -> entry.getValue().equals(handler));

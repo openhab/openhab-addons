@@ -365,7 +365,6 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
      * 
      * @return
      */
-    @SuppressWarnings("null")
     private CompletableFuture<Void> syncUnknownNodes() {
         logger.debug("syncUnknownNodes starting");
         if (!ready) {
