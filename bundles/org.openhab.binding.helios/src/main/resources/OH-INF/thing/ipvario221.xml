@@ -7,6 +7,7 @@
 	<thing-type id="ipvario221">
 		<label>Helios IP Vario</label>
 		<description>Helios IP Vario Door Station / Intercom with Firmware v2.21</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 
 		<channels>
 			<channel id="audiolooptest" typeId="audiolooptest"/>

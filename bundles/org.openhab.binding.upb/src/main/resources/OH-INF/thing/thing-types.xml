@@ -10,7 +10,7 @@
 		<label>Generic Powerline Device</label>
 		<description>A generic device in a UPB network</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="dimmer" typeId="system.brightness"/>
 		</channels>

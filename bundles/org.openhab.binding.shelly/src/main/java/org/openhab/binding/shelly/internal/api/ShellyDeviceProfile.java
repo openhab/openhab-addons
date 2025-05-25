@@ -83,6 +83,7 @@ public class ShellyDeviceProfile {
 
     public int numMeters = 0;
     public boolean isEMeter = false; // true for ShellyEM/3EM
+    public boolean isCB = false; // true for Shelly Pro CB
 
     public boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb = false; // true only if it is a Bulb
@@ -157,7 +158,6 @@ public class ShellyDeviceProfile {
         String mode = getString(device.mode);
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
-
         numRelays = !isLight ? getInteger(device.numOutputs) : 0;
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
@@ -411,7 +411,8 @@ public class ShellyDeviceProfile {
 
     public static boolean isGeneration2(String thingType) {
         return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
-                || thingType.startsWith("shellywall") || (thingType.startsWith("shelly") && thingType.contains("g3"))
+                || thingType.startsWith("shellywall")
+                || (thingType.startsWith("shelly") && (thingType.contains("g3") || thingType.contains("g4")))
                 || isBluSeries(thingType) || thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 

@@ -96,7 +96,7 @@ public class ProjectFileUtils {
             DocumentBuilder builder = factory.newDocumentBuilder();
             return builder.parse(new ByteArrayInputStream(data));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.warn("Error occured when trying to convert data to XML, reason {}", e.getMessage());
+            LOGGER.warn("Error occurred when trying to convert data to XML, reason {}", e.getMessage());
         }
         return null;
     }
@@ -134,7 +134,7 @@ public class ProjectFileUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.debug("Error occured during project file date comparasion, reason {}.", e.getMessage(), e);
+                LOGGER.debug("Error occurred during project file date comparasion, reason {}.", e.getMessage(), e);
                 // There is no documentation available for XML content. This is part of inessential feature, so do
                 // nothing, but return false
             }

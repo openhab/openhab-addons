@@ -39,6 +39,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.test.java.JavaTest;
@@ -58,6 +59,7 @@ import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
+import org.openhab.core.util.BundleResolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -100,6 +102,8 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     private @Mock @NonNullByDefault({}) TransformationService transformationService1Mock;
 
     private @Mock @NonNullByDefault({}) BundleContext bundleContextMock;
+    private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
+    private @Mock @NonNullByDefault({}) BundleResolver bundleResolver;
     private @Mock @NonNullByDefault({}) ServiceReference<TransformationService> serviceRefMock;
 
     private @NonNullByDefault({}) TransformationHelper transformationHelper;
@@ -114,7 +118,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
         when(thingTypeRegistry.getThingType(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)).thenReturn(HA_THING_TYPE);
 
         channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry, new VolatileStorageService()));
-        stateDescriptionProvider = spy(new MqttChannelStateDescriptionProvider());
+        stateDescriptionProvider = spy(new MqttChannelStateDescriptionProvider(translationProvider, bundleResolver));
         channelTypeRegistry = spy(new ChannelTypeRegistry());
 
         setupConnection();

@@ -88,6 +88,8 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
                 TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/th1", """
                 {"running_state": "idle", "away_mode": "ON", \
                 "local_temperature": "22.2", "preset": "schedule", "system_mode": "heat", \
@@ -158,6 +160,8 @@ public class ClimateTests extends AbstractComponentTests {
                 "zigbee2mqtt/th1/set/current_heating_setpoint", "th1", NumberValue.class);
         assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
                 TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/th1", """
                 {"running_state": "idle", "away_mode": "ON", \
@@ -276,6 +280,8 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
                 TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/th1", """
                 { "action": "fan",  "aux": "ON",  "away_mode": "OFF", \
                 "current_temperature": "35.5",  "fan_mode": "p2",  "hold": "u2", \
@@ -352,6 +358,8 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.PRESET_MODE_CH_ID, "zigbee2mqtt/th2", "zigbee2mqtt/th2/set/preset", "th2",
                 TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/th2", """
                 {"running_state": "heat",
                 "local_temperature": "22.2", "preset": "manual", "system_mode": "heat",
@@ -385,6 +393,8 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.CURRENT_HUMIDITY_CH_ID, "zigbee2mqtt/th2", "", "th2", NumberValue.class);
         assertChannel(component, Climate.TARGET_HUMIDITY_CH_ID, "zigbee2mqtt/th2",
                 "zigbee2mqtt/th2/set/humidity_setpoint", "th2", NumberValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/th2", """
                 {"humidity": "55", "humidity_setpoint": "50"}\

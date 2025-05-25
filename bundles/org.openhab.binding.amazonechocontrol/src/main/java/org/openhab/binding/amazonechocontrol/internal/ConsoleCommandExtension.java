@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -40,8 +42,7 @@ public class ConsoleCommandExtension extends AbstractConsoleCommandExtension {
 
     @Activate
     public ConsoleCommandExtension(@Reference AmazonEchoControlHandlerFactory handlerFactory) {
-        super("amazonechocontrol", "Manage the AmazonEchoControl account");
-
+        super(BINDING_ID, "Manage the AmazonEchoControl account");
         this.handlerFactory = handlerFactory;
     }
 
@@ -83,7 +84,7 @@ public class ConsoleCommandExtension extends AbstractConsoleCommandExtension {
                 .filter(handler -> handler.getThing().getUID().getId().equals(accountId)).findAny();
         if (accountHandler.isPresent()) {
             console.println("Resetting account '" + accountId + "'");
-            accountHandler.get().setConnection(null);
+            accountHandler.get().resetConnection(true);
         } else {
             console.println("Account '" + accountId + "' not found.");
         }

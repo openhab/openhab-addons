@@ -8,6 +8,7 @@
 	<thing-type id="kodi" extensible="shownotification">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="volume" typeId="system.volume"/>

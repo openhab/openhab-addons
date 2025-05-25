@@ -417,7 +417,7 @@ public class RRMapDraw {
         g2d.drawString(message, textPos, height - offset * scale - stringHeight / 2);
     }
 
-    private @Nullable String getAvailableFont(String[] preferedFonts) {
+    private @Nullable String getAvailableFont(String[] preferredFonts) {
         final GraphicsEnvironment gEv = GraphicsEnvironment.getLocalGraphicsEnvironment();
         if (gEv == null) {
             return null;
@@ -426,10 +426,10 @@ public class RRMapDraw {
         if (fonts.length == 0) {
             return null;
         }
-        for (int j = 0; j < preferedFonts.length; j++) {
+        for (int j = 0; j < preferredFonts.length; j++) {
             for (int i = 0; i < fonts.length; i++) {
-                if (fonts[i].equalsIgnoreCase(preferedFonts[j])) {
-                    return preferedFonts[j];
+                if (fonts[i].equalsIgnoreCase(preferredFonts[j])) {
+                    return preferredFonts[j];
                 }
             }
         }

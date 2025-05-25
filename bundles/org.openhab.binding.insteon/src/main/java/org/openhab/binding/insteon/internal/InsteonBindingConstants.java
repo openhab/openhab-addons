@@ -75,6 +75,7 @@ public class InsteonBindingConstants {
     public static final String FEATURE_LED_ON_OFF = "ledOnOff";
     public static final String FEATURE_LINK_FF_GROUP = "linkFFGroup";
     public static final String FEATURE_LOW_BATTERY_THRESHOLD = "lowBatteryThreshold";
+    public static final String FEATURE_MONITOR_MODE = "monitorMode";
     public static final String FEATURE_ON_LEVEL = "onLevel";
     public static final String FEATURE_PING = "ping";
     public static final String FEATURE_RAMP_RATE = "rampRate";

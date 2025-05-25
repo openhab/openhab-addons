@@ -129,11 +129,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
         String channelId = channelUID.getId();
         if (ELECTRICITY_CHANNELS.contains(channelId)) {
-            if (!electricityPriceProvider.forceRefreshPrices(getChannelSubscription(channelId))) {
-                // All subscriptions are automatically notified upon actual changes after download.
-                // If cached values are the same, we will update the requested channel directly.
-                updateChannelFromCache(getChannelSubscription(channelId), channelId);
-            }
+            updateChannelFromCache(getChannelSubscription(channelId), channelId);
         } else if (CO2_EMISSION_CHANNELS.contains(channelId)) {
             Subscription subscription = getChannelSubscription(channelId);
             unsubscribe(subscription);

@@ -57,4 +57,24 @@ public class JablotronHistoryDataEvent {
     public String getSectionName() {
         return sectionName;
     }
+
+    public void setIconType(String iconType) {
+        this.iconType = iconType;
+    }
+
+    public void setEventText(String eventText) {
+        this.eventText = eventText;
+    }
+
+    public void setInvokerName(String invokerName) {
+        this.invokerName = invokerName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = sectionName;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 }

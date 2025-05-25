@@ -27,6 +27,7 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.Header;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroupStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneExpanded;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,6 +214,9 @@ public class LeapMessageParser {
                 case "MultipleZoneStatus":
                     parseMultipleZoneStatus(body);
                     break;
+                case "MultipleZoneExpandedStatus":
+                    parseMultipleZoneExpandedStatus(body);
+                    break;
                 default:
                     logger.debug("Unknown MessageBodyType received: {}", messageBodyType);
                     break;
@@ -328,6 +332,12 @@ public class LeapMessageParser {
             logger.debug("Setting zone {} to level: {}", status.href, status.level);
             callback.handleZoneUpdate(status);
         }
+    }
+
+    private void parseMultipleZoneExpandedStatus(JsonObject messageBody) {
+        List<ZoneExpanded> zoneExpandedList = parseBodyMultiple(messageBody, "ZoneExpandedStatuses",
+                ZoneExpanded.class);
+        callback.handleMultipleZoneExpandedUpdate(zoneExpandedList);
     }
 
     /**

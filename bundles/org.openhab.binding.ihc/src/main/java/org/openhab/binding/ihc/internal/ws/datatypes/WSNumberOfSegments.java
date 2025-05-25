@@ -59,7 +59,7 @@ public class WSNumberOfSegments {
             setNumberOfSegments(Integer.parseInt(value));
             return this;
         } catch (IOException | XPathExpressionException | NumberFormatException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 }

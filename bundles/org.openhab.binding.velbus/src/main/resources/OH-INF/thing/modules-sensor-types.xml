@@ -12,6 +12,7 @@
 
 		<label>VMBELPIR</label>
 		<description>Edge-lit Motion detector with one touch button</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="2channelButtonModule"/>
@@ -35,6 +36,7 @@
 
 		<label>VMBGP4PIR</label>
 		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -54,6 +56,7 @@
 
 		<label>VMBEL4PIR-20</label>
 		<description>Edge-lit Motion detector with four touch button</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="4channelButtonModule"/>
@@ -77,6 +80,7 @@
 
 		<label>VMBMETEO</label>
 		<description>Weather station with thermometer, anemometer, rain sensor and light sensor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="weatherStation" typeId="weatherStation"/>
@@ -94,6 +98,7 @@
 
 		<label>VMBPIR-20</label>
 		<description>Mini motion and twilight sensor for recessed or surface mounting</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="7channelInputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -110,6 +115,7 @@
 
 		<label>VMBGP4PIR-2</label>
 		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -129,6 +135,7 @@
 
 		<label>VMBGP4PIR-20</label>
 		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -164,6 +171,7 @@
 
 		<label>VMBPIRM</label>
 		<description>Mini motion and twilight sensor for recessed or surface mounting</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="7channelInputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -180,6 +188,7 @@
 
 		<label>VMBPIRO</label>
 		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureAndLightSensor"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
@@ -197,6 +206,7 @@
 
 		<label>VMBPIRO-10</label>
 		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureAndLightSensor"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>

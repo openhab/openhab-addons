@@ -12,7 +12,7 @@
 
 		<label>T310 Temperature Sensor</label>
 		<description>Tapo Smart Temperature and Humidity Sensor</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensor" typeId="temperatureSensor"/>
 			<channel-group id="device" typeId="childDeviceState"/>

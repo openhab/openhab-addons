@@ -68,11 +68,24 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
         thingHandler.queryDiscoveryData();
     }
 
-    public void processDeviceDefinitions(List<Device> deviceList) {
+    public void processDeviceDefinitions(List<Device> deviceList, Map<Integer, String> zoneIdToName,
+            Map<Integer, String> areaIdToName) {
         for (Device device : deviceList) {
-            // Integer zoneid = device.getZone();
+            Integer zoneId = device.getZone();
             Integer deviceId = device.getDevice();
+            Integer areaId = device.getArea();
+
             String label = device.getFullyQualifiedName();
+            // RA3 doesn't provide a name for the above instead you
+            // need to get the Area and Zone name to have it make sense
+            if (label.isEmpty()) {
+                String areaName = areaIdToName.getOrDefault(areaId, "");
+                if (areaName.isEmpty()) {
+                    label = zoneIdToName.getOrDefault(zoneId, "");
+                } else {
+                    label = String.format("%s - %s", areaName, zoneIdToName.getOrDefault(zoneId, ""));
+                }
+            }
             if (deviceId > 0) {
                 logger.debug("Discovered device: {} type: {} id: {}", label, device.deviceType, deviceId);
                 if (device.deviceType != null) {
@@ -93,6 +106,7 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                             break;
                         case "WallSwitch":
                         case "PlugInSwitch":
+                        case "DivaSmartSwitch":
                             notifyDiscovery(THING_TYPE_SWITCH, deviceId, label);
                             break;
                         case "CasetaFanSpeedController":
@@ -115,6 +129,11 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                         case "TriathlonHoneycombShade":
                         case "QsWirelessShade":
                             notifyDiscovery(THING_TYPE_SHADE, deviceId, label);
+                            break;
+                        case "RPSWallMountedOccupancySensor":
+                            // TODO: Handle ra3 OccupancySensors, will need to get area
+                            // that the sensor is associated with to get at the sensor
+                            // status
                             break;
                         case "RPSOccupancySensor":
                             // Don't discover sensors. Using occupancy groups instead.

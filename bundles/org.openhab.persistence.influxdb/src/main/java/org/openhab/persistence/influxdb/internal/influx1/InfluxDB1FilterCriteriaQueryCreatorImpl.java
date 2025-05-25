@@ -50,9 +50,10 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
     }
 
     @Override
-    public String createQuery(FilterCriteria criteria, String retentionPolicy) {
+    public String createQuery(FilterCriteria criteria, String retentionPolicy, @Nullable String alias) {
         final String itemName = Objects.requireNonNull(criteria.getItemName()); // we checked non-null before
-        final String tableName = getTableName(itemName);
+        final String localAlias = alias != null ? alias : itemName;
+        final String tableName = getTableName(localAlias);
         final boolean hasCriteriaName = itemName != null;
 
         Select select = select().column("\"" + COLUMN_VALUE_NAME_V1 + "\"::field")
@@ -61,8 +62,8 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
 
         Where where = select.where();
 
-        if (itemName != null && !tableName.equals(itemName)) {
-            where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
+        if (localAlias != null && !tableName.equals(localAlias)) {
+            where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, localAlias));
         }
         if (criteria.getBeginDate() != null) {
             where.and(BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1, criteria.getBeginDate().toInstant().toString()));
@@ -99,7 +100,7 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
             return "/.*/";
         }
 
-        String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+        String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName);
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');

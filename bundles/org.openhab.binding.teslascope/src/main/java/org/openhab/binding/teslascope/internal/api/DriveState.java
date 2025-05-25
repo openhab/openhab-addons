@@ -28,11 +28,11 @@ public class DriveState {
     public int heading;
     public float latitude;
     public float longitude;
+    public float power;
 
     @SerializedName("shift_state")
     public String shiftState = "";
 
-    public float power;
     public float speed = 0;
 
     private DriveState() {

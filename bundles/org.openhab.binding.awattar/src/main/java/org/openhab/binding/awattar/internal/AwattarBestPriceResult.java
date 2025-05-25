@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.awattar.internal;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,7 +26,7 @@ public abstract class AwattarBestPriceResult {
     private long start;
     private long end;
 
-    public AwattarBestPriceResult() {
+    protected AwattarBestPriceResult() {
     }
 
     public long getStart() {
@@ -47,7 +49,18 @@ public abstract class AwattarBestPriceResult {
         }
     }
 
-    public abstract boolean isActive();
+    /**
+     * Returns true if the best price is active.
+     *
+     * @param pointInTime the current time
+     * @return true if the best price is active, false otherwise
+     */
+    public abstract boolean isActive(Instant pointInTime);
 
+    /**
+     * Returns the hours of the best price.
+     *
+     * @return the hours of the best price as a string
+     */
     public abstract String getHours();
 }

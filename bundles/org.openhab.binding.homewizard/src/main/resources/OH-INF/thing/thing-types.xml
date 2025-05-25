@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="p1_wifi_meter">
+	<thing-type id="p1_wifi_meter" listed="false">
 		<label>HomeWizard Wi-Fi P1 Meter</label>
 		<description>This thing provides the measurement data that is available through the http interface of the HomeWizard
 			Wi-Fi P1 Meter.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="active_current" typeId="system.electric-current">
 				<label>Current</label>
@@ -75,7 +75,8 @@
 
 	</thing-type>
 
-	<thing-type id="energy_socket">
+
+	<thing-type id="energy_socket" listed="false">
 		<label>HomeWizard Energysocket</label>
 		<description>This thing provides the measurement data that is available through the http interface of a HomeWizard
 			Energysocket.</description>
@@ -83,8 +84,8 @@
 		<channels>
 			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
 			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
+			<channel id="active_voltage" typeId="active_voltage"/>
 			<channel id="active_power" typeId="active_power"/>
-
 			<channel id="power_switch" typeId="power_switch"/>
 			<channel id="power_lock" typeId="power_lock"/>
 			<channel id="ring_brightness" typeId="ring_brightness"/>
@@ -106,7 +107,7 @@
 
 	</thing-type>
 
-	<thing-type id="watermeter">
+	<thing-type id="watermeter" listed="false">
 		<label>HomeWizard Wi-Fi Watermeter</label>
 		<description>This thing provides the measurement data that is available through the http interface of a HomeWizard
 			Watermeter.</description>
@@ -172,6 +173,14 @@
 		</description>
 	</channel-type>
 
+	<channel-type id="active_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Current Grid Voltage</label>
+		<description>
+			This channel provides the current grid voltage.
+		</description>
+	</channel-type>
+
 	<channel-type id="active_power">
 		<item-type>Number:Power</item-type>
 		<label>Current Total Net Power</label>
@@ -179,6 +188,7 @@
 			This channel provides the current net total power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="active_power_l1">
@@ -243,6 +253,7 @@
 		</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
+
 
 	<channel-type id="power_switch">
 		<item-type>Switch</item-type>

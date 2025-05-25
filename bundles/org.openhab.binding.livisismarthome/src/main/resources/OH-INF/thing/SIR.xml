@@ -11,7 +11,7 @@
 
 		<label>Wall Mounted Siren Indoor (SIR)</label>
 		<description>A battery powered indoor siren.</description>
-
+		<semantic-equipment-tag>Siren</semantic-equipment-tag>
 		<channels>
 			<channel id="sirenAlarm" typeId="sirenAlarmActuator"/>
 			<channel id="sirenNotification" typeId="sirenNotificationActuator"/>

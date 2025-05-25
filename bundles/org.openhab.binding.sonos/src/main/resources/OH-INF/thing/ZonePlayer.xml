@@ -9,7 +9,7 @@
 		<!-- Label without column (:) because of device pairing name restrictions -->
 		<label>Zone Player</label>
 		<description>The Zone Player represents a Sonos Zone Player which is not known to this binding</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

@@ -14,7 +14,9 @@ package org.openhab.binding.dscalarm.internal.handler;
 
 import static org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
@@ -129,11 +131,11 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
                 DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
-                ChannelUID channelUID = null;
                 DSCAlarmCode dscAlarmCode = DSCAlarmCode
                         .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
+                logger.debug("dscAlarmEventReceived(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
+                ChannelUID channelUID;
                 int state = 0;
                 String status = "";
 
@@ -173,10 +175,45 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                         updateChannel(channelUID, state, "");
                         zoneMessage(status);
                         break;
+                    case BypassedZonesBitfield:
+                        state = isZoneByPassed(dscAlarmMessage) ? 1 : 0;
+                        channelUID = new ChannelUID(getThing().getUID(), ZONE_BYPASS_MODE);
+                        updateChannel(channelUID, state, "");
+                        break;
                     default:
                         break;
                 }
             }
         }
+    }
+
+    private boolean isZoneByPassed(DSCAlarmMessage dscAlarmMessage) {
+        String data = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+        List<Integer> bypassedZones = parseZoneIdsFromHex(data);
+        return bypassedZones.contains(getZoneNumber());
+    }
+
+    private List<Integer> parseZoneIdsFromHex(String data) {
+        // List to store bypassed zones
+        List<Integer> bypassedZones = new ArrayList<>();
+
+        // Process each byte in the HEX string
+        for (int byteIndex = 0; byteIndex < data.length() / 2; byteIndex++) {
+            // Get two characters representing the byte (2 HEX characters = 1 byte)
+            String byteHex = data.substring(byteIndex * 2, byteIndex * 2 + 2);
+
+            // Convert the HEX string to an integer
+            int byteValue = Integer.parseInt(byteHex, 16);
+
+            // Process each bit in the byte (8 bits per byte)
+            for (int bit = 0; bit < 8; bit++) {
+                if ((byteValue & (1 << bit)) != 0) {
+                    // Calculate the zone number (1-based)
+                    int zoneNumber = byteIndex * 8 + bit + 1;
+                    bypassedZones.add(zoneNumber);
+                }
+            }
+        }
+        return bypassedZones;
     }
 }

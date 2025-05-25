@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface TransceiverErrorListener {
 
-    void errorOccured(Throwable exception);
+    void errorOccurred(Throwable exception);
 }

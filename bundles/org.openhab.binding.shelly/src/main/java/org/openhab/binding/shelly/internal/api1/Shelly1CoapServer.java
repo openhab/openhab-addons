@@ -29,8 +29,9 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.Exchange;
-import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.elements.UdpMulticastConnector;
+import org.eclipse.californium.elements.config.Configuration;
+import org.eclipse.californium.scandium.config.DtlsConfig;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -43,12 +44,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Shelly1CoapServer {
+    static {
+        // register configurations before Configuration.getStandard() is used
+        DtlsConfig.register();
+    }
     private final Logger logger = LoggerFactory.getLogger(Shelly1CoapServer.class);
 
     boolean started = false;
     private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
     private @Nullable UdpMulticastConnector statusConnector;
-    private CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
+    private CoapServer server = new CoapServer(Configuration.getStandard(), COIOT_PORT);
     private final Set<Shelly1CoapListener> coapListeners = ConcurrentHashMap.newKeySet();
 
     protected class ShellyStatusListener extends CoapResource {
@@ -81,13 +86,13 @@ public class Shelly1CoapServer {
             throws UnknownHostException, SocketException {
         if (!started) {
             logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, port);
-            NetworkConfig nc = NetworkConfig.getStandard();
+            Configuration nc = Configuration.getStandard();
             InetAddress localAddr = InetAddress.getByName(localIp);
             // Join the multicast group on the selected network interface, add UDP listener
             statusConnector = new UdpMulticastConnector.Builder().setLocalAddress(localAddr, port).setLocalPort(port)
                     .setOutgoingMulticastInterface(localAddr).addMulticastGroup(CoAP.MULTICAST_IPV4).build();
-            statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
-            server = new CoapServer(NetworkConfig.getStandard(), port);
+            statusEndpoint = new CoapEndpoint.Builder().setConfiguration(nc).setConnector(statusConnector).build();
+            server = new CoapServer(Configuration.getStandard(), port);
             server.addEndpoint(statusEndpoint);
             CoapResource cit = new ShellyStatusListener("cit", this);
             CoapResource s = new ShellyStatusListener("s", this);

@@ -198,7 +198,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return null;
                 } catch (Exception e) {
-                    logger.debug("Unexpected exception occured", e);
+                    logger.debug("Unexpected exception occurred", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return null;
                 }

@@ -8,6 +8,7 @@
 	<thing-type id="rcx1500">
 		<label>RCX-1500 Stereo Receiver</label>
 		<description>Connection to the Rotel RCX-1500 stereo receiver</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

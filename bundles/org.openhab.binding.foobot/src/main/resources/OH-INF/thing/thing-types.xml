@@ -8,6 +8,7 @@
 	<bridge-type id="account">
 		<label>Foobot Account</label>
 		<description>Your Foobot account.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="apiKeyLimitRemaining" typeId="api-key-limit-remaining"/>
@@ -41,6 +42,7 @@
 
 		<label>Foobot</label>
 		<description>A Foobot device.</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="time" typeId="time"/>

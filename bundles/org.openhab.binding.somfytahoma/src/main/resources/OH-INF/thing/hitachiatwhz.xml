@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Hitachi Air To Water Heating Zone</label>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>
 			<channel id="zone_mode" typeId="zone_mode"></channel>
 			<channel id="circuit_control" typeId="circuit_control"></channel>

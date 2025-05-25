@@ -7,12 +7,18 @@
 	<bridge-type id="sc-site">
 		<label>Solcast Site</label>
 		<description>Solcast service site definition</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="average" typeId="average-values"/>
 			<channel-group id="optimistic" typeId="optimistic-values"/>
 			<channel-group id="pessimistic" typeId="pessimistic-values"/>
+			<channel-group id="update" typeId="update-values"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:solarforecast:sc-site"/>
 	</bridge-type>
 </thing:thing-descriptions>

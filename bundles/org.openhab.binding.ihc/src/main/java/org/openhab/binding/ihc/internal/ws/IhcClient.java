@@ -566,7 +566,7 @@ public class IhcClient {
     private void sendErrorEvent(IhcExecption err) {
         eventListeners.forEach(listener -> {
             try {
-                listener.errorOccured(err);
+                listener.errorOccurred(err);
             } catch (RuntimeException e) {
                 logger.debug("Event listener invoking error.", e);
             }

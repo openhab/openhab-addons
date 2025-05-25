@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,6 +60,23 @@ public interface MyBMWConstants {
     static final int DEFAULT_IMAGE_SIZE_PX = 1024;
 
     static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 60;
+
+    // Captcha servlet constants
+    static final String LOCAL_OPENHAB_BASE_PATH = "/" + BINDING_ID + "/";
+    static final String CAPTCHA_URL_ROOT = "captcha/";
+    static final String NORTH_AMERICA = "NORTH_AMERICA";
+    static final String ROW = "ROW";
+    static final Map<String, String> CAPTCHA_HTML = Map.of(NORTH_AMERICA, CAPTCHA_URL_ROOT + "north_america_form.html",
+            ROW, CAPTCHA_URL_ROOT + "rest_of_world_form.html");
+
+    // Thing status detail messages
+    static final String STATUS_AUTH_NEEDED = "@text/mybmw.status.authorization-needed";
+    static final String STATUS_USER_DETAILS_MISSING = "@text/mybmw.status.user-details-missing";
+    static final String STATUS_REGION_MISSING = "@text/mybmw.status.region-missing";
+    static final String STATUS_IP_MISSING = "@text/mybmw.status.ip-missing";
+    static final String STATUS_VEHICLE_RETRIEVAL_ERROR = "@text/mybmw.status.vehicle-retrieval-error";
+    static final String STATUS_NETWORK_ERROR = "@text/mybmw.status.network-error";
+    static final String STATUS_QUOTA_ERROR = "@text/mybmw.status.quota-error";
 
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py

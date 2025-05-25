@@ -14,6 +14,7 @@
 		<label>AM43 Blind Drive Motor</label>
 		<description>An AM43 Blind Drive Motor</description>
 		<category>Blinds</category>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>

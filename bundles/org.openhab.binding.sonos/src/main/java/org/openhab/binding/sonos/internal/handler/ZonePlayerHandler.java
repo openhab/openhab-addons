@@ -15,7 +15,7 @@ package org.openhab.binding.sonos.internal.handler;
 import static org.openhab.binding.sonos.internal.SonosBindingConstants.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -741,10 +741,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 try {
                     URL serviceDescrUrl = service.getDescriptorURL(this);
                     if (serviceDescrUrl != null) {
-                        url = new URL(serviceDescrUrl.getProtocol(), serviceDescrUrl.getHost(),
-                                serviceDescrUrl.getPort(), albumArtURI).toExternalForm();
+                        url = serviceDescrUrl.toURI().resolve(albumArtURI).toString();
                     }
-                } catch (MalformedURLException e) {
+                } catch (URISyntaxException e) {
                     logger.debug("Failed to build a valid album art URL from {}: {}", albumArtURI, e.getMessage());
                 }
             }

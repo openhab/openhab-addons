@@ -63,7 +63,12 @@ public class TransientCommunicationIssueException extends I18Exception {
         /**
          * COMMUNICATIONS_LOST
          */
-        COMMUNICATIONS_LOST("Communications Lost", "exception.communications-lost");
+        COMMUNICATIONS_LOST("Communications Lost", "exception.communications-lost"),
+
+        /**
+         * GATEWAY_BUSY
+         */
+        GATEWAY_BUSY("Gateway Busy", "exception.gateway-busy");
 
         private final String description;
         private final String i18Key;

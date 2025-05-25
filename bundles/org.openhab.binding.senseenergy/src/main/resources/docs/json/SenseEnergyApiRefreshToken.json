@@ -1,0 +1,12 @@
+// SenseEnergyApiRefreshToken
+
+{
+    "authorized": true,
+    "account_id": 139132,
+    "user_id": 135624,
+    "access_token": "t1.v2.eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJTZW5zZSBJbmMiLCJleHAiOjE3MjYwMTQwNzYsInVzZXJJZCI6MTM1NjI0LCJhY2NvdW50SWQiOjEzOTEzMiwicm9sZXMiOiJ1c2VyIiwiZGhhc2giOiJhZDkyMSJ9.e6cBHBJl4k4EtG5kLPmxjOltbEn9_ulrdkL8ktU_OlNhdHoQtqG9HsPKivTgZcY-0b9GG_Pl_HeYNIeC5ikFfw",
+    "roles": "user",
+    "refresh_token": "DB6pZEWbY2F1e4hP+G3z/uE2qt+dcEQxAcwUBNSHG5KDabGp",
+    "totp_enabled": false,
+    "expires": "2024-09-11T00:21:16.805Z"
+  }

@@ -23,11 +23,12 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has the following configuration parameters:
 
-| Parameter      | Description                    |
-|----------------|--------------------------------|
-| username       | Your Enedis platform username. |
-| password       | Your Enedis platform password. |
-| internalAuthId | The internal authID            |
+| Parameter      | Description                                |
+|----------------|--------------------------------------------|
+| username       | Your Enedis platform username.             |
+| password       | Your Enedis platform password.             |
+| internalAuthId | The internal authID                        |
+| timezone       | The timezone at the location of your linky |
 
 This version is now compatible with the new API of Enedis (deployed from june 2020).
 To avoid the captcha login, it is necessary to log before on a classical browser (e.g Chrome, Firefox) and to retrieve the user cookies (internalAuthId).
@@ -42,6 +43,8 @@ Instructions given for Firefox :
 1. You will be directed to your Enedis account environment. Get back to previous page in you browser.
 1. Disconnect from your Enedis account
 1. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
+
+A new timezone parameter has been introduced. If you don't put a value, it will default to the timezone of your openHAB installation. This parameter can be useful if you read data from a Linky in a different timezone.
 
 ## Channels
 

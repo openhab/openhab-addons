@@ -8,6 +8,7 @@
 		<label>Update Receiver</label>
 		<description>An endpoint thing that can receive and propagate HTTP GET updates meant for a particular station id at
 			wunderground.com</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="metadata" typeId="metadata-group"/>

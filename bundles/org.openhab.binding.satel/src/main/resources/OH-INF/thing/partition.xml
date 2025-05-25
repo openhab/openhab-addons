@@ -16,7 +16,7 @@
 The subdivision into partitions enables arming/disarming the system only in part of the protected area, as well as limiting
 access to some portion of the premises to selected users.]]>
 		</description>
-
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<channel typeId="armed" id="armed"/>
 			<channel typeId="really_armed" id="really_armed"/>

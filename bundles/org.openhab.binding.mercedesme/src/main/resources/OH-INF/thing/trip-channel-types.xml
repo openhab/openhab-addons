@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="distance">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Trip Distance</label>
-		<state readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="driven-time">
 		<item-type>String</item-type>
@@ -31,10 +31,10 @@
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="distance-reset">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Rst Distance</label>
 		<description>Distance since last Reset</description>
-		<state readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="driven-time-reset">
 		<item-type>String</item-type>

@@ -8,12 +8,14 @@
 	<thing-type id="sonnenbattery">
 		<label>Sonnen Battery</label>
 		<description>Monitoring of a sonnen battery.</description>
-
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<channels>
 			<channel id="batteryChargingState" typeId="batteryChargingState"/>
 			<channel id="batteryDischargingState" typeId="batteryDischargingState"/>
 			<channel id="batteryCharging" typeId="batteryCharging"/>
 			<channel id="batteryDischarging" typeId="batteryDischarging"/>
+			<channel id="batteryChargingFromGrid" typeId="batteryChargingFromGrid"/>
+			<channel id="batteryOperationMode" typeId="batteryOperationMode"/>
 			<channel id="consumption" typeId="consumption"/>
 			<channel id="gridFeedIn" typeId="gridFeedIn"/>
 			<channel id="gridConsumption" typeId="gridConsumption"/>
@@ -32,7 +34,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">sonnen</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -46,6 +48,14 @@
 				<label>sonnen Authentication Token</label>
 				<description>Authentication Token which can be found under "Software Integration" if you connect locally to your
 					sonnen battery. If empty the old deprecated API will be used.</description>
+			</parameter>
+			<parameter name="chargingPower" type="integer" unit="W" min="1" max="10000">
+				<label>Maximum Charging Power</label>
+				<description>Maximum charging power in watt which is supported by sonnen battery type. Be cautious to not enter a
+					higher value then supported by the battery. Details can be found on the datasheet of your battery.
+				</description>
+				<advanced>true</advanced>
+				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
@@ -165,5 +175,20 @@
 		<label>kWh Exported Consumption</label>
 		<description>Indicates the exported kWh Consumption.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="batteryChargingFromGrid">
+		<item-type>Switch</item-type>
+		<label>Charging from Grid</label>
+		<description>Starts and stops the active battery charging from Grid. Note: "Write-API" in Software-Integration page of
+			the local web interface from the sonnen battery must be activated and the given token must be entered in
+			authentication token field of the binding.</description>
+	</channel-type>
+	<channel-type id="batteryOperationMode">
+		<item-type>String</item-type>
+		<label>Battery Operation Mode</label>
+		<description>Indicates if the Battery is operating in automatic or manual mode. Manual mode is required for active
+			charging the battery. Assure that the battery is in automatic mode if you don't actively charge the battery.Changing
+			the operation mode is happening with the channel "Start/Stop Active Battery Charging from Grid"</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

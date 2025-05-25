@@ -7,6 +7,7 @@
 	<thing-type id="signals">
 		<label>Electricity Forecast</label>
 		<description>The French electricity consumption forecasts</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="todaySignal" typeId="signal">

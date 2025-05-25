@@ -7,6 +7,7 @@
 	<thing-type id="network">
 		<label>Oceanic Water Softener</label>
 		<description>Oceanic Water Softener connected through a network proxy</description>
+		<semantic-equipment-tag>WaterSoftener</semantic-equipment-tag>
 
 		<channels>
 			<channel id="alarm" typeId="alarm"/>

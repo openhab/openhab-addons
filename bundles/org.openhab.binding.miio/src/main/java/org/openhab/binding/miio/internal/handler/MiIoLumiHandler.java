@@ -144,7 +144,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                 logger.debug("Refresh custom commands for child device {}", getThing().getLabel());
                 refreshCustomProperties(midevice, false);
             } else {
-                logger.debug("Null value occured for device {}: {}", midevice, config);
+                logger.debug("Null value occurred for device {}: {}", midevice, config);
             }
         } catch (Exception e) {
             logger.debug("Error while performing periodic refresh for '{}': {}", getThing().getUID(), e.getMessage());

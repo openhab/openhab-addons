@@ -9,6 +9,10 @@
 		<label>Position</label>
 		<description>The vertical position of the shade</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -16,6 +20,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Vane</label>
 		<description>The opening of the slats in the shade</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -57,6 +65,10 @@
 	<channel-type id="automation-enabled">
 		<item-type>Switch</item-type>
 		<label>Enable</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="battery-voltage" advanced="true">
@@ -71,6 +83,10 @@
 		<label>RSSI</label>
 		<description>Received Signal Strength Indicator</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -96,6 +112,10 @@
 		<label>Signal Strength</label>
 		<description>Signal strength of Bluetooth Low Energy communication</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f dBm"/>
 	</channel-type>
 

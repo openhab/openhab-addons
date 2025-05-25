@@ -42,10 +42,9 @@ public class InfluxDBMetadataService {
      * get the measurement name from the item metadata or return the provided default
      *
      * @param itemName the item name
-     * @param defaultName the default measurement name (
      * @return the metadata measurement name if present, defaultName otherwise
      */
-    public String getMeasurementNameOrDefault(String itemName, String defaultName) {
+    public String getMeasurementNameOrDefault(String itemName) {
         Optional<Metadata> metadata = getMetaData(itemName);
         if (metadata.isPresent()) {
             String metaName = metadata.get().getValue();
@@ -54,7 +53,7 @@ public class InfluxDBMetadataService {
             }
         }
 
-        return defaultName;
+        return itemName;
     }
 
     /**

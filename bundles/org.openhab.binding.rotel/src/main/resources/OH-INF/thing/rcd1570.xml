@@ -8,6 +8,7 @@
 	<thing-type id="rcd1570">
 		<label>RCD-1570 CD Player</label>
 		<description>Connection to the Rotel RCD-1570 CD player</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

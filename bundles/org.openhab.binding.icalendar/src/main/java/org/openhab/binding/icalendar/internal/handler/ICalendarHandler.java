@@ -268,7 +268,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
                             cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item!", e);
+                    logger.debug("Exception occurred while pushing to item!", e);
                 }
             }
         }

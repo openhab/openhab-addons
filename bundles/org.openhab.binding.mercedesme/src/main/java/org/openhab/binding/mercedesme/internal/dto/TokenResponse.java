@@ -33,6 +33,6 @@ public class TokenResponse {
     @SerializedName("token_type")
     public String tokenType = Constants.NOT_SET;
     @SerializedName("expires_in")
-    public int expiresIn;
-    public String createdOn = Instant.now().toString();
+    public int expiresIn = 0;
+    public String createdOn = Instant.MIN.toString();
 }

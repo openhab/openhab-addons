@@ -26,6 +26,7 @@ import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponseListener;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicatorFactory;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.commands.CommandFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -53,7 +54,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     /**
      * Interval at which to send update refresh commands.
      */
-    private static final int EVENT_REFRESH_INTERVAL = 120;
+    private static final int DEFAULT_REFRESH_INTERVAL_SEC = 120;
 
     /**
      * Logger.
@@ -104,8 +105,10 @@ public class LgTvSerialHandler extends BaseThingHandler {
 
     @Override
     public synchronized void initialize() {
-        String portName = (String) getThing().getConfiguration().get("port");
-        BigDecimal setIdParam = (BigDecimal) getThing().getConfiguration().get("setId");
+        Configuration config = getThing().getConfiguration();
+        String portName = (String) config.get("port");
+        int refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValue();
+        BigDecimal setIdParam = (BigDecimal) config.get("setId");
         int setId = 1;
         if (setIdParam != null) {
             setId = setIdParam.intValue();
@@ -168,7 +171,8 @@ public class LgTvSerialHandler extends BaseThingHandler {
         }
 
         if (updateJob == null || updateJob.isCancelled()) {
-            updateJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL, TimeUnit.SECONDS);
+            updateJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0,
+                    refreshInterval > 0 ? refreshInterval : DEFAULT_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
         }
         // trigger REFRESH commands for all linked Channels to start polling
         getThing().getChannels().forEach(channel -> {
@@ -232,7 +236,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 try {
                     entry.getValue().execute(entry.getKey(), communicator, null);
                 } catch (IOException e) {
-                    logger.warn("An error occured while sending an update command for {}: {}", entry.getKey(),
+                    logger.warn("An error occurred while sending an update command for {}: {}", entry.getKey(),
                             e.getMessage());
                 }
             }

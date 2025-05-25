@@ -12,11 +12,11 @@
  */
 package org.openhab.automation.jsscripting.internal.fs.watch;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
@@ -37,21 +37,21 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 @NonNullByDefault
 public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
-    private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
-
     @Activate
     public JSScriptFileWatcher(final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
             final @Reference ScriptEngineManager manager, final @Reference ReadyService readyService,
             final @Reference StartLevelService startLevelService) {
-        super(watchService, manager, readyService, startLevelService, FILE_DIRECTORY, true);
+        super(watchService, manager, readyService, startLevelService,
+                GraalJSScriptEngineFactory.JS_DEFAULT_PATH.toString(), true);
     }
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        Optional<String> scriptType = super.getScriptType(scriptFilePath);
-        if (scriptType.isPresent() && !scriptFilePath.startsWith(getWatchPath().resolve("node_modules"))
-                && ("js".equals(scriptType.get()))) {
-            return scriptType;
+        if (!scriptFilePath.startsWith(GraalJSScriptEngineFactory.JS_LIB_PATH)) {
+            Optional<String> scriptType = super.getScriptType(scriptFilePath);
+            if (scriptType.isPresent() && ("js".equals(scriptType.get()))) {
+                return Optional.of(GraalJSScriptEngineFactory.SCRIPT_TYPE);
+            }
         }
         return Optional.empty();
     }

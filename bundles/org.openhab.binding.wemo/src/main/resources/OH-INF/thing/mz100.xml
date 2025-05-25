@@ -12,7 +12,7 @@
 
 		<label>WeMo LED Light</label>
 		<description>This is a standard WeMo light bulb with E27 socket </description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="brightness" typeId="brightness"/>

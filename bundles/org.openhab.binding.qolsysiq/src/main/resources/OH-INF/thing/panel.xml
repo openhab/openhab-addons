@@ -6,6 +6,7 @@
 	<bridge-type id="panel">
 		<label>Qolsys IQ Panel</label>
 		<description>A Qolsys IQ Panel Bridge</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>

@@ -9,6 +9,7 @@
 		<label>@text/thing-type.mielecloud.account.label</label>
 		<description>@text/thing-type.mielecloud.account.description</description>
 		<category>WebService</category>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<properties>
 			<property name="vendor">Miele</property>

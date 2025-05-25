@@ -31,6 +31,7 @@ import org.openhab.binding.insteon.internal.transport.PortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 
 /**
@@ -251,8 +252,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
         DeviceType deviceType = productData.getDeviceType();
         if (deviceType == null) {
-            logger.warn("unsupported product data for modem {} devCat:{} subCat:{}", address, deviceCategory,
-                    subCategory);
+            logger.warn("unsupported product data for modem {} devCat:{} subCat:{}", address,
+                    HexUtils.getHexString(deviceCategory), HexUtils.getHexString(subCategory));
             return;
         }
         setAddress(address);

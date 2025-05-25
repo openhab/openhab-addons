@@ -8,7 +8,7 @@
 
 		<label>Router</label>
 		<description>Router device monitored and controlled by telnet connection</description>
-
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="wifi" typeId="wifiGroupType"/>
 		</channel-groups>

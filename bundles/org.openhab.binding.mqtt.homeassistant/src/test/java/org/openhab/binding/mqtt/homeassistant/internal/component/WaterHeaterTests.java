@@ -74,6 +74,8 @@ public class WaterHeaterTests extends AbstractComponentTests {
         assertChannel(component, WaterHeater.TARGET_TEMPERATURE_CHANNEL_ID, "basement/boiler/temperature",
                 "basement/boiler/temperature/set", "Target Temperature", NumberValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("basement/boiler/mode", "eco");
         assertState(component, WaterHeater.MODE_CHANNEL_ID, new StringType("eco"));
         publishMessage("basement/boiler/mode", "invalid");
@@ -130,6 +132,8 @@ public class WaterHeaterTests extends AbstractComponentTests {
                 "Current Temperature", NumberValue.class);
         assertChannel(component, WaterHeater.TARGET_TEMPERATURE_CHANNEL_ID, "basement/boiler/temperature",
                 "basement/boiler/temperature/set", "Target Temperature", NumberValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("basement/boiler/mode", "eco");
         assertState(component, WaterHeater.MODE_CHANNEL_ID, new StringType("eco"));

@@ -12,8 +12,7 @@
  */
 package org.openhab.persistence.influxdb.internal.influx2;
 
-import static com.influxdb.query.dsl.functions.restriction.Restrictions.measurement;
-import static com.influxdb.query.dsl.functions.restriction.Restrictions.tag;
+import static com.influxdb.query.dsl.functions.restriction.Restrictions.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
@@ -21,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
@@ -49,7 +49,7 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
     }
 
     @Override
-    public String createQuery(FilterCriteria criteria, String retentionPolicy) {
+    public String createQuery(FilterCriteria criteria, String retentionPolicy, @Nullable String alias) {
         Flux flux = Flux.from(retentionPolicy);
 
         RangeFlux range = flux.range();
@@ -66,7 +66,8 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         flux = range;
 
         String itemName = Objects.requireNonNull(criteria.getItemName()); // we checked non-null before
-        String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+        final String localAlias = alias != null ? alias : itemName;
+        String name = influxDBMetadataService.getMeasurementNameOrDefault(localAlias);
         String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
         flux = flux.filter(measurement().equal(measurementName));
         if (!measurementName.equals(itemName)) {

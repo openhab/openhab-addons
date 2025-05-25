@@ -191,8 +191,8 @@ public class LIRCBridgeHandler extends BaseBridgeHandler {
         }
 
         @Override
-        public void errorOccured(String error) {
-            logger.error("Error occured: {}", error);
+        public void errorOccurred(String error) {
+            logger.error("Error occurred: {}", error);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
         }
     }

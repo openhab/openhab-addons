@@ -167,10 +167,10 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
             router.setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         } else if (e instanceof InterruptedException) {
             router.errorHandler.raiseError(new Exception(e), payload);
-            router.setState(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            router.setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         } else {
             router.errorHandler.raiseError(new Exception(e), errorMessage);
-            router.setState(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            router.setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
     }
 

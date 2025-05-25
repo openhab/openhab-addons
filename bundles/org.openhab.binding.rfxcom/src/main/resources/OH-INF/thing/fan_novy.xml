@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Fan Device - Novy Extractor Fan</label>
 		<description>A Novy extractor fan.</description>
+		<semantic-equipment-tag>ExhaustFan</semantic-equipment-tag>
 
 		<channels>
 			<channel id="commandString" typeId="commandString"/>

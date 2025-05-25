@@ -8,6 +8,7 @@
 
 		<label>evcc installation</label>
 		<description>A running evcc installation</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>

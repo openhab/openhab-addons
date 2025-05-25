@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Plugwise Circle</label>
 		<description>A power outlet plug that provides energy measurement and switching control of appliances</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="clock" typeId="clock"/>
 			<channel id="energy" typeId="energy"/>

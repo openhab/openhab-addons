@@ -70,8 +70,9 @@ public class VelbusColorChannel {
      * @param brightness the brightness to set
      */
     public void setBrightness(int brightness) {
-        if (this.curveType == CURVE_TYPE_EXPONENTIAL)
+        if (this.curveType == CURVE_TYPE_EXPONENTIAL) {
             brightness = adaptBrightnessValue(brightness);
+        }
         this.brightness = (brightness < BRIGHTNESS_MIN_VALUE) ? BRIGHTNESS_MIN_VALUE : brightness;
         this.brightness = (brightness > BRIGHTNESS_MAX_VALUE) ? BRIGHTNESS_MAX_VALUE : brightness;
     }

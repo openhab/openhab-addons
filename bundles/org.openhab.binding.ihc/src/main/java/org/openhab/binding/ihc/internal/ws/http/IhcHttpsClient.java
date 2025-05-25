@@ -120,7 +120,7 @@ public abstract class IhcHttpsClient {
             return resp;
         } catch (Exception e) {
             if (logger.isTraceEnabled()) {
-                logger.trace("Exception occured (connectionPool={}, clientId={} requestId={}, in {}): {}",
+                logger.trace("Exception occurred (connectionPool={}, clientId={} requestId={}, in {}): {}",
                         ihcConnectionPool.hashCode(), client.hashCode(), requestId,
                         Duration.between(start, LocalDateTime.now()), e.getMessage());
             }

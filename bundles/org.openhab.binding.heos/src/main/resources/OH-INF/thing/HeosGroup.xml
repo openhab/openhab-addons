@@ -10,6 +10,8 @@
 		</supported-bridge-type-refs>
 		<label>HEOS Group</label>
 		<description>A group of HEOS Player</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
+
 		<channels>
 			<channel id="Control" typeId="system.media-control"/>
 			<channel id="Volume" typeId="system.volume"/>

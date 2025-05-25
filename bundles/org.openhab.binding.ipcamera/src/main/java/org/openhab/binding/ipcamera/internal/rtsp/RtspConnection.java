@@ -153,7 +153,7 @@ public class RtspConnection {
                         if (future.isDone() && future.isSuccess()) {
                             Channel ch = future.channel();
                             ch.writeAndFlush(request);
-                        } else { // an error occured
+                        } else { // an error occurred
                             logger.debug("Could not reach cameras rtsp on port 554.");
                         }
                     }

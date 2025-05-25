@@ -289,7 +289,7 @@ public class MagentaTVControl {
      * complete the pairing process. You should see a message like "Connected to
      * openHAB" on your TV screen.
      *
-     * @return true: successful, false: a non-critical error occured, caller handles
+     * @return true: successful, false: a non-critical error occurred, caller handles
      *         this
      * @throws MagentaTVException
      */

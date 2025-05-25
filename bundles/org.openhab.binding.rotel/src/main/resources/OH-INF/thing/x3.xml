@@ -8,6 +8,7 @@
 	<thing-type id="x3">
 		<label>X3 Integrated Amplifier</label>
 		<description>Connection to the Rotel Michi X3 integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

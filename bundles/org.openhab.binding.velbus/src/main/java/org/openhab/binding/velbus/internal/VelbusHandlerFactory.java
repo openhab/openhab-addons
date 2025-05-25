@@ -29,6 +29,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusSerialBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB1TSHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB4ANHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB7INHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMB8INHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBDALIHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBELHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBELOHandler;
@@ -101,6 +102,8 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusVMBPIROHandler(thing);
         } else if (VelbusVMB7INHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMB7INHandler(thing);
+        } else if (VelbusVMB8INHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMB8INHandler(thing);
         } else if (VelbusVMBELHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBELHandler(thing);
         } else if (VelbusVMBELOHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {

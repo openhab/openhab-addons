@@ -7,7 +7,7 @@
 	<thing-type id="particulate">
 		<label>Particulate Sensor</label>
 		<description>Sensor to measure Particulate Matter (PM)</description>
-
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="pm25" typeId="pm25-channel"/>
 			<channel id="pm100" typeId="pm100-channel"/>
@@ -29,7 +29,7 @@
 	<thing-type id="conditions">
 		<label>Condition Sensor</label>
 		<description>Sensor to measure Temperature and Humidity conditions</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temp-channel"/>
 			<channel id="humidity" typeId="hum-channel"/>
@@ -53,7 +53,7 @@
 	<thing-type id="noise">
 		<label>Noise Sensor</label>
 		<description>Sensor to measure noise on location</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="noise-eq" typeId="noise-eq-channel"/>
 			<channel id="noise-min" typeId="noise-min-channel"/>

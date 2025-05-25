@@ -113,6 +113,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             properties.put(PROPERTY_IP, ipAddress);
             properties.put(PROPERTY_BROADCAST, broadcastAddress);
             properties.put(PROPERTY_ENCRYPTION_TYPE, device.getEncryptionType());
+            properties.put(PROPERTY_REFRESH_INTERVAL, device.getRefreshInterval());
             ThingUID thingUID = new ThingUID(THING_TYPE_GREEAIRCON, device.getId());
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(device.getName()).build();

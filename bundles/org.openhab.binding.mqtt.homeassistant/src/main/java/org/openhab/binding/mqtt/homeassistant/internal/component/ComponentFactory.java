@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
@@ -47,10 +48,12 @@ public class ComponentFactory {
      * @return A HA MQTT Component
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
-            ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
-            Gson gson, Jinjava jinjava, UnitProvider unitProvider) throws ConfigurationException {
+            ChannelStateUpdateListener updateListener, HomeAssistantChannelLinkageChecker linkageChecker,
+            AvailabilityTracker tracker, ScheduledExecutorService scheduler, Gson gson, Jinjava jinjava,
+            UnitProvider unitProvider) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, jinjava, updateListener, tracker, scheduler, unitProvider);
+                channelConfigurationJSON, gson, jinjava, updateListener, linkageChecker, tracker, scheduler,
+                unitProvider);
         switch (haID.component) {
             case "alarm_control_panel":
                 return new AlarmControlPanel(componentConfiguration);
@@ -110,6 +113,7 @@ public class ComponentFactory {
         private final HaID haID;
         private final String configJSON;
         private final ChannelStateUpdateListener updateListener;
+        private final HomeAssistantChannelLinkageChecker linkageChecker;
         private final AvailabilityTracker tracker;
         private final Gson gson;
         private final Jinjava jinjava;
@@ -125,14 +129,15 @@ public class ComponentFactory {
          * @param gson A Gson instance
          */
         protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson, Jinjava jinjava,
-                ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
-                ScheduledExecutorService scheduler, UnitProvider unitProvider) {
+                ChannelStateUpdateListener updateListener, HomeAssistantChannelLinkageChecker linkageChecker,
+                AvailabilityTracker tracker, ScheduledExecutorService scheduler, UnitProvider unitProvider) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
             this.jinjava = jinjava;
             this.updateListener = updateListener;
+            this.linkageChecker = linkageChecker;
             this.tracker = tracker;
             this.scheduler = scheduler;
             this.unitProvider = unitProvider;
@@ -152,6 +157,10 @@ public class ComponentFactory {
 
         public ChannelStateUpdateListener getUpdateListener() {
             return updateListener;
+        }
+
+        public HomeAssistantChannelLinkageChecker getLinkageChecker() {
+            return linkageChecker;
         }
 
         public Gson getGson() {

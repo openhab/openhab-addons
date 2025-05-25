@@ -72,7 +72,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
     void updateChannelDoorWindow(TouchWandBSensorUnitData unitData) {
         OpenClosedType myOpenClose;
         String isOpen = unitData.getCurrStatus();
-        logger.debug("recieved status {} from door unit {} ", isOpen, unitData.getName());
+        logger.debug("received status {} from door unit {} ", isOpen, unitData.getName());
         if (isOpen.equals(BSENSOR_STATUS_OPEN)) {
             myOpenClose = OpenClosedType.OPEN;
         } else if (isOpen.equals(BSENSOR_STATUS_CLOSE)) {
@@ -86,7 +86,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
 
     void updateChannelMotion(TouchWandBSensorUnitData unitData) {
         String motion = unitData.getCurrStatus();
-        logger.debug("recieved status {} from motion unit {} ", motion, unitData.getName());
+        logger.debug("received status {} from motion unit {} ", motion, unitData.getName());
         OnOffType status;
         if (motion.equals(BSENSOR_STATUS_OPEN)) {
             status = OnOffType.ON;

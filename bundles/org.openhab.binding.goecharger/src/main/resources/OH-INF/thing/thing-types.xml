@@ -7,7 +7,7 @@
 	<thing-type id="goe">
 		<label>Go-eCharger</label>
 		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="awattarMaxPrice" typeId="awp"/>
 			<channel id="maxCurrent" typeId="current"/>

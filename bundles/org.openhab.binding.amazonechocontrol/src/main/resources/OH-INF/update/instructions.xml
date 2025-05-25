@@ -3,10 +3,93 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
+	<thing-type uid="amazonechocontrol:account">
+		<instruction-set targetVersion="1">
+			<update-channel id="refreshActivity">
+				<type>amazonechocontrol:refreshActivity</type>
+				<label>Refresh Activity</label>
+				<description>A command send to this channel refreshes the customer history activity (write-only)</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="amazonechocontrol:echo">
+		<instruction-set targetVersion="1">
+			<add-channel id="lastSpokenText">
+				<type>amazonechocontrol:lastSpokenText</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="doNotDisturb">
+				<type>amazonechocontrol:doNotDisturb</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="amazonMusicTrackId"/>
+			<remove-channel id="amazonMusicPlayListId"/>
+			<remove-channel id="amazonMusic"/>
+			<remove-channel id="radioStationId"/>
+			<remove-channel id="radio"/>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="amazonechocontrol:echoshow">
+		<instruction-set targetVersion="1">
+			<add-channel id="lastSpokenText">
+				<type>amazonechocontrol:lastSpokenText</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="doNotDisturb">
+				<type>amazonechocontrol:doNotDisturb</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="amazonMusicTrackId"/>
+			<remove-channel id="amazonMusicPlayListId"/>
+			<remove-channel id="amazonMusic"/>
+			<remove-channel id="radioStationId"/>
+			<remove-channel id="radio"/>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="amazonechocontrol:echospot">
+		<instruction-set targetVersion="1">
+			<add-channel id="lastSpokenText">
+				<type>amazonechocontrol:lastSpokenText</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="doNotDisturb">
+				<type>amazonechocontrol:doNotDisturb</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="amazonMusicTrackId"/>
+			<remove-channel id="amazonMusicPlayListId"/>
+			<remove-channel id="amazonMusic"/>
+			<remove-channel id="radioStationId"/>
+			<remove-channel id="radio"/>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="amazonechocontrol:smartHomeDevice">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureInKelvin">
 				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+		<!-- this instruction-set is only necessary if you're coming from the SmartHomeJ fork of the binding -->
+		<instruction-set targetVersion="2">
+			<remove-channel id="humidity"/>
+			<!-- update, not add, because if you're coming from the main fork of the binding you'll already have this channel -->
+			<update-channel id="relativeHumidity">
+				<type>amazonechocontrol:relativeHumidity</type>
+				<label>Humidity</label>
+				<tags>
+					<tag>Measurement</tag>
+					<tag>Temperature</tag>
+				</tags>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -19,4 +102,13 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="amazonechocontrol:wha">
+		<instruction-set targetVersion="1">
+			<remove-channel id="amazonMusicTrackId"/>
+			<remove-channel id="amazonMusicPlayListId"/>
+			<remove-channel id="amazonMusic"/>
+			<remove-channel id="radioStationId"/>
+			<remove-channel id="radio"/>
+		</instruction-set>
+	</thing-type>
 </update:update-descriptions>

@@ -24,6 +24,7 @@
 		<label>Sensor Device</label>
 		<description>A Sensor connected to the gateway (WN1900, GW1000, GW1100, WH2680, WH2650)</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="signal" typeId="system.signal-strength"/>

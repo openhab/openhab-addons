@@ -131,6 +131,7 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
         if (scene != null) {
             scene.setModem(null);
         }
+        unlinkChannels();
     }
 
     @Override

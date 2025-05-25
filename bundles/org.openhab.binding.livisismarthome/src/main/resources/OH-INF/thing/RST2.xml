@@ -12,7 +12,7 @@
 		<label>Radiator Mounted Smart Thermostat (RST2)</label>
 		<description>A thermostat, that supports setting the temperature and measuring the current temperature and humidity (2
 			battery version since 2018)</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="targetTemperature" typeId="thermostatActuatorPointTemperature"/>
 			<channel id="currentTemperature" typeId="temperatureSensorTemperature"/>

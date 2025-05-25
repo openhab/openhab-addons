@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Hitachi DHW</label>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 		<channels>
 			<channel id="dhw_mode" typeId="dhw_mode"></channel>
 			<channel id="dhw" typeId="dhw"></channel>

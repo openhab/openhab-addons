@@ -211,7 +211,102 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="counter5Unit" type="text">
+	</config-description>
+
+	<config-description uri="thing-type:velbus:8channelDeviceWith8Counters">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for the counters (in seconds), default 300. If set to 0 or left empty, no refresh will
+				be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 Name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 Name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="counter1Unit" type="text">
+			<label>Counter 1 Unit</label>
+			<description>The unit for Counter 1.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="counter2Unit" type="text">
+			<label>Counter 2 Unit</label>
+			<description>The unit for Counter 2.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="counter3Unit" type="text">
+			<label>Counter 3 Unit</label>
+			<description>The unit for Counter 3.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="counter4Unit" type="text">
 			<label>Counter 4 Unit</label>
 			<description>The unit for Counter 4.</description>
 			<default>kWh</default>
@@ -222,84 +317,47 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="counter5PulseMultiplier" type="decimal">
-			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4.</description>
-			<default>1</default>
+		<parameter name="counter5Unit" type="text">
+			<label>Counter 5 Unit</label>
+			<description>The unit for Counter 5.</description>
+			<default>kWh</default>
 			<options>
-				<option value="1">x1</option>
-				<option value="2.5">x2.5</option>
-				<option value="0.05">x0.05</option>
-				<option value="0.01">x0.01</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter6Unit" type="text">
-			<label>Counter 4 Unit</label>
-			<description>The unit for Counter 4.</description>
+			<label>Counter 6 Unit</label>
+			<description>The unit for Counter 6.</description>
 			<default>kWh</default>
 			<options>
 				<option value="kWh">kWh</option>
 				<option value="liters">liters</option>
 				<option value="m³">m³</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="counter6PulseMultiplier" type="decimal">
-			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4.</description>
-			<default>1</default>
-			<options>
-				<option value="1">x1</option>
-				<option value="2.5">x2.5</option>
-				<option value="0.05">x0.05</option>
-				<option value="0.01">x0.01</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter7Unit" type="text">
-			<label>Counter 4 Unit</label>
-			<description>The unit for Counter 4.</description>
+			<label>Counter 7 Unit</label>
+			<description>The unit for Counter 7.</description>
 			<default>kWh</default>
 			<options>
 				<option value="kWh">kWh</option>
 				<option value="liters">liters</option>
 				<option value="m³">m³</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="counter7PulseMultiplier" type="decimal">
-			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4.</description>
-			<default>1</default>
-			<options>
-				<option value="1">x1</option>
-				<option value="2.5">x2.5</option>
-				<option value="0.05">x0.05</option>
-				<option value="0.01">x0.01</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter8Unit" type="text">
-			<label>Counter 4 Unit</label>
-			<description>The unit for Counter 4.</description>
+			<label>Counter 8 Unit</label>
+			<description>The unit for Counter 8.</description>
 			<default>kWh</default>
 			<options>
 				<option value="kWh">kWh</option>
 				<option value="liters">liters</option>
 				<option value="m³">m³</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="counter8PulseMultiplier" type="decimal">
-			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4.</description>
-			<default>1</default>
-			<options>
-				<option value="1">x1</option>
-				<option value="2.5">x2.5</option>
-				<option value="0.05">x0.05</option>
-				<option value="0.01">x0.01</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>

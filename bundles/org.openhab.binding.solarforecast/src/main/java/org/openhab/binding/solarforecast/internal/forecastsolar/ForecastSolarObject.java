@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
  * The {@link ForecastSolarObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
- * @author Bernd Weymann - TimeSeries delivers only future values, otherwise past values are overwritten
+ * @author Bernd Weymann - TimeSeries delivers only future values, otherwise
+ *         past values are overwritten
  */
 @NonNullByDefault
 public class ForecastSolarObject implements SolarForecast {
@@ -60,15 +61,18 @@ public class ForecastSolarObject implements SolarForecast {
     private ZoneId zone = ZoneId.systemDefault();
     private Optional<String> rawData = Optional.empty();
     private Instant expirationDateTime;
+    private Instant creationDateTime;
     private String identifier;
 
     public ForecastSolarObject(String id) {
-        expirationDateTime = Instant.now().minusSeconds(1);
+        expirationDateTime = Utils.now().minusSeconds(1);
+        creationDateTime = Utils.now();
         identifier = id;
     }
 
     public ForecastSolarObject(String id, String content, Instant expirationDate) throws SolarForecastException {
         expirationDateTime = expirationDate;
+        creationDateTime = Utils.now();
         identifier = id;
         if (!content.isEmpty()) {
             rawData = Optional.of(content);
@@ -104,7 +108,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public boolean isExpired() {
-        return expirationDateTime.isBefore(Instant.now());
+        return expirationDateTime.isBefore(Utils.now());
     }
 
     public double getActualEnergyValue(ZonedDateTime queryDateTime) throws SolarForecastException {
@@ -158,7 +162,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
-        Instant now = Instant.now(Utils.getClock());
+        Instant now = Utils.now();
         wattHourMap.forEach((timestamp, energy) -> {
             Instant entryTimestamp = timestamp.toInstant();
             if (Utils.isAfterOrEqual(entryTimestamp, now)) {
@@ -211,7 +215,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
-        Instant now = Instant.now(Utils.getClock());
+        Instant now = Utils.now();
         wattMap.forEach((timestamp, power) -> {
             Instant entryTimestamp = timestamp.toInstant();
             if (Utils.isAfterOrEqual(entryTimestamp, now)) {
@@ -355,5 +359,10 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    public Instant getCreationInstant() {
+        return creationDateTime;
     }
 }

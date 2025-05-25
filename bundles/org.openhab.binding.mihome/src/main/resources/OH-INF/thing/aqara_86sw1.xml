@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi Aqara 1 Channel Smart Light Control</label>
 		<description>Battery powered Aqara Switch with 1 Channel</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="ch1" typeId="system.button">
 				<label>Button</label>

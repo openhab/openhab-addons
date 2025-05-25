@@ -13,7 +13,7 @@
 
 		<label>Alarm System</label>
 		<description>A virtual thing describing general status of the alarm system.</description>
-
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<channel typeId="date_time" id="date_time"/>
 			<channel typeId="troubles" id="troubles"/>

@@ -601,7 +601,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
                     // 76 07 5B CD 15
                     // ASCII string contained: 985b157bf6fc43368a63467ea3b19d0dc .. xlink_dev
                     // Response to the v6 SEARCH and the SEARCH FOR commands to look for new or known devices.
-                    // Our session id will be transfered in this process (!= bridge session id)
+                    // Our session id will be transferred in this process (!= bridge session id)
                     case (byte) 0x18: {
                         boolean eq = ByteBuffer.wrap(bridgeMAC, 0, 6).equals(ByteBuffer.wrap(buffer, 6, 6));
                         if (eq) {

@@ -7,7 +7,7 @@
 	<thing-type id="hf367x">
 		<label>Philips Somneo Light</label>
 		<description>A smart sleep and wake-up light with sensors.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensor" typeId="sensor"/>
 			<channel-group id="light" typeId="light"/>

@@ -29,6 +29,7 @@ import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDimPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetScenePacket;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -118,8 +119,9 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
         final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            this.refreshJob = null;
         }
+        this.refreshJob = null;
+        super.dispose();
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -194,6 +196,16 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
 
                 VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
                 packet.setDim(colorChannel.getBrightnessVelbus());
+                packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+            } else if (command instanceof OnOffType onOffCommand) {
+                VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
+                if (onOffCommand == OnOffType.ON) {
+                    packet.setLastUsedDim();
+                } else {
+                    colorChannel.setBrightness(0);
+                    packet.setDim(colorChannel.getBrightnessVelbus());
+                }
                 packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
                 velbusBridgeHandler.sendPacket(packet.getBytes());
             } else {

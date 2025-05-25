@@ -14,7 +14,9 @@ package org.openhab.binding.wundergroundupdatereceiver.internal;
 
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.*;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +61,9 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     public String getStationId() {
         return config.stationId;
     }
+
+    // The format can be "yyyy-MM-dd H:mm:ss" from the device
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss");
 
     private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverHandler.class);
     private final WundergroundUpdateReceiverServlet wundergroundUpdateReceiverServlet;
@@ -183,17 +188,12 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     private DateTimeType safeResolvUtcDateTime(String dateUtc) {
         if (!dateUtc.isEmpty() && !NOW.equals(dateUtc)) {
             try {
-                // Supposedly the format is "yyyy-MM-dd hh:mm:ss" from the device
-                return new DateTimeType(ZonedDateTime.parse(dateUtc.replace(" ", "T") + "Z"));
+                return new DateTimeType(LocalDateTime.parse(dateUtc, FORMATTER).atZone(ZoneOffset.UTC));
             } catch (Exception ex) {
                 logger.warn("The device is submitting unparsable datetime values: {}", dateUtc);
             }
         }
         return new DateTimeType();
-    }
-
-    public void updateChannelState(String channelId, String[] stateParts) {
-        updateChannelState(channelId, String.join("", stateParts));
     }
 
     public void updateChannelState(String parameterName, String state) {

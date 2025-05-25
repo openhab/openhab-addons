@@ -8,6 +8,7 @@
 		<label>EyezOn Envisalink</label>
 		<description>This bridge represents the EyezOn Envlisalink 3/2D
 			Ethernet interface.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="bridge_reset" typeId="reset">

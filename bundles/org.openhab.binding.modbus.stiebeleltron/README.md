@@ -375,7 +375,6 @@ Number:Energy stiebel_eltron_consumption_heat_total  "Heating power consumption 
 Number:Energy stiebel_eltron_consumption_heat_today  "Heating power consumption today [%.0f kWh]"        { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_today" }
 Number:Energy stiebel_eltron_consumption_water_today "Water heating power consumption today  [%.0f kWh]" { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_today" }
 Number:Energy stiebel_eltron_consumption_water_total "Water heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_total"}
-
 ```
 
 ### Sitemap Configuration

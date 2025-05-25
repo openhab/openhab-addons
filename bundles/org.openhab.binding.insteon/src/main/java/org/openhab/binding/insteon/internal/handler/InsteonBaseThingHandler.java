@@ -317,6 +317,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                 .forEach(this::channelLinked);
     }
 
+    protected void unlinkChannels() {
+        getThing().getChannels().stream().map(Channel::getUID).filter(channelHandlers::containsKey)
+                .forEach(this::channelUnlinked);
+    }
+
     @Override
     public void refresh() {
         InsteonModem modem = getModem();
@@ -329,8 +334,6 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
         updateStatus();
     }
-
-    public abstract void updateStatus();
 
     public void updateProperties(Device device) {
         Map<String, String> properties = editProperties();
@@ -372,9 +375,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }

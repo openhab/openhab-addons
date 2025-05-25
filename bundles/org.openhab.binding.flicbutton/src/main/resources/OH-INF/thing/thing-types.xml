@@ -7,6 +7,7 @@
 	<bridge-type id="flicd-bridge">
 		<label>FlicButton Bridge</label>
 		<description>This bridge represents a running instance of the fliclib-linux-hci server (flicd).</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="false">
@@ -29,6 +30,7 @@
 		</supported-bridge-type-refs>
 		<label>Flic Button</label>
 		<description>The thing(-type) representing a Flic Button</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="rawbutton" typeId="system.rawbutton"/>
 			<channel id="button" typeId="system.button"/>

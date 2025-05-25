@@ -14,10 +14,10 @@ package org.openhab.binding.bluetooth.grundfosalpha.internal;
 
 import static org.openhab.binding.bluetooth.grundfosalpha.internal.GrundfosAlphaBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bluetooth.grundfosalpha.internal.handler.GrundfosAlpha3Handler;
+import org.openhab.binding.bluetooth.grundfosalpha.internal.handler.GrundfosAlphaReaderHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -35,8 +35,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.bluetooth.grundfosalpha", service = ThingHandlerFactory.class)
 public class GrundfosAlphaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MI401);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -47,7 +45,9 @@ public class GrundfosAlphaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_MI401.equals(thingTypeUID)) {
-            return new GrundfosAlphaHandler(thing);
+            return new GrundfosAlphaReaderHandler(thing);
+        } else if (THING_TYPE_ALPHA3.equals(thingTypeUID)) {
+            return new GrundfosAlpha3Handler(thing);
         }
 
         return null;

@@ -74,6 +74,7 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        this.refreshJob = null;
         super.dispose();
     }
 

@@ -57,6 +57,7 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
     private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Energy>> energyCaptor;
 
     @BeforeEach
+    @Override
     public void beforeEach(TestInfo testInfo)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         PowerMeterServiceState powerMeterServiceState = new PowerMeterServiceState();

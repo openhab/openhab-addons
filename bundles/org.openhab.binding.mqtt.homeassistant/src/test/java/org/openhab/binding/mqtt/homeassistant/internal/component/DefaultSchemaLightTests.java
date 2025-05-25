@@ -100,6 +100,8 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
                     "Brightness", PercentageValue.class);
         }
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON_\"}");
         assertState(component, Light.COLOR_CHANNEL_ID, HSBType.WHITE);
         publishMessage("zigbee2mqtt/light/rgb", "{\"rgb\": \"10,20,30\"}");
@@ -137,6 +139,8 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
                 }\
                 """);
         // @formatter:on
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/light/rgb", "{\"rgb\": \"255,255,255\"}");
         assertState(component, Light.COLOR_CHANNEL_ID, HSBType.WHITE);
@@ -176,6 +180,8 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.getName(), is("light"));
 
         assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
+
+        linkAllChannels(component);
 
         @Nullable
         ComponentChannel onOffChannel = component.onOffChannel;
@@ -241,6 +247,8 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
                     OnOffValue.class);
         }
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/brightness", "128");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID,
                 new PercentType(new BigDecimal(128 * 100).divide(new BigDecimal(255), MathContext.DECIMAL128)));
@@ -278,6 +286,8 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
                 "On/Off State", OnOffValue.class);
         assertThat(component.brightnessChannel, is(nullValue()));
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON_\"}");
         assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"OFF_\"}");
@@ -309,6 +319,8 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
                 "On/Off State", OnOffValue.class);
         assertChannel(component, Light.EFFECT_CHANNEL_ID, "zigbee2mqtt/light/effect", "zigbee2mqtt/light/set/effect",
                 "Lighting Effect", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON\"}");
         assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);

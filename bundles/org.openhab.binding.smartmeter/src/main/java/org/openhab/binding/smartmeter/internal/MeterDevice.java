@@ -182,7 +182,7 @@ public abstract class MeterDevice<T> {
                     connector.openConnection();
                 }).doOnError(ex -> {
                     if (ex instanceof TimeoutException) {
-                        logger.debug("Timeout occured for {}; {}", getDeviceId(), ex.getMessage());
+                        logger.debug("Timeout occurred for {}; {}", getDeviceId(), ex.getMessage());
                     } else {
                         logger.debug("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
                                 ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);

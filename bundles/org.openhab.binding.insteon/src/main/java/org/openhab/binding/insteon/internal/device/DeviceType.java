@@ -21,10 +21,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.transport.message.FieldException;
-import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
-import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
 
 /**
@@ -175,7 +171,6 @@ public class DeviceType {
         private boolean controller;
         private int group;
         private byte[] data;
-        private List<CommandEntry> commands = new ArrayList<>();
 
         public DefaultLinkEntry(String name, boolean controller, int group, byte[] data) {
             this.name = name;
@@ -196,68 +191,11 @@ public class DeviceType {
             return data;
         }
 
-        public List<CommandEntry> getCommands() {
-            return commands;
-        }
-
-        public void addCommand(CommandEntry command) {
-            commands.add(command);
-        }
-
         @Override
         public String toString() {
             String s = name + "->";
             s += controller ? "CTRL" : "RESP";
             s += "|group:" + group;
-            s += "|data1:" + HexUtils.getHexString(data[0]);
-            s += "|data2:" + HexUtils.getHexString(data[1]);
-            s += "|data3:" + HexUtils.getHexString(data[2]);
-            if (!commands.isEmpty()) {
-                s += "|commands:" + commands;
-            }
-            return s;
-        }
-    }
-
-    /**
-     * Class that reflects a command entry
-     */
-    public static class CommandEntry {
-        private String name;
-        private int ext;
-        private byte cmd1;
-        private byte cmd2;
-        private byte[] data;
-
-        public CommandEntry(String name, int ext, byte cmd1, byte cmd2, byte[] data) {
-            this.name = name;
-            this.ext = ext;
-            this.cmd1 = cmd1;
-            this.cmd2 = cmd2;
-            this.data = data;
-        }
-
-        public @Nullable Msg getMessage(InsteonDevice device) {
-            try {
-                if (ext == 0) {
-                    return Msg.makeStandardMessage(device.getAddress(), cmd1, cmd2);
-                } else if (ext == 1) {
-                    return Msg.makeExtendedMessage(device.getAddress(), cmd1, cmd2, data,
-                            device.getInsteonEngine().supportsChecksum());
-                } else if (ext == 2) {
-                    return Msg.makeExtendedMessageCRC2(device.getAddress(), cmd1, cmd2, data);
-                }
-            } catch (FieldException | InvalidMessageTypeException e) {
-            }
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            String s = name + "->";
-            s += "ext:" + ext;
-            s += "|cmd1:" + HexUtils.getHexString(cmd1);
-            s += "|cmd2:" + HexUtils.getHexString(cmd2);
             s += "|data1:" + HexUtils.getHexString(data[0]);
             s += "|data2:" + HexUtils.getHexString(data[1]);
             s += "|data3:" + HexUtils.getHexString(data[2]);

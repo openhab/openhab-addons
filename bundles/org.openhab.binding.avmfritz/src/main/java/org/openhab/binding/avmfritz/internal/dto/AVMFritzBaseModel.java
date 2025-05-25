@@ -47,6 +47,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
@@ -65,6 +66,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int DIMMABLE_LIGHT_BIT = 1 << 16; // Bit 16
     protected static final int COLOR_LIGHT_BIT = 1 << 17; // Bit 17
     protected static final int HAN_FUN_BLINDS_BIT = 1 << 18; // Bit 18
+    protected static final int HAN_FUN_BATTERY_BIT = 1 << 19; // Bit 19 - undocumented
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
@@ -213,6 +215,10 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HAN_FUN_BLINDS_BIT) > 0;
     }
 
+    public boolean isHANFUNBattery() {
+        return (bitmask & HAN_FUN_BATTERY_BIT) > 0;
+    }
+
     public String getFirmwareVersion() {
         return firmwareVersion;
     }
@@ -261,4 +267,6 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(getBatterylow()).append(",").append(getSwitch()).append(",").append(getSimpleOnOffUnit())
                 .append(",").append(getPowermeter()).append(",").append(getHkr()).append(",").toString();
     }
+
+    public transient boolean isLinked;
 }

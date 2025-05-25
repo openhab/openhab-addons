@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Chime</label>
 		<description>A Chime device.</description>
+		<semantic-equipment-tag>Siren</semantic-equipment-tag>
 
 		<channels>
 			<channel id="chimeSound" typeId="chimesound"/>

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tellstick.internal.local.dto;
 
-import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
+import org.openhab.binding.tellstick.internal.live.dto.LiveDataType;
 
 /**
  * Class used to deserialize JSON from Telldus local API.

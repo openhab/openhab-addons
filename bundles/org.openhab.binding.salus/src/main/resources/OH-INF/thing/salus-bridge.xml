@@ -12,7 +12,7 @@
 			cloud. Without this bridge, the devices would be unable to send, receive or exchange data with the cloud platform,
 			hindering functionality and data utilization.
 		</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<representation-property>username</representation-property>
 		<config-description>
 			<parameter name="username" type="text" required="true">

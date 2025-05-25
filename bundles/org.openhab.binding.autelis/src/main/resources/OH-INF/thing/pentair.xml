@@ -6,6 +6,7 @@
 	<thing-type id="pentair">
 		<label>Pentair Pool Controller</label>
 		<description>A Pentair pool control thing represents an Autelis pool controller for Pentair systems</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 		<channels>
 			<channel id="system-runstate" typeId="system-runstate"/>
 			<channel id="system-model" typeId="system-model"/>

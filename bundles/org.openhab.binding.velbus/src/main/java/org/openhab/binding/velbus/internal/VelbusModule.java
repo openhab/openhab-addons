@@ -145,8 +145,9 @@ public class VelbusModule {
         Integer key = CHANNEL_NAME_IDX_FROM_BYTE_THING_TYPES.contains(thingTypeUID)
                 ? channelIdentifier.getChannelByte() - 1
                 : velbusModuleAddress.getChannelIndex(channelIdentifier);
-        if (key == 0 && PIR_WITH_SENSOR_THING_TYPES.contains(thingTypeUID))
+        if (key == 0 && PIR_WITH_SENSOR_THING_TYPES.contains(thingTypeUID)) {
             key = key + 8;
+        }
 
         if (!channelNames.containsKey(key)) {
             channelNames.put(key, new String[3]);

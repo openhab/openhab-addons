@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +25,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
@@ -36,11 +34,21 @@ import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleBase;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
+import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.enums.ExecutionState;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.oauth2client.internal.OAuthFactoryImpl;
+import org.openhab.core.auth.oauth2client.internal.OAuthStoreHandler;
+import org.openhab.core.auth.oauth2client.internal.OAuthStoreHandlerImpl;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
+import org.openhab.core.test.storage.VolatileStorage;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,32 +61,64 @@ import ch.qos.logback.classic.Level;
  * CONNECTED_USER
  * CONNECTED_PASSWORD
  * HCAPTCHA_TOKEN
- * 
- * if you want to execute the tests, please set the env variables and remove the disabled annotation
+ * VEHICLE_COUNT
+ * VIN
+ * BRAND
+ *
+ * if you want to execute the tests, please set the env variables or static fields with the same name.
  *
  * @author Martin Grassl - initial contribution
+ * @author Mark Herwege - adapted to be able to always compile and run
  */
 @NonNullByDefault
 public class MyBMWProxyBackendIT {
 
+    // The following block of static constants can be used instead of environment variables with the same name.
+    private static final String CONNECTED_USER = "";
+    private static final String CONNECTED_PASSWORD = "";
+    private static final String HCAPTCHA_TOKEN = "";
+    private static final int VEHICLE_COUNT = 0; // number of vehicles in account
+    private static final String VIN = ""; // vin to use for testing images on account
+    private static final String BRAND = ""; // brand to use for testing images on account (bmw or mini)
+
+    private int vehicleCount;
+
     private final Logger logger = LoggerFactory.getLogger(MyBMWProxyBackendIT.class);
 
-    public MyBMWProxy initializeProxy() {
+    private @Nullable MyBMWProxy myBMWProxy;
+
+    public @Nullable MyBMWProxy initializeProxy() {
         String connectedUser = System.getenv("CONNECTED_USER");
+        connectedUser = connectedUser != null ? connectedUser : CONNECTED_USER;
         String connectedPassword = System.getenv("CONNECTED_PASSWORD");
-        String hCaptchaString = System.getenv("HCAPTCHA_TOKEN");
-        assertNotNull(connectedUser);
-        assertNotNull(connectedPassword);
-        assertNotNull(hCaptchaString);
+        connectedPassword = connectedPassword != null ? connectedPassword : CONNECTED_PASSWORD;
+        String hCaptchaToken = System.getenv("HCAPTCHA_TOKEN");
+        hCaptchaToken = hCaptchaToken != null ? hCaptchaToken : HCAPTCHA_TOKEN;
+        String vehicleCount = System.getenv("VEHICLE_COUNT");
+        this.vehicleCount = vehicleCount != null ? Integer.valueOf(vehicleCount) : VEHICLE_COUNT;
+
+        if (connectedUser.isEmpty() || connectedPassword.isEmpty() || hCaptchaToken.isEmpty()) {
+            return null;
+        }
 
         MyBMWBridgeConfiguration configuration = new MyBMWBridgeConfiguration();
         configuration.setLanguage("de-DE");
         configuration.setRegion(BimmerConstants.REGION_ROW);
         configuration.setUserName(connectedUser);
         configuration.setPassword(connectedPassword);
-        configuration.setHcaptchatoken(hCaptchaString);
+        configuration.setHCaptchaToken(hCaptchaToken);
 
-        return new MyBMWHttpProxy(new MyHttpClientFactory(), configuration);
+        HttpClientFactory clientFactory = new MyHttpClientFactory();
+        StorageService storageService = new MyStorageService();
+        OAuthStoreHandler oAuthStoreHandler = new OAuthStoreHandlerImpl(storageService);
+        OAuthFactory oAuthFactory = new OAuthFactoryImpl(clientFactory, oAuthStoreHandler);
+        MyBMWBridgeHandler myBMWBridgeHandlerMock = Mockito.mock(MyBMWBridgeHandler.class);
+        Bridge myBMWBridgeMock = Mockito.mock(Bridge.class);
+        Mockito.when(myBMWBridgeHandlerMock.getThing()).thenReturn(myBMWBridgeMock);
+        Mockito.when(myBMWBridgeMock.getUID()).thenReturn(new ThingUID("mybmw", "bridge", "test"));
+
+        return new MyBMWHttpProxy(myBMWBridgeHandlerMock, clientFactory.createHttpClient("test"), oAuthFactory,
+                configuration);
     }
 
     @BeforeEach
@@ -93,8 +133,26 @@ public class MyBMWProxyBackendIT {
     }
 
     @Test
-    public void testSequence() {
-        MyBMWProxy myBMWProxy = initializeProxy();
+    public void testAll() {
+        myBMWProxy = initializeProxy();
+
+        if (myBMWProxy == null) {
+            logger.info("not running backend integration tests, no test credentials provided");
+            return;
+        }
+
+        // Do it all in one wrapper test to reuse the same proxy. If done separately, the proxy will be created multiple
+        // times with the same hCaptchaToken. This does not work.
+        testGetVehicles();
+        testSequence();
+        testGetImages();
+    }
+
+    private void testSequence() {
+        MyBMWProxy myBMWProxy = this.myBMWProxy;
+        if (myBMWProxy == null) {
+            return;
+        }
 
         // get list of vehicles
         List<VehicleBase> vehicles = null;
@@ -102,10 +160,11 @@ public class MyBMWProxyBackendIT {
             vehicles = myBMWProxy.requestVehiclesBase();
         } catch (NetworkException e) {
             fail(e.getReason(), e);
+            return;
         }
 
         assertNotNull(vehicles);
-        assertEquals(2, vehicles.size());
+        assertEquals(vehicleCount, vehicles.size());
 
         for (VehicleBase vehicleBase : vehicles) {
             assertNotNull(vehicleBase.getVin());
@@ -186,24 +245,36 @@ public class MyBMWProxyBackendIT {
         }
     }
 
-    @Test
-    public void testGetImages() {
-        MyBMWProxy myBMWProxy = initializeProxy();
+    private void testGetImages() {
+        MyBMWProxy myBMWProxy = this.myBMWProxy;
+        if (myBMWProxy == null) {
+            return;
+        }
+
+        String vin = System.getenv("VIN");
+        vin = vin != null ? vin : VIN;
+        String brand = System.getenv("BRAND");
+        brand = brand != null ? brand : BRAND;
+
+        if (vin.isEmpty() || brand.isEmpty()) {
+            return;
+        }
 
         ImageProperties imageProperties = new ImageProperties();
 
         try {
             imageProperties.viewport = "VehicleStatus";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
             logger.error("error retrieving image", e);
+            return;
         }
 
         try {
             imageProperties.viewport = "SideViewLeft";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
@@ -212,7 +283,7 @@ public class MyBMWProxyBackendIT {
 
         try {
             imageProperties.viewport = "AngleSideViewForty";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
@@ -221,7 +292,7 @@ public class MyBMWProxyBackendIT {
 
         try {
             imageProperties.viewport = "FrontView";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
@@ -230,7 +301,7 @@ public class MyBMWProxyBackendIT {
 
         try {
             imageProperties.viewport = "FrontLeft";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
@@ -239,7 +310,7 @@ public class MyBMWProxyBackendIT {
 
         try {
             imageProperties.viewport = "FrontRight";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
@@ -248,7 +319,7 @@ public class MyBMWProxyBackendIT {
 
         try {
             imageProperties.viewport = "RearView";
-            byte[] bmwImage = myBMWProxy.requestImage("please_set_here_your_vin", "bmw", imageProperties);
+            byte[] bmwImage = myBMWProxy.requestImage(vin, brand, imageProperties);
             Files.write(new File("./" + imageProperties.viewport + ".jpg").toPath(), bmwImage);
             assertNotNull(bmwImage);
         } catch (NetworkException | IOException e) {
@@ -256,72 +327,82 @@ public class MyBMWProxyBackendIT {
         }
     }
 
-    @Test
-    @Disabled
-    public void testGetVehicles() {
-        MyBMWProxy myBMWProxy = initializeProxy();
+    private void testGetVehicles() {
+        MyBMWProxy myBMWProxy = this.myBMWProxy;
+        if (myBMWProxy == null) {
+            return;
+        }
 
         try {
             List<Vehicle> vehicles = myBMWProxy.requestVehicles();
 
             logger.warn(ResponseContentAnonymizer.anonymizeResponseContent(new Gson().toJson(vehicles)));
             assertNotNull(vehicles);
-            assertEquals(2, vehicles.size());
+            assertEquals(vehicleCount, vehicles.size());
         } catch (NetworkException e) {
             fail(e.getReason(), e);
         }
     }
-}
 
-/**
- * @author Martin Grassl - initial contribution
- */
-@NonNullByDefault
-class MyHttpClientFactory implements HttpClientFactory {
+    /**
+     * @author Martin Grassl - initial contribution
+     */
+    class MyHttpClientFactory implements HttpClientFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(MyHttpClientFactory.class);
+        private final Logger logger = LoggerFactory.getLogger(MyHttpClientFactory.class);
 
-    @Override
-    public HttpClient createHttpClient(String consumerName) {
-        // Instantiate and configure the SslContextFactory
-        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        @Override
+        public HttpClient createHttpClient(String consumerName) {
+            // Instantiate and configure the SslContextFactory
+            SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
 
-        // Instantiate HttpClient with the SslContextFactory
-        HttpClient httpClient = new HttpClient(sslContextFactory);
+            // Instantiate HttpClient with the SslContextFactory
+            HttpClient httpClient = new HttpClient(sslContextFactory);
 
-        // Configure HttpClient, for example:
-        httpClient.setFollowRedirects(false);
+            // Configure HttpClient, for example:
+            httpClient.setFollowRedirects(false);
 
-        // Start HttpClient
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            // Start HttpClient
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+
+            return httpClient;
         }
 
-        return httpClient;
+        @Override
+        public HttpClient getCommonHttpClient() {
+            return createHttpClient("test");
+        }
+
+        @Override
+        public HTTP2Client createHttp2Client(String arg0) {
+            throw new UnsupportedOperationException("Unimplemented method 'createHttp2Client'");
+        }
+
+        @Override
+        public HTTP2Client createHttp2Client(String arg0, @Nullable SslContextFactory arg1) {
+            throw new UnsupportedOperationException("Unimplemented method 'createHttp2Client'");
+        }
+
+        @Override
+        public HttpClient createHttpClient(String arg0, @Nullable SslContextFactory arg1) {
+            throw new UnsupportedOperationException("Unimplemented method 'createHttpClient'");
+        }
     }
 
-    @Override
-    public HttpClient getCommonHttpClient() {
-        return createHttpClient("test");
-    }
+    class MyStorageService implements StorageService {
 
-    @Override
-    public HTTP2Client createHttp2Client(String arg0) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createHttp2Client'");
-    }
+        @Override
+        public <T> Storage<T> getStorage(String name) {
+            return new VolatileStorage<T>();
+        }
 
-    @Override
-    public HTTP2Client createHttp2Client(String arg0, @Nullable SslContextFactory arg1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createHttp2Client'");
-    }
-
-    @Override
-    public HttpClient createHttpClient(String arg0, @Nullable SslContextFactory arg1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createHttpClient'");
+        @Override
+        public <T> Storage<T> getStorage(String name, @Nullable ClassLoader classLoader) {
+            return getStorage("test");
+        }
     }
 }

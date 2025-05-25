@@ -13,6 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Public Information of the controller.
@@ -20,32 +21,42 @@ import java.util.List;
  *
  * Currently, only the ipAddress is used for discovery. More fields can be added on demand.
  * <p>
- * Json example:
+ * JSON example:
  *
  * <pre>
  * {
- * "apiVersions":["1.2","2.1"],
- * ...
- * "shcIpAddress":"192.168.1.2",
- * ...
+ *     "apiVersions": ["2.9","3.2"],
+ *     "macAddress": "64-da-a0-ab-cd-ef",
+ *     "shcIpAddress": "192.168.0.123",
+ *     ...
+ *     "shcGeneration": "SHC_1"
  * }
  * </pre>
  *
  * @author Gerd Zanker - Initial contribution
  */
 public class PublicInformation {
-    public PublicInformation() {
-        this.shcIpAddress = "";
-        this.shcGeneration = "";
-    }
-
     public List<String> apiVersions;
+    public String macAddress;
     public String shcIpAddress;
     public String shcGeneration;
     public SoftwareUpdateState softwareUpdateState;
 
     public static boolean isValid(PublicInformation obj) {
-        return obj != null && obj.shcIpAddress != null && obj.shcGeneration != null && obj.apiVersions != null
-                && SoftwareUpdateState.isValid(obj.softwareUpdateState);
+        return obj != null && obj.macAddress != null && obj.shcIpAddress != null && obj.shcGeneration != null
+                && obj.apiVersions != null && SoftwareUpdateState.isValid(obj.softwareUpdateState);
+    }
+
+    /**
+     * Returns the API versions as comma-separated list.
+     * 
+     * @return a comma-separated list of API versions or <code>null</code> if {@link #apiVersions} is <code>null</code>.
+     */
+    public String getApiVersionsAsCommaSeparatedList() {
+        if (apiVersions == null) {
+            return null;
+        }
+
+        return apiVersions.stream().collect(Collectors.joining(", "));
     }
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.fenecon.internal.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +35,8 @@ import org.openhab.binding.fenecon.internal.exception.FeneconException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -68,16 +72,17 @@ public class FeneconController {
     }
 
     /**
-     * Queries the data for a specified channel.
+     * Queries the data for a specified channel group.
      *
-     * @param channel Channel to be queried, e.g. _sum/State .
+     * @param channel Channel group to be queried, e.g. _sum/(State|EssSoc) .
      * @return {@link FeneconResponse} can be optional if values are not available.
      * @throws FeneconException is thrown if there are problems with the connection or processing of data to the FENECON
      *             system.
      */
-    public Optional<FeneconResponse> requestChannel(String channel) throws FeneconException {
+    public List<FeneconResponse> requestChannel(String channel) throws FeneconException {
         try {
             URI uri = new URI(getBaseUrl(config) + "rest/channel/" + channel);
+            logger.trace("FENECON - uri: {}", uri);
 
             Request request = httpClient.newRequest(uri).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);
             logger.trace("FENECON - request: {}", request);
@@ -88,37 +93,68 @@ public class FeneconController {
 
             int statusCode = response.getStatus();
             if (statusCode > 300) {
-                // Authentication error
-                if (statusCode == 401) {
+                if (statusCode == 401) { // Authentication error
                     throw new FeneconAuthenticationException(
                             "Authentication on the FENECON system was not possible. Check password.");
+                } else if (statusCode == 404) { // Channel-URL not supported
+                    logger.debug("Channel request '{}' not possible, is not supported by the FENECON system.", channel);
+                    return List.of();
                 } else {
                     throw new FeneconCommunicationException("Unexpected http status code: " + statusCode);
                 }
             } else {
-                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()).getAsJsonObject());
+                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()));
             }
         } catch (TimeoutException | ExecutionException | UnsupportedOperationException | InterruptedException err) {
-            throw new FeneconCommunicationException("Communication error with FENECON system on channel: " + channel,
+            throw new FeneconCommunicationException(
+                    "Communication error: " + err.getMessage() + " with FENECON system on channel: " + channel, err);
+        } catch (URISyntaxException | IllegalStateException | JsonSyntaxException err) {
+            throw new FeneconCommunicationException("Syntax error: " + err.getMessage() + " on channel: " + channel,
                     err);
-        } catch (URISyntaxException | JsonSyntaxException err) {
-            throw new FeneconCommunicationException("Syntax error on channel: " + channel, err);
         }
     }
 
-    private Optional<FeneconResponse> createResponseFromJson(JsonObject response) {
+    private List<FeneconResponse> createResponseFromJson(JsonElement jsonElement) {
+        if (jsonElement.isJsonArray()) {
+            return createResponseFromJsonArray(jsonElement.getAsJsonArray());
+        } else if (jsonElement.isJsonObject()) {
+            return createResponseFromJsonObject(jsonElement.getAsJsonObject());
+        } else {
+            throw new IllegalStateException("Unexpected response format: " + jsonElement);
+        }
+    }
+
+    private List<FeneconResponse> createResponseFromJsonArray(JsonArray jsonArray) {
+        // Example response: [{"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+        // 0..100","unit":"%","value":99}]
+        List<FeneconResponse> result = new ArrayList<>();
+        for (JsonElement each : jsonArray) {
+            if (each.isJsonObject()) {
+                result.addAll(createResponseFromJsonObject(each.getAsJsonObject()));
+            }
+        }
+        return result;
+    }
+
+    private List<FeneconResponse> createResponseFromJsonObject(JsonObject jsonObject) {
         // Example response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
         // 0..100","unit":"%","value":99}
+        List<FeneconResponse> result = new ArrayList<>();
+        convertJsonObjectToResponse(jsonObject).ifPresent(result::add);
+        return result;
+    }
 
-        if (response.get("value").isJsonNull()) {
-            // Example problem response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+    private Optional<FeneconResponse> convertJsonObjectToResponse(JsonObject jsonObject) {
+        if (jsonObject.get("value").isJsonNull()) {
+            // Example problem response:
+            // {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
             // 0..100","unit":"%","value":null}
             return Optional.empty();
         }
 
-        String address = response.get("address").getAsString();
-        String text = response.get("text").getAsString();
-        String value = response.get("value").getAsString();
+        String address = jsonObject.get("address").getAsString();
+        String text = jsonObject.get("text").getAsString();
+        String value = jsonObject.get("value").getAsString();
 
         return Optional.of(new FeneconResponse(address, text, value));
     }

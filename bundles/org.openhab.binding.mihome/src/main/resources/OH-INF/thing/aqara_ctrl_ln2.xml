@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi "zero-fire" 2 Channel Wall Switch</label>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="ch1" typeId="sw-btn">
 				<label>Button 1</label>

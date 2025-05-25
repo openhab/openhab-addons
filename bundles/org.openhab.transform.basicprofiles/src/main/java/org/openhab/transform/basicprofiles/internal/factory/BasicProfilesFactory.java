@@ -119,6 +119,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
+    @Nullable
     private final Bundle bundle;
     private final ItemRegistry itemRegistry;
     private final TimeZoneProvider timeZoneProvider;

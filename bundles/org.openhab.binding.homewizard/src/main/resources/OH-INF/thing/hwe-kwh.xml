@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homewizard"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hwe-kwh">
+		<label>HomeWizard kWh Meter</label>
+		<description>This thing provides the measurement data that is available through the API of a HomeWizard
+			kWh Meter.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="energy" typeId="kwh-energy-group"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:homewizard:device"/>
+	</thing-type>
+
+	<channel-group-type id="kwh-energy-group">
+		<label>Recent Measurements</label>
+		<channels>
+			<channel id="power" typeId="hw-power"/>
+			<channel id="power_l1" typeId="hw-power-advanced">
+				<label>Active Power L1</label>
+				<description>
+					This channel provides the active usage for phase 1 in Watt.
+				</description>
+			</channel>
+			<channel id="power_l2" typeId="hw-power-advanced">
+				<label>Active Power L2</label>
+				<description>
+					This channel provides the active usage for phase 2 in Watt.
+				</description>
+			</channel>
+			<channel id="power_l3" typeId="hw-power-advanced">
+				<label>Active Power L3</label>
+				<description>
+					This channel provides the active usage for phase 3 in Watt.
+				</description>
+			</channel>
+
+			<channel id="voltage_l1" typeId="hw-voltage-advanced">
+				<label>Active Voltage L1</label>
+				<description>
+					This channel provides the active voltage for phase 1 in Volt.
+				</description>
+			</channel>
+			<channel id="voltage_l2" typeId="hw-voltage-advanced">
+				<label>Active Voltage L2</label>
+				<description>
+					This channel provides the active voltage for phase 2 in Volt.
+				</description>
+			</channel>
+			<channel id="voltage_l3" typeId="hw-voltage-advanced">
+				<label>Active Voltage L3</label>
+				<description>
+					This channel provides the active voltage for phase 3 in Volt.
+				</description>
+			</channel>
+
+			<channel id="current" typeId="hw-current"/>
+			<channel id="current_l1" typeId="hw-current-advanced">
+				<label>Active Current L1</label>
+				<description>
+					This channel provides the active current for phase 1 in Ampere.
+				</description>
+			</channel>
+			<channel id="current_l2" typeId="hw-current-advanced">
+				<label>Active Current L2</label>
+				<description>
+					This channel provides the active current for phase 2 in Ampere.
+				</description>
+			</channel>
+			<channel id="current_l3" typeId="hw-current-advanced">
+				<label>Active Current L3</label>
+				<description>
+					This channel provides the active current for phase 3 in Ampere.
+				</description>
+			</channel>
+
+			<channel id="energy_import" typeId="hw-energy-import"/>
+			<channel id="energy_export" typeId="hw-energy-export"/>
+			<channel id="reactive_power" typeId="hw-reactive-power"/>
+			<channel id="apparent_power" typeId="hw-apparent-power"/>
+			<channel id="frequency" typeId="hw-frequency"/>
+		</channels>
+	</channel-group-type>
+
+
+</thing:thing-descriptions>

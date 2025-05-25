@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ams-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="printer"/>
+		</supported-bridge-type-refs>
+		<label>Bambu Lab AMS Device</label>
+		<description>Represents a Bambu Lab AMS connected to a printer.</description>
+
+		<channel-groups>
+			<!-- each AMS contains exactly 4 trays -->
+			<!-- not all of them might be used at the same time -->
+			<!-- but still channels should exist for them -->
+			<channel-group id="ams-tray-1" typeId="ams-tray">
+				<label>AMS Tray #1</label>
+			</channel-group>
+			<channel-group id="ams-tray-2" typeId="ams-tray">
+				<label>AMS Tray #2</label>
+			</channel-group>
+			<channel-group id="ams-tray-3" typeId="ams-tray">
+				<label>AMS Tray #3</label>
+			</channel-group>
+			<channel-group id="ams-tray-4" typeId="ams-tray">
+				<label>AMS Tray #4</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true" min="1" max="4">
+				<label>AMS Number</label>
+				<description>Order of the AMS</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

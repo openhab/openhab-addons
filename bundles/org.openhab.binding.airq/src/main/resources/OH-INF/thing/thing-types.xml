@@ -8,6 +8,7 @@
 		<label>air-Q</label>
 		<description>Thing for air-Q Device</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="status" typeId="status"/>

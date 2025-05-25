@@ -8,6 +8,7 @@
 		<label>ShellyPlus H&amp;T</label>
 		<description>@text/thing-type.shelly.shellypludht.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -22,6 +23,7 @@
 		<label>ShellyPlus H&amp;T Gen 3</label>
 		<description>@text/thing-type.shelly.shellypludhtg3.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -36,6 +38,7 @@
 		<label>Shelly Plus Smoke</label>
 		<description>@text/thing-type.shelly.shellyplussmoke.description</description>
 		<category>SmokeDetector</category>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
@@ -50,6 +53,7 @@
 		<label>Shelly Wall Display</label>
 		<description>@text/thing-type.shelly.shellywalldisplay.description</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="relay" typeId="relayChannel"/>

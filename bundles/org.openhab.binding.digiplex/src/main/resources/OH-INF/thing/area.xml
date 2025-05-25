@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Area</label>
 		<description>Area</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel typeId="area_status" id="status"/>
 			<channel typeId="area_armed" id="armed"/>

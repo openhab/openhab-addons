@@ -32,8 +32,8 @@ import org.osgi.service.component.annotations.Activate;
  * @author Jonathan Gilbert - Initial contribution
  */
 public abstract class AbstractScriptExtensionProvider implements ScriptExtensionProvider {
-    private Map<String, Function<String, Object>> types = new HashMap<>();
-    private Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
+    protected final Map<String, Function<String, Object>> types = new HashMap<>();
+    protected final Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
 
     protected abstract String getPresetName();
 

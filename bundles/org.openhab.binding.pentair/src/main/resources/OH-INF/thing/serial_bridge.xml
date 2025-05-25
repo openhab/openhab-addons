@@ -7,6 +7,7 @@
 	<bridge-type id="serial_bridge">
 		<label>Pentair-RS485 Serial Bridge</label>
 		<description>This bridge should be configured when using a USB->RS485 interface.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port</label>

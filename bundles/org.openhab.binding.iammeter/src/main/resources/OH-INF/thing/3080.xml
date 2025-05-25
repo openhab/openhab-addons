@@ -7,6 +7,7 @@
 	<thing-type id="powermeter">
 		<label>Iammeter Power Meter 3162/3080</label>
 		<description>Single phase PowerMeter for Iammeter Binding</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="voltage" typeId="voltage"/>
 			<channel id="current" typeId="current"/>

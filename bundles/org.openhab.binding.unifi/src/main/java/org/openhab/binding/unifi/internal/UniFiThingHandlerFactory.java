@@ -21,6 +21,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifi.internal.handler.UniFiAccessPointThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
+import org.openhab.binding.unifi.internal.handler.UniFiNetworkThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiPoePortThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiSiteThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiWlanThingHandler;
@@ -82,6 +83,8 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
             return new UniFiControllerThingHandler((Bridge) thing, httpClient);
         } else if (THING_TYPE_SITE.equals(thingTypeUID)) {
             return new UniFiSiteThingHandler(thing);
+        } else if (THING_TYPE_NETWORK.equals(thingTypeUID)) {
+            return new UniFiNetworkThingHandler(thing);
         } else if (THING_TYPE_WLAN.equals(thingTypeUID)) {
             return new UniFiWlanThingHandler(thing);
         } else if (THING_TYPE_WIRELESS_CLIENT.equals(thingTypeUID) || THING_TYPE_WIRED_CLIENT.equals(thingTypeUID)) {

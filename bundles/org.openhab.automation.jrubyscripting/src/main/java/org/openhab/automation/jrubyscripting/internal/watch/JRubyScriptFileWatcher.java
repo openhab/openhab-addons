@@ -12,26 +12,22 @@
  */
 package org.openhab.automation.jrubyscripting.internal.watch;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.jrubyscripting.internal.JRubyScriptEngineConfiguration;
 import org.openhab.automation.jrubyscripting.internal.JRubyScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
-import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
 import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
 import org.openhab.core.service.StartLevelService;
 import org.openhab.core.service.WatchService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Monitors {@code <openHAB-conf>/automation/ruby} for Ruby files, but not libraries in lib or gems
@@ -39,24 +35,21 @@ import org.slf4j.LoggerFactory;
  * @author Cody Cutrer - Initial contribution
  * @author Jan N. Klug - Refactored to new WatchService
  */
-@Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
+@Component(immediate = true, service = { ScriptFileWatcher.class, JRubyScriptFileWatcher.class,
+        ScriptDependencyTracker.Listener.class })
 @NonNullByDefault
 public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
-    private final Logger logger = LoggerFactory.getLogger(JRubyScriptFileWatcher.class);
-
-    private static final String FILE_DIRECTORY = "automation" + File.separator + "ruby";
-
     private final JRubyScriptEngineFactory scriptEngineFactory;
 
     @Activate
     public JRubyScriptFileWatcher(final @Reference ScriptEngineManager manager,
             final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService,
-            final @Reference(target = "(" + Constants.SERVICE_PID
-                    + "=org.openhab.automation.jrubyscripting)") ScriptEngineFactory scriptEngineFactory,
+            final @Reference JRubyScriptEngineFactory scriptEngineFactory,
             final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
-        super(watchService, manager, readyService, startLevelService, FILE_DIRECTORY, true);
+        super(watchService, manager, readyService, startLevelService,
+                JRubyScriptEngineConfiguration.HOME_PATH.toString(), true);
 
-        this.scriptEngineFactory = (JRubyScriptEngineFactory) scriptEngineFactory;
+        this.scriptEngineFactory = scriptEngineFactory;
     }
 
     @Override
@@ -68,5 +61,11 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
         }
 
         return super.getScriptType(scriptFilePath).filter(type -> scriptEngineFactory.getScriptTypes().contains(type));
+    }
+
+    // Overriding to make it public, so it can be used in {@link JRubyConsoleCommandExtension}
+    @Override
+    public Path getWatchPath() {
+        return super.getWatchPath();
     }
 }

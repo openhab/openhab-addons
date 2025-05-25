@@ -11,6 +11,7 @@
 
 		<label>Nest Thermostat</label>
 		<description>A Thermostat to control the various aspects of the house's HVAC system</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="ambient_humidity" typeId="SDMAmbientHumidity"/>

@@ -44,7 +44,6 @@ import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemNotUniqueException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.RegistryHook;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
@@ -296,16 +295,6 @@ public class BaseIntegrationTest extends JavaTest {
 
             @Override
             public @Nullable Item remove(String itemName, boolean recursive) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void addRegistryHook(RegistryHook<Item> hook) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void removeRegistryHook(RegistryHook<Item> hook) {
                 throw new UnsupportedOperationException();
             }
         }, UNIT_PROVIDER, localEndpointOverride);

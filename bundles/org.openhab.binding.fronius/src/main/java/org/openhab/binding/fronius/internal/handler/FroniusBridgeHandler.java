@@ -15,6 +15,7 @@ package org.openhab.binding.fronius.internal.handler;
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -92,6 +93,15 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         if (localRefreshJob != null) {
             localRefreshJob.cancel(true);
             refreshJob = null;
+        }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+
+        for (FroniusBaseThingHandler service : services) {
+            service.handleBridgeConfigurationUpdate(configurationParameters);
         }
     }
 

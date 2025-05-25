@@ -87,6 +87,8 @@ public class HumidifierTests extends AbstractComponentTests {
         assertChannel(component, Humidifier.TARGET_HUMIDITY_CHANNEL_ID, "bedroom_humidifier/humidity/state",
                 "bedroom_humidifier/humidity/set", "Target Humidity", NumberValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("bedroom_humidifier/on/state", "true");
         assertState(component, Humidifier.STATE_CHANNEL_ID, OnOffType.ON);
         publishMessage("bedroom_humidifier/on/state", "false");

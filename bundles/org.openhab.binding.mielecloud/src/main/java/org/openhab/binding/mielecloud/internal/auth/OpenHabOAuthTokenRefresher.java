@@ -72,6 +72,7 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
             try {
                 OAuthClientService clientService = getOAuthClientService(serviceHandle);
                 clientService.removeAccessTokenRefreshListener(refreshListener);
+                oauthFactory.ungetOAuthService(serviceHandle);
             } catch (OAuthException e) {
                 logger.warn("Failed to remove refresh listener: OAuth client service is unavailable. Cause: {}",
                         e.getMessage());
@@ -107,9 +108,9 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
                 throw new OAuthException("Access token is not available.");
             }
         } catch (org.openhab.core.auth.client.oauth2.OAuthException e) {
-            throw new OAuthException("An error occured during token refresh: " + e.getMessage(), e);
+            throw new OAuthException("An error occurred during token refresh: " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new OAuthException("A network error occured during token refresh: " + e.getMessage(), e);
+            throw new OAuthException("A network error occurred during token refresh: " + e.getMessage(), e);
         } catch (OAuthResponseException e) {
             throw new OAuthException("Miele cloud service returned an illegal response: " + e.getMessage(), e);
         }

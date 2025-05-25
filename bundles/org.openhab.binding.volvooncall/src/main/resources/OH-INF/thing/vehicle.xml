@@ -12,7 +12,7 @@
 
 		<label>Volvo Vehicle</label>
 		<description>Provides all data available on a Volvo vehicle.</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="doors" typeId="doors"/>
 			<channel-group id="windows" typeId="windows"/>

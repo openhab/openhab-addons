@@ -8,7 +8,7 @@
 	<thing-type id="box">
 		<label>senseBox</label>
 		<description>This is a senseBox sensor.</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="descriptors" id="descriptors"/>
 			<channel-group typeId="measurements" id="measurements"/>

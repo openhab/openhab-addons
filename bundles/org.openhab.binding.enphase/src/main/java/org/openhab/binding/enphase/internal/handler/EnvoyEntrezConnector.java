@@ -29,6 +29,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
+import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
+import org.openhab.binding.enphase.internal.dto.PdmEnergyDTO;
+import org.openhab.binding.enphase.internal.dto.PdmEnergyDTO.PdmProductionDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EntrezJwtInvalidException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
@@ -48,6 +51,8 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
     private static final String HTTPS = "https://";
     private static final String LOGIN_URL = "/auth/check_jwt";
     private static final String SESSION_COOKIE_NAME = "session";
+    private static final String IVP_PDM_ENERGY_URL = "/ivp/pdm/energy";
+    private static final EnvoyEnergyDTO NO_DATA = new EnvoyEnergyDTO();
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyEntrezConnector.class);
 
@@ -88,6 +93,17 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
 
     private String check(final String property, final String message) {
         return property.isBlank() ? message : "";
+    }
+
+    @Override
+    public EnvoyEnergyDTO getProduction() throws EnphaseException {
+        final PdmProductionDTO production = retrieveData(IVP_PDM_ENERGY_URL, this::jsonToPdmEnergyDTO).production;
+
+        return production == null || production.pcu == null ? NO_DATA : production.pcu;
+    }
+
+    private @Nullable PdmEnergyDTO jsonToPdmEnergyDTO(final String json) {
+        return gson.fromJson(json, PdmEnergyDTO.class);
     }
 
     @Override
@@ -151,7 +167,7 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
         final URI uri = URI.create(HTTPS + configuration.hostname + LOGIN_URL);
 
         // Authorization: Bearer
-        final Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
+        final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).accept("application/json")
                 .header("Authorization", "Bearer " + jwt).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         final ContentResponse response = send(request);
 

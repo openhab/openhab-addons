@@ -950,7 +950,7 @@ public enum HeatpumpChannel {
      * EVU 2
      * (original: EVU 2)
      */
-    // CHANNEL_HZIO_EVU2(185, "HZIO_EVU2", NumberItem.class, null, false, null),
+    CHANNEL_HZIO_EVU2(185, "inputUtilityLock2", SwitchItem.class, null, false, HeatpumpVisibility.IN_EVU),
 
     /**
      * Safety tempearture limiter floor heating
@@ -1199,18 +1199,18 @@ public enum HeatpumpChannel {
     // code. The following channels are determined based on their values and which value
     // they match on a heat pump
 
-    CHANNEL_232(232, "channel232", NumberItem.class, null, false, null),
-    CHANNEL_233(233, "channel233", NumberItem.class, null, false, null),
+    CHANNEL_232(232, "temperatureVapourisation", NumberItem.class, SIUnits.CELSIUS, false, null),
+    CHANNEL_233(233, "temperatureLiquefaction", NumberItem.class, SIUnits.CELSIUS, false, null),
     CHANNEL_234(234, "channel234", NumberItem.class, null, false, null),
     CHANNEL_235(235, "channel235", NumberItem.class, null, false, null),
     CHANNEL_236(236, "frequencyCompressorTarget", NumberItem.class, Units.HERTZ, false, null),
-    CHANNEL_237(237, "channel237", NumberItem.class, null, false, null),
-    CHANNEL_238(238, "channel238", NumberItem.class, null, false, null),
-    CHANNEL_239(239, "channel239", NumberItem.class, null, false, null),
-    CHANNEL_240(240, "channel240", NumberItem.class, null, false, null),
-    CHANNEL_241(241, "channel241", NumberItem.class, null, false, null),
-    CHANNEL_242(242, "channel242", NumberItem.class, null, false, null),
-    CHANNEL_243(243, "channel243", NumberItem.class, null, false, null),
+    CHANNEL_237(237, "frequencyCompressorMin", NumberItem.class, Units.HERTZ, false, null),
+    CHANNEL_238(238, "frequencyCompressorMax", NumberItem.class, Units.HERTZ, false, null),
+    CHANNEL_239(239, "temperatureVBOTarget", NumberItem.class, Units.KELVIN, false, null),
+    CHANNEL_240(240, "temperatureVBO", NumberItem.class, Units.KELVIN, false, null),
+    CHANNEL_241(241, "controlSignalHeatingCirculationPump", NumberItem.class, Units.PERCENT, false, null),
+    CHANNEL_242(242, "temperatureHeatingCirculationPumpTarget", NumberItem.class, Units.KELVIN, false, null),
+    CHANNEL_243(243, "temperatureHeatingCirculationPump", NumberItem.class, Units.KELVIN, false, null),
     CHANNEL_244(244, "channel244", NumberItem.class, null, false, null),
     CHANNEL_245(245, "channel245", NumberItem.class, null, false, null),
     CHANNEL_246(246, "channel246", NumberItem.class, null, false, null),
@@ -1219,15 +1219,29 @@ public enum HeatpumpChannel {
     CHANNEL_249(249, "channel249", NumberItem.class, null, false, null),
     CHANNEL_250(250, "channel250", NumberItem.class, null, false, null),
     CHANNEL_251(251, "channel251", NumberItem.class, null, false, null),
-    CHANNEL_252(252, "channel252", NumberItem.class, null, false, null),
+    CHANNEL_252(252, "temperatureHotGasMax", NumberItem.class, SIUnits.CELSIUS, false, null),
     CHANNEL_253(253, "channel253", NumberItem.class, null, false, null),
     CHANNEL_254(254, "flowRateHeatSource2", NumberItem.class, Units.LITRE_PER_MINUTE, false, null),
     CHANNEL_255(255, "channel255", NumberItem.class, null, false, null),
     CHANNEL_256(256, "channel256", NumberItem.class, null, false, null),
     CHANNEL_257(257, "heatingPowerActualValue", NumberItem.class, Units.WATT, false, null),
-    CHANNEL_258(258, "channel258", NumberItem.class, null, false, null),
-    CHANNEL_259(259, "channel259", NumberItem.class, null, false, null),
-    CHANNEL_260(260, "channel260", NumberItem.class, null, false, null),
+
+    /**
+     * Version RBE
+     * handled as property
+     */
+    // CHANNEL_258(258, "versionRBE", NumberItem.class, null, false, null),
+
+    CHANNEL_259(259, "outputControlSignalCooling", SwitchItem.class, null, false, null),
+    CHANNEL_260(260, "timeCoolingRelease", NumberItem.class, Units.SECOND, false, null),
+    CHANNEL_261(261, "channel261", NumberItem.class, null, false, null),
+    CHANNEL_262(262, "channel262", NumberItem.class, null, false, null),
+    CHANNEL_263(263, "channel263", NumberItem.class, null, false, null),
+    CHANNEL_264(264, "channel264", NumberItem.class, null, false, null),
+    CHANNEL_265(265, "channel265", NumberItem.class, null, false, null),
+    CHANNEL_266(266, "channel266", NumberItem.class, null, false, null),
+    CHANNEL_267(267, "channel267", NumberItem.class, null, false, null),
+    CHANNEL_268(268, "powerConsumption", NumberItem.class, Units.WATT, false, null),
 
     // Changeable Parameters
     // https://www.loxwiki.eu/display/LOX/Java+Webinterface?preview=/13306044/13307658/3003.txt

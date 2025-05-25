@@ -15,7 +15,6 @@ package org.openhab.binding.gce.internal.model;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gce.internal.handler.Ipx800DeviceConnector;
 import org.openhab.binding.gce.internal.handler.Ipx800EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,23 +32,19 @@ public class M2MMessageParser {
             .compile("I=" + IO_DESCRIPTOR + "&O=" + IO_DESCRIPTOR + "&([AC]\\d{1,2}=\\d+&)*[^I]*");
 
     private final Logger logger = LoggerFactory.getLogger(M2MMessageParser.class);
-    private final Ipx800DeviceConnector connector;
     private final Ipx800EventListener listener;
 
     private String expectedResponse = "";
 
-    public M2MMessageParser(Ipx800DeviceConnector connector, Ipx800EventListener listener) {
-        this.connector = connector;
+    public M2MMessageParser(Ipx800EventListener listener) {
         this.listener = listener;
-        connector.setParser(this);
     }
 
-    /**
-     *
-     * @param data
-     */
     public void unsolicitedUpdate(String data) {
-        if (IO_PATTERN.matcher(data).matches()) {
+        if ("OK".equals(data)) { // If OK, do nothing special
+        } else if ("? Bad command".equals(data)) {
+            logger.warn("{}", data);
+        } else if (IO_PATTERN.matcher(data).matches()) {
             PortDefinition portDefinition = PortDefinition.fromM2MCommand(expectedResponse);
             decodeDataLine(portDefinition, data);
         } else if (VALIDATION_PATTERN.matcher(data).matches()) {
@@ -67,65 +62,36 @@ public class M2MMessageParser {
                         portNumShift = 0; // Align counters on 1 based array
                     case ANALOG: {
                         int portNumber = Integer.parseInt(statusPart[0].substring(1)) + portNumShift;
-                        setStatus(portDefinition.getPortName() + portNumber, Double.parseDouble(statusPart[1]));
+                        setStatus(portDefinition.portName + portNumber, Double.parseDouble(statusPart[1]));
                     }
                 }
             }
         } else if (!expectedResponse.isEmpty()) {
             setStatus(expectedResponse, Double.parseDouble(data));
+        } else {
+            logger.warn("Unable to handle data received: {}", data);
         }
-
         expectedResponse = "";
     }
 
     private void decodeDataLine(PortDefinition portDefinition, String data) {
         for (int count = 0; count < data.length(); count++) {
-            setStatus(portDefinition.getPortName() + (count + 1), (double) data.charAt(count) - '0');
+            setStatus(portDefinition.portName + (count + 1), (double) data.charAt(count) - '0');
         }
     }
 
     private void setStatus(String port, double value) {
-        logger.debug("Received {} : {}", port, value);
+        logger.debug("Received {} on port {}", value, port);
         listener.dataReceived(port, value);
     }
 
     public void setExpectedResponse(String expectedResponse) {
         if (expectedResponse.endsWith("s")) { // GetInputs or GetOutputs
             this.expectedResponse = expectedResponse;
-        } else { // GetAnx or GetCountx
-            PortDefinition portType = PortDefinition.fromM2MCommand(expectedResponse);
-            this.expectedResponse = expectedResponse.replaceAll(portType.getM2mCommand(), portType.getPortName());
+            return;
         }
-    }
-
-    /**
-     * Set output of the device sending the corresponding command
-     *
-     * @param targetPort
-     * @param targetValue
-     */
-    public void setOutput(String targetPort, int targetValue, boolean pulse) {
-        logger.debug("Sending {} to {}", targetValue, targetPort);
-        String command = String.format("Set%02d%s%s", Integer.parseInt(targetPort), targetValue, pulse ? "p" : "");
-        connector.send(command);
-    }
-
-    /**
-     * Resets the counter value to 0
-     *
-     * @param targetCounter
-     */
-    public void resetCounter(int targetCounter) {
-        logger.debug("Resetting counter {} to 0", targetCounter);
-        connector.send(String.format("ResetCount%d", targetCounter));
-    }
-
-    public void errorOccurred(Exception e) {
-        logger.warn("Error received from connector : {}", e.getMessage());
-        listener.errorOccurred(e);
-    }
-
-    public void resetPLC() {
-        connector.send("Reset");
+        // GetAnx or GetCountx
+        PortDefinition portType = PortDefinition.fromM2MCommand(expectedResponse);
+        this.expectedResponse = expectedResponse.replaceAll(portType.m2mCommand, portType.portName);
     }
 }

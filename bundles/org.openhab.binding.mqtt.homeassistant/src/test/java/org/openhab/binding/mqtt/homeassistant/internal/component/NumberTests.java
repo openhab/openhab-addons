@@ -65,6 +65,8 @@ public class NumberTests extends AbstractComponentTests {
         assertChannel(component, Number.NUMBER_CHANNEL_ID, "homie/bwa/spa/pump1", "homie/bwa/spa/pump1/set",
                 "BWA Link Hot Tub Pump 1", NumberValue.class, null);
 
+        linkAllChannels(component);
+
         publishMessage("homie/bwa/spa/pump1", "1");
         assertState(component, Number.NUMBER_CHANNEL_ID, new DecimalType(1));
         publishMessage("homie/bwa/spa/pump1", "2");

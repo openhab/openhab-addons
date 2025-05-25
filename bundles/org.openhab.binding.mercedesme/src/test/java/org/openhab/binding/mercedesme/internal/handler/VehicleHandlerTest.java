@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.FileReader;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -60,6 +61,11 @@ class VehicleHandlerTest {
 
     private static final int EVENT_STORAGE_COUNT = HVAC_UPDATE_COUNT + POSITIONING_UPDATE_COUNT + ECOSCORE_UPDATE_COUNT
             + 76;
+
+    @BeforeAll
+    public static void init() {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+    }
 
     public static Map<String, Object> createBEV() {
         Thing thingMock = mock(Thing.class);

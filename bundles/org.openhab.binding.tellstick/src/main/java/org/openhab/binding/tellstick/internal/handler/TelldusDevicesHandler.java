@@ -17,10 +17,12 @@ import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
-import org.openhab.binding.tellstick.internal.live.xml.DataTypeValue;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensorEvent;
+import org.openhab.binding.tellstick.internal.live.dto.DataTypeValue;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetSensorEvent;
 import org.openhab.binding.tellstick.internal.local.dto.LocalDataTypeValueDTO;
 import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalSensorDTO;
 import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalSensorEventDTO;
@@ -58,13 +60,14 @@ import org.tellstick.enums.DeviceType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TelldusDevicesHandler extends BaseThingHandler implements DeviceStatusListener {
 
     private Logger logger = LoggerFactory.getLogger(TelldusDevicesHandler.class);
-    private String deviceId;
+    private @Nullable String deviceId;
     private Boolean isDimmer = Boolean.FALSE;
     private int resend = 1;
-    private TelldusBridgeHandler bridgeHandler = null;
+    private @Nullable TelldusBridgeHandler bridgeHandler;
     private final ChannelUID stateChannel;
     private final ChannelUID dimChannel;
     private final ChannelUID humidityChannel;
@@ -225,7 +228,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         super.dispose();
     }
 
-    private Device getDevice(TelldusBridgeHandler tellHandler, String deviceId) {
+    private @Nullable Device getDevice(TelldusBridgeHandler tellHandler, @Nullable String deviceId) {
         Device dev = null;
         if (deviceId != null) {
             if (isSensor()) {
@@ -267,7 +270,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         }
     }
 
-    private synchronized TelldusBridgeHandler getTellstickBridgeHandler() {
+    private @Nullable synchronized TelldusBridgeHandler getTellstickBridgeHandler() {
         if (this.bridgeHandler == null) {
             logger.debug("No available bridge handler found for {} bridge {} .", deviceId, getBridge());
         }
@@ -401,17 +404,18 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         }
     }
 
-    private void updateDeviceState(Device device) {
+    private void updateDeviceState(@Nullable Device device) {
         if (device != null) {
             logger.debug("Updating state of {} {} ({}) id: {}", device.getDeviceType(), device.getName(),
                     device.getUUId(), getThing().getUID());
             TelldusBridgeHandler bridgeHandler = getTellstickBridgeHandler();
             State st = null;
-            if (bridgeHandler != null && bridgeHandler.getController() != null) {
-                st = bridgeHandler.getController().calcState(device);
+            TelldusDeviceController controller = null;
+            if (bridgeHandler != null && (controller = bridgeHandler.getController()) != null) {
+                st = controller.calcState(device);
             }
-            if (st != null && bridgeHandler != null) {
-                BigDecimal dimValue = bridgeHandler.getController().calcDimValue(device);
+            if (st != null && controller != null) {
+                BigDecimal dimValue = controller.calcDimValue(device);
                 updateState(stateChannel, st);
                 if (device instanceof DimmableDevice) {
                     updateState(dimChannel, new PercentType(dimValue));

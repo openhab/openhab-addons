@@ -28,14 +28,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttThingHandlerFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
+import org.openhab.core.util.BundleResolver;
 
 /**
  * @author Jochen Klein - Initial contribution
@@ -48,12 +49,15 @@ public class HomeAssistantChannelTransformationTests {
     protected @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
     protected @NonNullByDefault({}) HomeAssistantChannelTransformation transformation;
+    private @Mock @NonNullByDefault({}) BundleResolver bundleResolver;
+    private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
 
     @BeforeEach
     public void beforeEachChannelTransformationTest() {
         MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry,
                 new VolatileStorageService());
-        MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider();
+        HomeAssistantStateDescriptionProvider stateDescriptionProvider = new HomeAssistantStateDescriptionProvider(
+                translationProvider, bundleResolver);
         ChannelTypeRegistry channelTypeRegistry = new ChannelTypeRegistry();
         MqttThingHandlerFactory thingHandlerFactory = new MqttThingHandlerFactory(channelTypeProvider,
                 stateDescriptionProvider, channelTypeRegistry, unitProvider);

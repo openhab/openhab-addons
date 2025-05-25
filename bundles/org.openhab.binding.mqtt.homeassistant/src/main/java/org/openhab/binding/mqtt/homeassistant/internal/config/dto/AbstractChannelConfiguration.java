@@ -35,7 +35,7 @@ public abstract class AbstractChannelConfiguration {
     public static final char PARENT_TOPIC_PLACEHOLDER = '~';
     private static final String DEFAULT_THING_NAME = "Home Assistant Device";
 
-    protected @Nullable String name;
+    protected String name;
 
     protected String icon = "";
     protected int qos; // defaults to 0 according to HA specification
@@ -136,7 +136,7 @@ public abstract class AbstractChannelConfiguration {
         return properties;
     }
 
-    public @Nullable String getName() {
+    public String getName() {
         return name;
     }
 

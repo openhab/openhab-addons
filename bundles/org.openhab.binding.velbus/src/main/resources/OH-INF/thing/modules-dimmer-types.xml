@@ -12,6 +12,7 @@
 
 		<label>VMB1DM</label>
 		<description>Dimmer module for inductive/resistive and capacitive load</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="brightness"/>
 		</channels>
@@ -27,6 +28,7 @@
 
 		<label>VMB1LED</label>
 		<description>1-channel 0-10V controlled PWM dimmer for led strips</description>
+		<semantic-equipment-tag>LightStrip</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="brightness"/>
 		</channels>
@@ -42,6 +44,7 @@
 
 		<label>VMB4DC</label>
 		<description>4-channel 0/1-10V dimmer controller</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="brightness"/>
 			<channel id="CH2" typeId="brightness"/>
@@ -60,6 +63,7 @@
 
 		<label>VMB4LEDPWM-20</label>
 		<description>4 channel led PWM dimmer module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="brightness" typeId="4channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="4channelFadeModule"/>
@@ -77,6 +81,7 @@
 
 		<label>VMB8DC-20</label>
 		<description>8 channel 0 to 10 V dimmer control module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="brightness" typeId="8channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="8channelFadeModule"/>
@@ -94,6 +99,7 @@
 
 		<label>VMBDALI</label>
 		<description>DALI gateway module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="81channelInputModule"/>
 			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
@@ -116,6 +122,7 @@
 
 		<label>VMBDALI-20</label>
 		<description>DALI gateway module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="81channelInputModule"/>
 			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
@@ -138,6 +145,7 @@
 
 		<label>VMBDME</label>
 		<description>Dimmer for electronic/resistive load</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="brightness"/>
 		</channels>
@@ -153,6 +161,7 @@
 
 		<label>VMBDMI</label>
 		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="brightness"/>
 		</channels>
@@ -168,6 +177,7 @@
 
 		<label>VMBDMI-R</label>
 		<description>Single channel triac dimmer for resistive and inductive loads</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="brightness"/>
 		</channels>

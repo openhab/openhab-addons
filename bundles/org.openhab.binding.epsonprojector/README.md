@@ -9,7 +9,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4 SDDP' options are present and enabled in the projector's network menu, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4 SDDP' options are present and enabled in the projector's network menu, the Thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -109,7 +109,7 @@ connection: &conEpson
 
 ## Full Example
 
-things/epson.things:
+### `epson.things` Example
 
 ```java
 // serial port connection
@@ -120,7 +120,7 @@ epsonprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port
 
 ```
 
-items/epson.items
+### `epson.items` Example
 
 ```java
 Switch epsonPower                                      { channel="epsonprojector:projector-serial:hometheater:power" }
@@ -156,7 +156,7 @@ Number epsonErrCode     "Error Code [%d]"    <error>   { channel="epsonprojector
 String epsonErrMessage  "Error Message [%s]" <error>   { channel="epsonprojector:projector-serial:hometheater:errmessage" }
 ```
 
-sitemaps/epson.sitemap
+### `epson.sitemap` Example
 
 ```perl
 sitemap epson label="Epson Projector"

@@ -12,6 +12,7 @@
 		<label>@text/thing-type.mielecloud.dish_warmer.label</label>
 		<description>@text/thing-type.mielecloud.dish_warmer.description</description>
 		<category>WhiteGood</category>
+		<semantic-equipment-tag>WhiteGood</semantic-equipment-tag>
 
 		<channels>
 			<channel id="remote_control_can_be_switched_on" typeId="remote_control_can_be_switched_on"/>

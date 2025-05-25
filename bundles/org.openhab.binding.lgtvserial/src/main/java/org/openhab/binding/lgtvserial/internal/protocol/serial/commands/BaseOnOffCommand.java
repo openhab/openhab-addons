@@ -35,6 +35,6 @@ public abstract class BaseOnOffCommand extends BaseLGSerialCommand {
 
     @Override
     protected LGSerialResponse createResponse(int set, boolean success, String data) {
-        return new OnOffResponse(set, success, data);
+        return new OnOffResponse(set, success, data, false);
     }
 }

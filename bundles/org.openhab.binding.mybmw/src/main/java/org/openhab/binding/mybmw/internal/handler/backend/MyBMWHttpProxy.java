@@ -12,15 +12,20 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.APP_VERSIONS;
-
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +42,7 @@ import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleBase;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
+import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.auth.MyBMWTokenController;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
@@ -44,7 +50,8 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.HTTPConstants;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +70,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MyBMWHttpProxy implements MyBMWProxy {
+    private static final Pattern TIME_PATTERN = Pattern.compile("\\b(\\d{1,2}:\\d{2}:\\d{2})\\b");
+    private static final Pattern DURATION_PATTERN = Pattern.compile("\\b(\\d+)");
+
     private final Logger logger = LoggerFactory.getLogger(MyBMWHttpProxy.class);
+
     private final HttpClient httpClient;
     private MyBMWBridgeConfiguration bridgeConfiguration;
     MyBMWTokenController myBMWTokenController;
+
+    private Instant nextQuota = Instant.now();
 
     /**
      * URLs taken from
@@ -77,11 +90,12 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     private final String remoteCommandUrl;
     private final String remoteStatusUrl;
 
-    public MyBMWHttpProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration bridgeConfiguration) {
+    public MyBMWHttpProxy(MyBMWBridgeHandler bridgeHandler, HttpClient httpClient, OAuthFactory oAuthFactory,
+            MyBMWBridgeConfiguration bridgeConfiguration) {
         logger.trace("MyBMWHttpProxy - initialize");
-        httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient = httpClient;
 
-        myBMWTokenController = new MyBMWTokenController(bridgeConfiguration, httpClient);
+        myBMWTokenController = new MyBMWTokenController(bridgeHandler, bridgeConfiguration, httpClient, oAuthFactory);
 
         this.bridgeConfiguration = bridgeConfiguration;
 
@@ -104,9 +118,10 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
     /**
      * requests all vehicles
-     * 
+     *
      * @return list of vehicles
      */
+    @Override
     public List<Vehicle> requestVehicles() throws NetworkException {
         List<Vehicle> vehicles = new ArrayList<>();
         List<VehicleBase> vehiclesBase = requestVehiclesBase();
@@ -130,6 +145,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param brand
      * @return the vehicles of one brand
      */
+    @Override
     public List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException {
         String vehicleResponseString = requestVehiclesBaseJson(brand);
         return JsonStringDeserializer.getVehicleBaseList(vehicleResponseString);
@@ -141,6 +157,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param brand
      * @return the base vehicle information as JSON string
      */
+    @Override
     public String requestVehiclesBaseJson(String brand) throws NetworkException {
         byte[] vehicleResponse = get(vehicleUrl, brand, null, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleResponseString = new String(vehicleResponse, Charset.defaultCharset());
@@ -152,6 +169,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      *
      * @return the list of vehicles
      */
+    @Override
     public List<VehicleBase> requestVehiclesBase() throws NetworkException {
         List<VehicleBase> vehicles = new ArrayList<>();
 
@@ -160,8 +178,11 @@ public class MyBMWHttpProxy implements MyBMWProxy {
                 vehicles.addAll(requestVehiclesBase(brand));
 
                 Thread.sleep(10000);
-            } catch (Exception e) {
-                logger.warn("error retrieving the base vehicles for brand {}: {}", brand, e.getMessage());
+            } catch (NetworkException ne) {
+                logger.warn("error retrieving the base vehicles for brand {}: {}", brand, ne.getMessage());
+                throw ne;
+            } catch (InterruptedException ie) {
+                throw new NetworkException(ie);
             }
         }
 
@@ -176,9 +197,10 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param props the image properties
      * @return the image as a byte array
      */
+    @Override
     public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException {
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion())
-                + "/eadrax-ics/v3/presentation/vehicles/" + vin + "/images?carView=" + props.viewport;
+                + BimmerConstants.IMAGE_URL.replace(BimmerConstants.PARAM_VIN, vin) + props.viewport;
         return get(localImageUrl, brand, vin, HTTPConstants.CONTENT_TYPE_IMAGE);
     }
 
@@ -189,6 +211,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param brand
      * @return the vehicle state
      */
+    @Override
     public VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException {
         String vehicleStateResponseString = requestVehicleStateJson(vin, brand);
         return JsonStringDeserializer.getVehicleState(vehicleStateResponseString);
@@ -201,6 +224,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param brand
      * @return the vehicle state as string
      */
+    @Override
     public String requestVehicleStateJson(String vin, String brand) throws NetworkException {
         byte[] vehicleStateResponse = get(vehicleStateUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleStateResponseString = new String(vehicleStateResponse, Charset.defaultCharset());
@@ -209,11 +233,12 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
     /**
      * request charge statistics for electric vehicles
-     * 
+     *
      * @param vin
      * @param brand
      * @return the charge statistics
      */
+    @Override
     public ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
         String chargeStatisticsResponseString = requestChargeStatisticsJson(vin, brand);
         return JsonStringDeserializer.getChargingStatistics(new String(chargeStatisticsResponseString));
@@ -221,18 +246,19 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
     /**
      * request charge statistics for electric vehicles as JSON
-     * 
+     *
      * @param vin
      * @param brand
      * @return the charge statistics as JSON string
      */
+    @Override
     public String requestChargeStatisticsJson(String vin, String brand) throws NetworkException {
         MultiMap<@Nullable String> chargeStatisticsParams = new MultiMap<>();
         chargeStatisticsParams.put("vin", vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion())
-                + "/eadrax-chs/v1/charging-statistics?" + params;
+                + BimmerConstants.CHARGING_STATISTICS + params;
         byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String chargeStatisticsResponseString = new String(chargeStatisticsResponse);
         return chargeStatisticsResponseString;
@@ -245,6 +271,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param brand
      * @return the charge sessions
      */
+    @Override
     public ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
         String chargeSessionsResponseString = requestChargeSessionsJson(vin, brand);
         return JsonStringDeserializer.getChargingSessions(chargeSessionsResponseString);
@@ -257,6 +284,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param brand
      * @return the charge sessions as JSON string
      */
+    @Override
     public String requestChargeSessionsJson(String vin, String brand) throws NetworkException {
         MultiMap<@Nullable String> chargeSessionsParams = new MultiMap<>();
         chargeSessionsParams.put("vin", vin);
@@ -264,7 +292,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         chargeSessionsParams.put("include_date_picker", "true");
         String params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
         String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion())
-                + "/eadrax-chs/v1/charging-sessions?" + params;
+                + BimmerConstants.CHARGING_SESSIONS + params;
         byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String chargeSessionsResponseString = new String(chargeSessionsResponse);
         return chargeSessionsResponseString;
@@ -278,6 +306,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param service the service which should be executed
      * @return the running service execution for status checks
      */
+    @Override
     public ExecutionStatusContainer executeRemoteServiceCall(String vin, String brand, RemoteService service)
             throws NetworkException {
         String executionUrl = remoteCommandUrl + vin + "/" + service.getCommand();
@@ -294,6 +323,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @param eventid the ID of the currently running service execution
      * @return the running service execution for status checks
      */
+    @Override
     public ExecutionStatusContainer executeRemoteServiceStatusCall(String brand, String eventId)
             throws NetworkException {
         String executionUrl = remoteStatusUrl + Constants.QUESTION + "eventId=" + eventId;
@@ -347,6 +377,10 @@ public class MyBMWHttpProxy implements MyBMWProxy {
             final @Nullable String vin, final String contentType, final @Nullable String body) throws NetworkException {
         byte[] responseByteArray = "".getBytes();
 
+        if (Instant.now().isBefore(nextQuota)) {
+            throw new NetworkException(url, -1, "Quota Exceeded, waiting for quota renewal", body);
+        }
+
         // return in case of unknown brand
         if (!BimmerConstants.REQUESTED_BRANDS.contains(brand.toLowerCase())) {
             logger.warn("Unknown Brand {}", brand);
@@ -354,7 +388,12 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         }
 
         // if no token is available, no request can be triggered
-        if (Constants.EMPTY.equals(myBMWTokenController.getToken().getBearerToken())) {
+        AccessTokenResponse tokenResponse = myBMWTokenController.getToken();
+        String bearerToken = tokenResponse.getAccessToken();
+        bearerToken = (bearerToken == null) || bearerToken.isEmpty() ? Constants.EMPTY
+                : new StringBuilder(tokenResponse.getTokenType()).append(Constants.SPACE).append(bearerToken)
+                        .toString();
+        if (tokenResponse.isExpired(Instant.now(), 1)) {
             logger.warn("The login failed, no token is available");
             throw new NetworkException("The login failed, no token is available");
         }
@@ -367,9 +406,9 @@ public class MyBMWHttpProxy implements MyBMWProxy {
             req = httpClient.newRequest(url);
         }
 
-        req.header(HttpHeader.AUTHORIZATION, myBMWTokenController.getToken().getBearerToken());
+        req.header(HttpHeader.AUTHORIZATION, bearerToken);
         req.header(HTTPConstants.HEADER_X_USER_AGENT, String.format(BimmerConstants.X_USER_AGENT, brand.toLowerCase(),
-                APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
+                BimmerConstants.APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
         req.header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfiguration.getLanguage());
         req.header(HttpHeader.ACCEPT, contentType);
         req.header(HTTPConstants.HEADER_BMW_VIN, vin);
@@ -377,6 +416,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         try {
             ContentResponse response = req.timeout(HTTPConstants.HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (response.getStatus() >= 300) {
+                setNextQuotaAttempt(response);
                 responseByteArray = "".getBytes();
                 NetworkException exception = new NetworkException(url, response.getStatus(),
                         ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()), body);
@@ -405,6 +445,45 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         }
 
         return responseByteArray;
+    }
+
+    private void setNextQuotaAttempt(ContentResponse response) {
+        int status = response.getStatus();
+        String message = JsonStringDeserializer.deserializeString(response.getContentAsString(),
+                ResponseErrorContainer.class).message;
+        Duration delay = Duration.ofSeconds(5); // minimum wait of 5 seconds
+        switch (status) {
+            case 403:
+                // response contains the amount of time before quota is replenished
+                try {
+                    Matcher matcher = TIME_PATTERN.matcher(message);
+                    if (matcher.find()) {
+                        LocalTime time = LocalTime.parse(matcher.group(1), DateTimeFormatter.ISO_LOCAL_TIME);
+                        delay = Duration.between(LocalTime.MIDNIGHT, time);
+                    }
+                } catch (DateTimeParseException e) {
+                    // we couldn't parse, continue with default
+                }
+                break;
+            case 429:
+                // response may contain the number of seconds to wait before quota is replenished
+                Matcher matcher = DURATION_PATTERN.matcher(message);
+                if (matcher.find()) {
+                    delay = Duration.ofSeconds(Long.valueOf(matcher.group(1)));
+                } else {
+                    delay = Duration.ofMinutes(5);
+                }
+                break;
+            default:
+                return;
+        }
+        logger.debug("next call allowed in {}:{}:{}", delay.toHours(), delay.toMinutesPart(), delay.toSecondsPart());
+        nextQuota = Instant.now().plus(delay);
+    }
+
+    @Override
+    public Instant getNextQuota() {
+        return nextQuota;
     }
 
     private void logResponse(@Nullable String url, @Nullable String fingerprint, @Nullable String body) {

@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Silent Roller Shutter</label>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="control_silent" typeId="control_silent"></channel>
 			<channel id="control" typeId="control"></channel>

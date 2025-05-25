@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Humidity Sensor</label>
+		<semantic-equipment-tag>HumiditySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="humidity" typeId="humidity"></channel>
 		</channels>

@@ -70,7 +70,7 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
                     try {
                         ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
                     } catch (NumberFormatException e) {
-                        logger.warn("Audio Threshold recieved an unexpected command, was it a number?");
+                        logger.warn("Audio Threshold received an unexpected command, was it a number?");
                     }
                 }
                 ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);

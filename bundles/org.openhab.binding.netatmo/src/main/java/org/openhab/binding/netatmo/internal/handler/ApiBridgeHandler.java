@@ -216,7 +216,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/conf-error-grant-needed [ \"%s\" ]".formatted(servlet.getPath()));
+                "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
+                        .formatted(servlet.getPath()));
         connectApi.dispose();
     }
 

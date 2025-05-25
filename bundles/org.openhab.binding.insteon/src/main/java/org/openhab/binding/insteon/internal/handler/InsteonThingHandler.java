@@ -91,4 +91,9 @@ public interface InsteonThingHandler extends ThingHandler {
      * Refreshes the thing
      */
     public void refresh();
+
+    /**
+     * Updates the thing status
+     */
+    public void updateStatus();
 }

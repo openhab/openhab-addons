@@ -247,7 +247,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
     }
 
     Runnable socketReceiverRunnable = () -> {
-        logger.trace("Start Background Thread for recieving data from adapter");
+        logger.trace("Start Background Thread for receiving data from adapter");
         try {
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
