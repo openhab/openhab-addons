@@ -12,15 +12,11 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class AutoFanSpeed {
-    @SerializedName("currentMode")
     private FanCurrentMode currentMode;
-    @SerializedName("modes")
     private ActionTypesModes modes;
 
     public ActionTypesModes getModes() {

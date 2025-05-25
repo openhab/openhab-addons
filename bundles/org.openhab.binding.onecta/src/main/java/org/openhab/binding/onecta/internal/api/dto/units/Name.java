@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class Name {
-    @SerializedName("settable")
     private boolean settable;
-    @SerializedName("maxLength")
     private Integer maxLength;
-    @SerializedName("value")
     private String value;
 
     public boolean isSettable() {

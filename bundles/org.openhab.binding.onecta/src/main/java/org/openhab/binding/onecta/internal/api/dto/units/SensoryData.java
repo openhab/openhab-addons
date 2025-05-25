@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class SensoryData {
-    @SerializedName("ref")
     private String ref;
-    @SerializedName(value = "settable", alternate = "")
     private boolean settable;
-    @SerializedName("value")
     private SensoryDataValue value;
 
     public String getRef() {

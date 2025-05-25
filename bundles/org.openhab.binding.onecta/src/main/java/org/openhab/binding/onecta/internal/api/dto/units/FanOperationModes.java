@@ -14,22 +14,15 @@ package org.openhab.binding.onecta.internal.api.dto.units;
 
 import org.openhab.binding.onecta.internal.api.Enums;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class FanOperationModes {
 
-    @SerializedName("heating")
     private FanOnlyClass heating;
-    @SerializedName("cooling")
     private FanOnlyClass cooling;
-    @SerializedName("auto")
     private FanOnlyClass auto;
-    @SerializedName("dry")
     private FanOnlyClass dry;
-    @SerializedName("fanOnly")
     private FanOnlyClass fanOnly;
 
     public FanOnlyClass getFanOperationMode(Enums.OperationMode operationMode) {

@@ -12,15 +12,11 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class GatwaySubValueBoolean {
-    @SerializedName("settable")
     private boolean settable;
-    @SerializedName("value")
     private Boolean value;
 
     public boolean isSettable() {

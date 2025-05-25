@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class OpertationMode {
-    @SerializedName("setpoints")
     private Setpoints setpoints;
 
     public Setpoints getSetpoints() {

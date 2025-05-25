@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class ConsumptionDataValue {
-    @SerializedName("electrical")
     private Electrical electrical;
 
     public Electrical getElectrical() {

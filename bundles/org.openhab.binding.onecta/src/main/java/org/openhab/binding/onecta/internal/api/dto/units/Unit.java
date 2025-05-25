@@ -25,17 +25,11 @@ public class Unit {
     private String id;
     @SerializedName("id")
     private UUID initID;
-    @SerializedName("type")
     private String type;
-    @SerializedName("deviceModel")
     private String deviceModel;
-    @SerializedName("isCloudConnectionUp")
     private GatwaySubValueBoolean IsCloudConnectionUp;
-    @SerializedName("managementPoints")
     private List<ManagementPoint> managementPoints;
-    @SerializedName("embeddedId")
     private String embeddedID;
-    @SerializedName("timestamp")
     private String timestamp;
 
     public String getId() {

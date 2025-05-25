@@ -14,29 +14,18 @@ package org.openhab.binding.onecta.internal.api.dto.units;
 
 import org.openhab.binding.onecta.internal.api.Enums;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class SensoryDataValue {
-    @SerializedName("roomTemperature")
     private IconID roomTemperature;
-    @SerializedName("roomHumidity")
     private IconID roomHumidity;
-    @SerializedName("outdoorTemperature")
     private IconID outdoorTemperature;
-    @SerializedName("leavingWaterTemperature")
     private IconID leavingWaterTemperature;
-    @SerializedName("tankTemperature")
     private IconID tankTemperature;
-    @SerializedName("deltaD")
     private IconID deltaD;
-    @SerializedName("fanMotorRotationSpeed")
     private IconID fanMotorRotationSpeed;
-    @SerializedName("heatExchangerTemperature")
     private IconID heatExchangerTemperature;
-    @SerializedName("suctionTemperature")
     private IconID suctionTemperature;
 
     public IconID getRoomTemperature() {

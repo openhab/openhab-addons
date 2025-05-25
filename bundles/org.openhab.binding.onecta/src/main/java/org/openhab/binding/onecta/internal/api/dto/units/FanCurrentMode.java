@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class FanCurrentMode {
-    @SerializedName("value")
     private String value;
-    @SerializedName("settable")
     private boolean settable;
-    @SerializedName("values")
     private String[] values;
 
     public boolean isSettable() {

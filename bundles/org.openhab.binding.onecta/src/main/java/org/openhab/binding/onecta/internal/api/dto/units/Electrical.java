@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class Electrical {
-    @SerializedName("unit")
     private String unit;
-    @SerializedName("heating")
     private Ing heating;
-    @SerializedName("cooling")
     private Ing cooling;
 
     public String getUnit() {

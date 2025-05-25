@@ -12,21 +12,14 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class DemandControlModesFixed {
-    @SerializedName("stepValue")
     private Integer stepValue;
-    @SerializedName("value")
     private Integer value;
-    @SerializedName("minValue")
     private Integer minValue;
-    @SerializedName("maxValue")
     private Integer maxValue;
-    @SerializedName("settable")
     private Boolean settable;
 
     public Integer getStepValue() {

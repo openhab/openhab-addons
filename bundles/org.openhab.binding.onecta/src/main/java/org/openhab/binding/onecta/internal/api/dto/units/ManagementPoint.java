@@ -12,132 +12,52 @@
  */
 package org.openhab.binding.onecta.internal.api.dto.units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
 public class ManagementPoint {
-    @SerializedName("embeddedId")
     private String embeddedId;
-    @SerializedName("managementPointType")
     private String managementPointType;
-    @SerializedName("managementPointSubType")
     private String managementPointSubType;
-    @SerializedName("managementPointCategory")
     private String managementPointCategory;
-    @SerializedName("daylightSavingTimeEnabled")
     private GatwaySubValueBoolean daylightSavingTimeEnabled;
-    @SerializedName("errorCode")
     private GatwaySubValueString errorCode;
-    @SerializedName("firmwareVersion")
     private GatwaySubValueString firmwareVersion;
-    @SerializedName("isFirmwareUpdateSupported")
     private GatwaySubValueBoolean isFirmwareUpdateSupported;
-    @SerializedName("isInErrorState")
     private GatwaySubValueBoolean isInErrorState;
-    @SerializedName("ledEnabled")
     private GatwaySubValueBoolean ledEnabled;
-    @SerializedName("ipAddress")
     private GatwaySubValueString ipAddress;
-    @SerializedName("macAddress")
     private GatwaySubValueString macAddress;
-    @SerializedName("modelInfo")
     private GatwaySubValueString modelInfo;
-    @SerializedName("regionCode")
     private GatwaySubValueString regionCode;
-    @SerializedName("serialNumber")
     private GatwaySubValueString serialNumber;
-    @SerializedName("eepromVersion")
     private GatwaySubValueString eepromVersion;
-    @SerializedName("ssid")
     private GatwaySubValueString ssid;
-    @SerializedName("timeZone")
     private GatwaySubValueString timeZone;
-    @SerializedName("wifiConnectionSSID")
     private GatwaySubValueString wifiConnectionSSID;
-    @SerializedName("wifiConnectionStrength")
     private GatwaySubValueInteger wifiConnectionStrength;
-    @SerializedName("consumptionData")
     private ConsumptionData consumptionData;
-
-    @SerializedName("demandControl")
     private DemandControl demandControl;
-
-    @SerializedName("econoMode")
     private GatwaySubValueString econoMode;
-
-    @SerializedName("fanControl")
     private FanControl fanControl;
-
-    @SerializedName("holidayMode")
     private HolidayMode holidayMode;
-
-    // @SerializedName("_id")
-    // private IconID iconID;
-    //
-    // @SerializedName("_id")
-    // private DtoIsCloudConnectionUp isCoolHeatMaster;
-    //
-    @SerializedName("isHolidayModeActive")
     private GatwaySubValueBoolean isHolidayModeActive;
-
-    @SerializedName("isInEmergencyState")
     private GatwaySubValueBoolean isInEmergencyState;
-    //
-    // @SerializedName("_id")
-    // private DtoIsCloudConnectionUp isInCautionState;
-    //
-    @SerializedName("heatupMode")
     private GatwaySubValueString heatupMode;
-    @SerializedName("setpointMode")
     private GatwaySubValueString setpointMode;
-
-    @SerializedName("isInWarningState")
     private GatwaySubValueBoolean isInWarningState;
-
-    @SerializedName("isInInstallerState")
     private GatwaySubValueBoolean isInInstallerState;
-    //
-    @SerializedName("name")
     private Name name;
-
-    @SerializedName("onOffMode")
     private GatwaySubValueString onOffMode;
-
-    @SerializedName("operationMode")
     private GatwaySubValueString operationMode;
-    @SerializedName("targetTemperature")
     private IconID targetTemperature;
-
-    @SerializedName("outdoorSilentMode")
     private GatwaySubValueString outdoorSilentMode;
-
-    @SerializedName("powerfulMode")
     private GatwaySubValueString powerfulMode;
-
-    @SerializedName("isPowerfulModeActive")
     private GatwaySubValueBoolean isPowerfulModeActive;
-
-    // @SerializedName("_id")
-    // private Schedule schedule;
-    //
-    @SerializedName("sensoryData")
     private SensoryData sensoryData;
-
-    @SerializedName("streamerMode")
     private GatwaySubValueString streamerMode;
-
-    @SerializedName("temperatureControl")
     private TemperatureControl temperatureControl;
-
-    @SerializedName("softwareVersion")
     private GatwaySubValueString softwareVersion;
-    //
-    // @SerializedName("_id")
-    // private GatwaySubValueString gatwaySubValue;
-    //
-    @SerializedName("dryKeepSetting")
     private GatwaySubValueString dryKeepSetting;
 
     public String getEmbeddedId() {
