@@ -19,6 +19,8 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
+import javax.measure.quantity.Illuminance;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +29,8 @@ import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
@@ -56,12 +59,12 @@ class IlluminanceMeasurementConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#illuminancemeasurement-measuredvalue", channel.getUID().toString());
-        assertEquals("Number", channel.getAcceptedItemType());
+        assertEquals("Number:Illuminance", channel.getAcceptedItemType());
     }
 
     @Test
@@ -72,7 +75,7 @@ class IlluminanceMeasurementConverterTest extends BaseMatterConverterTest {
         message.value = 100;
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(new DecimalType(100)));
+                eq(new QuantityType<Illuminance>(100, Units.LUX)));
     }
 
     @Test
@@ -80,7 +83,7 @@ class IlluminanceMeasurementConverterTest extends BaseMatterConverterTest {
         mockCluster.measuredValue = 100;
         converter.initState();
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(new DecimalType(100)));
+                eq(new QuantityType<Illuminance>(100, Units.LUX)));
     }
 
     @Test
@@ -88,6 +91,6 @@ class IlluminanceMeasurementConverterTest extends BaseMatterConverterTest {
         mockCluster.measuredValue = null;
         converter.initState();
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(UnDefType.UNDEF));
+                eq(UnDefType.NULL));
     }
 }

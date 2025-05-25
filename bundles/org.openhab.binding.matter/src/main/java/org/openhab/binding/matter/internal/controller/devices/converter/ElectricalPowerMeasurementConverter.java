@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ELECTRICALPOWERMEASUREMENT_VOLTAGE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -32,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalPowerMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -57,20 +51,20 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Map<Channel, @Nullable StateDescription> map = new HashMap<>();
         // Active Power is mandatory
         Channel activePowerChannel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER),
-                        CoreItemFactory.NUMBER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER),
+                        "Number:Power")
                 .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVEPOWER).build();
         map.put(activePowerChannel, null);
 
         // optional cluster if not null
         if (initializingCluster.activeCurrent != null) {
             Channel activeCurrentChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT),
-                            CoreItemFactory.NUMBER)
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT),
+                            "Number:ElectricCurrent")
                     .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_ACTIVECURRENT).build();
             map.put(activeCurrentChannel, null);
         }
@@ -78,8 +72,8 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
         // optional cluster if not null
         if (initializingCluster.voltage != null) {
             Channel voltageChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE),
-                            CoreItemFactory.NUMBER)
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE),
+                            "Number:ElectricPotential")
                     .withType(CHANNEL_ELECTRICALPOWERMEASUREMENT_VOLTAGE).build();
             map.put(voltageChannel, null);
         }
@@ -99,7 +93,7 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
                 break;
             case ElectricalPowerMeasurementCluster.ATTRIBUTE_VOLTAGE:
                 updateState(CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE,
-                        message.value instanceof Number number ? voltageToAmps(number) : UnDefType.UNDEF);
+                        message.value instanceof Number number ? milliVoltsToVolts(number) : UnDefType.UNDEF);
                 break;
         }
         super.onEvent(message);
@@ -118,7 +112,8 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
         }
         if (initializingCluster.voltage != null) {
             updateState(CHANNEL_ID_ELECTRICALPOWERMEASUREMENT_VOLTAGE,
-                    initializingCluster.voltage != null ? voltageToAmps(initializingCluster.voltage) : UnDefType.NULL);
+                    initializingCluster.voltage != null ? milliVoltsToVolts(initializingCluster.voltage)
+                            : UnDefType.NULL);
         }
     }
 
@@ -130,7 +125,7 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
         return new QuantityType<ElectricCurrent>(new BigDecimal(number.intValue() / 1000), Units.AMPERE);
     }
 
-    private QuantityType<ElectricPotential> voltageToAmps(Number number) {
+    private QuantityType<ElectricPotential> milliVoltsToVolts(Number number) {
         return new QuantityType<ElectricPotential>(new BigDecimal(number.intValue() / 1000), Units.VOLT);
     }
 }

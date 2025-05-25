@@ -82,7 +82,7 @@ public class ThermostatDevice extends GenericDevice {
                             } else if (item instanceof StringItem stringItem) {
                                 stringItem.send(new StringType(mappedMode));
                             } else if (item instanceof SwitchItem switchItem) {
-                                switchItem.send(mode > 0 ? OnOffType.ON : OnOffType.OFF);
+                                switchItem.send(OnOffType.from(mode > 0));
                             }
                         } catch (SystemModeMappingException e) {
                             logger.debug("Could not convert {} to custom value", data);
@@ -262,9 +262,7 @@ public class ThermostatDevice extends GenericDevice {
             intToCustomMap.clear();
             customToEnumMap.clear();
             for (Map.Entry<String, Object> entry : mappings.entrySet()) {
-                @SuppressWarnings("null")
                 String customKey = entry.getKey().trim();
-                @SuppressWarnings("null")
                 Object valueObj = entry.getValue();
                 String customValue = valueObj.toString().trim();
 

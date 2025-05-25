@@ -60,7 +60,7 @@ public abstract class GenericDevice implements StateChangeListener {
      * Activate the device, this will return the device options for the device, inherited classes should override this
      * method to return the correct device options as well as set the initial state of the device and register listeners
      * 
-     * @return
+     * @return the device options
      */
     protected abstract MatterDeviceOptions activate();
 
@@ -70,19 +70,17 @@ public abstract class GenericDevice implements StateChangeListener {
     public abstract void dispose();
 
     /**
-     * Handle item state changes
+     * Handle openHAB item state changes
      * 
-     * @param item
-     * @param state
      */
     public abstract void updateState(Item item, State state);
 
     /**
      * Handle matter events
      * 
-     * @param clusterName
-     * @param attributeName
-     * @param data
+     * @param clusterName the cluster name
+     * @param attributeName the attribute name
+     * @param data the raw matter data value
      */
     public abstract void handleMatterEvent(String clusterName, String attributeName, Object data);
 
@@ -94,7 +92,6 @@ public abstract class GenericDevice implements StateChangeListener {
 
     @Override
     public void stateUpdated(Item item, State state) {
-        // updateState(item, state);
     }
 
     public synchronized CompletableFuture<String> registerDevice() {
@@ -212,8 +209,7 @@ public abstract class GenericDevice implements StateChangeListener {
         Map<String, String> keyValueMap = Arrays.stream(labels.split(",")).map(pair -> pair.trim().split("=", 2))
                 .filter(parts -> parts.length == 2)
                 .collect(Collectors.toMap(parts -> parts[0].trim(), parts -> parts[1].trim()));
-        return keyValueMap.entrySet().stream().map(entry -> new KeyValue(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+        return keyValueMap.entrySet().stream().map(entry -> new KeyValue(entry.getKey(), entry.getValue())).toList();
     }
 
     class KeyValue {

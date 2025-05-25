@@ -17,6 +17,10 @@
 		<label>Battery Alarm</label>
 		<description>The battery alarm state</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="minThreshold">Below min threshold</option>
@@ -29,7 +33,7 @@
 	</channel-type>
 
 	<channel-type id="powersource-batpercentremaining">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Percent Remaining</label>
 		<description>Indicates the estimated percentage of battery charge remaining until the battery will no longer be able
 			to provide power to the Node</description>
@@ -38,7 +42,7 @@
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %%"/>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="powersource-batchargelevel">
@@ -104,6 +108,10 @@
 		<label>Switch</label>
 		<description>Switches the power on and off</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -124,6 +132,10 @@
 		<item-type>Number</item-type>
 		<label>Mode Select</label>
 		<description>Selection of 1 or more states</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%d" readOnly="false"/>
 	</channel-type>
 
@@ -192,6 +204,10 @@
 		<label>Local Temperature</label>
 		<description>Indicates the local temperature provided by the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -200,6 +216,10 @@
 		<label>Outdoor Temperature</label>
 		<description>Indicates the outdoor temperature provided by the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -208,6 +228,10 @@
 		<label>Occupied Heating Setpoint</label>
 		<description>Sets the heating temperature when the room is occupied</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -216,6 +240,10 @@
 		<label>Occupied Cooling Setpoint</label>
 		<description>Sets the cooling temperature when the room is occupied</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -224,6 +252,10 @@
 		<label>Unoccupied Heating Setpoint</label>
 		<description>Sets the heating temperature when the room is unoccupied</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -232,6 +264,10 @@
 		<label>Unoccupied Cooling Setpoint</label>
 		<description>Sets the cooling temperature when the room is unoccupied</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -239,6 +275,10 @@
 		<item-type>Number</item-type>
 		<label>System Mode</label>
 		<description>Sets the system mode of the thermostat</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Off</option>
@@ -258,6 +298,10 @@
 		<item-type>Number</item-type>
 		<label>Running Mode</label>
 		<description>The running mode of the thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -301,6 +345,10 @@
 		<label>Fan Speed</label>
 		<description>The current fan speed percentage </description>
 		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -344,6 +392,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illumination</label>
 		<description>Indicates the brightness in Lux.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -359,6 +411,10 @@
 		<label>Signal</label>
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -366,6 +422,10 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock State</label>
 		<description>Locks and unlocks the door and maintains the lock state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -374,6 +434,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -381,6 +445,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Active Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -388,6 +456,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Active Current</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -395,6 +467,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 

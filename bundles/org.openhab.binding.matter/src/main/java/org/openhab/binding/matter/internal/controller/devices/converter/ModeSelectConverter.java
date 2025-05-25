@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_MODESELECT_MODE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_MODESELECT_MODE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,16 +50,15 @@ public class ModeSelectConverter extends GenericConverter<ModeSelectCluster> {
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_MODESELECT_MODE), CoreItemFactory.NUMBER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_MODESELECT_MODE), CoreItemFactory.NUMBER)
                 .withType(CHANNEL_MODESELECT_MODE).withLabel(formatLabel(initializingCluster.description)).build();
 
         List<StateOption> modeOptions = new ArrayList<>();
         initializingCluster.supportedModes
                 .forEach(mode -> modeOptions.add(new StateOption(mode.mode.toString(), mode.label)));
 
-        @Nullable
         StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
                 .withOptions(modeOptions).build().toStateDescription();
 
@@ -69,8 +67,8 @@ public class ModeSelectConverter extends GenericConverter<ModeSelectCluster> {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof DecimalType) {
-            ClusterCommand cc = ModeSelectCluster.changeToMode(((DecimalType) command).intValue());
+        if (command instanceof DecimalType decimalType) {
+            ClusterCommand cc = ModeSelectCluster.changeToMode(decimalType.intValue());
             handler.sendClusterCommand(endpointNumber, ModeSelectCluster.CLUSTER_NAME, cc);
         }
         super.handleCommand(channelUID, command);
@@ -78,11 +76,11 @@ public class ModeSelectConverter extends GenericConverter<ModeSelectCluster> {
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        Integer numberValue = message.value instanceof Number number ? number.intValue() : 0;
         switch (message.path.attributeName) {
             case ModeSelectCluster.ATTRIBUTE_CURRENT_MODE:
-                initializingCluster.currentMode = numberValue;
-                updateState(CHANNEL_ID_MODESELECT_MODE, new DecimalType(numberValue));
+                if (message.value instanceof Number number) {
+                    updateState(CHANNEL_ID_MODESELECT_MODE, new DecimalType(number.intValue()));
+                }
                 break;
         }
         super.onEvent(message);

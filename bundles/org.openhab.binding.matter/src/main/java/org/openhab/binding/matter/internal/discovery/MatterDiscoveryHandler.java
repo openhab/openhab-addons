@@ -16,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 
 /**
  * The {@link MatterDiscoveryHandler} is the interface for the discovery handler.
@@ -27,9 +29,12 @@ public interface MatterDiscoveryHandler {
     /**
      * Sets a {@link MatterDiscoveryService} to call when device information is received
      *
-     * @param service
      */
-    void setDiscoveryService(MatterDiscoveryService service);
+    public void setDiscoveryService(MatterDiscoveryService service);
 
-    CompletableFuture<Void> startScan(@Nullable String code);
+    public CompletableFuture<Void> startScan(@Nullable String code);
+
+    public LocaleProvider getLocaleProvider();
+
+    public TranslationProvider getTranslationProvider();
 }

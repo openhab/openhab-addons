@@ -47,9 +47,9 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_DOORLOCK_STATE), CoreItemFactory.SWITCH)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_DOORLOCK_STATE), CoreItemFactory.SWITCH)
                 .withType(CHANNEL_DOORLOCK_STATE).build();
 
         return Collections.singletonMap(channel, null);

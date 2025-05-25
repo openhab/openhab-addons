@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_OCCUPANCYSENSING_OCCUPIED;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_OCCUPANCYSENSING_OCCUPIED;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,9 +44,9 @@ public class OccupancySensingConverter extends GenericConverter<OccupancySensing
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_OCCUPANCYSENSING_OCCUPIED), CoreItemFactory.SWITCH)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_OCCUPANCYSENSING_OCCUPIED), CoreItemFactory.SWITCH)
                 .withType(CHANNEL_OCCUPANCYSENSING_OCCUPIED).build();
         return Collections.singletonMap(channel, null);
     }

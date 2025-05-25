@@ -22,6 +22,7 @@ import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -39,9 +40,10 @@ public class TestMatterBaseThingHandler extends MatterBaseThingHandler {
 
     public TestMatterBaseThingHandler(MatterBridgeClient bridgeClient, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
-            MatterChannelTypeProvider channelTypeProvider, MatterConfigDescriptionProvider configDescriptionProvider) {
+            MatterChannelTypeProvider channelTypeProvider, MatterConfigDescriptionProvider configDescriptionProvider,
+            TranslationService translationService) {
         super(ThingBuilder.create(THING_TYPE_TEST, "test").build(), thingHandlerFactory, stateDescriptionProvider,
-                channelTypeProvider, configDescriptionProvider);
+                channelTypeProvider, configDescriptionProvider, translationService);
         this.mockClient = new MatterControllerClient();
     }
 

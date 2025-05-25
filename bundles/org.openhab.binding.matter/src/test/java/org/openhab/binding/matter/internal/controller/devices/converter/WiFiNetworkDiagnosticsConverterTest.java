@@ -27,7 +27,8 @@ import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
@@ -57,12 +58,12 @@ class WiFiNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#wifinetworkdiagnostics-rssi", channel.getUID().toString());
-        assertEquals("Number", channel.getAcceptedItemType());
+        assertEquals("Number:Power", channel.getAcceptedItemType());
     }
 
     @Test
@@ -72,7 +73,8 @@ class WiFiNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
         message.path.attributeName = "rssi";
         message.value = -70;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("wifinetworkdiagnostics-rssi"), eq(new DecimalType(-70)));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("wifinetworkdiagnostics-rssi"),
+                eq(new QuantityType<>(-70, Units.DECIBEL_MILLIWATTS)));
     }
 
     @Test
@@ -83,14 +85,16 @@ class WiFiNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
         message.value = "invalid";
         converter.onEvent(message);
         // Should not call updateState for non-number values
-        verify(mockHandler, times(0)).updateState(eq(1), eq("wifinetworkdiagnostics-rssi"), eq(new DecimalType(-70)));
+        verify(mockHandler, times(0)).updateState(eq(1), eq("wifinetworkdiagnostics-rssi"),
+                eq(new QuantityType<>(-70, Units.DECIBEL_MILLIWATTS)));
     }
 
     @Test
     void testInitState() {
         mockCluster.rssi = -70;
         converter.initState();
-        verify(mockHandler, times(1)).updateState(eq(1), eq("wifinetworkdiagnostics-rssi"), eq(new DecimalType(-70)));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("wifinetworkdiagnostics-rssi"),
+                eq(new QuantityType<>(-70, Units.DECIBEL_MILLIWATTS)));
     }
 
     @Test

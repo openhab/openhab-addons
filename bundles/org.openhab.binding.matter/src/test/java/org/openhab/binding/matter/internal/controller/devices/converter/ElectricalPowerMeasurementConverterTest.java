@@ -60,21 +60,21 @@ class ElectricalPowerMeasurementConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(3, channels.size());
 
         for (Channel channel : channels.keySet()) {
             String channelId = channel.getUID().getIdWithoutGroup();
             switch (channelId) {
                 case "electricalpowermeasurement-activepower":
-                    assertEquals("Number", channel.getAcceptedItemType());
+                    assertEquals("Number:Power", channel.getAcceptedItemType());
                     break;
                 case "electricalpowermeasurement-activecurrent":
-                    assertEquals("Number", channel.getAcceptedItemType());
+                    assertEquals("Number:ElectricCurrent", channel.getAcceptedItemType());
                     break;
                 case "electricalpowermeasurement-voltage":
-                    assertEquals("Number", channel.getAcceptedItemType());
+                    assertEquals("Number:ElectricPotential", channel.getAcceptedItemType());
                     break;
             }
         }

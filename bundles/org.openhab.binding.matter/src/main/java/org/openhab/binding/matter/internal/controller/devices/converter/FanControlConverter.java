@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_FANCONTROL_MODE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_FANCONTROL_PERCENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_FANCONTROL_MODE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_FANCONTROL_PERCENT;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +37,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,16 +57,16 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
         Channel percentChannel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_FANCONTROL_PERCENT), CoreItemFactory.DIMMER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_FANCONTROL_PERCENT), CoreItemFactory.DIMMER)
                 .withType(CHANNEL_FANCONTROL_PERCENT).build();
         channels.put(percentChannel, null);
 
         if (initializingCluster.fanModeSequence != null) {
             Channel modeChannel = ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_FANCONTROL_MODE), CoreItemFactory.NUMBER)
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_FANCONTROL_MODE), CoreItemFactory.NUMBER)
                     .withType(CHANNEL_FANCONTROL_MODE).build();
 
             List<StateOption> modeOptions = new ArrayList<>();
@@ -139,14 +137,14 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
                         break;
                 }
             } else if (command instanceof PercentType percentType) {
-                handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME, "percentSetting",
-                        percentType.toString());
+                handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME,
+                        FanControlCluster.ATTRIBUTE_PERCENT_SETTING, percentType.toString());
             }
         }
         if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_FANCONTROL_MODE)) {
             if (command instanceof DecimalType decimalType) {
-                handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME, "fanMode",
-                        decimalType.toString());
+                handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME,
+                        FanControlCluster.ATTRIBUTE_FAN_MODE, decimalType.toString());
             }
         }
         super.handleCommand(channelUID, command);
@@ -173,12 +171,12 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
 
     @Override
     public void initState() {
-        if (initializingCluster.fanMode != null) {
-            updateState(CHANNEL_ID_FANCONTROL_MODE, new DecimalType(initializingCluster.fanMode.value));
-        }
-        if (initializingCluster.percentSetting != null) {
-            updateState(CHANNEL_ID_FANCONTROL_PERCENT, new PercentType(initializingCluster.percentSetting));
-        }
+        updateState(CHANNEL_ID_FANCONTROL_MODE,
+                initializingCluster.fanMode != null ? new DecimalType(initializingCluster.fanMode.value)
+                        : UnDefType.NULL);
+        updateState(CHANNEL_ID_FANCONTROL_PERCENT,
+                initializingCluster.percentSetting != null ? new PercentType(initializingCluster.percentSetting)
+                        : UnDefType.NULL);
     }
 
     private void moveCommand(ClusterCommand command) {

@@ -59,12 +59,12 @@ class RelativeHumidityMeasurementConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#relativehumiditymeasurement-measuredvalue", channel.getUID().toString());
-        assertEquals("Number", channel.getAcceptedItemType());
+        assertEquals("Number:Dimensionless", channel.getAcceptedItemType());
     }
 
     @Test

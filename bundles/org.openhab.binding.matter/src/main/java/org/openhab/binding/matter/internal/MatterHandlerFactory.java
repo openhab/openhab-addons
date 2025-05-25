@@ -25,6 +25,7 @@ import org.openhab.binding.matter.internal.handler.ControllerHandler;
 import org.openhab.binding.matter.internal.handler.EndpointHandler;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -51,16 +52,19 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
     private final MatterWebsocketService websocketService;
     private final MatterChannelTypeProvider channelGroupTypeProvider;
     private final MatterConfigDescriptionProvider configDescriptionProvider;
+    private final TranslationService translationService;
 
     @Activate
     public MatterHandlerFactory(@Reference MatterWebsocketService websocketService,
             @Reference MatterStateDescriptionOptionProvider stateDescriptionProvider,
             @Reference MatterChannelTypeProvider channelGroupTypeProvider,
-            @Reference MatterConfigDescriptionProvider configDescriptionProvider) {
+            @Reference MatterConfigDescriptionProvider configDescriptionProvider,
+            @Reference TranslationService translationService) {
         this.websocketService = websocketService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelGroupTypeProvider = channelGroupTypeProvider;
         this.configDescriptionProvider = configDescriptionProvider;
+        this.translationService = translationService;
     }
 
     @Override
@@ -74,7 +78,8 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
-            ControllerHandler controllerHandler = new ControllerHandler((Bridge) thing, websocketService);
+            ControllerHandler controllerHandler = new ControllerHandler((Bridge) thing, websocketService,
+                    translationService);
             return controllerHandler;
         }
 
@@ -83,12 +88,12 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_NODE.equals(derivedTypeUID)) {
             return new NodeHandler((Bridge) thing, this, stateDescriptionProvider, channelGroupTypeProvider,
-                    configDescriptionProvider);
+                    configDescriptionProvider, translationService);
         }
 
         if (THING_TYPE_ENDPOINT.equals(derivedTypeUID)) {
             return new EndpointHandler(thing, this, stateDescriptionProvider, channelGroupTypeProvider,
-                    configDescriptionProvider);
+                    configDescriptionProvider, translationService);
         }
 
         return null;

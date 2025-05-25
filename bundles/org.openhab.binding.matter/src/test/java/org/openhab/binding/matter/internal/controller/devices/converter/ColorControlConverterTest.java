@@ -74,8 +74,8 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
 
         assertEquals(3, channels.size());
         for (Channel channel : channels.keySet()) {
@@ -122,9 +122,6 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         satMsg.value = 254; // 100%
         converter.onEvent(satMsg);
 
-        // Wait for color update timer
-        // Thread.sleep(600); // Wait slightly longer than the 500ms timer
-
         verify(mockHandler, times(1)).updateState(eq(1), eq("colorcontrol-color"),
                 eq(new HSBType(new DecimalType(180), new PercentType(100), new PercentType(100))));
     }
@@ -145,9 +142,6 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         tempMsg.value = 250;
         converter.onEvent(tempMsg);
 
-        // Wait for color update timer
-        Thread.sleep(600);
-
         verify(mockHandler, times(1)).updateState(eq(1), eq("colorcontrol-temperature"), eq(new PercentType(27)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("colorcontrol-temperature-abs"),
                 eq(new QuantityType<>(250, Units.MIRED)));
@@ -163,9 +157,6 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         mockColorCluster.featureMap.colorTemperature = true;
         mockLevelCluster.currentLevel = 254;
         converter.initState(true, mockLevelCluster);
-
-        // Wait for color update timer
-        Thread.sleep(600);
 
         verify(mockHandler, times(1)).updateState(eq(1), eq("colorcontrol-color"),
                 eq(new HSBType(new DecimalType(180), new PercentType(100), new PercentType(100))));

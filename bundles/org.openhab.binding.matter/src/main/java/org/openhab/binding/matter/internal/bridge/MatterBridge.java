@@ -533,7 +533,7 @@ public class MatterBridge implements MatterClientListener {
             // if this updates, it will trigger a @Modified call
             config.updateIfDifferent(props);
         } catch (IOException e) {
-            logger.debug("Could load configuration", e);
+            logger.debug("Could not load configuration", e);
         }
     }
 

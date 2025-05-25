@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -29,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -37,6 +32,7 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A converter for translating {@link ElectricalEnergyMeasurementCluster} events and attributes to openHAB channels and
@@ -53,41 +49,37 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Map<Channel, @Nullable StateDescription> map = new HashMap<>();
         if (initializingCluster.featureMap.cumulativeEnergy) {
             if (initializingCluster.featureMap.exportedEnergy) {
-                Channel exportedEnergyChannel = ChannelBuilder
-                        .create(new ChannelUID(thingUID,
+                Channel exportedEnergyChannel = ChannelBuilder.create(
+                        new ChannelUID(channelGroupUID,
                                 CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY),
-                                CoreItemFactory.NUMBER)
-                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
+                        "Number:Energy").withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(exportedEnergyChannel, null);
             }
 
             if (initializingCluster.featureMap.importedEnergy) {
-                Channel importedEnergyChannel = ChannelBuilder
-                        .create(new ChannelUID(thingUID,
+                Channel importedEnergyChannel = ChannelBuilder.create(
+                        new ChannelUID(channelGroupUID,
                                 CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY),
-                                CoreItemFactory.NUMBER)
-                        .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
+                        "Number:Energy").withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(importedEnergyChannel, null);
             }
         }
         if (initializingCluster.featureMap.periodicEnergy) {
             if (initializingCluster.featureMap.exportedEnergy) {
                 Channel exportedEnergyChannel = ChannelBuilder
-                        .create(new ChannelUID(thingUID,
-                                CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY),
-                                CoreItemFactory.NUMBER)
+                        .create(new ChannelUID(channelGroupUID,
+                                CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY), "Number:Energy")
                         .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(exportedEnergyChannel, null);
             }
             if (initializingCluster.featureMap.importedEnergy) {
                 Channel importedEnergyChannel = ChannelBuilder
-                        .create(new ChannelUID(thingUID,
-                                CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY),
-                                CoreItemFactory.NUMBER)
+                        .create(new ChannelUID(channelGroupUID,
+                                CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY), "Number:Energy")
                         .withType(CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY).build();
                 map.put(importedEnergyChannel, null);
             }
@@ -108,7 +100,7 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                     break;
                 case ElectricalEnergyMeasurementCluster.ATTRIBUTE_CUMULATIVE_ENERGY_EXPORTED: {
                     if (energyMeasurement.energy != null) {
-                        updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY,
+                        updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY,
                                 activePowerToWatts(energyMeasurement.energy));
                     }
                 }
@@ -116,6 +108,13 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                 case ElectricalEnergyMeasurementCluster.ATTRIBUTE_PERIODIC_ENERGY_IMPORTED: {
                     if (energyMeasurement.energy != null) {
                         updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY,
+                                activePowerToWatts(energyMeasurement.energy));
+                    }
+                }
+                    break;
+                case ElectricalEnergyMeasurementCluster.ATTRIBUTE_PERIODIC_ENERGY_EXPORTED: {
+                    if (energyMeasurement.energy != null) {
+                        updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY,
                                 activePowerToWatts(energyMeasurement.energy));
                     }
                 }
@@ -131,21 +130,29 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                 && initializingCluster.cumulativeEnergyImported.energy != null) {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY,
                     activePowerToWatts(initializingCluster.cumulativeEnergyImported.energy));
+        } else {
+            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY, UnDefType.NULL);
         }
         if (initializingCluster.cumulativeEnergyExported != null
                 && initializingCluster.cumulativeEnergyExported.energy != null) {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY,
                     activePowerToWatts(initializingCluster.cumulativeEnergyExported.energy));
+        } else {
+            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY, UnDefType.NULL);
         }
         if (initializingCluster.periodicEnergyImported != null
                 && initializingCluster.periodicEnergyImported.energy != null) {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY,
                     activePowerToWatts(initializingCluster.periodicEnergyImported.energy));
+        } else {
+            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY, UnDefType.NULL);
         }
         if (initializingCluster.periodicEnergyExported != null
                 && initializingCluster.periodicEnergyExported.energy != null) {
-            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY,
+            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY,
                     activePowerToWatts(initializingCluster.periodicEnergyExported.energy));
+        } else {
+            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY, UnDefType.NULL);
         }
     }
 

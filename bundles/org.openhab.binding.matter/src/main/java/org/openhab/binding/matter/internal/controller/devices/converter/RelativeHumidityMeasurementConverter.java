@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.RelativeHumidityMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -50,9 +49,10 @@ public class RelativeHumidityMeasurementConverter extends GenericConverter<Relat
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_HUMIDITYMEASURMENT_MEASUREDVALUE), CoreItemFactory.NUMBER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_HUMIDITYMEASURMENT_MEASUREDVALUE),
+                        "Number:Dimensionless")
                 .withType(CHANNEL_HUMIDITYMEASURMENT_MEASUREDVALUE).build();
         return Collections.singletonMap(channel, null);
     }
@@ -61,7 +61,9 @@ public class RelativeHumidityMeasurementConverter extends GenericConverter<Relat
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
             case RelativeHumidityMeasurementCluster.ATTRIBUTE_MEASURED_VALUE:
-                updateState(CHANNEL_ID_HUMIDITYMEASURMENT_MEASUREDVALUE, humidityToPercent((Number) message.value));
+                if (message.value instanceof Number number) {
+                    updateState(CHANNEL_ID_HUMIDITYMEASURMENT_MEASUREDVALUE, humidityToPercent(number));
+                }
                 break;
         }
         super.onEvent(message);

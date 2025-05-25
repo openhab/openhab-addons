@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.matter.internal.discovery;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_ENDPOINT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_NODE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.math.BigInteger;
 import java.util.Set;
@@ -63,6 +62,8 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
         if (handler instanceof MatterDiscoveryHandler childDiscoveryHandler) {
             childDiscoveryHandler.setDiscoveryService(this);
             this.thingHandler = handler;
+            this.i18nProvider = childDiscoveryHandler.getTranslationProvider();
+            this.localeProvider = childDiscoveryHandler.getLocaleProvider();
         }
     }
 
@@ -104,12 +105,12 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public @Nullable String getScanInputLabel() {
-        return "@text/discovery.matter.scan-input.label";
+        return DISCOVERY_MATTER_SCAN_INPUT_LABEL;
     }
 
     @Override
     public @Nullable String getScanInputDescription() {
-        return "@text/discovery.matter.scan-input.description";
+        return DISCOVERY_MATTER_SCAN_INPUT_DESCRIPTION;
     }
 
     @Override
@@ -129,20 +130,19 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     public void discoverBridgeEndpoint(ThingUID thingUID, ThingUID bridgeUID, Endpoint root) {
-        String label = ("@text/discovery.matter.bridge-endpoint.label : "
-                + MatterLabelUtils.labelForBridgeEndpoint(root)).trim();
+        String label = String.format("%s [\"%s\"]", DISCOVERY_MATTER_BRIDGE_ENDPOINT_LABEL,
+                MatterLabelUtils.labelForBridgeEndpoint(root)).trim();
         discoverThing(thingUID, bridgeUID, root, root.number.toString(), "endpointId", label);
     }
 
     public void discoverNodeDevice(ThingUID thingUID, ThingUID bridgeUID, Node node) {
-        String label = ("@text/discovery.matter.node-device.label : "
-                + MatterLabelUtils.labelForNode(node.rootEndpoint)).trim();
+        String label = String.format("%s [\"%s\"]", DISCOVERY_MATTER_NODE_DEVICE_LABEL,
+                MatterLabelUtils.labelForNode(node.rootEndpoint)).trim();
         discoverThing(thingUID, bridgeUID, node.rootEndpoint, node.id.toString(), "nodeId", label);
     }
 
     public void discoverUnknownNodeDevice(ThingUID thingUID, ThingUID bridgeUID, BigInteger nodeId) {
-        String label = ("@text/discovery.matter.unknown-node.label");
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(label)
+        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(DISCOVERY_MATTER_UNKNOWN_NODE_LABEL)
                 .withProperty("nodeId", nodeId.toString()).withRepresentationProperty("nodeId").withBridge(bridgeUID)
                 .build();
         thingDiscovered(result);
@@ -150,8 +150,7 @@ public class MatterDiscoveryService extends AbstractDiscoveryService implements 
 
     private void discoverThing(ThingUID thingUID, ThingUID bridgeUID, Endpoint root, String id,
             String representationProperty, String label) {
-        logger.debug("discoverThing: {} {} {}", thingUID, bridgeUID, id);
-
+        logger.debug("discoverThing: {} {} {} {}", label, thingUID, bridgeUID, id);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(label)
                 .withProperty(representationProperty, id).withRepresentationProperty(representationProperty)
                 .withBridge(bridgeUID).build();

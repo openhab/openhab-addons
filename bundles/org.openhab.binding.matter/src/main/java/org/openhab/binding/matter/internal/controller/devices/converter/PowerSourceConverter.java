@@ -12,15 +12,14 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_POWER_BATTERYPERCENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_POWER_CHARGELEVEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_POWER_BATTERYPERCENT;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_POWER_CHARGELEVEL;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +29,8 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -55,18 +55,19 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
         if (initializingCluster.featureMap.battery) {
             if (initializingCluster.batPercentRemaining != null) {
                 Channel channel = ChannelBuilder
-                        .create(new ChannelUID(thingUID, CHANNEL_ID_POWER_BATTERYPERCENT), CoreItemFactory.NUMBER)
+                        .create(new ChannelUID(channelGroupUID, CHANNEL_ID_POWER_BATTERYPERCENT),
+                                "Number:Dimensionless")
                         .withType(CHANNEL_POWER_BATTERYPERCENT).build();
                 channels.put(channel, null);
             }
             if (initializingCluster.batChargeLevel != null) {
                 Channel channel = ChannelBuilder
-                        .create(new ChannelUID(thingUID, CHANNEL_ID_POWER_CHARGELEVEL), CoreItemFactory.NUMBER)
+                        .create(new ChannelUID(channelGroupUID, CHANNEL_ID_POWER_CHARGELEVEL), CoreItemFactory.NUMBER)
                         .withType(CHANNEL_POWER_CHARGELEVEL).build();
                 List<StateOption> options = new ArrayList<>();
                 for (BatChargeLevelEnum mode : BatChargeLevelEnum.values()) {
@@ -101,13 +102,13 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
 
     @Override
     public void initState() {
-        if (initializingCluster.batPercentRemaining != null) {
-            updateState(CHANNEL_ID_POWER_BATTERYPERCENT, convertToPercentage(initializingCluster.batPercentRemaining));
-        }
-
-        if (initializingCluster.batChargeLevel != null) {
-            updateState(CHANNEL_ID_POWER_CHARGELEVEL, new DecimalType(initializingCluster.batChargeLevel.value));
-        }
+        updateState(CHANNEL_ID_POWER_BATTERYPERCENT,
+                initializingCluster.batPercentRemaining != null
+                        ? convertToPercentage(initializingCluster.batPercentRemaining)
+                        : UnDefType.NULL);
+        updateState(CHANNEL_ID_POWER_CHARGELEVEL,
+                initializingCluster.batChargeLevel != null ? new DecimalType(initializingCluster.batChargeLevel.value)
+                        : UnDefType.NULL);
     }
 
     /**
@@ -116,12 +117,13 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
      * For example, a value of 48 is equivalent to 24%.
      *
      * @param halfPercentValue the battery charge value in half-percent units.
-     * @return the percentage of battery charge (0-100) or -1 if the value is null or invalid.
+     * @return the percentage of battery charge (0-100) or UnDefType.UNDEF if the value is null or invalid as a
+     *         QuantityType.
      */
     private State convertToPercentage(Integer halfPercentValue) {
         if (halfPercentValue < 0 || halfPercentValue > 200) {
             return UnDefType.UNDEF; // Indicates that the node is unable to assess the value or invalid input.
         }
-        return new PercentType(halfPercentValue == 0 ? 0 : halfPercentValue / 2);
+        return new QuantityType<Dimensionless>(halfPercentValue == 0 ? 0 : halfPercentValue / 2, Units.PERCENT);
     }
 }

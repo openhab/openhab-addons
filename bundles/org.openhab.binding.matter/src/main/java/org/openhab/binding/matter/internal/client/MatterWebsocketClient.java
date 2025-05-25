@@ -210,14 +210,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     public void onNodeReady(int port) {
         logger.debug("onNodeReady port {}", port);
         if (isConnected()) {
-            logger.debug("Already connected, aborting !");
+            logger.debug("Already connected, aborting!");
             return;
         }
         try {
             connectWebsocket("localhost", port);
         } catch (Exception e) {
             disconnect();
-            logger.error("Could not connect", e);
+            logger.debug("Could not connect", e);
             for (MatterClientListener listener : clientListeners) {
                 String msg = e.getLocalizedMessage();
                 listener.onDisconnect(msg != null ? msg : "Exception connecting");

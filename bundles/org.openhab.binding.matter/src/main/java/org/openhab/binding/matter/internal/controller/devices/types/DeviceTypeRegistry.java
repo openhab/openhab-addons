@@ -28,8 +28,8 @@ import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
  */
 @NonNullByDefault
 public class DeviceTypeRegistry {
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static final Map<Integer, Class<? extends DeviceType>> DEVICE_TYPES = new HashMap();
+
+    private static final Map<Integer, Class<? extends DeviceType>> DEVICE_TYPES = new HashMap<>();
 
     static {
         List.of(DeviceTypes.ON_OFF_LIGHT, DeviceTypes.ON_OFF_LIGHT_SWITCH, DeviceTypes.ON_OFF_PLUG_IN_UNIT,
@@ -41,8 +41,8 @@ public class DeviceTypeRegistry {
     /**
      * Register a device type with the device type id.
      *
-     * @param deviceTypeId
-     * @param deviceType
+     * @param deviceTypeId The device type id
+     * @param deviceType The device type class
      */
     public static void registerDeviceType(Integer deviceTypeId, Class<? extends DeviceType> deviceType) {
         DEVICE_TYPES.put(deviceTypeId, deviceType);
@@ -51,9 +51,10 @@ public class DeviceTypeRegistry {
     /**
      * Create a device type based on the device type id. If the device type is not found, a generic type is returned.
      *
-     * @param deviceTypeId
-     * @param handler
-     * @return
+     * @param deviceTypeId The device type id
+     * @param handler The handler
+     * @param endpointNumber The endpoint number
+     * @return The device type
      */
     @SuppressWarnings("null")
     public static DeviceType createDeviceType(Integer deviceTypeId, MatterBaseThingHandler handler,

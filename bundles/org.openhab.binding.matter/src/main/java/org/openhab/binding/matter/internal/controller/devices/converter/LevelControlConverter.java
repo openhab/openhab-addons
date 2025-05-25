@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_LEVEL_LEVEL;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_LEVEL_LEVEL;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +46,9 @@ import org.openhab.core.types.StateDescription;
  */
 @NonNullByDefault
 public class LevelControlConverter extends GenericConverter<LevelControlCluster> {
+    private static final int UPDATE_DELAY_MS = 200;
+    private @Nullable ScheduledFuture<?> levelFuture = null;
+    private ScheduledExecutorService updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
     private PercentType lastLevel = new PercentType(0);
     private OnOffType lastOnOff = OnOffType.OFF;
@@ -72,9 +78,9 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_LEVEL_LEVEL), CoreItemFactory.DIMMER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_LEVEL_LEVEL), CoreItemFactory.DIMMER)
                 .withType(CHANNEL_LEVEL_LEVEL).build();
         return Collections.singletonMap(channel, null);
     }
@@ -111,6 +117,7 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
+                clearUpdateTimer();
                 Integer numberValue = message.value instanceof Number number ? number.intValue() : 0;
                 lastLevel = ValueUtils.levelToPercent(numberValue);
                 logger.debug("currentLevel {}", lastLevel);
@@ -120,8 +127,20 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
                 break;
             case OnOffCluster.ATTRIBUTE_ON_OFF:
                 logger.debug("onOff {}", message.value);
-                lastOnOff = OnOffType.from((Boolean) message.value);
-                updateState(CHANNEL_ID_LEVEL_LEVEL, lastOnOff);
+                clearUpdateTimer();
+                if (message.value instanceof Boolean booleanValue) {
+                    lastOnOff = OnOffType.from(booleanValue);
+                    if (booleanValue) {
+                        // most ON commands are followed by a currentLevel update, but not always
+                        // We wil wait just a bit before sending the last known level to avoid multiple updates
+                        levelFuture = updateScheduler.schedule(() -> {
+                            updateState(CHANNEL_ID_LEVEL_LEVEL, lastLevel);
+                        }, UPDATE_DELAY_MS, TimeUnit.MILLISECONDS);
+                    } else {
+                        updateState(CHANNEL_ID_LEVEL_LEVEL, OnOffType.OFF);
+                    }
+
+                }
                 break;
         }
         super.onEvent(message);
@@ -137,5 +156,13 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
         lastOnOff = OnOffType.from(onOff);
         lastLevel = ValueUtils.levelToPercent(initializingCluster.currentLevel);
         updateState(CHANNEL_ID_LEVEL_LEVEL, onOff ? lastLevel : OnOffType.OFF);
+    }
+
+    private void clearUpdateTimer() {
+        ScheduledFuture<?> levelFuture = this.levelFuture;
+        if (levelFuture != null) {
+            levelFuture.cancel(true);
+            this.levelFuture = null;
+        }
     }
 }

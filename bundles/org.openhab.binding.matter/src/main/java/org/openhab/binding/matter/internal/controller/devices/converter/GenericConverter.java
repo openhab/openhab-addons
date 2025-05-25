@@ -60,7 +60,7 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
         this.labelPrefix = labelPrefix;
     }
 
-    public abstract Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID);
+    public abstract Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID);
 
     /**
      * Updates all the channel states of a cluster
@@ -68,10 +68,7 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
     public abstract void initState();
 
     /**
-     * Handles a openHAB
-     * 
-     * @param channelUID
-     * @param command
+     * Handles a openHAB channel command
      */
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {

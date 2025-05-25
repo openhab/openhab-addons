@@ -49,9 +49,9 @@ public class WindowCoveringConverter extends GenericConverter<WindowCoveringClus
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_WINDOWCOVERING_LIFT), CoreItemFactory.ROLLERSHUTTER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_WINDOWCOVERING_LIFT), CoreItemFactory.ROLLERSHUTTER)
                 .withType(CHANNEL_WINDOWCOVERING_LIFT).build();
         return Collections.singletonMap(channel, null);
     }

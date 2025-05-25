@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.matter.internal.util;
 
-import java.net.InetAddress;
+import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -169,33 +169,26 @@ public class MatterLabelUtils {
                 .mapToObj(i -> macString.substring(i, i + 2)).collect(Collectors.joining(":"));
     }
 
-    public static String formatIPv4Address(@Nullable OctetString ipv4Hex) {
-        if (ipv4Hex == null) {
+    public static String formatIPv4Address(@Nullable OctetString os) {
+        if (os == null || os.value == null || os.value.length != 4) {
             return "";
         }
-        String ipv4String = ipv4Hex.toString();
-        StringBuilder ipv4 = new StringBuilder();
-        for (int i = 0; i < ipv4String.length(); i += 2) {
-            int decimal = Integer.parseInt(ipv4String.substring(i, i + 2), 16);
-            ipv4.append(decimal).append(".");
-        }
-        return ipv4.substring(0, ipv4.length() - 1); // Remove the trailing dot
+
+        byte[] addr = os.value;
+        return (addr[0] & 0xFF) + "." + (addr[1] & 0xFF) + "." + (addr[2] & 0xFF) + "." + (addr[3] & 0xFF);
     }
 
-    public static String formatIPv6Address(@Nullable OctetString ipv6Hex) {
-        if (ipv6Hex == null) {
+    public static String formatIPv6Address(@Nullable OctetString os) {
+        if (os == null || os.value == null || os.value.length != 16) {
             return "";
         }
-        String ipv6String = ipv6Hex.toString();
+
         try {
-            byte[] bytes = new byte[ipv6String.length() / 2];
-            for (int i = 0; i < ipv6String.length(); i += 2) {
-                bytes[i / 2] = (byte) Integer.parseInt(ipv6String.substring(i, i + 2), 16);
-            }
-            InetAddress address = InetAddress.getByAddress(bytes);
-            return address.getHostAddress();
+            // passing in host=null ensures this call does not block or throw
+            Inet6Address ip = (Inet6Address) Inet6Address.getByAddress(null, os.value, -1);
+            return ip.getHostAddress();
         } catch (UnknownHostException e) {
-            return ipv6String;
+            return os.toHexString();
         }
     }
 }

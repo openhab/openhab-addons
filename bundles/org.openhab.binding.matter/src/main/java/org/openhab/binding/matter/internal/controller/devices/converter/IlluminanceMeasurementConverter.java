@@ -12,19 +12,20 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Map;
+
+import javax.measure.quantity.Illuminance;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -47,10 +48,10 @@ public class IlluminanceMeasurementConverter extends GenericConverter<Illuminanc
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE),
-                        CoreItemFactory.NUMBER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE),
+                        "Number:Illuminance")
                 .withType(CHANNEL_ILLUMINANCEMEASURMENT_MEASUREDVALUE).build();
         return Collections.singletonMap(channel, null);
     }
@@ -59,7 +60,10 @@ public class IlluminanceMeasurementConverter extends GenericConverter<Illuminanc
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
             case IlluminanceMeasurementCluster.ATTRIBUTE_MEASURED_VALUE:
-                updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE, new DecimalType((Number) message.value));
+                if (message.value instanceof Number number) {
+                    updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE,
+                            new QuantityType<Illuminance>(number.intValue(), Units.LUX));
+                }
                 break;
         }
         super.onEvent(message);
@@ -68,7 +72,8 @@ public class IlluminanceMeasurementConverter extends GenericConverter<Illuminanc
     @Override
     public void initState() {
         updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE,
-                initializingCluster.measuredValue != null ? new DecimalType(initializingCluster.measuredValue)
-                        : UnDefType.UNDEF);
+                initializingCluster.measuredValue != null
+                        ? new QuantityType<Illuminance>(initializingCluster.measuredValue, Units.LUX)
+                        : UnDefType.NULL);
     }
 }

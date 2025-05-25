@@ -58,12 +58,12 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(4, channels.size());
 
         for (Channel channel : channels.keySet()) {
-            assertEquals("Number", channel.getAcceptedItemType());
+            assertEquals("Number:Energy", channel.getAcceptedItemType());
         }
     }
 

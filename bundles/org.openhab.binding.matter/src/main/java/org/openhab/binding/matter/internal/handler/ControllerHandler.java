@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.matter.internal.handler;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_TYPE_NODE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -45,7 +45,10 @@ import org.openhab.binding.matter.internal.config.ControllerConfiguration;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.discovery.MatterDiscoveryHandler;
 import org.openhab.binding.matter.internal.discovery.MatterDiscoveryService;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -85,12 +88,15 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     private @Nullable ScheduledFuture<?> reconnectFuture;
     private MatterControllerClient client;
     private boolean ready = false;
+    private final TranslationService translationService;
 
-    public ControllerHandler(Bridge bridge, MatterWebsocketService websocketService) {
+    public ControllerHandler(Bridge bridge, MatterWebsocketService websocketService,
+            TranslationService translationService) {
         super(bridge);
         client = new MatterControllerClient();
         client.addListener(this);
         this.websocketService = websocketService;
+        this.translationService = translationService;
     }
 
     @Override
@@ -174,11 +180,22 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     @Override
+    public LocaleProvider getLocaleProvider() {
+        return translationService.getLocaleProvider();
+    }
+
+    @Override
+    public TranslationProvider getTranslationProvider() {
+        return translationService.getTranslationProvider();
+    }
+
+    @Override
     public void onEvent(NodeStateMessage message) {
         logger.debug("Node onEvent: node {} is {}", message.nodeId, message.state);
         switch (message.state) {
             case CONNECTED:
-                updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for data");
+                updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                        translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
                 client.requestAllNodeData(message.nodeId);
                 break;
             case STRUCTURECHANGED:
@@ -251,6 +268,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         updateStatus(ThingStatus.ONLINE);
         cancelReconnect();
         linkedNodes.keySet().forEach(nodeId -> updateNode(nodeId));
+    }
+
+    public String getTranslation(String key) {
+        return translationService.getTranslation(key);
     }
 
     public MatterControllerClient getClient() {

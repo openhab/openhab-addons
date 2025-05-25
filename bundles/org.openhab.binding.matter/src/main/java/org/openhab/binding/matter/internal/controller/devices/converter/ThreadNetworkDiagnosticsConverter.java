@@ -66,7 +66,7 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         return Collections.emptyMap();
     }
 

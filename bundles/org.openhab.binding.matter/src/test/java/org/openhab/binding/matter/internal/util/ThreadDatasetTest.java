@@ -71,13 +71,12 @@ class ThreadDatasetTest {
         ThreadDataset ds = ThreadDataset.fromHex(hexInput);
 
         assertEquals(Optional.of("OpenThread-6adb"), ds.getNetworkName());
-        // assertEquals(Optional.of(247), ds.getSecurityPolicyFlags());
         assertEquals(Optional.of(15), ds.getChannel());
         assertEquals(Optional.of("F2CD947327A3453D03C7BEF5B51EA207"), ds.getPskcHex());
         assertEquals(Optional.of(4660), ds.getPanId());
         assertEquals(Optional.of("4A3BDDA4723ED6A0"), ds.getExtPanIdHex());
         assertEquals(Optional.of("FD2FCA4935B73ECC"), ds.getMeshLocalPrefixHex());
-        // assertEquals(Optional.of(2097120L), ds.getChannelMask());
+        assertEquals(Optional.of(4294901760L), ds.getChannelMask());
 
         Set<Integer> expectedChannels = Set.of(16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31);
         assertEquals(Optional.of(expectedChannels), ds.getChannelSet());

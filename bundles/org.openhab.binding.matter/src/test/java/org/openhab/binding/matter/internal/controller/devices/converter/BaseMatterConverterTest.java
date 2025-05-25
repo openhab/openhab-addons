@@ -20,6 +20,7 @@ import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
 import org.openhab.binding.matter.internal.MatterConfigDescriptionProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 
 /**
@@ -49,11 +50,15 @@ public abstract class BaseMatterConverterTest {
     protected TestMatterBaseThingHandler mockHandler;
     @NonNullByDefault({})
     protected TemperatureMeasurementConverter converter;
+    @Mock
+    @NonNullByDefault({})
+    protected TranslationService mockTranslationService;
 
     @SuppressWarnings("null")
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockHandler = Mockito.spy(new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory,
-                mockStateDescriptionProvider, mockChannelTypeProvider, mockConfigDescriptionProvider));
+        mockHandler = Mockito.spy(
+                new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory, mockStateDescriptionProvider,
+                        mockChannelTypeProvider, mockConfigDescriptionProvider, mockTranslationService));
     }
 }

@@ -12,15 +12,7 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_SWITCH_SWITCH;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_INITIALPRESS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_LONGPRESS;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_LONGRELEASE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_MULTIPRESSCOMPLETE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_MULTIPRESSONGOING;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_SHORTRELEASE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_SWITCH;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_SWITCH_SWITCHLATECHED;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,7 +56,7 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         final Map<Channel, @Nullable StateDescription> map = new java.util.HashMap<>();
         Set<ChannelTypeUID> triggerChannelTypes = new HashSet<>();
         // See cluster specification table 1.13.4. Switch Features
@@ -85,11 +77,12 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
             triggerChannelTypes.add(CHANNEL_SWITCH_MULTIPRESSCOMPLETE);
             triggerChannelTypes.add(CHANNEL_SWITCH_MULTIPRESSONGOING);
         }
-        triggerChannelTypes.forEach(type -> map.put(ChannelBuilder.create(new ChannelUID(thingUID, type.getId()), null)
-                .withType(type).withKind(ChannelKind.TRIGGER).build(), null));
+        triggerChannelTypes
+                .forEach(type -> map.put(ChannelBuilder.create(new ChannelUID(channelGroupUID, type.getId()), null)
+                        .withType(type).withKind(ChannelKind.TRIGGER).build(), null));
 
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_SWITCH_SWITCH), CoreItemFactory.NUMBER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_SWITCH_SWITCH), CoreItemFactory.NUMBER)
                 .withType(CHANNEL_SWITCH_SWITCH).build();
 
         List<StateOption> options = new ArrayList<>();
@@ -107,11 +100,11 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        Integer numberValue = message.value instanceof Number number ? number.intValue() : 0;
         switch (message.path.attributeName) {
             case SwitchCluster.ATTRIBUTE_CURRENT_POSITION:
-                initializingCluster.currentPosition = numberValue;
-                updateState(CHANNEL_ID_SWITCH_SWITCH, new DecimalType(numberValue));
+                if (message.value instanceof Number number) {
+                    updateState(CHANNEL_ID_SWITCH_SWITCH, new DecimalType(number.intValue()));
+                }
                 break;
         }
         super.onEvent(message);

@@ -47,9 +47,9 @@ public class OnOffConverter extends GenericConverter<OnOffCluster> {
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_ONOFF_ONOFF), CoreItemFactory.SWITCH)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_ONOFF_ONOFF), CoreItemFactory.SWITCH)
                 .withType(CHANNEL_ONOFF_ONOFF).build();
         return Collections.singletonMap(channel, null);
     }

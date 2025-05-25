@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.matter.internal.handler;
 
+import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -50,6 +52,7 @@ import org.openhab.binding.matter.internal.controller.devices.types.DeviceType;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceTypeRegistry;
 import org.openhab.binding.matter.internal.util.MatterLabelUtils;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -95,18 +98,21 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final MatterStateDescriptionOptionProvider stateDescriptionProvider;
     protected final MatterChannelTypeProvider channelTypeProvider;
     protected final MatterConfigDescriptionProvider configDescriptionProvider;
+    protected final TranslationService translationService;
     protected HashMap<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
     private @Nullable ScheduledFuture<?> pollingTask;
 
     public MatterBaseThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
-            MatterChannelTypeProvider channelTypeProvider, MatterConfigDescriptionProvider configDescriptionProvider) {
+            MatterChannelTypeProvider channelTypeProvider, MatterConfigDescriptionProvider configDescriptionProvider,
+            TranslationService translationService) {
         super(thing);
         this.thingHandlerFactory = thingHandlerFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeProvider = channelTypeProvider;
         this.configDescriptionProvider = configDescriptionProvider;
+        this.translationService = translationService;
     }
 
     public abstract BigInteger getNodeId();
@@ -148,7 +154,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     @Override
     public void initialize() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for data");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                    translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
         }
     }
 
@@ -157,12 +164,6 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         channelTypeProvider.removeChannelGroupTypesForPrefix(getThing().getThingTypeUID().getId());
         stopPolling();
         super.dispose();
-    }
-
-    // making this public
-    @Override
-    public void updateThing(Thing thing) {
-        super.updateThing(thing);
     }
 
     @Override
@@ -332,9 +333,9 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     /**
      * Update the property of the thing for a given cluster and attribute name. Null values will remove the property.
      * 
-     * @param clusterName
-     * @param attributeName
-     * @param value
+     * @param clusterName The name of the cluster.
+     * @param attributeName The name of the attribute.
+     * @param value The value of the attribute.
      */
     public void updateClusterAttributeProperty(String clusterName, String attributeName, @Nullable Object value) {
         getThing().setProperty(clusterName + "-" + attributeName, value != null ? value.toString() : null);
@@ -389,6 +390,10 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                 getThing().getUID().getAsString());
         return URI.create(
                 MatterBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX + ":" + getThing().getUID().getAsString());
+    }
+
+    public final String getTranslation(String key) {
+        return translationService.getTranslation(key);
     }
 
     protected @Nullable ControllerHandler controllerHandler() {
@@ -531,7 +536,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
 
         // create custom group for endpoint
         ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(MatterBindingConstants.BINDING_ID,
-                getNodeId() + "_" + endpoint.number);
+                getNodeId() + "-" + endpoint.number);
         ChannelGroupDefinition channelGroupDefinition = new ChannelGroupDefinition(endpoint.number.toString(),
                 channelGroupTypeUID);
         ChannelGroupType channelGroupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, deviceLabel)

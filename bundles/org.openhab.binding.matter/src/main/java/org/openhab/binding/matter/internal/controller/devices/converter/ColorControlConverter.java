@@ -100,16 +100,16 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Map<Channel, @Nullable StateDescription> map = new HashMap<>();
 
-        map.put(ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_COLOR), CoreItemFactory.COLOR)
+        map.put(ChannelBuilder.create(new ChannelUID(channelGroupUID, CHANNEL_ID_COLOR_COLOR), CoreItemFactory.COLOR)
                 .withType(CHANNEL_COLOR_COLOR).build(), null);
 
         // see Matter spec 3.2.6.1 For more information on color temperature
         if (initializingCluster.featureMap.colorTemperature) {
             map.put(ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_TEMPERATURE), CoreItemFactory.DIMMER)
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_COLOR_TEMPERATURE), CoreItemFactory.DIMMER)
                     .withType(CHANNEL_COLOR_TEMPERATURE).build(), null);
             StateDescription stateDescription = null;
             if (colorTempPhysicalMinMireds < colorTempPhysicalMaxMireds) {
@@ -118,7 +118,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                         .withMaximum(BigDecimal.valueOf(colorTempPhysicalMaxMireds)).build().toStateDescription();
             }
             map.put(ChannelBuilder
-                    .create(new ChannelUID(thingUID, CHANNEL_ID_COLOR_TEMPERATURE_ABS), CoreItemFactory.NUMBER)
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_COLOR_TEMPERATURE_ABS), "Number:Temperature")
                     .withType(CHANNEL_COLOR_TEMPERATURE_ABS).build(), stateDescription);
         }
         return map;

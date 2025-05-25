@@ -137,7 +137,7 @@ public class MatterBindingConstants {
             CHANNEL_ID_SWITCH_MULTIPRESSCOMPLETE);
     // shared by energy imported and exported
     public static final ChannelTypeUID CHANNEL_ELECTRICALENERGYMEASUREMENT_ENERGYMEASUREMENT_ENERGY = new ChannelTypeUID(
-            "matter:electricalenergymeasurement-energymeasurmement-energy");
+            BINDING_ID, "electricalenergymeasurement-energymeasurmement-energy");
 
     public static final String CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY = "electricalenergymeasurement-cumulativeenergyimported-energy";
 
@@ -368,4 +368,15 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE_RESULT = "@text/thing-action.controller.pairDevice.result.label";
     public static final String THING_ACTION_RESULT_DEVICE_ADDED = "@text/thing-action.result.device-added";
     public static final String THING_ACTION_RESULT_PAIRING_FAILED = "@text/thing-action.result.pairing-failed";
+
+    // Matter Controller Statuses
+    public static final String THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA = "@text/thing-status.detail.controller.waitingForData";
+    public static final String THING_STATUS_DETAIL_ENDPOINT_THING_NOT_REACHABLE = "@text/thing-status.detail.endpoint.thingNotReachable";
+
+    // Discovery
+    public static final String DISCOVERY_MATTER_BRIDGE_ENDPOINT_LABEL = "@text/discovery.matter.bridge-endpoint.label";
+    public static final String DISCOVERY_MATTER_NODE_DEVICE_LABEL = "@text/discovery.matter.node-device.label";
+    public static final String DISCOVERY_MATTER_UNKNOWN_NODE_LABEL = "@text/discovery.matter.unknown-node.label";
+    public static final String DISCOVERY_MATTER_SCAN_INPUT_LABEL = "@text/discovery.matter.scan-input.label";
+    public static final String DISCOVERY_MATTER_SCAN_INPUT_DESCRIPTION = "@text/discovery.matter.scan-input.description";
 }

@@ -19,6 +19,8 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
+import javax.measure.quantity.Dimensionless;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +31,8 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.PowerSourceClu
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
@@ -64,15 +67,15 @@ class PowerSourceConverterTest extends BaseMatterConverterTest {
     @Test
     @SuppressWarnings("null")
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(2, channels.size());
 
         for (Channel channel : channels.keySet()) {
             String channelId = channel.getUID().getIdWithoutGroup();
             switch (channelId) {
                 case "powersource-batpercentremaining":
-                    assertEquals("Number", channel.getAcceptedItemType());
+                    assertEquals("Number:Dimensionless", channel.getAcceptedItemType());
                     break;
                 case "powersource-batchargelevel":
                     assertEquals("Number", channel.getAcceptedItemType());
@@ -91,7 +94,7 @@ class PowerSourceConverterTest extends BaseMatterConverterTest {
         message.value = 100; // 50%
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("powersource-batpercentremaining"),
-                eq(new PercentType(50)));
+                eq(new QuantityType<Dimensionless>(50, Units.PERCENT)));
     }
 
     @Test
@@ -122,7 +125,7 @@ class PowerSourceConverterTest extends BaseMatterConverterTest {
         converter.initState();
 
         verify(mockHandler, times(1)).updateState(eq(1), eq("powersource-batpercentremaining"),
-                eq(new PercentType(50)));
+                eq(new QuantityType<Dimensionless>(50, Units.PERCENT)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("powersource-batchargelevel"),
                 eq(new DecimalType(PowerSourceCluster.BatChargeLevelEnum.OK.getValue())));
     }

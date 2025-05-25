@@ -65,8 +65,8 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
 
         assertEquals(6, channels.size());
 
@@ -81,7 +81,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
                 case "thermostat-occupiedcooling":
                 case "thermostat-unoccupiedheating":
                 case "thermostat-unoccupiedcooling":
-                    assertEquals("Number", channel.getAcceptedItemType());
+                    assertEquals("Number:Temperature", channel.getAcceptedItemType());
                     break;
             }
         }

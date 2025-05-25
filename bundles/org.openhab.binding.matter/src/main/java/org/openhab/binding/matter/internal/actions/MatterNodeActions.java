@@ -27,7 +27,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCre
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
 import org.openhab.binding.matter.internal.util.MatterVendorIDs;
-import org.openhab.binding.matter.internal.util.ResourceHelper;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.ActionOutputs;
@@ -35,7 +35,9 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,12 @@ import org.slf4j.LoggerFactory;
 public class MatterNodeActions implements ThingActions {
     public final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable NodeHandler handler;
+    private final TranslationService translationService;
+
+    @Activate
+    public MatterNodeActions(@Reference TranslationService translationService) {
+        this.translationService = translationService;
+    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -81,9 +89,9 @@ public class MatterNodeActions implements ThingActions {
             }
         }
         return Map.of("manualPairingCode",
-                ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER),
+                translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER),
                 "qrPairingCode",
-                ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
+                translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
     }
 
     @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_DECOMMISSION, description = MatterBindingConstants.THING_ACTION_DESC_NODE_DECOMMISSION)
@@ -95,14 +103,14 @@ public class MatterNodeActions implements ThingActions {
             if (client != null) {
                 try {
                     client.removeNode(handler.getNodeId()).get();
-                    return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
+                    return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }
         }
-        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 
     @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GET_FABRICS, description = MatterBindingConstants.THING_ACTION_DESC_NODE_GET_FABRICS)
@@ -119,7 +127,7 @@ public class MatterNodeActions implements ThingActions {
                             fabric.label, MatterVendorIDs.VENDOR_IDS.get(fabric.vendorId)))
                             .collect(Collectors.joining(", "));
                     return result.isEmpty()
-                            ? ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_FABRICS)
+                            ? translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_FABRICS)
                             : result;
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
@@ -127,7 +135,7 @@ public class MatterNodeActions implements ThingActions {
                 }
             }
         }
-        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 
     @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC, description = MatterBindingConstants.THING_ACTION_DESC_NODE_REMOVE_FABRIC)
@@ -140,13 +148,13 @@ public class MatterNodeActions implements ThingActions {
             if (client != null) {
                 try {
                     client.removeFabric(handler.getNodeId(), indexNumber).get();
-                    return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
+                    return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }
         }
-        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 }

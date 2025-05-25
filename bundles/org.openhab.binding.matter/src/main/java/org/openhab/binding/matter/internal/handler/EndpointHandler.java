@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.matter.internal.handler;
 
+import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_STATUS_DETAIL_ENDPOINT_THING_NOT_REACHABLE;
+
 import java.math.BigInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,6 +26,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
 import org.openhab.binding.matter.internal.config.EndpointConfiguration;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -49,9 +52,9 @@ public class EndpointHandler extends MatterBaseThingHandler {
     public EndpointHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelGroupTypeProvider,
-            MatterConfigDescriptionProvider configDescriptionProvider) {
-        super(thing, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider,
-                configDescriptionProvider);
+            MatterConfigDescriptionProvider configDescriptionProvider, TranslationService translationService) {
+        super(thing, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider, configDescriptionProvider,
+                translationService);
     }
 
     @Override
@@ -104,7 +107,7 @@ public class EndpointHandler extends MatterBaseThingHandler {
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Bridge reports device as not reachable");
+                    getTranslation(THING_STATUS_DETAIL_ENDPOINT_THING_NOT_REACHABLE));
         }
         updateRootProperties(endpoint);
         super.updateBaseEndpoint(endpoint);

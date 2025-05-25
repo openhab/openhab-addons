@@ -88,8 +88,8 @@ public class FanDevice extends GenericDevice {
                     int level = ((Double) data).intValue();
                     if (item instanceof GroupItem groupItem) {
                         groupItem.send(new PercentType(level));
-                    } else {
-                        ((DimmerItem) item).send(new PercentType(level));
+                    } else if (item instanceof DimmerItem dimmerItem) {
+                        dimmerItem.send(new PercentType(level));
                     }
                     break;
                 case OnOffCluster.ATTRIBUTE_ON_OFF:
@@ -111,7 +111,7 @@ public class FanDevice extends GenericDevice {
                     GenericItem genericItem = itemForAttribute(OnOffCluster.CLUSTER_PREFIX,
                             OnOffCluster.ATTRIBUTE_ON_OFF);
                     if (genericItem instanceof SwitchItem switchItem) {
-                        switchItem.send(level > 0 ? OnOffType.ON : OnOffType.OFF);
+                        switchItem.send(OnOffType.from(level > 0));
                     }
                     // try and update the fan mode if set
                     genericItem = itemForAttribute(FanControlCluster.CLUSTER_PREFIX,
@@ -182,10 +182,6 @@ public class FanDevice extends GenericDevice {
                             if (state instanceof PercentType percentType) {
                                 int speed = percentType.intValue();
                                 attributeMap.put(attribute, speed);
-                                attributeMap.put(FanControlCluster.CLUSTER_PREFIX + "."
-                                        + FanControlCluster.ATTRIBUTE_PERCENT_CURRENT, speed);
-                                attributeMap.put(FanControlCluster.CLUSTER_PREFIX + "."
-                                        + FanControlCluster.ATTRIBUTE_PERCENT_SETTING, speed);
                                 lastSpeed = speed;
                             } else {
                                 attributeMap.put(attribute, 0);
@@ -230,7 +226,12 @@ public class FanDevice extends GenericDevice {
 
     @Override
     public void dispose() {
+        attributeToItemNameMap.clear();
         primaryItem.removeStateChangeListener(this);
+        itemMap.forEach((uid, item) -> {
+            ((GenericItem) item).removeStateChangeListener(this);
+        });
+        itemMap.clear();
     }
 
     @Override
@@ -371,9 +372,7 @@ public class FanDevice extends GenericDevice {
             intToCustomMap.clear();
             customToEnumMap.clear();
             for (Map.Entry<String, Object> entry : mappings.entrySet()) {
-                @SuppressWarnings("null")
                 String customKey = entry.getKey().trim();
-                @SuppressWarnings("null")
                 Object valueObj = entry.getValue();
                 String customValue = valueObj.toString().trim();
 

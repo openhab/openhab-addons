@@ -22,6 +22,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BooleanStateCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalPowerMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FanControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
@@ -72,6 +73,8 @@ public class ConverterRegistry {
         ConverterRegistry.registerConverter(DoorLockCluster.CLUSTER_ID, DoorLockConverter.class);
         ConverterRegistry.registerConverter(ElectricalPowerMeasurementCluster.CLUSTER_ID,
                 ElectricalPowerMeasurementConverter.class);
+        ConverterRegistry.registerConverter(ElectricalEnergyMeasurementCluster.CLUSTER_ID,
+                ElectricalEnergyMeasurementConverter.class);
         ConverterRegistry.registerConverter(ThreadNetworkDiagnosticsCluster.CLUSTER_ID,
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
@@ -104,6 +107,8 @@ public class ConverterRegistry {
     }
 
     public static class ConverterCreationException extends Exception {
+        private static final long serialVersionUID = 1L;
+
         public ConverterCreationException(String message, Throwable cause) {
             super(message, cause);
         }
@@ -114,6 +119,8 @@ public class ConverterRegistry {
     }
 
     public static class NoConverterFoundException extends Exception {
+        private static final long serialVersionUID = 1L;
+
         public NoConverterFoundException(String message) {
             super(message);
         }

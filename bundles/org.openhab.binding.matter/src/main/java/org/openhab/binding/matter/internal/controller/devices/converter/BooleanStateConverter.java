@@ -45,9 +45,9 @@ public class BooleanStateConverter extends GenericConverter<BooleanStateCluster>
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_BOOLEANSTATE_STATEVALUE), CoreItemFactory.SWITCH)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_BOOLEANSTATE_STATEVALUE), CoreItemFactory.SWITCH)
                 .withType(CHANNEL_BOOLEANSTATE_STATEVALUE).build();
         return Collections.singletonMap(channel, null);
     }

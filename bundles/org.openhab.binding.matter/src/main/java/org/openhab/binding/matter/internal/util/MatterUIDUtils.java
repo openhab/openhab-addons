@@ -35,7 +35,7 @@ public class MatterUIDUtils {
      */
     public static ThingTypeUID nodeThingTypeUID(BigInteger nodeId) {
         return new ThingTypeUID(MatterBindingConstants.BINDING_ID,
-                MatterBindingConstants.THING_TYPE_NODE.getId() + "_" + nodeId);
+                MatterBindingConstants.THING_TYPE_NODE.getId() + "-" + nodeId);
     }
 
     /**
@@ -47,7 +47,7 @@ public class MatterUIDUtils {
      */
     public static ThingTypeUID endpointThingTypeUID(BigInteger nodeId, Integer endpointNumber) {
         return new ThingTypeUID(MatterBindingConstants.BINDING_ID,
-                MatterBindingConstants.THING_TYPE_ENDPOINT.getId() + "_" + nodeId + "_" + endpointNumber);
+                MatterBindingConstants.THING_TYPE_ENDPOINT.getId() + "-" + nodeId + "-" + endpointNumber);
     }
 
     /**
@@ -57,7 +57,7 @@ public class MatterUIDUtils {
      * @return the base ThingTypeUID
      */
     public static @Nullable ThingTypeUID baseTypeForThingType(ThingTypeUID thingTypeUID) {
-        String type = thingTypeUID.getId().split("_", 2)[0];
+        String type = thingTypeUID.getId().split("-", 2)[0];
         switch (type) {
             case "node":
                 return MatterBindingConstants.THING_TYPE_NODE;

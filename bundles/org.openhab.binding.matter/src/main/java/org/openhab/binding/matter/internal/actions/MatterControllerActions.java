@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.handler.ControllerHandler;
-import org.openhab.binding.matter.internal.util.ResourceHelper;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.ActionOutputs;
@@ -26,7 +26,9 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,12 @@ import org.slf4j.LoggerFactory;
 public class MatterControllerActions implements ThingActions {
     public final Logger logger = LoggerFactory.getLogger(getClass());
     private @Nullable ControllerHandler handler;
+    private final TranslationService translationService;
+
+    @Activate
+    public MatterControllerActions(@Reference TranslationService translationService) {
+        this.translationService = translationService;
+    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -63,12 +71,12 @@ public class MatterControllerActions implements ThingActions {
         if (handler != null) {
             try {
                 handler.startScan(code).get();
-                return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED);
+                return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED);
             } catch (InterruptedException | ExecutionException e) {
-                return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED)
+                return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED)
                         + e.getLocalizedMessage();
             }
         }
-        return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
 }

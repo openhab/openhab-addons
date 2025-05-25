@@ -52,8 +52,8 @@ public class OnOffLightDevice extends GenericDevice {
             case OnOffCluster.ATTRIBUTE_ON_OFF: {
                 if (primaryItem instanceof GroupItem groupItem) {
                     groupItem.send(OnOffType.from(Boolean.valueOf(data.toString())));
-                } else {
-                    ((SwitchItem) primaryItem).send(OnOffType.from(Boolean.valueOf(data.toString())));
+                } else if (primaryItem instanceof SwitchItem switchItem) {
+                    switchItem.send(OnOffType.from(Boolean.valueOf(data.toString())));
                 }
             }
                 break;
@@ -61,8 +61,8 @@ public class OnOffLightDevice extends GenericDevice {
                 OnOffType onOff = OnOffType.from(((Double) data).intValue() > 0);
                 if (primaryItem instanceof GroupItem groupItem) {
                     groupItem.send(onOff);
-                } else {
-                    ((SwitchItem) primaryItem).send(onOff);
+                } else if (primaryItem instanceof SwitchItem switchItem) {
+                    switchItem.send(onOff);
                 }
             }
                 break;
@@ -95,8 +95,7 @@ public class OnOffLightDevice extends GenericDevice {
             setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
                     percentType.intValue() > 0 ? true : false);
         } else if (state instanceof OnOffType onOffType) {
-            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    onOffType == OnOffType.ON ? true : false);
+            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, onOffType == OnOffType.ON);
         }
     }
 }

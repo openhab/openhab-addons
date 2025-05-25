@@ -190,7 +190,7 @@ class NodeJSRuntimeManager {
         Path downloadPath = Paths.get(cacheDir, fileName);
         Files.createDirectories(downloadPath.getParent());
 
-        logger.debug("Downloading Node.js from: {}", downloadUrl);
+        logger.info("Downloading Node.js from: {}", downloadUrl);
         try {
             InputStreamResponseListener listener = new InputStreamResponseListener();
             client.newRequest(downloadUrl).method(HttpMethod.GET).send(listener);

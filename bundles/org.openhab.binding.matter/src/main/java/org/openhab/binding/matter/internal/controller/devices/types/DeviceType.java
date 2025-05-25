@@ -129,7 +129,10 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
     /**
      * Create openHAB channels for the device type based on the clusters provided
      *
-     * @param clusters
+     * @param endpointNumber The endpoint number that contains the clusters
+     * @param clusters The clusters to create channels for
+     * @param channelGroupUID The channel group UID
+     * @return A list of channels
      */
     public final List<Channel> createChannels(Integer endpointNumber, Map<String, BaseCluster> clusters,
             ChannelGroupUID channelGroupUID) {

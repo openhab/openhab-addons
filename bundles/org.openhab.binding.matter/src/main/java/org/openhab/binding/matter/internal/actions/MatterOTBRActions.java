@@ -16,17 +16,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.controller.devices.converter.ThreadBorderRouterManagementConverter;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
-import org.openhab.binding.matter.internal.util.ResourceHelper;
 import org.openhab.binding.matter.internal.util.ThreadDataset;
 import org.openhab.binding.matter.internal.util.ThreadDataset.ThreadTimestamp;
 import org.openhab.binding.matter.internal.util.TlvCodec;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.ActionOutputs;
@@ -34,7 +33,9 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,12 @@ public class MatterOTBRActions implements ThingActions {
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected @Nullable NodeHandler handler;
+    private final TranslationService translationService;
+
+    @Activate
+    public MatterOTBRActions(@Reference TranslationService translationService) {
+        this.translationService = translationService;
+    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -78,23 +85,23 @@ public class MatterOTBRActions implements ThingActions {
                     if (dataset.trim().startsWith("{")) {
                         tds = ThreadDataset.fromJson(dataset);
                         if (tds == null) {
-                            return ResourceHelper
-                                    .getResourceString(MatterBindingConstants.THING_ACTION_RESULT_INVALID_JSON);
+                            return translationService
+                                    .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_INVALID_JSON);
                         }
                     } else {
                         tds = ThreadDataset.fromHex(dataset);
                     }
                     converter.updateThreadConfiguration(tds.toHex());
-                    return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
+                    return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
                 } catch (Exception e) {
                     logger.debug("Error setting  dataset", e);
                     return "error: " + e.getMessage();
                 }
             } else {
-                return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER);
+                return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER);
             }
         } else {
-            return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+            return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
         }
     }
 
@@ -111,13 +118,9 @@ public class MatterOTBRActions implements ThingActions {
                     String dataset = Objects.requireNonNull(converter.getActiveDataset().get(),
                             "Could not get active dataset");
                     converter.updateThreadConfiguration(dataset);
-                    return new TreeMap<String, Object>() {
-                        {
-                            put("result", ResourceHelper
-                                    .getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS));
-                            put("dataset", dataset);
-                        }
-                    };
+                    return Map.of("result",
+                            translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS),
+                            "dataset", dataset);
                 } catch (Exception e) {
                     logger.debug("Error setting  dataset", e);
                     String message = Objects.requireNonNull(Optional.ofNullable(e.getMessage()).orElse(e.toString()));
@@ -125,11 +128,11 @@ public class MatterOTBRActions implements ThingActions {
                 }
             } else {
                 return Map.of("error",
-                        ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER));
+                        translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER));
             }
         } else {
             return Map.of("error",
-                    ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
+                    translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
         }
     }
 
@@ -141,12 +144,12 @@ public class MatterOTBRActions implements ThingActions {
                     @ActionInput(name = "incrementActiveTime", label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET_INCREMENT_TIME, description = MatterBindingConstants.THING_ACTION_DESC_OTBR_PUSH_DATASET_INCREMENT_TIME, defaultValue = "1", required = true) @Nullable Integer incrementActiveTime) {
         NodeHandler handler = this.handler;
         if (handler == null) {
-            return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+            return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
         }
         ThreadBorderRouterManagementConverter converter = handler
                 .findConverterByType(ThreadBorderRouterManagementConverter.class);
         if (converter == null) {
-            return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER);
+            return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER);
         }
         ThreadDataset tds = converter.datasetFromConfiguration();
         if (delay == null) {
@@ -167,7 +170,7 @@ public class MatterOTBRActions implements ThingActions {
         logger.debug("New dataset hex: {}", dataset);
         try {
             converter.setPendingDataset(dataset).get();
-            return ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS) + ": "
+            return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS) + ": "
                     + tds.toJson();
         } catch (Exception e) {
             logger.debug("Error setting pending dataset", e);
@@ -204,13 +207,13 @@ public class MatterOTBRActions implements ThingActions {
         NodeHandler handler = this.handler;
         if (handler == null) {
             return Map.of("error",
-                    ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
+                    translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
         }
         ThreadBorderRouterManagementConverter converter = handler
                 .findConverterByType(ThreadBorderRouterManagementConverter.class);
         if (converter == null) {
             return Map.of("error",
-                    ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER));
+                    translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_CONVERTER));
         }
         try {
             ThreadTimestamp timestamp = new ThreadTimestamp(1, 0, false);
@@ -248,8 +251,8 @@ public class MatterOTBRActions implements ThingActions {
                 } catch (NoSuchAlgorithmException e) {
                     logger.debug("Error generating master key", e);
                     return Map.of("error",
-                            ResourceHelper
-                                    .getResourceString(MatterBindingConstants.THING_ACTION_RESULT_ERROR_GENERATING_KEY)
+                            translationService
+                                    .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_ERROR_GENERATING_KEY)
                                     + ": " + e.getMessage());
                 }
             }
@@ -288,17 +291,13 @@ public class MatterOTBRActions implements ThingActions {
             if (save.booleanValue()) {
                 converter.updateThreadConfiguration(hex);
             }
-            return new TreeMap<String, Object>() {
-                {
-                    put("result", ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS));
-                    put("datasetJson", json);
-                    put("datasetHex", hex);
-                }
-            };
+            return Map.of("result",
+                    translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS),
+                    "datasetJson", json, "datasetHex", hex);
         } catch (Exception e) {
             logger.debug("Error setting active dataset", e);
-            return Map.of("error",
-                    ResourceHelper.getResourceString(MatterBindingConstants.THING_ACTION_RESULT_ERROR_SETTING_DATASET));
+            return Map.of("error", translationService
+                    .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_ERROR_SETTING_DATASET));
         }
     }
 }

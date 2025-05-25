@@ -64,7 +64,7 @@ export class DeviceNode {
     }
 
     async startBridge() {
-        if (this.devices.size == 0) {
+        if (this.devices.size === 0) {
             throw new Error("No devices added, not starting");
         }
         if(!this.server) {

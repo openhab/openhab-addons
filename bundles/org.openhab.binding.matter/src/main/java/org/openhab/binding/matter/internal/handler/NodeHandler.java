@@ -32,6 +32,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.config.NodeConfiguration;
 import org.openhab.binding.matter.internal.discovery.MatterDiscoveryService;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
+import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -61,9 +62,9 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelGroupTypeProvider,
-            MatterConfigDescriptionProvider configDescriptionProvider) {
+            MatterConfigDescriptionProvider configDescriptionProvider, TranslationService translationService) {
         super(bridge, thingHandlerFactory, stateDescriptionProvider, channelGroupTypeProvider,
-                configDescriptionProvider);
+                configDescriptionProvider, translationService);
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.OnOffType;
@@ -56,8 +57,8 @@ class LevelControlConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannels() {
-        ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
-        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(thingUID);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
         assertEquals(1, channels.size());
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#levelcontrol-level", channel.getUID().toString());
@@ -66,31 +67,31 @@ class LevelControlConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testOnEventWithLevel() {
-        AttributeChangedMessage message = new AttributeChangedMessage();
-        message.path = new Path();
-        message.path.attributeName = "currentLevel";
-        message.value = 254;
+        AttributeChangedMessage levelMessage = new AttributeChangedMessage();
+        levelMessage.path = new Path();
+        levelMessage.path.attributeName = LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL;
+        levelMessage.value = 254;
 
         // Set lastOnOff to ON to ensure level update is processed
         AttributeChangedMessage onOffMessage = new AttributeChangedMessage();
         onOffMessage.path = new Path();
-        onOffMessage.path.attributeName = "onOff";
-        onOffMessage.value = true;
+        onOffMessage.path.attributeName = OnOffCluster.ATTRIBUTE_ON_OFF;
+        onOffMessage.value = Boolean.TRUE;
         converter.onEvent(onOffMessage);
 
-        converter.onEvent(message);
+        converter.onEvent(levelMessage);
         verify(mockHandler, times(1)).updateState(eq(1), eq("levelcontrol-level"), eq(new PercentType(100)));
     }
 
     @Test
-    void testOnEventWithOnOff() {
+    void testOffEventWithOnOff() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();
-        message.path.attributeName = "onOff";
-        message.value = true;
+        message.path.attributeName = OnOffCluster.ATTRIBUTE_ON_OFF;
+        message.value = Boolean.FALSE;
 
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("levelcontrol-level"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("levelcontrol-level"), eq(OnOffType.OFF));
     }
 
     @Test

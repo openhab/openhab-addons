@@ -24,7 +24,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.TemperatureMea
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -46,10 +45,10 @@ public class TemperatureMeasurementConverter extends GenericConverter<Temperatur
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
+    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(thingUID, CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE),
-                        CoreItemFactory.NUMBER)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE),
+                        "Number:Temperature")
                 .withType(CHANNEL_TEMPERATUREMEASURMENT_MEASUREDVALUE).build();
         return Collections.singletonMap(channel, null);
     }
@@ -58,8 +57,10 @@ public class TemperatureMeasurementConverter extends GenericConverter<Temperatur
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
             case TemperatureMeasurementCluster.ATTRIBUTE_MEASURED_VALUE:
-                updateState(CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE,
-                        ValueUtils.valueToTemperature(message.value instanceof Number number ? number.intValue() : 0));
+                if (message.value instanceof Number number) {
+                    updateState(CHANNEL_ID_TEMPERATUREMEASURMENT_MEASUREDVALUE,
+                            ValueUtils.valueToTemperature(number.intValue()));
+                }
                 break;
         }
         super.onEvent(message);

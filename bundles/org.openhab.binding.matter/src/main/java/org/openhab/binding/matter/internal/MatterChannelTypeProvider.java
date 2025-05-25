@@ -111,7 +111,7 @@ public class MatterChannelTypeProvider extends AbstractStorageBasedTypeProvider 
     }
 
     private Collection<ChannelGroupType> channelGroupTypesForPrefix(String prefix) {
-        return getChannelGroupTypes(null).stream().filter(cgt -> cgt.getUID().getId().startsWith(prefix + "_"))
+        return getChannelGroupTypes(null).stream().filter(cgt -> cgt.getUID().getId().startsWith(prefix + "-"))
                 .toList();
     }
 }
