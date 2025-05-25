@@ -46,7 +46,7 @@ public class AmberElectricWebTargets {
     }
 
     public String getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
-        String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current";
+        String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current?next=1";
         String response = invoke("GET", getCurrentPricesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
         return response;

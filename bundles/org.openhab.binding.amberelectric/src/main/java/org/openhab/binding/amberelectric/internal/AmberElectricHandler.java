@@ -13,6 +13,7 @@
 package org.openhab.binding.amberelectric.internal;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
 import org.openhab.binding.amberelectric.internal.api.Sites;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -53,6 +55,8 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AmberElectricHandler.class);
 
+    private final TimeZoneProvider timeZoneProvider;
+
     private long refreshInterval;
     private String apiKey = "";
     private String nmi = "";
@@ -62,8 +66,9 @@ public class AmberElectricHandler extends BaseThingHandler {
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
-    public AmberElectricHandler(Thing thing) {
+    public AmberElectricHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -160,6 +165,14 @@ public class AmberElectricHandler extends BaseThingHandler {
                     updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
                             OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
                     updatePriceChannel(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, currentPrices.perKwh);
+                }
+                if ("ForecastInterval".equals(currentPrices.type) && "general".equals(currentPrices.channelType)) {
+                    Instant instantStart = Instant.parse(currentPrices.startTime);
+                    Instant instantEnd = Instant.parse(currentPrices.endTime);
+                    logger.info("predicted next interval {}-{} = {}, {}, {}",
+                            instantStart.atZone(timeZoneProvider.getTimeZone()),
+                            instantEnd.atZone(timeZoneProvider.getTimeZone()), currentPrices.advancedPrice.low,
+                            currentPrices.advancedPrice.predicted, currentPrices.advancedPrice.high);
                 }
                 if ("CurrentInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,

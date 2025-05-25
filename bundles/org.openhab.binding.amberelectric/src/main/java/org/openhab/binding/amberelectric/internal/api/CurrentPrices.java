@@ -35,6 +35,13 @@ public class CurrentPrices {
     public String spikeStatus = "";
     public String descriptor = "";
     public boolean estimate;
+    public @NonNullByDefault({}) AdvancedPrice advancedPrice;
+
+    public class AdvancedPrice {
+        public double low;
+        public double predicted;
+        public double high;
+    }
 
     private CurrentPrices() {
     }
