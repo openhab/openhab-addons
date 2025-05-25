@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
 import org.openhab.binding.amberelectric.internal.api.Sites;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -59,9 +58,8 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AmberElectricHandler.class);
 
-    private final TimeZoneProvider timeZoneProvider;
-
     private long refreshInterval;
+    private long forecasts;
     private String apiKey = "";
     private String nmi = "";
     private String siteID = "";
@@ -70,9 +68,8 @@ public class AmberElectricHandler extends BaseThingHandler {
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
-    public AmberElectricHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public AmberElectricHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -92,6 +89,7 @@ public class AmberElectricHandler extends BaseThingHandler {
         webTargets = new AmberElectricWebTargets();
         updateStatus(ThingStatus.UNKNOWN);
         refreshInterval = config.refresh;
+        forecasts = config.forecasts;
         nmi = config.nmi;
         apiKey = config.apiKey;
 
@@ -162,11 +160,12 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
 
-            String response = webTargets.getCurrentPrices(siteID, apiKey);
+            String response = webTargets.getCurrentPrices(siteID, apiKey, forecasts);
             Gson gson = new Gson();
             JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
             CurrentPrices currentPrices;
             TimeSeries elecTimeSeries = new TimeSeries(REPLACE);
+            TimeSeries feedInTimeSeries = new TimeSeries(REPLACE);
 
             for (int i = 0; i < jsonArray.size(); i++) {
                 currentPrices = gson.fromJson(jsonArray.get(i), CurrentPrices.class);
@@ -188,7 +187,11 @@ public class AmberElectricHandler extends BaseThingHandler {
                 if ("CurrentInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
                             new StringType(currentPrices.descriptor));
-                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, currentPrices.perKwh);
+                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, -1 * currentPrices.perKwh);
+                    updatePriceTimeSeries(feedInTimeSeries, instantStart, -1 * currentPrices.perKwh);
+                }
+                if ("ForecastInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
+                    updatePriceTimeSeries(feedInTimeSeries, instantStart, -1 * currentPrices.perKwh);
                 }
                 if ("CurrentInterval".equals(currentPrices.type)
                         && "controlledLoad".equals(currentPrices.channelType)) {
@@ -199,6 +202,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                 }
             }
             sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
+            sendTimeSeries(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, feedInTimeSeries);
         } catch (AmberElectricCommunicationException e) {
             logger.debug("Unexpected error connecting to Amber Electric API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

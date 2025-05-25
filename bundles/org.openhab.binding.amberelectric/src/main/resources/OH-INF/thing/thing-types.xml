@@ -47,6 +47,11 @@
 				<description>Specifies the refresh interval in seconds</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="forecasts" type="integer" min="0" max="2048">
+				<label>Forecasts</label>
+				<description>Specifies the number of forecasts to fetch (Optional)</description>
+				<default>0</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>
