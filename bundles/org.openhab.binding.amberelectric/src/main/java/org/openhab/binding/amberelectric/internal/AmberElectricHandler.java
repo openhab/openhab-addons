@@ -121,6 +121,17 @@ public class AmberElectricHandler extends BaseThingHandler {
         }
     }
 
+    private void updatePriceChannel(String channel, double price) {
+        final String electricityUnit = " AUD/kWh";
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
+        if (unit == null) {
+            logger.trace("Currency AUD is unknown, falling back to DecimalType");
+            updateState(channel, new DecimalType(price / 100));
+        } else {
+            updateState(channel, new QuantityType<>(price / 100 + " " + electricityUnit));
+        }
+    }
+
     private void pollStatus() throws IOException {
         try {
             if (siteID.isEmpty()) {
@@ -132,10 +143,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                 updateConfiguration(configuration);
                 logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
             }
-
-            final String electricityUnit = " AUD/kWh";
             updateStatus(ThingStatus.ONLINE);
-            Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
 
             String response = webTargets.getCurrentPrices(siteID, apiKey);
             Gson gson = new Gson();
@@ -151,39 +159,19 @@ public class AmberElectricHandler extends BaseThingHandler {
                             new DecimalType(currentPrices.renewables));
                     updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
                             OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
-                    if (unit == null) {
-                        logger.trace("Currency AUD is unknown, falling back to DecimalType");
-                        updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                                new DecimalType(currentPrices.perKwh / 100));
-                    } else {
-                        updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                                new QuantityType<>(currentPrices.perKwh / 100 + " " + electricityUnit));
-                    }
+                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, currentPrices.perKwh);
                 }
                 if ("CurrentInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
                             new StringType(currentPrices.descriptor));
-                    if (unit == null) {
-                        logger.trace("Currency AUD is unknown, falling back to DecimalType");
-                        updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                                new DecimalType(currentPrices.perKwh / 100 * -1));
-                    } else {
-                        updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                                new QuantityType<>(currentPrices.perKwh / 100 + " " + electricityUnit));
-                    }
+                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, currentPrices.perKwh);
                 }
                 if ("CurrentInterval".equals(currentPrices.type)
                         && "controlledLoad".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                             new StringType(currentPrices.descriptor));
-                    if (unit == null) {
-                        logger.trace("Currency AUD is unknown, falling back to DecimalType");
-                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                                new DecimalType(currentPrices.perKwh / 100));
-                    } else {
-                        updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                                new QuantityType<>(currentPrices.perKwh / 100 + " " + electricityUnit));
-                    }
+                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
+                            currentPrices.perKwh);
                 }
             }
         } catch (AmberElectricCommunicationException e) {

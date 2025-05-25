@@ -28,7 +28,7 @@
 				<label>Current Feed-In Status</label>
 				<description>Current price status of Feed-In</description>
 			</channel>
-			<channel id="nem-time" typeId="nemtime"/>
+			<channel id="nem-time" typeId="nem-time"/>
 			<channel id="spike" typeId="spike"/>
 			<channel id="renewables" typeId="renewables"/>
 		</channels>
