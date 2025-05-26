@@ -199,6 +199,10 @@ public class EnedisHttpApi {
             throw new LinkyException("Invalid prms data received");
         }
 
+        if (prmId.isBlank()) {
+            return prms[0];
+        }
+
         Optional<PrmInfo> result = Arrays.stream(prms).filter(x -> x.idPrm.equals(prmId)).findFirst();
         if (result.isPresent()) {
             return result.get();

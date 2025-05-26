@@ -350,6 +350,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
                     PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
 
+                    config.prmId = prmInfo.idPrm;
                     result.identity = Identity.convertFromUserInfo(userInfo);
                     result.contact = Contact.convertFromUserInfo(userInfo);
                     result.contract = Contract.convertFromPrmDetail(details);

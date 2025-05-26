@@ -27,6 +27,6 @@ public abstract class LinkyThingConfiguration extends Configuration {
     public String prmId = "";
 
     public boolean seemsValid() {
-        return !prmId.isBlank();
+        return true;
     }
 }
