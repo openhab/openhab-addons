@@ -8,6 +8,34 @@ It supports different functionalities:
 - Connection to the data.gouv.fr API to obtain regulated electricity prices.
 - Connection to the RTE API to get Tempo Red/White/Blue calendar information.
 
+
+## Migration
+
+The new binding will need some tweak to you configuration to work.
+Mainly the new binding use Bridge to access Enedis data, so you will have to add this bridge to your configuration.
+Step are:
+
+1. add a bridge definition
+	
+	Bridge linky:enedis:local "EnedisWebBridge" [ 
+		username="laurent@clae.net", 
+		password="Mnbo32tyu123!", 
+		internalAuthId="eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.u_mxXO7_d4I5bLvJzGtc2MARvpkYv0iM0EsO6a24k-tW9493_Myxwg.LVlfephhGTiCBxii8bRIkA.GOf9Ea8PTGshvkfjl62b6w.hSH97IkmBcEAz2udU-FqQg" 
+		]  
+	{ 
+	}  
+
+2. Move username, password & internalAuthId configuration parameter from the old linky thing to the bridge thing.
+
+3. add the bridge reference to the thing
+
+	Thing linky:linky:linkremotemelody "Linky Melody" (linky:enedis:local)
+
+4. Possibly restart openhab instance to take change in effect
+
+5. Possibly start to use the new channel add by the new binding.
+   Old channel will work out of the box without any config modification as we keep the same group name / channel name.
+
 ## Getting Consumption Data Online
 
 The new binding version can use multiple bridges to access consumption data.
