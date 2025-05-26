@@ -68,6 +68,8 @@ public class AmberElectricHandler extends BaseThingHandler {
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
+    Gson gson = new Gson();
+
     public AmberElectricHandler(Thing thing) {
         super(thing);
     }
@@ -128,23 +130,10 @@ public class AmberElectricHandler extends BaseThingHandler {
         }
     }
 
-    private void updatePriceChannel(String channel, double price) {
+    private State convertPriceToState(double price) {
         final String electricityUnit = " AUD/kWh";
         Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
-        if (unit == null) {
-            logger.trace("Currency AUD is unknown, falling back to DecimalType");
-            updateState(channel, new DecimalType(price / 100));
-        } else {
-            updateState(channel, new QuantityType<>(price / 100 + " " + electricityUnit));
-        }
-    }
-
-    private void updatePriceTimeSeries(TimeSeries timeSeries, Instant instant, double price) {
-        final String electricityUnit = " AUD/kWh";
-        Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
-        State state = (unit == null) ? new DecimalType(price / 100)
-                : new QuantityType<>(price / 100 + " " + electricityUnit);
-        timeSeries.add(instant, state);
+        return (unit == null) ? new DecimalType(price / 100) : new QuantityType<>(price / 100 + " " + electricityUnit);
     }
 
     private void pollStatus() throws IOException {
@@ -161,7 +150,6 @@ public class AmberElectricHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
 
             String response = webTargets.getCurrentPrices(siteID, apiKey, forecasts);
-            Gson gson = new Gson();
             JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
             CurrentPrices currentPrices;
             TimeSeries elecTimeSeries = new TimeSeries(REPLACE);
@@ -178,27 +166,29 @@ public class AmberElectricHandler extends BaseThingHandler {
                             new DecimalType(currentPrices.renewables));
                     updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
                             OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
-                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, currentPrices.perKwh);
-                    updatePriceTimeSeries(elecTimeSeries, instantStart, currentPrices.perKwh);
+                    updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
+                            convertPriceToState(currentPrices.perKwh));
+                    elecTimeSeries.add(instantStart, convertPriceToState(currentPrices.perKwh));
                 }
                 if ("ForecastInterval".equals(currentPrices.type) && "general".equals(currentPrices.channelType)) {
-                    updatePriceTimeSeries(elecTimeSeries, instantStart, currentPrices.perKwh);
+                    elecTimeSeries.add(instantStart, convertPriceToState(currentPrices.perKwh));
                 }
                 if ("CurrentInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
                             new StringType(currentPrices.descriptor));
-                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, -1 * currentPrices.perKwh);
-                    updatePriceTimeSeries(feedInTimeSeries, instantStart, -1 * currentPrices.perKwh);
+                    updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
+                            convertPriceToState(currentPrices.perKwh));
+                    feedInTimeSeries.add(instantStart, convertPriceToState(-1 * currentPrices.perKwh));
                 }
                 if ("ForecastInterval".equals(currentPrices.type) && "feedIn".equals(currentPrices.channelType)) {
-                    updatePriceTimeSeries(feedInTimeSeries, instantStart, -1 * currentPrices.perKwh);
+                    feedInTimeSeries.add(instantStart, convertPriceToState(-1 * currentPrices.perKwh));
                 }
                 if ("CurrentInterval".equals(currentPrices.type)
                         && "controlledLoad".equals(currentPrices.channelType)) {
                     updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                             new StringType(currentPrices.descriptor));
-                    updatePriceChannel(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
-                            currentPrices.perKwh);
+                    updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
+                            convertPriceToState(currentPrices.perKwh));
                 }
             }
             sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
