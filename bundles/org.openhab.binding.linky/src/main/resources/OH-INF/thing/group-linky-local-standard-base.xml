@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-standard-base">
+	<channel-group-type id="commonLSMGroupType">
 		<label>Standard Base</label>
 		<channels>
 			<channel id="adsc" typeId="info">
@@ -137,17 +137,17 @@
 				<description>Maximum withdrawn apparent power of the day</description>
 			</channel>
 
-			<channel id="smaxsn-date" typeId="datetime">
+			<channel id="smaxsnDate" typeId="datetime">
 				<label>S Max Sn Timestamp</label>
 				<description>Timestamp of SMAXSN value</description>
 			</channel>
 
-			<channel id="smaxsn-minus1" typeId="power">
+			<channel id="smaxsnMinus1" typeId="power">
 				<label>S Max Sn -1</label>
 				<description>Maximum withdrawn apparent power of the previous day</description>
 			</channel>
 
-			<channel id="smaxsn-minus1-date" typeId="datetime">
+			<channel id="smaxsnMinus1Date" typeId="datetime">
 				<label>S Max Sn -1 Timestamp</label>
 				<description>Timestamp of SMAXSN-1 value</description>
 			</channel>
@@ -157,17 +157,17 @@
 				<description>Active charge point N</description>
 			</channel>
 
-			<channel id="ccasn-date" typeId="datetime">
+			<channel id="ccasnDate" typeId="datetime">
 				<label>Ccasn Timestamp</label>
 				<description>Timestamp of CCASN value</description>
 			</channel>
 
-			<channel id="ccasn-minus1" typeId="power">
+			<channel id="ccasnMinus1" typeId="power">
 				<label>Ccasn -1</label>
 				<description>Active charge point N-1</description>
 			</channel>
 
-			<channel id="ccasn-minus1-date" typeId="datetime">
+			<channel id="ccasnMinus1Date" typeId="datetime">
 				<label>Ccasn -1 Timestamp</label>
 				<description>Timestamp of CCASN-1 value</description>
 			</channel>
@@ -177,7 +177,7 @@
 				<description>Mean Voltage on phase 1</description>
 			</channel>
 
-			<channel id="umoy1-date" typeId="datetime">
+			<channel id="umoy1Date" typeId="datetime">
 				<label>UMoy 1 Timestamp</label>
 				<description>Timestamp of UMOY1 value</description>
 			</channel>
@@ -192,7 +192,7 @@
 				<description>Start of mobile peak period 1</description>
 			</channel>
 
-			<channel id="dpm1-date" typeId="datetime">
+			<channel id="dpm1Date" typeId="datetime">
 				<label>Dpm1 Timestamp</label>
 				<description>Date of DPM1</description>
 			</channel>
@@ -202,7 +202,7 @@
 				<description>End of mobile peak period 1</description>
 			</channel>
 
-			<channel id="fpm1-date" typeId="datetime">
+			<channel id="fpm1Date" typeId="datetime">
 				<label>Fpm1 Timestamp</label>
 				<description>Date of FPM1</description>
 			</channel>
@@ -212,7 +212,7 @@
 				<description>Start of mobile peak period 2</description>
 			</channel>
 
-			<channel id="dpm2-date" typeId="datetime">
+			<channel id="dpm2Date" typeId="datetime">
 				<label>Dpm2 Timestamp</label>
 				<description>Date of DPM2</description>
 			</channel>
@@ -222,7 +222,7 @@
 				<description>End of mobile peak period 2</description>
 			</channel>
 
-			<channel id="fpm2-date" typeId="datetime">
+			<channel id="fpm2Date" typeId="datetime">
 				<label>Fpm2 Timestamp</label>
 				<description>Date of FPM2</description>
 			</channel>
@@ -232,7 +232,7 @@
 				<description>Start of mobile peak period 3</description>
 			</channel>
 
-			<channel id="dpm3-date" typeId="datetime">
+			<channel id="dpm3Date" typeId="datetime">
 				<label>Dpm3 Timestamp</label>
 				<description>Date of DPM3</description>
 			</channel>
@@ -242,7 +242,7 @@
 				<description>End of mobile peak period 3</description>
 			</channel>
 
-			<channel id="fpm3-date" typeId="datetime">
+			<channel id="fpm3Date" typeId="datetime">
 				<label>Fpm3 Timestamp</label>
 				<description>Date of FPM3</description>
 			</channel>
@@ -276,12 +276,12 @@
 				<description>Number of current provider schedule</description>
 			</channel>
 
-			<channel id="njourf-plus1" typeId="info">
+			<channel id="njourfPlus1" typeId="info">
 				<label>Njourf +1</label>
 				<description>Number of next day provider schedule</description>
 			</channel>
 
-			<channel id="pjourf-plus1" typeId="info">
+			<channel id="pjourfPlus1" typeId="info">
 				<label>Pjourf +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
@@ -290,6 +290,40 @@
 				<label>ppointe</label>
 				<description>Profile of next rush day</description>
 			</channel>
+			
+			<channel id="relais1" typeId="switch">
+				<label>Relay 1</label>
+			</channel>
+
+			<channel id="relais2" typeId="switch">
+				<label>Relay 2</label>
+			</channel>
+
+			<channel id="relais3" typeId="switch">
+				<label>Relay 3</label>
+			</channel>
+
+			<channel id="relais4" typeId="switch">
+				<label>Relay 4</label>
+			</channel>
+
+			<channel id="relais5" typeId="switch">
+				<label>Relay 5</label>
+			</channel>
+
+			<channel id="relais6" typeId="switch">
+				<label>Relay 6</label>
+			</channel>
+
+			<channel id="relais7" typeId="switch">
+				<label>Relay 7</label>
+			</channel>
+
+			<channel id="relais8" typeId="switch">
+				<label>Relay 8</label>
+			</channel>
+
+
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

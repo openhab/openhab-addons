@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-standard-producer">
+	<channel-group-type id="producerLSMGroupType">
 		<label>Standard Producer</label>
 		<channels>
 			<channel id="eait" typeId="energy">
@@ -42,17 +42,17 @@
 				<description>Maximum injected apparent power of the day</description>
 			</channel>
 
-			<channel id="smaxin-date" typeId="datetime">
+			<channel id="smaxinDate" typeId="datetime">
 				<label>Smaxin Timestamp</label>
 				<description>Timestamp of SMAXIN value</description>
 			</channel>
 
-			<channel id="smaxin-minus1" typeId="power">
+			<channel id="smaxinMinus1" typeId="power">
 				<label>Smaxin -1</label>
 				<description>Maximum injected apparent power of the previous day</description>
 			</channel>
 
-			<channel id="smaxin-minus1-date" typeId="datetime">
+			<channel id="smaxinMinus1Date" typeId="datetime">
 				<label>Smaxin -1 Timestamp</label>
 				<description>Timestamp of SMAXIN-1 value</description>
 			</channel>
@@ -62,17 +62,17 @@
 				<description>Injected active charge point N</description>
 			</channel>
 
-			<channel id="ccain-date" typeId="datetime">
+			<channel id="ccainDate" typeId="datetime">
 				<label>Ccain Timestamp</label>
 				<description>Timestamp of CCAIN value</description>
 			</channel>
 
-			<channel id="ccain-minus1" typeId="power">
+			<channel id="ccainMinus1" typeId="power">
 				<label>Ccain -1</label>
 				<description>Injected active charge point N-1</description>
 			</channel>
 
-			<channel id="ccain-minus1-date" typeId="datetime">
+			<channel id="ccainMinus1Date" typeId="datetime">
 				<label>Ccain -1 Timestamp</label>
 				<description>Timestamp of CCAIN-1 value</description>
 			</channel>

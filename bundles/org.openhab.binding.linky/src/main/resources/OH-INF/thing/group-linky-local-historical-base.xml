@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-historical-base">
+	<channel-group-type id="historical-base">
 		<label>Historical Base</label>
 		<channels>
 			<channel id="adco" typeId="info">

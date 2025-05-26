@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-historical-tempo">
+	<channel-group-type id="historical-tempo">
 		<label>Historical Tempo</label>
 		<channels>
 			<channel id="bbrhcjb" typeId="consumption">

@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-d2l">
+	<channel-group-type id="d2l">
 		<label>D2l</label>
 		<channels>
 			<channel id="id-d2l" typeId="info">

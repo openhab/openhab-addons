@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-calc">
+	<channel-group-type id="calc">
 		<label>Calc</label>
 		<channels>
 			<channel id="irms1f" typeId="current">
@@ -26,39 +26,6 @@
 				<label>Sreactive</label>
 				<description>Instantaneous withdrawn reactive power</description>
 			</channel>
-
-			<channel id="relais1" typeId="switch">
-				<label>Relay 1</label>
-			</channel>
-
-			<channel id="relais2" typeId="switch">
-				<label>Relay 2</label>
-			</channel>
-
-			<channel id="relais3" typeId="switch">
-				<label>Relay 3</label>
-			</channel>
-
-			<channel id="relais4" typeId="switch">
-				<label>Relay 4</label>
-			</channel>
-
-			<channel id="relais5" typeId="switch">
-				<label>Relay 5</label>
-			</channel>
-
-			<channel id="relais6" typeId="switch">
-				<label>Relay 6</label>
-			</channel>
-
-			<channel id="relais7" typeId="switch">
-				<label>Relay 7</label>
-			</channel>
-
-			<channel id="relais8" typeId="switch">
-				<label>Relay 8</label>
-			</channel>
-
 
 			<channel id="contact-sec" typeId="contact">
 				<label>Dry Contact</label>

@@ -59,28 +59,26 @@ public class LinkyBindingConstants {
     public static final String USER_ID = "customerId";
     public static final String AV2_ID = "av2_interne_id";
 
-    public static final String LINKY_REMOTE_DAILY_GROUP = "linky-remote-daily";
-    public static final String LINKY_REMOTE_WEEKLY_GROUP = "linky-remote-weekly";
-    public static final String LINKY_REMOTE_MONTHLY_GROUP = "linky-remote-monthly";
-    public static final String LINKY_REMOTE_YEARLY_GROUP = "linky-remote-yearly";
-    public static final String LINKY_REMOTE_MAIN_GROUP = "linky-remote-main";
-    public static final String LINKY_TEMPO_CALENDAR_GROUP = "linky-tempo-calendar";
-    public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "linky-remote-load-curve";
+    public static final String LINKY_REMOTE_DAILY_GROUP = "daily";
+    public static final String LINKY_REMOTE_WEEKLY_GROUP = "weekly";
+    public static final String LINKY_REMOTE_MONTHLY_GROUP = "monthly";
+    public static final String LINKY_REMOTE_YEARLY_GROUP = "yearly";
+    public static final String LINKY_REMOTE_MAIN_GROUP = "main";
+    public static final String LINKY_TEMPO_CALENDAR_GROUP = "tempo-calendar";
+    public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "load-curve";
 
-    public static final String LINKY_LOCAL_METER_BASE_GROUP = "linky-local-meter-base";
+    public static final String LINKY_LOCAL_STANDARD_3PHASE_GROUP = "threePhasedLSMGroup";
+    public static final String LINKY_LOCAL_STANDARD_BASE_GROUP = "commonLSMGroupType";
+    public static final String LINKY_LOCAL_STANDARD_PRODUCER_GROUP = "producerLSMGroupType";
 
-    public static final String LINKY_LOCAL_STANDARD_3PHASE_GROUP = "linky-local-standard-3phase";
-    public static final String LINKY_LOCAL_STANDARD_BASE_GROUP = "linky-local-standard-base";
-    public static final String LINKY_LOCAL_STANDARD_PRODUCER_GROUP = "linky-local-standard-producer";
+    public static final String LINKY_LOCAL_HISTORICAL_3PHASE_GROUP = "historical-3phase";
+    public static final String LINKY_LOCAL_HISTORICAL_BASE_GROUP = "historical-base";
+    public static final String LINKY_LOCAL_HISTORICAL_EJP_GROUP = "historical-ejp";
+    public static final String LINKY_LOCAL_HISTORICAL_HPHC_GROUP = "historical-hphc";
+    public static final String LINKY_LOCAL_HISTORICAL_TEMPO_GROUP = "historical-tempo";
 
-    public static final String LINKY_LOCAL_HISTORICAL_3PHASE_GROUP = "linky-local-historical-3phase";
-    public static final String LINKY_LOCAL_HISTORICAL_BASE_GROUP = "linky-local-historical-base";
-    public static final String LINKY_LOCAL_HISTORICAL_EJP_GROUP = "linky-local-historical-ejp";
-    public static final String LINKY_LOCAL_HISTORICAL_HPHC_GROUP = "linky-local-historical-hphc";
-    public static final String LINKY_LOCAL_HISTORICAL_TEMPO_GROUP = "linky-local-historical-tempo";
-
-    public static final String LINKY_LOCAL_D2L_GROUP = "linky-local-d2l";
-    public static final String LINKY_LOCAL_CALC_GROUP = "linky-local-calc";
+    public static final String LINKY_LOCAL_D2L_GROUP = "d2l";
+    public static final String LINKY_LOCAL_CALC_GROUP = "calc";
 
     // List of all Channel id's
     public static final String CHANNEL_CONSUMPTION = "consumption";
@@ -269,66 +267,66 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_SMAXSN2_DATE = "smaxsn2-date";
     public static final String CHANNEL_SMAXSN3_DATE = "smaxsn3-date";
 
-    public static final String CHANNEL_SMAXSN_MINUS_1 = "smaxsn-minus1";
-    public static final String CHANNEL_SMAXSN1_MINUS_1 = "smaxsn1-minus1";
-    public static final String CHANNEL_SMAXSN2_MINUS_1 = "smaxsn2-minus1";
-    public static final String CHANNEL_SMAXSN3_MINUS_1 = "smaxsn3-minus1";
+    public static final String CHANNEL_SMAXSN_MINUS_1 = "smaxsnMinus1";
+    public static final String CHANNEL_SMAXSN1_MINUS_1 = "smaxsn1Minus1";
+    public static final String CHANNEL_SMAXSN2_MINUS_1 = "smaxsn2Minus1";
+    public static final String CHANNEL_SMAXSN3_MINUS_1 = "smaxsn3Minus1";
 
-    public static final String CHANNEL_SMAXSN_MINUS_1_DATE = "smaxsn-minus1Date";
-    public static final String CHANNEL_SMAXSN1_MINUS_1_DATE = "smaxsn1-minus1Date";
-    public static final String CHANNEL_SMAXSN2_MINUS_1_DATE = "smaxsn2-minus1Date";
-    public static final String CHANNEL_SMAXSN3_MINUS_1_DATE = "smaxsn3-minus1Date";
+    public static final String CHANNEL_SMAXSN_MINUS_1_DATE = "smaxsnMinus1Date";
+    public static final String CHANNEL_SMAXSN1_MINUS_1_DATE = "smaxsn1Minus1Date";
+    public static final String CHANNEL_SMAXSN2_MINUS_1_DATE = "smaxsn2Minus1Date";
+    public static final String CHANNEL_SMAXSN3_MINUS_1_DATE = "smaxsn3Minus1Date";
 
     public static final String CHANNEL_SINSTI = "sinsti";
 
     public static final String CHANNEL_SMAXIN = "smaxin";
-    public static final String CHANNEL_SMAXIN_DATE = "smaxin-date";
+    public static final String CHANNEL_SMAXIN_DATE = "smaxinDate";
 
-    public static final String CHANNEL_SMAXIN_MINUS_1 = "smaxin-minus1";
-    public static final String CHANNEL_SMAXIN_MINUS_1_DATE = "smaxin-minus1-date";
+    public static final String CHANNEL_SMAXIN_MINUS_1 = "smaxinMinus1";
+    public static final String CHANNEL_SMAXIN_MINUS_1_DATE = "smaxinMinus1Date";
 
     public static final String CHANNEL_CCASN = "ccasn";
-    public static final String CHANNEL_CCASN_DATE = "ccasn-date";
+    public static final String CHANNEL_CCASN_DATE = "ccasnDate";
 
-    public static final String CHANNEL_CCASN_MINUS_1 = "ccasn-minus1";
-    public static final String CHANNEL_CCASN_MINUS_1_DATE = "ccasn-minus1-date";
+    public static final String CHANNEL_CCASN_MINUS_1 = "ccasnMinus1";
+    public static final String CHANNEL_CCASN_MINUS_1_DATE = "ccasnMinus1Date";
 
     public static final String CHANNEL_CCAIN = "ccain";
-    public static final String CHANNEL_CCAIN_DATE = "ccain-date";
+    public static final String CHANNEL_CCAIN_DATE = "ccainDate";
 
-    public static final String CHANNEL_CCAIN_MINUS_1 = "ccain-minus1";
-    public static final String CHANNEL_CCAIN_MINUS_1_DATE = "ccain-minus1-date";
+    public static final String CHANNEL_CCAIN_MINUS_1 = "ccainMinus1";
+    public static final String CHANNEL_CCAIN_MINUS_1_DATE = "ccainMinus1Date";
 
     public static final String CHANNEL_UMOY1 = "umoy1";
-    public static final String CHANNEL_UMOY1_DATE = "umoy1-date";
+    public static final String CHANNEL_UMOY1_DATE = "umoy1Date";
 
     public static final String CHANNEL_UMOY2 = "umoy2";
-    public static final String CHANNEL_UMOY2_DATE = "umoy2-date";
+    public static final String CHANNEL_UMOY2_DATE = "umoy2Date";
 
     public static final String CHANNEL_UMOY3 = "umoy3";
-    public static final String CHANNEL_UMOY3_DATE = "umoy3-date";
+    public static final String CHANNEL_UMOY3_DATE = "umoy3Date";
 
     public static final String CHANNEL_STGE = "stge";
 
     public static final String CHANNEL_RELAIS = "relais";
 
     public static final String CHANNEL_DPM1 = "dpm1";
-    public static final String CHANNEL_DPM1_DATE = "dpm1-date";
+    public static final String CHANNEL_DPM1_DATE = "dpm1Date";
 
     public static final String CHANNEL_FPM1 = "fpm1";
-    public static final String CHANNEL_FPM1_DATE = "fpm1-date";
+    public static final String CHANNEL_FPM1_DATE = "fpm1Date";
 
     public static final String CHANNEL_DPM2 = "dpm2";
-    public static final String CHANNEL_DPM2_DATE = "dpm2-date";
+    public static final String CHANNEL_DPM2_DATE = "dpm2Date";
 
     public static final String CHANNEL_FPM2 = "fpm2";
-    public static final String CHANNEL_FPM2_DATE = "fpm2-date";
+    public static final String CHANNEL_FPM2_DATE = "fpm2Date";
 
     public static final String CHANNEL_DPM3 = "dpm3";
-    public static final String CHANNEL_DPM3_DATE = "dpm3-date";
+    public static final String CHANNEL_DPM3_DATE = "dpm3Date";
 
     public static final String CHANNEL_FPM3 = "fpm3";
-    public static final String CHANNEL_FPM3_DATE = "fpm3-date";
+    public static final String CHANNEL_FPM3_DATE = "fpm3Date";
 
     public static final String CHANNEL_MSG1 = "msg1";
     public static final String CHANNEL_MSG2 = "msg2";
@@ -337,8 +335,8 @@ public class LinkyBindingConstants {
 
     public static final String CHANNEL_NTARF = "ntarf";
     public static final String CHANNEL_NJOURF = "njourf";
-    public static final String CHANNEL_NJOURF_PLUS_1 = "njourf-plus1";
-    public static final String CHANNEL_PJOURF_PLUS_1 = "pjourf-plus1";
+    public static final String CHANNEL_NJOURF_PLUS_1 = "njourfPlus1";
+    public static final String CHANNEL_PJOURF_PLUS_1 = "pjourfPlus1";
     public static final String CHANNEL_PPOINTE = "ppointe";
 
     public static final String CHANNEL_PJOURF_IDX = "pjourf";
