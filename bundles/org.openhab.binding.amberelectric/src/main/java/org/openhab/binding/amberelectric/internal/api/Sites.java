@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Class for holding the set of parameters used to read the controller variables.
+ * Container class for Sites, related to amberelectric
  *
  * @author Paul Smedley - Initial Contribution
  *
