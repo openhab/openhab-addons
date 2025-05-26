@@ -13,9 +13,9 @@ It supports different functionalities:
 The new binding version can use multiple bridges to access consumption data.
 You can use :
 
-- The enedis-web bridge: Uses the old Enedis API, based on the Enedis website, to gather data.
+- The enedis bridge: Uses the old Enedis API, based on the Enedis website, to gather data.
 - The myelectricaldata bridge: Uses the new REST Enedis API via the MyElectricalData proxy site to access the data.
-- TThe enedis bridge: Also uses the new REST Enedis API, but gathers data directly from the Enedis site.
+- TThe enedis-api bridge: Also uses the new REST Enedis API, but gathers data directly from the Enedis site.
 
 You first need to create an Enedis account [here](https://mon-compte-client.enedis.fr/)  if you don't already have one. 
 Ensure that you have accepted their conditions and check that you can see graphs on the website, especially the hourly view.
@@ -25,19 +25,19 @@ The binding will not provide this information unless this step is completed.
 
 Advantage and Disadvantage of Each Method.
 
-- Enedis-web bridge is the older method.
+- Enedis bridge is the older method.
 - MyelectricalData and enedis bridges both use the new API format, making them less prone to changes in website architecture.
 - MyelectricalData bridge is managed by a third-party provider but is stable.
-- Enedis bridge directly connects to Enedis but currently requires a complex registration process with Enedis. 
-  This limitation will likely be resolved in the near future, making Enedis Bridge the preferred method.
+- Enedis-api bridge directly connects to Enedis but currently requires a complex registration process with Enedis. 
+  This limitation will likely be resolved in the near future, making Enedis-api Bridge the preferred method.
 
 ### Bridge Configuration
 
-To retrieve data, the Linky device needs to be linked to a LinkyBridge. The available bridge options are enedis-web, myelectricaldata, and enedis.
+To retrieve data, the Linky device needs to be linked to a LinkyBridge. The available bridge options are enedis, myelectricaldata, and enedis-api.
 
-#### Enedis-web Bridge
+#### Enedis Bridge
 
-If you select enedis-web bridge, you will need :
+If you select enedis bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To provide your credentials: username, password, and InternalAuthId.
@@ -67,7 +67,7 @@ If you select enedis-web bridge, you will need :
 	This parameter can be useful if you read data from a Linky in a different timezone.
 
     ```java
-    Bridge linky:enedis-web:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
+    Bridge linky:enedis:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
     ```
 
 #### Myelectricaldata Bridge
@@ -119,7 +119,7 @@ If you select enedis bridge, you will need :
 
 
     ```java
-    Bridge linky:enedis:localSB "EnedisBridgeSandbox" [  clientId="myClientId...", clientSecret="myClientSecret..."	]  
+    Bridge linky:enedis-api:localSB "EnedisBridgeSandbox" [  clientId="myClientId...", clientSecret="myClientSecret..."	]  
     ```
 
 ### Thing Configuration  
@@ -144,8 +144,8 @@ The device has the following configuration parameters:
 
 
 ```java
-Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis-web:local) [ prmId="xxxx" ]
 Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis:local) [ prmId="xxxx" ]
+Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis-api:local) [ prmId="xxxx" ]
 Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:myelectricaldata:local) [ prmId="xxxx", token="myElectricalDataToken" ]
 ```
 
@@ -234,19 +234,19 @@ The retrieved information is available in multiple groups.
 #### Remote Enedis Web Connection
 
 ```java
-Bridge linky:enedis-web:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
+Bridge linky:enedis:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
 
-Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis-web:local) [ prmId="xxxx" ]
+Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis:local) [ prmId="xxxx" ]
 ```
 
 ```java
-Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:daily#yesterday" }
-Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:weekly#thisWeek" }
-Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:weekly#lastWeek" }
-Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:monthly#thisMonth" }
-Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:monthly#lastMonth" }
-Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:yearly#thisYear" }
-Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:yearly#lastYear" }
+Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:enedis:local:daily#yesterday" }
+Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:enedis:local:weekly#thisWeek" }
+Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:enedis:local:weekly#lastWeek" }
+Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel="linky:enedis:local:monthly#thisMonth" }
+Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:enedis:local:monthly#lastMonth" }
+Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:enedis:local:yearly#thisYear" }
+Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:enedis:local:yearly#lastYear" }
 ```
 
 ### Displaying Information Graph
