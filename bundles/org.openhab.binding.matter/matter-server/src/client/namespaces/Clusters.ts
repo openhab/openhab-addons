@@ -36,6 +36,10 @@ export class Clusters {
         }
 
         const cluster = this.#clusterForName(clusterName);
+        if (cluster.id === undefined) {
+            throw new Error(`Cluster ID for ${clusterName} not found`);
+        }
+
         const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterName} not found`);
@@ -81,6 +85,10 @@ export class Clusters {
         }
 
         const cluster = this.#clusterForName(clusterName);
+        if (cluster.id === undefined) {
+            throw new Error(`Cluster ID for ${clusterName} not found`);
+        }
+
         const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterName} not found`);
@@ -127,6 +135,10 @@ export class Clusters {
         }
 
         const cluster = this.#clusterForName(clusterName);
+        if (cluster.id === undefined) {
+            throw new Error(`Cluster ID for ${clusterName} not found`);
+        }
+
         const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterName} not found`);
@@ -159,6 +171,10 @@ export class Clusters {
         }
 
         const clusterId = typeof clusterNameOrId === 'string' ? this.#clusterForName(clusterNameOrId).id : clusterNameOrId;
+        if (clusterId === undefined) {
+            throw new Error(`Cluster ID for ${clusterNameOrId} not found`);
+        }
+        
         const clusterClient = device.getClusterClientById(ClusterId(clusterId));       
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterNameOrId} not found`);

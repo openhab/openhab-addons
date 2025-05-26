@@ -103,17 +103,17 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * PowerAsNumber
+         * 
          * Power is specified as a unitless number or a percentage
          */
         public boolean powerAsNumber;
         /**
-         * PowerInWatts
+         * 
          * Power is specified in Watts
          */
         public boolean powerInWatts;
         /**
-         * PowerNumberLimits
+         * 
          * Supports the limit attributes used with the PWRNUM feature
          */
         public boolean powerNumberLimits;

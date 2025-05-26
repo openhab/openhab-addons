@@ -275,6 +275,6 @@ export class Nodes {
     async logNode(nodeId: number | string) {
         const node = await this.controllerNode.getNode(nodeId);
         console.log("Logging structure of Node ", node.nodeId.toString());
-        node.logStructure({});
+        node.logStructure();
     }
 }

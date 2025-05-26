@@ -120,7 +120,7 @@ public class EnergyPreferenceCluster extends BaseCluster {
         COMFORT(0, "Comfort"),
         SPEED(1, "Speed"),
         EFFICIENCY(2, "Efficiency"),
-        WATER_CONSUMPTION(3, "WaterConsumption");
+        WATER_CONSUMPTION(3, "Water Consumption");
 
         public final Integer value;
         public final String label;
@@ -144,13 +144,13 @@ public class EnergyPreferenceCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * EnergyBalance
+         * 
          * This feature allows a user to select from a list of energy balances with associated descriptions of which
          * strategies a device will use to target the specified balance.
          */
         public boolean energyBalance;
         /**
-         * LowPowerModeSensitivity
+         * 
          * This feature allows the user to select a condition or set of conditions which will cause the device to switch
          * to a mode using less power. For example, a device might provide a scale of durations that must elapse without
          * user interaction before it goes to sleep.

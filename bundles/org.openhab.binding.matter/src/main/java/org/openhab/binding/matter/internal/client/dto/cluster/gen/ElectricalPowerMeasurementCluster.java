@@ -420,27 +420,27 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * DirectCurrent
+         * 
          * This feature indicates the cluster can measure a direct current.
          */
         public boolean directCurrent;
         /**
-         * AlternatingCurrent
+         * 
          * This feature indicates the cluster can measure an alternating current.
          */
         public boolean alternatingCurrent;
         /**
-         * PolyphasePower
+         * 
          * This feature indicates the cluster represents the collective measurements for a Polyphase power supply.
          */
         public boolean polyphasePower;
         /**
-         * Harmonics
+         * 
          * This feature indicates the cluster can measure the harmonics of an alternating current.
          */
         public boolean harmonics;
         /**
-         * PowerQuality
+         * 
          * This feature indicates the cluster can measure the harmonic phases of an alternating current.
          */
         public boolean powerQuality;

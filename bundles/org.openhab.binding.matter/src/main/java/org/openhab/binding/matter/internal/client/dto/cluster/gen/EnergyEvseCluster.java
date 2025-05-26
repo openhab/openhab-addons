@@ -508,12 +508,12 @@ public class EnergyEvseCluster extends BaseCluster {
 
     // Enums
     public enum StateEnum implements MatterEnum {
-        NOT_PLUGGED_IN(0, "NotPluggedIn"),
-        PLUGGED_IN_NO_DEMAND(1, "PluggedInNoDemand"),
-        PLUGGED_IN_DEMAND(2, "PluggedInDemand"),
-        PLUGGED_IN_CHARGING(3, "PluggedInCharging"),
-        PLUGGED_IN_DISCHARGING(4, "PluggedInDischarging"),
-        SESSION_ENDING(5, "SessionEnding"),
+        NOT_PLUGGED_IN(0, "Not Plugged In"),
+        PLUGGED_IN_NO_DEMAND(1, "Plugged In No Demand"),
+        PLUGGED_IN_DEMAND(2, "Plugged In Demand"),
+        PLUGGED_IN_CHARGING(3, "Plugged In Charging"),
+        PLUGGED_IN_DISCHARGING(4, "Plugged In Discharging"),
+        SESSION_ENDING(5, "Session Ending"),
         FAULT(6, "Fault");
 
         public final Integer value;
@@ -537,10 +537,10 @@ public class EnergyEvseCluster extends BaseCluster {
 
     public enum SupplyStateEnum implements MatterEnum {
         DISABLED(0, "Disabled"),
-        CHARGING_ENABLED(1, "ChargingEnabled"),
-        DISCHARGING_ENABLED(2, "DischargingEnabled"),
-        DISABLED_ERROR(3, "DisabledError"),
-        DISABLED_DIAGNOSTICS(4, "DisabledDiagnostics"),
+        CHARGING_ENABLED(1, "Charging Enabled"),
+        DISCHARGING_ENABLED(2, "Discharging Enabled"),
+        DISABLED_ERROR(3, "Disabled Error"),
+        DISABLED_DIAGNOSTICS(4, "Disabled Diagnostics"),
         ENABLED(5, "Enabled");
 
         public final Integer value;
@@ -563,22 +563,22 @@ public class EnergyEvseCluster extends BaseCluster {
     }
 
     public enum FaultStateEnum implements MatterEnum {
-        NO_ERROR(0, "NoError"),
-        METER_FAILURE(1, "MeterFailure"),
-        OVER_VOLTAGE(2, "OverVoltage"),
-        UNDER_VOLTAGE(3, "UnderVoltage"),
-        OVER_CURRENT(4, "OverCurrent"),
-        CONTACT_WET_FAILURE(5, "ContactWetFailure"),
-        CONTACT_DRY_FAILURE(6, "ContactDryFailure"),
-        GROUND_FAULT(7, "GroundFault"),
-        POWER_LOSS(8, "PowerLoss"),
-        POWER_QUALITY(9, "PowerQuality"),
-        PILOT_SHORT_CIRCUIT(10, "PilotShortCircuit"),
-        EMERGENCY_STOP(11, "EmergencyStop"),
-        EV_DISCONNECTED(12, "EvDisconnected"),
-        WRONG_POWER_SUPPLY(13, "WrongPowerSupply"),
-        LIVE_NEUTRAL_SWAP(14, "LiveNeutralSwap"),
-        OVER_TEMPERATURE(15, "OverTemperature"),
+        NO_ERROR(0, "No Error"),
+        METER_FAILURE(1, "Meter Failure"),
+        OVER_VOLTAGE(2, "Over Voltage"),
+        UNDER_VOLTAGE(3, "Under Voltage"),
+        OVER_CURRENT(4, "Over Current"),
+        CONTACT_WET_FAILURE(5, "Contact Wet Failure"),
+        CONTACT_DRY_FAILURE(6, "Contact Dry Failure"),
+        GROUND_FAULT(7, "Ground Fault"),
+        POWER_LOSS(8, "Power Loss"),
+        POWER_QUALITY(9, "Power Quality"),
+        PILOT_SHORT_CIRCUIT(10, "Pilot Short Circuit"),
+        EMERGENCY_STOP(11, "Emergency Stop"),
+        EV_DISCONNECTED(12, "Ev Disconnected"),
+        WRONG_POWER_SUPPLY(13, "Wrong Power Supply"),
+        LIVE_NEUTRAL_SWAP(14, "Live Neutral Swap"),
+        OVER_TEMPERATURE(15, "Over Temperature"),
         OTHER(255, "Other");
 
         public final Integer value;
@@ -601,8 +601,8 @@ public class EnergyEvseCluster extends BaseCluster {
     }
 
     public enum EnergyTransferStoppedReasonEnum implements MatterEnum {
-        EV_STOPPED(0, "EvStopped"),
-        EVSE_STOPPED(1, "EvseStopped"),
+        EV_STOPPED(0, "Ev Stopped"),
+        EVSE_STOPPED(1, "Evse Stopped"),
         OTHER(2, "Other");
 
         public final Integer value;
@@ -648,7 +648,7 @@ public class EnergyEvseCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * ChargingPreferences
+         * 
          * Since some EVSEs cannot obtain the SoC from the vehicle, some EV charging solutions allow the consumer to
          * specify a daily charging target (for adding energy to the EV’s battery). This feature allows the consumer to
          * specify how many miles or km of additional range they need for their typical daily commute. This range
@@ -668,7 +668,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public boolean chargingPreferences;
         /**
-         * SoCReporting
+         * 
          * Vehicles and EVSEs which support ISO 15118 may allow the vehicle to report its battery size and state of
          * charge. If the EVSE supports PLC it may have a vehicle connected which optionally supports reporting of its
          * battery size and current State of Charge (SoC).
@@ -679,7 +679,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public boolean soCReporting;
         /**
-         * PlugAndCharge
+         * 
          * If the EVSE supports PLC, it may be able to support the Plug and Charge feature. e.g. this may allow the
          * vehicle ID to be obtained which may allow an energy management system to track energy usage per vehicle (e.g.
          * to give the owner an indicative cost of charging, or for work place charging).
@@ -687,7 +687,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public boolean plugAndCharge;
         /**
-         * Rfid
+         * 
          * If the EVSE is fitted with an RFID reader, it may be possible to obtain the User or Vehicle ID from an RFID
          * card. This may be used to record a charging session against a specific charging account, and may optionally
          * be used to authorize a charging session.
@@ -697,7 +697,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public boolean rfid;
         /**
-         * V2X
+         * 
          * If the EVSE can support bi-directional charging, it may be possible to request that the vehicle can discharge
          * to the home or grid.
          * The charging and discharging may be controlled by a home Energy Management System (EMS) using the Device

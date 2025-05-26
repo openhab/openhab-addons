@@ -131,7 +131,7 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Watermarks
+         * 
          * Node makes available the metrics for high watermark related to memory consumption.
          */
         public boolean watermarks;

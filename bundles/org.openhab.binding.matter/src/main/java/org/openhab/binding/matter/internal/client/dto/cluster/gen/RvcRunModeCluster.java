@@ -33,13 +33,13 @@ public class RvcRunModeCluster extends ModeBaseCluster {
     // Enums
     public enum ModeChangeStatus implements MatterEnum {
         STUCK(65, "Stuck"),
-        DUST_BIN_MISSING(66, "DustBinMissing"),
-        DUST_BIN_FULL(67, "DustBinFull"),
-        WATER_TANK_EMPTY(68, "WaterTankEmpty"),
-        WATER_TANK_MISSING(69, "WaterTankMissing"),
-        WATER_TANK_LID_OPEN(70, "WaterTankLidOpen"),
-        MOP_CLEANING_PAD_MISSING(71, "MopCleaningPadMissing"),
-        BATTERY_LOW(72, "BatteryLow");
+        DUST_BIN_MISSING(66, "Dust Bin Missing"),
+        DUST_BIN_FULL(67, "Dust Bin Full"),
+        WATER_TANK_EMPTY(68, "Water Tank Empty"),
+        WATER_TANK_MISSING(69, "Water Tank Missing"),
+        WATER_TANK_LID_OPEN(70, "Water Tank Lid Open"),
+        MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing"),
+        BATTERY_LOW(72, "Battery Low");
 
         public final Integer value;
         public final String label;
@@ -64,8 +64,8 @@ public class RvcRunModeCluster extends ModeBaseCluster {
         AUTO(0, "Auto"),
         QUICK(1, "Quick"),
         QUIET(2, "Quiet"),
-        LOW_NOISE(3, "LowNoise"),
-        LOW_ENERGY(4, "LowEnergy"),
+        LOW_NOISE(3, "Low Noise"),
+        LOW_ENERGY(4, "Low Energy"),
         VACATION(5, "Vacation"),
         MIN(6, "Min"),
         MAX(7, "Max"),

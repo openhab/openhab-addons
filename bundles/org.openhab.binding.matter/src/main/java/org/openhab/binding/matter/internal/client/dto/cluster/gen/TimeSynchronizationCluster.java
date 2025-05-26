@@ -324,11 +324,11 @@ public class TimeSynchronizationCluster extends BaseCluster {
 
     // Enums
     public enum GranularityEnum implements MatterEnum {
-        NO_TIME_GRANULARITY(0, "NoTimeGranularity"),
-        MINUTES_GRANULARITY(1, "MinutesGranularity"),
-        SECONDS_GRANULARITY(2, "SecondsGranularity"),
-        MILLISECONDS_GRANULARITY(3, "MillisecondsGranularity"),
-        MICROSECONDS_GRANULARITY(4, "MicrosecondsGranularity");
+        NO_TIME_GRANULARITY(0, "No Time Granularity"),
+        MINUTES_GRANULARITY(1, "Minutes Granularity"),
+        SECONDS_GRANULARITY(2, "Seconds Granularity"),
+        MILLISECONDS_GRANULARITY(3, "Milliseconds Granularity"),
+        MICROSECONDS_GRANULARITY(4, "Microseconds Granularity");
 
         public final Integer value;
         public final String label;
@@ -353,18 +353,18 @@ public class TimeSynchronizationCluster extends BaseCluster {
         NONE(0, "None"),
         UNKNOWN(1, "Unknown"),
         ADMIN(2, "Admin"),
-        NODE_TIME_CLUSTER(3, "NodeTimeCluster"),
-        NON_MATTER_SNTP(4, "NonMatterSntp"),
-        NON_MATTER_NTP(5, "NonMatterNtp"),
-        MATTER_SNTP(6, "MatterSntp"),
-        MATTER_NTP(7, "MatterNtp"),
-        MIXED_NTP(8, "MixedNtp"),
-        NON_MATTER_SNTPNTS(9, "NonMatterSntpnts"),
-        NON_MATTER_NTPNTS(10, "NonMatterNtpnts"),
-        MATTER_SNTPNTS(11, "MatterSntpnts"),
-        MATTER_NTPNTS(12, "MatterNtpnts"),
-        MIXED_NTPNTS(13, "MixedNtpnts"),
-        CLOUD_SOURCE(14, "CloudSource"),
+        NODE_TIME_CLUSTER(3, "Node Time Cluster"),
+        NON_MATTER_SNTP(4, "Non Matter Sntp"),
+        NON_MATTER_NTP(5, "Non Matter Ntp"),
+        MATTER_SNTP(6, "Matter Sntp"),
+        MATTER_NTP(7, "Matter Ntp"),
+        MIXED_NTP(8, "Mixed Ntp"),
+        NON_MATTER_SNTPNTS(9, "Non Matter Sntpnts"),
+        NON_MATTER_NTPNTS(10, "Non Matter Ntpnts"),
+        MATTER_SNTPNTS(11, "Matter Sntpnts"),
+        MATTER_NTPNTS(12, "Matter Ntpnts"),
+        MIXED_NTPNTS(13, "Mixed Ntpnts"),
+        CLOUD_SOURCE(14, "Cloud Source"),
         PTP(15, "Ptp"),
         GNSS(16, "Gnss");
 
@@ -417,7 +417,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
     }
 
     public enum StatusCodeEnum implements MatterEnum {
-        TIME_NOT_ACCEPTED(2, "TimeNotAccepted");
+        TIME_NOT_ACCEPTED(2, "Time Not Accepted");
 
         public final Integer value;
         public final String label;
@@ -441,7 +441,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * TimeZone
+         * 
          * Allows a server to translate a UTC time to a local time using the time zone and daylight savings time (DST)
          * offsets. If a server supports the TimeZone feature, it shall support the SetTimeZone and SetDSTOffset
          * commands, and TimeZone and DSTOffset attributes, and shall expose the local time through the LocalTime
@@ -449,18 +449,18 @@ public class TimeSynchronizationCluster extends BaseCluster {
          */
         public boolean timeZone;
         /**
-         * NtpClient
+         * 
          * Allows a node to use NTP/SNTP for time synchronization.
          */
         public boolean ntpClient;
         /**
-         * NtpServer
+         * 
          * Allows a Node to host an NTP server for the network so that other Nodes can achieve a high accuracy time
          * synchronization within the network. See Section 11.17.15, “Acting as an NTP Server”.
          */
         public boolean ntpServer;
         /**
-         * TimeSyncClient
+         * 
          * This node also supports a time synchronization client and can connect to and read time from other nodes.
          */
         public boolean timeSyncClient;

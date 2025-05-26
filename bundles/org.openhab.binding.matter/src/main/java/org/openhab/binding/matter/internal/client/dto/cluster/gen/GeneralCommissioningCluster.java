@@ -168,13 +168,13 @@ public class GeneralCommissioningCluster extends BaseCluster {
      */
     public enum CommissioningErrorEnum implements MatterEnum {
         OK(0, "Ok"),
-        VALUE_OUTSIDE_RANGE(1, "ValueOutsideRange"),
-        INVALID_AUTHENTICATION(2, "InvalidAuthentication"),
-        NO_FAIL_SAFE(3, "NoFailSafe"),
-        BUSY_WITH_OTHER_ADMIN(4, "BusyWithOtherAdmin"),
-        REQUIRED_TC_NOT_ACCEPTED(5, "RequiredTcNotAccepted"),
-        TC_ACKNOWLEDGEMENTS_NOT_RECEIVED(6, "TcAcknowledgementsNotReceived"),
-        TC_MIN_VERSION_NOT_MET(7, "TcMinVersionNotMet");
+        VALUE_OUTSIDE_RANGE(1, "Value Outside Range"),
+        INVALID_AUTHENTICATION(2, "Invalid Authentication"),
+        NO_FAIL_SAFE(3, "No Fail Safe"),
+        BUSY_WITH_OTHER_ADMIN(4, "Busy With Other Admin"),
+        REQUIRED_TC_NOT_ACCEPTED(5, "Required Tc Not Accepted"),
+        TC_ACKNOWLEDGEMENTS_NOT_RECEIVED(6, "Tc Acknowledgements Not Received"),
+        TC_MIN_VERSION_NOT_MET(7, "Tc Min Version Not Met");
 
         public final Integer value;
         public final String label;
@@ -202,7 +202,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
     public enum RegulatoryLocationTypeEnum implements MatterEnum {
         INDOOR(0, "Indoor"),
         OUTDOOR(1, "Outdoor"),
-        INDOOR_OUTDOOR(2, "IndoorOutdoor");
+        INDOOR_OUTDOOR(2, "Indoor Outdoor");
 
         public final Integer value;
         public final String label;
@@ -241,7 +241,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * TermsAndConditions
+         * 
          * Supports Terms &amp; Conditions acknowledgement
          */
         public boolean termsAndConditions;

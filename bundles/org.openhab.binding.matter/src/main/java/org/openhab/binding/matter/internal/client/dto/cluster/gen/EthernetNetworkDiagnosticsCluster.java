@@ -94,16 +94,16 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
 
     // Enums
     public enum PHYRateEnum implements MatterEnum {
-        RATE10M(0, "Rate10M"),
-        RATE100M(1, "Rate100M"),
-        RATE1G(2, "Rate1G"),
-        RATE25G(3, "Rate25G"),
-        RATE5G(4, "Rate5G"),
-        RATE10G(5, "Rate10G"),
-        RATE40G(6, "Rate40G"),
-        RATE100G(7, "Rate100G"),
-        RATE200G(8, "Rate200G"),
-        RATE400G(9, "Rate400G");
+        RATE10M(0, "Rate 10 M"),
+        RATE100M(1, "Rate 100 M"),
+        RATE1G(2, "Rate 1 G"),
+        RATE25G(3, "Rate 25 G"),
+        RATE5G(4, "Rate 5 G"),
+        RATE10G(5, "Rate 10 G"),
+        RATE40G(6, "Rate 40 G"),
+        RATE100G(7, "Rate 100 G"),
+        RATE200G(8, "Rate 200 G"),
+        RATE400G(9, "Rate 400 G");
 
         public final Integer value;
         public final String label;
@@ -127,12 +127,12 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * PacketCounts
+         * 
          * Node makes available the counts for the number of received and transmitted packets on the ethernet interface.
          */
         public boolean packetCounts;
         /**
-         * ErrorCounts
+         * 
          * Node makes available the counts for the number of errors that have occurred during the reception and
          * transmission of packets on the ethernet interface.
          */

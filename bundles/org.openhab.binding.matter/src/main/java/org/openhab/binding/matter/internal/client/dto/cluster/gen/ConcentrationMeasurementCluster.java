@@ -106,11 +106,11 @@ public abstract class ConcentrationMeasurementCluster extends BaseCluster {
         PPM(0, "Ppm"),
         PPB(1, "Ppb"),
         PPT(2, "Ppt"),
-        MGM3(3, "Mgm3"),
-        UGM3(4, "Ugm3"),
-        NGM3(5, "Ngm3"),
-        PM3(6, "Pm3"),
-        BQM3(7, "Bqm3");
+        MGM3(3, "Mgm 3"),
+        UGM3(4, "Ugm 3"),
+        NGM3(5, "Ngm 3"),
+        PM3(6, "Pm 3"),
+        BQM3(7, "Bqm 3");
 
         public final Integer value;
         public final String label;
@@ -184,32 +184,32 @@ public abstract class ConcentrationMeasurementCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * NumericMeasurement
+         * 
          * Cluster supports numeric measurement of substance
          */
         public boolean numericMeasurement;
         /**
-         * LevelIndication
+         * 
          * Cluster supports basic level indication for substance using the ConcentrationLev el enum
          */
         public boolean levelIndication;
         /**
-         * MediumLevel
+         * 
          * Cluster supports the Medium Concentration Level
          */
         public boolean mediumLevel;
         /**
-         * CriticalLevel
+         * 
          * Cluster supports the Critical Concentration Level
          */
         public boolean criticalLevel;
         /**
-         * PeakMeasurement
+         * 
          * Cluster supports peak numeric measurement of substance
          */
         public boolean peakMeasurement;
         /**
-         * AverageMeasurement
+         * 
          * Cluster supports average numeric measurement of substance
          */
         public boolean averageMeasurement;

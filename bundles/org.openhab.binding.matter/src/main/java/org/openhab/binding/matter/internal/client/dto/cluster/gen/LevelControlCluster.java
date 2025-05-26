@@ -221,12 +221,12 @@ public class LevelControlCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * OnOff
+         * 
          * Dependency with the On/Off cluster
          */
         public boolean onOff;
         /**
-         * Lighting
+         * 
          * This feature supports an interface for controlling the level of a light source. For the CurrentLevel
          * attribute:
          * A value of 0x00 shall NOT be used.
@@ -237,7 +237,7 @@ public class LevelControlCluster extends BaseCluster {
          */
         public boolean lighting;
         /**
-         * Frequency
+         * 
          * Supports frequency attributes and behavior.
          */
         public boolean frequency;

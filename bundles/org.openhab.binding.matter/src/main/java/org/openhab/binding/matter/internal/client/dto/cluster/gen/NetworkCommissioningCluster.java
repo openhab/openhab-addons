@@ -245,12 +245,12 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * WiFiInterfaceScanResultStruct.
      */
     public enum WiFiBandEnum implements MatterEnum {
-        V2G4(0, "2G4"),
-        V3G65(1, "3G65"),
-        V5G(2, "5G"),
-        V6G(3, "6G"),
-        V60G(4, "60G"),
-        V1G(5, "1G");
+        V2G4(0, "2 G 4"),
+        V3G65(1, "3 G 65"),
+        V5G(2, "5 G"),
+        V6G(3, "6 G"),
+        V60G(4, "60 G"),
+        V1G(5, "1 G");
 
         public final Integer value;
         public final String label;
@@ -273,18 +273,18 @@ public class NetworkCommissioningCluster extends BaseCluster {
 
     public enum NetworkCommissioningStatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        OUT_OF_RANGE(1, "OutOfRange"),
-        BOUNDS_EXCEEDED(2, "BoundsExceeded"),
-        NETWORK_ID_NOT_FOUND(3, "NetworkIdNotFound"),
-        DUPLICATE_NETWORK_ID(4, "DuplicateNetworkId"),
-        NETWORK_NOT_FOUND(5, "NetworkNotFound"),
-        REGULATORY_ERROR(6, "RegulatoryError"),
-        AUTH_FAILURE(7, "AuthFailure"),
-        UNSUPPORTED_SECURITY(8, "UnsupportedSecurity"),
-        OTHER_CONNECTION_FAILURE(9, "OtherConnectionFailure"),
-        IPV6FAILED(10, "Ipv6Failed"),
-        IP_BIND_FAILED(11, "IpBindFailed"),
-        UNKNOWN_ERROR(12, "UnknownError");
+        OUT_OF_RANGE(1, "Out Of Range"),
+        BOUNDS_EXCEEDED(2, "Bounds Exceeded"),
+        NETWORK_ID_NOT_FOUND(3, "Network Id Not Found"),
+        DUPLICATE_NETWORK_ID(4, "Duplicate Network Id"),
+        NETWORK_NOT_FOUND(5, "Network Not Found"),
+        REGULATORY_ERROR(6, "Regulatory Error"),
+        AUTH_FAILURE(7, "Auth Failure"),
+        UNSUPPORTED_SECURITY(8, "Unsupported Security"),
+        OTHER_CONNECTION_FAILURE(9, "Other Connection Failure"),
+        IPV6FAILED(10, "Ipv 6 Failed"),
+        IP_BIND_FAILED(11, "Ip Bind Failed"),
+        UNKNOWN_ERROR(12, "Unknown Error");
 
         public final Integer value;
         public final String label;
@@ -353,17 +353,17 @@ public class NetworkCommissioningCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * WiFiNetworkInterface
+         * 
          * Wi-Fi related features
          */
         public boolean wiFiNetworkInterface;
         /**
-         * ThreadNetworkInterface
+         * 
          * Thread related features
          */
         public boolean threadNetworkInterface;
         /**
-         * EthernetNetworkInterface
+         * 
          * Ethernet related features
          */
         public boolean ethernetNetworkInterface;

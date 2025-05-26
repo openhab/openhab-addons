@@ -559,7 +559,7 @@ public class AccessControlCluster extends BaseCluster {
      */
     public enum AccessControlEntryPrivilegeEnum implements MatterEnum {
         VIEW(1, "View"),
-        PROXY_VIEW(2, "ProxyView"),
+        PROXY_VIEW(2, "Proxy View"),
         OPERATE(3, "Operate"),
         MANAGE(4, "Manage"),
         ADMINISTER(5, "Administer");
@@ -584,10 +584,10 @@ public class AccessControlCluster extends BaseCluster {
     }
 
     public enum AccessRestrictionTypeEnum implements MatterEnum {
-        ATTRIBUTE_ACCESS_FORBIDDEN(0, "AttributeAccessForbidden"),
-        ATTRIBUTE_WRITE_FORBIDDEN(1, "AttributeWriteForbidden"),
-        COMMAND_FORBIDDEN(2, "CommandForbidden"),
-        EVENT_FORBIDDEN(3, "EventForbidden");
+        ATTRIBUTE_ACCESS_FORBIDDEN(0, "Attribute Access Forbidden"),
+        ATTRIBUTE_WRITE_FORBIDDEN(1, "Attribute Write Forbidden"),
+        COMMAND_FORBIDDEN(2, "Command Forbidden"),
+        EVENT_FORBIDDEN(3, "Event Forbidden");
 
         public final Integer value;
         public final String label;
@@ -635,12 +635,12 @@ public class AccessControlCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Extension
+         * 
          * This feature indicates the device supports ACL Extension attribute.
          */
         public boolean extension;
         /**
-         * ManagedDevice
+         * 
          * This feature is for a device that is managed by a service associated with the device vendor and which imposes
          * default access restrictions upon each new fabric added to it. This could arise, for example, if the device is
          * managed by a service provider under contract to an end-user, in such a way that the manager of the device

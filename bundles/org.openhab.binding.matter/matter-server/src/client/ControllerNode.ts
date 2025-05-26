@@ -1,8 +1,7 @@
 // Include this first to auto-register Crypto, Network and Time Node.js implementations
 import { CommissioningController } from "@project-chip/matter.js";
 import { NodeId } from "@matter/types";
-import { PairedNode, NodeStates } from "@project-chip/matter.js/device";
-import { EndpointInterface } from "@matter/protocol";
+import { PairedNode, NodeStates, Endpoint } from "@project-chip/matter.js/device";
 import { Environment, Logger, StorageContext } from "@matter/general";
 import { ControllerStore } from "@matter/node";
 import { WebSocketSession } from "../app";
@@ -274,7 +273,7 @@ export class ControllerNode {
      * @param endpointId 
      * @returns 
      */
-    private findEndpoint(root: EndpointInterface, endpointId: number): EndpointInterface | undefined {
+    private findEndpoint(root: Endpoint, endpointId: number): Endpoint | undefined {
         if (root.number === endpointId) {
             return root;
         }
@@ -314,7 +313,7 @@ export class ControllerNode {
         }
     
         // Recursive function to build the hierarchy
-        async function serializeEndpoint(endpoint: EndpointInterface): Promise<any> {
+        async function serializeEndpoint(endpoint: Endpoint): Promise<any> {
             const endpointData: any = {
                 number: endpoint.number,
                 clusters: {},
@@ -354,7 +353,7 @@ export class ControllerNode {
         }
     
         // Start serialization from the root endpoint
-        const rootEndpoint = endpointId !== undefined ? this.getEndpoint(node, endpointId) : node.getRootEndpoint() as EndpointInterface;
+        const rootEndpoint = endpointId !== undefined ? this.getEndpoint(node, endpointId) : node.getRootEndpoint();
         if (rootEndpoint === undefined) {
             throw new Error(`Endpoint not found for node ${node.nodeId} and endpointId ${endpointId}`);
         }

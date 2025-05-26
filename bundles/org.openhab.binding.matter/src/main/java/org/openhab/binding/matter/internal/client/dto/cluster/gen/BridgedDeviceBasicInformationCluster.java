@@ -98,7 +98,7 @@ public class BridgedDeviceBasicInformationCluster extends BasicInformationCluste
     // Bitmaps
     public static class FeatureMap {
         /**
-         * BridgedIcdSupport
+         * 
          * Support bridged ICDs.
          */
         public boolean bridgedIcdSupport;

@@ -180,7 +180,7 @@ public class ModeSelectCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * OnOff
+         * 
          * This feature creates a dependency between an OnOff cluster instance and this cluster instance on the same
          * endpoint. See OnMode for more information.
          */

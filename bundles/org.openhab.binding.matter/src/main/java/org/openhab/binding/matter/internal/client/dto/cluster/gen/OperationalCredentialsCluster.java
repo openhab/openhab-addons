@@ -171,8 +171,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * attestation certificate chain to transmit back to the client.
      */
     public enum CertificateChainTypeEnum implements MatterEnum {
-        DAC_CERTIFICATE(1, "DacCertificate"),
-        PAI_CERTIFICATE(2, "PaiCertificate");
+        DAC_CERTIFICATE(1, "Dac Certificate"),
+        PAI_CERTIFICATE(2, "Pai Certificate");
 
         public final Integer value;
         public final String label;
@@ -199,15 +199,15 @@ public class OperationalCredentialsCluster extends BaseCluster {
      */
     public enum NodeOperationalCertStatusEnum implements MatterEnum {
         OK(0, "Ok"),
-        INVALID_PUBLIC_KEY(1, "InvalidPublicKey"),
-        INVALID_NODE_OP_ID(2, "InvalidNodeOpId"),
-        INVALID_NOC(3, "InvalidNoc"),
-        MISSING_CSR(4, "MissingCsr"),
-        TABLE_FULL(5, "TableFull"),
-        INVALID_ADMIN_SUBJECT(6, "InvalidAdminSubject"),
-        FABRIC_CONFLICT(9, "FabricConflict"),
-        LABEL_CONFLICT(10, "LabelConflict"),
-        INVALID_FABRIC_INDEX(11, "InvalidFabricIndex");
+        INVALID_PUBLIC_KEY(1, "Invalid Public Key"),
+        INVALID_NODE_OP_ID(2, "Invalid Node Op Id"),
+        INVALID_NOC(3, "Invalid Noc"),
+        MISSING_CSR(4, "Missing Csr"),
+        TABLE_FULL(5, "Table Full"),
+        INVALID_ADMIN_SUBJECT(6, "Invalid Admin Subject"),
+        FABRIC_CONFLICT(9, "Fabric Conflict"),
+        LABEL_CONFLICT(10, "Label Conflict"),
+        INVALID_FABRIC_INDEX(11, "Invalid Fabric Index");
 
         public final Integer value;
         public final String label;

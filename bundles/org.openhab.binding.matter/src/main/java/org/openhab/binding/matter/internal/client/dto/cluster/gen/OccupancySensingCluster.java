@@ -177,8 +177,8 @@ public class OccupancySensingCluster extends BaseCluster {
     public enum OccupancySensorTypeEnum implements MatterEnum {
         PIR(0, "Pir"),
         ULTRASONIC(1, "Ultrasonic"),
-        PIR_AND_ULTRASONIC(2, "PirAndUltrasonic"),
-        PHYSICAL_CONTACT(3, "PhysicalContact");
+        PIR_AND_ULTRASONIC(2, "Pir And Ultrasonic"),
+        PHYSICAL_CONTACT(3, "Physical Contact");
 
         public final Integer value;
         public final String label;
@@ -232,43 +232,43 @@ public class OccupancySensingCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * Other
+         * 
          * Supports sensing using a modality not listed in the other bits
          */
         public boolean other;
         /**
-         * PassiveInfrared
+         * 
          * Supports sensing using PIR (Passive InfraRed)
          */
         public boolean passiveInfrared;
         /**
-         * Ultrasonic
+         * 
          * Supports sensing using UltraSound
          */
         public boolean ultrasonic;
         /**
-         * PhysicalContact
+         * 
          * Supports sensing using a physical contact
          */
         public boolean physicalContact;
         /**
-         * ActiveInfrared
+         * 
          * Supports sensing using Active InfraRed measurement (e.g. time-of-flight or transflective/reflec tive IR
          * sensing)
          */
         public boolean activeInfrared;
         /**
-         * Radar
+         * 
          * Supports sensing using radar waves (microwave)
          */
         public boolean radar;
         /**
-         * RfSensing
+         * 
          * Supports sensing based on RF signal analysis
          */
         public boolean rfSensing;
         /**
-         * Vision
+         * 
          * Supports sensing based on analyzing images
          */
         public boolean vision;

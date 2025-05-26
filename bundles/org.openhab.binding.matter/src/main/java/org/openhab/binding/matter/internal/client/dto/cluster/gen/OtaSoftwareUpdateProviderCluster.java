@@ -42,10 +42,10 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
      * See Section 11.20.3.2, “Querying the OTA Provider” for the semantics of these values.
      */
     public enum StatusEnum implements MatterEnum {
-        UPDATE_AVAILABLE(0, "UpdateAvailable"),
+        UPDATE_AVAILABLE(0, "Update Available"),
         BUSY(1, "Busy"),
-        NOT_AVAILABLE(2, "NotAvailable"),
-        DOWNLOAD_PROTOCOL_NOT_SUPPORTED(3, "DownloadProtocolNotSupported");
+        NOT_AVAILABLE(2, "Not Available"),
+        DOWNLOAD_PROTOCOL_NOT_SUPPORTED(3, "Download Protocol Not Supported");
 
         public final Integer value;
         public final String label;
@@ -72,7 +72,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
      */
     public enum ApplyUpdateActionEnum implements MatterEnum {
         PROCEED(0, "Proceed"),
-        AWAIT_NEXT_ACTION(1, "AwaitNextAction"),
+        AWAIT_NEXT_ACTION(1, "Await Next Action"),
         DISCONTINUE(2, "Discontinue");
 
         public final Integer value;
@@ -99,10 +99,10 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
      * as there is no way to authenticate the involved participants.
      */
     public enum DownloadProtocolEnum implements MatterEnum {
-        BDX_SYNCHRONOUS(0, "BdxSynchronous"),
-        BDX_ASYNCHRONOUS(1, "BdxAsynchronous"),
+        BDX_SYNCHRONOUS(0, "Bdx Synchronous"),
+        BDX_ASYNCHRONOUS(1, "Bdx Asynchronous"),
         HTTPS(2, "Https"),
-        VENDOR_SPECIFIC(3, "VendorSpecific");
+        VENDOR_SPECIFIC(3, "Vendor Specific");
 
         public final Integer value;
         public final String label;

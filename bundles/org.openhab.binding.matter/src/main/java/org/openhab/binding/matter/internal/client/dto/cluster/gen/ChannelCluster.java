@@ -411,8 +411,8 @@ public class ChannelCluster extends BaseCluster {
 
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        MULTIPLE_MATCHES(1, "MultipleMatches"),
-        NO_MATCHES(2, "NoMatches");
+        MULTIPLE_MATCHES(1, "Multiple Matches"),
+        NO_MATCHES(2, "No Matches");
 
         public final Integer value;
         public final String label;
@@ -473,22 +473,22 @@ public class ChannelCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * ChannelList
+         * 
          * Provides list of available channels.
          */
         public boolean channelList;
         /**
-         * LineupInfo
+         * 
          * Provides lineup info, which is a reference to an external source of lineup information.
          */
         public boolean lineupInfo;
         /**
-         * ElectronicGuide
+         * 
          * Provides electronic program guide information.
          */
         public boolean electronicGuide;
         /**
-         * RecordProgram
+         * 
          * Provides ability to record program.
          */
         public boolean recordProgram;

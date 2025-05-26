@@ -282,7 +282,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     public enum PlaybackStateEnum implements MatterEnum {
         PLAYING(0, "Playing"),
         PAUSED(1, "Paused"),
-        NOT_PLAYING(2, "NotPlaying"),
+        NOT_PLAYING(2, "Not Playing"),
         BUFFERING(3, "Buffering");
 
         public final Integer value;
@@ -306,11 +306,11 @@ public class MediaPlaybackCluster extends BaseCluster {
 
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        INVALID_STATE_FOR_COMMAND(1, "InvalidStateForCommand"),
-        NOT_ALLOWED(2, "NotAllowed"),
-        NOT_ACTIVE(3, "NotActive"),
-        SPEED_OUT_OF_RANGE(4, "SpeedOutOfRange"),
-        SEEK_OUT_OF_RANGE(5, "SeekOutOfRange");
+        INVALID_STATE_FOR_COMMAND(1, "Invalid State For Command"),
+        NOT_ALLOWED(2, "Not Allowed"),
+        NOT_ACTIVE(3, "Not Active"),
+        SPEED_OUT_OF_RANGE(4, "Speed Out Of Range"),
+        SEEK_OUT_OF_RANGE(5, "Seek Out Of Range");
 
         public final Integer value;
         public final String label;
@@ -332,22 +332,22 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     public enum CharacteristicEnum implements MatterEnum {
-        FORCED_SUBTITLES(0, "ForcedSubtitles"),
-        DESCRIBES_VIDEO(1, "DescribesVideo"),
-        EASY_TO_READ(2, "EasyToRead"),
-        FRAME_BASED(3, "FrameBased"),
-        MAIN_PROGRAM(4, "MainProgram"),
-        ORIGINAL_CONTENT(5, "OriginalContent"),
-        VOICE_OVER_TRANSLATION(6, "VoiceOverTranslation"),
+        FORCED_SUBTITLES(0, "Forced Subtitles"),
+        DESCRIBES_VIDEO(1, "Describes Video"),
+        EASY_TO_READ(2, "Easy To Read"),
+        FRAME_BASED(3, "Frame Based"),
+        MAIN_PROGRAM(4, "Main Program"),
+        ORIGINAL_CONTENT(5, "Original Content"),
+        VOICE_OVER_TRANSLATION(6, "Voice Over Translation"),
         CAPTION(7, "Caption"),
         SUBTITLE(8, "Subtitle"),
         ALTERNATE(9, "Alternate"),
         SUPPLEMENTARY(10, "Supplementary"),
         COMMENTARY(11, "Commentary"),
-        DUBBED_TRANSLATION(12, "DubbedTranslation"),
+        DUBBED_TRANSLATION(12, "Dubbed Translation"),
         DESCRIPTION(13, "Description"),
         METADATA(14, "Metadata"),
-        ENHANCED_AUDIO_INTELLIGIBILITY(15, "EnhancedAudioIntelligibility"),
+        ENHANCED_AUDIO_INTELLIGIBILITY(15, "Enhanced Audio Intelligibility"),
         EMERGENCY(16, "Emergency"),
         KARAOKE(17, "Karaoke");
 
@@ -373,29 +373,29 @@ public class MediaPlaybackCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * AdvancedSeek
+         * 
          * This feature provides access to the time offset location within current playback media and allows for jumping
          * to a specific location using time offsets. This enables clients to implement more advanced media seeking
          * behavior in their user interface, for instance a &quot;seek bar&quot;.
          */
         public boolean advancedSeek;
         /**
-         * VariableSpeed
+         * 
          * This feature is for a device which supports variable speed playback on media that supports it.
          */
         public boolean variableSpeed;
         /**
-         * TextTracks
+         * 
          * This feature is for a device or app that supports Text Tracks.
          */
         public boolean textTracks;
         /**
-         * AudioTracks
+         * 
          * This feature is for a device or app that supports Audio Tracks.
          */
         public boolean audioTracks;
         /**
-         * AudioAdvance
+         * 
          * This feature is for a device or app that supports playing audio during fast and slow advance and rewind
          * (e.g., while playback speed is not 1). A device that supports this feature may only support playing audio
          * during certain speeds.

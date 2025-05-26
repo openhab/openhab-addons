@@ -109,9 +109,9 @@ public class ApplicationBasicCluster extends BaseCluster {
     // Enums
     public enum ApplicationStatusEnum implements MatterEnum {
         STOPPED(0, "Stopped"),
-        ACTIVE_VISIBLE_FOCUS(1, "ActiveVisibleFocus"),
-        ACTIVE_HIDDEN(2, "ActiveHidden"),
-        ACTIVE_VISIBLE_NOT_FOCUS(3, "ActiveVisibleNotFocus");
+        ACTIVE_VISIBLE_FOCUS(1, "Active Visible Focus"),
+        ACTIVE_HIDDEN(2, "Active Hidden"),
+        ACTIVE_VISIBLE_NOT_FOCUS(3, "Active Visible Not Focus");
 
         public final Integer value;
         public final String label;

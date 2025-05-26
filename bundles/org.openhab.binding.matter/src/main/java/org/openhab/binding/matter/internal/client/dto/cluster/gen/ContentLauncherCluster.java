@@ -281,10 +281,10 @@ public class ContentLauncherCluster extends BaseCluster {
     // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        URL_NOT_AVAILABLE(1, "UrlNotAvailable"),
-        AUTH_FAILED(2, "AuthFailed"),
-        TEXT_TRACK_NOT_AVAILABLE(3, "TextTrackNotAvailable"),
-        AUDIO_TRACK_NOT_AVAILABLE(4, "AudioTrackNotAvailable");
+        URL_NOT_AVAILABLE(1, "Url Not Available"),
+        AUTH_FAILED(2, "Auth Failed"),
+        TEXT_TRACK_NOT_AVAILABLE(3, "Text Track Not Available"),
+        AUDIO_TRACK_NOT_AVAILABLE(4, "Audio Track Not Available");
 
         public final Integer value;
         public final String label;
@@ -317,7 +317,7 @@ public class ContentLauncherCluster extends BaseCluster {
         POPULARITY(8, "Popularity"),
         PROVIDER(9, "Provider"),
         SPORT(10, "Sport"),
-        SPORTS_TEAM(11, "SportsTeam"),
+        SPORTS_TEAM(11, "Sports Team"),
         TYPE(12, "Type"),
         VIDEO(13, "Video"),
         SEASON(14, "Season"),
@@ -379,28 +379,28 @@ public class ContentLauncherCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * ContentSearch
+         * 
          * Device supports content search (non-app specific)
          */
         public boolean contentSearch;
         /**
-         * UrlPlayback
+         * 
          * Device supports basic URL-based file playback
          */
         public boolean urlPlayback;
         /**
-         * AdvancedSeek
+         * 
          * Enables clients to implement more advanced media seeking behavior in their user interface, such as for
          * example a &quot;seek bar&quot;.
          */
         public boolean advancedSeek;
         /**
-         * TextTracks
+         * 
          * Device or app supports Text Tracks.
          */
         public boolean textTracks;
         /**
-         * AudioTracks
+         * 
          * Device or app supports Audio Tracks.
          */
         public boolean audioTracks;

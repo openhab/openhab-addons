@@ -352,11 +352,11 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     }
 
     public enum ControlModeEnum implements MatterEnum {
-        CONSTANT_SPEED(0, "ConstantSpeed"),
-        CONSTANT_PRESSURE(1, "ConstantPressure"),
-        PROPORTIONAL_PRESSURE(2, "ProportionalPressure"),
-        CONSTANT_FLOW(3, "ConstantFlow"),
-        CONSTANT_TEMPERATURE(5, "ConstantTemperature"),
+        CONSTANT_SPEED(0, "Constant Speed"),
+        CONSTANT_PRESSURE(1, "Constant Pressure"),
+        PROPORTIONAL_PRESSURE(2, "Proportional Pressure"),
+        CONSTANT_FLOW(3, "Constant Flow"),
+        CONSTANT_TEMPERATURE(5, "Constant Temperature"),
         AUTOMATIC(7, "Automatic");
 
         public final Integer value;
@@ -436,37 +436,37 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * ConstantPressure
+         * 
          * Supports operating in constant pressure mode
          */
         public boolean constantPressure;
         /**
-         * CompensatedPressure
+         * 
          * Supports operating in compensated pressure mode
          */
         public boolean compensatedPressure;
         /**
-         * ConstantFlow
+         * 
          * Supports operating in constant flow mode
          */
         public boolean constantFlow;
         /**
-         * ConstantSpeed
+         * 
          * Supports operating in constant speed mode
          */
         public boolean constantSpeed;
         /**
-         * ConstantTemperature
+         * 
          * Supports operating in constant temperature mode
          */
         public boolean constantTemperature;
         /**
-         * Automatic
+         * 
          * Supports operating in automatic mode
          */
         public boolean automatic;
         /**
-         * LocalOperation
+         * 
          * Supports operating using local settings
          */
         public boolean localOperation;

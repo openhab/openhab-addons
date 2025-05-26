@@ -110,8 +110,8 @@ public class OnOffCluster extends BaseCluster {
     }
 
     public enum EffectIdentifierEnum implements MatterEnum {
-        DELAYED_ALL_OFF(0, "DelayedAllOff"),
-        DYING_LIGHT(1, "DyingLight");
+        DELAYED_ALL_OFF(0, "Delayed All Off"),
+        DYING_LIGHT(1, "Dying Light");
 
         public final Integer value;
         public final String label;
@@ -133,9 +133,9 @@ public class OnOffCluster extends BaseCluster {
     }
 
     public enum DelayedAllOffEffectVariantEnum implements MatterEnum {
-        DELAYED_OFF_FAST_FADE(0, "DelayedOffFastFade"),
-        NO_FADE(1, "NoFade"),
-        DELAYED_OFF_SLOW_FADE(2, "DelayedOffSlowFade");
+        DELAYED_OFF_FAST_FADE(0, "Delayed Off Fast Fade"),
+        NO_FADE(1, "No Fade"),
+        DELAYED_OFF_SLOW_FADE(2, "Delayed Off Slow Fade");
 
         public final Integer value;
         public final String label;
@@ -157,7 +157,7 @@ public class OnOffCluster extends BaseCluster {
     }
 
     public enum DyingLightEffectVariantEnum implements MatterEnum {
-        DYING_LIGHT_FADE_OFF(0, "DyingLightFadeOff");
+        DYING_LIGHT_FADE_OFF(0, "Dying Light Fade Off");
 
         public final Integer value;
         public final String label;
@@ -189,7 +189,7 @@ public class OnOffCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * Lighting
+         * 
          * This cluster is used for a lighting application.
          * On receipt of a Level Control cluster command that causes the OnOff attribute to be set to FALSE, the OnTime
          * attribute shall be set to 0.
@@ -198,7 +198,7 @@ public class OnOffCluster extends BaseCluster {
          */
         public boolean lighting;
         /**
-         * DeadFrontBehavior
+         * 
          * When this feature is supported, the device exposing this server cluster exhibits &quot;dead front&quot;
          * behavior when the &quot;OnOff&quot; attribute is FALSE (Off). This &quot;dead front&quot; behavior includes:
          * • clusters other than this cluster that are also exposed may respond with failures to Invoke and Write
@@ -225,7 +225,7 @@ public class OnOffCluster extends BaseCluster {
          */
         public boolean deadFrontBehavior;
         /**
-         * OffOnly
+         * 
          * When this feature is supported, the Off command shall be supported and the On and Toggle commands shall NOT
          * be supported.
          * This feature is useful for devices which can be turned off via the Off command received by an instance of

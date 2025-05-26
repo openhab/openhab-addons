@@ -574,14 +574,14 @@ public class DoorLockCluster extends BaseCluster {
      * This enumeration shall indicate the alarm type.
      */
     public enum AlarmCodeEnum implements MatterEnum {
-        LOCK_JAMMED(0, "LockJammed"),
-        LOCK_FACTORY_RESET(1, "LockFactoryReset"),
-        LOCK_RADIO_POWER_CYCLED(3, "LockRadioPowerCycled"),
-        WRONG_CODE_ENTRY_LIMIT(4, "WrongCodeEntryLimit"),
-        FRONT_ESCEUTCHEON_REMOVED(5, "FrontEsceutcheonRemoved"),
-        DOOR_FORCED_OPEN(6, "DoorForcedOpen"),
-        DOOR_AJAR(7, "DoorAjar"),
-        FORCED_USER(8, "ForcedUser");
+        LOCK_JAMMED(0, "Lock Jammed"),
+        LOCK_FACTORY_RESET(1, "Lock Factory Reset"),
+        LOCK_RADIO_POWER_CYCLED(3, "Lock Radio Power Cycled"),
+        WRONG_CODE_ENTRY_LIMIT(4, "Wrong Code Entry Limit"),
+        FRONT_ESCEUTCHEON_REMOVED(5, "Front Esceutcheon Removed"),
+        DOOR_FORCED_OPEN(6, "Door Forced Open"),
+        DOOR_AJAR(7, "Door Ajar"),
+        FORCED_USER(8, "Forced User");
 
         public final Integer value;
         public final String label;
@@ -633,15 +633,15 @@ public class DoorLockCluster extends BaseCluster {
      * This enumeration shall indicate the credential type.
      */
     public enum CredentialTypeEnum implements MatterEnum {
-        PROGRAMMING_PIN(0, "ProgrammingPin"),
+        PROGRAMMING_PIN(0, "Programming Pin"),
         PIN(1, "Pin"),
         RFID(2, "Rfid"),
         FINGERPRINT(3, "Fingerprint"),
-        FINGER_VEIN(4, "FingerVein"),
+        FINGER_VEIN(4, "Finger Vein"),
         FACE(5, "Face"),
-        ALIRO_CREDENTIAL_ISSUER_KEY(6, "AliroCredentialIssuerKey"),
-        ALIRO_EVICTABLE_ENDPOINT_KEY(7, "AliroEvictableEndpointKey"),
-        ALIRO_NON_EVICTABLE_ENDPOINT_KEY(8, "AliroNonEvictableEndpointKey");
+        ALIRO_CREDENTIAL_ISSUER_KEY(6, "Aliro Credential Issuer Key"),
+        ALIRO_EVICTABLE_ENDPOINT_KEY(7, "Aliro Evictable Endpoint Key"),
+        ALIRO_NON_EVICTABLE_ENDPOINT_KEY(8, "Aliro Non Evictable Endpoint Key");
 
         public final Integer value;
         public final String label;
@@ -693,12 +693,12 @@ public class DoorLockCluster extends BaseCluster {
      * This enumeration shall indicate the current door state.
      */
     public enum DoorStateEnum implements MatterEnum {
-        DOOR_OPEN(0, "DoorOpen"),
-        DOOR_CLOSED(1, "DoorClosed"),
-        DOOR_JAMMED(2, "DoorJammed"),
-        DOOR_FORCED_OPEN(3, "DoorForcedOpen"),
-        DOOR_UNSPECIFIED_ERROR(4, "DoorUnspecifiedError"),
-        DOOR_AJAR(5, "DoorAjar");
+        DOOR_OPEN(0, "Door Open"),
+        DOOR_CLOSED(1, "Door Closed"),
+        DOOR_JAMMED(2, "Door Jammed"),
+        DOOR_FORCED_OPEN(3, "Door Forced Open"),
+        DOOR_UNSPECIFIED_ERROR(4, "Door Unspecified Error"),
+        DOOR_AJAR(5, "Door Ajar");
 
         public final Integer value;
         public final String label;
@@ -724,19 +724,19 @@ public class DoorLockCluster extends BaseCluster {
      */
     public enum LockDataTypeEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        PROGRAMMING_CODE(1, "ProgrammingCode"),
-        USER_INDEX(2, "UserIndex"),
-        WEEK_DAY_SCHEDULE(3, "WeekDaySchedule"),
-        YEAR_DAY_SCHEDULE(4, "YearDaySchedule"),
-        HOLIDAY_SCHEDULE(5, "HolidaySchedule"),
+        PROGRAMMING_CODE(1, "Programming Code"),
+        USER_INDEX(2, "User Index"),
+        WEEK_DAY_SCHEDULE(3, "Week Day Schedule"),
+        YEAR_DAY_SCHEDULE(4, "Year Day Schedule"),
+        HOLIDAY_SCHEDULE(5, "Holiday Schedule"),
         PIN(6, "Pin"),
         RFID(7, "Rfid"),
         FINGERPRINT(8, "Fingerprint"),
-        FINGER_VEIN(9, "FingerVein"),
+        FINGER_VEIN(9, "Finger Vein"),
         FACE(10, "Face"),
-        ALIRO_CREDENTIAL_ISSUER_KEY(11, "AliroCredentialIssuerKey"),
-        ALIRO_EVICTABLE_ENDPOINT_KEY(12, "AliroEvictableEndpointKey"),
-        ALIRO_NON_EVICTABLE_ENDPOINT_KEY(13, "AliroNonEvictableEndpointKey");
+        ALIRO_CREDENTIAL_ISSUER_KEY(11, "Aliro Credential Issuer Key"),
+        ALIRO_EVICTABLE_ENDPOINT_KEY(12, "Aliro Evictable Endpoint Key"),
+        ALIRO_NON_EVICTABLE_ENDPOINT_KEY(13, "Aliro Non Evictable Endpoint Key");
 
         public final Integer value;
         public final String label;
@@ -763,8 +763,8 @@ public class DoorLockCluster extends BaseCluster {
     public enum LockOperationTypeEnum implements MatterEnum {
         LOCK(0, "Lock"),
         UNLOCK(1, "Unlock"),
-        NON_ACCESS_USER_EVENT(2, "NonAccessUserEvent"),
-        FORCED_USER_EVENT(3, "ForcedUserEvent"),
+        NON_ACCESS_USER_EVENT(2, "Non Access User Event"),
+        FORCED_USER_EVENT(3, "Forced User Event"),
         UNLATCH(4, "Unlatch");
 
         public final Integer value;
@@ -791,10 +791,10 @@ public class DoorLockCluster extends BaseCluster {
      */
     public enum OperationErrorEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        INVALID_CREDENTIAL(1, "InvalidCredential"),
-        DISABLED_USER_DENIED(2, "DisabledUserDenied"),
+        INVALID_CREDENTIAL(1, "Invalid Credential"),
+        DISABLED_USER_DENIED(2, "Disabled User Denied"),
         RESTRICTED(3, "Restricted"),
-        INSUFFICIENT_BATTERY(4, "InsufficientBattery");
+        INSUFFICIENT_BATTERY(4, "Insufficient Battery");
 
         public final Integer value;
         public final String label;
@@ -829,7 +829,7 @@ public class DoorLockCluster extends BaseCluster {
         NORMAL(0, "Normal"),
         VACATION(1, "Vacation"),
         PRIVACY(2, "Privacy"),
-        NO_REMOTE_LOCK_UNLOCK(3, "NoRemoteLockUnlock"),
+        NO_REMOTE_LOCK_UNLOCK(3, "No Remote Lock Unlock"),
         PASSAGE(4, "Passage");
 
         public final Integer value;
@@ -857,7 +857,7 @@ public class DoorLockCluster extends BaseCluster {
     public enum OperationSourceEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         MANUAL(1, "Manual"),
-        PROPRIETARY_REMOTE(2, "ProprietaryRemote"),
+        PROPRIETARY_REMOTE(2, "Proprietary Remote"),
         KEYPAD(3, "Keypad"),
         AUTO(4, "Auto"),
         BUTTON(5, "Button"),
@@ -891,8 +891,8 @@ public class DoorLockCluster extends BaseCluster {
      */
     public enum UserStatusEnum implements MatterEnum {
         AVAILABLE(0, "Available"),
-        OCCUPIED_ENABLED(1, "OccupiedEnabled"),
-        OCCUPIED_DISABLED(3, "OccupiedDisabled");
+        OCCUPIED_ENABLED(1, "Occupied Enabled"),
+        OCCUPIED_DISABLED(3, "Occupied Disabled");
 
         public final Integer value;
         public final String label;
@@ -917,16 +917,16 @@ public class DoorLockCluster extends BaseCluster {
      * This enumeration shall indicate what the type is for a specific user ID.
      */
     public enum UserTypeEnum implements MatterEnum {
-        UNRESTRICTED_USER(0, "UnrestrictedUser"),
-        YEAR_DAY_SCHEDULE_USER(1, "YearDayScheduleUser"),
-        WEEK_DAY_SCHEDULE_USER(2, "WeekDayScheduleUser"),
-        PROGRAMMING_USER(3, "ProgrammingUser"),
-        NON_ACCESS_USER(4, "NonAccessUser"),
-        FORCED_USER(5, "ForcedUser"),
-        DISPOSABLE_USER(6, "DisposableUser"),
-        EXPIRING_USER(7, "ExpiringUser"),
-        SCHEDULE_RESTRICTED_USER(8, "ScheduleRestrictedUser"),
-        REMOTE_ONLY_USER(9, "RemoteOnlyUser");
+        UNRESTRICTED_USER(0, "Unrestricted User"),
+        YEAR_DAY_SCHEDULE_USER(1, "Year Day Schedule User"),
+        WEEK_DAY_SCHEDULE_USER(2, "Week Day Schedule User"),
+        PROGRAMMING_USER(3, "Programming User"),
+        NON_ACCESS_USER(4, "Non Access User"),
+        FORCED_USER(5, "Forced User"),
+        DISPOSABLE_USER(6, "Disposable User"),
+        EXPIRING_USER(7, "Expiring User"),
+        SCHEDULE_RESTRICTED_USER(8, "Schedule Restricted User"),
+        REMOTE_ONLY_USER(9, "Remote Only User");
 
         public final Integer value;
         public final String label;
@@ -948,7 +948,7 @@ public class DoorLockCluster extends BaseCluster {
     }
 
     public enum LockStateEnum implements MatterEnum {
-        NOT_FULLY_LOCKED(0, "NotFullyLocked"),
+        NOT_FULLY_LOCKED(0, "Not Fully Locked"),
         LOCKED(1, "Locked"),
         UNLOCKED(2, "Unlocked"),
         UNLATCHED(3, "Unlatched");
@@ -973,17 +973,17 @@ public class DoorLockCluster extends BaseCluster {
     }
 
     public enum LockTypeEnum implements MatterEnum {
-        DEAD_BOLT(0, "DeadBolt"),
+        DEAD_BOLT(0, "Dead Bolt"),
         MAGNETIC(1, "Magnetic"),
         OTHER(2, "Other"),
         MORTISE(3, "Mortise"),
         RIM(4, "Rim"),
-        LATCH_BOLT(5, "LatchBolt"),
-        CYLINDRICAL_LOCK(6, "CylindricalLock"),
-        TUBULAR_LOCK(7, "TubularLock"),
-        INTERCONNECTED_LOCK(8, "InterconnectedLock"),
-        DEAD_LATCH(9, "DeadLatch"),
-        DOOR_FURNITURE(10, "DoorFurniture"),
+        LATCH_BOLT(5, "Latch Bolt"),
+        CYLINDRICAL_LOCK(6, "Cylindrical Lock"),
+        TUBULAR_LOCK(7, "Tubular Lock"),
+        INTERCONNECTED_LOCK(8, "Interconnected Lock"),
+        DEAD_LATCH(9, "Dead Latch"),
+        DOOR_FURNITURE(10, "Door Furniture"),
         EUROCYLINDER(11, "Eurocylinder");
 
         public final Integer value;
@@ -1006,9 +1006,9 @@ public class DoorLockCluster extends BaseCluster {
     }
 
     public enum LEDSettingEnum implements MatterEnum {
-        NO_LED_SIGNAL(0, "NoLedSignal"),
-        NO_LED_SIGNAL_ACCESS_ALLOWED(1, "NoLedSignalAccessAllowed"),
-        LED_SIGNAL_ALL(2, "LedSignalAll");
+        NO_LED_SIGNAL(0, "No Led Signal"),
+        NO_LED_SIGNAL_ACCESS_ALLOWED(1, "No Led Signal Access Allowed"),
+        LED_SIGNAL_ALL(2, "Led Signal All");
 
         public final Integer value;
         public final String label;
@@ -1273,7 +1273,7 @@ public class DoorLockCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * PinCredential
+         * 
          * If the User Feature is also supported then any PIN Code stored in the lock shall be associated with a User.
          * A lock may support multiple credential types so if the User feature is supported the UserType, UserStatus and
          * Schedules are all associated with a User index and not directly with a PIN index. A User index may have
@@ -1281,7 +1281,7 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean pinCredential;
         /**
-         * RfidCredential
+         * 
          * If the User Feature is also supported then any RFID credential stored in the lock shall be associated with a
          * User.
          * A lock may support multiple credential types so if the User feature is supported the UserType, UserStatus and
@@ -1290,7 +1290,7 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean rfidCredential;
         /**
-         * FingerCredentials
+         * 
          * Currently the cluster only defines the metadata format for notifications when a fingerprint/ finger vein
          * credential is used to access the lock and doesn’t describe how to create fingerprint/finger vein credentials.
          * If the Users feature is also supported then the User that a fingerprint/finger vein is associated with can
@@ -1301,7 +1301,7 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean fingerCredentials;
         /**
-         * WeekDayAccessSchedules
+         * 
          * If the User feature is supported then Week Day Schedules are applied to a User and not a credential.
          * Week Day Schedules are used to restrict access to a specified time window on certain days of the week. The
          * schedule is repeated each week.
@@ -1310,13 +1310,13 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean weekDayAccessSchedules;
         /**
-         * DoorPositionSensor
+         * 
          * If this feature is supported this indicates that the lock has the ability to determine the position of the
          * door which is separate from the state of the lock.
          */
         public boolean doorPositionSensor;
         /**
-         * FaceCredentials
+         * 
          * Currently the cluster only defines the metadata format for notifications when a face recognition, iris, or
          * retina credential is used to access the lock and doesn’t describe how to create face recognition, iris, or
          * retina credentials. If the Users feature is also supported then the User that a face recognition, iris, or
@@ -1326,21 +1326,21 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean faceCredentials;
         /**
-         * CredentialOverTheAirAccess
+         * 
          * If this feature is supported then the lock supports the ability to verify a credential provided in a
          * lock/unlock command. Currently the cluster only supports providing the PIN credential to the lock/unlock
          * commands. If this feature is supported then the PIN Credential feature shall also be supported.
          */
         public boolean credentialOverTheAirAccess;
         /**
-         * User
+         * 
          * If the User Feature is supported then a lock employs a User database. A User within the User database is used
          * to associate credentials and schedules to single user record within the lock. This also means the UserType
          * and UserStatus fields are associated with a User and not a credential.
          */
         public boolean user;
         /**
-         * YearDayAccessSchedules
+         * 
          * If the User feature is supported then Year Day Schedules are applied to a User and not a credential. Year Day
          * Schedules are used to restrict access to a specified date and time window.
          * The lock may automatically adjust the UserType when a schedule is created or cleared.
@@ -1348,14 +1348,14 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean yearDayAccessSchedules;
         /**
-         * HolidaySchedules
+         * 
          * This feature is used to setup Holiday Schedule in the lock device. A Holiday Schedule sets a start and stop
          * end date/time for the lock to use the specified operating mode set by the Holiday Schedule.
          * Support for HolidaySchedules requires that the lock has the capability of keeping track of local time.
          */
         public boolean holidaySchedules;
         /**
-         * Unbolting
+         * 
          * Locks that support this feature differentiate between unbolting and unlocking. The Unbolt Door command
          * retracts the bolt without pulling the latch. The Unlock Door command fully unlocks the door by retracting the
          * bolt and briefly pulling the latch. While the latch is pulled, the lock state changes to Unlatched. Locks
@@ -1364,13 +1364,13 @@ public class DoorLockCluster extends BaseCluster {
          */
         public boolean unbolting;
         /**
-         * AliroProvisioning
+         * 
          * Locks that support this feature implement the Aliro specification as defined in [Aliro] and support Matter as
          * a method for provisioning Aliro credentials.
          */
         public boolean aliroProvisioning;
         /**
-         * AliroBleuwb
+         * 
          * Locks that support this feature implement the Bluetooth LE + UWB Access Control Flow as defined in [Aliro].
          */
         public boolean aliroBleuwb;

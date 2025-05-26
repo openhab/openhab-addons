@@ -354,7 +354,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
     public enum DatastoreStateEnum implements MatterEnum {
         PENDING(0, "Pending"),
         COMMITTED(1, "Committed"),
-        DELETE_PENDING(2, "DeletePending");
+        DELETE_PENDING(2, "Delete Pending");
 
         public final Integer value;
         public final String label;

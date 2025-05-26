@@ -737,9 +737,9 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     // Enums
     public enum NetworkFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        LINK_DOWN(1, "LinkDown"),
-        HARDWARE_FAILURE(2, "HardwareFailure"),
-        NETWORK_JAMMED(3, "NetworkJammed");
+        LINK_DOWN(1, "Link Down"),
+        HARDWARE_FAILURE(2, "Hardware Failure"),
+        NETWORK_JAMMED(3, "Network Jammed");
 
         public final Integer value;
         public final String label;
@@ -762,7 +762,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
 
     public enum ConnectionStatusEnum implements MatterEnum {
         CONNECTED(0, "Connected"),
-        NOT_CONNECTED(1, "NotConnected");
+        NOT_CONNECTED(1, "Not Connected");
 
         public final Integer value;
         public final String label;
@@ -786,8 +786,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public enum RoutingRoleEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         UNASSIGNED(1, "Unassigned"),
-        SLEEPY_END_DEVICE(2, "SleepyEndDevice"),
-        END_DEVICE(3, "EndDevice"),
+        SLEEPY_END_DEVICE(2, "Sleepy End Device"),
+        END_DEVICE(3, "End Device"),
         REED(4, "Reed"),
         ROUTER(5, "Router"),
         LEADER(6, "Leader");
@@ -814,23 +814,23 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * PacketCounts
+         * 
          * Server supports the counts for the number of received and transmitted packets on the Thread interface.
          */
         public boolean packetCounts;
         /**
-         * ErrorCounts
+         * 
          * Server supports the counts for the number of errors that have occurred during the reception and transmission
          * of packets on the Thread interface.
          */
         public boolean errorCounts;
         /**
-         * MleCounts
+         * 
          * Server supports the counts for various MLE layer happenings.
          */
         public boolean mleCounts;
         /**
-         * MacCounts
+         * 
          * Server supports the counts for various MAC layer happenings.
          */
         public boolean macCounts;

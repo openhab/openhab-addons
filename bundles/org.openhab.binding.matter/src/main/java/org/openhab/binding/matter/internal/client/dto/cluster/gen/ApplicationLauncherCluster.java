@@ -94,9 +94,9 @@ public class ApplicationLauncherCluster extends BaseCluster {
     // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        APP_NOT_AVAILABLE(1, "AppNotAvailable"),
-        SYSTEM_BUSY(2, "SystemBusy"),
-        PENDING_USER_APPROVAL(3, "PendingUserApproval"),
+        APP_NOT_AVAILABLE(1, "App Not Available"),
+        SYSTEM_BUSY(2, "System Busy"),
+        PENDING_USER_APPROVAL(3, "Pending User Approval"),
         DOWNLOADING(4, "Downloading"),
         INSTALLING(5, "Installing");
 
@@ -122,7 +122,7 @@ public class ApplicationLauncherCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * ApplicationPlatform
+         * 
          * Support for attributes and commands required for endpoint to support launching any application within the
          * supported application catalogs
          */

@@ -187,8 +187,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
 
     // Enums
     public enum GroupKeySecurityPolicyEnum implements MatterEnum {
-        TRUST_FIRST(0, "TrustFirst"),
-        CACHE_AND_SYNC(1, "CacheAndSync");
+        TRUST_FIRST(0, "Trust First"),
+        CACHE_AND_SYNC(1, "Cache And Sync");
 
         public final Integer value;
         public final String label;
@@ -210,8 +210,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
     }
 
     public enum GroupKeyMulticastPolicyEnum implements MatterEnum {
-        PER_GROUP_ID(0, "PerGroupId"),
-        ALL_NODES(1, "AllNodes");
+        PER_GROUP_ID(0, "Per Group Id"),
+        ALL_NODES(1, "All Nodes");
 
         public final Integer value;
         public final String label;
@@ -235,7 +235,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * CacheAndSync
+         * 
          * The ability to support CacheAndSync security policy and MCSP.
          */
         public boolean cacheAndSync;

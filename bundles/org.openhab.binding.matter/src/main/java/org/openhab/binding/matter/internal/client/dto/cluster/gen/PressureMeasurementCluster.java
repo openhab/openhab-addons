@@ -92,7 +92,7 @@ public class PressureMeasurementCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Extended
+         * 
          * Extended range and resolution
          */
         public boolean extended;

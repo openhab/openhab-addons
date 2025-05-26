@@ -214,12 +214,12 @@ public class FanControlCluster extends BaseCluster {
     }
 
     public enum FanModeSequenceEnum implements MatterEnum {
-        OFF_LOW_MED_HIGH(0, "OffLowMedHigh"),
-        OFF_LOW_HIGH(1, "OffLowHigh"),
-        OFF_LOW_MED_HIGH_AUTO(2, "OffLowMedHighAuto"),
-        OFF_LOW_HIGH_AUTO(3, "OffLowHighAuto"),
-        OFF_HIGH_AUTO(4, "OffHighAuto"),
-        OFF_HIGH(5, "OffHigh");
+        OFF_LOW_MED_HIGH(0, "Off Low Med High"),
+        OFF_LOW_HIGH(1, "Off Low High"),
+        OFF_LOW_MED_HIGH_AUTO(2, "Off Low Med High Auto"),
+        OFF_LOW_HIGH_AUTO(3, "Off Low High Auto"),
+        OFF_HIGH_AUTO(4, "Off High Auto"),
+        OFF_HIGH(5, "Off High");
 
         public final Integer value;
         public final String label;
@@ -265,7 +265,7 @@ public class FanControlCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * MultiSpeed
+         * 
          * Legacy Fan Control cluster revision 0-1 defined 3 speeds (low, medium and high) plus automatic speed control
          * but left it up to the implementer to decide what was supported. Therefore, it is assumed that legacy client
          * implementations are capable of determining, from the server, the number of speeds supported between 1, 2, or
@@ -276,27 +276,27 @@ public class FanControlCluster extends BaseCluster {
          */
         public boolean multiSpeed;
         /**
-         * Auto
+         * 
          * Automatic mode supported for fan speed
          */
         public boolean auto;
         /**
-         * Rocking
+         * 
          * Rocking movement supported
          */
         public boolean rocking;
         /**
-         * Wind
+         * 
          * Wind emulation supported
          */
         public boolean wind;
         /**
-         * Step
+         * 
          * Step command supported
          */
         public boolean step;
         /**
-         * AirflowDirection
+         * 
          * Airflow Direction attribute is supported
          */
         public boolean airflowDirection;

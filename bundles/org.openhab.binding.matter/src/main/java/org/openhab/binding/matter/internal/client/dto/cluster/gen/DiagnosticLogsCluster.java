@@ -38,9 +38,9 @@ public class DiagnosticLogsCluster extends BaseCluster {
 
     // Enums
     public enum IntentEnum implements MatterEnum {
-        END_USER_SUPPORT(0, "EndUserSupport"),
-        NETWORK_DIAG(1, "NetworkDiag"),
-        CRASH_LOGS(2, "CrashLogs");
+        END_USER_SUPPORT(0, "End User Support"),
+        NETWORK_DIAG(1, "Network Diag"),
+        CRASH_LOGS(2, "Crash Logs");
 
         public final Integer value;
         public final String label;
@@ -64,7 +64,7 @@ public class DiagnosticLogsCluster extends BaseCluster {
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
         EXHAUSTED(1, "Exhausted"),
-        NO_LOGS(2, "NoLogs"),
+        NO_LOGS(2, "No Logs"),
         BUSY(3, "Busy"),
         DENIED(4, "Denied");
 
@@ -88,7 +88,7 @@ public class DiagnosticLogsCluster extends BaseCluster {
     }
 
     public enum TransferProtocolEnum implements MatterEnum {
-        RESPONSE_PAYLOAD(0, "ResponsePayload"),
+        RESPONSE_PAYLOAD(0, "Response Payload"),
         BDX(1, "Bdx");
 
         public final Integer value;

@@ -43,13 +43,13 @@ public class JointFabricPkiCluster extends BaseCluster {
      */
     public enum IcacsrRequestStatusEnum implements MatterEnum {
         OK(0, "Ok"),
-        INVALID_ICA_CSR_FORMAT(1, "InvalidIcaCsrFormat"),
-        INVALID_ICA_CSR_SIGNATURE(2, "InvalidIcaCsrSignature"),
-        FAILED_DCL_VENDOR_ID_VALIDATION(3, "FailedDclVendorIdValidation"),
-        NOT_AN_ICAC(4, "NotAnIcac"),
-        BUSY_ANCHOR_TRANSFER(5, "BusyAnchorTransfer"),
-        ICA_CSR_SIGNING_FAILED(6, "IcaCsrSigningFailed"),
-        ICA_CSR_REQUEST_NO_USER_CONSENT(7, "IcaCsrRequestNoUserConsent");
+        INVALID_ICA_CSR_FORMAT(1, "Invalid Ica Csr Format"),
+        INVALID_ICA_CSR_SIGNATURE(2, "Invalid Ica Csr Signature"),
+        FAILED_DCL_VENDOR_ID_VALIDATION(3, "Failed Dcl Vendor Id Validation"),
+        NOT_AN_ICAC(4, "Not An Icac"),
+        BUSY_ANCHOR_TRANSFER(5, "Busy Anchor Transfer"),
+        ICA_CSR_SIGNING_FAILED(6, "Ica Csr Signing Failed"),
+        ICA_CSR_REQUEST_NO_USER_CONSENT(7, "Ica Csr Request No User Consent");
 
         public final Integer value;
         public final String label;
@@ -76,8 +76,8 @@ public class JointFabricPkiCluster extends BaseCluster {
      */
     public enum TransferAnchorResponseStatusEnum implements MatterEnum {
         OK(0, "Ok"),
-        TRANSFER_ANCHOR_STATUS_DATASTORE_BUSY(1, "TransferAnchorStatusDatastoreBusy"),
-        TRANSFER_ANCHOR_STATUS_NO_USER_CONSENT(2, "TransferAnchorStatusNoUserConsent");
+        TRANSFER_ANCHOR_STATUS_DATASTORE_BUSY(1, "Transfer Anchor Status Datastore Busy"),
+        TRANSFER_ANCHOR_STATUS_NO_USER_CONSENT(2, "Transfer Anchor Status No User Consent");
 
         public final Integer value;
         public final String label;

@@ -389,9 +389,9 @@ public class ServiceAreaCluster extends BaseCluster {
 
     public enum SelectAreasStatus implements MatterEnum {
         SUCCESS(0, "Success"),
-        UNSUPPORTED_AREA(1, "UnsupportedArea"),
-        INVALID_IN_MODE(2, "InvalidInMode"),
-        INVALID_SET(3, "InvalidSet");
+        UNSUPPORTED_AREA(1, "Unsupported Area"),
+        INVALID_IN_MODE(2, "Invalid In Mode"),
+        INVALID_SET(3, "Invalid Set");
 
         public final Integer value;
         public final String label;
@@ -414,9 +414,9 @@ public class ServiceAreaCluster extends BaseCluster {
 
     public enum SkipAreaStatus implements MatterEnum {
         SUCCESS(0, "Success"),
-        INVALID_AREA_LIST(1, "InvalidAreaList"),
-        INVALID_IN_MODE(2, "InvalidInMode"),
-        INVALID_SKIPPED_AREA(3, "InvalidSkippedArea");
+        INVALID_AREA_LIST(1, "Invalid Area List"),
+        INVALID_IN_MODE(2, "Invalid In Mode"),
+        INVALID_SKIPPED_AREA(3, "Invalid Skipped Area");
 
         public final Integer value;
         public final String label;
@@ -440,18 +440,18 @@ public class ServiceAreaCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * SelectWhileRunning
+         * 
          * This feature indicates whether this device allows changing the selected areas, by using the SelectAreas
          * command, while operating.
          */
         public boolean selectWhileRunning;
         /**
-         * ProgressReporting
+         * 
          * The device implements the progress reporting feature
          */
         public boolean progressReporting;
         /**
-         * Maps
+         * 
          * The device has map support
          */
         public boolean maps;

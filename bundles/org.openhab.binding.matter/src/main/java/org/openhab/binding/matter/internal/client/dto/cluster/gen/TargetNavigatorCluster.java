@@ -91,8 +91,8 @@ public class TargetNavigatorCluster extends BaseCluster {
     // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        TARGET_NOT_FOUND(1, "TargetNotFound"),
-        NOT_ALLOWED(2, "NotAllowed");
+        TARGET_NOT_FOUND(1, "Target Not Found"),
+        NOT_ALLOWED(2, "Not Allowed");
 
         public final Integer value;
         public final String label;

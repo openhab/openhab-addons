@@ -266,7 +266,7 @@ public class ScenesManagementCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * SceneNames
+         * 
          * This feature indicates the ability to store a name for a scene when a scene is added.
          */
         public boolean sceneNames;

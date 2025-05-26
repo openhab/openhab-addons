@@ -57,7 +57,7 @@ public class GroupsCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * GroupNames
+         * 
          * The Group Names feature indicates the ability to store a name for a group when a group is added.
          */
         public boolean groupNames;

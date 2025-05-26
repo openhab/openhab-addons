@@ -2,8 +2,8 @@
 import "@matter/node";
 
 import { FabricIndex, VendorId } from "@matter/types";
-import { logEndpoint, DeviceCommissioner, FabricManager, SessionManager } from "@matter/protocol";
-import { Endpoint, EndpointServer, ServerNode } from "@matter/node";
+import { DeviceCommissioner, FabricManager, SessionManager } from "@matter/protocol";
+import { Endpoint, ServerNode } from "@matter/node";
 import { AggregatorEndpoint } from "@matter/node/endpoints";
 import { Environment, Logger, StorageService } from "@matter/general";
 import { GenericDeviceType } from "./devices/GenericDeviceType";
@@ -81,7 +81,7 @@ export class DeviceNode {
             logger.info(`Bridge online`);
             this.#sendCommissioningStatus();
         });
-        logEndpoint(EndpointServer.forEndpoint(this.server));
+        logger.info(this.server);
         logger.info(`Starting bridge`);
         await this.server.start();
         logger.info(`Bridge started`);

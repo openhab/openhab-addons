@@ -193,9 +193,9 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
 
     // Enums
     public enum AnnouncementReasonEnum implements MatterEnum {
-        SIMPLE_ANNOUNCEMENT(0, "SimpleAnnouncement"),
-        UPDATE_AVAILABLE(1, "UpdateAvailable"),
-        URGENT_UPDATE_AVAILABLE(2, "UrgentUpdateAvailable");
+        SIMPLE_ANNOUNCEMENT(0, "Simple Announcement"),
+        UPDATE_AVAILABLE(1, "Update Available"),
+        URGENT_UPDATE_AVAILABLE(2, "Urgent Update Available");
 
         public final Integer value;
         public final String label;
@@ -220,12 +220,12 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         UNKNOWN(0, "Unknown"),
         IDLE(1, "Idle"),
         QUERYING(2, "Querying"),
-        DELAYED_ON_QUERY(3, "DelayedOnQuery"),
+        DELAYED_ON_QUERY(3, "Delayed On Query"),
         DOWNLOADING(4, "Downloading"),
         APPLYING(5, "Applying"),
-        DELAYED_ON_APPLY(6, "DelayedOnApply"),
-        ROLLING_BACK(7, "RollingBack"),
-        DELAYED_ON_USER_CONSENT(8, "DelayedOnUserConsent");
+        DELAYED_ON_APPLY(6, "Delayed On Apply"),
+        ROLLING_BACK(7, "Rolling Back"),
+        DELAYED_ON_USER_CONSENT(8, "Delayed On User Consent");
 
         public final Integer value;
         public final String label;
@@ -250,8 +250,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         UNKNOWN(0, "Unknown"),
         SUCCESS(1, "Success"),
         FAILURE(2, "Failure"),
-        TIME_OUT(3, "TimeOut"),
-        DELAY_BY_PROVIDER(4, "DelayByProvider");
+        TIME_OUT(3, "Time Out"),
+        DELAY_BY_PROVIDER(4, "Delay By Provider");
 
         public final Integer value;
         public final String label;

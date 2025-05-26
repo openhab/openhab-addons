@@ -1,4 +1,5 @@
 import { AnyElement, FieldElement, Matter, ClusterElement, DatatypeElement, AttributeElement, CommandElement, AnyValueElement, ClusterModel, MatterModel } from "@matter/main/model";
+import "@matter/model/resources";
 import handlebars from "handlebars";
 import { Bytes } from "@matter/general"
 import fs from "fs";
@@ -67,6 +68,10 @@ handlebars.registerHelper('asUpperSnakeCase', function (str) {
     return toUpperSnakeCase(str);
 });
 
+handlebars.registerHelper('asSpacedTitleCase', function (str) {
+    return toSpacedTitleCase(str);
+});
+
 handlebars.registerHelper('asHex', function (decimal, length) {
     return toHex(decimal, length);
 });
@@ -90,7 +95,7 @@ handlebars.registerHelper('toBitmapType', function (constraint) {
     return constraint != undefined && constraint.indexOf(" to ") > 0 ? "short" : "boolean"
 });
 handlebars.registerHelper('toBitmapChildName', function (child, type) {
-    return type == "FeatureMap" ? toLowerCamelCase(child.description) : toLowerCamelCase(child.name)
+    return type == "FeatureMap" ? toLowerCamelCase(child.title) : toLowerCamelCase(child.name)
 });
 handlebars.registerHelper('isAttribute', function (field) {
     return field.tag == 'attribute'
@@ -163,6 +168,20 @@ function toUpperSnakeCase(str: string | undefined) {
         .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert underscore between camelCase
         .replace(/[\s-]+/g, '_') // Replace spaces and hyphens with underscore
         .toUpperCase();
+}
+
+function toSpacedTitleCase(str: string | undefined): string {
+    if (!str) {
+        return "Undefined";
+    }
+    return str
+        .replace(/([a-z])([A-Z])/g, '$1 $2') // Add a space before uppercase letters that follow lowercase letters
+        .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Split between capital letters when followed by capital+lowercase
+        .replace(/([a-z])([A-Z][a-z])/g, '$1 $2') // Split between lowercase and camelCase word
+        .replace(/([a-zA-Z])(\d)/g, '$1 $2') // Split between letters and numbers
+        .replace(/(\d)([a-zA-Z])/g, '$1 $2') // Split between numbers and letters
+        .replace(/[_\s]+/g, ' ') // Replace underscores or multiple spaces with a single space
+        .trim();
 }
 
 function toHex(decimal: number, length = 0) {

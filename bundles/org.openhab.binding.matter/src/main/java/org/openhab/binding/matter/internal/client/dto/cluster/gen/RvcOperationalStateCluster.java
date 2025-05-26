@@ -50,7 +50,7 @@ public class RvcOperationalStateCluster extends OperationalStateCluster {
         RUNNING(1, "Running"),
         PAUSED(2, "Paused"),
         ERROR(3, "Error"),
-        SEEKING_CHARGER(64, "SeekingCharger"),
+        SEEKING_CHARGER(64, "Seeking Charger"),
         CHARGING(65, "Charging"),
         DOCKED(66, "Docked");
 
@@ -78,18 +78,18 @@ public class RvcOperationalStateCluster extends OperationalStateCluster {
      * the set of values defined in Operational State itself.
      */
     public enum ErrorStateEnum implements MatterEnum {
-        NO_ERROR(0, "NoError"),
-        UNABLE_TO_START_OR_RESUME(1, "UnableToStartOrResume"),
-        UNABLE_TO_COMPLETE_OPERATION(2, "UnableToCompleteOperation"),
-        COMMAND_INVALID_IN_STATE(3, "CommandInvalidInState"),
-        FAILED_TO_FIND_CHARGING_DOCK(64, "FailedToFindChargingDock"),
+        NO_ERROR(0, "No Error"),
+        UNABLE_TO_START_OR_RESUME(1, "Unable To Start Or Resume"),
+        UNABLE_TO_COMPLETE_OPERATION(2, "Unable To Complete Operation"),
+        COMMAND_INVALID_IN_STATE(3, "Command Invalid In State"),
+        FAILED_TO_FIND_CHARGING_DOCK(64, "Failed To Find Charging Dock"),
         STUCK(65, "Stuck"),
-        DUST_BIN_MISSING(66, "DustBinMissing"),
-        DUST_BIN_FULL(67, "DustBinFull"),
-        WATER_TANK_EMPTY(68, "WaterTankEmpty"),
-        WATER_TANK_MISSING(69, "WaterTankMissing"),
-        WATER_TANK_LID_OPEN(70, "WaterTankLidOpen"),
-        MOP_CLEANING_PAD_MISSING(71, "MopCleaningPadMissing");
+        DUST_BIN_MISSING(66, "Dust Bin Missing"),
+        DUST_BIN_FULL(67, "Dust Bin Full"),
+        WATER_TANK_EMPTY(68, "Water Tank Empty"),
+        WATER_TANK_MISSING(69, "Water Tank Missing"),
+        WATER_TANK_LID_OPEN(70, "Water Tank Lid Open"),
+        MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing");
 
         public final Integer value;
         public final String label;

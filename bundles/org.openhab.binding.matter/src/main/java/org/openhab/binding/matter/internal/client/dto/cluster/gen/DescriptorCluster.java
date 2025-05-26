@@ -104,7 +104,7 @@ public class DescriptorCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * TagList
+         * 
          * See the Disambiguation section in the System Model spec for conformance requirements for this feature and the
          * corresponding attribute.
          */

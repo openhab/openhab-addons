@@ -39,7 +39,7 @@ public class ContentAppObserverCluster extends BaseCluster {
     // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
-        UNEXPECTED_DATA(1, "UnexpectedData");
+        UNEXPECTED_DATA(1, "Unexpected Data");
 
         public final Integer value;
         public final String label;

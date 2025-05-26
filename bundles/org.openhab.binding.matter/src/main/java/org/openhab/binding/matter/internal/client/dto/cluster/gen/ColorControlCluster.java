@@ -387,10 +387,10 @@ public class ColorControlCluster extends BaseCluster {
 
     public enum DriftCompensationEnum implements MatterEnum {
         NONE(0, "None"),
-        OTHER_OR_UNKNOWN(1, "OtherOrUnknown"),
-        TEMPERATURE_MONITORING(2, "TemperatureMonitoring"),
-        OPTICAL_LUMINANCE_MONITORING_AND_FEEDBACK(3, "OpticalLuminanceMonitoringAndFeedback"),
-        OPTICAL_COLOR_MONITORING_AND_FEEDBACK(4, "OpticalColorMonitoringAndFeedback");
+        OTHER_OR_UNKNOWN(1, "Other Or Unknown"),
+        TEMPERATURE_MONITORING(2, "Temperature Monitoring"),
+        OPTICAL_LUMINANCE_MONITORING_AND_FEEDBACK(3, "Optical Luminance Monitoring And Feedback"),
+        OPTICAL_COLOR_MONITORING_AND_FEEDBACK(4, "Optical Color Monitoring And Feedback");
 
         public final Integer value;
         public final String label;
@@ -412,9 +412,9 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     public enum ColorModeEnum implements MatterEnum {
-        CURRENT_HUE_AND_CURRENT_SATURATION(0, "CurrentHueAndCurrentSaturation"),
-        CURRENT_XAND_CURRENT_Y(1, "CurrentXAndCurrentY"),
-        COLOR_TEMPERATURE_MIREDS(2, "ColorTemperatureMireds");
+        CURRENT_HUE_AND_CURRENT_SATURATION(0, "Current Hue And Current Saturation"),
+        CURRENT_XAND_CURRENT_Y(1, "Current X And Current Y"),
+        COLOR_TEMPERATURE_MIREDS(2, "Color Temperature Mireds");
 
         public final Integer value;
         public final String label;
@@ -436,10 +436,10 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     public enum EnhancedColorModeEnum implements MatterEnum {
-        CURRENT_HUE_AND_CURRENT_SATURATION(0, "CurrentHueAndCurrentSaturation"),
-        CURRENT_XAND_CURRENT_Y(1, "CurrentXAndCurrentY"),
-        COLOR_TEMPERATURE_MIREDS(2, "ColorTemperatureMireds"),
-        ENHANCED_CURRENT_HUE_AND_CURRENT_SATURATION(3, "EnhancedCurrentHueAndCurrentSaturation");
+        CURRENT_HUE_AND_CURRENT_SATURATION(0, "Current Hue And Current Saturation"),
+        CURRENT_XAND_CURRENT_Y(1, "Current X And Current Y"),
+        COLOR_TEMPERATURE_MIREDS(2, "Color Temperature Mireds"),
+        ENHANCED_CURRENT_HUE_AND_CURRENT_SATURATION(3, "Enhanced Current Hue And Current Saturation");
 
         public final Integer value;
         public final String label;
@@ -534,8 +534,8 @@ public class ColorControlCluster extends BaseCluster {
 
     public enum ColorLoopActionEnum implements MatterEnum {
         DEACTIVATE(0, "Deactivate"),
-        ACTIVATE_FROM_COLOR_LOOP_START_ENHANCED_HUE(1, "ActivateFromColorLoopStartEnhancedHue"),
-        ACTIVATE_FROM_ENHANCED_CURRENT_HUE(2, "ActivateFromEnhancedCurrentHue");
+        ACTIVATE_FROM_COLOR_LOOP_START_ENHANCED_HUE(1, "Activate From Color Loop Start Enhanced Hue"),
+        ACTIVATE_FROM_ENHANCED_CURRENT_HUE(2, "Activate From Enhanced Current Hue");
 
         public final Integer value;
         public final String label;
@@ -660,27 +660,27 @@ public class ColorControlCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * HueSaturation
+         * 
          * Supports color specification via hue/saturation.
          */
         public boolean hueSaturation;
         /**
-         * EnhancedHue
+         * 
          * Enhanced hue is supported.
          */
         public boolean enhancedHue;
         /**
-         * ColorLoop
+         * 
          * Color loop is supported.
          */
         public boolean colorLoop;
         /**
-         * Xy
+         * 
          * Supports color specification via XY.
          */
         public boolean xy;
         /**
-         * ColorTemperature
+         * 
          * Supports specification of color temperature.
          */
         public boolean colorTemperature;

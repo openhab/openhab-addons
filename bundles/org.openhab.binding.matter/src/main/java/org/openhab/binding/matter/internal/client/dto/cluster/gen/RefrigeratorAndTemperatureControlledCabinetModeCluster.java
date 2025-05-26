@@ -35,15 +35,15 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Mode
         AUTO(0, "Auto"),
         QUICK(1, "Quick"),
         QUIET(2, "Quiet"),
-        LOW_NOISE(3, "LowNoise"),
-        LOW_ENERGY(4, "LowEnergy"),
+        LOW_NOISE(3, "Low Noise"),
+        LOW_ENERGY(4, "Low Energy"),
         VACATION(5, "Vacation"),
         MIN(6, "Min"),
         MAX(7, "Max"),
         NIGHT(8, "Night"),
         DAY(9, "Day"),
-        RAPID_COOL(16384, "RapidCool"),
-        RAPID_FREEZE(16385, "RapidFreeze");
+        RAPID_COOL(16384, "Rapid Cool"),
+        RAPID_FREEZE(16385, "Rapid Freeze");
 
         public final Integer value;
         public final String label;

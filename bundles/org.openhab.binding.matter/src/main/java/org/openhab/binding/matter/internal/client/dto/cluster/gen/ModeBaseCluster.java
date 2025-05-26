@@ -153,9 +153,9 @@ public abstract class ModeBaseCluster extends BaseCluster {
     // Enums
     public enum ModeChangeStatus implements MatterEnum {
         SUCCESS(0, "Success"),
-        UNSUPPORTED_MODE(1, "UnsupportedMode"),
-        GENERIC_FAILURE(2, "GenericFailure"),
-        INVALID_IN_MODE(3, "InvalidInMode");
+        UNSUPPORTED_MODE(1, "Unsupported Mode"),
+        GENERIC_FAILURE(2, "Generic Failure"),
+        INVALID_IN_MODE(3, "Invalid In Mode");
 
         public final Integer value;
         public final String label;
@@ -180,8 +180,8 @@ public abstract class ModeBaseCluster extends BaseCluster {
         AUTO(0, "Auto"),
         QUICK(1, "Quick"),
         QUIET(2, "Quiet"),
-        LOW_NOISE(3, "LowNoise"),
-        LOW_ENERGY(4, "LowEnergy"),
+        LOW_NOISE(3, "Low Noise"),
+        LOW_ENERGY(4, "Low Energy"),
         VACATION(5, "Vacation"),
         MIN(6, "Min"),
         MAX(7, "Max"),
@@ -210,7 +210,7 @@ public abstract class ModeBaseCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * OnOff
+         * 
          * This feature creates a dependency between an OnOff cluster instance and this cluster instance on the same
          * endpoint. See OnMode for more information.
          */

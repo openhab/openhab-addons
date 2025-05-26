@@ -296,14 +296,14 @@ public class SmokeCoAlarmCluster extends BaseCluster {
 
     public enum ExpressedStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
-        SMOKE_ALARM(1, "SmokeAlarm"),
-        CO_ALARM(2, "CoAlarm"),
-        BATTERY_ALERT(3, "BatteryAlert"),
+        SMOKE_ALARM(1, "Smoke Alarm"),
+        CO_ALARM(2, "Co Alarm"),
+        BATTERY_ALERT(3, "Battery Alert"),
         TESTING(4, "Testing"),
-        HARDWARE_FAULT(5, "HardwareFault"),
-        END_OF_SERVICE(6, "EndOfService"),
-        INTERCONNECT_SMOKE(7, "InterconnectSmoke"),
-        INTERCONNECT_CO(8, "InterconnectCo");
+        HARDWARE_FAULT(5, "Hardware Fault"),
+        END_OF_SERVICE(6, "End Of Service"),
+        INTERCONNECT_SMOKE(7, "Interconnect Smoke"),
+        INTERCONNECT_CO(8, "Interconnect Co");
 
         public final Integer value;
         public final String label;
@@ -325,7 +325,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     }
 
     public enum MuteStateEnum implements MatterEnum {
-        NOT_MUTED(0, "NotMuted"),
+        NOT_MUTED(0, "Not Muted"),
         MUTED(1, "Muted");
 
         public final Integer value;
@@ -398,12 +398,12 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * SmokeAlarm
+         * 
          * Supports Smoke alarm
          */
         public boolean smokeAlarm;
         /**
-         * CoAlarm
+         * 
          * Supports CO alarm
          */
         public boolean coAlarm;

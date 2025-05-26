@@ -118,7 +118,7 @@ public class MediaInputCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * NameUpdates
+         * 
          * Supports updates to the input names
          */
         public boolean nameUpdates;

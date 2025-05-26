@@ -35,17 +35,17 @@ public class DeviceEnergyManagementModeCluster extends ModeBaseCluster {
         AUTO(0, "Auto"),
         QUICK(1, "Quick"),
         QUIET(2, "Quiet"),
-        LOW_NOISE(3, "LowNoise"),
-        LOW_ENERGY(4, "LowEnergy"),
+        LOW_NOISE(3, "Low Noise"),
+        LOW_ENERGY(4, "Low Energy"),
         VACATION(5, "Vacation"),
         MIN(6, "Min"),
         MAX(7, "Max"),
         NIGHT(8, "Night"),
         DAY(9, "Day"),
-        NO_OPTIMIZATION(16384, "NoOptimization"),
-        DEVICE_OPTIMIZATION(16385, "DeviceOptimization"),
-        LOCAL_OPTIMIZATION(16386, "LocalOptimization"),
-        GRID_OPTIMIZATION(16387, "GridOptimization");
+        NO_OPTIMIZATION(16384, "No Optimization"),
+        DEVICE_OPTIMIZATION(16385, "Device Optimization"),
+        LOCAL_OPTIMIZATION(16386, "Local Optimization"),
+        GRID_OPTIMIZATION(16387, "Grid Optimization");
 
         public final Integer value;
         public final String label;

@@ -57,9 +57,9 @@ public class IdentifyCluster extends BaseCluster {
     // Enums
     public enum IdentifyTypeEnum implements MatterEnum {
         NONE(0, "None"),
-        LIGHT_OUTPUT(1, "LightOutput"),
-        VISIBLE_INDICATOR(2, "VisibleIndicator"),
-        AUDIBLE_BEEP(3, "AudibleBeep"),
+        LIGHT_OUTPUT(1, "Light Output"),
+        VISIBLE_INDICATOR(2, "Visible Indicator"),
+        AUDIBLE_BEEP(3, "Audible Beep"),
         DISPLAY(4, "Display"),
         ACTUATOR(5, "Actuator");
 
@@ -86,9 +86,9 @@ public class IdentifyCluster extends BaseCluster {
         BLINK(0, "Blink"),
         BREATHE(1, "Breathe"),
         OKAY(2, "Okay"),
-        CHANNEL_CHANGE(11, "ChannelChange"),
-        FINISH_EFFECT(254, "FinishEffect"),
-        STOP_EFFECT(255, "StopEffect");
+        CHANNEL_CHANGE(11, "Channel Change"),
+        FINISH_EFFECT(254, "Finish Effect"),
+        STOP_EFFECT(255, "Stop Effect");
 
         public final Integer value;
         public final String label;

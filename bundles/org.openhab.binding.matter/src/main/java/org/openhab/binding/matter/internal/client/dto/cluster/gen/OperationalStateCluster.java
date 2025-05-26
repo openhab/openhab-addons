@@ -254,10 +254,10 @@ public class OperationalStateCluster extends BaseCluster {
      * specifications is called ErrorState.
      */
     public enum ErrorStateEnum implements MatterEnum {
-        NO_ERROR(0, "NoError"),
-        UNABLE_TO_START_OR_RESUME(1, "UnableToStartOrResume"),
-        UNABLE_TO_COMPLETE_OPERATION(2, "UnableToCompleteOperation"),
-        COMMAND_INVALID_IN_STATE(3, "CommandInvalidInState");
+        NO_ERROR(0, "No Error"),
+        UNABLE_TO_START_OR_RESUME(1, "Unable To Start Or Resume"),
+        UNABLE_TO_COMPLETE_OPERATION(2, "Unable To Complete Operation"),
+        COMMAND_INVALID_IN_STATE(3, "Command Invalid In State");
 
         public final Integer value;
         public final String label;

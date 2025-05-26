@@ -257,14 +257,14 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         UNSPECIFIED(0, "Unspecified"),
         RADIO(1, "Radio"),
         SENSOR(2, "Sensor"),
-        RESETTABLE_OVER_TEMP(3, "ResettableOverTemp"),
-        NON_RESETTABLE_OVER_TEMP(4, "NonResettableOverTemp"),
-        POWER_SOURCE(5, "PowerSource"),
-        VISUAL_DISPLAY_FAULT(6, "VisualDisplayFault"),
-        AUDIO_OUTPUT_FAULT(7, "AudioOutputFault"),
-        USER_INTERFACE_FAULT(8, "UserInterfaceFault"),
-        NON_VOLATILE_MEMORY_ERROR(9, "NonVolatileMemoryError"),
-        TAMPER_DETECTED(10, "TamperDetected");
+        RESETTABLE_OVER_TEMP(3, "Resettable Over Temp"),
+        NON_RESETTABLE_OVER_TEMP(4, "Non Resettable Over Temp"),
+        POWER_SOURCE(5, "Power Source"),
+        VISUAL_DISPLAY_FAULT(6, "Visual Display Fault"),
+        AUDIO_OUTPUT_FAULT(7, "Audio Output Fault"),
+        USER_INTERFACE_FAULT(8, "User Interface Fault"),
+        NON_VOLATILE_MEMORY_ERROR(9, "Non Volatile Memory Error"),
+        TAMPER_DETECTED(10, "Tamper Detected");
 
         public final Integer value;
         public final String label;
@@ -287,12 +287,12 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
 
     public enum RadioFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        WI_FI_FAULT(1, "WiFiFault"),
-        CELLULAR_FAULT(2, "CellularFault"),
-        THREAD_FAULT(3, "ThreadFault"),
-        NFC_FAULT(4, "NfcFault"),
-        BLE_FAULT(5, "BleFault"),
-        ETHERNET_FAULT(6, "EthernetFault");
+        WI_FI_FAULT(1, "Wi Fi Fault"),
+        CELLULAR_FAULT(2, "Cellular Fault"),
+        THREAD_FAULT(3, "Thread Fault"),
+        NFC_FAULT(4, "Nfc Fault"),
+        BLE_FAULT(5, "Ble Fault"),
+        ETHERNET_FAULT(6, "Ethernet Fault");
 
         public final Integer value;
         public final String label;
@@ -315,9 +315,9 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
 
     public enum NetworkFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        HARDWARE_FAILURE(1, "HardwareFailure"),
-        NETWORK_JAMMED(2, "NetworkJammed"),
-        CONNECTION_FAILED(3, "ConnectionFailed");
+        HARDWARE_FAILURE(1, "Hardware Failure"),
+        NETWORK_JAMMED(2, "Network Jammed"),
+        CONNECTION_FAILED(3, "Connection Failed");
 
         public final Integer value;
         public final String label;
@@ -340,7 +340,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
 
     public enum InterfaceTypeEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        WI_FI(1, "WiFi"),
+        WI_FI(1, "Wi Fi"),
         ETHERNET(2, "Ethernet"),
         CELLULAR(3, "Cellular"),
         THREAD(4, "Thread");
@@ -366,12 +366,12 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
 
     public enum BootReasonEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        POWER_ON_REBOOT(1, "PowerOnReboot"),
-        BROWN_OUT_RESET(2, "BrownOutReset"),
-        SOFTWARE_WATCHDOG_RESET(3, "SoftwareWatchdogReset"),
-        HARDWARE_WATCHDOG_RESET(4, "HardwareWatchdogReset"),
-        SOFTWARE_UPDATE_COMPLETED(5, "SoftwareUpdateCompleted"),
-        SOFTWARE_RESET(6, "SoftwareReset");
+        POWER_ON_REBOOT(1, "Power On Reboot"),
+        BROWN_OUT_RESET(2, "Brown Out Reset"),
+        SOFTWARE_WATCHDOG_RESET(3, "Software Watchdog Reset"),
+        HARDWARE_WATCHDOG_RESET(4, "Hardware Watchdog Reset"),
+        SOFTWARE_UPDATE_COMPLETED(5, "Software Update Completed"),
+        SOFTWARE_RESET(6, "Software Reset");
 
         public final Integer value;
         public final String label;
@@ -395,7 +395,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * DataModelTest
+         * 
          * This feature indicates support for extended Data Model testing commands, which are required in some
          * situations.
          * This feature shall be supported if the MaxPathsPerInvoke attribute of the Basic Information Cluster has a

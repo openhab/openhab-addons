@@ -227,12 +227,12 @@ public class WaterHeaterManagementCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * EnergyManagement
+         * 
          * Allows energy management control of the tank
          */
         public boolean energyManagement;
         /**
-         * TankPercent
+         * 
          * Supports monitoring the percentage of hot water in the tank
          */
         public boolean tankPercent;

@@ -109,7 +109,7 @@ public class AudioOutputCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * NameUpdates
+         * 
          * Supports updates to output names
          */
         public boolean nameUpdates;

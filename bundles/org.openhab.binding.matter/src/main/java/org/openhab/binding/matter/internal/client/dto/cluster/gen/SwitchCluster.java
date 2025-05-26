@@ -227,34 +227,34 @@ public class SwitchCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * LatchingSwitch
+         * 
          * This feature flag is for a switch that maintains its position after being pressed (or turned).
          */
         public boolean latchingSwitch;
         /**
-         * MomentarySwitch
+         * 
          * This feature flag is for a switch that does not maintain its position after being pressed (or turned). After
          * releasing, it goes back to its idle position.
          */
         public boolean momentarySwitch;
         /**
-         * MomentarySwitchRelease
+         * 
          * This feature flag is for a momentary switch that can distinguish and report release events.
          */
         public boolean momentarySwitchRelease;
         /**
-         * MomentarySwitchLongPress
+         * 
          * This feature flag is for a momentary switch that can distinguish and report long presses from short presses.
          */
         public boolean momentarySwitchLongPress;
         /**
-         * MomentarySwitchMultiPress
+         * 
          * This feature flag is for a momentary switch that can distinguish and report double press and potentially
          * multiple presses with more events, such as triple press, etc.
          */
         public boolean momentarySwitchMultiPress;
         /**
-         * ActionSwitch
+         * 
          * This feature flag indicates simplified handling of events for multi-press-capable switches. See Multi Press
          * Details.
          */

@@ -172,8 +172,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         NONE(1, "None"),
         WEP(2, "Wep"),
         WPA(3, "Wpa"),
-        WPA2(4, "Wpa2"),
-        WPA3(5, "Wpa3");
+        WPA2(4, "Wpa 2"),
+        WPA3(5, "Wpa 3");
 
         public final Integer value;
         public final String label;
@@ -224,9 +224,9 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
 
     public enum AssociationFailureCauseEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
-        ASSOCIATION_FAILED(1, "AssociationFailed"),
-        AUTHENTICATION_FAILED(2, "AuthenticationFailed"),
-        SSID_NOT_FOUND(3, "SsidNotFound");
+        ASSOCIATION_FAILED(1, "Association Failed"),
+        AUTHENTICATION_FAILED(2, "Authentication Failed"),
+        SSID_NOT_FOUND(3, "Ssid Not Found");
 
         public final Integer value;
         public final String label;
@@ -249,7 +249,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
 
     public enum ConnectionStatusEnum implements MatterEnum {
         CONNECTED(0, "Connected"),
-        NOT_CONNECTED(1, "NotConnected");
+        NOT_CONNECTED(1, "Not Connected");
 
         public final Integer value;
         public final String label;
@@ -273,12 +273,12 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * PacketCounts
+         * 
          * Node makes available the counts for the number of received and transmitted packets on the Wi-Fi interface.
          */
         public boolean packetCounts;
         /**
-         * ErrorCounts
+         * 
          * Node makes available the counts for the number of errors that have occurred during the reception and
          * transmission of packets on the Wi-Fi interface.
          */

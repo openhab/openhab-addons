@@ -106,7 +106,7 @@ public abstract class AlarmBaseCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * Reset
+         * 
          * This feature indicates that alarms can be reset via the Reset command.
          */
         public boolean reset;

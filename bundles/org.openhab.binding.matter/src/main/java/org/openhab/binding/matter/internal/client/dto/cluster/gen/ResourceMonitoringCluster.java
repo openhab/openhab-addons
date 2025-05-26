@@ -143,9 +143,9 @@ public abstract class ResourceMonitoringCluster extends BaseCluster {
      */
     public enum ProductIdentifierTypeEnum implements MatterEnum {
         UPC(0, "Upc"),
-        GTIN8(1, "Gtin8"),
+        GTIN8(1, "Gtin 8"),
         EAN(2, "Ean"),
-        GTIN14(3, "Gtin14"),
+        GTIN14(3, "Gtin 14"),
         OEM(4, "Oem");
 
         public final Integer value;
@@ -170,17 +170,17 @@ public abstract class ResourceMonitoringCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Condition
+         * 
          * Supports monitoring the condition of the resource in percentage
          */
         public boolean condition;
         /**
-         * Warning
+         * 
          * Supports warning indication
          */
         public boolean warning;
         /**
-         * ReplacementProductList
+         * 
          * Supports specifying the list of replacement products
          */
         public boolean replacementProductList;

@@ -87,20 +87,20 @@ public class TemperatureControlCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * TemperatureNumber
+         * 
          * For devices that use an actual temperature value for the temperature setpoint, such as some water heaters,
          * the feature TN shall be used. Note that this cluster provides and supports temperatures in degrees Celsius
          * via the temperature data type.
          */
         public boolean temperatureNumber;
         /**
-         * TemperatureLevel
+         * 
          * For devices that use vendor-specific temperature levels for the temperature setpoint, such as some washers,
          * the feature TL shall be used.
          */
         public boolean temperatureLevel;
         /**
-         * TemperatureStep
+         * 
          * For devices that support discrete temperature setpoints that are larger than the temperature resolution
          * imposed via the temperature data type, the Step feature may be used.
          */

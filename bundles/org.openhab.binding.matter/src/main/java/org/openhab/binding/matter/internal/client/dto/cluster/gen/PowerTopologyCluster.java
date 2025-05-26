@@ -51,22 +51,22 @@ public class PowerTopologyCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * NodeTopology
+         * 
          * This endpoint provides or consumes power to/from the entire node
          */
         public boolean nodeTopology;
         /**
-         * TreeTopology
+         * 
          * This endpoint provides or consumes power to/from itself and its child endpoints
          */
         public boolean treeTopology;
         /**
-         * SetTopology
+         * 
          * This endpoint provides or consumes power to/from a specified set of endpoints
          */
         public boolean setTopology;
         /**
-         * DynamicPowerFlow
+         * 
          * The specified set of endpoints may change
          */
         public boolean dynamicPowerFlow;

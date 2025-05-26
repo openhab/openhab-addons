@@ -71,9 +71,9 @@ public class AdministratorCommissioningCluster extends BaseCluster {
 
     // Enums
     public enum CommissioningWindowStatusEnum implements MatterEnum {
-        WINDOW_NOT_OPEN(0, "WindowNotOpen"),
-        ENHANCED_WINDOW_OPEN(1, "EnhancedWindowOpen"),
-        BASIC_WINDOW_OPEN(2, "BasicWindowOpen");
+        WINDOW_NOT_OPEN(0, "Window Not Open"),
+        ENHANCED_WINDOW_OPEN(1, "Enhanced Window Open"),
+        BASIC_WINDOW_OPEN(2, "Basic Window Open");
 
         public final Integer value;
         public final String label;
@@ -96,8 +96,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
 
     public enum StatusCodeEnum implements MatterEnum {
         BUSY(2, "Busy"),
-        PAKE_PARAMETER_ERROR(3, "PakeParameterError"),
-        WINDOW_NOT_OPEN(4, "WindowNotOpen");
+        PAKE_PARAMETER_ERROR(3, "Pake Parameter Error"),
+        WINDOW_NOT_OPEN(4, "Window Not Open");
 
         public final Integer value;
         public final String label;
@@ -121,7 +121,7 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Basic
+         * 
          * Node supports Basic Commissioning Method.
          */
         public boolean basic;

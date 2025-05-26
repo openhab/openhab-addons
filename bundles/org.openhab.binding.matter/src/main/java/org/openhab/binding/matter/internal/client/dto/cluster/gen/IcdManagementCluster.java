@@ -264,23 +264,23 @@ public class IcdManagementCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * CheckInProtocolSupport
+         * 
          * When this feature is supported, the device shall support all the associated commands and attributes to
          * properly support the Check-In Protocol.
          */
         public boolean checkInProtocolSupport;
         /**
-         * UserActiveModeTrigger
+         * 
          * This feature is supported if and only if the device has a user active mode trigger.
          */
         public boolean userActiveModeTrigger;
         /**
-         * LongIdleTimeSupport
+         * 
          * This feature is supported if and only the device is a Long Idle Time ICD.
          */
         public boolean longIdleTimeSupport;
         /**
-         * DynamicSitLitSupport
+         * 
          * This feature is supported if and only if the device can switch between SIT and LIT operating modes even if it
          * has a valid registered client. See the dynamic SIT / LIT operating mode switching for more details.
          */

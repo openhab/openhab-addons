@@ -35,17 +35,17 @@ public class EnergyEvseModeCluster extends ModeBaseCluster {
         AUTO(0, "Auto"),
         QUICK(1, "Quick"),
         QUIET(2, "Quiet"),
-        LOW_NOISE(3, "LowNoise"),
-        LOW_ENERGY(4, "LowEnergy"),
+        LOW_NOISE(3, "Low Noise"),
+        LOW_ENERGY(4, "Low Energy"),
         VACATION(5, "Vacation"),
         MIN(6, "Min"),
         MAX(7, "Max"),
         NIGHT(8, "Night"),
         DAY(9, "Day"),
         MANUAL(16384, "Manual"),
-        TIME_OF_USE(16385, "TimeOfUse"),
-        SOLAR_CHARGING(16386, "SolarCharging"),
-        V2X(16387, "V2X");
+        TIME_OF_USE(16385, "Time Of Use"),
+        SOLAR_CHARGING(16386, "Solar Charging"),
+        V2X(16387, "V 2 X");
 
         public final Integer value;
         public final String label;

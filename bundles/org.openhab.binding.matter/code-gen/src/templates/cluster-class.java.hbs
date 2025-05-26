@@ -93,7 +93,7 @@ public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster 
         DEFAULT(0, "Default");
 {{else}}
 {{#each children}}
-        {{asEnumField name}}({{id}}, "{{name}}"){{#unless (isLastElement @index ../children.length)}},{{else}};{{/unless}}
+        {{asEnumField name}}({{id}}, "{{asSpacedTitleCase name}}"){{#unless (isLastElement @index ../children.length)}},{{else}};{{/unless}}
 {{/each}}
 {{/if}}
         public final Integer value;

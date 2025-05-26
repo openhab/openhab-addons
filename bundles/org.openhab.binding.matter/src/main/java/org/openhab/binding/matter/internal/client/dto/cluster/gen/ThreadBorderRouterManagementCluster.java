@@ -83,7 +83,7 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * PanChange
+         * 
          * This feature shall indicate the ability of the Border Router to change its already configured PAN to another,
          * by setting a pending dataset.
          * &gt; [!NOTE]

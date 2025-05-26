@@ -334,8 +334,8 @@ public class PowerSourceCluster extends BaseCluster {
     // Enums
     public enum WiredFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        OVER_VOLTAGE(1, "OverVoltage"),
-        UNDER_VOLTAGE(2, "UnderVoltage");
+        OVER_VOLTAGE(1, "Over Voltage"),
+        UNDER_VOLTAGE(2, "Under Voltage");
 
         public final Integer value;
         public final String label;
@@ -358,8 +358,8 @@ public class PowerSourceCluster extends BaseCluster {
 
     public enum BatFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        OVER_TEMP(1, "OverTemp"),
-        UNDER_TEMP(2, "UnderTemp");
+        OVER_TEMP(1, "Over Temp"),
+        UNDER_TEMP(2, "Under Temp");
 
         public final Integer value;
         public final String label;
@@ -382,16 +382,16 @@ public class PowerSourceCluster extends BaseCluster {
 
     public enum BatChargeFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        AMBIENT_TOO_HOT(1, "AmbientTooHot"),
-        AMBIENT_TOO_COLD(2, "AmbientTooCold"),
-        BATTERY_TOO_HOT(3, "BatteryTooHot"),
-        BATTERY_TOO_COLD(4, "BatteryTooCold"),
-        BATTERY_ABSENT(5, "BatteryAbsent"),
-        BATTERY_OVER_VOLTAGE(6, "BatteryOverVoltage"),
-        BATTERY_UNDER_VOLTAGE(7, "BatteryUnderVoltage"),
-        CHARGER_OVER_VOLTAGE(8, "ChargerOverVoltage"),
-        CHARGER_UNDER_VOLTAGE(9, "ChargerUnderVoltage"),
-        SAFETY_TIMEOUT(10, "SafetyTimeout");
+        AMBIENT_TOO_HOT(1, "Ambient Too Hot"),
+        AMBIENT_TOO_COLD(2, "Ambient Too Cold"),
+        BATTERY_TOO_HOT(3, "Battery Too Hot"),
+        BATTERY_TOO_COLD(4, "Battery Too Cold"),
+        BATTERY_ABSENT(5, "Battery Absent"),
+        BATTERY_OVER_VOLTAGE(6, "Battery Over Voltage"),
+        BATTERY_UNDER_VOLTAGE(7, "Battery Under Voltage"),
+        CHARGER_OVER_VOLTAGE(8, "Charger Over Voltage"),
+        CHARGER_UNDER_VOLTAGE(9, "Charger Under Voltage"),
+        SAFETY_TIMEOUT(10, "Safety Timeout");
 
         public final Integer value;
         public final String label;
@@ -486,9 +486,9 @@ public class PowerSourceCluster extends BaseCluster {
 
     public enum BatReplaceabilityEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
-        NOT_REPLACEABLE(1, "NotReplaceable"),
-        USER_REPLACEABLE(2, "UserReplaceable"),
-        FACTORY_REPLACEABLE(3, "FactoryReplaceable");
+        NOT_REPLACEABLE(1, "Not Replaceable"),
+        USER_REPLACEABLE(2, "User Replaceable"),
+        FACTORY_REPLACEABLE(3, "Factory Replaceable");
 
         public final Integer value;
         public final String label;
@@ -515,63 +515,63 @@ public class PowerSourceCluster extends BaseCluster {
         AA(2, "Aa"),
         C(3, "C"),
         D(4, "D"),
-        V4V5(5, "4V5"),
-        V6V0(6, "6V0"),
-        V9V0(7, "9V0"),
-        V12AA(8, "12Aa"),
+        V4V5(5, "4 V 5"),
+        V6V0(6, "6 V 0"),
+        V9V0(7, "9 V 0"),
+        V12AA(8, "12 Aa"),
         AAAA(9, "Aaaa"),
         A(10, "A"),
         B(11, "B"),
         F(12, "F"),
         N(13, "N"),
-        NO6(14, "No6"),
-        SUB_C(15, "SubC"),
-        A23(16, "A23"),
-        A27(17, "A27"),
-        BA5800(18, "Ba5800"),
+        NO6(14, "No 6"),
+        SUB_C(15, "Sub C"),
+        A23(16, "A 23"),
+        A27(17, "A 27"),
+        BA5800(18, "Ba 5800"),
         DUPLEX(19, "Duplex"),
-        V4SR44(20, "4Sr44"),
+        V4SR44(20, "4 Sr 44"),
         V523(21, "523"),
         V531(22, "531"),
-        V15V0(23, "15V0"),
-        V22V5(24, "22V5"),
-        V30V0(25, "30V0"),
-        V45V0(26, "45V0"),
-        V67V5(27, "67V5"),
+        V15V0(23, "15 V 0"),
+        V22V5(24, "22 V 5"),
+        V30V0(25, "30 V 0"),
+        V45V0(26, "45 V 0"),
+        V67V5(27, "67 V 5"),
         J(28, "J"),
-        CR123A(29, "Cr123A"),
-        CR2(30, "Cr2"),
-        V2CR5(31, "2Cr5"),
-        CR_P2(32, "CrP2"),
-        CR_V3(33, "CrV3"),
-        SR41(34, "Sr41"),
-        SR43(35, "Sr43"),
-        SR44(36, "Sr44"),
-        SR45(37, "Sr45"),
-        SR48(38, "Sr48"),
-        SR54(39, "Sr54"),
-        SR55(40, "Sr55"),
-        SR57(41, "Sr57"),
-        SR58(42, "Sr58"),
-        SR59(43, "Sr59"),
-        SR60(44, "Sr60"),
-        SR63(45, "Sr63"),
-        SR64(46, "Sr64"),
-        SR65(47, "Sr65"),
-        SR66(48, "Sr66"),
-        SR67(49, "Sr67"),
-        SR68(50, "Sr68"),
-        SR69(51, "Sr69"),
-        SR516(52, "Sr516"),
-        SR731(53, "Sr731"),
-        SR712(54, "Sr712"),
-        LR932(55, "Lr932"),
-        A5(56, "A5"),
-        A10(57, "A10"),
-        A13(58, "A13"),
-        A312(59, "A312"),
-        A675(60, "A675"),
-        AC41E(61, "Ac41E"),
+        CR123A(29, "Cr 123 A"),
+        CR2(30, "Cr 2"),
+        V2CR5(31, "2 Cr 5"),
+        CR_P2(32, "Cr P 2"),
+        CR_V3(33, "Cr V 3"),
+        SR41(34, "Sr 41"),
+        SR43(35, "Sr 43"),
+        SR44(36, "Sr 44"),
+        SR45(37, "Sr 45"),
+        SR48(38, "Sr 48"),
+        SR54(39, "Sr 54"),
+        SR55(40, "Sr 55"),
+        SR57(41, "Sr 57"),
+        SR58(42, "Sr 58"),
+        SR59(43, "Sr 59"),
+        SR60(44, "Sr 60"),
+        SR63(45, "Sr 63"),
+        SR64(46, "Sr 64"),
+        SR65(47, "Sr 65"),
+        SR66(48, "Sr 66"),
+        SR67(49, "Sr 67"),
+        SR68(50, "Sr 68"),
+        SR69(51, "Sr 69"),
+        SR516(52, "Sr 516"),
+        SR731(53, "Sr 731"),
+        SR712(54, "Sr 712"),
+        LR932(55, "Lr 932"),
+        A5(56, "A 5"),
+        A10(57, "A 10"),
+        A13(58, "A 13"),
+        A312(59, "A 312"),
+        A675(60, "A 675"),
+        AC41E(61, "Ac 41 E"),
         V10180(62, "10180"),
         V10280(63, "10280"),
         V10440(64, "10440"),
@@ -581,7 +581,7 @@ public class PowerSourceCluster extends BaseCluster {
         V14650(68, "14650"),
         V15270(69, "15270"),
         V16340(70, "16340"),
-        RCR123A(71, "Rcr123A"),
+        RCR123A(71, "Rcr 123 A"),
         V17500(72, "17500"),
         V17670(73, "17670"),
         V18350(74, "18350"),
@@ -614,37 +614,37 @@ public class PowerSourceCluster extends BaseCluster {
     public enum BatApprovedChemistryEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         ALKALINE(1, "Alkaline"),
-        LITHIUM_CARBON_FLUORIDE(2, "LithiumCarbonFluoride"),
-        LITHIUM_CHROMIUM_OXIDE(3, "LithiumChromiumOxide"),
-        LITHIUM_COPPER_OXIDE(4, "LithiumCopperOxide"),
-        LITHIUM_IRON_DISULFIDE(5, "LithiumIronDisulfide"),
-        LITHIUM_MANGANESE_DIOXIDE(6, "LithiumManganeseDioxide"),
-        LITHIUM_THIONYL_CHLORIDE(7, "LithiumThionylChloride"),
+        LITHIUM_CARBON_FLUORIDE(2, "Lithium Carbon Fluoride"),
+        LITHIUM_CHROMIUM_OXIDE(3, "Lithium Chromium Oxide"),
+        LITHIUM_COPPER_OXIDE(4, "Lithium Copper Oxide"),
+        LITHIUM_IRON_DISULFIDE(5, "Lithium Iron Disulfide"),
+        LITHIUM_MANGANESE_DIOXIDE(6, "Lithium Manganese Dioxide"),
+        LITHIUM_THIONYL_CHLORIDE(7, "Lithium Thionyl Chloride"),
         MAGNESIUM(8, "Magnesium"),
-        MERCURY_OXIDE(9, "MercuryOxide"),
-        NICKEL_OXYHYDRIDE(10, "NickelOxyhydride"),
-        SILVER_OXIDE(11, "SilverOxide"),
-        ZINC_AIR(12, "ZincAir"),
-        ZINC_CARBON(13, "ZincCarbon"),
-        ZINC_CHLORIDE(14, "ZincChloride"),
-        ZINC_MANGANESE_DIOXIDE(15, "ZincManganeseDioxide"),
-        LEAD_ACID(16, "LeadAcid"),
-        LITHIUM_COBALT_OXIDE(17, "LithiumCobaltOxide"),
-        LITHIUM_ION(18, "LithiumIon"),
-        LITHIUM_ION_POLYMER(19, "LithiumIonPolymer"),
-        LITHIUM_IRON_PHOSPHATE(20, "LithiumIronPhosphate"),
-        LITHIUM_SULFUR(21, "LithiumSulfur"),
-        LITHIUM_TITANATE(22, "LithiumTitanate"),
-        NICKEL_CADMIUM(23, "NickelCadmium"),
-        NICKEL_HYDROGEN(24, "NickelHydrogen"),
-        NICKEL_IRON(25, "NickelIron"),
-        NICKEL_METAL_HYDRIDE(26, "NickelMetalHydride"),
-        NICKEL_ZINC(27, "NickelZinc"),
-        SILVER_ZINC(28, "SilverZinc"),
-        SODIUM_ION(29, "SodiumIon"),
-        SODIUM_SULFUR(30, "SodiumSulfur"),
-        ZINC_BROMIDE(31, "ZincBromide"),
-        ZINC_CERIUM(32, "ZincCerium");
+        MERCURY_OXIDE(9, "Mercury Oxide"),
+        NICKEL_OXYHYDRIDE(10, "Nickel Oxyhydride"),
+        SILVER_OXIDE(11, "Silver Oxide"),
+        ZINC_AIR(12, "Zinc Air"),
+        ZINC_CARBON(13, "Zinc Carbon"),
+        ZINC_CHLORIDE(14, "Zinc Chloride"),
+        ZINC_MANGANESE_DIOXIDE(15, "Zinc Manganese Dioxide"),
+        LEAD_ACID(16, "Lead Acid"),
+        LITHIUM_COBALT_OXIDE(17, "Lithium Cobalt Oxide"),
+        LITHIUM_ION(18, "Lithium Ion"),
+        LITHIUM_ION_POLYMER(19, "Lithium Ion Polymer"),
+        LITHIUM_IRON_PHOSPHATE(20, "Lithium Iron Phosphate"),
+        LITHIUM_SULFUR(21, "Lithium Sulfur"),
+        LITHIUM_TITANATE(22, "Lithium Titanate"),
+        NICKEL_CADMIUM(23, "Nickel Cadmium"),
+        NICKEL_HYDROGEN(24, "Nickel Hydrogen"),
+        NICKEL_IRON(25, "Nickel Iron"),
+        NICKEL_METAL_HYDRIDE(26, "Nickel Metal Hydride"),
+        NICKEL_ZINC(27, "Nickel Zinc"),
+        SILVER_ZINC(28, "Silver Zinc"),
+        SODIUM_ION(29, "Sodium Ion"),
+        SODIUM_SULFUR(30, "Sodium Sulfur"),
+        ZINC_BROMIDE(31, "Zinc Bromide"),
+        ZINC_CERIUM(32, "Zinc Cerium");
 
         public final Integer value;
         public final String label;
@@ -667,9 +667,9 @@ public class PowerSourceCluster extends BaseCluster {
 
     public enum BatChargeStateEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
-        IS_CHARGING(1, "IsCharging"),
-        IS_AT_FULL_CHARGE(2, "IsAtFullCharge"),
-        IS_NOT_CHARGING(3, "IsNotCharging");
+        IS_CHARGING(1, "Is Charging"),
+        IS_AT_FULL_CHARGE(2, "Is At Full Charge"),
+        IS_NOT_CHARGING(3, "Is Not Charging");
 
         public final Integer value;
         public final String label;
@@ -693,22 +693,22 @@ public class PowerSourceCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Wired
+         * 
          * A wired power source
          */
         public boolean wired;
         /**
-         * Battery
+         * 
          * A battery power source
          */
         public boolean battery;
         /**
-         * Rechargeable
+         * 
          * A rechargeable battery power source
          */
         public boolean rechargeable;
         /**
-         * Replaceable
+         * 
          * A replaceable battery power source
          */
         public boolean replaceable;

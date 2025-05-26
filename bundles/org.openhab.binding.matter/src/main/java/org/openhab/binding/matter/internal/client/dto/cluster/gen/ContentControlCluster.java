@@ -280,16 +280,16 @@ public class ContentControlCluster extends BaseCluster {
 
     // Enums
     public enum StatusCodeEnum implements MatterEnum {
-        INVALID_PIN_CODE(2, "InvalidPinCode"),
-        INVALID_RATING(3, "InvalidRating"),
-        INVALID_CHANNEL(4, "InvalidChannel"),
-        CHANNEL_ALREADY_EXIST(5, "ChannelAlreadyExist"),
-        CHANNEL_NOT_EXIST(6, "ChannelNotExist"),
-        UNIDENTIFIABLE_APPLICATION(7, "UnidentifiableApplication"),
-        APPLICATION_ALREADY_EXIST(8, "ApplicationAlreadyExist"),
-        APPLICATION_NOT_EXIST(9, "ApplicationNotExist"),
-        TIME_WINDOW_ALREADY_EXIST(10, "TimeWindowAlreadyExist"),
-        TIME_WINDOW_NOT_EXIST(11, "TimeWindowNotExist");
+        INVALID_PIN_CODE(2, "Invalid Pin Code"),
+        INVALID_RATING(3, "Invalid Rating"),
+        INVALID_CHANNEL(4, "Invalid Channel"),
+        CHANNEL_ALREADY_EXIST(5, "Channel Already Exist"),
+        CHANNEL_NOT_EXIST(6, "Channel Not Exist"),
+        UNIDENTIFIABLE_APPLICATION(7, "Unidentifiable Application"),
+        APPLICATION_ALREADY_EXIST(8, "Application Already Exist"),
+        APPLICATION_NOT_EXIST(9, "Application Not Exist"),
+        TIME_WINDOW_ALREADY_EXIST(10, "Time Window Already Exist"),
+        TIME_WINDOW_NOT_EXIST(11, "Time Window Not Exist");
 
         public final Integer value;
         public final String label;
@@ -334,42 +334,42 @@ public class ContentControlCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * ScreenTime
+         * 
          * Supports managing screen time limits.
          */
         public boolean screenTime;
         /**
-         * PinManagement
+         * 
          * Supports managing a PIN code which is used for restricting access to configuration of this feature.
          */
         public boolean pinManagement;
         /**
-         * BlockUnrated
+         * 
          * Supports managing content controls for unrated content.
          */
         public boolean blockUnrated;
         /**
-         * OnDemandContentRating
+         * 
          * Supports managing content controls based upon rating threshold for on demand content.
          */
         public boolean onDemandContentRating;
         /**
-         * ScheduledContentRating
+         * 
          * Supports managing content controls based upon rating threshold for scheduled content.
          */
         public boolean scheduledContentRating;
         /**
-         * BlockChannels
+         * 
          * Supports managing a set of channels that are prohibited.
          */
         public boolean blockChannels;
         /**
-         * BlockApplications
+         * 
          * Supports managing a set of applications that are prohibited.
          */
         public boolean blockApplications;
         /**
-         * BlockContentTimeWindow
+         * 
          * Supports managing content controls based upon setting time window in which all contents and applications
          * SHALL be blocked.
          */

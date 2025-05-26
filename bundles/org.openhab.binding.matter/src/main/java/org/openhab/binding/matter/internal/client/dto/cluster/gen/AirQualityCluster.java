@@ -51,8 +51,8 @@ public class AirQualityCluster extends BaseCluster {
         FAIR(2, "Fair"),
         MODERATE(3, "Moderate"),
         POOR(4, "Poor"),
-        VERY_POOR(5, "VeryPoor"),
-        EXTREMELY_POOR(6, "ExtremelyPoor");
+        VERY_POOR(5, "Very Poor"),
+        EXTREMELY_POOR(6, "Extremely Poor");
 
         public final Integer value;
         public final String label;
@@ -76,22 +76,22 @@ public class AirQualityCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * Fair
+         * 
          * Cluster supports the Fair air quality level
          */
         public boolean fair;
         /**
-         * Moderate
+         * 
          * Cluster supports the Moderate air quality level
          */
         public boolean moderate;
         /**
-         * VeryPoor
+         * 
          * Cluster supports the Very poor air quality level
          */
         public boolean veryPoor;
         /**
-         * ExtremelyPoor
+         * 
          * Cluster supports the Extremely poor air quality level
          */
         public boolean extremelyPoor;

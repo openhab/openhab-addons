@@ -32,7 +32,7 @@ public class RvcCleanModeCluster extends ModeBaseCluster {
 
     // Enums
     public enum ModeChangeStatus implements MatterEnum {
-        CLEANING_IN_PROGRESS(64, "CleaningInProgress");
+        CLEANING_IN_PROGRESS(64, "Cleaning In Progress");
 
         public final Integer value;
         public final String label;
@@ -57,14 +57,14 @@ public class RvcCleanModeCluster extends ModeBaseCluster {
         AUTO(0, "Auto"),
         QUICK(1, "Quick"),
         QUIET(2, "Quiet"),
-        LOW_NOISE(3, "LowNoise"),
-        LOW_ENERGY(4, "LowEnergy"),
+        LOW_NOISE(3, "Low Noise"),
+        LOW_ENERGY(4, "Low Energy"),
         VACATION(5, "Vacation"),
         MIN(6, "Min"),
         MAX(7, "Max"),
         NIGHT(8, "Night"),
         DAY(9, "Day"),
-        DEEP_CLEAN(16384, "DeepClean"),
+        DEEP_CLEAN(16384, "Deep Clean"),
         VACUUM(16385, "Vacuum"),
         MOP(16386, "Mop");
 

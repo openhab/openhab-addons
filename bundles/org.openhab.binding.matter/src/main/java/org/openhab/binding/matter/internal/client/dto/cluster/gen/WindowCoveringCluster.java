@@ -171,15 +171,15 @@ public class WindowCoveringCluster extends BaseCluster {
     // Enums
     public enum TypeEnum implements MatterEnum {
         ROLLERSHADE(0, "Rollershade"),
-        ROLLERSHADE2MOTOR(1, "Rollershade2Motor"),
-        ROLLERSHADE_EXTERIOR(2, "RollershadeExterior"),
-        ROLLERSHADE_EXTERIOR2MOTOR(3, "RollershadeExterior2Motor"),
+        ROLLERSHADE2MOTOR(1, "Rollershade 2 Motor"),
+        ROLLERSHADE_EXTERIOR(2, "Rollershade Exterior"),
+        ROLLERSHADE_EXTERIOR2MOTOR(3, "Rollershade Exterior 2 Motor"),
         DRAPERY(4, "Drapery"),
         AWNING(5, "Awning"),
         SHUTTER(6, "Shutter"),
-        TILT_BLIND_TILT_ONLY(7, "TiltBlindTiltOnly"),
-        TILT_BLIND_LIFT(8, "TiltBlindLift"),
-        PROJECTOR_SCREEN(9, "ProjectorScreen"),
+        TILT_BLIND_TILT_ONLY(7, "Tilt Blind Tilt Only"),
+        TILT_BLIND_LIFT(8, "Tilt Blind Lift"),
+        PROJECTOR_SCREEN(9, "Projector Screen"),
         UNKNOWN(255, "Unknown");
 
         public final Integer value;
@@ -202,30 +202,30 @@ public class WindowCoveringCluster extends BaseCluster {
     }
 
     public enum EndProductTypeEnum implements MatterEnum {
-        ROLLER_SHADE(0, "RollerShade"),
-        ROMAN_SHADE(1, "RomanShade"),
-        BALLOON_SHADE(2, "BalloonShade"),
-        WOVEN_WOOD(3, "WovenWood"),
-        PLEATED_SHADE(4, "PleatedShade"),
-        CELLULAR_SHADE(5, "CellularShade"),
-        LAYERED_SHADE(6, "LayeredShade"),
-        LAYERED_SHADE2D(7, "LayeredShade2D"),
-        SHEER_SHADE(8, "SheerShade"),
-        TILT_ONLY_INTERIOR_BLIND(9, "TiltOnlyInteriorBlind"),
-        INTERIOR_BLIND(10, "InteriorBlind"),
-        VERTICAL_BLIND_STRIP_CURTAIN(11, "VerticalBlindStripCurtain"),
-        INTERIOR_VENETIAN_BLIND(12, "InteriorVenetianBlind"),
-        EXTERIOR_VENETIAN_BLIND(13, "ExteriorVenetianBlind"),
-        LATERAL_LEFT_CURTAIN(14, "LateralLeftCurtain"),
-        LATERAL_RIGHT_CURTAIN(15, "LateralRightCurtain"),
-        CENTRAL_CURTAIN(16, "CentralCurtain"),
-        ROLLER_SHUTTER(17, "RollerShutter"),
-        EXTERIOR_VERTICAL_SCREEN(18, "ExteriorVerticalScreen"),
-        AWNING_TERRACE_PATIO(19, "AwningTerracePatio"),
-        AWNING_VERTICAL_SCREEN(20, "AwningVerticalScreen"),
-        TILT_ONLY_PERGOLA(21, "TiltOnlyPergola"),
-        SWINGING_SHUTTER(22, "SwingingShutter"),
-        SLIDING_SHUTTER(23, "SlidingShutter"),
+        ROLLER_SHADE(0, "Roller Shade"),
+        ROMAN_SHADE(1, "Roman Shade"),
+        BALLOON_SHADE(2, "Balloon Shade"),
+        WOVEN_WOOD(3, "Woven Wood"),
+        PLEATED_SHADE(4, "Pleated Shade"),
+        CELLULAR_SHADE(5, "Cellular Shade"),
+        LAYERED_SHADE(6, "Layered Shade"),
+        LAYERED_SHADE2D(7, "Layered Shade 2 D"),
+        SHEER_SHADE(8, "Sheer Shade"),
+        TILT_ONLY_INTERIOR_BLIND(9, "Tilt Only Interior Blind"),
+        INTERIOR_BLIND(10, "Interior Blind"),
+        VERTICAL_BLIND_STRIP_CURTAIN(11, "Vertical Blind Strip Curtain"),
+        INTERIOR_VENETIAN_BLIND(12, "Interior Venetian Blind"),
+        EXTERIOR_VENETIAN_BLIND(13, "Exterior Venetian Blind"),
+        LATERAL_LEFT_CURTAIN(14, "Lateral Left Curtain"),
+        LATERAL_RIGHT_CURTAIN(15, "Lateral Right Curtain"),
+        CENTRAL_CURTAIN(16, "Central Curtain"),
+        ROLLER_SHUTTER(17, "Roller Shutter"),
+        EXTERIOR_VERTICAL_SCREEN(18, "Exterior Vertical Screen"),
+        AWNING_TERRACE_PATIO(19, "Awning Terrace Patio"),
+        AWNING_VERTICAL_SCREEN(20, "Awning Vertical Screen"),
+        TILT_ONLY_PERGOLA(21, "Tilt Only Pergola"),
+        SWINGING_SHUTTER(22, "Swinging Shutter"),
+        SLIDING_SHUTTER(23, "Sliding Shutter"),
         UNKNOWN(255, "Unknown");
 
         public final Integer value;
@@ -442,24 +442,24 @@ public class WindowCoveringCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * Lift
+         * 
          * The Lift feature applies to window coverings that lift up and down (e.g. for a roller shade, Up and Down is
          * lift Open and Close) or slide left to right (e.g. for a sliding curtain, Left and Right is lift Open and
          * Close).
          */
         public boolean lift;
         /**
-         * Tilt
+         * 
          * The Tilt feature applies to window coverings with vertical or horizontal strips.
          */
         public boolean tilt;
         /**
-         * PositionAwareLift
+         * 
          * Position aware lift control is supported.
          */
         public boolean positionAwareLift;
         /**
-         * AbsolutePosition
+         * 
          * The percentage attributes shall indicate the position as a percentage between the InstalledOpenLimits and
          * InstalledClosedLimits attributes of the window covering starting at the open (0.00%).
          * As a general rule, absolute positioning (in centimeters or tenth of a degrees) SHOULD NOT be supported for
@@ -467,7 +467,7 @@ public class WindowCoveringCluster extends BaseCluster {
          */
         public boolean absolutePosition;
         /**
-         * PositionAwareTilt
+         * 
          * Position aware tilt control is supported.
          */
         public boolean positionAwareTilt;

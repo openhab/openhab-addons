@@ -615,7 +615,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     // Enums
     public enum CostTypeEnum implements MatterEnum {
         FINANCIAL(0, "Financial"),
-        GHG_EMISSIONS(1, "GhgEmissions"),
+        GHG_EMISSIONS(1, "Ghg Emissions"),
         COMFORT(2, "Comfort"),
         TEMPERATURE(3, "Temperature");
 
@@ -640,19 +640,19 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
 
     public enum ESATypeEnum implements MatterEnum {
         EVSE(0, "Evse"),
-        SPACE_HEATING(1, "SpaceHeating"),
-        WATER_HEATING(2, "WaterHeating"),
-        SPACE_COOLING(3, "SpaceCooling"),
-        SPACE_HEATING_COOLING(4, "SpaceHeatingCooling"),
-        BATTERY_STORAGE(5, "BatteryStorage"),
-        SOLAR_PV(6, "SolarPv"),
-        FRIDGE_FREEZER(7, "FridgeFreezer"),
-        WASHING_MACHINE(8, "WashingMachine"),
+        SPACE_HEATING(1, "Space Heating"),
+        WATER_HEATING(2, "Water Heating"),
+        SPACE_COOLING(3, "Space Cooling"),
+        SPACE_HEATING_COOLING(4, "Space Heating Cooling"),
+        BATTERY_STORAGE(5, "Battery Storage"),
+        SOLAR_PV(6, "Solar Pv"),
+        FRIDGE_FREEZER(7, "Fridge Freezer"),
+        WASHING_MACHINE(8, "Washing Machine"),
         DISHWASHER(9, "Dishwasher"),
         COOKING(10, "Cooking"),
-        HOME_WATER_PUMP(11, "HomeWaterPump"),
-        IRRIGATION_WATER_PUMP(12, "IrrigationWaterPump"),
-        POOL_PUMP(13, "PoolPump"),
+        HOME_WATER_PUMP(11, "Home Water Pump"),
+        IRRIGATION_WATER_PUMP(12, "Irrigation Water Pump"),
+        POOL_PUMP(13, "Pool Pump"),
         OTHER(255, "Other");
 
         public final Integer value;
@@ -678,7 +678,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         OFFLINE(0, "Offline"),
         ONLINE(1, "Online"),
         FAULT(2, "Fault"),
-        POWER_ADJUST_ACTIVE(3, "PowerAdjustActive"),
+        POWER_ADJUST_ACTIVE(3, "Power Adjust Active"),
         PAUSED(4, "Paused");
 
         public final Integer value;
@@ -701,10 +701,10 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     public enum OptOutStateEnum implements MatterEnum {
-        NO_OPT_OUT(0, "NoOptOut"),
-        LOCAL_OPT_OUT(1, "LocalOptOut"),
-        GRID_OPT_OUT(2, "GridOptOut"),
-        OPT_OUT(3, "OptOut");
+        NO_OPT_OUT(0, "No Opt Out"),
+        LOCAL_OPT_OUT(1, "Local Opt Out"),
+        GRID_OPT_OUT(2, "Grid Opt Out"),
+        OPT_OUT(3, "Opt Out");
 
         public final Integer value;
         public final String label;
@@ -726,10 +726,10 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     public enum CauseEnum implements MatterEnum {
-        NORMAL_COMPLETION(0, "NormalCompletion"),
+        NORMAL_COMPLETION(0, "Normal Completion"),
         OFFLINE(1, "Offline"),
         FAULT(2, "Fault"),
-        USER_OPT_OUT(3, "UserOptOut"),
+        USER_OPT_OUT(3, "User Opt Out"),
         CANCELLED(4, "Cancelled");
 
         public final Integer value;
@@ -752,8 +752,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     public enum AdjustmentCauseEnum implements MatterEnum {
-        LOCAL_OPTIMIZATION(0, "LocalOptimization"),
-        GRID_OPTIMIZATION(1, "GridOptimization");
+        LOCAL_OPTIMIZATION(0, "Local Optimization"),
+        GRID_OPTIMIZATION(1, "Grid Optimization");
 
         public final Integer value;
         public final String label;
@@ -775,9 +775,9 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     public enum ForecastUpdateReasonEnum implements MatterEnum {
-        INTERNAL_OPTIMIZATION(0, "InternalOptimization"),
-        LOCAL_OPTIMIZATION(1, "LocalOptimization"),
-        GRID_OPTIMIZATION(2, "GridOptimization");
+        INTERNAL_OPTIMIZATION(0, "Internal Optimization"),
+        LOCAL_OPTIMIZATION(1, "Local Optimization"),
+        GRID_OPTIMIZATION(2, "Grid Optimization");
 
         public final Integer value;
         public final String label;
@@ -799,9 +799,9 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     public enum PowerAdjustReasonEnum implements MatterEnum {
-        NO_ADJUSTMENT(0, "NoAdjustment"),
-        LOCAL_OPTIMIZATION_ADJUSTMENT(1, "LocalOptimizationAdjustment"),
-        GRID_OPTIMIZATION_ADJUSTMENT(2, "GridOptimizationAdjustment");
+        NO_ADJUSTMENT(0, "No Adjustment"),
+        LOCAL_OPTIMIZATION_ADJUSTMENT(1, "Local Optimization Adjustment"),
+        GRID_OPTIMIZATION_ADJUSTMENT(2, "Grid Optimization Adjustment");
 
         public final Integer value;
         public final String label;
@@ -825,7 +825,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * PowerAdjustment
+         * 
          * For Energy Smart Appliances (ESA) the definition of being &#x27;smart&#x27; mandates that they can report
          * their current power adjustment capability and have an EMS request a temporary adjustment. This may typically
          * be to curtail power requirements during peak periods, but can also be used to turn on an ESA if there is
@@ -836,7 +836,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public boolean powerAdjustment;
         /**
-         * PowerForecastReporting
+         * 
          * For Energy Smart Appliances (ESA) the definition of being &#x27;smart&#x27; implies that they can report
          * their indicative forecast power demands or generation, to a greater or lesser extent. For some ESAs this is
          * highly predictable (in terms of both power and time), in other appliances this is more challenging and only a
@@ -860,7 +860,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public boolean powerForecastReporting;
         /**
-         * StateForecastReporting
+         * 
          * Some ESAs do not know their actual power consumption, but do know the state of operation. Like the
          * PowerForecastingReporting feature, this uses the same slot structure mechanism to indicate a change in state
          * vs time.
@@ -873,7 +873,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public boolean stateForecastReporting;
         /**
-         * StartTimeAdjustment
+         * 
          * ESAs which support the Start Time Adjustment feature, allow an EMS to recommend a change to the start time of
          * the energy transfer that the ESA has previously suggested it would use.
          * However, the EMS is aware that a grid event has occurred, making it cheaper to run the cycle at a later time,
@@ -887,7 +887,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public boolean startTimeAdjustment;
         /**
-         * Pausable
+         * 
          * ESAs which support the Pausable feature, allow an EMS to recommend a pause in the middle of a forecast power
          * profile that the ESA is currently using.
          * However, the EMS becomes aware from the smart meter that the total home load on the grid is close to
@@ -902,7 +902,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public boolean pausable;
         /**
-         * ForecastAdjustment
+         * 
          * ESAs which support the Forecast adjustment feature, allow an EMS to recommend a change to the start, duration
          * and/or power level limits of the steps of the power profile that the ESA has previously suggested it would
          * use.
@@ -920,7 +920,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public boolean forecastAdjustment;
         /**
-         * ConstraintBasedAdjustment
+         * 
          * ESAs which support the Constraint-Based Adjustment feature allow an EMS to inform the ESA of periods during
          * which power usage should be modified (for example when the EMS has been made aware that the grid supplier has
          * requested reduced energy usage due to overall peak grid demand) and may cause the ESA to modify the intended

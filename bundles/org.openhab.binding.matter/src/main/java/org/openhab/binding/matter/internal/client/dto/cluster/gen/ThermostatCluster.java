@@ -892,7 +892,7 @@ public class ThermostatCluster extends BaseCluster {
 
     // Enums
     public enum ACCapacityFormatEnum implements MatterEnum {
-        BT_UH(0, "BtUh");
+        BT_UH(0, "Bt Uh");
 
         public final Integer value;
         public final String label;
@@ -915,9 +915,9 @@ public class ThermostatCluster extends BaseCluster {
 
     public enum ACCompressorTypeEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
-        T1(1, "T1"),
-        T2(2, "T2"),
-        T3(3, "T3");
+        T1(1, "T 1"),
+        T2(2, "T 2"),
+        T3(3, "T 3");
 
         public final Integer value;
         public final String label;
@@ -943,7 +943,7 @@ public class ThermostatCluster extends BaseCluster {
         OPEN(2, "Open"),
         QUARTER(3, "Quarter"),
         HALF(4, "Half"),
-        THREE_QUARTERS(5, "ThreeQuarters");
+        THREE_QUARTERS(5, "Three Quarters");
 
         public final Integer value;
         public final String label;
@@ -966,9 +966,9 @@ public class ThermostatCluster extends BaseCluster {
 
     public enum ACRefrigerantTypeEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
-        R22(1, "R22"),
-        R410A(2, "R410A"),
-        R407C(3, "R407C");
+        R22(1, "R 22"),
+        R410A(2, "R 410 A"),
+        R407C(3, "R 407 C");
 
         public final Integer value;
         public final String label;
@@ -991,10 +991,10 @@ public class ThermostatCluster extends BaseCluster {
 
     public enum ACTypeEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
-        COOLING_FIXED(1, "CoolingFixed"),
-        HEAT_PUMP_FIXED(2, "HeatPumpFixed"),
-        COOLING_INVERTER(3, "CoolingInverter"),
-        HEAT_PUMP_INVERTER(4, "HeatPumpInverter");
+        COOLING_FIXED(1, "Cooling Fixed"),
+        HEAT_PUMP_FIXED(2, "Heat Pump Fixed"),
+        COOLING_INVERTER(3, "Cooling Inverter"),
+        HEAT_PUMP_INVERTER(4, "Heat Pump Inverter");
 
         public final Integer value;
         public final String label;
@@ -1048,12 +1048,12 @@ public class ThermostatCluster extends BaseCluster {
      * building must be in the same mode, SHOULD report CoolingOnly or HeatingOnly based on the current capability.
      */
     public enum ControlSequenceOfOperationEnum implements MatterEnum {
-        COOLING_ONLY(0, "CoolingOnly"),
-        COOLING_WITH_REHEAT(1, "CoolingWithReheat"),
-        HEATING_ONLY(2, "HeatingOnly"),
-        HEATING_WITH_REHEAT(3, "HeatingWithReheat"),
-        COOLING_AND_HEATING(4, "CoolingAndHeating"),
-        COOLING_AND_HEATING_WITH_REHEAT(5, "CoolingAndHeatingWithReheat");
+        COOLING_ONLY(0, "Cooling Only"),
+        COOLING_WITH_REHEAT(1, "Cooling With Reheat"),
+        HEATING_ONLY(2, "Heating Only"),
+        HEATING_WITH_REHEAT(3, "Heating With Reheat"),
+        COOLING_AND_HEATING(4, "Cooling And Heating"),
+        COOLING_AND_HEATING_WITH_REHEAT(5, "Cooling And Heating With Reheat");
 
         public final Integer value;
         public final String label;
@@ -1080,8 +1080,8 @@ public class ThermostatCluster extends BaseCluster {
         SLEEP(3, "Sleep"),
         WAKE(4, "Wake"),
         VACATION(5, "Vacation"),
-        GOING_TO_SLEEP(6, "GoingToSleep"),
-        USER_DEFINED(254, "UserDefined");
+        GOING_TO_SLEEP(6, "Going To Sleep"),
+        USER_DEFINED(254, "User Defined");
 
         public final Integer value;
         public final String label;
@@ -1162,9 +1162,9 @@ public class ThermostatCluster extends BaseCluster {
         AUTO(1, "Auto"),
         COOL(3, "Cool"),
         HEAT(4, "Heat"),
-        EMERGENCY_HEAT(5, "EmergencyHeat"),
+        EMERGENCY_HEAT(5, "Emergency Heat"),
         PRECOOLING(6, "Precooling"),
-        FAN_ONLY(7, "FanOnly"),
+        FAN_ONLY(7, "Fan Only"),
         DRY(8, "Dry"),
         SLEEP(9, "Sleep");
 
@@ -1212,8 +1212,8 @@ public class ThermostatCluster extends BaseCluster {
     }
 
     public enum TemperatureSetpointHoldEnum implements MatterEnum {
-        SETPOINT_HOLD_OFF(0, "SetpointHoldOff"),
-        SETPOINT_HOLD_ON(1, "SetpointHoldOn");
+        SETPOINT_HOLD_OFF(0, "Setpoint Hold Off"),
+        SETPOINT_HOLD_ON(1, "Setpoint Hold On");
 
         public final Integer value;
         public final String label;
@@ -1451,49 +1451,49 @@ public class ThermostatCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * Heating
+         * 
          * Thermostat is capable of managing a heating device
          */
         public boolean heating;
         /**
-         * Cooling
+         * 
          * Thermostat is capable of managing a cooling device
          */
         public boolean cooling;
         /**
-         * Occupancy
+         * 
          * Supports Occupied and Unoccupied setpoints
          */
         public boolean occupancy;
         /**
-         * ScheduleConfiguration
+         * 
          * Supports remote configuration of a weekly schedule of setpoint transitions
          */
         public boolean scheduleConfiguration;
         /**
-         * Setback
+         * 
          * Supports configurable setback (or span)
          */
         public boolean setback;
         /**
-         * AutoMode
+         * 
          * Supports a System Mode of Auto
          */
         public boolean autoMode;
         /**
-         * LocalTemperatureNotExposed
+         * 
          * This feature indicates that the Calculated Local Temperature used internally is unavailable to report
          * externally, for example due to the temperature control being done by a separate subsystem which does not
          * offer a view into the currently measured temperature, but allows setpoints to be provided.
          */
         public boolean localTemperatureNotExposed;
         /**
-         * MatterScheduleConfiguration
+         * 
          * Supports enhanced schedules
          */
         public boolean matterScheduleConfiguration;
         /**
-         * Presets
+         * 
          * Thermostat supports setpoint presets
          */
         public boolean presets;

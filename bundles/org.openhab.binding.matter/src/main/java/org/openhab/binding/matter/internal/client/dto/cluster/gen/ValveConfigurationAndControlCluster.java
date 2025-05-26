@@ -203,7 +203,7 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     }
 
     public enum StatusCodeEnum implements MatterEnum {
-        FAILURE_DUE_TO_FAULT(2, "FailureDueToFault");
+        FAILURE_DUE_TO_FAULT(2, "Failure Due To Fault");
 
         public final Integer value;
         public final String label;
@@ -246,14 +246,14 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
 
     public static class FeatureMap {
         /**
-         * TimeSync
+         * 
          * This feature shall indicate that the valve uses Time Synchronization and UTC time to indicate duration and
          * auto close time.
          * This feature shall NOT be supported unless the device supports the Time Synchronization cluster.
          */
         public boolean timeSync;
         /**
-         * Level
+         * 
          * This feature shall indicate that the valve is capable of being adjusted to a specific position, as a
          * percentage, of its full range of motion.
          */

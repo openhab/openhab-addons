@@ -61,9 +61,9 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
 
     // Enums
     public enum HourFormatEnum implements MatterEnum {
-        V12HR(0, "12Hr"),
-        V24HR(1, "24Hr"),
-        USE_ACTIVE_LOCALE(255, "UseActiveLocale");
+        V12HR(0, "12 Hr"),
+        V24HR(1, "24 Hr"),
+        USE_ACTIVE_LOCALE(255, "Use Active Locale");
 
         public final Integer value;
         public final String label;
@@ -97,7 +97,7 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
         KOREAN(9, "Korean"),
         PERSIAN(10, "Persian"),
         TAIWANESE(11, "Taiwanese"),
-        USE_ACTIVE_LOCALE(255, "UseActiveLocale");
+        USE_ACTIVE_LOCALE(255, "Use Active Locale");
 
         public final Integer value;
         public final String label;
@@ -121,7 +121,7 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
     // Bitmaps
     public static class FeatureMap {
         /**
-         * CalendarFormat
+         * 
          * The Node can be configured to use different calendar formats when conveying values to a user.
          */
         public boolean calendarFormat;
