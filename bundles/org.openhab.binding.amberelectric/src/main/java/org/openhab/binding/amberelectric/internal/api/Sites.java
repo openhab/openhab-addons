@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amberelectric.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,10 +25,11 @@ import com.google.gson.JsonParser;
  *
  */
 
+@NonNullByDefault
 public class Sites {
     public String siteid = "";
     public String nmi = "";
-    public Channels channels;
+    public @NonNullByDefault({}) Channels channels;
     public String network = "";
     public String status = "";
     public String activeFrom = "";
