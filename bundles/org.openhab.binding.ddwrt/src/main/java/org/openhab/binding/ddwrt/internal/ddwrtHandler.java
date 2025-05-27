@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
-import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.*;
+import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.CHANNEL_1;
+
+import java.io.File;
+import java.security.KeyPair;
+import java.util.Collections;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.common.config.keys.FilePasswordProvider;
+import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -80,6 +87,14 @@ public class ddwrtHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        String privateKeyDirString = OpenHAB.getUserDataFolder() + "/ddwrt/keys";
+        File privateKeyDir = new File(privateKeyDirString);
+
+        if (!privateKeyDir.exists()) {
+            logger.debug("Creating directory {}", privateKeyDirString);
+            privateKeyDir.mkdirs();
+        }
+
         // Example for background initialization:
         scheduler.execute(() -> {
             boolean thingReachable = false; // <background task with long running initialization here>
@@ -87,12 +102,38 @@ public class ddwrtHandler extends BaseThingHandler {
             SshClient client = SshClient.setUpDefaultClient();
 
             try {
-                //client.setServerKeyVerifier((ClientSession ssh, InputStream is, int i) -> true);
+                // client.setServerKeyVerifier((ClientSession ssh, InputStream is, int i) -> true);
                 client.start();
 
                 try (ClientSession session = client.connect(config.user, config.hostname, config.port).verify()
                         .getSession()) {
-                    session.addPasswordIdentity(config.password);
+                    if (!config.password.isBlank()) {
+                        session.addPasswordIdentity(config.password);
+                    }
+                    logger.debug("opening keys directory {}", privateKeyDir.getName());
+                    File[] privateKeyFiles = privateKeyDir.listFiles();
+                    if (privateKeyFiles != null) {
+                        logger.debug("keys present");
+                        for (File privateKeyFile : privateKeyFiles) {
+                            logger.debug("loading keys from {}", privateKeyDir.getName());
+                            try {
+                                FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(
+                                        Collections.singletonList(privateKeyFile.toPath()));
+                                keyPairProvider.setPasswordFinder(FilePasswordProvider.EMPTY);
+                                Iterable<KeyPair> keyPairs = keyPairProvider.loadKeys(null);
+                                if (keyPairs.iterator().hasNext()) {
+                                    // Add private key identity
+                                    session.addPublicKeyIdentity(keyPairs.iterator().next());
+                                } else {
+                                    logger.warn("No valid key pairs found in {}", privateKeyFile.getName());
+                                }
+                            } catch (Exception ex) {
+                                logger.warn("Skipping file {}: not a valid key file. Reason: {}",
+                                        privateKeyFile.getName(), ex.getMessage());
+                            }
+                        }
+                    }
+
                     session.auth().verify();
 
                     logger.debug("Connected to the server!");
@@ -110,8 +151,10 @@ public class ddwrtHandler extends BaseThingHandler {
 
             // when done do:
             if (thingReachable) {
+                logger.debug("ThingStatus.ONLINE");
                 updateStatus(ThingStatus.ONLINE);
             } else {
+                logger.debug("ThingStatus.OFFLINE");
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
