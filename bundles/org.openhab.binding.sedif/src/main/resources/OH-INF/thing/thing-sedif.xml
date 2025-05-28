@@ -18,25 +18,25 @@
 
 		<channel-groups>
 			<channel-group typeId="sedif-base" id="sedif-base"/>
- 
+
 			<channel-group typeId="sedif-daily-consumption" id="sedif-daily-consumption"/>
-            <channel-group typeId="sedif-weekly-consumption" id="sedif-weekly-consumption"/>
-            <channel-group typeId="sedif-monthly-consumption" id="sedif-monthly-consumption"/>
-            <channel-group typeId="sedif-yearly-consumption" id="sedif-yearly-consumption"/>
+			<channel-group typeId="sedif-weekly-consumption" id="sedif-weekly-consumption"/>
+			<channel-group typeId="sedif-monthly-consumption" id="sedif-monthly-consumption"/>
+			<channel-group typeId="sedif-yearly-consumption" id="sedif-yearly-consumption"/>
 
 			<channel-group typeId="sedif-contrat" id="sedif-contrat"/>
 			<channel-group typeId="sedif-contrat-client" id="sedif-contrat-client"/>
 			<channel-group typeId="sedif-contrat-payer" id="sedif-contrat-payer"/>
 			<channel-group typeId="sedif-contrat-meter" id="sedif-contrat-meter"/>
-			
+
 
 		</channel-groups>
 
 		<config-description>
-		    <parameter name="contractId" type="text" required="true">
-                <label>ContractId</label>
-                <description>Your Contract Id</description>
-            </parameter>
+			<parameter name="contractId" type="text" required="true">
+				<label>ContractId</label>
+				<description>Your Contract Id</description>
+			</parameter>
 			<parameter name="meterId" type="text" required="true">
 				<label>MeterId</label>
 				<description>Your Meter Id</description>
