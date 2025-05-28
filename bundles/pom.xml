@@ -379,6 +379,7 @@
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.sbus</module>
+	<module>org.openhab.binding.sedif</module>
     <module>org.openhab.binding.semsportal</module>
     <module>org.openhab.binding.senechome</module>
     <module>org.openhab.binding.seneye</module>
