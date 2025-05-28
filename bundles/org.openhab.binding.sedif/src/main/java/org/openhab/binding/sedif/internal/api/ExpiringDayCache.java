@@ -84,6 +84,7 @@ public class ExpiringDayCache<V> {
      * Returns if the value is Present or not.
      */
     public boolean isPresent() {
+        @Nullable
         V cachedValue = value;
         return (cachedValue != null && !isExpired());
     }
