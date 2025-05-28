@@ -307,8 +307,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 values.identity.internId = values.identity.firstname + " " + values.identity.lastname;
             }
             userId = values.identity.internId;
-            updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA", PRM_ID,
-                    values.usagePoint.usagePointId));
+            updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA"));
         }, () -> {
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_IDENTITY, UnDefType.UNDEF);
 
