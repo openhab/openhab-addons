@@ -112,15 +112,15 @@ public class SedifHttpApi {
                     String meterIdB = handler.getMeterIdB();
                     String meterIdA = handler.getMeterIdA();
 
-                    if (contractId != null && !"".equals(contractId)) {
+                    if (!"".equals(contractId)) {
                         paramsSub.put("contratId", contractId);
                         paramsSub.put("contractId", contractId);
                     }
-                    if (meterIdB != null && !"".equals(meterIdB)) {
+                    if (!"".equals(meterIdB)) {
                         paramsSub.put("NUMERO_COMPTEUR", meterIdB);
                     }
 
-                    if (meterIdA != null && !"".equals(meterIdA)) {
+                    if (!"".equals(meterIdA)) {
                         paramsSub.put("ID_PDS", meterIdA);
                     }
                 }
@@ -301,7 +301,8 @@ public class SedifHttpApi {
 
         AuraContext ctx = bridgeHandler.getAppCtx();
         if (ctx != null) {
-            if (ctx.app != null && ctx.app.indexOf("login") >= 0) {
+            String app = ctx.app;
+            if (app != null && app.indexOf("login") >= 0) {
                 action.descriptor = "apex://LightningLoginFormController/ACTION$login";
                 action.callingDescriptor = "markup://c:loginForm";
             } else {

@@ -97,7 +97,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
 
     protected final Gson gson;
-    private @Nullable String sid = "";
+    private String sid = "";
 
     private @Nullable AuraContext appCtx;
 
@@ -212,11 +212,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
                         sid = part;
                     }
                 }
-                if (sid != null) {
-                    sid = sid.replace("sid=", "");
-                } else {
-                    throw new SedifException("Unable to find sid in login process");
-                }
+                sid = sid.replace("sid=", "");
             }
 
             // =====================================================================
@@ -253,8 +249,9 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             Contracts contracts = sedifApi.getContracts();
             if (contracts != null && contracts.contrats != null) {
                 for (Contract contract : contracts.contrats) {
-                    if (contract.Name != null) {
-                        contractDict.put(contract.Name, contract);
+                    String contractName = contract.Name;
+                    if (contractName != null) {
+                        contractDict.put(contractName, contract);
                         fireOnContractReceivedEvent(contract);
                     }
                 }
@@ -262,7 +259,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
             connected = true;
         } catch (Exception ex) {
-            logger.debug("error durring connect : {}" + ex.getMessage());
+            logger.debug("error durring connect : {}", ex.getMessage());
         }
     }
 
@@ -315,7 +312,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         listeners.forEach(l -> l.onContractInit(contract));
     }
 
-    public Contract getContract(String contractName) {
+    public @Nullable Contract getContract(String contractName) {
         return contractDict.get(contractName);
     }
 }

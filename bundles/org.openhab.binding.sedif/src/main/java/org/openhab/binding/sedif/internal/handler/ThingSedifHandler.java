@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -105,7 +106,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         this.contractDetail = new ExpiringDayCache<ContractDetail>("contractDetail", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
-                    LocalDate today = LocalDate.now();
                     ContractDetail contractDetail = getContractDetail();
                     return contractDetail;
                 });
@@ -459,8 +459,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
 
             Contract contract = bridgeHandler.getContract(contractName);
-            if (contract.Id != null) {
-                contractId = contract.Id;
+            if (contract != null) {
+                contractId = Objects.requireNonNull(contract.Id);
             }
             sedifApi = bridgeHandler.getSedifApi();
 

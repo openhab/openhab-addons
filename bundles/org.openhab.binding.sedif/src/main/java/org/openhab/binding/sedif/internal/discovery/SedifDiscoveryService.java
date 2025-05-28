@@ -111,32 +111,37 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         logger.debug("New water meter detection from contract {}", contract);
 
         BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) getThingHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
         SedifHttpApi api = bridgeHandler.getSedifApi();
 
         try {
-            if (contract.Id != null) {
-                ContractDetail contractDetail = api.getContractDetails(contract.Id);
+            String contractId = contract.Id;
+            if (contractId != null) {
+                ContractDetail contractDetail = api.getContractDetails(contractId);
 
-                for (CompteInfo compteInfo : contractDetail.compteInfo) {
-                    // compteInfo.NUM_COMPTEUR;
+                if (contractDetail != null) {
+                    for (CompteInfo compteInfo : contractDetail.compteInfo) {
+                        ThingTypeUID tpUid = THING_TYPE_SEDIF;
+                        ThingUID thingUID = new ThingUID(tpUid, compteInfo.NUM_COMPTEUR,
+                                thingHandler.getThing().getUID().getId());
 
-                    ThingTypeUID tpUid = THING_TYPE_SEDIF;
-                    ThingUID thingUID = new ThingUID(tpUid, compteInfo.NUM_COMPTEUR,
-                            thingHandler.getThing().getUID().getId());
+                        Map<String, Object> properties = new HashMap<>();
+                        properties.put(THING_WATER_METER_PROPERTY_ELMA, compteInfo.ELEMA);
+                        properties.put(THING_WATER_METER_PROPERTY_ELMB, compteInfo.ELEMB);
+                        properties.put(THING_WATER_METER_PROPERTY_NUM_COMPTEUR, compteInfo.NUM_COMPTEUR);
+                        properties.put(THING_WATER_METER_PROPERTY_ID_PDS, compteInfo.ID_PDS);
 
-                    Map<String, Object> properties = new HashMap<>();
-                    properties.put(THING_WATER_METER_PROPERTY_ELMA, compteInfo.ELEMA);
-                    properties.put(THING_WATER_METER_PROPERTY_ELMB, compteInfo.ELEMB);
-                    properties.put(THING_WATER_METER_PROPERTY_NUM_COMPTEUR, compteInfo.NUM_COMPTEUR);
-                    properties.put(THING_WATER_METER_PROPERTY_ID_PDS, compteInfo.ID_PDS);
+                        final String representationProperty = THING_WATER_METER_PROPERTY_NUM_COMPTEUR;
+                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                                .withProperties(properties).withLabel("WaterMeter " + compteInfo.NUM_COMPTEUR)
+                                .withThingType(tpUid).withBridge(thingHandler.getThing().getUID())
+                                .withRepresentationProperty(representationProperty).build();
 
-                    final String representationProperty = THING_WATER_METER_PROPERTY_NUM_COMPTEUR;
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                            .withLabel("WaterMeter " + compteInfo.NUM_COMPTEUR).withThingType(tpUid)
-                            .withBridge(thingHandler.getThing().getUID())
-                            .withRepresentationProperty(representationProperty).build();
-
-                    thingDiscovered(discoveryResult);
+                        thingDiscovered(discoveryResult);
+                    }
                 }
             }
         } catch (SedifException ex) {
