@@ -3,6 +3,10 @@ import { OccupancySensorDevice } from "@matter/node/devices/occupancy-sensor";
 import { GenericDeviceType } from "./GenericDeviceType";
 import { OccupancySensing } from "@matter/main/clusters";
 import { OccupancySensingServer } from "@matter/node/behaviors";
+
+/**
+ * This is the device type for the occupancy sensor.
+ */
 export class OccupancySensorDeviceType extends GenericDeviceType {
   override createEndpoint(clusterValues: Record<string, any>) {
     const endpoint = new Endpoint(

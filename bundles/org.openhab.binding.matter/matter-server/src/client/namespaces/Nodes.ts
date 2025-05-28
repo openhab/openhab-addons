@@ -8,6 +8,7 @@ const logger = Logger.get("matter");
 
 
 /**
+ * This class is used for exposing Matter nodes. This includes node lifecycle functions, node fabrics, node data, and other node related methods to websocket clients.
  * Methods not marked as private are intended to be exposed to websocket clients
  */
 export class Nodes {
@@ -174,7 +175,7 @@ export class Nodes {
     }
 
     /**
-     * Returns the fabrics for a node.  Fabrics are the set of matter networks that the node has been commissioned to (openhab, alexa, google, apple, etc)
+     * Returns the fabrics for a node. Fabrics are the set of matter networks that the node has been commissioned to (openhab, Alexa, Google, Apple, etc)
      * @param nodeId 
      * @returns 
      */

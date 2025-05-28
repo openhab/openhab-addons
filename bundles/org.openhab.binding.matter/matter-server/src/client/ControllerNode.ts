@@ -10,7 +10,7 @@ import { printError } from "../util/error";
 const logger = Logger.get("ControllerNode");
 
 /**
- * This class contains represents the Matter Controller / Admin client
+ * This class represents the Matter Controller / Admin client
  */
 export class ControllerNode {
 
@@ -54,7 +54,7 @@ export class ControllerNode {
         logger.info(`Storage location: ${outputDir} (Directory)`);
         this.environment.vars.set('storage.path', outputDir)
     
-        //TODO we may need to choose which network interface to use
+        // TODO we may need to choose which network interface to use
         if (this.netInterface !== undefined) {
             this.environment.vars.set("mdns.networkinterface", this.netInterface);
         }
@@ -88,8 +88,9 @@ export class ControllerNode {
      * Connects to a node, setting up event listeners. If called multiple times for the same node, it will trigger a node reconnect.
      * If a connection timeout is provided, the function will return a promise that will resolve when the node is initialized or reject if the node
      * becomes disconnected or the timeout is reached. Note that the node will continue to connect in the background and the client will be notified
-     * when the node is initialized through the NodeStateInformation event.  To stop the reconnection, call the disconnectNode method.
-     * @param nodeId 
+     * when the node is initialized through the NodeStateInformation event. To stop the reconnection, call the disconnectNode method.
+     * 
+     * @param nodeId  The nodeId of the node to connect to
      * @param connectionTimeout Optional timeout in milliseconds. If omitted or non-positive, no timeout will be applied
      * @returns Promise that resolves when the node is initialized
      * @throws Error if connection times out or node becomes disconnected
@@ -128,7 +129,6 @@ export class ControllerNode {
             });
         }
 
-        //node = await this.commissioningController.connectNode(NodeId(BigInt(nodeId)));
         node = await this.commissioningController.getNode(NodeId(BigInt(nodeId)));
         if (node === undefined) {
             throw new Error(`Node ${nodeId} not connected`);
@@ -136,7 +136,7 @@ export class ControllerNode {
         node.connect();
         this.nodes.set(node.nodeId, node);
 
-        //register event listeners once the node is fully connected
+        // register event listeners once the node is fully connected
         node.events.initializedFromRemote.once(() => {
             node.events.attributeChanged.on((data) => {
                 data.path.nodeId = node.nodeId;

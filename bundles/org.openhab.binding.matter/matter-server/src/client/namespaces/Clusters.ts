@@ -11,6 +11,7 @@ const logger = Logger.get("Clusters");
 
 /**
  * This class is used for websocket clients interacting with Matter Clusters to send commands like OnOff, LevelControl, etc... 
+ * Methods not marked as private are intended to be exposed to websocket clients
  */
 export class Clusters {
     constructor(private controllerNode: ControllerNode) {
@@ -52,11 +53,11 @@ export class Clusters {
         }
 
         let convertedArgs: any = undefined; 
-        if(args !== undefined && Object.keys(args).length > 0) {
+        if (args !== undefined && Object.keys(args).length > 0) {
             convertedArgs = convertJsonDataWithModel(command, args);
         }
         
-        return  clusterClient.commands[commandName](convertedArgs);
+        return clusterClient.commands[commandName](convertedArgs);
     }
 
     /**
@@ -166,7 +167,7 @@ export class Clusters {
      */
      async readCluster(nodeId: string | number, endpointId: number, clusterNameOrId: string | number) {
         const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
-        if (device == undefined) {
+        if (device === undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
 

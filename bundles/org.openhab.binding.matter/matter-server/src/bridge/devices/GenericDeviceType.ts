@@ -9,6 +9,10 @@ import { TypeFromPartialBitSchema } from "@matter/main/types";
 
 const logger = Logger.get("GenericDevice");
 const OnOffType = OnOffServer.with(OnOff.Feature.Lighting);
+
+/**
+ * This is the base class for all matter device types.
+ */
 export abstract class GenericDeviceType {
 
     protected updateLocks = new Set<string>();

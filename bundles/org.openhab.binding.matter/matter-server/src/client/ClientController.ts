@@ -39,7 +39,7 @@ export class ClientController extends Controller {
     async init() {
         await this.controllerNode.initialize();
         logger.info(`Started Node`);
-        //set up listeners to send events back to the client
+        // set up listeners to send events back to the client
         this.nodes = new Nodes(this.controllerNode);
         this.clusters = new Clusters(this.controllerNode);
     }

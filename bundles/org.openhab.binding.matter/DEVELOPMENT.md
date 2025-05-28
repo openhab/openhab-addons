@@ -4,7 +4,7 @@ This document describes how to set up your development environment and contribut
 
 1. Code Generation Tool
 2. Matter.js WebSocket Service
-3. OpenHAB Java Add-on
+3. openHAB Java Add-on
 
 ## General Build Requirements
 
@@ -77,12 +77,12 @@ npm install
 npm run build
 ```
 
-The generated Java classes will be placed in the OpenHAB addon's source directory.
+The generated Java classes will be placed in the openHAB addon's source directory.
 
 ### 2. Matter.js WebSocket Service (`matter-server/`)
 
 #### Purpose
-The Matter.js WebSocket service acts as a bridge between the OpenHAB binding and the Matter.js SDK. It provides a WebSocket interface that allows the Java binding to communicate with Matter devices through the Matter.js protocol implementation.
+The Matter.js WebSocket service acts as a bridge between the openHAB binding and the Matter.js SDK. It provides a WebSocket interface that allows the Java binding to communicate with Matter devices through the Matter.js protocol implementation.
 
 #### Architecture
 - WebSocket server implementation in TypeScript
@@ -184,10 +184,10 @@ Server configuration options:
 - Automatic reconnection for temporary disconnections
 - Parent process monitoring for clean shutdown
 
-### 3. OpenHAB Matter Binding (`src/`)
+### 3. openHAB Matter Binding (`src/`)
 
 #### Purpose
-The OpenHAB Matter binding provides integration between OpenHAB and Matter devices. It implements the OpenHAB binding framework and communicates with Matter devices through the Matter.js WebSocket service.
+The openHAB Matter binding provides integration between openHAB and Matter devices. It implements the openHAB binding framework and communicates with Matter devices through the Matter.js WebSocket service.
 
 #### Architecture
 

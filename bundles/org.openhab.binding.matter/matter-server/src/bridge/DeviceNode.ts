@@ -27,6 +27,9 @@ type DeviceType = OnOffLightDeviceType | OnOffPlugInDeviceType | DimmableDeviceT
 
 const logger = Logger.get("DeviceNode");
 
+/**
+ * This represents the root device node for the Matter Bridge, creates the initial aggregator endpoint, adds devices to the bridge, and manages storage
+ */
 export class DeviceNode {
     static DEFAULT_NODE_ID = "oh-bridge";
 
@@ -54,7 +57,7 @@ export class DeviceNode {
             logger.info(`!!! Erasing ServerNode Storage !!!`);
             await this.server?.erase();
             await this.close();
-            //generate a new uniqueId for the bridge (bridgeBasicInformation.uniqueId)
+            // generate a new uniqueId for the bridge (bridgeBasicInformation.uniqueId)
             const ohStorage = await this.#ohBridgeStorage();
             await ohStorage.set("basicInformation.uniqueId", BasicInformationServer.createUniqueId());
             logger.info(`Initializing bridge again`);
@@ -67,10 +70,10 @@ export class DeviceNode {
         if (this.devices.size === 0) {
             throw new Error("No devices added, not starting");
         }
-        if(!this.server) {
+        if (!this.server) {
             throw new Error("Server not initialized, not starting");
         }
-        if(this.server.lifecycle.isOnline) {
+        if (this.server.lifecycle.isOnline) {
             throw new Error("Server is already started, not starting");
         }
         this.server.events.commissioning.enabled$Changed.on(async () => {
@@ -104,7 +107,7 @@ export class DeviceNode {
             throw new Error(`Aggregator not initialized, aborting.`);
         }
 
-        //little hack to get the correct device class and initialize it with the correct parameters once
+        // little hack to get the correct device class and initialize it with the correct parameters once
         const deviceTypeMap: { [key: string]: new (bridgeController: BridgeController, attributeMap: { [key: string]: any }, id: string, nodeLabel: string, productName: string, productLabel: string, serialNumber: string) => DeviceType } = {
             "OnOffLight": OnOffLightDeviceType,
             "OnOffPlugInUnit": OnOffPlugInDeviceType,

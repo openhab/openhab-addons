@@ -39,7 +39,7 @@ export class WindowCoveringDeviceType extends GenericDeviceType {
         }
     }
 
-    //this allows us to get all commands to move the device, not just if it thinks the position has changed
+    // this allows us to get all commands to move the device, not just if it thinks the position has changed
     private createWindowCoveringServer(): typeof WindowCoveringServer {
         const parent = this;
         return class extends WindowCoveringServer {

@@ -163,7 +163,7 @@ wss.on('connection', async (ws: WebSocketSession, req: IncomingMessage) => {
             return;
         }
     } else {
-        //For now we only support one bridge
+        // For now we only support one bridge
         const uniqueId = "0"
         try {
             wss.clients.forEach((client: WebSocket) => {
