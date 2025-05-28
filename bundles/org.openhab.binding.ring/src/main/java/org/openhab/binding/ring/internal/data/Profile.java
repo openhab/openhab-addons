@@ -87,8 +87,8 @@ public class Profile {
     // ADD REFRESH TOKEN
     private JsonObject jsonProfile = new JsonObject();
     private JsonObject jsonFeatures = new JsonObject();
-    private String refreshToken;
-    private String accessToken;
+    private String refreshToken = "";
+    private String accessToken = "";
 
     /**
      * Create Profile instance from JSON String.

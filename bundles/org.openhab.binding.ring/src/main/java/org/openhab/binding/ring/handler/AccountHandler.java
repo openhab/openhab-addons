@@ -94,11 +94,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The registry.
      */
-    private @Nullable RingDeviceRegistry registry;
+    private @NonNullByDefault({}) RingDeviceRegistry registry;
     /**
      * The RestClient is used to connect to the Ring Account.
      */
-    private @Nullable RestClient restClient;
+    private @NonNullByDefault({}) RestClient restClient;
     /**
      * The list with events.
      */
@@ -108,7 +108,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private int eventIndex;
 
-    private ExecutorService videoExecutorService;
+    private @Nullable ExecutorService videoExecutorService;
 
     /*
      * The number of video files to keep when auto-downloading
@@ -322,13 +322,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     public @NonNullByDefault({}) String getHardwareId() {
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
-        String hardwareId = (config.hardwareId != null) ? config.hardwareId : "";
+        String hardwareId = config.hardwareId;
         logger.debug("getHardwareId H:{}", hardwareId);
         Configuration updatedConfiguration = getThing().getConfiguration();
         try {
             if (hardwareId.isEmpty()) {
                 hardwareId = getLocalMAC();
-                if ((hardwareId == null) || hardwareId.isEmpty()) {
+                if (("".equals(hardwareId)) || hardwareId.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Hardware ID missing, check thing config");
                     return hardwareId;
@@ -353,14 +353,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
         Integer refreshInterval = config.refreshInterval;
-        String username = (config.username != null) ? config.username : "";
-        String password = (config.password != null) ? config.password : "";
+        String username = config.username;
+        String password = config.password;
         String hardwareId = getHardwareId();
         String refreshToken = getRefreshTokenFromFile();
 
         String twofactorCode = config.twofactorCode;
         videoRetentionCount = config.videoRetentionCount;
-        videoStoragePath = (config.videoStoragePath != null) ? config.videoStoragePath
+        videoStoragePath = ("".equals(config.videoStoragePath)) ? config.videoStoragePath
                 : OpenHAB.getConfigFolder() + "/html/ring/video";
 
         logger.debug("AccountHandler - initialize - VSP: {} OH: {}", config.videoStoragePath,
@@ -433,8 +433,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     "AuthenticationException in AccountHandler.minuteTick() when trying refreshRegistry, attempting to reconnect {}",
                     e.getMessage());
             AccountConfiguration config = getConfigAs(AccountConfiguration.class);
-            String username = (config.username != null) ? config.username : "";
-            String password = (config.password != null) ? config.password : "";
+            String username = config.username;
+            String password = config.password;
             String hardwareId = getHardwareId();
             String refreshToken = getRefreshTokenFromFile();
             if ((!refreshToken.isEmpty()) || !(username.isEmpty() && password.isEmpty())) {
@@ -518,13 +518,16 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                             }
                         }
                     };
-                    videoExecutorService.submit(runnableVideo);
+                    ExecutorService service = videoExecutorService;
+                    if (service != null) {
+                        videoExecutorService.submit(runnableVideo);
+                    }
                 }
             } else {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
             }
         } catch (AuthenticationException ex) {
-            // registry = null;
+            registry = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
             logger.debug(
@@ -584,14 +587,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     protected void stopSessionRefresh() {
-        if (jobTokenRefresh != null) {
-            jobTokenRefresh.cancel(true);
-            jobTokenRefresh = null;
+        ScheduledFuture<?> job = jobTokenRefresh;
+        if (job != null) {
+            job.cancel(true);
         }
-        if (eventRefresh != null) {
-            eventRefresh.cancel(true);
-            eventRefresh = null;
+        jobTokenRefresh = null;
+
+        job = eventRefresh;
+        if (job != null) {
+            job.cancel(true);
         }
+        eventRefresh = null;
     }
 
     String getLocalMAC() throws Exception {
@@ -640,10 +646,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public void dispose() {
         stopSessionRefresh();
-        if (this.videoExecutorService != null) {
-            this.videoExecutorService.shutdownNow();
+        ExecutorService service = this.videoExecutorService;
+        if (service != null) {
+            service.shutdownNow();
         }
-
+        this.videoExecutorService = null;
         super.dispose();
     }
 }

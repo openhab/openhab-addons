@@ -656,7 +656,7 @@ public class RestClient {
         }
     }
 
-    public @Nullable String getRecordingURL(String eventId, Profile profile) {
+    public String getRecordingURL(String eventId, Profile profile) {
         try {
             StringBuilder vidUrl = new StringBuilder();
             vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId).append(ApiConstants.URL_RECORDING_END);
@@ -666,10 +666,10 @@ public class RestClient {
             return obj.get("url").getAsString();
         } catch (AuthenticationException e) {
             logger.error("Authentication exception in getRecordingURL", e);
-            return null;
+            return "";
         } catch (JsonParseException e) {
             logger.error("Parse exception in getRecordingURL!", e);
-            return null;
+            return "";
         }
     }
 

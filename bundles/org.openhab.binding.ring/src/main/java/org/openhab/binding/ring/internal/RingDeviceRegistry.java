@@ -52,12 +52,12 @@ public class RingDeviceRegistry {
      * Key: device id.
      * Value: the RingDevice implementation object.
      */
-    private ConcurrentHashMap<String, RingDevice> devices;
+    private ConcurrentHashMap<String, RingDevice> devices = new ConcurrentHashMap<>();
 
     /**
      * Private constructor for singleton.
      */
-    private RingDeviceRegistry() {
+    public RingDeviceRegistry() {
         devices = new ConcurrentHashMap<>();
     }
 
@@ -65,13 +65,6 @@ public class RingDeviceRegistry {
      * Return a singleton instance of RingDeviceRegistry.
      */
     public static RingDeviceRegistry getInstance() {
-        if (instance == null) {
-            synchronized (RingDeviceRegistry.class) {
-                if (instance == null) {
-                    instance = new RingDeviceRegistry();
-                }
-            }
-        }
         return instance;
     }
 
@@ -79,16 +72,12 @@ public class RingDeviceRegistry {
      * Add a new ring device.
      */
     public void addRingDevice(RingDevice ringDevice) throws DuplicateIdException {
-        if (ringDevice == null) {
-            logger.debug("Ignoring null ringDevice");
+        if (devices.containsKey(ringDevice.getId())) {
+            // logger.trace("Ring device with duplicate id " + ringDevice.getId() + " ignored");
+            throw new DuplicateIdException("Ring device with duplicate id " + ringDevice.getId() + " ignored");
         } else {
-            if (devices.containsKey(ringDevice.getId())) {
-                // logger.trace("Ring device with duplicate id " + ringDevice.getId() + " ignored");
-                throw new DuplicateIdException("Ring device with duplicate id " + ringDevice.getId() + " ignored");
-            } else {
-                ringDevice.setRegistrationStatus(Status.ADDED);
-                devices.put(ringDevice.getId(), ringDevice);
-            }
+            ringDevice.setRegistrationStatus(Status.ADDED);
+            devices.put(ringDevice.getId(), ringDevice);
         }
     }
 
