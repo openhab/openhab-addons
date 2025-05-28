@@ -1,0 +1,358 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.tibber.internal.calculator;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+/**
+ * The {@link PriceCalculator} provides price calculations for thing actions.
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
+public class PriceCalculator {
+    private static final int AVERAGE_PRICE_INTERVAL = 5;
+    private final Logger logger = LoggerFactory.getLogger(PriceCalculator.class);
+    private TreeMap<Instant, Double> priceMap;
+    private int duration;
+
+    public PriceCalculator(JsonArray spotPrices) {
+        priceMap = new TreeMap<>();
+        spotPrices.forEach(entry -> {
+            JsonObject entryObject = entry.getAsJsonObject();
+            Instant startsAt = Instant.parse(entryObject.get("startsAt").getAsString());
+            double price = entryObject.get("total").getAsDouble();
+            priceMap.put(startsAt, price);
+        });
+        duration = (int) Duration.between(priceMap.lowerKey(priceMap.lastKey()), priceMap.lastKey()).toSeconds();
+        // put termination element
+        priceMap.put(priceMap.lastKey().plus(duration, ChronoUnit.SECONDS), Double.MAX_VALUE);
+    }
+
+    /**
+     * Calculate average prices if 24 hours history is available
+     *
+     * @return Average prices from past 24 h in 5 minutes steps
+     */
+    public TreeMap<Instant, Double> calculateAveragePrices() {
+        TreeMap<Instant, Double> averages = new TreeMap<>();
+        Instant startCalculation = priceMap.firstKey();
+        // Instant start = end.minus(1, ChronoUnit.DAYS);
+        Instant iterator = startCalculation;
+        // continue loop until iterator current point of calculation
+        while (priceMap.higherEntry(iterator) != null) {
+            Instant start = iterator.minus(1, ChronoUnit.DAYS);
+            if (priceMap.floorEntry(start) != null) {
+                if (priceMap.higherEntry(iterator).getKey().isAfter(iterator)) {
+                    double price = averagePrice(start, iterator);
+                    averages.put(iterator, price);
+                }
+            }
+            iterator = iterator.plus(AVERAGE_PRICE_INTERVAL, ChronoUnit.MINUTES);
+        }
+        return averages;
+    }
+
+    /**
+     * Calculate average price between 2 timestamps.
+     *
+     * @param from start timestamp
+     * @param to end timestamp
+     * @return average price according to durations
+     */
+    public double averagePrice(Instant from, Instant to) {
+        // calculate average for 24h
+        double price = 0;
+        Instant iterator = from;
+        while (iterator.isBefore(to)) {
+            Entry<Instant, Double> floor = priceMap.floorEntry(iterator);
+            Entry<Instant, Double> ceiling = priceMap.higherEntry(iterator);
+            if (floor != null && ceiling != null) {
+                // System.out.println(floor + " " + ceiling);
+                long duration = 0;
+                if (to.isBefore(ceiling.getKey())) {
+                    // if to is before higher entry this is the last calculation and it needs to be cutted
+                    duration = Duration.between(iterator, to).toMinutes();
+                } else {
+                    duration = Duration.between(iterator, ceiling.getKey()).toMinutes();
+                }
+                price += duration * floor.getValue();
+                iterator = iterator.plus(duration, ChronoUnit.MINUTES);
+            } else {
+                logger.warn("Calaculation of average price out of range {}", iterator);
+                break;
+            }
+        }
+        return price / (24 * 60);
+    }
+
+    /**
+     * Calculates the price based on start time, power and duration
+     *
+     * @param start timestamp of calculation
+     * @param powerW power in watts
+     * @param durationSeconds duration in seconds
+     * @return price according zo priceMap
+     */
+    public double calculatePrice(Instant start, int powerW, int durationSeconds) {
+        checkBoundaries(start, start.plus(durationSeconds, ChronoUnit.SECONDS));
+        Entry<Instant, Double> startEntry = priceMap.floorEntry(start);
+        Entry<Instant, Double> nextEntry = priceMap.higherEntry(start);
+        if (startEntry != null && nextEntry != null) {
+            if (!start.plusSeconds(durationSeconds).isAfter(nextEntry.getKey())) {
+                // complete duration is in this price period
+                return (powerW / 1000.0) * (durationSeconds / 3600.0) * startEntry.getValue();
+            } else {
+                // calculate price from this time period plus later periods
+                int partDuration = (int) Duration.between(start, nextEntry.getKey()).toSeconds();
+                double partPrice = powerW / 1000.0 * partDuration / 3600.0 * startEntry.getValue();
+                int remainingDuration = durationSeconds - partDuration;
+                return (partPrice + calculatePrice(nextEntry.getKey(), powerW, remainingDuration));
+            }
+        } else {
+            throw new PriceCalculationException(
+                    "Calculation for " + start + "out of range. Respect priceInfoStart and priceInfoEnd boundaries.");
+        }
+    }
+
+    /**
+     * Calculates the best price between 2 timestamps
+     *
+     * @param earliestStart
+     * @param latestEnd
+     * @param curve power duration tuples representing a device power curve
+     * @return Map with results of cheapest start and price plus most expensive start
+     */
+    public Map<String, Object> calculateBestPrice(Instant earliestStart, Instant latestEnd, List<CurveEntry> curve) {
+        checkBoundaries(earliestStart, latestEnd);
+        int totalDuration = 0;
+        for (Iterator<CurveEntry> iterator = curve.iterator(); iterator.hasNext();) {
+            CurveEntry curveEntry = iterator.next();
+            totalDuration += curveEntry.durationSeconds;
+        }
+        Instant latestStart = latestEnd.minus(totalDuration, ChronoUnit.SECONDS);
+        Instant startIterator = earliestStart;
+        double highestCost = Double.MIN_VALUE;
+        Instant highestStart = Instant.MAX;
+        double lowestCost = Double.MAX_VALUE;
+        Instant lowestStart = Instant.MAX;
+        int iterations = 0;
+        long calculationStart = System.currentTimeMillis();
+        while (startIterator.isBefore(latestStart)) {
+            double price = 0;
+            for (Iterator<CurveEntry> iterator = curve.iterator(); iterator.hasNext();) {
+                CurveEntry curveEntry = iterator.next();
+                price += calculatePrice(startIterator, curveEntry.powerWatts, curveEntry.durationSeconds);
+            }
+            if (price < lowestCost) {
+                lowestCost = price;
+                lowestStart = startIterator;
+            }
+            if (price > highestCost) {
+                highestCost = price;
+                highestStart = startIterator;
+            }
+            startIterator = startIterator.plus(1, ChronoUnit.MINUTES);
+            iterations++;
+        }
+        logger.trace("Calculation time {} ms for {} iterations", (System.currentTimeMillis() - calculationStart),
+                iterations);
+        System.out.println("Calculation time " + (System.currentTimeMillis() - calculationStart) + " ms for "
+                + iterations + " iterations");
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("cheapestStart", lowestStart.toString());
+        resultMap.put("lowestCost", lowestCost);
+        resultMap.put("mostExpensiveStart", highestStart.toString());
+        resultMap.put("highestCost", highestCost);
+        return resultMap;
+    }
+
+    /**
+     * List prices in ascending or descending order.
+     *
+     * @param earliestStart start time of list
+     * @param latestEnd end time of list
+     * @param ascending true for ascending, false for descending order
+     * @return list matching exactly between the timestamps with PriceInfo
+     */
+    public List<PriceInfo> listPrices(Instant earliestStart, Instant latestEnd, boolean ascending) {
+        checkBoundaries(earliestStart, latestEnd);
+        TreeMap<Instant, Double> calculationMap = new TreeMap<>();
+        for (Entry<Instant, Double> entry : priceMap.entrySet()) {
+            if (!entry.getKey().isBefore(earliestStart) && !entry.getKey().isAfter(latestEnd)) {
+                calculationMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        // assure price before earliest start is available
+        calculationMap.put(priceMap.floorKey(earliestStart), priceMap.floorEntry(earliestStart).getValue());
+
+        SortedMap<Double, List<Instant>> reversed = reverseMap(calculationMap, ascending);
+        List<PriceInfo> ascendingList = new ArrayList<>();
+        reversed.forEach((key, value) -> {
+            value.forEach(instant -> {
+                PriceInfo pInfo = new PriceInfo(key, duration, instant);
+                pInfo.adjust(earliestStart, latestEnd);
+                ascendingList.add(pInfo);
+            });
+        });
+        return ascendingList;
+    }
+
+    /**
+     * Reverse priceMap with sorted timestamps to sorting of prices. If same price is found several times list of
+     * timestamp is added.
+     *
+     * @param input SorteMap with Instant keys
+     * @param ascending true ascending sorting, false descending
+     * @return SortedMap accoring to price with List of Instant
+     */
+    public SortedMap<Double, List<Instant>> reverseMap(SortedMap<Instant, Double> input, boolean ascending) {
+        TreeMap<Double, List<Instant>> reversed;
+        if (ascending) {
+            reversed = new TreeMap<>();
+        } else {
+            reversed = new TreeMap<>(Comparator.reverseOrder());
+        }
+        input.forEach((key, value) -> {
+            List<Instant> l = reversed.get(value);
+            if (l == null) {
+                l = new ArrayList<>();
+            }
+            l.add(key);
+            reversed.put(value, l);
+        });
+        return reversed;
+    }
+
+    /**
+     * Calculate non consecutive schedule for fixed duration of power. Due to the fact the listPrices call returns a
+     * list exactly matching the earliestStart and latestEnd timestamps with correct duration it's only needed to pick
+     * one entry after another to calculate the schedule.
+     *
+     * @param earliestStart earliest start point
+     * @param latestEnd latest end point
+     * @param powerW power in watts
+     * @param durationS duration in seconds
+     * @return List of ScheduleEntries
+     */
+    public List<ScheduleEntry> calculateNonConsecutive(Instant earliestStart, Instant latestEnd, int powerW,
+            int durationS) {
+        checkBoundaries(earliestStart, latestEnd);
+        List<PriceInfo> sortedList = listPrices(earliestStart, latestEnd, true);
+        List<ScheduleEntry> schedule = new ArrayList<>();
+        int remainDuration = durationS;
+        for (int i = 0; i < sortedList.size() && remainDuration > 0; i++) {
+            PriceInfo priceInfo = sortedList.get(i);
+            if (priceInfo.durationSeconds > remainDuration) {
+                // request fits in this time window - terminate
+                double cost = powerW / 1000.0 * remainDuration / 3600.0 * priceInfo.price;
+                ScheduleEntry se = new ScheduleEntry(priceInfo.timestamp,
+                        priceInfo.timestamp.plus(remainDuration, ChronoUnit.SECONDS), remainDuration, cost);
+                schedule = insertSchedule(se, schedule);
+                remainDuration = 0;
+            } else {
+                double cost = powerW / 1000.0 * priceInfo.durationSeconds / 3600.0 * priceInfo.price;
+                ScheduleEntry se = new ScheduleEntry(priceInfo.timestamp,
+                        priceInfo.timestamp.plus(priceInfo.durationSeconds, ChronoUnit.SECONDS),
+                        priceInfo.durationSeconds, cost);
+                schedule = insertSchedule(se, schedule);
+                remainDuration -= priceInfo.durationSeconds;
+            }
+        }
+        return schedule;
+    }
+
+    /**
+     * Insert ScheduleEntry into list to check if a head / tail ScheduleEntry can be found
+     *
+     * @param entry ScheduleEntry to inserted
+     * @param schedule List of currently found ScheduleEntry
+     * @return List with compacted ScheduleEntry
+     */
+    private List<ScheduleEntry> insertSchedule(ScheduleEntry entry, List<ScheduleEntry> schedule) {
+        ScheduleEntry newScheduleEntry = entry;
+        List<ScheduleEntry> newSchedule = new ArrayList<>();
+        while (!schedule.isEmpty()) {
+            ScheduleEntry observationEntry = schedule.remove(0);
+            if (newScheduleEntry.start.equals(observationEntry.stop)) {
+                // found direct predecessor - merge
+                newScheduleEntry = new ScheduleEntry(observationEntry.start, newScheduleEntry.stop,
+                        observationEntry.duration + newScheduleEntry.duration,
+                        observationEntry.cost + newScheduleEntry.cost);
+            } else if (newScheduleEntry.stop.equals(observationEntry.start)) {
+                // found direct successor - merge
+                newScheduleEntry = new ScheduleEntry(newScheduleEntry.start, observationEntry.stop,
+                        observationEntry.duration + newScheduleEntry.duration,
+                        observationEntry.cost + newScheduleEntry.cost);
+            } else {
+                newSchedule.add(observationEntry);
+            }
+        }
+        newSchedule.add(newScheduleEntry);
+        return newSchedule;
+    }
+
+    /**
+     * Get earliest price info
+     *
+     * @return first Instant key of priceMap
+     */
+    public Instant priceInfoStart() {
+        return priceMap.firstKey();
+    }
+
+    /**
+     * Get latest available price info
+     *
+     * @return last INstant key of priceMap
+     */
+    public Instant priceInfoEnd() {
+        return priceMap.lastKey();
+    }
+
+    /**
+     * Check start and end boundaries of priceMap
+     *
+     * @param start
+     * @param end
+     */
+    private void checkBoundaries(Instant start, Instant end) {
+        if (start.isBefore(priceMap.firstKey())) {
+            throw new PriceCalculationException(
+                    "Calculation start " + start + " too early. Please respect priceInfoStart boundary.");
+        }
+        if (end.isAfter(priceMap.lastKey())) {
+            throw new PriceCalculationException(
+                    "Calculation end " + end + " too late. Please respect priceInfoEnd boundary.");
+        }
+    }
+}

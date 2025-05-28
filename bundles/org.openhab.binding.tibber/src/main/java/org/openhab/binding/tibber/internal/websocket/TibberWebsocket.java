@@ -176,6 +176,8 @@ public class TibberWebsocket {
     public void onMessage(String message) {
         if (message.contains("connection_ack")) {
             logger.debug("WebSocket connected to Server");
+            // String subScriptionMessage = String.format(handler.getTemplate(WEBSOCKET_SUBSCRIPTION_RESOURCE_PATH),
+            // config.homeid);
             String subScriptionMessage = String.format(SUBSCRIPTION_MESSAGE, config.homeid);
             sendMessage(subScriptionMessage);
         } else {

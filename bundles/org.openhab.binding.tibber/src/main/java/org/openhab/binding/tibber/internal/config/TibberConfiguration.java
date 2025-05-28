@@ -26,4 +26,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TibberConfiguration {
     public String token = EMPTY;
     public String homeid = EMPTY;
+    public int updateHour = 13;
 }

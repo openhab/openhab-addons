@@ -17,53 +17,76 @@ Tibber Pulse is optional, but will enable live measurements.
 
 The channels (i.e. measurements) associated with the Binding:
 
-Tibber Default:
+### price group
 
-| Channel ID           | Description                                             | Read-only | Forecast |
-|----------------------|---------------------------------------------------------|-----------|----------|
-| current_total        | Current Total Price (energy + tax)                      | True      | yes      |
-| current_startsAt     | Current Price Timestamp                                 | True      | no       |
-| current_level        | Current Price Level                                     | True      | no       |
-| daily_cost           | Daily Cost (last/previous day)                          | True      | no       |
-| daily_consumption    | Daily Consumption (last/previous day)                   | True      | no       |
-| daily_from           | Timestamp (daily from)                                  | True      | no       |
-| daily_to             | Timestamp (daily to)                                    | True      | no       |
-| hourly_cost          | Hourly Cost (last/previous hour)                        | True      | no       |
-| hourly_consumption   | Hourly Consumption (last/previous hour)                 | True      | no       |
-| hourly_from          | Timestamp (hourly from)                                 | True      | no       |
-| hourly_to            | Timestamp (hourly to)                                   | True      | no       |
-| tomorrow_prices      | JSON array of tomorrow's prices. See below for example. | True      | no       |
-| today_prices         | JSON array of today's prices. See below for example.    | True      | no       |
+Forecast values og Tibber pricing.
+All read-only.
 
-Tibber Pulse (optional):
+| Channel ID        | Type                 | Description         | Forecast |
+|-------------------|----------------------|---------------------|----------|
+| spot-prices       | Number:EnergyPrice   | Spot Prices         | yes      |
+| level             | Number               | Price Level         | yes      |
+| average           | Number:EnergyPrice   | Average 24h         | yes      |
 
-| Channel ID                          | Description                                   | Read-only |
-|-------------------------------------|-----------------------------------------------|-----------|
-| live_timestamp                      | Timestamp for live measurements               | True      |
-| live_power                          | Live Power Consumption                        | True      |
-| live_lastMeterConsumption           | Last Recorded Meter Consumption               | True      |
-| live_accumulatedConsumption         | Accumulated Consumption since Midnight        | True      |
-| live_accumulatedConsumptionThisHour | Accumulated Consumption since last hour shift | True      |
-| live_accumulatedCost                | Accumulated Cost since Midnight               | True      |
-| live_accumulatedReward              | Accumulated Reward since Midnight             | True      |
-| live_currency                       | Currency of Cost                              | True      |
-| live_minPower                       | Min Power Consumption since Midnight          | True      |
-| live_averagePower                   | Average Power Consumption since Midnight      | True      |
-| live_maxPower                       | Max Power Consumption since Midnight          | True      |
-| live_voltage1                       | Voltage Phase 1                               | True      |
-| live_voltage2                       | Voltage Phase  2                              | True      |
-| live_voltage3                       | Voltage Phase 3                               | True      |
-| live_current1                       | Current Phase 1                               | True      |
-| live_current2                       | Current Phase 2                               | True      |
-| live_current3                       | Current Phase 3                               | True      |
-| live_powerProduction                | Live Power Production                         | True      |
-| live_accumulatedProduction          | Accumulated Production since Midnight         | True      |
-| live_accumulatedProductionThisHour  | Accumulated Production since last hour shift  | True      |
-| live_lastMeterProduction            | Last Recorded Meter Production                | True      |
-| live_minPowerproduction             | Min Power Production since Midnight           | True      |
-| live_maxPowerproduction             | Max Power Production since Midnight           | True      |
+The `level` number is mapping the [Tibber Rating](https://developer.tibber.com/docs/reference#pricelevel) into numbers.
+Zero reflects _normal_ price while values above 0 are _expensive_ and values below 0 are _cheap_.
 
-## Binding Configuration
+Mapping:
+
+- Very Cheap : -2
+- Cheap : -1
+- Normal : 0
+- Expensive : 1
+- Very Expensive : 2
+
+
+The `average` values are not delivered by Tibber API.
+It's calculated by the binding to provide a trend line for the last 24 hours.
+After initial setup the average values will stay NULL until the next day because the previous 24 h prices cannot be obtained by the Tibber API.
+
+### live group
+
+Live information from Tibber Pulse.
+All values read-only.
+
+| Channel ID            | Type                      | Description                                           |
+|-----------------------|---------------------------|-------------------------------------------------------|
+| consumption           | Number:Power              | Consumption at the moment in watts                    |
+| minimum-consumption   | Number:Power              | Minimum power consumption since midnight in watts     |
+| peak-consumtion       | Number:Power              | Peak power consumption since midnight in watts        |
+| production            | Number:Power              | Net power production at the moment in watts           |
+| minimum-production    | Number:Power              | Minimum net power production since midnight in watts  |
+| peak-production       | Number:Power              | Maximum net power production since midnight in watts  |
+| voltage1              | Number:ElectricPotential  | Electric potential on phase 1                         |
+| voltage2              | Number:ElectricPotential  | Electric potential on phase 2                         |
+| voltage3              | Number:ElectricPotential  | Electric potential on phase 3                         |
+| current1              | Number:ElectricCurrent    | Electric current on phase 1                           |
+| current2              | Number:ElectricCurrent    | Electric current on phase 2                           |
+| current3              | Number:ElectricCurrent    | Electric current on phase 3                           |
+
+
+### statistics group
+
+Statistic information about total, daily and last hour energy consumption and production. 
+All values read-only.
+
+| Channel ID            | Type                      | Description                                                   |
+|-----------------------|---------------------------|---------------------------------------------------------------|
+| total-consumption     | Number:Energy             | Total energy consumption measured by Tibber Pulse meter       |
+| daily-consumption     | Number:Energy             | Energy consumed since midnight in kilowatt-hours              |
+| daily-cost            | Number:Currency           | Accumulated cost since midnight                               |
+| last-hour-consumption | Number:Energy             | Energy consumed since last hour shift in kilowatt-hours       |
+| total-production      | Number:Energy             | Total energy production measured by Tibber Pulse meter        |
+| daily-production      | Number:Energy             | Net energy produced since midnight in kilowatt-hours          |
+| last-hour-production  | Number:Energy             | Net energy produced since last hour shift in kilowatt-hours   |
+
+## Thing Configuration
+
+| Name          | Type      | Description                           | Default   | Required  |
+|---------------|-----------|---------------------------------------|-----------|-----------|
+| token         | text      | Tibber Personal Token                 | N/A       | yes       |
+| homeid        | text      | Tibber Home ID                        | N/A       | yes       |
+| updateHour    | integer   | Hour when spot prices are updated     | 13        | yes       |
 
 To access and initiate the Tibber Binding, a Tibber user account is required.
 
@@ -98,176 +121,95 @@ Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.t
 
 If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds.
 
-## Thing Configuration
+## Thing Actions
 
-When Tibber Binding is installed, Tibber API should be auto discovered.
+Thing actions can be used to perform calculations on the current available price information cached by the binding. 
+Cache contains energy prices from today and after reaching the `updateHour` also for tomorrow.
+This is for planning when and for what cost a specific electric consumer can be started.  
 
-Retrieve personal token and HomeId from description above, and initialize/start a scan with the binding.
+Performing a calcuation a `paramters` object is needed containing e.g. your boundaries for the calculation.
+Parameter object allow 2 types: Java `Map` or JSON `String`.
+Depending on which parameter object is given the returned result object is eiter a Java `Map` or JSON `String`.
 
-Tibber API will be auto discovered if provided input is correct.
 
-## Tomorrow and Today Prices
+### `priceInfoStart`
 
-The today and tomorrow prices are served as forecast on the `current_total` channel and as JSON data on the channels `today_prices` and `tomorrow_prices`.
-Example of tomorrow and today prices data structure - an array of tuples:
+Returns starting point as `Instant` of first available energy price. 
+It's not allowed to start calculations before this timestamp.
 
-```json
-[
-  {
-    "startsAt": "2022-09-27T00:00:00.000+02:00",
-    "total": 3.8472,
-    "level": "NORMAL"
-  },
-  {
-    "startsAt": "2022-09-27T01:00:00.000+02:00",
-    "total": 3.0748,
-    "level": "NORMAL"
-  },
-  {
-    "startsAt": "2022-09-27T02:00:00.000+02:00",
-    "total": 2.2725,
-    "level": "CHEAP"
-  },
-  {
-    "startsAt": "2022-09-27T03:00:00.000+02:00",
-    "total": 2.026,
-    "level": "VERY_CHEAP"
-  },
-  {
-    "startsAt": "2022-09-27T04:00:00.000+02:00",
-    "total": 2.6891,
-    "level": "CHEAP"
-  },
-  {
-    "startsAt": "2022-09-27T05:00:00.000+02:00",
-    "total": 3.7821,
-    "level": "NORMAL"
-  },
-  {
-    "startsAt": "2022-09-27T06:00:00.000+02:00",
-    "total": 3.9424,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T07:00:00.000+02:00",
-    "total": 4.158,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T08:00:00.000+02:00",
-    "total": 4.2648,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T09:00:00.000+02:00",
-    "total": 4.2443,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T10:00:00.000+02:00",
-    "total": 4.2428,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T11:00:00.000+02:00",
-    "total": 4.2061,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T12:00:00.000+02:00",
-    "total": 4.1458,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T13:00:00.000+02:00",
-    "total": 3.9396,
-    "level": "NORMAL"
-  },
-  {
-    "startsAt": "2022-09-27T14:00:00.000+02:00",
-    "total": 3.8563,
-    "level": "NORMAL"
-  },
-  {
-    "startsAt": "2022-09-27T15:00:00.000+02:00",
-    "total": 4.0364,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T16:00:00.000+02:00",
-    "total": 4.093,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T17:00:00.000+02:00",
-    "total": 4.1823,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T18:00:00.000+02:00",
-    "total": 4.2779,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T19:00:00.000+02:00",
-    "total": 4.3154,
-    "level": "VERY_EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T20:00:00.000+02:00",
-    "total": 4.3469,
-    "level": "VERY_EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T21:00:00.000+02:00",
-    "total": 4.2329,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T22:00:00.000+02:00",
-    "total": 4.1014,
-    "level": "EXPENSIVE"
-  },
-  {
-    "startsAt": "2022-09-27T23:00:00.000+02:00",
-    "total": 4.0265,
-    "level": "EXPENSIVE"
-  }
-]
-```
+In case of error `Instant.MAX` is returned.
+
+### `priceInfoEnd`
+
+Returns end point as `Instant` of the last available energy price. 
+It's not allowed to exceed calculations after this timestamp.
+
+In case of error `Instant.MIN` is returned.
+
+### listPrices
+
+List prices in ascending / decending order.
+
+Parameters:
+
+| Name          | Type      | Description                           | Default           | Required  |
+|---------------|-----------|---------------------------------------|-------------------|-----------|
+| earliestStart | Instant   | Earliest start time                   | now               | no        |
+| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
+| ascending     | boolean   | Hour when spot prices are updated     | true              | no        |
+
+Result:
+
+Java `Map` or JSON `String` with following keys
+ 
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| earliestStart | Instant   | Earliest start time                   |
+
+### bestPricePeriod
+
+Calculates best cost for a consecutive period.
+For use cases like dishwasher or laundry.
+
+Parameters:
+
+| Name          | Type      | Description                           | Default           | Required  |
+|---------------|-----------|---------------------------------------|-------------------|-----------|
+| earliestStart | Instant   | Earliest start time                   | now               | no        |
+| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
+| curve         | List<Map> | List of curve etnries                 | N/A               | true      |
+
+### bestPriceSchedule
+
+Calculates best cost for a non-consecutive schedule.
+For use cases like battery electric vehicle or heat-pump.
+
+Parameters:
+
+| Name          | Type      | Description                           | Default           | Required  |
+|---------------|-----------|---------------------------------------|-------------------|-----------|
+| earliestStart | Instant   | Earliest start time                   | now               | no        |
+| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
+| power         | int       | Needed power                          | N/A               | no        |
+| duration      | int       | Hour when spot prices are updated     | N/A               | yes        |
 
 ## Full Example
 
 ### `demo.things` Example
 
 ```java
-Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
+Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx", updateHour=13 ]
 ```
 
 ### `demo.items` Example
 
 ```java
-Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
-DateTime                   TibberAPICurrentStartsAt              "Timestamp - Current Price"                 {channel="tibber:tibberapi:7cfae492:current_startsAt"}
-String                     TibberAPICurrentLevel                 "Price Level"                               {channel="tibber:tibberapi:7cfae492:current_level"}
-DateTime                   TibberAPIDailyFrom                    "Timestamp - Daily From"                    {channel="tibber:tibberapi:7cfae492:daily_from"}
-DateTime                   TibberAPIDailyTo                      "Timestamp - Daily To"                      {channel="tibber:tibberapi:7cfae492:daily_to"}
-Number:Dimensionless       TibberAPIDailyCost                    "Total Daily Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:daily_cost"}
-Number:Energy              TibberAPIDailyConsumption             "Total Daily Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:daily_consumption"}
-DateTime                   TibberAPIHourlyFrom                   "Timestamp - Hourly From"                   {channel="tibber:tibberapi:7cfae492:hourly_from"}
-DateTime                   TibberAPIHourlyTo                     "Timestamp - Hourly To"                     {channel="tibber:tibberapi:7cfae492:hourly_to"}
-Number:Dimensionless       TibberAPIHourlyCost                   "Total Hourly Cost [%.2f NOK]"              {channel="tibber:tibberapi:7cfae492:hourly_cost"}
-Number:Energy              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
-String                     TibberAPITomorrowPrices               "Price per hour tomorrow JSON array"        {channel="tibber:tibberapi:7cfae492:tomorrow_prices"}
-String                     TibberAPITodayPrices                  "Price per hour today JSON array"           {channel="tibber:tibberapi:7cfae492:today_prices"}
-DateTime                   TibberAPILiveTimestamp                "Timestamp - Live Measurement"              {channel="tibber:tibberapi:7cfae492:live_timestamp"}
+Number:EnergyPrice       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
+Number       TibberAPIDailyCost                    "Total Daily Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:daily_cost"}
+Number:EnergyPrice              TibberAPIDailyConsumption             "Total Daily Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:daily_consumption"}
+Number:Power              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
+Number:Power              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
 Number:Power               TibberAPILivePower                    "Live Power Consumption [%.0f W]"           {channel="tibber:tibberapi:7cfae492:live_power"}
-Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
-Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
-Number:Energy              TibberAPILiveAccumulatedConsumptionThisHour   "kWh consumed since since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumptionLastHour"}
-Number:Dimensionless       TibberAPILiveAccumulatedCost          "Accumulated Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:live_accumulatedCost"}
-Number:Dimensionless       TibberAPILiveAccumulatedReward        "Accumulated Reward [%.2f NOK]"             {channel="tibber:tibberapi:7cfae492:live_accumulatedReward"}
-String                     TibberAPILiveCurrency                 "Currency"                                  {channel="tibber:tibberapi:7cfae492:live_currency"}
 Number:Power               TibberAPILiveMinPower                 "Min Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_minPower"}
 Number:Power               TibberAPILiveAveragePower             "Average Power Consumption [%.0f W]"        {channel="tibber:tibberapi:7cfae492:live_averagePower"}
 Number:Power               TibberAPILiveMaxPower                 "Max Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_maxPower"}
@@ -277,10 +219,11 @@ Number:ElectricPotential   TibberAPILiveVoltage3                 "Live Voltage P
 Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current1"}
 Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current2"}
 Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current3"}
-Number:Power               TibberAPILivePowerProduction          "Live Power Production [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
 Number:Energy              TibberAPILiveAccumulatedProductionThisHour   "Net kWh produced since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedProductionThisHour"}
+Number:Currency              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
 Number:Energy              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
-Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
-Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
+Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
+Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
+Number:Energy              TibberAPILiveAccumulatedConsumptionThisHour   "kWh consumed since since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumptionLastHour"}
 ```
