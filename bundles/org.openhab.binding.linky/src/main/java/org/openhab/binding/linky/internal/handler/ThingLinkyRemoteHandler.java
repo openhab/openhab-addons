@@ -303,6 +303,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_MAIL, new StringType(values.contact.email));
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_PHONE, new StringType(values.contact.phone));
 
+            if (values.identity.internId == null) {
+                values.identity.internId = values.identity.firstname + " " + values.identity.lastname;
+            }
             userId = values.identity.internId;
             updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA", PRM_ID,
                     values.usagePoint.usagePointId));
@@ -341,6 +344,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             MetaData result = new MetaData();
             if (api != null) {
                 if (supportNewApiFormat()) {
+                    if (config.prmId.isBlank()) {
+                        throw new LinkyException("@text/offline.config-error-mandatory-settings");
+                    }
                     result.identity = api.getIdentity(this, config.prmId);
                     result.contact = api.getContact(this, config.prmId);
                     result.contract = api.getContract(this, config.prmId);
@@ -381,6 +387,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
 
         updateMetaData();
+        // Stop there if we are not able to get Metadata
+        if (thing.getStatus() == ThingStatus.OFFLINE) {
+            return;
+        }
+
         updateEnergyData();
         updatePowerData();
         updateLoadCurveData();
