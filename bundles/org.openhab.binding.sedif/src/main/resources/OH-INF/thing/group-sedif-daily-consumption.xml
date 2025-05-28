@@ -7,19 +7,18 @@
 	<channel-group-type id="sedif-daily-consumption">
 		<label>Daily Consumption</label>
 		<channels>
-            <channel id="yesterday" typeId="consumption-type">
-                <label>Yesterday Consumption</label>
-            </channel>
-            <channel id="day-2" typeId="consumption-type">
-                <label>Day -2 Consumption</label>
-            </channel>
-            <channel id="day-3" typeId="consumption-type"> 
-                <label>Day -3 Consumption</label> 
-            </channel>
-            <channel id="consumption" typeId="consumption-type">
-                <label>Consumption</label>
-            </channel>
+			<channel id="yesterday" typeId="consumption-type">
+				<label>Yesterday Consumption</label>
+			</channel>
+			<channel id="day-2" typeId="consumption-type">
+				<label>Day -2 Consumption</label>
+			</channel>
+			<channel id="day-3" typeId="consumption-type">
+				<label>Day -3 Consumption</label>
+			</channel>
+			<channel id="consumption" typeId="consumption-type">
+				<label>Consumption</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
- 

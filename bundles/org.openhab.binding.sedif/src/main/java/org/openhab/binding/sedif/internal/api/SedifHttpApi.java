@@ -374,5 +374,4 @@ public class SedifHttpApi {
 
         return null;
     }
-
 }

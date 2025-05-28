@@ -110,5 +110,4 @@ public class SedifBindingConstants {
     public static final String THING_WATER_METER_PROPERTY_ELMB = "elmb";
     public static final String THING_WATER_METER_PROPERTY_NUM_COMPTEUR = "num-compteur";
     public static final String THING_WATER_METER_PROPERTY_ID_PDS = "id-pds";
-
 }

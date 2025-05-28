@@ -143,5 +143,4 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
             logger.debug("Unable to detect water meter for contract {}", contract, ex);
         }
     }
-
 }

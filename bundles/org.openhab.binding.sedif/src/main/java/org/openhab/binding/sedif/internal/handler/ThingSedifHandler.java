@@ -147,7 +147,6 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
         }
-
     }
 
     @Override
@@ -170,7 +169,6 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-
     }
 
     /**
@@ -648,5 +646,4 @@ public class ThingSedifHandler extends BaseThingHandler {
     public String getNumCompteur() {
         return idPds;
     }
-
 }
