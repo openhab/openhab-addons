@@ -54,7 +54,6 @@ public class MeterReading extends Value {
 
         @SerializedName("NUMERO_COMPTEUR")
         public String numeroCompteur;
-
     }
 
     public @Nullable Data data;
@@ -63,5 +62,4 @@ public class MeterReading extends Value {
     public float prixMoyenEau;
     public boolean canCompareMonth;
     public String numeroCompteur;
-
 }

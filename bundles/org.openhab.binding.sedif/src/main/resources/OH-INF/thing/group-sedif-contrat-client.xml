@@ -7,49 +7,49 @@
 	<channel-group-type id="sedif-contrat-client">
 		<label>Contrat Client</label>
 		<channels>
-            <channel id="contrat-billing-city" typeId="info-type">
-                <label>Ville (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-billing-postal-code" typeId="info-type">
-                <label>Postal Code (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-billing-street" typeId="info-type">
-                <label>Rue  (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-first-name" typeId="info-type">
-                <label>Prénom (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-last-name" typeId="info-type">
-                <label>Nom  (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-name-sup" typeId="info-type">
-                <label>Complément Nom  (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-email" typeId="info-type">
-                <label>Email  (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-gc" typeId="info-type">
-                <label>GC  (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-mobile-phone" typeId="info-type">
-                <label>Téléphone (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-salutation" typeId="info-type">
-                <label>Salutation (contrat client)</label>
-            </channel>
- 
-            <channel id="contrat-verrouillage-fiche" typeId="info-type">
-                <label>Verrouillage fiche (contrat client)</label>
-            </channel>
+			<channel id="contrat-billing-city" typeId="info-type">
+				<label>Ville (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-billing-postal-code" typeId="info-type">
+				<label>Postal Code (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-billing-street" typeId="info-type">
+				<label>Rue (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-first-name" typeId="info-type">
+				<label>Prénom (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-last-name" typeId="info-type">
+				<label>Nom (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-name-sup" typeId="info-type">
+				<label>Complément Nom (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-email" typeId="info-type">
+				<label>Email (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-gc" typeId="info-type">
+				<label>GC (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-mobile-phone" typeId="info-type">
+				<label>Téléphone (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-salutation" typeId="info-type">
+				<label>Salutation (contrat client)</label>
+			</channel>
+
+			<channel id="contrat-verrouillage-fiche" typeId="info-type">
+				<label>Verrouillage fiche (contrat client)</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

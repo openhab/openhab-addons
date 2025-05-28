@@ -7,18 +7,18 @@
 	<channel-group-type id="sedif-yearly-consumption">
 		<label>Yearly Consumption</label>
 		<channels>
-            <channel id="thisYear" typeId="consumption-type">
-                <label>this Year Consumption</label>
-            </channel>
-            <channel id="lastYear" typeId="consumption-type">
-                <label>last Year Consumption</label>
-            </channel>
-            <channel id="year-2" typeId="consumption-type">
-                <label>Year -2 Consumption</label>
-            </channel>
-            <channel id="consumption" typeId="consumption-type">
-                <label>Consumption</label>
-            </channel>
+			<channel id="thisYear" typeId="consumption-type">
+				<label>this Year Consumption</label>
+			</channel>
+			<channel id="lastYear" typeId="consumption-type">
+				<label>last Year Consumption</label>
+			</channel>
+			<channel id="year-2" typeId="consumption-type">
+				<label>Year -2 Consumption</label>
+			</channel>
+			<channel id="consumption" typeId="consumption-type">
+				<label>Consumption</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

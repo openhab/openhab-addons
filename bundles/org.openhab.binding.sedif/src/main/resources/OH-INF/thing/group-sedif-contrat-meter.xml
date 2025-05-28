@@ -7,21 +7,21 @@
 	<channel-group-type id="sedif-contrat-meter">
 		<label>Contrat Compteur</label>
 		<channels>
-           <channel id="elema" typeId="info-type-advanced">
-                <label>Elem A</label>
-            </channel>
- 
-            <channel id="elemb" typeId="info-type-advanced">
-                <label>Elem B</label>
-            </channel>
- 
-            <channel id="id-pds" typeId="info-type-advanced">
-                <label>Id Pds</label>
-            </channel>
- 
-            <channel id="num-compteur" typeId="info-type">
-                <label>Num Compteur</label>
-            </channel>
- 		</channels>
+			<channel id="elema" typeId="info-type-advanced">
+				<label>Elem A</label>
+			</channel>
+
+			<channel id="elemb" typeId="info-type-advanced">
+				<label>Elem B</label>
+			</channel>
+
+			<channel id="id-pds" typeId="info-type-advanced">
+				<label>Id Pds</label>
+			</channel>
+
+			<channel id="num-compteur" typeId="info-type">
+				<label>Num Compteur</label>
+			</channel>
+		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

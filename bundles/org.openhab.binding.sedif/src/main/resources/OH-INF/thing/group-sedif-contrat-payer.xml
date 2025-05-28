@@ -7,49 +7,49 @@
 	<channel-group-type id="sedif-contrat-payer">
 		<label>Contrat Payeur</label>
 		<channels>
-            <channel id="payer-billing-city" typeId="info-type">
-                <label>Ville (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-billing-postal-code" typeId="info-type">
-                <label>Postal Code (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-billing-street" typeId="info-type">
-                <label>Rue  (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-first-name" typeId="info-type">
-                <label>Prénom (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-last-name" typeId="info-type">
-                <label>Nom  (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-name-sup" typeId="info-type">
-                <label>Complément Nom  (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-email" typeId="info-type">
-                <label>Email  (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-gc" typeId="info-type">
-                <label>GC  (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-mobile-phone" typeId="info-type">
-                <label>Téléphone (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-salutation" typeId="info-type">
-                <label>Salutation (payeur client)</label>
-            </channel>
- 
-            <channel id="payer-verrouillage-fiche" typeId="info-type">
-                <label>Verrouillage fiche (payeur client)</label>
-            </channel>
-    	</channels>
+			<channel id="payer-billing-city" typeId="info-type">
+				<label>Ville (payeur client)</label>
+			</channel>
+
+			<channel id="payer-billing-postal-code" typeId="info-type">
+				<label>Postal Code (payeur client)</label>
+			</channel>
+
+			<channel id="payer-billing-street" typeId="info-type">
+				<label>Rue (payeur client)</label>
+			</channel>
+
+			<channel id="payer-first-name" typeId="info-type">
+				<label>Prénom (payeur client)</label>
+			</channel>
+
+			<channel id="payer-last-name" typeId="info-type">
+				<label>Nom (payeur client)</label>
+			</channel>
+
+			<channel id="payer-name-sup" typeId="info-type">
+				<label>Complément Nom (payeur client)</label>
+			</channel>
+
+			<channel id="payer-email" typeId="info-type">
+				<label>Email (payeur client)</label>
+			</channel>
+
+			<channel id="payer-gc" typeId="info-type">
+				<label>GC (payeur client)</label>
+			</channel>
+
+			<channel id="payer-mobile-phone" typeId="info-type">
+				<label>Téléphone (payeur client)</label>
+			</channel>
+
+			<channel id="payer-salutation" typeId="info-type">
+				<label>Salutation (payeur client)</label>
+			</channel>
+
+			<channel id="payer-verrouillage-fiche" typeId="info-type">
+				<label>Verrouillage fiche (payeur client)</label>
+			</channel>
+		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
