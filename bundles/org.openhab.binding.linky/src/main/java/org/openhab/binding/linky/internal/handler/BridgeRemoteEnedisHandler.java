@@ -126,7 +126,7 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
         AccessTokenResponse accesToken = getAccessTokenResponse();
 
         // Store token is about to expire, ask for a new one.
-        if (accesToken.isExpired(Instant.now(), 1200)) {
+        if (accesToken != null && accesToken.isExpired(Instant.now(), 1200)) {
             accesToken = null;
         }
 

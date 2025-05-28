@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
@@ -85,8 +84,6 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private static final String URL_ENEDIS_AUTHENTICATE = BASE_URL + "/authenticate?target=" + URL_COMPTE_PART;
-
-    private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
     private static final String BASE_MYELECT_URL = "https://www.myelectricaldata.fr/";
     private static final String TEMPO_URL = BASE_MYELECT_URL + "rte/tempo/%s/%s";
@@ -184,12 +181,8 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
 
         try {
             ContentResponse result = null;
-            String data = "";
-            String nonce = "";
-            String state = "";
             String uri = "";
             String gotoUri = "";
-            String code = "";
 
             // has we reconnect, remove all previous cookie to start from fresh session
             enedisApi.removeAllCookie();
@@ -222,19 +215,6 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             logger.debug("Step 1c: ...");
             // ======================================================
             uri = result.getHeaders().get("Location");
-
-            String[] urlParts = uri.split("&");
-            for (String urlPart : urlParts) {
-                String[] urlComps = urlPart.split("=");
-
-                if (urlComps[0].equals("state")) {
-                    state = urlComps[1];
-
-                }
-                if (urlComps[0].equals("nonce")) {
-                    nonce = urlComps[1];
-                }
-            }
 
             result = httpClient.GET(uri);
 
@@ -280,14 +260,16 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
-            if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
-                    || authData.callbacks.get(1).input.isEmpty() || !lcConfig.username
-                            .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
-                logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
-                throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
-            }
+            if (authData != null) {
+                if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
+                        || authData.callbacks.get(1).input.isEmpty() || !lcConfig.username.equals(
+                                Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
+                    logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
+                    throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
+                }
 
-            authData.callbacks.get(1).input.get(0).value = lcConfig.password;
+                authData.callbacks.get(1).input.get(0).value = lcConfig.password;
+            }
 
             // ======================================================
             logger.debug("Step 3: auth2 - send the auth data");
@@ -303,8 +285,11 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             AuthResult authResult = gson.fromJson(result.getContentAsString(), AuthResult.class);
 
             logger.debug("Add the tokenId cookie");
-            enedisApi.addCookie("enedisExt", authResult.tokenId);
+            if (authResult == null) {
+                throw new LinkyException("Errors on step3 : authResult=null");
+            }
 
+            enedisApi.addCookie("enedisExt", authResult.tokenId);
             // ======================================================
             logger.debug("Step 4a: Confirm login");
             // ======================================================
@@ -347,7 +332,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
 
             String cookieKey;
 
-            if (hashRes.containsKey("cnAlex")) {
+            if (hashRes != null && hashRes.containsKey("cnAlex")) {
                 cookieKey = "personne_for_" + hashRes.get("cnAlex");
             } else {
                 throw new LinkyException("Connection failed step 7, missing cookieKey");
