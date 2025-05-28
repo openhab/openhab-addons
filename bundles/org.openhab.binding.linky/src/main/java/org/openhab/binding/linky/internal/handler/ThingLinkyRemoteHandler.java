@@ -397,42 +397,47 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private synchronized void updatePowerData() {
-        dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
-            int dSize = values.baseValue.length;
+        if (isLinkedPowerData()) {
+            dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
+                int dSize = values.baseValue.length;
 
-            updatekVAChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1,
-                    values.baseValue[dSize - 1].value);
-            updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1,
-                    new DateTimeType(values.baseValue[dSize - 1].date.atZone(zoneId)));
+                updatekVAChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1,
+                        values.baseValue[dSize - 1].value);
+                updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1,
+                        new DateTimeType(values.baseValue[dSize - 1].date.atZone(zoneId)));
 
-            updatekVAChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2,
-                    values.baseValue[dSize - 2].value);
-            updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2,
-                    new DateTimeType(values.baseValue[dSize - 2].date.atZone(zoneId)));
+                updatekVAChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2,
+                        values.baseValue[dSize - 2].value);
+                updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2,
+                        new DateTimeType(values.baseValue[dSize - 2].date.atZone(zoneId)));
 
-            updatekVAChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3,
-                    values.baseValue[dSize - 3].value);
-            updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
-                    new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
+                updatekVAChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3,
+                        values.baseValue[dSize - 3].value);
+                updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
+                        new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
-            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue,
-                    MetricPrefix.KILO(Units.VOLT_AMPERE));
-            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue,
-                    MetricPrefix.KILO(Units.VOLT_AMPERE));
-            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue,
-                    MetricPrefix.KILO(Units.VOLT_AMPERE));
-            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
-                    MetricPrefix.KILO(Units.VOLT_AMPERE));
-        }, () -> {
-            updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
-            updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue,
+                        MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-            updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2, Double.NaN);
-            updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue,
+                        MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-            updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3, Double.NaN);
-            updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
-        });
+                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue,
+                        MetricPrefix.KILO(Units.VOLT_AMPERE));
+
+                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
+                        MetricPrefix.KILO(Units.VOLT_AMPERE));
+            }, () -> {
+                updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
+                updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
+
+                updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2, Double.NaN);
+                updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
+
+                updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3, Double.NaN);
+                updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
+            });
+        }
     }
 
     /**
@@ -502,11 +507,13 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * Request new loadCurve data and updates channels
      */
     private synchronized void updateLoadCurveData() {
-        loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-            updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue,
-                    MetricPrefix.KILO(Units.VOLT_AMPERE));
-        }, () -> {
-        });
+        if (isLinked(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER)) {
+            loadCurveConsumption.getValue().ifPresentOrElse(values -> {
+                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue,
+                        MetricPrefix.KILO(Units.VOLT_AMPERE));
+            }, () -> {
+            });
+        }
     }
 
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
@@ -830,5 +837,44 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
     public void saveConfiguration(Configuration config) {
         updateConfiguration(config);
+    }
+
+    public boolean isLinkedPowerData() {
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER)) {
+            return true;
+        }
+        if (isLinked(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isLinked(String groupName, String channelName) {
+        return isLinked(groupName + "#" + channelName);
     }
 }
