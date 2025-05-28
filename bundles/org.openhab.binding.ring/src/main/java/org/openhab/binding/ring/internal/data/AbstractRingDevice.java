@@ -61,7 +61,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return the device id.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return jsonObject.get(ApiConstants.DEVICE_ID).getAsString();
@@ -72,7 +71,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return the device device_id.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public String getDeviceId() {
         return jsonObject.get(ApiConstants.DEVICE_DEVICE_ID).getAsString();
@@ -83,7 +81,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return the device description.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public String getDescription() {
         return jsonObject.get(ApiConstants.DEVICE_DESCRIPTION).getAsString();
@@ -94,7 +91,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return the device firmware version.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public String getFirmwareVersion() {
         return jsonObject.get(ApiConstants.DEVICE_FIRMWARE_VERSION).getAsString();
@@ -105,7 +101,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return the device time zone.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public String getTimeZone() {
         return jsonObject.get(ApiConstants.DEVICE_TIME_ZONE).getAsString();
@@ -116,7 +111,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return the device kind.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public String getKind() {
         return jsonObject.get(ApiConstants.DEVICE_KIND).getAsString();
@@ -127,7 +121,6 @@ public abstract class AbstractRingDevice implements RingDevice {
      *
      * @return battery level (%)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Integer getBattery() {
         if (jsonObject.get(ApiConstants.DEVICE_BATTERY) != null) {

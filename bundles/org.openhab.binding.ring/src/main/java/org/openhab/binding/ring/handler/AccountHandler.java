@@ -76,7 +76,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable Runnable runnableEvent = null;
     private @Nullable Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
-    private @Nullable HttpService httpService;
+    private @NonNullByDefault({}) HttpService httpService;
     private final String thingId;
 
     // Current status
@@ -235,10 +235,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     protected void stopAutomaticRefresh() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        refreshJob = null;
     }
 
     private void saveRefreshTokenToFile(String refreshToken) {

@@ -17,7 +17,6 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
@@ -46,7 +45,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     /**
      * The RingDevice instance linked to this thing.
      */
-    protected @Nullable RingDevice device;
+    protected @NonNullByDefault({}) RingDevice device;
 
     public RingDeviceHandler(Thing thing) {
         super(thing);
@@ -58,7 +57,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
      * @param id the device id
      * @param deviceClass the expected class
      * @throws DeviceNotFoundException when device is not found in the RingDeviceRegistry.
-     * @throws IllegalDeviceClassException when the regitered device is of the wrong type.
+     * @throws IllegalDeviceClassException when the registered device is of the wrong type.
      */
     protected void linkDevice(String id, Class<?> deviceClass)
             throws DeviceNotFoundException, IllegalDeviceClassException {

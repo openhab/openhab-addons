@@ -86,12 +86,11 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.info("Stop Ring background discovery");
-        if (discoveryJob != null) {
-            if (!discoveryJob.isCancelled()) {
-                discoveryJob.cancel(true);
-                discoveryJob = null;
-            }
+        ScheduledFuture<?> job = discoveryJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        discoveryJob = null;
     }
 
     @Override

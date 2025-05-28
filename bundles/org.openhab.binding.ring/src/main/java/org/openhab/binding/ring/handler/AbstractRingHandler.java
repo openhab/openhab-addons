@@ -95,10 +95,11 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     }
 
     protected void stopAutomaticRefresh() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        refreshJob = null;
     }
 
     /**

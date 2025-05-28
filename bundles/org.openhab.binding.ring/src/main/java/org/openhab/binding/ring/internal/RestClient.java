@@ -283,7 +283,7 @@ public class RestClient {
                 RingUtils.sanitizeData(refreshToken), RingUtils.sanitizeData(twofactorCode),
                 RingUtils.sanitizeData(hardwareId));
 
-        if ((twofactorCode != null) && (!"".equals(twofactorCode))) {
+        if ((!"".equals(twofactorCode))) {
             logger.debug("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
@@ -306,20 +306,20 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws JsonParseException
      */
-    private @Nullable JsonObject getOauthToken(String username, String password, String refreshToken)
+    private JsonObject getOauthToken(String username, String password, String refreshToken)
             throws AuthenticationException, JsonParseException {
         logger.debug("RestClient - getOauthToken {} - {} - {}", RingUtils.sanitizeData(username),
                 RingUtils.sanitizeData(password), RingUtils.sanitizeData(refreshToken));
 
         String result = null;
-        JsonObject oauthToken = null;
+        JsonObject oauthToken = new JsonObject();
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
             Map<String, String> map = new HashMap<String, String>();
 
             map.put("client_id", "ring_official_android");
             map.put("scope", "client");
-            if (refreshToken == null || "".equals(refreshToken)) {
+            if ("".equals(refreshToken)) {
                 logger.debug("RestClient - getOauthToken - refreshToken null or empty {}",
                         RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "password");
@@ -644,7 +644,7 @@ public class RestClient {
     public synchronized List<RingEvent> getHistory(Profile profile, int limit)
             throws AuthenticationException, JsonParseException {
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
-        if (jsonResult != null) {
+        if (!"".equals(jsonResult)) {
             JsonArray obj = JsonParser.parseString(jsonResult).getAsJsonArray();
             List<RingEvent> result = new ArrayList<>(limit);
             for (Object jsonEvent : obj) {

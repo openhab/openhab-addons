@@ -72,7 +72,6 @@ public class RingEvent {
      *
      * @return the id.
      */
-    @SuppressWarnings("unchecked")
     public String getEventId() {
         return jsonObject.get(ApiConstants.EVENT_ID).getAsString();
     }
@@ -82,7 +81,6 @@ public class RingEvent {
      *
      * @return the date/time.
      */
-    @SuppressWarnings("unchecked")
     public String getCreatedAt() {
         String eventTime = jsonObject.get(ApiConstants.EVENT_CREATED_AT).getAsString();
         ZonedDateTime gmtTime = LocalDateTime
@@ -96,7 +94,6 @@ public class RingEvent {
      *
      * @return true if answered.
      */
-    @SuppressWarnings("unchecked")
     public boolean isAnswered() {
         return jsonObject.get(ApiConstants.EVENT_ANSWERED).getAsString().equalsIgnoreCase("true");
     }
@@ -106,7 +103,6 @@ public class RingEvent {
      *
      * @return the kind.
      */
-    @SuppressWarnings("unchecked")
     public String getKind() {
         return jsonObject.get(ApiConstants.EVENT_KIND).getAsString();
     }
@@ -116,7 +112,6 @@ public class RingEvent {
      *
      * @return favorite or not.
      */
-    @SuppressWarnings("unchecked")
     public boolean isFavorite() {
         return jsonObject.get(ApiConstants.EVENT_FAVORITE).getAsString().equalsIgnoreCase("true");
     }
@@ -126,7 +121,6 @@ public class RingEvent {
      *
      * @return the snapshot url.
      */
-    @SuppressWarnings("unchecked")
     public String getSnapshotUrl() {
         return jsonObject.get(ApiConstants.EVENT_SNAPSHOT_URL).getAsString();
     }

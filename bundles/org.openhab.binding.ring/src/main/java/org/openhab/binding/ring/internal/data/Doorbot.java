@@ -13,7 +13,6 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.ApiConstants;
 
 import com.google.gson.JsonObject;
@@ -29,7 +28,7 @@ public class Doorbot {
      * The JsonObject contains the data retrieved from the Ring API,
      * or the data to send to the API.
      */
-    protected @Nullable JsonObject jsonObject;
+    protected JsonObject jsonObject = new JsonObject();
 
     /**
      * Create from a JsonObject, example:
@@ -40,7 +39,7 @@ public class Doorbot {
      *
      * @param jsonObject
      */
-    public Doorbot(@Nullable JsonObject jsonObject) {
+    public Doorbot(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 
@@ -49,9 +48,8 @@ public class Doorbot {
      *
      * @return the id.
      */
-    @SuppressWarnings("unchecked")
     public String getId() {
-        return (jsonObject != null) ? jsonObject.get(ApiConstants.DOORBOT_ID).getAsString() : "";
+        return jsonObject.get(ApiConstants.DOORBOT_ID).getAsString();
     }
 
     /**
@@ -59,8 +57,7 @@ public class Doorbot {
      *
      * @return the description.
      */
-    @SuppressWarnings("unchecked")
     public String getDescription() {
-        return (jsonObject != null) ? jsonObject.get(ApiConstants.DOORBOT_DESCRIPTION).getAsString() : "";
+        return jsonObject.get(ApiConstants.DOORBOT_DESCRIPTION).getAsString();
     }
 }
