@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -123,6 +124,12 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
     @Override
     public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
         AccessTokenResponse accesToken = getAccessTokenResponse();
+
+        // Store token is about to expire, ask for a new one.
+        if (accesToken.isExpired(Instant.now(), 1200)) {
+            accesToken = null;
+        }
+
         if (accesToken == null) {
             accesToken = getAccessTokenByClientCredentials();
         }
