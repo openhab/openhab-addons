@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="emby" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Emby Binding</name>
+	<description>
+		The Emby Binding integrates Emby, a personal media server (https://emby.media/), with openHAB. It supports
+		both controlling the player and retrieving player status data like the currently playing movie title.
+	</description>
+
+	<!-- binding only works on the local network -->
+	<connection>local</connection>
+
+	<discovery-methods>
+
+		<!-- 1) Standard mDNS discovery for _emby-server._tcp.local. -->
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_emby-server._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+
+		<!-- 2) UDP broadcast “who is EmbyServer?” on port 7359 -->
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipBroadcast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>7359</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>request</name>
+					<value>who is EmbyServer?</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>timeoutMs</name>
+					<value>5000</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<!-- match any JSON reply containing the “Id” field -->
+				<match-property>
+					<name>response</name>
+					<regex>.*"Id".*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+
+	</discovery-methods>
+</addon:addon>

@@ -114,13 +114,14 @@ public class PythonScriptEngine
             .targetTypeMapping(Value.class, Instant.class,
                     v -> v.hasMember("ctime") && v.hasMember("isoformat") && v.hasMember("tzinfo")
                             && v.getMember("tzinfo").isNull(),
-                    v -> Instant.parse(v.invokeMember("isoformat").asString()), HostAccess.TargetMappingPrecedence.LOW)
+                    v -> Instant.parse(v.invokeMember("isoformat").asString() + "Z"),
+                    HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python timedelta to java.time.Duration
             .targetTypeMapping(Value.class, Duration.class,
                     // picking two members to check as Duration has many common function names
                     v -> v.hasMember("total_seconds") && v.hasMember("total_seconds"),
-                    v -> Duration.ofNanos(v.invokeMember("total_seconds").asLong() * 10000000),
+                    v -> Duration.ofNanos(Math.round(v.invokeMember("total_seconds").asDouble() * 1000000000)),
                     HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python item to org.openhab.core.items.Item
