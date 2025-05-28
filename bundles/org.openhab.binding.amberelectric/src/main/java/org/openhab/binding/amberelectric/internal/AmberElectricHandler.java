@@ -146,14 +146,17 @@ public class AmberElectricHandler extends BaseThingHandler {
                 Sites sites = new Sites();
                 for (int i = 0; i < jsonArraySites.size(); i++) {
                     sites = gson.fromJson(jsonArraySites.get(i), Sites.class);
+                    if (sites == null)
+                        return;
                     if (nmi.equals(sites.nmi)) {
                         siteID = sites.id;
                     }
                 }
                 if (("".equals(nmi)) || ("".equals(siteID))) { // nmi not specified, or not found so we take the first
-                                                               // siteid
-                                                               // found
+                                                               // siteid found
                     sites = gson.fromJson(jsonArraySites.get(0), Sites.class);
+                    if (sites == null)
+                        return;
                     siteID = sites.id;
                     nmi = sites.nmi;
                     Configuration configuration = editConfiguration();
