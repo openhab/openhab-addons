@@ -16,6 +16,7 @@ import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -138,14 +139,35 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     private void pollStatus() throws IOException {
         try {
-            if (siteID.isEmpty()) {
-                Sites sites = webTargets.getSites(apiKey, nmi);
-                // add error handling
-                siteID = sites.siteid;
-                Configuration configuration = editConfiguration();
-                configuration.put("nmi", sites.nmi);
-                updateConfiguration(configuration);
-                logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
+            if ("".equals(siteID)) {
+                String responseSites = webTargets.getSites(apiKey);
+                logger.trace("responseSites = {}", responseSites);
+                JsonArray jsonArraySites = JsonParser.parseString(responseSites).getAsJsonArray();
+                Sites sites = new Sites();
+                for (int i = 0; i < jsonArraySites.size(); i++) {
+                    sites = gson.fromJson(jsonArraySites.get(i), Sites.class);
+                    if (nmi.equals(sites.nmi)) {
+                        siteID = sites.id;
+                    }
+                }
+                if (("".equals(nmi)) || ("".equals(siteID))) { // nmi not specified, or not found so we take the first
+                                                               // siteid
+                                                               // found
+                    sites = gson.fromJson(jsonArraySites.get(0), Sites.class);
+                    siteID = sites.id;
+                    nmi = sites.nmi;
+                    Configuration configuration = editConfiguration();
+                    configuration.put("nmi", nmi);
+                    updateConfiguration(configuration);
+                }
+                Map<String, String> properties = editProperties();
+                properties.put("network", sites.network);
+                properties.put("status", sites.status);
+                properties.put("activeFrom", sites.activeFrom);
+                properties.put("tariff", sites.channels[0].tariff);
+                properties.put("intervalLength", String.valueOf(sites.intervalLength));
+                updateProperties(properties);
+                logger.debug("Detected amber siteid is {}, for nmi {}", sites.id, sites.nmi);
             }
             updateStatus(ThingStatus.ONLINE);
 
