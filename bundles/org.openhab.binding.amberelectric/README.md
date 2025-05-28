@@ -17,6 +17,7 @@ As a minimum, the IP address is needed:
 - `apiKey` - The API key from the 'Developer' section of <https://apps.amber.com.au>
 - 'nmi' optional -  the NMI for your property. Required if you have multiple properties with Amber
 - 'refresh' the refresh rate for querying the API.
+- 'forecasts' the number of price forecasts to retrieve
 
 ## Channels
 
