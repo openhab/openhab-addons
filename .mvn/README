@@ -1,0 +1,1 @@
+required by Maven 4 to detect root dir; adding root=true to pom is not compatible with Maven 3
