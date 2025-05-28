@@ -290,7 +290,7 @@
 				<label>ppointe</label>
 				<description>Profile of next rush day</description>
 			</channel>
-			
+
 			<channel id="relais1" typeId="switch">
 				<label>Relay 1</label>
 			</channel>
