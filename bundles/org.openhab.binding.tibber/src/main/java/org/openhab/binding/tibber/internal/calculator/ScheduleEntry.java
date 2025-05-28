@@ -1,0 +1,54 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.tibber.internal.calculator;
+
+import java.time.Instant;
+import java.util.HashMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link ScheduleEntry} represents one entry of a curve with power and duration.
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
+public class ScheduleEntry extends HashMap<String, Object> {
+    private static final long serialVersionUID = -4725410533295254655L;
+    public Instant start;
+    public Instant stop;
+    public int duration;
+    public double cost;
+
+    public ScheduleEntry(Instant start, Instant stop, int duration, double cost) {
+        this.start = start;
+        this.stop = stop;
+        this.duration = duration;
+        this.cost = cost;
+        super.put("start", start);
+        super.put("stop", stop);
+        super.put("duration", duration);
+        super.put("cost", cost);
+    }
+
+    public String toJSON() {
+        return "{\"start\":\"" + start + "\",\"stop\":\"" + stop + "\",\"duration\":" + duration + ",\"cost\":" + cost
+                + "}";
+    }
+
+    @Override
+    public String toString() {
+        return "{\"start\":\"" + start + "\",\"stop\":\"" + stop + "\",\"duration\":" + duration + ",\"cost\":" + cost
+                + "}";
+    }
+}
