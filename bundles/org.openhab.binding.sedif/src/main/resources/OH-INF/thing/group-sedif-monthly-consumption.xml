@@ -7,18 +7,18 @@
 	<channel-group-type id="sedif-monthly-consumption">
 		<label>Monthly Consumption</label>
 		<channels>
-            <channel id="thisMonth" typeId="consumption-type">
-                <label>this Month  Consumption</label>
-            </channel>
-            <channel id="lastMonth" typeId="consumption-type">
-                <label>last Month Consumption</label>
-            </channel>
-            <channel id="month-2" typeId="consumption-type">
-                <label>Month -2 Consumption</label>
-            </channel>
-            <channel id="consumption" typeId="consumption-type">
-                <label>Consumption</label>
-            </channel>
+			<channel id="thisMonth" typeId="consumption-type">
+				<label>this Month Consumption</label>
+			</channel>
+			<channel id="lastMonth" typeId="consumption-type">
+				<label>last Month Consumption</label>
+			</channel>
+			<channel id="month-2" typeId="consumption-type">
+				<label>Month -2 Consumption</label>
+			</channel>
+			<channel id="consumption" typeId="consumption-type">
+				<label>Consumption</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

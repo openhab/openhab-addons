@@ -142,7 +142,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         this.sedifApi = new SedifHttpApi(this, gson, this.httpClient);
-
     }
 
     @Override
@@ -158,13 +157,11 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-
     }
 
     public String getBaseUrl() {
@@ -321,5 +318,4 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     public Contract getContract(String contractName) {
         return contractDict.get(contractName);
     }
-
 }

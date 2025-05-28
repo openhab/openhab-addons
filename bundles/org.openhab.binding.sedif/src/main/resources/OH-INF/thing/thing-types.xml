@@ -12,15 +12,15 @@
 		<category>text</category>
 		<state readOnly="true"></state>
 	</channel-type>
-	
+
 	<channel-type id="info-type-advanced" advanced="true">
-        <item-type>String</item-type>
-        <label>Information</label>
-        <description>an information</description>
-        <category>text</category>
-        <state readOnly="true"></state>
-    </channel-type>
-	
+		<item-type>String</item-type>
+		<label>Information</label>
+		<description>an information</description>
+		<category>text</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
 
 	<channel-type id="info-date-type">
 		<item-type>DateTime</item-type>
@@ -50,14 +50,14 @@
 		<category>Text</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
-	
+
 	<channel-type id="consumption-type">
-        <item-type>Number:Volume</item-type>
-        <label>Total Consumption</label>
-        <description>Consumption at given time interval</description>
-        <category>flow</category>
-        <state readOnly="true" pattern="%.3f %unit%"/>
-    </channel-type>
+		<item-type>Number:Volume</item-type>
+		<label>Total Consumption</label>
+		<description>Consumption at given time interval</description>
+		<category>flow</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
 
 
 </thing:thing-descriptions>
