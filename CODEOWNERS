@@ -104,6 +104,7 @@
 /bundles/org.openhab.binding.electroluxappliance/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
+/bundles/org.openhab.binding.emby/ @volfan6415
 /bundles/org.openhab.binding.emotiva/ @espenaf
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.energidataservice/ @jlaur
@@ -134,6 +135,7 @@
 /bundles/org.openhab.binding.freecurrency/ @J-N-K
 /bundles/org.openhab.binding.frenchgovtenergydata/ @clinique
 /bundles/org.openhab.binding.fronius/ @trokohl @florian-h05
+/bundles/org.openhab.binding.froniuswattpilot/ @florian-h05
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg @andrewfg
@@ -324,7 +326,7 @@
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
 /bundles/org.openhab.binding.renault/ @dougculnane
 /bundles/org.openhab.binding.resol/ @ramack
-/bundles/org.openhab.binding.revogi/ @andibraeu
+/bundles/org.openhab.binding.revogi/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.ring/ @morph166955
 /bundles/org.openhab.binding.rme/ @kgoderis

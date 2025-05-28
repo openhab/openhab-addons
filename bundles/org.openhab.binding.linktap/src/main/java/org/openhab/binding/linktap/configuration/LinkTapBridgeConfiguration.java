@@ -28,4 +28,5 @@ public class LinkTapBridgeConfiguration {
     public boolean enableMDNS = true;
     public boolean enableJSONComms = false;
     public boolean enforceProtocolLimits = true;
+    public int gatewayResponseTimeout = 3;
 }

@@ -137,6 +137,7 @@
     <module>org.openhab.binding.electroluxappliance</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.elroconnects</module>
+    <module>org.openhab.binding.emby</module>
     <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
@@ -167,6 +168,7 @@
     <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.frenchgovtenergydata</module>
     <module>org.openhab.binding.fronius</module>
+    <module>org.openhab.binding.froniuswattpilot</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
