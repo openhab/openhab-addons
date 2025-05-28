@@ -44,8 +44,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,8 +57,6 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 @Component(immediate = true, service = ThingHandlerFactory.class, configurationPid = "binding.sedif")
 public class SedifHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(SedifHandlerFactory.class);
-
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
     private final HttpService httpService;
@@ -75,7 +71,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     // new DateTimeFormatterBuilder()
     // .appendPattern("\"uuuu-MM-dd[' ']HH:mm:ss\"").toFormatter();
 
-    private @Nullable Gson gson = null;
+    private final Gson gson;
 
     private final LocaleProvider localeProvider;
 
@@ -123,11 +119,9 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_WEB_SEDIF_BRIDGE.equals(thing.getThingTypeUID())) {
-            if (gson != null) {
-                BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory,
-                        this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
-                return handler;
-            }
+            BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory,
+                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            return handler;
         } else if (THING_TYPE_SEDIF.equals(thing.getThingTypeUID())) {
             ThingSedifHandler handler = new ThingSedifHandler(thing, localeProvider, timeZoneProvider);
             return handler;
