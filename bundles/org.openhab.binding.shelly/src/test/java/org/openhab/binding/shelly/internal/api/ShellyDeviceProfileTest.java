@@ -106,6 +106,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPROEM50_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO4PM_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER1PM_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHTG3_STR, true, false), //
