@@ -164,11 +164,11 @@ Only a few contract-related items may differ between the web bridge and the API 
 
 The device has the following configuration parameters:
 
-| Parameter      | Description                                                                                          |
-|----------------|------------------------------------------------------------------------------------------------------|
-| prmId          | The prmId linked to the Linky Handler (optional: if blank first registered meter will be used        |
-| timezone       | The timezone at the location of your linky 															|
-| token          | Optional: Required if a token is necessary to access this Linky device (used for MyElectricalData).  |
+  | Parameter      | Description                                                                                          |
+  |----------------|------------------------------------------------------------------------------------------------------|
+  | prmId          | The prmId linked to the Linky Handler (optional: if blank first registered meter will be used        |
+  | timezone       | The timezone associated with your Point of delivery													|
+  | token          | Optional: Required if a token is necessary to access this Linky device (used for MyElectricalData).  |
 
 
 
