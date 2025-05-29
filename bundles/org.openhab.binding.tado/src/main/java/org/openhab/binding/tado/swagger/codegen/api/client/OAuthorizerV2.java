@@ -10,13 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tado.internal.auth;
+package org.openhab.binding.tado.swagger.codegen.api.client;
 
 import java.io.IOException;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -25,7 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a new {@link Authorizer} that is mandated by Tado after March 15 2025.
+ * This is a new authorizer that was mandated by Tado after March 15 2025.
+ * <p>
+ * Based on static imported copy of class created by Swagger Codegen
  *
  * @see <a href="https://support.tado.com/en/articles/8565472-how-do-i-authenticate-to-access-the-rest-api">Tado Support
  *      Article</a>
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-public class OAuthorizerV2 implements Authorizer {
+public class OAuthorizerV2 {
 
     private final Logger logger = LoggerFactory.getLogger(OAuthorizerV2.class);
 
@@ -43,7 +44,6 @@ public class OAuthorizerV2 implements Authorizer {
         this.oAuthService = oAuthService;
     }
 
-    @Override
     public void addAuthorization(Request request) {
         try {
             AccessTokenResponse token = oAuthService.getAccessTokenResponse();

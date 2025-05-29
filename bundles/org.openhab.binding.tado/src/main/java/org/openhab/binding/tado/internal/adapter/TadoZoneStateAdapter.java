@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.tado.internal.adapter;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -225,11 +223,6 @@ public class TadoZoneStateAdapter {
         }
 
         return "ON".equals(power.getValue());
-    }
-
-    private static DecimalType toDecimalType(double value) {
-        BigDecimal decimal = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
-        return new DecimalType(decimal);
     }
 
     private static DateTimeType toDateTimeType(OffsetDateTime offsetDateTime) {
