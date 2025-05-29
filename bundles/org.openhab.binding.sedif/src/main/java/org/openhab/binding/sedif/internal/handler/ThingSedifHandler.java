@@ -203,18 +203,18 @@ public class ThingSedifHandler extends BaseThingHandler {
                 return;
             }
 
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_AUTORITE_ORGANISATRICE,
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ORGANIZING_AUTHORITY,
                     new StringType(values.contrat.AutoriteOrganisatrice));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_DATE_SORTIE_EPT, new StringType(values.contrat.DateSortieEPT));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_EFACTURE, OnOffType.from(values.contrat.eFacture));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_EINVOICE, OnOffType.from(values.contrat.eFacture));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ICL_ACTIVE, OnOffType.from(values.contrat.iclActive));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_PRELEVAUTO, OnOffType.from(values.contrat.prelevAuto));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_DIRECT_DEBIT, OnOffType.from(values.contrat.prelevAuto));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_NAME, new StringType(values.contrat.Name));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STREET, new StringType(values.contrat.SITE_Rue));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_CP, new StringType(values.contrat.SITE_CP));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_POST_CODE, new StringType(values.contrat.SITE_CP));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_TOWN, new StringType(values.contrat.SITE_Commune));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STATE, new StringType(values.contrat.Statut));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_SOLDE, new DecimalType(values.solde));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_BALANCE, new DecimalType(values.solde));
 
             CompteInfo comptInfo = values.compteInfo.get(0);
             updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ELMA, new StringType(comptInfo.ELEMA));
@@ -222,25 +222,25 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ID_PDS, new StringType(comptInfo.ID_PDS));
             updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_NUM_METER, new StringType(comptInfo.NUM_COMPTEUR));
 
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_BILLING_CITY,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_BILLING_TOWN,
                     new StringType(values.contratClient.BillingCity));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_BILLING_POSTAL_CODE,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_BILLING_POST_CODE,
                     new StringType(values.contratClient.BillingPostalCode));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_BILLING_STREET,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_BILLING_STREET,
                     new StringType(values.contratClient.BillingStreet));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_FIRST_NAME,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_FIRST_NAME,
                     new StringType(values.contratClient.FirstName));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_LAST_NAME,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_LAST_NAME,
                     new StringType(values.contratClient.LastName));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_NAME_SUP,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_NAME_SUP,
                     new StringType(values.contratClient.Name));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_EMAIL, new StringType(values.contratClient.Email));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_GC, OnOffType.from(values.contratClient.GC));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_MOBILE_PHONE,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_EMAIL, new StringType(values.contratClient.Email));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_GC, OnOffType.from(values.contratClient.GC));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_MOBILE_PHONE,
                     new StringType(values.contratClient.MobilePhone));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_SALUTATION,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_TITLE,
                     new StringType(values.contratClient.Salutation));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_VEROUILLAGE_FICHE,
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_LOCK,
                     OnOffType.from(values.contratClient.VerrouillageFiche));
 
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_CITY,
@@ -258,9 +258,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_GC, OnOffType.from(values.payeurClient.GC));
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_MOBILE_PHONE,
                     new StringType(values.payeurClient.MobilePhone));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_SALUTATION,
-                    new StringType(values.payeurClient.Salutation));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_VEROUILLAGE_FICHE,
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_TITLE, new StringType(values.payeurClient.Salutation));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_LOCK,
                     OnOffType.from(values.payeurClient.VerrouillageFiche));
 
         }, () -> {
