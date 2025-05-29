@@ -543,8 +543,9 @@ public class ThingSedifHandler extends BaseThingHandler {
 
                 for (int idx = 0; idx < meterReading.data.consommation.length; idx++) {
                     meterReading.data.consommation[idx].dateIndex = meterReading.data.consommation[idx].dateIndex
-                            .withHour(23).withMinute(0).withSecond(0);
+                            .withHour(0).withMinute(0).withSecond(0);
                 }
+
                 LocalDate startDate = meterReading.data.consommation[0].dateIndex.toLocalDate();
                 LocalDate endDate = meterReading.data.consommation[meterReading.data.consommation.length - 1].dateIndex
                         .toLocalDate();

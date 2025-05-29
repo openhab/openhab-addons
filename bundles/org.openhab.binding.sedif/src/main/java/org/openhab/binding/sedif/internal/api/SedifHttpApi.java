@@ -162,7 +162,7 @@ public class SedifHttpApi {
             }
 
             String content = result.getContentAsString();
-            logger.trace("getContent returned {}", content);
+            // logger.trace("getContent returned {}", content);
             return content;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new SedifException(e, "Error getting url: '%s'", url);
@@ -182,7 +182,7 @@ public class SedifHttpApi {
 
     public @Nullable Contracts getContracts() throws SedifException {
         // =====================================================================
-        logger.debug("Step 6: Get contractDetails");
+        logger.debug("Step 6: Get contracts");
 
         AuraCommand cmd = AuraCommand.make("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements");
         Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
@@ -209,7 +209,7 @@ public class SedifHttpApi {
 
     public @Nullable MeterReading getConsumptionData(ThingSedifHandler handler, LocalDate from, LocalDate to)
             throws SedifException {
-        logger.debug("Step 6: Get data");
+        logger.debug("Step 8: Get data");
 
         AuraCommand cmd = AuraCommand.make("", "LTN015_ICL_ContratConsoHisto", "getData");
         Hashtable<String, Object> paramsSub = cmd.getParamsSub();
