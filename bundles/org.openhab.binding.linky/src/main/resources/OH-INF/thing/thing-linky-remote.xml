@@ -30,7 +30,7 @@
 		<config-description>
 			<parameter name="prmId" type="text" required="false">
 				<label>prmId</label>
-				<description>The Meter Id (PRM)</description>
+				<description>The Meter Id (PRM). If not provider, the binding will use the first registered meter found on your Enedis account.</description>
 			</parameter>
 			<parameter name="timezone" type="text" required="false">
 				<label>timezone</label>
