@@ -113,7 +113,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         this.consumption = new ExpiringDayCache<MeterReading>("dailyConsumption", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+                    MeterReading meterReading = getConsumptionData(today.minusDays(60), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     return meterReading;
                 });
@@ -289,8 +289,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (values.data.consommation.length - 3 >= 0) {
                 dayConsoMinus3 = values.data.consommation[values.data.consommation.length - 3].consommation;
             }
-            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                    new QuantityType<>(yesterdayConso, Units.LITRE));
+            // updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+            // new QuantityType<>(yesterdayConso, Units.LITRE));
             updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
                     new QuantityType<>(yesterdayConso, Units.LITRE));
             updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION,
@@ -314,8 +314,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (values.data.weekConso.length - 3 >= 0) {
                 weekConsoMinus2 = values.data.weekConso[values.data.weekConso.length - 3].consommation;
             }
-            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                    new QuantityType<>(thisWeekConso, Units.LITRE));
+            // updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+            // new QuantityType<>(thisWeekConso, Units.LITRE));
             updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
                     new QuantityType<>(thisWeekConso, Units.LITRE));
             updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
@@ -340,8 +340,8 @@ public class ThingSedifHandler extends BaseThingHandler {
                 monthConsoMinus2 = values.data.monthConso[values.data.monthConso.length - 3].consommation;
             }
 
-            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                    new QuantityType<>(thisMonthConso, Units.LITRE));
+            // updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+            // new QuantityType<>(thisMonthConso, Units.LITRE));
             updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
                     new QuantityType<>(thisMonthConso, Units.LITRE));
             updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
@@ -366,8 +366,8 @@ public class ThingSedifHandler extends BaseThingHandler {
                 yearConsoMinus2 = values.data.yearConso[values.data.yearConso.length - 3].consommation;
             }
 
-            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                    new QuantityType<>(thisYearConso, Units.LITRE));
+            // updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+            // new QuantityType<>(thisYearConso, Units.LITRE));
             updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
                     new QuantityType<>(thisYearConso, Units.LITRE));
             updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
@@ -540,6 +540,11 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         if (meterReading != null) {
             if (meterReading.data.weekConso == null) {
+
+                for (int idx = 0; idx < meterReading.data.consommation.length; idx++) {
+                    meterReading.data.consommation[idx].dateIndex = meterReading.data.consommation[idx].dateIndex
+                            .withHour(23).withMinute(0).withSecond(0);
+                }
                 LocalDate startDate = meterReading.data.consommation[0].dateIndex.toLocalDate();
                 LocalDate endDate = meterReading.data.consommation[meterReading.data.consommation.length - 1].dateIndex
                         .toLocalDate();
