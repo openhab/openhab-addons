@@ -131,6 +131,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
             api.initialize();
             devInfo = api.getDeviceInfo();
+
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);

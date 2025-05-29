@@ -1540,6 +1540,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
@@ -1547,6 +1548,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 
 ## Shelly Pro Series
 
