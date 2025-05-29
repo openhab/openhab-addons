@@ -37,7 +37,6 @@ import org.openhab.binding.linky.internal.types.Manufacturer;
 import org.openhab.binding.linky.internal.types.Meter;
 import org.openhab.binding.linky.internal.types.Phase;
 import org.openhab.binding.linky.internal.types.ValueType;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -96,8 +95,6 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     public synchronized void initialize() {
         prmId = config.prmId;
         logger.debug("Initializing Linky handler for {}", prmId);
-
-        Configuration thingConfig = getConfig();
 
         appKey = config.appKey;
         ivKey = config.ivKey;

@@ -168,7 +168,7 @@ public class LinkyAuthServlet extends HttpServlet {
                 optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
             }
 
-            final MultiMap<String> params = new MultiMap<>();
+            final MultiMap<@Nullable String> params = new MultiMap<>();
             String queryString = req.getQueryString();
             if (queryString != null) {
                 UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
@@ -215,7 +215,7 @@ public class LinkyAuthServlet extends HttpServlet {
         replaceMap.put(KEY_CB_DISPLAY_INSTRUCTION, "true");
 
         if (queryString != null) {
-            final MultiMap<String> params = new MultiMap<>();
+            final MultiMap<@Nullable String> params = new MultiMap<>();
             UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
             final String reqCode = params.getString("code");
             final String reqState = params.getString("state");

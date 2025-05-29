@@ -14,6 +14,7 @@ package org.openhab.binding.linky.internal.handler;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -77,7 +78,7 @@ public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
 
         config = getConfigAs(LinkyBridgeApiConfiguration.class);
 
-        if (config.seemsValid()) {
+        if (Objects.requireNonNull(config).seemsValid()) {
             this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
                     authorizeUrl, getClientId(), getClientSecret(), LinkyBindingConstants.LINKY_SCOPES, true);
 

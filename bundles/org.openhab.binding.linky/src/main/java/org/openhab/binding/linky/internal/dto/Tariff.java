@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -31,7 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Tariff {
     protected static final DateTimeFormatter TARIFF_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    protected final String[] values;
+    protected final @NonNull String[] values;
     public final ZonedDateTime dateDebut;
     public final @Nullable ZonedDateTime dateFin;
     public final int puissance;

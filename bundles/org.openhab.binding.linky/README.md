@@ -75,7 +75,6 @@ If you select enedis bridge, you will need :
       | username       | Your Enedis platform username.             |
       | password       | Your Enedis platform password.             |
       | internalAuthId | The internal authentication ID.            |
-	  | timezone       | The timezone at the location of your linky |
 
     This version is compatible with the latest Enedis Web API (deployed from June 2020). To bypass the captcha login, log in via a standard browser (e.g., Chrome, Firefox) and retrieve the user cookies (internalAuthId).
 
@@ -127,6 +126,7 @@ If you select MyElectricalData bridge, you will need :
     ```
 
 #### Enedis Bridge
+
 If you select enedis bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
@@ -166,8 +166,10 @@ The device has the following configuration parameters:
 
 | Parameter      | Description                                                                                          |
 |----------------|------------------------------------------------------------------------------------------------------|
-| prmId          | The prmId linked to the Linky Handler.                                                               |
+| prmId          | The prmId linked to the Linky Handler (optional: if blank first registered meter will be use)        |
+| timezone       | The timezone at the location of your linky 															|
 | token          | Optional: Required if a token is necessary to access this Linky device (used for MyElectricalData).  |
+
 
 
 
@@ -382,13 +384,14 @@ In comparison, remote connections using the Enedis API have a granularity of no 
 
 With the Teleinfo protocol, you can read various electrical statistics from your electricity meter, such as instantaneous power consumption, current price period, and meter readings. 
 These values can be used to:
+
 - Send your meter reading to your electricity provider with a simple copy/paste.
 - Improve your automation rules and minimize electricity costs.
 - Check if your subscription plan is suitable for your needs.
 - Monitor your electricity consumption.
 
-
 The Teleinfo binding supports both single-phase and three-phase connections, ICC evolution, and the following pricing modes:
+
 - HCHP mode
 - Base mode
 - Tempo mode
@@ -441,6 +444,7 @@ The method for changing the TIC mode of a Linky meter is explained [here](https:
 ### Supported Things
 
 Currently, there are two types of supported bridges:
+
 - Serial Bridge: For direct connection using a Teleinfo modem.
 - D2L Bridge: For remote connection over Wi-Fi.
 
@@ -477,10 +481,12 @@ The bridge will decode the ID of the D2L device sending the frame and dispatch i
 ```java
 Bridge linky:d2l:local "D2lBridge" [ listenningPort="7845"]
 ```
+
 ### Thing Configuration  
 
 There is only one thing type: the linky-local thing.
 Channels will be updated upon receiving the first frame to accommodate your setup:
+
 - Standard or Historical mode.
 - Single-phase or Three-phase configuration.
 - Tarif : Base, HP/HC, EJP or Tempo.
@@ -488,6 +494,7 @@ Channels will be updated upon receiving the first frame to accommodate your setu
 - ICC Evolution.
 
 You need to configure a few parameters according to your setup.
+
 - PRM ID is mandatory.
 - Other parameters are only required for D2L setup.
 
@@ -504,9 +511,8 @@ Thing linky:linky-local:linkylocalxx "Linky Local xxx" (linky:d2l:local)	[ prmId
 Thing linky:linky-local:linkylocalxx "Linky Local xxx" (linky:serial:local)	[ prmId="2145499xxx"]  
 ```
 
-
-
 ### Discovery
+
 This binding provides a discovery service only for things.
 First, configure your bridge (D2L or Serial).
 After a few seconds, your Inbox should be populated with your different meters.
@@ -925,10 +931,10 @@ All channels are read-only.
   | red-hc-ht    | Number:EnergyPrice | Low hours red day energy price in €/kWh excluding taxes     | Yes      |
   | red-hp-ht    | Number:EnergyPrice | High hours red day energy price in €/kWh excluding taxes    | Yes      |
 
-
 ### Full Example
 
 #### Thing Configuration
+
 ```java
 Thing linky:base:local "Tarification Actuelle Base" [puissance=9]
 Thing linky:hphc:local "Tarification Actuelle HP/HC" [puissance=9]
@@ -936,13 +942,13 @@ Thing linky:tempo:local "Tarification Actuelle Tempo" [puissance=9]
 ```
 
 #### Item Configuration
+
 ```java
 DateTime Tarif_Start { channel="linky:hphc:local:tariff-start" }
 Number:Currency Abonnement_Annuel {channel="linky:hphc:local:fixed-ttc"}
 Number:EnergyPrice Prix_Heure_Pleine {channel="linky:hphc:local:hp-ttc"}
 Number:EnergyPrice Prix_Heure_Creuse {channel="linky:hphc:local:hc-ttc"}
 ```
-
 
 ## Getting Tempo Calendar Information	
 

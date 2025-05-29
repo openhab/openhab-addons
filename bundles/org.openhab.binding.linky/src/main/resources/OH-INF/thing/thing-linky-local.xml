@@ -7,6 +7,7 @@
 	<thing-type id="linky-local">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="d2l"/>
+			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky Local</label>

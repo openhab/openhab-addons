@@ -99,7 +99,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
         super.initialize();
 
         config = getConfigAs(LinkyBridgeWebConfiguration.class);
-        if (!config.seemsValid()) {
+        if (!Objects.requireNonNull(config).seemsValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
         }

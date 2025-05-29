@@ -13,11 +13,10 @@
 package org.openhab.binding.linky.internal.helpers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.linky.internal.handler.BridgeLocalBaseHandler;
 
 /**
  * The {@link LinkyListener} interface defines all events pushed by a
- * {@link BridgeLocalBaseHandler}.
+ * BridgeLocalBaseHandler.
  *
  * @author Nicolas SIBERIL - Initial contribution
  * @author Laurent Arnal - Refactor to integrate into Linky Binding
