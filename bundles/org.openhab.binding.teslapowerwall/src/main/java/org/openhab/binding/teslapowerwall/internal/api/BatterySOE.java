@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Class for holding the set of parameters used to read the battery soe.
@@ -25,7 +26,8 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class BatterySOE {
-    public double soe;
+    @SerializedName("percentage")
+    public float soe = 0;
 
     private BatterySOE() {
     }
@@ -34,7 +36,7 @@ public class BatterySOE {
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         BatterySOE info = new BatterySOE();
-        info.soe = jsonObject.get("percentage").getAsDouble();
+        info.soe = jsonObject.get("percentage").getAsFloat();
         return info;
     }
 }

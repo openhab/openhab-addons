@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -31,6 +32,7 @@ import org.openhab.binding.teslapowerwall.internal.api.SystemStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -54,6 +56,8 @@ public class TeslaPowerwallWebTargets {
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallWebTargets.class);
     private HttpClient httpClient;
 
+    private final Gson gson = new Gson();
+
     public TeslaPowerwallWebTargets(String hostname, HttpClient httpClient) {
         this.httpClient = httpClient;
         String baseUri = "https://" + hostname + "/";
@@ -65,11 +69,12 @@ public class TeslaPowerwallWebTargets {
         getOperationUri = baseUri + "api/operation";
     }
 
+    @Nullable
     public BatterySOE getBatterySOE(String email, String password)
             throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getBatterySOEUri, email, password);
         logger.trace("getBatterySOE response = {}", response);
-        return BatterySOE.parse(response);
+        return gson.fromJson(response, BatterySOE.class);
     }
 
     public GridStatus getGridStatus(String email, String password)
