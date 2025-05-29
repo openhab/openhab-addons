@@ -13,7 +13,7 @@
 		<description>Provides tempo calendar</description>
 
 		<channel-groups>
-			<channel-group typeId="linky-tempo-calendar" id="linky-tempo-calendar"/>
+			<channel-group typeId="tempo-calendar" id="tempo-calendar"/>
 		</channel-groups>
 	</thing-type>
 
