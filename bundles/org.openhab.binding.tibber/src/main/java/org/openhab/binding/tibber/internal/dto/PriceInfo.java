@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tibber.internal.calculator;
+package org.openhab.binding.tibber.internal.dto;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -29,43 +29,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PriceInfo {
     public double price;
     public int durationSeconds;
-    public Instant timestamp;
+    public Instant startsAt;
 
-    public PriceInfo(double price, int durationSeconds, Instant timestamp) {
+    public PriceInfo(double price, int durationSeconds, Instant startsAt) {
         this.price = price;
         this.durationSeconds = durationSeconds;
-        this.timestamp = timestamp;
+        this.startsAt = startsAt;
     }
 
     public Map<String, Object> toMap() {
         Map<String, Object> priceInfoMap = new HashMap<>();
         priceInfoMap.put("price", price);
         priceInfoMap.put("duration", durationSeconds);
-        priceInfoMap.put("timestamp", timestamp);
+        priceInfoMap.put("startsAt", startsAt);
         return priceInfoMap;
     }
 
     public void adjust(Instant earliestStart, Instant latestEnd) {
-        if (timestamp.isBefore(earliestStart)) {
+        if (startsAt.isBefore(earliestStart)) {
             // adjust start time and duration to fit exactly to earliestStart
-            int adjustDuration = (int) Duration.between(timestamp, earliestStart).getSeconds();
-            System.out.println("Adjust entry to " + earliestStart + " minus " + adjustDuration);
+            int adjustDuration = (int) Duration.between(startsAt, earliestStart).getSeconds();
             durationSeconds -= adjustDuration;
-            timestamp = earliestStart;
+            startsAt = earliestStart;
         }
-        if (timestamp.plus(durationSeconds, ChronoUnit.SECONDS).isAfter(latestEnd)) {
+        if (startsAt.plus(durationSeconds, ChronoUnit.SECONDS).isAfter(latestEnd)) {
             // adjust duration according to latestEnd
-            durationSeconds = (int) Duration.between(timestamp, latestEnd).getSeconds();
-            System.out.println("Adjust entry to " + durationSeconds);
+            durationSeconds = (int) Duration.between(startsAt, latestEnd).getSeconds();
         }
-    }
-
-    public String toJSON() {
-        return "{\"price\":" + price + ",\"duration\":" + durationSeconds + ",\"timestamp\":\"" + timestamp + "\"}";
     }
 
     @Override
     public String toString() {
-        return "{\"price\":" + price + ",\"duration\":" + durationSeconds + ",\"timestamp\":\"" + timestamp + "\"}";
+        return "{\"price\":" + price + ",\"duration\":" + durationSeconds + ",\"startsAt\":\"" + startsAt + "\"}";
     }
 }

@@ -24,12 +24,14 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tibber.internal.Utils;
-import org.openhab.binding.tibber.internal.calculator.CurveEntry;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
-import org.openhab.binding.tibber.internal.calculator.PriceInfo;
-import org.openhab.binding.tibber.internal.calculator.ScheduleEntry;
+import org.openhab.binding.tibber.internal.dto.CurveEntry;
+import org.openhab.binding.tibber.internal.dto.PriceInfo;
+import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
 import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
+import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -50,8 +52,8 @@ import com.google.gson.JsonParser;
 public class TibberActions implements ThingActions {
     private Optional<TibberHandler> thingHandler = Optional.empty();
 
-    @RuleAction(label = "Price Info Start", description = "Earliest Price Info Start")
-    public Instant priceInfoStart() {
+    @RuleAction(label = "@text/actionPriceInfoStartLabel", description = "@text/actionPriceInfoStartDescription")
+    public @ActionOutput(name = "result", label = "Earliest Start", type = "java.time.Instant") Instant priceInfoStart() {
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             if (calc != null) {
@@ -61,8 +63,8 @@ public class TibberActions implements ThingActions {
         return Instant.MAX;
     }
 
-    @RuleAction(label = "Price Info End", description = "Latest Price Info End")
-    public Instant priceInfoEnd() {
+    @RuleAction(label = "@text/actionPriceInfoEndLabel", description = "@text/actionPriceInfoEndDescription")
+    public @ActionOutput(name = "result", label = "Latest End", type = "java.time.Instant") Instant priceInfoEnd() {
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             if (calc != null) {
@@ -72,10 +74,11 @@ public class TibberActions implements ThingActions {
         return Instant.MIN;
     }
 
-    @RuleAction(label = "List Prices", description = "List ascending / decending Prices")
-    public String listPrices(Object parameterObject) {
+    @RuleAction(label = "@text/actionListPricesLabel", description = "@text/actionListPricesDescription")
+    public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String listPrices(
+            @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
         Map<String, Object> parameterMap = new HashMap<>();
-        boolean jsonType = Utils.convertParameters(parameterObject, parameterMap);
+        Utils.convertParameters(parameters, parameterMap);
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             if (calc != null) {
@@ -85,30 +88,18 @@ public class TibberActions implements ThingActions {
                 Boolean ascending = (Boolean) parameterMap.get(PARAM_ASCENDING);
                 if (start != null && stop != null && ascending != null) {
                     List<PriceInfo> priceList = calc.listPrices(start, stop, ascending);
-                    // if (jsonType) {
                     return "{\"size\":" + priceList.size() + ",\"priceList\":" + priceList.toString() + "}";
-                    // }
-                    // else {
-                    // Map<String, Object> result = new HashMap<>();
-                    // result.put("size", priceList.size());
-                    // result.put("priceList", priceList);
-                    // return result;
-                    // }
                 }
             }
         }
-        // if (jsonType) {
         return "{}";
-        // }
-        // else {
-        // return Map.of();
-        // }
     }
 
-    @RuleAction(label = "Best Price Period", description = "Best Price Period")
-    public String bestPricePeriod(Object parameterObject) {
+    @RuleAction(label = "@text/actionBestPricePeriodLabel", description = "@text/actionBestPricePeriodDescription")
+    public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPricePeriod(
+            @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
         Map<String, Object> parameterMap = new HashMap<>();
-        boolean jsonType = Utils.convertParameters(parameterObject, parameterMap);
+        Utils.convertParameters(parameters, parameterMap);
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             if (calc != null) {
@@ -134,37 +125,30 @@ public class TibberActions implements ThingActions {
                         Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
                         if (duration == null) {
                             throw new CalculationParameterException(
-                                    "No curve and no duration given for bestPeriod calculation " + parameterObject);
+                                    "No curve and no duration given for bestPeriod calculation " + parameters);
                         }
-                        System.out.println("Calculate with power value " + powerValue);
                         CurveEntry entry = new CurveEntry(powerValue, duration.intValue());
                         curve = List.of(entry);
                     }
                     Map<String, Object> result = calc.calculateBestPrice(start, stop, (List<CurveEntry>) curve);
                     if (onlyPeriod) {
-                        result.remove("highestPrice");
                         result.remove("lowestPrice");
+                        result.remove("averagePrice");
+                        result.remove("highestPrice");
                     }
-                    // if (jsonType) {
                     Gson gson = new Gson();
                     return gson.toJson(result);
-                    // } else {
-                    // return result;
-                    // }
                 }
             }
         }
-        // if (jsonType) {
         return "{}";
-        // } else {
-        // return Map.of();
-        // }
     }
 
-    @RuleAction(label = "Best Price Schedule", description = "Best Price Schedule")
-    public String bestPriceSchedule(Object parameterObject) {
+    @RuleAction(label = "@text/actionBestPriceScheduleLabel", description = "@text/actionBestPriceScheduleDescription")
+    public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPriceSchedule(
+            @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
         Map<String, Object> parameterMap = new HashMap<>();
-        boolean jsonType = Utils.convertParameters(parameterObject, parameterMap);
+        Utils.convertParameters(parameters, parameterMap);
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             if (calc != null) {
@@ -180,7 +164,6 @@ public class TibberActions implements ThingActions {
                     for (Iterator<ScheduleEntry> iterator = priceList.iterator(); iterator.hasNext();) {
                         totalCost += iterator.next().cost;
                     }
-                    // if (jsonType) {
                     Gson gson = new Gson();
                     JsonObject result = new JsonObject();
                     result.addProperty("cost", totalCost);
@@ -188,21 +171,10 @@ public class TibberActions implements ThingActions {
                     JsonArray priceListJson = (JsonArray) JsonParser.parseString(priceList.toString());
                     result.add("schedule", priceListJson);
                     return gson.toJson(result);
-                    // } else {
-                    // Map<String, Object> result = new HashMap<>();
-                    // result.put("cost", totalCost);
-                    // result.put("size", priceList.size());
-                    // result.put("schedule", priceList);
-                    // return result;
-                    // }
                 }
             }
         }
-        // if (jsonType) {
         return "{}";
-        // } else {
-        // return Map.of();
-        // }
     }
 
     public static Instant priceInfoStart(ThingActions actions) {
