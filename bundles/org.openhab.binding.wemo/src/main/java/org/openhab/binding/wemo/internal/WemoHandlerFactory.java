@@ -14,15 +14,9 @@ package org.openhab.binding.wemo.internal;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.UDN;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCoffeeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCrockpotHandler;
@@ -33,17 +27,14 @@ import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
 import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
 import org.openhab.binding.wemo.internal.handler.WemoMotionHandler;
 import org.openhab.binding.wemo.internal.handler.WemoSwitchHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -63,17 +54,13 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHandlerFactory.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = WemoBindingConstants.SUPPORTED_THING_TYPES;
-
     private final UpnpIOService upnpIOService;
     private final HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+        return WemoBindingConstants.SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
-
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
     public WemoHandlerFactory(final @Reference UpnpIOService upnpIOService,
@@ -90,9 +77,7 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_BRIDGE)) {
             logger.debug("Creating a WemoBridgeHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
-            WemoBridgeHandler handler = new WemoBridgeHandler((Bridge) thing);
-            registerDeviceDiscoveryService(handler);
-            return handler;
+            return new WemoBridgeHandler((Bridge) thing, upnpIOService, httpClient);
         } else if (WemoBindingConstants.THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
             logger.debug("Creating a WemoInsightHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
@@ -140,22 +125,5 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("ThingHandler not found for {}", thingTypeUID);
             return null;
         }
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof WemoBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
-            }
-        }
-    }
-
-    private synchronized void registerDeviceDiscoveryService(WemoBridgeHandler wemoBridgeHandler) {
-        WemoLinkDiscoveryService discoveryService = new WemoLinkDiscoveryService(wemoBridgeHandler, upnpIOService,
-                httpClient);
-        this.discoveryServiceRegs.put(wemoBridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }
