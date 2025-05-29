@@ -30,7 +30,8 @@
 		<config-description>
 			<parameter name="prmId" type="text" required="false">
 				<label>prmId</label>
-				<description>The Meter Id (PRM). If not provider, the binding will use the first registered meter found on your Enedis account.</description>
+				<description>The Meter Id (PRM). If not provider, the binding will use the first registered meter found on your
+					Enedis account.</description>
 			</parameter>
 			<parameter name="timezone" type="text" required="false">
 				<label>timezone</label>
@@ -43,7 +44,8 @@
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<label>Token</label>
-				<description>Your Enedis token (you will need it only if you use MyElectricalData bridge. This can be left empty, the connection page will automatically fill it
+				<description>Your Enedis token (you will need it only if you use MyElectricalData bridge. This can be left empty,
+					the connection page will automatically fill it
 					http://youopenhab/connectlinky)</description>
 			</parameter>
 		</config-description>
