@@ -14,6 +14,7 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.time.Instant;
@@ -35,6 +36,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.telegram.internal.action.TelegramActions;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -54,6 +56,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
@@ -88,6 +92,14 @@ public class TelegramHandler extends BaseThingHandler {
         public ReplyKey(Long chatId, String replyId) {
             this.chatId = chatId;
             this.replyId = replyId;
+        }
+
+        public Long getChatId() {
+            return this.chatId;
+        }
+
+        public String getReplyId() {
+            return this.replyId;
         }
 
         @Override
@@ -188,6 +200,28 @@ public class TelegramHandler extends BaseThingHandler {
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
         localBot.setUpdatesListener(this::handleUpdates, this::handleExceptions,
                 getGetUpdatesRequest(config.getLongPollingTime()));
+
+        // get persisted replyIdToMessageIdMappings
+        String json = (String) getThing().getConfiguration().get("replyIdToMessageIdMappings");
+        logger.trace("initialize - read out json: {}", json);
+        if (json != null) { // there are already some values -> get them from the json string
+            Gson gson = new Gson();
+            Type mapType = new TypeToken<Map<String, String>>() {
+            }.getType();
+            Map<String, String> tmp = gson.fromJson(json, mapType);
+
+            for (Map.Entry<String, String> entry : tmp.entrySet()) { // get single parts for filling replyIdToMessageId
+                Integer messageId = Integer.valueOf(entry.getKey());
+                @Nullable
+                String value = entry.getValue();
+                if (value != null) {
+                    String[] parts = value.split("\\|", 2);
+                    Long chatId = Long.valueOf(parts[0]);
+                    String replyId = parts[1];
+                    replyIdToMessageId.put(new ReplyKey(chatId, replyId), messageId);
+                }
+            }
+        }
     }
 
     private void createReceiverChatIdsAndAuthorizedSenderChatIds(List<String> chatIds) {
@@ -505,6 +539,22 @@ public class TelegramHandler extends BaseThingHandler {
 
     public void addMessageId(Long chatId, String replyId, Integer messageId) {
         replyIdToMessageId.put(new ReplyKey(chatId, replyId), messageId);
+
+        // persist current replyIdToMessageId entries in thing configuration
+        JsonObject root = new JsonObject();
+        for (Map.Entry<ReplyKey, Integer> entry : replyIdToMessageId.entrySet()) {
+            @Nullable
+            ReplyKey replyKey = entry.getKey(); // dein ReplyKey.toString()
+            @Nullable
+            Integer intsgId = entry.getValue();
+            String strMsgId = intsgId.toString();
+            String strValue = replyKey.getChatId() + "|" + replyKey.getReplyId();
+            root.add(strMsgId, new JsonPrimitive(strValue));
+        }
+        String jsonString = root.toString();
+        Configuration cfg = editConfiguration();
+        cfg.put("replyIdToMessageIdMappings", jsonString);
+        updateConfiguration(cfg);
     }
 
     @Nullable
