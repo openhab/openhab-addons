@@ -604,7 +604,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {
-        return options.stream().map(c -> new CommandOption(c, c)).toList();
+        return options.stream()
+                .map(c -> new CommandOption(c, StringUtils.capitalizeByWhitespace(c.replaceAll("_", " ")))).toList();
     }
 
     private void addSingleExpiringCache(Integer key, Object value) {
