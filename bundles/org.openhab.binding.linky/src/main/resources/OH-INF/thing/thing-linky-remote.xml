@@ -43,7 +43,7 @@
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<label>Token</label>
-				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
+				<description>Your Enedis token (you will need it only if you use MyElectricalData bridge. This can be left empty, the connection page will automatically fill it
 					http://youopenhab/connectlinky)</description>
 			</parameter>
 		</config-description>

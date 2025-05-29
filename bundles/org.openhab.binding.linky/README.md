@@ -174,6 +174,7 @@ The device has the following configuration parameters:
 
 
 ```java
+Thing linky:linky:linkyremote "Linky Remote" (linky:enedis:local) [ ]
 Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis:local) [ prmId="xxxx" ]
 Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis-api:local) [ prmId="xxxx" ]
 Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:myelectricaldata:local) [ prmId="xxxx", token="myElectricalDataToken" ]
@@ -270,13 +271,13 @@ Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis:local) [ prm
 ```
 
 ```java
-Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:enedis:local:daily#yesterday" }
-Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:enedis:local:weekly#thisWeek" }
-Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:enedis:local:weekly#lastWeek" }
-Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel="linky:enedis:local:monthly#thisMonth" }
-Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:enedis:local:monthly#lastMonth" }
-Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:enedis:local:yearly#thisYear" }
-Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:enedis:local:yearly#lastYear" }
+Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:daily#yesterday" }
+Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:weekly#thisWeek" }
+Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:weekly#lastWeek" }
+Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:monthly#thisMonth" }
+Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:monthly#lastMonth" }
+Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:yearly#thisYear" }
+Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:yearly#lastYear" }
 ```
 
 ### Displaying Information Graph
