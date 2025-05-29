@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="sedif-contrat-meter">
+	<channel-group-type id="contract-meter">
 		<label>Contrat Compteur</label>
 		<channels>
 			<channel id="elema" typeId="info-type-advanced">
@@ -19,7 +19,7 @@
 				<label>Id Pds</label>
 			</channel>
 
-			<channel id="num-compteur" typeId="info-type">
+			<channel id="meter-id" typeId="info-type">
 				<label>Num Compteur</label>
 			</channel>
 		</channels>
