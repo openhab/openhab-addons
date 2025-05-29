@@ -1,21 +1,14 @@
 # Tibber Binding
 
-The Tibber Binding connects to the [Tibber API](https://developer.tibber.com), and enables users to retrieve electricity data:
+The Tibber Binding retrieves `prices` form  [Tibber API](https://developer.tibber.com).
+Users equipped with Tibber Pulse hardware can connect in addition to [live group](#live-group) and [statistics group](#livestatistics-group).
 
-- Default: Frequent polls are performed to retrieve electricity price and cost/consumption information
-- Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements
-
-Refresh time (poll frequency) is set manually as part of setup, minimum 1 minute.
-
-Tibber Pulse will automatically be detected by the Binding if present and associated with the token/HomeID used for setup.
 
 ## Supported Things
 
-Provided one have a Tibber User Account, the Tibber API is recognized as a thing in openHAB using the Tibber Binding.
-
-Tibber Pulse is optional, but will enable live measurements.
-
-The channels (i.e. measurements) associated with the Binding:
+| Type      | ID        | Description               | 
+|-----------|-----------|---------------------------|
+| Thing     | tibberapi | Connection to Tibber API  |
 
 ## Thing Configuration
 
@@ -25,13 +18,6 @@ The channels (i.e. measurements) associated with the Binding:
 | homeid        | text      | Tibber Home ID                        | N/A       | yes       |
 | updateHour    | integer   | Hour when spot prices are updated     | 13        | yes       |
 
-To access and initiate the Tibber Binding, a Tibber user account is required.
-
-The following input is required for initialization:
-
-- Tibber token
-- Tibber HomeId
-- Refresh Interval (min 1 minute)
 
 Note: Tibber token is retrieved from your Tibber account:
 [Tibber Account](https://developer.tibber.com/settings/accesstoken)
@@ -60,7 +46,7 @@ If user have multiple HomeIds / Pulse, separate Things have to be created for th
 
 ## Channels
 
-### price group
+### `price` group
 
 Forecast values og Tibber pricing.
 All read-only.
@@ -87,7 +73,7 @@ The `average` values are not delivered by Tibber API.
 It's calculated by the binding to provide a trend line for the last 24 hours.
 After initial setup the average values will stay NULL until the next day because the previous 24 h prices cannot be obtained by the Tibber API.
 
-### live group
+### `live` group
 
 Live information from Tibber Pulse.
 All values read-only.
@@ -108,7 +94,7 @@ All values read-only.
 | current3              | Number:ElectricCurrent    | Electric current on phase 3                           |
 
 
-### statistics group
+### `statistics` group
 
 Statistic information about total, daily and last hour energy consumption and production. 
 All values read-only.
