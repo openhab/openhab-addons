@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="sedif-contrat">
+	<channel-group-type id="contract">
 		<label>Contrat</label>
 		<channels>
-			<channel id="autorite-organisatrice" typeId="info-type">
+			<channel id="organizing-authority" typeId="info-type">
 				<label>Autorité organisatrice</label>
 			</channel>
 
@@ -15,7 +15,7 @@
 				<label>Date sortie EPT</label>
 			</channel>
 
-			<channel id="efacture" typeId="info-type">
+			<channel id="einvoice" typeId="info-type">
 				<label>efacture</label>
 			</channel>
 
@@ -23,7 +23,7 @@
 				<label>Icl Actif</label>
 			</channel>
 
-			<channel id="prelevauto" typeId="info-type">
+			<channel id="direct-debit" typeId="info-type">
 				<label>Prélévement Auto</label>
 			</channel>
 
@@ -31,23 +31,23 @@
 				<label>Name</label>
 			</channel>
 
-			<channel id="rue" typeId="info-type">
+			<channel id="street" typeId="info-type">
 				<label>Rue</label>
 			</channel>
 
-			<channel id="cp" typeId="info-type">
+			<channel id="postcode" typeId="info-type">
 				<label>CP</label>
 			</channel>
 
-			<channel id="commune" typeId="info-type">
+			<channel id="town" typeId="info-type">
 				<label>Ville</label>
 			</channel>
 
-			<channel id="statut" typeId="info-type">
+			<channel id="state" typeId="info-type">
 				<label>Statut</label>
 			</channel>
 
-			<channel id="solde" typeId="numeric-type">
+			<channel id="balance" typeId="numeric-type">
 				<label>Solde</label>
 			</channel>
 		</channels>

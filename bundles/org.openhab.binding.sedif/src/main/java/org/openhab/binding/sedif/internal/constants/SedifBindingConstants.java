@@ -36,17 +36,17 @@ public class SedifBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_SEDIF,
             THING_TYPE_WEB_SEDIF_BRIDGE);
 
-    public static final String SEDIF_BASE_GROUP = "sedif-base";
+    public static final String SEDIF_BASE_GROUP = "base";
 
-    public static final String SEDIF_DAILY_CONSUMPTION_GROUP = "sedif-daily-consumption";
-    public static final String SEDIF_WEEKLY_CONSUMPTION_GROUP = "sedif-weekly-consumption";
-    public static final String SEDIF_MONTHLY_CONSUMPTION_GROUP = "sedif-monthly-consumption";
-    public static final String SEDIF_YEARLY_CONSUMPTION_GROUP = "sedif-yearly-consumption";
+    public static final String SEDIF_DAILY_CONSUMPTION_GROUP = "daily-consumption";
+    public static final String SEDIF_WEEKLY_CONSUMPTION_GROUP = "weekly-consumption";
+    public static final String SEDIF_MONTHLY_CONSUMPTION_GROUP = "monthly-consumption";
+    public static final String SEDIF_YEARLY_CONSUMPTION_GROUP = "yearly-consumption";
 
-    public static final String SEDIF_CONTRAT_GROUP = "sedif-contrat";
-    public static final String SEDIF_CONTRAT_CLIENT_GROUP = "sedif-contrat-client";
-    public static final String SEDIF_CONTRAT_PAYER_GROUP = "sedif-contrat-payer";
-    public static final String SEDIF_CONTRAT_METER_GROUP = "sedif-contrat-meter";
+    public static final String SEDIF_CONTRAT_GROUP = "contract";
+    public static final String SEDIF_CONTRAT_CLIENT_GROUP = "contract-customer";
+    public static final String SEDIF_CONTRAT_PAYER_GROUP = "contract-payer";
+    public static final String SEDIF_CONTRAT_METER_GROUP = "contract-meter";
 
     public static final String CHANNEL_CONSUMPTION = "consumption";
 
@@ -68,46 +68,49 @@ public class SedifBindingConstants {
 
     public static final String CHANNEL_PRIX_MOYEN_EAU = "prix-moyen-eau";
 
-    public static final String CHANNEL_AUTORITE_ORGANISATRICE = "autorite-organisatrice";
+    public static final String CHANNEL_ORGANIZING_AUTHORITY = "organizing-authority";
     public static final String CHANNEL_DATE_SORTIE_EPT = "date-sortie-ept";
-    public static final String CHANNEL_EFACTURE = "efacture";
+    public static final String CHANNEL_EINVOICE = "einvoice";
     public static final String CHANNEL_ICL_ACTIVE = "icl-active";
-    public static final String CHANNEL_PRELEVAUTO = "prelevauto";
+    public static final String CHANNEL_DIRECT_DEBIT = "direct-debit";
     public static final String CHANNEL_NAME = "name";
-    public static final String CHANNEL_STREET = "rue";
-    public static final String CHANNEL_CP = "cp";
-    public static final String CHANNEL_TOWN = "commune";
-    public static final String CHANNEL_STATE = "statut";
+    public static final String CHANNEL_STREET = "street";
+    public static final String CHANNEL_POST_CODE = "postcode";
+    public static final String CHANNEL_TOWN = "town";
+    public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_ELMA = "elema";
     public static final String CHANNEL_ELMB = "elemb";
     public static final String CHANNEL_ID_PDS = "id-pds";
     public static final String CHANNEL_NUM_METER = "num-compteur";
-    public static final String CHANNEL_CONTRAT_BILLING_CITY = "contrat-billing-city";
-    public static final String CHANNEL_CONTRAT_BILLING_POSTAL_CODE = "contrat-billing-postal-code";
-    public static final String CHANNEL_CONTRAT_BILLING_STREET = "contrat-billing-street";
-    public static final String CHANNEL_CONTRAT_FIRST_NAME = "contrat-first-name";
-    public static final String CHANNEL_CONTRAT_LAST_NAME = "contrat-last-name";
-    public static final String CHANNEL_CONTRAT_NAME_SUP = "contrat-name-sup";
-    public static final String CHANNEL_CONTRAT_EMAIL = "contrat-email";
-    public static final String CHANNEL_CONTRAT_GC = "contrat-gc";
-    public static final String CHANNEL_CONTRAT_MOBILE_PHONE = "contrat-mobile-phone";
-    public static final String CHANNEL_CONTRAT_SALUTATION = "contrat-salutation";
-    public static final String CHANNEL_CONTRAT_VEROUILLAGE_FICHE = "contrat-verrouillage-fiche";
-    public static final String CHANNEL_PAYER_BILLING_CITY = "payer-billing-city";
-    public static final String CHANNEL_PAYER_BILLING_POSTAL_CODE = "payer-billing-postal-code";
-    public static final String CHANNEL_PAYER_BILLING_STREET = "payer-billing-street";
-    public static final String CHANNEL_PAYER_FIRST_NAME = "payer-first-name";
-    public static final String CHANNEL_PAYER_LAST_NAME = "payer-last-name";
-    public static final String CHANNEL_PAYER_NAME_SUP = "payer-name-sup";
-    public static final String CHANNEL_PAYER_EMAIL = "payer-email";
-    public static final String CHANNEL_PAYER_GC = "payer-gc";
-    public static final String CHANNEL_PAYER_MOBILE_PHONE = "payer-mobile-phone";
-    public static final String CHANNEL_PAYER_SALUTATION = "payer-salutation";
-    public static final String CHANNEL_PAYER_VEROUILLAGE_FICHE = "payer-verrouillage-fiche";
-    public static final String CHANNEL_SOLDE = "solde";
+
+    public static final String CHANNEL_CUSTOMER_BILLING_TOWN = "billing-town";
+    public static final String CHANNEL_CUSTOMER_BILLING_POST_CODE = "billing-post-code";
+    public static final String CHANNEL_CUSTOMER_BILLING_STREET = "billing-street";
+    public static final String CHANNEL_CUSTOMER_FIRST_NAME = "first-name";
+    public static final String CHANNEL_CUSTOMER_LAST_NAME = "last-name";
+    public static final String CHANNEL_CUSTOMER_NAME_SUP = "name-complement";
+    public static final String CHANNEL_CUSTOMER_EMAIL = "email";
+    public static final String CHANNEL_CUSTOMER_GC = "gc";
+    public static final String CHANNEL_CUSTOMER_MOBILE_PHONE = "mobile-phone";
+    public static final String CHANNEL_CUSTOMER_TITLE = "title";
+    public static final String CHANNEL_CUSTOMER_LOCK = "customer-lock";
+
+    public static final String CHANNEL_PAYER_BILLING_CITY = "billing-town";
+    public static final String CHANNEL_PAYER_BILLING_POSTAL_CODE = "billing-post-code";
+    public static final String CHANNEL_PAYER_BILLING_STREET = "billing-street";
+    public static final String CHANNEL_PAYER_FIRST_NAME = "first-name";
+    public static final String CHANNEL_PAYER_LAST_NAME = "last-name";
+    public static final String CHANNEL_PAYER_NAME_SUP = "name-complement";
+    public static final String CHANNEL_PAYER_EMAIL = "email";
+    public static final String CHANNEL_PAYER_GC = "gc";
+    public static final String CHANNEL_PAYER_MOBILE_PHONE = "mobile-phone";
+    public static final String CHANNEL_PAYER_TITLE = "title";
+    public static final String CHANNEL_PAYER_LOCK = "payer-lock";
+
+    public static final String CHANNEL_BALANCE = "balance";
 
     public static final String THING_WATER_METER_PROPERTY_ELMA = "elma";
     public static final String THING_WATER_METER_PROPERTY_ELMB = "elmb";
-    public static final String THING_WATER_METER_PROPERTY_NUM_COMPTEUR = "num-compteur";
+    public static final String THING_WATER_METER_PROPERTY_NUM_COMPTEUR = "meter-id";
     public static final String THING_WATER_METER_PROPERTY_ID_PDS = "id-pds";
 }
