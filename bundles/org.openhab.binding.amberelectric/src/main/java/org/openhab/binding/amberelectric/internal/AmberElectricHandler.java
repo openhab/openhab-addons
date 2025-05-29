@@ -68,7 +68,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
-    Gson gson = new Gson();
+    private Gson gson = new Gson();
 
     public AmberElectricHandler(Thing thing) {
         super(thing);
@@ -144,17 +144,19 @@ public class AmberElectricHandler extends BaseThingHandler {
                 Sites sites = new Sites();
                 for (int i = 0; i < jsonArraySites.size(); i++) {
                     sites = gson.fromJson(jsonArraySites.get(i), Sites.class);
-                    if (sites == null)
+                    if (sites == null) {
                         return;
+                    }
                     if (nmi.equals(sites.nmi)) {
                         siteID = sites.id;
                     }
                 }
-                if (("".equals(nmi)) || ("".equals(siteID))) { // nmi not specified, or not found so we take the first
-                                                               // siteid found
+                if ("".equals(nmi) || "".equals(siteID)) { // nmi not specified, or not found so we take the first
+                                                           // siteid found
                     sites = gson.fromJson(jsonArraySites.get(0), Sites.class);
-                    if (sites == null)
+                    if (sites == null) {
                         return;
+                    }
                     siteID = sites.id;
                     nmi = sites.nmi;
                     Configuration configuration = editConfiguration();
@@ -165,7 +167,9 @@ public class AmberElectricHandler extends BaseThingHandler {
                 properties.put("network", sites.network);
                 properties.put("status", sites.status);
                 properties.put("activeFrom", sites.activeFrom);
-                properties.put("tariff", sites.channels[0].tariff);
+                if (sites.channels != null && sites.channels.length > 0) {
+                    properties.put("tariff", sites.channels[0].tariff);
+                }
                 properties.put("intervalLength", String.valueOf(sites.intervalLength));
                 updateProperties(properties);
                 logger.debug("Detected amber siteid is {}, for nmi {}", sites.id, sites.nmi);
