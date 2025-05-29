@@ -372,8 +372,7 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYBLUHT = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUHT_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUGW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUGW_STR);
 
-    private static final Map<String, String> THING_TYPE_MAPPING = Map.ofEntries(
-            // mapping by device type id
+    private static final Map<String, String> THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
             Map.entry(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR), //
             Map.entry(SHELLYDT_1L, THING_TYPE_SHELLY1L_STR), //
             Map.entry(SHELLYDT_1, THING_TYPE_SHELLY1_STR), //
@@ -478,9 +477,9 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_BLUGWG3, THING_TYPE_SHELLYBLUGW_STR),
 
             // Wall displays
-            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY_STR),
+            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY_STR));
 
-            // mapping by thing type
+    private static final Map<String, String> THING_TYPE_MAPPING = Map.ofEntries(
             Map.entry(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR),
             Map.entry(THING_TYPE_SHELLY1PM_STR, THING_TYPE_SHELLY1PM_STR),
             Map.entry(THING_TYPE_SHELLY1L_STR, THING_TYPE_SHELLY1L_STR),
@@ -617,14 +616,14 @@ public class ShellyThingCreator {
 
         // Check general mapping
         if (!deviceType.isEmpty()) {
-            String res = THING_TYPE_MAPPING.get(deviceType); // by device type
+            String res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType); // by device type
             if (res != null) {
                 return res;
             }
 
             String dt = mode.equals(SHELLY_MODE_RELAY) || mode.equals(SHELLY_MODE_ROLLER) ? deviceType + "-" + mode
                     : deviceType;
-            res = THING_TYPE_MAPPING.get(dt); // <DT>-relay / <DT>-roller
+            res = THING_TYPE_BY_DEVICE_TYPE.get(dt); // <DT>-relay / <DT>-roller
             if (res != null) {
                 return res;
             }
