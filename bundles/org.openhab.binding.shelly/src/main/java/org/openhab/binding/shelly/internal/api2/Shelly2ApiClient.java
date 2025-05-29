@@ -346,6 +346,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (bs == null) {
             return false;
         }
+        if (bs.id == null) { // invalid for fw 1.6.1
+            bs.id = id;
+        }
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
@@ -625,6 +628,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             boolean updateChannels) throws ShellyApiException {
         if (cs == null) {
             return false;
+        }
+        if (cs.id == null) { // invalid in fw 1.6.1
+            cs.id = id;
         }
 
         if (cs.id == null) {
