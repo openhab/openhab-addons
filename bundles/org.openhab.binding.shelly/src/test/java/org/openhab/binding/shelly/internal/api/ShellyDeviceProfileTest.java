@@ -99,7 +99,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSHTG3_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSSMOKE_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, true, false), //
-				// Generation 2 Mini series
+                // Generation 2 Mini series
                 Arguments.of(THING_TYPE_SHELLY1MINI_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPMMINI_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLY1PMMINI_STR, true, false), //
