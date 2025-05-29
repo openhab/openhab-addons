@@ -271,13 +271,13 @@ Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:enedis:local) [ prm
 ```
 
 ```java
-Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:daily#yesterday" }
-Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:weekly#thisWeek" }
-Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:weekly#lastWeek" }
-Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:monthly#thisMonth" }
-Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:monthly#lastMonth" }
-Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:yearly#thisYear" }
-Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:enedis:linkyremotexxxx:yearly#lastYear" }
+Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:daily#yesterday" }
+Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:weekly#thisWeek" }
+Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:weekly#lastWeek" }
+Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#thisMonth" }
+Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#lastMonth" }
+Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#thisYear" }
+Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#lastYear" }
 ```
 
 ### Displaying Information Graph
