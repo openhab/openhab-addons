@@ -11,6 +11,8 @@ This binding supports the following types of things:
 - `gateway`: Represents the Z-Wave JS Webservice bridge. This is required to communicate with the Z-Wave network.
 - `node`: Represents a Z-Wave device (node) in the network. Each node can have multiple channels corresponding to its capabilities.
 
+ **Note**: This binding does not maintain a Z-Wave device database and relies on the external Z-Wave JS project for device compatibility and functionality.
+
 ## Discovery
 
 The `zwavejs` binding supports auto-discovery of Z-Wave devices.
