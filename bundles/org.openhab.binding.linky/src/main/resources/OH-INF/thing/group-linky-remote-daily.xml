@@ -15,7 +15,7 @@
 			<channel id="day-2" typeId="consumption">
 				<label>Day -2 Consumption</label>
 				<description>The energy consumption for day -2</description>
-			</channel> 
+			</channel>
 
 			<channel id="day-3" typeId="consumption">
 				<label>Day -3 Consumption</label>
