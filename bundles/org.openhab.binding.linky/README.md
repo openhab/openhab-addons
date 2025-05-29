@@ -166,7 +166,7 @@ The device has the following configuration parameters:
 
 | Parameter      | Description                                                                                          |
 |----------------|------------------------------------------------------------------------------------------------------|
-| prmId          | The prmId linked to the Linky Handler (optional: if blank first registered meter will be use)        |
+| prmId          | The prmId linked to the Linky Handler (optional: if blank first registered meter will be used        |
 | timezone       | The timezone at the location of your linky 															|
 | token          | Optional: Required if a token is necessary to access this Linky device (used for MyElectricalData).  |
 
