@@ -28,8 +28,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2+3: Plus / Pro series of devices
-- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
+- Generation 2+3+4: Plus / Pro series of devices
+- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3+4)
 - Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
@@ -78,38 +78,36 @@ See section [Discovery](#discovery) for details.
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
 
-### Generation 2 Plus series
+### Shelly Plus series (Generation 2+3+4)
 
-| thing-type           | Model                                                    | Vendor ID                    |
-|----------------------|----------------------------------------------------------|------------------------------|
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU |
-| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU |
-| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL |
-| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL |
-| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU   |
-| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
-| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
-| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
-| shellyplusplug       | Shelly Plug S Gen 3                                      | S3PL-00112EU                 |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X       |
-| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
-| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW    |
-| shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                   |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
-| shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
-| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
-| shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                |
-| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
-| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
+| thing-type           | Model                                                    | Vendor ID                                   |
+|----------------------|----------------------------------------------------------|---------------------------------------------|
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S4SW-001X16EU |
+| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU |
+| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU                |
+| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU                |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                                |
+| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                |
+| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                |
+| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                      |
+| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                  |
+| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                   |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                                  |
+| shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                                  |
+| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                  |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                 |
+| shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                               |
+| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                             |
+| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                                   |
 
-### Shelly Plus Mini series (Generation 2+3)
+### Shelly Plus Mini series (Generation 2+3+4)
 
-| thing-type           | Model                                                    | Vendor ID                      |
-| -------------------- | -------------------------------------------------------- | ------------------------------ |
-| shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
-| shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
-| shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
+ | thing-type           | Model                                                    | Vendor ID                                       |
+ | -------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+ | shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU, S4SW-001X8EU        |
+ | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU, S4SW-001P8EU        |
+ | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16, S4EM-001PXCEU16 |
 
 ### Shelly Pro Series (Generation 2+3)
 
