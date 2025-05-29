@@ -113,7 +113,8 @@ public class ThingSedifHandler extends BaseThingHandler {
         this.consumption = new ExpiringDayCache<MeterReading>("dailyConsumption", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getConsumptionData(today.minusDays(60), today);
+
+                    MeterReading meterReading = getConsumptionData(today.minusDays(89), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     return meterReading;
                 });
@@ -181,6 +182,8 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         logger.info("updateEnergyData() called");
         updateConsumptionData();
+
+        updateHistoricalConsumptionData();
     }
 
     /**
@@ -265,6 +268,33 @@ public class ThingSedifHandler extends BaseThingHandler {
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
+    }
+
+    private synchronized void updateHistoricalConsumptionData() {
+        LocalDate today = LocalDate.now();
+
+        for (int idx = 20; idx >= 1; idx--) {
+            int endDay = (idx * 90) - 1;
+            int startDay = endDay + 90;
+
+            MeterReading meterReading = getConsumptionData(today.minusDays(startDay), today.minusDays(endDay));
+            meterReading = getMeterReadingAfterChecks(meterReading);
+
+            if (meterReading == null || meterReading.data == null) {
+                continue;
+            }
+
+            updateConsumptionTimeSeries(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    meterReading.data.consommation);
+            updateConsumptionTimeSeries(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    meterReading.data.weekConso);
+            updateConsumptionTimeSeries(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    meterReading.data.monthConso);
+            updateConsumptionTimeSeries(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    meterReading.data.yearConso);
+
+        }
+
     }
 
     /**
