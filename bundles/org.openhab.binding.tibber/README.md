@@ -266,7 +266,7 @@ rule "Tibber Price List"
 when
     System started // use your trigger
 then
-    var actions = getActions("tibber","tibber:tibberapi:2c80fe4fe3")
+    var actions = getActions("tibber","tibber:tibberapi:xyz")
     // parameters empty => default parameters are used = starting from now till end of available price infos, ascending
     var parameters = "{}"
     var result = actions.listPrices(parameters)
@@ -306,7 +306,7 @@ when
     System started // use your trigger
 then
     // get actions
-    var actions = getActions("tibber","tibber:tibberapi:2c80fe4fe3")
+    var actions = getActions("tibber","tibber:tibberapi:xyz")
     //create parameters for calculation
     var parameters = Map.of("duration", "1 h 34 m")
     // perform calculation
@@ -346,7 +346,7 @@ rule "Tibber Schedule Calculation"
 when
     System started // use your trigger
 then
-    var actions = getActions("tibber","tibber:tibberapi:2c80fe4fe3")
+    var actions = getActions("tibber","tibber:tibberapi:xyz")
     // long period with constant power value
     var parameters = "{\"power\": 11000, \"duration\": \"8 h 15 m\"}"
     var result = actions.bestPriceSchedule(parameters)
@@ -368,6 +368,12 @@ end
 ```
 
 ```
+2025-05-29 19:42:38.223 [INFO ] [hab.core.model.script.TibberSchedule] - {"cost":17.004625,"size":2,"schedule":[{"start":"2025-05-30T08:00:00Z","stop":"2025-05-30T16:00:00Z","duration":28800,"cost":16.407600000000002},{"start":"2025-05-29T23:00:00Z","stop":"2025-05-29T23:15:00Z","duration":900,"cost":0.5970249999999999}]}
+2025-05-29 19:42:38.225 [INFO ] [hab.core.model.script.TibberSchedule] - Cost : 17.004625 Number of schedules : 2
+2025-05-29 19:42:38.227 [INFO ] [hab.core.model.script.TibberSchedule] - Schedule 0: {start=2025-05-30T08:00:00Z, stop=2025-05-30T16:00:00Z, duration=28800, cost=16.407600000000002}
+2025-05-29 19:42:38.230 [INFO ] [hab.core.model.script.TibberSchedule] - Schedule 0 start: 2025-05-30T10:00+02:00[Europe/Berlin]
+2025-05-29 19:42:38.232 [INFO ] [hab.core.model.script.TibberSchedule] - Schedule 1: {start=2025-05-29T23:00:00Z, stop=2025-05-29T23:15:00Z, duration=900, cost=0.5970249999999999}
+2025-05-29 19:42:38.234 [INFO ] [hab.core.model.script.TibberSchedule] - Schedule 1 start: 2025-05-30T01:00+02:00[Europe/Berlin]
 ```
 
 
@@ -376,33 +382,35 @@ end
 ### `demo.things` Example
 
 ```java
-Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx", updateHour=13 ]
+Thing tibber:tibberapi:xyz [ homeid="xxx", token="xxxxxxx", updateHour=13 ]
 ```
 
 ### `demo.items` Example
 
-**to be updated**
 ```java
-Number:EnergyPrice       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
-Number       TibberAPIDailyCost                    "Total Daily Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:daily_cost"}
-Number:EnergyPrice              TibberAPIDailyConsumption             "Total Daily Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:daily_consumption"}
-Number:Power              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
-Number:Power              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
-Number:Power               TibberAPILivePower                    "Live Power Consumption [%.0f W]"           {channel="tibber:tibberapi:7cfae492:live_power"}
-Number:Power               TibberAPILiveMinPower                 "Min Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_minPower"}
-Number:Power               TibberAPILiveAveragePower             "Average Power Consumption [%.0f W]"        {channel="tibber:tibberapi:7cfae492:live_averagePower"}
-Number:Power               TibberAPILiveMaxPower                 "Max Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_maxPower"}
-Number:ElectricPotential   TibberAPILiveVoltage1                 "Live Voltage Phase 1 [%.0 V]"              {channel="tibber:tibberapi:7cfae492:live_voltage1"}
-Number:ElectricPotential   TibberAPILiveVoltage2                 "Live Voltage Phase 2 [%.0 V]"              {channel="tibber:tibberapi:7cfae492:live_voltage2"}
-Number:ElectricPotential   TibberAPILiveVoltage3                 "Live Voltage Phase 3 [%.0 V]"              {channel="tibber:tibberapi:7cfae492:live_voltage3"}
-Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current Phase 1 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current1"}
-Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current2"}
-Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current3"}
-Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
-Number:Energy              TibberAPILiveAccumulatedProductionThisHour   "Net kWh produced since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedProductionThisHour"}
-Number:Currency              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
-Number:Energy              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
-Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
-Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
-Number:Energy              TibberAPILiveAccumulatedConsumptionThisHour   "kWh consumed since since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumptionLastHour"}
+Number:EnergyPrice          Tibber_API_Spot_Prices              "Spot Prices"               {channel="tibber:tibberapi:xyz:price#spot-prices"}
+Number                      Tibber_API_Price_Level              "Price Level"               {channel="tibber:tibberapi:xyz:price#level"}
+Number:EnergyPrice          Tibber_API_Average                  "Average Price"             {channel="tibber:tibberapi:xyz:price#average"}
+
+Number:Power                Tibber_API_Live_Cosnumption         "Live Consumption"          {channel="tibber:tibberapi:xyz:live#consumption"}
+Number:Power                Tibber_API_Minimum_Cosnumption      "Minimum Consumption"       {channel="tibber:tibberapi:xyz:live#minimum-consumption"}
+Number:Power                Tibber_API_Peak_Cosnumption         "Peak Consumption"          {channel="tibber:tibberapi:xyz:live#peak-consumtion"}
+Number:Power                Tibber_API_Live_Production          "Live Production"           {channel="tibber:tibberapi:xyz:live#production"}
+Number:Power                Tibber_API_Minimum_Production       "Minimum Production"        {channel="tibber:tibberapi:xyz:live#minimum-production"}
+Number:Power                Tibber_API_Peak_Production          "Peak Production"           {channel="tibber:tibberapi:xyz:live#peak-production"}
+Number:ElectricPotential    Tibber_API_Voltage_1                "Voltage 1"                 {channel="tibber:tibberapi:xyz:live#voltage1"}
+Number:ElectricPotential    Tibber_API_Voltage_2                "Voltage 2"                 {channel="tibber:tibberapi:xyz:live#voltage2"}
+Number:ElectricPotential    Tibber_API_Voltage_3                "Voltage 3"                 {channel="tibber:tibberapi:xyz:live#voltage3"}
+Number:ElectricCurrent      Tibber_API_Current_1                "Current 1"                 {channel="tibber:tibberapi:xyz:live#current1"}
+Number:ElectricCurrent      Tibber_API_Current_2                "Current 2"                 {channel="tibber:tibberapi:xyz:live#current2"}
+Number:ElectricCurrent      Tibber_API_Current_3                "Current 3"                 {channel="tibber:tibberapi:xyz:live#current3"}
+
+Number:Energy               Tibber_API_Total_Consumption        "Total Consumption"         {channel="tibber:tibberapi:xyz:statistics#total-consumption"}
+Number:Energy               Tibber_API_Daily_Consumption        "Daily Consumption"         {channel="tibber:tibberapi:xyz:statistics#daily-consumption"}
+Number:Currency             Tibber_API_Daily_Cost               "Daily Cost"                {channel="tibber:tibberapi:xyz:statistics#daily-cost"}
+Number:Energy               Tibber_API_Last_Hour_Consumption    "Last Hour Consumption"     {channel="tibber:tibberapi:xyz:statistics#last-hour-consumption"}
+Number:Energy               Tibber_API_Total_Production         "Total Production"          {channel="tibber:tibberapi:xyz:statistics#total-production"}
+Number:Energy               Tibber_API_Daily_Production         "Daily Production"          {channel="tibber:tibberapi:xyz:statistics#daily-production"}
+Number:Energy               Tibber_API_Last_Hour_Production     "Last Hour Production"      {channel="tibber:tibberapi:xyz:statistics#last-hour-production"}
+
 ```
