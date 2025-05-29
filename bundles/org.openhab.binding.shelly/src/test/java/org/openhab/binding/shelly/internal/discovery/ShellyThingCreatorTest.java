@@ -159,7 +159,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
-
+                Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMERG3_STR), //
                 // Plus Mini Series
                 Arguments.of(SHELLYDT_MINI1, "", THING_TYPE_SHELLY1MINI_STR), //
                 Arguments.of(SHELLYDT_MINIPM, "", THING_TYPE_SHELLYPMMINI_STR), //

@@ -93,6 +93,13 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGS_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERG3_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHTG3_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, true, false), //
+				// Generation 2 Mini series
                 Arguments.of(THING_TYPE_SHELLY1MINI_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPMMINI_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLY1PMMINI_STR, true, false), //
@@ -106,11 +113,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPROEM50_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO4PM_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSHTG3_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPROTECTED_STR, false, false), //
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN_STR, false, false));
     }
