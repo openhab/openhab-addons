@@ -60,7 +60,6 @@ public class AmberElectricHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AmberElectricHandler.class);
 
     private long refreshInterval;
-    private long forecasts;
     private String apiKey = "";
     private String nmi = "";
     private String siteID = "";
@@ -92,7 +91,6 @@ public class AmberElectricHandler extends BaseThingHandler {
         webTargets = new AmberElectricWebTargets();
         updateStatus(ThingStatus.UNKNOWN);
         refreshInterval = config.refresh;
-        forecasts = config.forecasts;
         nmi = config.nmi;
         apiKey = config.apiKey;
 
@@ -174,7 +172,7 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
 
-            String response = webTargets.getCurrentPrices(siteID, apiKey, forecasts);
+            String response = webTargets.getCurrentPrices(siteID, apiKey);
             JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
             CurrentPrices currentPrices;
             TimeSeries elecTimeSeries = new TimeSeries(REPLACE);

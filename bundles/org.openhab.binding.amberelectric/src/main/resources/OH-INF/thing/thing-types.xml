@@ -48,12 +48,6 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="forecasts" type="integer" min="0" max="2048">
-				<label>Forecasts</label>
-				<description>Specifies the number of forecasts to fetch (Optional)</description>
-				<default>288</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 
 	</thing-type>
