@@ -8,7 +8,7 @@
 		<instruction-set targetVersion="1">
 			<update-channel id="nem-time">
 				<type>amberelectric:nem-time</type>
-			</add-channel>
+			</update-channel>
 		</instruction-set>
 
 	</thing-type>
