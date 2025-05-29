@@ -99,7 +99,7 @@ See section [Discovery](#discovery) for details.
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
-| shellypluswdg3       | Shelly Plus Dimmer Gen3                                  | S3DM-0A101WWL                |
+| shellyplusdimg3      | Shelly Plus Dimmer Gen3                                  | S3DM-0A101WWL                |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 | shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |

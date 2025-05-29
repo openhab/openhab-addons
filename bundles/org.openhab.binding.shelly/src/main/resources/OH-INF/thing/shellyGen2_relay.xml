@@ -431,4 +431,18 @@
 		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyplusdimg3">
+		<label>Shelly Dimmer Gen3</label>
+		<description>@text/thing-type.shelly.shellyplusdimg3.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
 </thing:thing-descriptions>

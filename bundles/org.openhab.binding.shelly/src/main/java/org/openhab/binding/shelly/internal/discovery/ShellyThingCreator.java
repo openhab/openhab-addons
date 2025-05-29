@@ -205,7 +205,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPLUSPLUGS_STR = "shellyplusplug";
     public static final String THING_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplusplugus";
     public static final String THING_TYPE_SHELLYPLUSDIMMERUS_STR = "shellypluswdus";
-    public static final String THING_TYPE_SHELLYPLUSDIMMERG3_STR = "shellypluswdg3";
+    public static final String THING_TYPE_SHELLYPLUSDIMMERG3_STR = "shellyplusdimg3";
     public static final String THING_TYPE_SHELLYPLUSDIMMER10V_STR = "shellyplus10v";
     public static final String THING_TYPE_SHELLYPLUSDIMMER0110VG3_STR = "shelly0110dimg3";
     public static final String THING_TYPE_SHELLYPLUSRGBWPM_STR = "shellyplusrgbwpm";
