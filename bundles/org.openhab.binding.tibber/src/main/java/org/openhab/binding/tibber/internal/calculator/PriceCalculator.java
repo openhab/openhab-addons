@@ -26,11 +26,15 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tibber.internal.dto.CurveEntry;
+import org.openhab.binding.tibber.internal.dto.PriceInfo;
+import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -42,20 +46,33 @@ import com.google.gson.JsonObject;
 public class PriceCalculator {
     private static final int AVERAGE_PRICE_INTERVAL = 5;
     private final Logger logger = LoggerFactory.getLogger(PriceCalculator.class);
-    private TreeMap<Instant, Double> priceMap;
-    private int duration;
+    private TreeMap<Instant, PriceInfo> priceMap;
 
     public PriceCalculator(JsonArray spotPrices) {
         priceMap = new TreeMap<>();
-        spotPrices.forEach(entry -> {
+        JsonObject previousEntry = null;
+        int previousDuration = 0;
+        for (JsonElement entry : spotPrices) {
             JsonObject entryObject = entry.getAsJsonObject();
-            Instant startsAt = Instant.parse(entryObject.get("startsAt").getAsString());
-            double price = entryObject.get("total").getAsDouble();
-            priceMap.put(startsAt, price);
-        });
-        duration = (int) Duration.between(priceMap.lowerKey(priceMap.lastKey()), priceMap.lastKey()).toSeconds();
+            if (previousEntry != null) {
+                Instant start = Instant.parse(previousEntry.get("startsAt").getAsString());
+                Instant end = Instant.parse(entryObject.get("startsAt").getAsString());
+                double price = previousEntry.get("total").getAsDouble();
+                previousDuration = (int) Duration.between(start, end).getSeconds();
+                PriceInfo pi = new PriceInfo(price, previousDuration, start);
+                priceMap.put(start, pi);
+            }
+            previousEntry = entryObject;
+        }
+
+        // put last element with previousDuration
+        Instant lastElementStart = Instant.parse(previousEntry.get("startsAt").getAsString());
+        priceMap.put(lastElementStart,
+                new PriceInfo(previousEntry.get("total").getAsDouble(), previousDuration, lastElementStart));
+
         // put termination element
-        priceMap.put(priceMap.lastKey().plus(duration, ChronoUnit.SECONDS), Double.MAX_VALUE);
+        Instant terminationInstant = priceMap.lastKey().plus(previousDuration, ChronoUnit.SECONDS);
+        priceMap.put(terminationInstant, new PriceInfo(Double.MAX_VALUE, 0, terminationInstant));
     }
 
     /**
@@ -94,10 +111,9 @@ public class PriceCalculator {
         double price = 0;
         Instant iterator = from;
         while (iterator.isBefore(to)) {
-            Entry<Instant, Double> floor = priceMap.floorEntry(iterator);
-            Entry<Instant, Double> ceiling = priceMap.higherEntry(iterator);
+            Entry<Instant, PriceInfo> floor = priceMap.floorEntry(iterator);
+            Entry<Instant, PriceInfo> ceiling = priceMap.higherEntry(iterator);
             if (floor != null && ceiling != null) {
-                // System.out.println(floor + " " + ceiling);
                 long duration = 0;
                 if (to.isBefore(ceiling.getKey())) {
                     // if to is before higher entry this is the last calculation and it needs to be cutted
@@ -105,7 +121,7 @@ public class PriceCalculator {
                 } else {
                     duration = Duration.between(iterator, ceiling.getKey()).toMinutes();
                 }
-                price += duration * floor.getValue();
+                price += duration * floor.getValue().price;
                 iterator = iterator.plus(duration, ChronoUnit.MINUTES);
             } else {
                 logger.warn("Calaculation of average price out of range {}", iterator);
@@ -125,16 +141,16 @@ public class PriceCalculator {
      */
     public double calculatePrice(Instant start, int powerW, int durationSeconds) {
         checkBoundaries(start, start.plus(durationSeconds, ChronoUnit.SECONDS));
-        Entry<Instant, Double> startEntry = priceMap.floorEntry(start);
-        Entry<Instant, Double> nextEntry = priceMap.higherEntry(start);
+        Entry<Instant, PriceInfo> startEntry = priceMap.floorEntry(start);
+        Entry<Instant, PriceInfo> nextEntry = priceMap.higherEntry(start);
         if (startEntry != null && nextEntry != null) {
             if (!start.plusSeconds(durationSeconds).isAfter(nextEntry.getKey())) {
                 // complete duration is in this price period
-                return (powerW / 1000.0) * (durationSeconds / 3600.0) * startEntry.getValue();
+                return (powerW / 1000.0) * (durationSeconds / 3600.0) * startEntry.getValue().price;
             } else {
                 // calculate price from this time period plus later periods
                 int partDuration = (int) Duration.between(start, nextEntry.getKey()).toSeconds();
-                double partPrice = powerW / 1000.0 * partDuration / 3600.0 * startEntry.getValue();
+                double partPrice = powerW / 1000.0 * partDuration / 3600.0 * startEntry.getValue().price;
                 int remainingDuration = durationSeconds - partDuration;
                 return (partPrice + calculatePrice(nextEntry.getKey(), powerW, remainingDuration));
             }
@@ -166,6 +182,7 @@ public class PriceCalculator {
         double lowestCost = Double.MAX_VALUE;
         Instant lowestStart = Instant.MAX;
         int iterations = 0;
+        double priceAccumulation = 0;
         long calculationStart = System.currentTimeMillis();
         while (startIterator.isBefore(latestStart)) {
             double price = 0;
@@ -181,18 +198,18 @@ public class PriceCalculator {
                 highestCost = price;
                 highestStart = startIterator;
             }
+            priceAccumulation += price;
             startIterator = startIterator.plus(1, ChronoUnit.MINUTES);
             iterations++;
         }
         logger.trace("Calculation time {} ms for {} iterations", (System.currentTimeMillis() - calculationStart),
                 iterations);
-        System.out.println("Calculation time " + (System.currentTimeMillis() - calculationStart) + " ms for "
-                + iterations + " iterations");
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("cheapestStart", lowestStart.toString());
-        resultMap.put("lowestCost", lowestCost);
+        resultMap.put("lowestPrice", lowestCost);
         resultMap.put("mostExpensiveStart", highestStart.toString());
-        resultMap.put("highestCost", highestCost);
+        resultMap.put("highestPrice", highestCost);
+        resultMap.put("averagePrice", priceAccumulation / iterations);
         return resultMap;
     }
 
@@ -206,8 +223,8 @@ public class PriceCalculator {
      */
     public List<PriceInfo> listPrices(Instant earliestStart, Instant latestEnd, boolean ascending) {
         checkBoundaries(earliestStart, latestEnd);
-        TreeMap<Instant, Double> calculationMap = new TreeMap<>();
-        for (Entry<Instant, Double> entry : priceMap.entrySet()) {
+        TreeMap<Instant, PriceInfo> calculationMap = new TreeMap<>();
+        for (Entry<Instant, PriceInfo> entry : priceMap.entrySet()) {
             if (!entry.getKey().isBefore(earliestStart) && !entry.getKey().isAfter(latestEnd)) {
                 calculationMap.put(entry.getKey(), entry.getValue());
             }
@@ -215,13 +232,12 @@ public class PriceCalculator {
         // assure price before earliest start is available
         calculationMap.put(priceMap.floorKey(earliestStart), priceMap.floorEntry(earliestStart).getValue());
 
-        SortedMap<Double, List<Instant>> reversed = reverseMap(calculationMap, ascending);
+        SortedMap<Double, List<PriceInfo>> reversed = reverseMap(calculationMap, ascending);
         List<PriceInfo> ascendingList = new ArrayList<>();
         reversed.forEach((key, value) -> {
-            value.forEach(instant -> {
-                PriceInfo pInfo = new PriceInfo(key, duration, instant);
-                pInfo.adjust(earliestStart, latestEnd);
-                ascendingList.add(pInfo);
+            value.forEach(priceInfo -> {
+                priceInfo.adjust(earliestStart, latestEnd);
+                ascendingList.add(priceInfo);
             });
         });
         return ascendingList;
@@ -235,20 +251,20 @@ public class PriceCalculator {
      * @param ascending true ascending sorting, false descending
      * @return SortedMap accoring to price with List of Instant
      */
-    public SortedMap<Double, List<Instant>> reverseMap(SortedMap<Instant, Double> input, boolean ascending) {
-        TreeMap<Double, List<Instant>> reversed;
+    public SortedMap<Double, List<PriceInfo>> reverseMap(SortedMap<Instant, PriceInfo> input, boolean ascending) {
+        TreeMap<Double, List<PriceInfo>> reversed;
         if (ascending) {
             reversed = new TreeMap<>();
         } else {
             reversed = new TreeMap<>(Comparator.reverseOrder());
         }
         input.forEach((key, value) -> {
-            List<Instant> l = reversed.get(value);
+            List<PriceInfo> l = reversed.get(value.price);
             if (l == null) {
                 l = new ArrayList<>();
             }
-            l.add(key);
-            reversed.put(value, l);
+            l.add(value);
+            reversed.put(value.price, l);
         });
         return reversed;
     }
@@ -275,14 +291,14 @@ public class PriceCalculator {
             if (priceInfo.durationSeconds > remainDuration) {
                 // request fits in this time window - terminate
                 double cost = powerW / 1000.0 * remainDuration / 3600.0 * priceInfo.price;
-                ScheduleEntry se = new ScheduleEntry(priceInfo.timestamp,
-                        priceInfo.timestamp.plus(remainDuration, ChronoUnit.SECONDS), remainDuration, cost);
+                ScheduleEntry se = new ScheduleEntry(priceInfo.startsAt,
+                        priceInfo.startsAt.plus(remainDuration, ChronoUnit.SECONDS), remainDuration, cost);
                 schedule = insertSchedule(se, schedule);
                 remainDuration = 0;
             } else {
                 double cost = powerW / 1000.0 * priceInfo.durationSeconds / 3600.0 * priceInfo.price;
-                ScheduleEntry se = new ScheduleEntry(priceInfo.timestamp,
-                        priceInfo.timestamp.plus(priceInfo.durationSeconds, ChronoUnit.SECONDS),
+                ScheduleEntry se = new ScheduleEntry(priceInfo.startsAt,
+                        priceInfo.startsAt.plus(priceInfo.durationSeconds, ChronoUnit.SECONDS),
                         priceInfo.durationSeconds, cost);
                 schedule = insertSchedule(se, schedule);
                 remainDuration -= priceInfo.durationSeconds;

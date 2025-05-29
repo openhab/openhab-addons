@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tibber.internal.calculator;
+package org.openhab.binding.tibber.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

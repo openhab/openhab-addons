@@ -10,33 +10,34 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tibber.internal.calculator;
+package org.openhab.binding.tibber.internal.dto;
 
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PriceMapEntry} represents one entry of a curve with power and duration.
+ * The {@link ScheduleEntry} represents one entry of a curve with power and duration.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class PriceMapEntry {
-    public Instant startAt;
-    public double total;
+public class ScheduleEntry {
+    public Instant start;
+    public Instant stop;
     public int duration;
-    public int level;
+    public double cost;
 
-    public PriceMapEntry(Instant start, int duration, double total, int level) {
-        this.startAt = start;
+    public ScheduleEntry(Instant start, Instant stop, int duration, double cost) {
+        this.start = start;
+        this.stop = stop;
         this.duration = duration;
-        this.total = total;
-        this.level = level;
+        this.cost = cost;
     }
 
     @Override
     public String toString() {
-        return "{\"startAt\":\"" + startAt + "\",\"duration\":" + duration + ",\"cost\":" + total + "}";
+        return "{\"start\":\"" + start + "\",\"stop\":\"" + stop + "\",\"duration\":" + duration + ",\"cost\":" + cost
+                + "}";
     }
 }

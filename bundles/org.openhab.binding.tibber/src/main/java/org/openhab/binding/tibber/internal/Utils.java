@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tibber.internal.calculator.CurveEntry;
+import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -289,5 +289,4 @@ public class Utils {
         }
         return levelState;
     }
-
 }

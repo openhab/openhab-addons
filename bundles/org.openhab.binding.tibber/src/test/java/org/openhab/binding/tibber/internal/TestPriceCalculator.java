@@ -29,10 +29,10 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.tibber.internal.calculator.CurveEntry;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
-import org.openhab.binding.tibber.internal.calculator.PriceInfo;
-import org.openhab.binding.tibber.internal.calculator.ScheduleEntry;
+import org.openhab.binding.tibber.internal.dto.CurveEntry;
+import org.openhab.binding.tibber.internal.dto.PriceInfo;
+import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 
 import com.google.gson.JsonArray;
@@ -142,8 +142,8 @@ public class TestPriceCalculator {
         for (Iterator<PriceInfo> iterator = priceInfos.iterator(); iterator.hasNext();) {
             PriceInfo priceInfo = iterator.next();
             assertTrue(previousPrice <= priceInfo.price);
-            assertFalse(priceInfo.timestamp.isBefore(start));
-            assertFalse(priceInfo.timestamp.plus(priceInfo.durationSeconds, ChronoUnit.SECONDS).isAfter(end));
+            assertFalse(priceInfo.startsAt.isBefore(start));
+            assertFalse(priceInfo.startsAt.plus(priceInfo.durationSeconds, ChronoUnit.SECONDS).isAfter(end));
             previousPrice = priceInfo.price;
             totalDuration += priceInfo.durationSeconds;
         }

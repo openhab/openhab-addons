@@ -211,9 +211,7 @@ public class TibberHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Status: " + responseStatus + " - " + initResponse);
             }
-        } catch (InterruptedException | TimeoutException |
-
-                ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

@@ -17,6 +17,49 @@ Tibber Pulse is optional, but will enable live measurements.
 
 The channels (i.e. measurements) associated with the Binding:
 
+## Thing Configuration
+
+| Name          | Type      | Description                           | Default   | Required  |
+|---------------|-----------|---------------------------------------|-----------|-----------|
+| token         | text      | Tibber Personal Token                 | N/A       | yes       |
+| homeid        | text      | Tibber Home ID                        | N/A       | yes       |
+| updateHour    | integer   | Hour when spot prices are updated     | 13        | yes       |
+
+To access and initiate the Tibber Binding, a Tibber user account is required.
+
+The following input is required for initialization:
+
+- Tibber token
+- Tibber HomeId
+- Refresh Interval (min 1 minute)
+
+Note: Tibber token is retrieved from your Tibber account:
+[Tibber Account](https://developer.tibber.com/settings/accesstoken)
+
+Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.tibber.com/explorer):
+
+- Sign in (Tibber user account) and "load" personal token.
+- Copy query from below and paste into the Tibber API Explorer, and run query.
+- If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
+- Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
+
+```json
+{
+  viewer {
+    homes {
+      id
+      features {
+        realTimeConsumptionEnabled
+      }
+    }
+  }
+}
+```
+
+If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds.
+
+## Channels
+
 ### price group
 
 Forecast values og Tibber pricing.
@@ -80,47 +123,6 @@ All values read-only.
 | daily-production      | Number:Energy             | Net energy produced since midnight in kilowatt-hours          |
 | last-hour-production  | Number:Energy             | Net energy produced since last hour shift in kilowatt-hours   |
 
-## Thing Configuration
-
-| Name          | Type      | Description                           | Default   | Required  |
-|---------------|-----------|---------------------------------------|-----------|-----------|
-| token         | text      | Tibber Personal Token                 | N/A       | yes       |
-| homeid        | text      | Tibber Home ID                        | N/A       | yes       |
-| updateHour    | integer   | Hour when spot prices are updated     | 13        | yes       |
-
-To access and initiate the Tibber Binding, a Tibber user account is required.
-
-The following input is required for initialization:
-
-- Tibber token
-- Tibber HomeId
-- Refresh Interval (min 1 minute)
-
-Note: Tibber token is retrieved from your Tibber account:
-[Tibber Account](https://developer.tibber.com/settings/accesstoken)
-
-Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.tibber.com/explorer):
-
-- Sign in (Tibber user account) and "load" personal token.
-- Copy query from below and paste into the Tibber API Explorer, and run query.
-- If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
-- Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
-
-```json
-{
-  viewer {
-    homes {
-      id
-      features {
-        realTimeConsumptionEnabled
-      }
-    }
-  }
-}
-```
-
-If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds.
-
 ## Thing Actions
 
 Thing actions can be used to perform calculations on the current available price information cached by the binding. 
@@ -129,7 +131,9 @@ This is for planning when and for what cost a specific electric consumer can be 
 
 Performing a calcuation a `paramters` object is needed containing e.g. your boundaries for the calculation.
 Parameter object allow 2 types: Java `Map` or JSON `String`.
-Depending on which parameter object is given the returned result object is eiter a Java `Map` or JSON `String`.
+The result is returned as JSON encoded `String`.
+Refer below sections how the result looks like.
+Some real life are schown in [Action Examples](#action-examples) section.
 
 
 ### `priceInfoStart`
@@ -146,11 +150,11 @@ It's not allowed to exceed calculations after this timestamp.
 
 In case of error `Instant.MIN` is returned.
 
-### listPrices
+### `listPrices`
 
-List prices in ascending / decending order.
+List prices in ascending / decending _price_ order.
 
-Parameters:
+**Parameters:**
 
 | Name          | Type      | Description                           | Default           | Required  |
 |---------------|-----------|---------------------------------------|-------------------|-----------|
@@ -158,40 +162,214 @@ Parameters:
 | latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
 | ascending     | boolean   | Hour when spot prices are updated     | true              | no        |
 
-Result:
+**Result:**
 
-Java `Map` or JSON `String` with following keys
+JSON encoded `String` result with keys
  
 | Key           | Type      | Description                           | 
 |---------------|-----------|---------------------------------------|
-| earliestStart | Instant   | Earliest start time                   |
+| size          | int       | Size of price list                    |
+| priceList     | JsonArray | Array of `priceInfo` entries          |
 
-### bestPricePeriod
+JSON Object `priceInfo`
+
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| startsAt      | String    | String encoded Instant                |
+| duration      | int       | Price duration in seconds             |
+| price         | double    | Price in your currency                |
+
+### `bestPricePeriod`
 
 Calculates best cost for a consecutive period.
 For use cases like dishwasher or laundry.
 
-Parameters:
+**Parameters:**
 
-| Name          | Type      | Description                           | Default           | Required  |
-|---------------|-----------|---------------------------------------|-------------------|-----------|
-| earliestStart | Instant   | Earliest start time                   | now               | no        |
-| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
-| curve         | List<Map> | List of curve etnries                 | N/A               | true      |
+| Name          | Type      | Description                                   | Default           | Required  |
+|---------------|-----------|-----------------------------------------------|-------------------|-----------|
+| earliestStart | Instant   | Earliest start time                           | now               | no        |
+| latestStop    | Instant   | Latest end time                               | `priceInfoEnd`    | no        |
+| power         | int       | Power in watts                                | N/A               | no        |
+| duration      | String    | Duration as String with units `h`,`m` or `s`  | N/A               | true      |
+| curve         | JsonArray | Array with `curveEntry` elements              | N/A               | no        |
 
-### bestPriceSchedule
+Provide either 
+
+- `power` and `duration` for constant consumption _or_
+- `curve` for sophisticated use cases like a recorded laundry power timeseries
+
+JSON Object `curveEntry`
+
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| timestamp     | String    | String encoded Instant                |
+| power         | int       | Power in watts                        |
+| duration      | int       | Duration in seconds                   |
+
+**Result:**
+
+JSON encoded `String` result with keys
+ 
+| Key                   | Type      | Description                           | 
+|-----------------------|-----------|---------------------------------------|
+| cheapestStart         | String    | Timestamp of cheapest start           |
+| lowestPrice           | double    | Price of the cheapest period          |
+| mostExpensiveStart    | String    | Timestamp of most expensive start     |
+| highestPrice          | double    | Price of the most expensive period    |
+| averagePrice          | double    | Average price within the period       |
+
+### `bestPriceSchedule`
 
 Calculates best cost for a non-consecutive schedule.
 For use cases like battery electric vehicle or heat-pump.
 
-Parameters:
+**Parameters:**
 
-| Name          | Type      | Description                           | Default           | Required  |
+| Name          | Type      | Description              w             | Default          | Required  |
 |---------------|-----------|---------------------------------------|-------------------|-----------|
 | earliestStart | Instant   | Earliest start time                   | now               | no        |
 | latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
 | power         | int       | Needed power                          | N/A               | no        |
-| duration      | int       | Hour when spot prices are updated     | N/A               | yes        |
+| duration      | int       | Hour when spot prices are updated     | N/A               | yes       |
+
+**Result:**
+
+JSON encoded `String` result with keys
+ 
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| size          | int       | Number of schedules                   |
+| schedule      | JsonArray | Array of `scheduleEntry` elements     |
+
+JSON Object `scheduleEntry`
+
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| timestamp     | String    | String encoded Instant                |
+| duration      | int       | Price duration in seconds             |
+| price         | double    | Price in your currency                |
+
+Provide either 
+
+- `timestamp` - duration will be calculated automatically _or_
+- `duration` if you already know it
+
+## Action Examples
+
+### List prices in ascending order
+
+Example rule:
+
+```java
+rule "Tibber Price List"
+when
+    System started // use your trigger
+then
+    var actions = getActions("tibber","tibber:tibberapi:2c80fe4fe3")
+    // parameters empty => default parameters are used = starting from now till end of available price infos, ascending
+    var parameters = "{}"
+    var result = actions.listPrices(parameters)
+    val numberOfPrices = transform("JSONPATH", "$.size", result)
+    logInfo("TibberPriceList",result)
+    for(var i=0; i<Integer.valueOf(numberOfPrices); i++) {
+        // get values and convert them into correct format
+        val priceString = transform("JSONPATH", "$.priceList["+i+"].price", result)
+        val price = Double.valueOf(priceString)
+        val startsAtString = transform("JSONPATH", "$.priceList["+i+"].startsAt", result)
+        val startsAt = Instant.parse(startsAtString)
+        logInfo("TibberPriceList","PriceInfo "+i+" : " + price + " Starts at : " + startsAt.atZone(ZoneId.systemDefault()))
+    }
+end
+```
+
+Console output:
+
+```
+2025-05-29 15:52:31.345 [INFO ] [ab.core.model.script.TibberPriceList] - PriceInfo 0 : 0.1829 Starts at : 2025-05-30T13:00+02:00[Europe/Berlin]
+2025-05-29 15:52:31.349 [INFO ] [ab.core.model.script.TibberPriceList] - PriceInfo 1 : 0.183 Starts at : 2025-05-30T14:00+02:00[Europe/Berlin]
+2025-05-29 15:52:31.352 [INFO ] [ab.core.model.script.TibberPriceList] - PriceInfo 2 : 0.1842 Starts at : 2025-05-29T15:52:31.341193101+02:00[Europe/Berlin]
+...
+```
+
+### Calculate best price period
+
+Example rule:
+
+```java
+import java.util.Map;
+
+var Timer bestPriceTimer = null
+
+rule "Tibber Best Price"
+when
+    System started // use your trigger
+then
+    // get actions
+    var actions = getActions("tibber","tibber:tibberapi:2c80fe4fe3")
+    //create parameters for calculation
+    var parameters = Map.of("duration", "1 h 34 m")
+    // perform calculation
+    var result = actions.bestPricePeriod(parameters)
+    // log result, no prices given because no power value given
+    logInfo("TibberBestPrice",result)
+    
+    // parameters with power value - as example use java Map instead of JSON  
+    parameters = Map.of("duration", "1 h 34 m","power",423,"latestEnd",Instant.now().plusSeconds(7200))
+    result = actions.bestPricePeriod(parameters)
+    logInfo("TibberBestPrice",result)
+    // calculate time between now and cheapest start and start timer to execute action
+    val startsAt = transform("JSONPATH", "$.cheapestStart", result)
+    var secondsTillStart = Duration.between(Instant.now(), Instant.parse(startsAt)).getSeconds()
+    // is start shall happen immediately avoid negative values
+    secondsTillStart = Math::max(0,secondsTillStart) 
+    bestPriceTimer = createTimer(now.plusSeconds(secondsTillStart), [|           
+        logInfo("TibberBestPrice","Start your device")
+    ])
+end
+```
+
+Console output:
+
+```
+2025-05-29 16:07:40.858 [TRACE] [.internal.calculator.PriceCalculator] - Calculation time 2 ms for 1819 iterations
+2025-05-29 16:07:40.860 [INFO ] [ab.core.model.script.TibberBestPrice] - {"cheapestStart":"2025-05-30T11:00:40.856950656Z","mostExpensiveStart":"2025-05-30T18:25:40.856950656Z"}
+2025-05-29 16:07:40.861 [TRACE] [.internal.calculator.PriceCalculator] - Calculation time 0 ms for 26 iterations
+2025-05-29 16:07:40.863 [INFO ] [ab.core.model.script.TibberBestPrice] - {"highestPrice":0.138712416,"lowestPrice":0.13126169399999998,"cheapestStart":"2025-05-29T14:07:40.861730141Z","averagePrice":0.134152053,"mostExpensiveStart":"2025-05-29T14:32:40.861730141Z"}
+2025-05-29 16:07:40.967 [INFO ] [ab.core.model.script.TibberBestPrice] - Start your device
+```
+
+### Calculate best price schedule
+
+```java
+rule "Tibber Schedule Calculation"
+when
+    System started // use your trigger
+then
+    var actions = getActions("tibber","tibber:tibberapi:2c80fe4fe3")
+    // long period with constant power value
+    var parameters = "{\"power\": 11000, \"duration\": \"8 h 15 m\"}"
+    var result = actions.bestPriceSchedule(parameters)
+    // get cost and convert it into double value
+    val costString = transform("JSONPATH", "$.cost", result)
+    val cost = Double.valueOf(costString)
+    val scheduleSize = transform("JSONPATH", "$.size", result)
+    logInfo("TibberSchedule",result)
+    logInfo("TibberSchedule","Cost : " + cost+" Number of schedules : " + scheduleSize)
+    for(var i=0; i<Integer.valueOf(scheduleSize); i++) {
+        val schedule = transform("JSONPATH", "$.schedule["+i+"]", result)
+        logInfo("TibberSchedule","Schedule "+i+": " + schedule)
+        val scheduleStartString = transform("JSONPATH", "$.schedule["+i+"].start", result)
+        val scheduleStart = Instant.parse(scheduleStartString)
+        logInfo("TibberSchedule","Schedule "+i+" start: " + scheduleStart.atZone(ZoneId.systemDefault()).toString)
+    }
+end
+
+```
+
+```
+```
+
 
 ## Full Example
 
@@ -203,6 +381,7 @@ Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx", updateHour=13 ]
 
 ### `demo.items` Example
 
+**to be updated**
 ```java
 Number:EnergyPrice       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
 Number       TibberAPIDailyCost                    "Total Daily Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:daily_cost"}

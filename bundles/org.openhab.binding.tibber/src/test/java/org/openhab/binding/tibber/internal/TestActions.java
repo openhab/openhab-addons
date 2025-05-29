@@ -22,7 +22,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,7 +42,6 @@ import com.google.gson.JsonParser;
 public class TestActions {
 
     static @Nullable TibberActions getActions() {
-        TreeMap<Instant, Double> spotPriceMap = new TreeMap<>();
         String fileName = "src/test/resources/price-query-response.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -74,26 +72,35 @@ public class TestActions {
         assertNotNull(actions);
         assertEquals(Instant.parse("2025-05-17T22:00:00Z"), actions.priceInfoStart());
         assertEquals(Instant.parse("2025-05-19T22:00:00Z"), actions.priceInfoEnd());
-        System.out.println(actions.priceInfoStart());
-        System.out.println(actions.priceInfoEnd());
     }
 
     @Test
     void testMapToMapConversion() {
         TibberActions actions = getActions();
         assertNotNull(actions);
-        System.out.println(actions.priceInfoStart());
-        System.out.println(actions.priceInfoEnd());
-        System.out.println(actions.listPrices("{\"earliestStart\":\"" + actions.priceInfoStart().toString() + "\"}"));
         Map<String, Object> params = new HashMap<>();
         params.put("earliestStart", Instant.parse("2025-05-17T22:00:00Z"));
         params.put("duration", "3600 s");
         String result = actions.bestPricePeriod(params);
-        System.out.println(result);
     }
 
     @Test
     void testSchedule() {
+        TibberActions actions = getActions();
+        assertNotNull(actions);
+        Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
+
+        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "8 h 15 m");
+        String result = actions.bestPriceSchedule(params);
+        JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
+        System.out.println(result);
+        JsonArray scheduleArray = resultJson.get("schedule").getAsJsonArray();
+        System.out.println("###" + scheduleArray);
+        System.out.println("###" + scheduleArray.get(0));
+    }
+
+    @Test
+    void testCurve() {
         TibberActions actions = getActions();
         assertNotNull(actions);
         Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);

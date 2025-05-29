@@ -30,9 +30,9 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.tibber.internal.calculator.CurveEntry;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
-import org.openhab.binding.tibber.internal.calculator.PriceInfo;
+import org.openhab.binding.tibber.internal.dto.CurveEntry;
+import org.openhab.binding.tibber.internal.dto.PriceInfo;
 import org.openhab.core.library.unit.Units;
 
 import com.google.gson.JsonArray;
@@ -89,15 +89,15 @@ public class TibberTest {
         System.out.println(test1 + " " + test2);
         PriceInfo pInfo = new PriceInfo(0.3456, 30,
                 Instant.parse("2025-05-18T11:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS));
-        JsonObject pInfoJson = (JsonObject) JsonParser.parseString(pInfo.toJSON());
+        JsonObject pInfoJson = (JsonObject) JsonParser.parseString(pInfo.toString());
         System.out.println(pInfoJson);
         assertEquals(0.3456, pInfoJson.get("price").getAsDouble(), "Price JSON");
         assertEquals(30, pInfoJson.get("duration").getAsInt(), "Duration JSON");
-        assertEquals("2025-05-18T09:00:00Z", pInfoJson.get("timestamp").getAsString(), "Timestamp JSON");
+        assertEquals("2025-05-18T09:00:00Z", pInfoJson.get("startsAt").getAsString(), "Timestamp JSON");
         Map<String, Object> pInfoMap = pInfo.toMap();
         assertEquals(0.3456, (Double) pInfoMap.get("price"), "Price Map");
         assertEquals(30, (Integer) pInfoMap.get("duration"), "Duration Map");
-        assertEquals("2025-05-18T09:00:00Z", pInfoMap.get("timestamp").toString(), "Timestamp Map");
+        assertEquals("2025-05-18T09:00:00Z", pInfoMap.get("startsAt").toString(), "Timestamp Map");
     }
 
     @Test
