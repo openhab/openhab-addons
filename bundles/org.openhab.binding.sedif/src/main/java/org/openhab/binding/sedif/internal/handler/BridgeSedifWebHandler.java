@@ -174,6 +174,10 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         SedifBridgeConfiguration lcConfig = config;
 
         try {
+            if (connected) {
+                return;
+            }
+
             sedifApi.removeAllCookie();
 
             String resultSt;
@@ -245,7 +249,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             }
 
             // =====================================================================
-            logger.debug("Step 6: Get contract");
+            logger.debug("Step 6a: Get contract");
             Contracts contracts = sedifApi.getContracts();
             if (contracts != null && contracts.contrats != null) {
                 for (Contract contract : contracts.contrats) {
