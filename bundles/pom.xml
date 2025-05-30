@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -25,6 +25,7 @@
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
+    <module>org.openhab.automation.pythonscripting</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
@@ -48,6 +49,7 @@
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.ahawastecollection</module>
     <module>org.openhab.binding.airgradient</module>
+    <module>org.openhab.binding.airparif</module>
     <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
@@ -70,6 +72,7 @@
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
+    <module>org.openhab.binding.bambulab</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
@@ -97,6 +100,7 @@
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.caddx</module>
+    <module>org.openhab.binding.casokitchen</module>
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chatgpt</module>
     <module>org.openhab.binding.chromecast</module>
@@ -133,6 +137,7 @@
     <module>org.openhab.binding.electroluxappliance</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.elroconnects</module>
+    <module>org.openhab.binding.emby</module>
     <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
@@ -163,6 +168,7 @@
     <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.frenchgovtenergydata</module>
     <module>org.openhab.binding.fronius</module>
+    <module>org.openhab.binding.froniuswattpilot</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
@@ -195,6 +201,7 @@
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.huesync</module>
     <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iammeter</module>
@@ -214,7 +221,6 @@
     <module>org.openhab.binding.jablotron</module>
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.jellyfin</module>
-    <module>org.openhab.binding.juicenet</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.km200</module>
@@ -228,6 +234,7 @@
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
+    <module>org.openhab.binding.lgthinq</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
@@ -253,6 +260,7 @@
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
+    <module>org.openhab.binding.metofficedatahub</module>
     <module>org.openhab.binding.mffan</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mielecloud</module>
@@ -264,6 +272,7 @@
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.e3dc</module>
+    <module>org.openhab.binding.modbus.kermi</module>
     <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
     <module>org.openhab.binding.modbus.sungrow</module>
@@ -273,6 +282,7 @@
     <module>org.openhab.binding.monopriceaudio</module>
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
+    <module>org.openhab.binding.mqtt.awtrixlight</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
     <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.generic</module>
@@ -283,6 +293,7 @@
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.mystrom</module>
+    <module>org.openhab.binding.myuplink</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
@@ -356,14 +367,15 @@
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.sagercaster</module>
-    <module>org.openhab.binding.saicismart</module>
     <module>org.openhab.binding.salus</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
+    <module>org.openhab.binding.sbus</module>
     <module>org.openhab.binding.semsportal</module>
     <module>org.openhab.binding.senechome</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.senseenergy</module>
     <module>org.openhab.binding.sensibo</module>
     <module>org.openhab.binding.sensorcommunity</module>
     <module>org.openhab.binding.serial</module>
@@ -422,6 +434,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
+    <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
@@ -450,6 +463,7 @@
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
+    <module>org.openhab.binding.wiz</module>
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.wolfsmartset</module>
@@ -478,6 +492,7 @@
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.mimictts</module>
+    <module>org.openhab.voice.openaitts</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pipertts</module>
     <module>org.openhab.voice.pollytts</module>
@@ -644,7 +659,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>
@@ -682,10 +697,53 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <validationSets>
+            <validationSet>
+              <dir>.</dir>
+              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
+              <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
+            </validationSet>
+          </validationSets>
+          <catalogs>
+            <catalog>${basedirRoot}/src/thing-type-xml-validation-catalog.xml</catalog>
+          </catalogs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>
+    <profile>
+      <id>skipXmlValidation</id>
+      <activation>
+        <file>
+          <exists>skipXmlValidation.marker</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <!-- suppress embedding of dependencies -->
     <profile>
       <id>no-embed-dependencies</id>

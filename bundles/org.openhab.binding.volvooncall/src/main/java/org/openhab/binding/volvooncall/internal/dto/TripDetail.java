@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.volvooncall.internal.dto;
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
 
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Optional;
@@ -47,8 +46,7 @@ public class TripDetail {
     private @NonNullByDefault({}) PositionData endPosition;
 
     private State ZonedDateTimeToState(@Nullable ZonedDateTime datetime) {
-        return datetime != null ? new DateTimeType(datetime.withZoneSameInstant(ZoneId.systemDefault()))
-                : UnDefType.NULL;
+        return datetime != null ? new DateTimeType(datetime) : UnDefType.NULL;
     }
 
     private State getPositionAsState(PositionData details) {

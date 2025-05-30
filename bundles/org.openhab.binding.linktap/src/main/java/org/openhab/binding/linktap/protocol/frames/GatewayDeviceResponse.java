@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class GatewayDeviceResponse extends TLGatewayFrame {
 
     public boolean isRetryableError() {
         switch (getRes()) {
-            case RET_CONFLICT_WATER_PLAN: // Conflict with watering plan
+            case RET_GATEWAY_BUSY: // Gateway is busy (likely booting up)
             case RET_GW_INTERNAL_ERR: // Gateway internal error
                 return true;
             default:

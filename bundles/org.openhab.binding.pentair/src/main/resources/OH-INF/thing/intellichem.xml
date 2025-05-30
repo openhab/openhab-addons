@@ -12,6 +12,7 @@
 
 		<label>Intellichem</label>
 		<description>A Pentair Intellichem controller.</description>
+		<semantic-equipment-tag>Chlorinator</semantic-equipment-tag>
 
 		<channels>
 			<channel id="phReading" typeId="phReading"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,6 @@ import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -101,13 +100,10 @@ public class DoorbellHandler extends BaseThingHandler {
 
     private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
 
-    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
-    public DoorbellHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient,
-            BundleContext bundleContext) {
+    public DoorbellHandler(Thing thing, HttpClient httpClient, BundleContext bundleContext) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
         this.bundleContext = bundleContext;
         udpListener = new DoorbirdUdpListener(this);
@@ -582,6 +578,6 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private DateTimeType getLocalDateTimeType(long dateTimeSeconds) {
-        return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds).atZone(timeZoneProvider.getTimeZone()));
+        return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds));
     }
 }

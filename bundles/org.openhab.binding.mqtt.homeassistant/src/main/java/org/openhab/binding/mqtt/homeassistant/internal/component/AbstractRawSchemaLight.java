@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,8 @@ abstract class AbstractRawSchemaLight extends Light {
     protected ComponentChannel rawChannel;
     protected TextValue colorModeValue;
 
-    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
-        super(builder, newStyleChannels);
+    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder) {
+        super(builder);
         hiddenChannels.add(rawChannel = buildChannel(RAW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(),
                 "Raw state", this).stateTopic(channelConfiguration.stateTopic)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),

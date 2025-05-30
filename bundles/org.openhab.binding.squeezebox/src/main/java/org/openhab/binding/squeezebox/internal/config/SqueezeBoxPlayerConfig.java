@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.squeezebox.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration for a player
  *
@@ -19,11 +22,12 @@ package org.openhab.binding.squeezebox.internal.config;
  * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
  *
  */
+@NonNullByDefault
 public class SqueezeBoxPlayerConfig {
     /**
      * MAC address of player
      */
-    public String mac;
+    public String mac = "";
 
     /**
      * Number of seconds to wait to time out a notification
@@ -33,5 +37,5 @@ public class SqueezeBoxPlayerConfig {
     /**
      * Volume used for playing notifications
      */
-    public Integer notificationVolume;
+    public @Nullable Integer notificationVolume;
 }

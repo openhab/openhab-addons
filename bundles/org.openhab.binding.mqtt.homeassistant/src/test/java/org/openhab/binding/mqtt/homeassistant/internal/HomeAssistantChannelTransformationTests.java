@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,13 +28,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttThingHandlerFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
+import org.openhab.core.util.BundleResolver;
 
 /**
  * @author Jochen Klein - Initial contribution
@@ -44,17 +46,21 @@ import org.openhab.core.thing.type.ThingTypeRegistry;
 @NonNullByDefault
 public class HomeAssistantChannelTransformationTests {
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
+    protected @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
     protected @NonNullByDefault({}) HomeAssistantChannelTransformation transformation;
+    private @Mock @NonNullByDefault({}) BundleResolver bundleResolver;
+    private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
 
     @BeforeEach
     public void beforeEachChannelTransformationTest() {
         MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry,
                 new VolatileStorageService());
-        MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider();
+        HomeAssistantStateDescriptionProvider stateDescriptionProvider = new HomeAssistantStateDescriptionProvider(
+                translationProvider, bundleResolver);
         ChannelTypeRegistry channelTypeRegistry = new ChannelTypeRegistry();
         MqttThingHandlerFactory thingHandlerFactory = new MqttThingHandlerFactory(channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry);
+                stateDescriptionProvider, channelTypeRegistry, unitProvider);
 
         AbstractComponent component = Mockito.mock(AbstractComponent.class);
         HaID haID = new HaID("homeassistant/light/pool/light/config");
@@ -96,6 +102,24 @@ public class HomeAssistantChannelTransformationTests {
     public void testIsDefined() {
         assertThat(transform("{{ value_json.val | is_defined }}", "{}"), is(nullValue()));
         assertThat(transform("{{ 'hi' | is_defined }}", "{}"), is("hi"));
+    }
+
+    @Test
+    public void testRegexFindall() {
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall('([A-Z]{3})') }}", ""), is("[JFK, LHR]"));
+        assertThat(transform(
+                "{{ 'button_up_press' | regex_findall('^(?P<button>(?:button_)?[a-z0-9]+)_(?P<action>(?:press|hold)(?:_release)?)$') }}",
+                ""), is("[[button_up, press]]"));
+    }
+
+    @Test
+    public void testRegexFindallIndex() {
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall_index('([A-Z]{3})', 0) }}", ""), is("JFK"));
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall_index('([A-Z]{3})', 1) }}", ""), is("LHR"));
+        assertThat(transform("{{ ['JFK', 'LHR'] | regex_findall_index('([A-Z]{3})', 1) }}", ""), is("LHR"));
+        assertThat(transform(
+                "{{ 'button_up_press' | regex_findall_index('^(?P<button>(?:button_)?[a-z0-9]+)_(?P<action>(?:press|hold)(?:_release)?)$') }}",
+                ""), is("[button_up, press]"));
     }
 
     protected @Nullable String transform(String template, String value) {

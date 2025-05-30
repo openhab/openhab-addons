@@ -48,6 +48,7 @@
 		<label>OWD5/MWD5 Thermostat</label>
 		<description>OWD5/MWD5 Thermostat</description>
 		<category>RadiatorControl</category>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channels>
 			<channel id="floorTemperature" typeId="floorTemperature"/>
 			<channel id="roomTemperature" typeId="roomTemperature"/>

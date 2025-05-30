@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,8 @@ public abstract class UniFiClient implements HasId {
     @SerializedName("satisfaction")
     private Integer experience;
 
+    private String networkId;
+
     protected UniFiClient(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -120,6 +122,10 @@ public abstract class UniFiClient implements HasId {
 
     public Integer getExperience() {
         return experience;
+    }
+
+    public UniFiNetwork getNetwork() {
+        return cache.getNetwork(networkId);
     }
 
     @Override

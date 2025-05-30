@@ -21,10 +21,10 @@ Note also that just because these tables show that a channel may be read/write, 
 
 ### [Alarm Control Panel](https://www.home-assistant.io/integrations/alarm_control_panel.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                                                                              |
-|-----------------|--------|-----|------------------------------------------------------------------------------------------------------------------------------------------|
-| state           | String | R/W | The current state of the alarm system, and the ability to change its state. Inspect the state and command descriptions for valid values. |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                                                      |
+| Channel ID      | Type   | R/W | Description                                                                                                                                                                                                                                                                                                                                                                                                         |
+|-----------------|--------|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| state           | String | R/W | The current state of the alarm system, and the ability to change its state. Inspect the state and command descriptions for values supported by your device. Possible values are ARM_AWAY, ARM_CUSTOM_BYPASS, ARM_HOME, ARM_NIGHT, ARM_VACATION, DISARM, TRIGGER for commands; armed_away, armed_custom_bypass, armed_home, armed_night, armed_vacation, arming, disarmed, disarming, pending, triggered for states. |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### [Binary Sensor](https://www.home-assistant.io/integrations/binary_sensor.mqtt/)
 
@@ -35,10 +35,10 @@ Note also that just because these tables show that a channel may be read/write, 
 
 ### [Button](https://www.home-assistant.io/integrations/button.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                  |
-|-----------------|--------|-----|------------------------------------------------------------------------------|
-| button          | String | WO  | Inspect the state description for the proper string to send (usually PRESS). |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                          |
+| Channel ID      | Type   | R/W | Description                                         |
+|-----------------|--------|-----|-----------------------------------------------------|
+| button          | String | WO  | Send PRESS to activate the button.                  |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string. |
 
 ### [Camera](https://www.home-assistant.io/integrations/camera.mqtt/)<br>
 
@@ -51,18 +51,21 @@ Base64 encoding is not supported
 
 ### [Climate](https://www.home-assistant.io/integrations/climate.mqtt/)
 
-| Channel ID          | Type   | R/W | Description                                                                   |
-|---------------------|--------|-----|-------------------------------------------------------------------------------|
-| action              | String | RO  | The current operating state of the HVAC device.                               |
-| current-temperature | Number | RO  | The current temperature                                                       |
-| fan-mode            | String | R/W | The desired fan speed. Inspect the state description for allowed values.      |
-| mode                | String | R/W | The desired operating mode. Inspect the state description for allowed values. |
-| swing               | String | R/W | The desired swing mode. Inspect the state description for allowed values.     |
-| temperature         | Number | R/W | The desired temperature.                                                      |
-| temperature-high    | Number | R/W | The desired maximum temperature.                                              |
-| temperature-low     | Number | R/W | The desired minimum temperature.                                              |
-| power               | Switch | WO  | Use to turn the HVAC on or off, regardless of mode.                           |
-| json-attributes     | String | RO  | Additional attributes, as a serialized JSON string.                           |
+| Channel ID          | Type                 | R/W | Description                                                                              |
+|---------------------|----------------------|-----|------------------------------------------------------------------------------------------|
+| action              | String               | RO  | The current operating state of the HVAC device.                                          |
+| current-temperature | Number               | RO  | The current temperature.                                                                 |
+| fan-mode            | String               | R/W | The desired fan speed. Inspect the state description for allowed values.                 |
+| current-humidity    | Number:Dimensionless | RO  | The current relative humidity.                                                           |
+| target-humidity     | Number:Dimensionless | RO  | The desired relative humidity.                                                           |
+| mode                | String               | R/W | The desired operating mode. Inspect the state description for allowed values.            |
+| preset-mode         | String               | R/W | The current preset mode (such as `eco`, `away`, `boost`, `comfort`, `home`, or `sleep`.) |
+| swing               | String               | R/W | The desired swing mode. Inspect the state description for allowed values.                |
+| temperature         | Number               | R/W | The desired temperature.                                                                 |
+| temperature-high    | Number               | R/W | The desired maximum temperature.                                                         |
+| temperature-low     | Number               | R/W | The desired minimum temperature.                                                         |
+| power               | Switch               | WO  | Use to turn the HVAC on or off, regardless of mode.                                      |
+| json-attributes     | String               | RO  | Additional attributes, as a serialized JSON string.                                      |
 
 ### [Cover](https://www.home-assistant.io/integrations/cover.mqtt/)
 
@@ -71,6 +74,17 @@ Base64 encoding is not supported
 | cover           | Rollershutter  | R/W | Status and control of the cover, possibly including its current position.        |
 | state           | String         | RO  | The current state of the cover, possibly including opening, closing, or stopped. |
 | json-attributes | String         | RO  | Additional attributes, as a serialized JSON string.                              |
+
+### [Device Tracker](https://www.home-assistant.io/integrations/device_tracker.mqtt/)
+
+| Channel ID      | Type          | R/W | Description                                                                                                                        |
+|-----------------|---------------|-----|------------------------------------------------------------------------------------------------------------------------------------|
+| home            | Switch        | RO  | If the tracker reports itself as home or not home.                                                                                 |
+| location-name   | String        | RO  | The arbitrary location the tracker reports itself as at (can often be "home" or "not_home").                                       |
+| location        | Location      | RO  | The GPS location, if the tracker can report it.                                                                                    |
+| gps-accuracy    | Number:Length | RO  | The accuracy of a GPS fix. Even if a tracker can provide GPS location, it may not be able to determine and/or report its accuracy. |
+| source-type     | String        | RO  | The source of the data, if the tracker reports it. May be "gps", "router", "bluetooth", or "bluetooth_le".                         |
+| json-attributes | String        | RO  | Additional attributes, as a serialized JSON string.                                                                                |
 
 ### [Device Trigger](https://www.home-assistant.io/integrations/device_trigger.mqtt/)
 
@@ -98,6 +112,18 @@ If a device has multiple device triggers for the same subtype (the particular bu
 | direction       | String  | R/W | `forward` or `backward`                                   |
 | json-attributes | String  | RO  | Additional attributes, as a serialized JSON string.       |
 
+### [Humidifier](https://www.home-assistant.io/integrations/humidifier.mqtt/)
+
+| Channel ID       | Type                 | R/W | Description                                                                              |
+|------------------|----------------------|-----|------------------------------------------------------------------------------------------|
+| state            | Switch               | R/W | If the humidifier should be on or off.                                                   |
+| action           | String               | RO  | What the humidifier is actively doing. One of `off`, `humidifying`, `drying`, or `idle`. |
+| mode             | String               | R/W | Inspect the state description for valid values.                                          |
+| current-humidity | Number:Dimensionless | RO  | The current detected relative humidity, in %.                                            |
+| target-humidity  | Number:Dimensionless | R/W | The desired relative humidity, in %.                                                     |
+| device-class     | String               | RO  | `humidifier` or `dehumidifier`                                                           |
+| json-attributes  | String               | RO  | Additional attributes, as a serialized JSON string.                                      |
+
 ### [Light](https://www.home-assistant.io/integrations/light.mqtt/)
 
 | Channel ID      | Type    | R/W | Description                                                     |
@@ -112,11 +138,11 @@ If a device has multiple device triggers for the same subtype (the particular bu
 
 ### [Lock](https://www.home-assistant.io/integrations/lock.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                                                                                   |
-|-----------------|--------|-----|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| lock            | Switch | R/W | Lock/unlocked state.                                                                                                                          |
-| state           | String | R/W | Additional states may be supported such as jammed, or opening the door directly. Inspect the state and command descriptions for availability. |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                                                           |
+| Channel ID      | Type   | R/W | Description                                                                                                                                                                                                                                                                    |
+|-----------------|--------|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| lock            | Switch | R/W | Lock/unlocked state.                                                                                                                                                                                                                                                           |
+| state           | String | R/W | Additional states may be supported such as jammed, or opening the door directly. Inspect the state and command descriptions for values supported by your device. Possible values are LOCK, UNLOCK, OPEN for commands; JAMMED, LOCKED, LOCKING, UNLOCKED, UNLOCKING for states. |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                                                                                                                                                                                            |
 
 ### [Number](https://www.home-assistant.io/integrations/number.mqtt/)
 
@@ -127,10 +153,12 @@ If a device has multiple device triggers for the same subtype (the particular bu
 
 ### [Scene](https://www.home-assistant.io/integrations/scene.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                                               |
-|-----------------|--------|-----|-----------------------------------------------------------------------------------------------------------|
-| scene           | String | WO  | Triggers a scene on the device. Inspect the state description for the proper string to send (usually ON). |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                       |
+If a device has multiple scenes, they will only show up as a single channel. You send the name of a given scene to activate it.
+
+| Channel ID      | Type   | R/W | Description                                                                                    |
+|-----------------|--------|-----|------------------------------------------------------------------------------------------------|
+| scene           | String | WO  | Triggers a scene on the device. Inspect the command description for the proper string to send. |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                            |
 
 ### [Select](https://www.home-assistant.io/integrations/select.mqtt/)
 
@@ -153,6 +181,12 @@ If a device has multiple device triggers for the same subtype (the particular bu
 | switch          | Switch | R/W | If the device is on or off.                         |
 | json-attributes | String | RO  | Additional attributes, as a serialized JSON string. |
 
+### [Tag Scanner](https://www.home-assistant.io/integrations/tag.mqtt/)
+
+| Channel ID      | Type    | R/W | Description                     |
+|-----------------|---------|-----|---------------------------------|
+| tag             | Trigger | N/A | The value of the "scanned" tag. |
+
 ### [Text](https://www.home-assistant.io/integrations/text.mqtt/)
 
 | Channel ID      | Type   | R/W | Description                                         |
@@ -171,21 +205,22 @@ The `json-attributes` channel for this component will always appear as part of c
 
 ### [Vacuum](https://www.home-assistant.io/integrations/vacuum.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                                      |
-|-----------------|--------|-----|--------------------------------------------------------------------------------------------------|
-| command         | String | WO  | Send a command to the vacuum. Inspect the state description for allowed values.                  |
-| fan-speed       | String | R/W | Set the fan speed. Inspect the state description fro allowed values.                             |
-| custom-command  | String | WO  | Send an arbitrary command to the vacuum. This may be a raw command, or JSON.                     |
-| battery-level   | Dimmer | RO  | The vaccum's battery level.                                                                      |
-| state           | String | RO  | The state of the vacuum. One of `cleaning`, `docked`, `paused`, `idle`, `returning`, or `error`. |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                              |
+| Channel ID      | Type   | R/W | Description                                                                                                                                                                        |
+|-----------------|--------|-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| command         | String | WO  | Send a command to the vacuum. Inspect the command description for values supported by your device. Possible values are clean_spot, locate, pause, return_to_base, start, and stop. |
+| fan-speed       | String | R/W | Set the fan speed. Inspect the state description fro allowed values.                                                                                                               |
+| custom-command  | String | WO  | Send an arbitrary command to the vacuum. This may be a raw command, or JSON.                                                                                                       |
+| battery-level   | Dimmer | RO  | The vaccum's battery level.                                                                                                                                                        |
+| state           | String | RO  | The state of the vacuum. One of `cleaning`, `docked`, `paused`, `idle`, `returning`, or `error`.                                                                                   |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                                                                                                |
 
 ### [Valve](https://www.home-assistant.io/integrations/valve.mqtt/)
 
-| Channel ID      | Type          | R/W | Description                                                                                 |
-|-----------------|---------------|-----|---------------------------------------------------------------------------------------------|
-| valve           | Switch/Dimmer | R/W | If the valve is on (open), or not. For a valve with position (a Dimmer), 100% is full open. |
-| json-attributes | String        | RO  | Additional attributes, as a serialized JSON string.                                         |
+| Channel ID      | Type          | R/W | Description                                                                                                                                                                                                                                                                                           |
+|-----------------|---------------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| valve           | Switch/Dimmer | R/W | If the valve is on (open), or not. For a valve with position (a Dimmer), 100% is full open.                                                                                                                                                                                                           |
+| state           | String        | RO  | Additional states may be supported, such as currently processing actions, or stopping the valve where it currently is. Inspect the state and command descriptions for values supported by your device. Possible values are CLOSE, OPEN, STOP for commands; open, opening, closed, closing for states. |
+| json-attributes | String        | RO  | Additional attributes, as a serialized JSON string.                                                                                                                                                                                                                                                   |
 
 
 ## Supported Devices

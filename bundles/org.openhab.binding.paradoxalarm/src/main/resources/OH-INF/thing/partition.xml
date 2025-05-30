@@ -11,6 +11,7 @@
 
 		<label>Paradox Partition</label>
 		<description>Paradox Partition</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="label" typeId="partitionLabel"/>

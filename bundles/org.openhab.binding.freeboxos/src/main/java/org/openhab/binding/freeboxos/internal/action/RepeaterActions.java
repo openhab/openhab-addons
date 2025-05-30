@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class RepeaterActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "reboot free repeater", description = "Reboots the Free Repeater")
+    @RuleAction(label = "@text/action.rebootRepeater.label", description = "@text/action.rebootRepeater.description")
     public void rebootRepeater() {
         logger.debug("Repeater reboot called");
         RepeaterHandler localHandler = this.handler;

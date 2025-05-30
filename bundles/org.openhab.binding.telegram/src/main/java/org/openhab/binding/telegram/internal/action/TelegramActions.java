@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -288,7 +288,7 @@ public class TelegramActions implements ThingActions {
             try {
                 retMessage = localHandler.execute(sendMessage);
             } catch (Exception e) {
-                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+                logger.warn("Exception occurred whilst sending message:{}", e.getMessage());
             }
             if (!evaluateResponse(retMessage)) {
                 return false;

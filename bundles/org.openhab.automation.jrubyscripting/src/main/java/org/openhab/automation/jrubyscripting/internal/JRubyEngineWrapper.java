@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import java.io.Reader;
 import java.util.Objects;
 
 import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -37,7 +35,9 @@ import org.jruby.embed.jsr223.JRubyEngine;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
+public class JRubyEngineWrapper implements Invocable, ScriptEngine, AutoCloseable {
+    // Don't implement Compilable because there is a bug
+    // in JRuby's compiled scripts: https://github.com/jruby/jruby/issues/8346
 
     private final JRubyEngine engine;
 
@@ -46,16 +46,6 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     JRubyEngineWrapper(JRubyEngine engine) {
         this.engine = Objects.requireNonNull(engine);
-    }
-
-    @Override
-    public CompiledScript compile(@Nullable String script) throws ScriptException {
-        return new JRubyCompiledScriptWrapper(engine.compile(script));
-    }
-
-    @Override
-    public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
-        return new JRubyCompiledScriptWrapper(engine.compile(reader));
     }
 
     @Override
@@ -214,5 +204,10 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
     @Override
     public <T> T getInterface(@Nullable Object receiver, @Nullable Class<T> returnType) {
         return engine.getInterface(receiver, returnType);
+    }
+
+    @Override
+    public void close() {
+        engine.close();
     }
 }

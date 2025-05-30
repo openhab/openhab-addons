@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -46,7 +47,6 @@ import org.openhab.binding.somneo.internal.model.SunsetData;
 import org.openhab.binding.somneo.internal.model.TimerData;
 import org.openhab.binding.somneo.internal.model.WifiData;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -373,7 +373,7 @@ public class SomneoHttpConnector {
         executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
     }
 
-    public void setAlarmTime(int position, DateTimeType time)
+    public void setAlarmTime(int position, ZonedDateTime time)
             throws TimeoutException, InterruptedException, ExecutionException {
         final AlarmSettingsData data = fetchAlarmSettingsData(position);
         data.setConfigured(true);

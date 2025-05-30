@@ -242,7 +242,7 @@
 	</channel-type>
 
 	<channel-type id="color-temperature-abs" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Color Temperature</label>
 		<description>Controls the color temperature of the light in Kelvin</description>
 		<category>ColorLight</category>

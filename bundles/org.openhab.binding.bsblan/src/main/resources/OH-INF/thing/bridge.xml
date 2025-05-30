@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>BSB-LAN Bridge</label>
 		<description>A bridge to connect a BSB-LAN device</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter-group name="network">

@@ -507,7 +507,7 @@
 	</channel-type>
 
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal</label>
 		<description>Signal strength indicator.</description>
 		<category>QualityOfService</category>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,7 +186,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
             throw new IllegalArgumentException("keepAliveInterval not within given limits!");
         }
 
-        sessionThread = new Thread(this, "SessionThread");
+        sessionThread = new Thread(this, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-SessionThread");
     }
 
     /**
@@ -600,7 +601,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
                     // 76 07 5B CD 15
                     // ASCII string contained: 985b157bf6fc43368a63467ea3b19d0dc .. xlink_dev
                     // Response to the v6 SEARCH and the SEARCH FOR commands to look for new or known devices.
-                    // Our session id will be transfered in this process (!= bridge session id)
+                    // Our session id will be transferred in this process (!= bridge session id)
                     case (byte) 0x18: {
                         boolean eq = ByteBuffer.wrap(bridgeMAC, 0, 6).equals(ByteBuffer.wrap(buffer, 6, 6));
                         if (eq) {

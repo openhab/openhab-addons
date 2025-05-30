@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Filter</label>
+		<semantic-equipment-tag>WaterFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="filterEnable" typeId="system.power"/>
 			<channel id="filterValvePosition" typeId="valvePosition"/>
@@ -61,7 +62,7 @@
 	</channel-type>
 
 	<channel-type id="filterSpeedRpm">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Filter Speed</label>
 		<description>Filter speed in rpm</description>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>

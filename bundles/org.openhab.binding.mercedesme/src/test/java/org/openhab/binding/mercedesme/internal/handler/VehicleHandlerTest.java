@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.FileReader;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -60,6 +61,11 @@ class VehicleHandlerTest {
 
     private static final int EVENT_STORAGE_COUNT = HVAC_UPDATE_COUNT + POSITIONING_UPDATE_COUNT + ECOSCORE_UPDATE_COUNT
             + 76;
+
+    @BeforeAll
+    public static void init() {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+    }
 
     public static Map<String, Object> createBEV() {
         Thing thingMock = mock(Thing.class);
@@ -115,7 +121,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("doors"), "Doors Update Count");
@@ -151,7 +158,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-ImperialUnits.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("doors"), "Doors Update Count");
@@ -187,7 +195,9 @@ class VehicleHandlerTest {
         // overwrite with EU Units
         json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
         assertEquals("%.1f °C", patternMock.patternMap.get("test::bev:hvac#temperature"), "Temperature Pattern");
         commandOptionMock.getCommandList("test::bev:hvac#temperature").forEach(cmd -> {
             assertTrue(cmd.getCommand().endsWith(" °C"), "Command Option Celsius Unit");
@@ -209,7 +219,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("doors"), "Doors Update Count");
@@ -246,13 +257,17 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
         assertEquals("2023-09-09 13:54", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
                 .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
 
         json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday-Underrun.json");
         update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
         assertEquals("2023-09-11 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
                 .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
     }
@@ -272,7 +287,9 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
         assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
         assertEquals("2023-09-19 20:45", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
                 .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
@@ -294,7 +311,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-GPS.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
         assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
         assertEquals("1.23,4.56", updateListener.getResponse("test::bev:position#gps").toFullString(), "GPS update");
         assertEquals("41.9 °", updateListener.getResponse("test::bev:position#heading").toFullString(),
@@ -316,7 +334,9 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Range.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
         assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
         assertEquals("15017 km", updateListener.getResponse("test::bev:range#mileage").toFullString(),
                 "Mileage Update");
@@ -341,7 +361,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Hybrid-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("doors"), "Doors Update Count");
@@ -374,7 +395,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Hybrid-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         // Test charged / uncharged battery and filled / unfilled tank volume
         assertEquals("5.800000190734863 kWh", updateListener.getResponse("test::hybrid:range#charged").toFullString(),
@@ -403,7 +425,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("doors"), "Doors Update Count");
@@ -450,12 +473,14 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
         assertFalse(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
                 "Proto Channel not updated");
 
         updateListener.linked = true;
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
         assertTrue(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
                 "Proto Channel not updated");
     }
@@ -477,7 +502,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
         assertEquals("22 °C", updateListener.getResponse("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
 
@@ -508,7 +534,8 @@ class VehicleHandlerTest {
         vh.setCallback(updateListener);
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "temperature");
         updateListener = new ThingCallbackListener();
@@ -538,7 +565,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.distributeContent(update);
+        vh.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
         vh.handleCommand(cuid, QuantityType.valueOf("90 %"));
@@ -586,7 +614,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vHandler.distributeContent(update);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals("1.23,4.56", updateListener.getResponse("test::bev:position#gps").toFullString(),
@@ -608,7 +637,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vHandler.distributeContent(update);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(0, ((DecimalType) updateListener.getResponse("test::bev:hvac#ac-status")).intValue(),
@@ -627,7 +657,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vHandler.distributeContent(update);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals("72 %", updateListener.getResponse("test::bev:eco#accel").toFullString(), "Eco Acceleration");
         assertEquals("81 %", updateListener.getResponse("test::bev:eco#coasting").toFullString(), "Eco Coasting");
@@ -647,7 +678,8 @@ class VehicleHandlerTest {
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Combustion.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vHandler.distributeContent(update);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
 
         assertEquals("29 %", updateListener.getResponse("test::combustion:range#adblue-level").toFullString(),
                 "AdBlue Tank Level");

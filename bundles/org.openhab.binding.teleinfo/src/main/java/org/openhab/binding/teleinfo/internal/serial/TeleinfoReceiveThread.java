@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class TeleinfoReceiveThread extends Thread {
 
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoSerialControllerHandler listener,
             boolean autoRepairInvalidADPSgroupLine, TeleinfoTicMode ticMode, boolean verifyChecksum) {
-        super("OH-binding-TeleinfoReceiveThread-" + listener.getThing().getUID().getId());
+        super("OH-binding-" + listener.getThing().getUID());
         setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;

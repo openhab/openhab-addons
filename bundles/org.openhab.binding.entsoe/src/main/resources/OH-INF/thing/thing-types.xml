@@ -10,6 +10,8 @@
 		<description>Hourly spot prices of the electricity market from European Network of Transmission System Operators
 			(ENTSO-E)</description>
 		<category>WebService</category>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
 		<channels>
 			<channel id="spot-price" typeId="spot-price"/>
 			<channel id="prices-received" typeId="trigger-prices-received"/>

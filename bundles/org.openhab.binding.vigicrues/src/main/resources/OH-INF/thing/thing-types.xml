@@ -7,6 +7,7 @@
 	<thing-type id="station">
 		<label>Station</label>
 		<description>Provides river level informations for this station</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="height" typeId="height"/>

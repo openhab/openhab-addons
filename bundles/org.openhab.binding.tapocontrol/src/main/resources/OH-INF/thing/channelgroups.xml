@@ -86,7 +86,7 @@
 			<channel id="mode" typeId="colorBulbMode"/>
 			<channel id="brightness" typeId="dimmerChannel"/>
 			<channel id="color" typeId="colorChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
+			<channel id="colorTemperature" typeId="system.color-temperature-abs"/>
 		</channels>
 	</channel-group-type>
 

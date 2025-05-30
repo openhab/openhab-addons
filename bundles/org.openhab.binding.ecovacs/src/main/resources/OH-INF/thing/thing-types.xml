@@ -11,6 +11,7 @@
 
 		<label>Ecovacs Vacuum Cleaner</label>
 		<description>Represents an Ecovacs vacuum cleaner</description>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
@@ -296,7 +297,7 @@
 	</channel-type>
 
 	<channel-type id="wifi-rssi" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
 		<description>Received signal strength indicator for Wi-Fi</description>
 		<category>QualityOfService</category>
