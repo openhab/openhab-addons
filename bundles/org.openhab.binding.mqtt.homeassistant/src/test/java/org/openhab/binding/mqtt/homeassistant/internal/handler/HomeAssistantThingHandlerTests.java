@@ -48,8 +48,6 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.StateDescription;
 
-import com.hubspot.jinjava.Jinjava;
-
 /**
  * Tests for {@link HomeAssistantThingHandler}
  *
@@ -91,7 +89,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
     protected void setupThingHandler() {
         thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, python, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
@@ -361,7 +359,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     @Test
     public void testDuplicateChannelId() {
         thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, python, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
@@ -418,7 +416,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     @Test
     public void testDuplicateChannelIdComplex() {
         thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, python, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
