@@ -22,7 +22,6 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -66,8 +65,8 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
 
     public BridgeRemoteEnedisHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
-        super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
+            ComponentContext componentContext, Gson gson) {
+        super(bridge, httpClientFactory, oAuthFactory, httpService, componentContext, gson);
     }
 
     @Override

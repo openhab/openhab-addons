@@ -25,7 +25,24 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="info-adv" advanced="true">
+		<item-type>String</item-type>
+		<label>Information</label>
+		<description>an basic textual information from the supplier contract</description>
+		<category>energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+
+
 	<channel-type id="info-date">
+		<item-type>DateTime</item-type>
+		<label>Information Date</label>
+		<description>an basic date information from the supplier contract</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+
+	<channel-type id="info-date-adv" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Information Date</label>
 		<description>an basic date information from the supplier contract</description>

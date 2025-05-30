@@ -12,10 +12,12 @@ It supports different functionalities:
 ## Migration
 
 The new binding will need some tweak to you configuration to work.
-Mainly the new binding use Bridge to access Enedis data, so you will have to add this bridge to your configuration.
+Mainly the new binding uses Bridge to access Enedis data, so you will have to add this bridge to your configuration.
 Step are:
 
-1. add a bridge definition
+1. before updating to openHAB 5.0, in case you defined your thing with Main UI, backup username, password & internalAuthId configuration parameters as you will need to fill them again.
+
+2. add a bridge definition
 	
 	Bridge linky:enedis:local "EnedisWebBridge" [ 
 		username="laurent@clae.net", 
@@ -25,16 +27,14 @@ Step are:
 	{ 
 	}  
 
-2. Move username, password & internalAuthId configuration parameter from the old linky thing to the bridge thing.
+3. Move username, password & internalAuthId configuration parameter from the old linky thing to the bridge thing.
 
-3. add the bridge reference to the thing
+4. Link your old thing to the new created bridge thing
 
 	Thing linky:linky:linkremotemelody "Linky Melody" (linky:enedis:local)
 
-4. Possibly restart openhab instance to take change in effect
-
-5. Possibly start to use the new channel add by the new binding.
-   Old channel will work out of the box without any config modification as we keep the same group name / channel name.
+5. Start using the new channels added by the enhanced binding..
+   Old items will work out of the box without the need to relink items to channels.
 
 ## Getting Consumption Data Online
 
@@ -58,14 +58,18 @@ Advantage and Disadvantage of Each Method.
 - MyelectricalData bridge is managed by a third-party provider but is stable.
 - Enedis-api bridge directly connects to Enedis but currently requires a complex registration process with Enedis. 
   This limitation will likely be resolved in the near future, making Enedis-api Bridge the preferred method.
+  
+Be warned that MyElectricalData bridge collect data using MyElectricalData service.
+This service will store your enedis information for caching purpose.
+This cache is crypted, so it may be a very big concerns, but of course, we don't know the details about this crypting, and if it can be reverse to access your data.
 
 ### Bridge Configuration
 
 To retrieve data, the Linky device needs to be linked to a LinkyBridge. The available bridge options are enedis, myelectricaldata, and enedis-api.
 
-#### Enedis Bridge
+#### Enedis Web Bridge
 
-If you select enedis bridge, you will need :
+If you select enedis web bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To provide your credentials: username, password, and InternalAuthId.

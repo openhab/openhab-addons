@@ -34,7 +34,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -61,7 +60,6 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
     protected final BundleContext bundleContext;
     protected final HttpClient httpClient;
     protected final EnedisHttpApi enedisApi;
-    protected final ThingRegistry thingRegistry;
 
     protected final Gson gson;
 
@@ -75,7 +73,7 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
     public BridgeRemoteBaseHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
+            ComponentContext componentContext, Gson gson) {
         super(bridge);
 
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
@@ -92,7 +90,6 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
         this.gson = gson;
         this.httpService = httpService;
-        this.thingRegistry = thingRegistry;
         this.bundleContext = componentContext.getBundleContext();
 
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);

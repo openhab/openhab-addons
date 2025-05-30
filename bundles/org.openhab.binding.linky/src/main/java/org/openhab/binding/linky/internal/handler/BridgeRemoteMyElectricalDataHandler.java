@@ -25,7 +25,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -73,8 +72,8 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
 
     public BridgeRemoteMyElectricalDataHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
-        super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
+            ComponentContext componentContext, Gson gson) {
+        super(bridge, httpClientFactory, oAuthFactory, httpService, componentContext, gson);
     }
 
     @Override
@@ -122,7 +121,7 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
 
         logger.debug("token: {}", token);
 
-        Collection<Thing> col = this.thingRegistry.getAll();
+        Collection<Thing> col = this.getThing().getThings();
 
         for (Thing thing : col) {
             if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {

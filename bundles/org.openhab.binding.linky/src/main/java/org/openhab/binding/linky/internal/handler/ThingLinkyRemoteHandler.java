@@ -169,6 +169,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/offline.missing-bridge");
             return;
         }
 
@@ -185,18 +186,20 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     zoneId = ZoneId.of(config.timezone);
                 }
 
-                bridgeHandler.registerNewPrmId(config.prmId);
+                if (bridgeHandler instanceof BridgeRemoteApiHandler && config.prmId.isBlank()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-mandatory-settings");
+                }
+
+                if (!config.prmId.isBlank()) {
+                    bridgeHandler.registerNewPrmId(config.prmId);
+                }
                 pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-mandatory-settings");
             }
         }
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
     }
 
     public boolean supportNewApiFormat() throws LinkyException {
@@ -238,10 +241,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 final LocalDateTime now = LocalDateTime.now();
                 final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
                         .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
-
-                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
 
                 if (lcPollingJob != null) {
                     lcPollingJob.cancel(false);
@@ -337,7 +336,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         });
     }
 
-    private synchronized @Nullable MetaData getMetaData() {
+    private @Nullable MetaData getMetaData() {
         try {
             EnedisHttpApi api = this.enedisApi;
             MetaData result = new MetaData();
@@ -687,7 +686,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     @Override
-    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {} {}", config.prmId, channelUID.getId());
             updateData();
@@ -839,42 +838,20 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         updateConfiguration(config);
     }
 
-    public boolean isLinkedPowerData() {
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER)) {
-            return true;
-        }
-        if (isLinked(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER)) {
-            return true;
-        }
-
-        return false;
+    private boolean isLinkedPowerData() {
+        return (isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1)
+                || isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1)
+                || isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_2)
+                || isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2)
+                || isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_3)
+                || isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3)
+                || isLinked(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER)
+                || isLinked(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER)
+                || isLinked(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER)
+                || isLinked(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER));
     }
 
-    public boolean isLinked(String groupName, String channelName) {
+    private boolean isLinked(String groupName, String channelName) {
         return isLinked(groupName + "#" + channelName);
     }
 }

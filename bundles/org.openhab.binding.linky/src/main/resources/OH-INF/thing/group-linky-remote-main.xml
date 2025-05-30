@@ -16,12 +16,12 @@
 				<description>The power subscribed on the contract</description>
 			</channel>
 
-			<channel id="contract-last-activationdate" typeId="info-date">
+			<channel id="contract-last-activationdate" typeId="info-date-adv">
 				<label>Last Activation Date</label>
 				<description>The activation date of the contract</description>
 			</channel>
 
-			<channel id="contract-distribution-tariff" typeId="info">
+			<channel id="contract-distribution-tariff" typeId="info-adv">
 				<label>Distribution Tariff</label>
 				<description>The current distribution tariff in progres</description>
 			</channel>
@@ -31,22 +31,22 @@
 				<description>The offpeak hours in the contract</description>
 			</channel>
 
-			<channel id="contract-status" typeId="info">
+			<channel id="contract-status" typeId="info-adv">
 				<label>Contract Status</label>
 				<description>The current state of the contract</description>
 			</channel>
 
-			<channel id="contract" typeId="info">
+			<channel id="contract" typeId="info-adv">
 				<label>Contract Type</label>
 				<description>The type of the contract</description>
 			</channel>
 
-			<channel id="contract-lastdistribution-tariff-changedate" typeId="info-date">
+			<channel id="contract-lastdistribution-tariff-changedate" typeId="info-date-adv">
 				<label>Last Distribution Tariff ChangeDate</label>
 				<description>The last time the tariff option have changed</description>
 			</channel>
 
-			<channel id="contract-segment" typeId="info">
+			<channel id="contract-segment" typeId="info-adv">
 				<label>Contract Segment</label>
 				<description>The contract customer market segment</description>
 			</channel>
@@ -61,7 +61,7 @@
 				<description>The usage point current status</description>
 			</channel>
 
-			<channel id="usage-point-meter" typeId="info">
+			<channel id="usage-point-meter" typeId="info-adv">
 				<label>UsagePoint Meter Type</label>
 				<description>The usage point installed meter type</description>
 			</channel>
@@ -71,12 +71,12 @@
 				<description>The usage point adress city</description>
 			</channel>
 
-			<channel id="usage-point-address-country" typeId="info">
+			<channel id="usage-point-address-country" typeId="info-adv">
 				<label>Country</label>
 				<description>The usage point adress country</description>
 			</channel>
 
-			<channel id="usage-point-address-insee-code" typeId="info">
+			<channel id="usage-point-address-insee-code" typeId="info-adv">
 				<label>Insee Code</label>
 				<description>The usage point adress Insee code</description>
 			</channel>
@@ -86,16 +86,16 @@
 				<description>The usage point adress Postal code</description>
 			</channel>
 
-			<channel id="usage-point-address-street" typeId="info">
+			<channel id="usage-point-address-street" typeId="info-adv">
 				<label>Street</label>
 				<description>The usage point adress Street</description>
 			</channel>
 
-			<channel id="contact-mail" typeId="info">
+			<channel id="contact-mail" typeId="info-adv">
 				<label>Mail</label>
 				<description>The email contact for this contract</description>
 			</channel>
-			<channel id="contact-phone" typeId="info">
+			<channel id="contact-phone" typeId="info-adv">
 				<label>Phone</label>
 				<description>The phone contact for this contract</description>
 			</channel>

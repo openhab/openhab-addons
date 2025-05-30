@@ -43,7 +43,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -76,7 +75,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
     private final HttpService httpService;
-    private final ThingRegistry thingRegistry;
     private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
     private SerialPortManager serialPortManager;
@@ -105,15 +103,13 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpService httpService, final @Reference ThingRegistry thingRegistry,
-            final @Reference SerialPortManager serialPortManager, ComponentContext componentContext,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference HttpService httpService, final @Reference SerialPortManager serialPortManager,
+            ComponentContext componentContext, final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.httpService = httpService;
-        this.thingRegistry = thingRegistry;
         this.componentContext = componentContext;
         this.serialPortManager = serialPortManager;
     }
@@ -132,15 +128,15 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_API_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeRemoteEnedisHandler handler = new BridgeRemoteEnedisHandler((Bridge) thing, this.httpClientFactory,
-                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+                    this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
         } else if (THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeRemoteEnedisWebHandler handler = new BridgeRemoteEnedisWebHandler((Bridge) thing,
-                    this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+                    this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
         } else if (THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeRemoteMyElectricalDataHandler handler = new BridgeRemoteMyElectricalDataHandler((Bridge) thing,
-                    this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+                    this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
         } else if (THING_TYPE_D2L_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, gson);
