@@ -8,6 +8,7 @@
 	<bridge-type id="account">
 		<label>Binding Bridge</label>
 		<description>Account with ring.com to access the devices</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="event" typeId="eventGroup"/>
@@ -60,6 +61,7 @@
 		</supported-bridge-type-refs>
 		<label>Other Binding Thing</label>
 		<description>A Ring Other device</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
@@ -89,6 +91,7 @@
 		</supported-bridge-type-refs>
 		<label>Chime Binding Thing</label>
 		<description>Ring Chime connected to the system</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 		</channel-groups>
@@ -117,6 +120,7 @@
 		</supported-bridge-type-refs>
 		<label>Video Doorbell Binding Thing</label>
 		<description>A Ring Video Doorbell device</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
@@ -146,6 +150,7 @@
 		</supported-bridge-type-refs>
 		<label>Stickup Cam Binding Thing</label>
 		<description>A Ring Stickup Cam device</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
@@ -203,37 +208,65 @@
 		<item-type>String</item-type>
 		<label>URL to recorded video</label>
 		<description>The URL to a recorded video (only when subscribed)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="doorbotId">
 		<item-type>String</item-type>
 		<label>Event Device ID</label>
 		<description>The id of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="doorbotDescription">
 		<item-type>String</item-type>
 		<label>Event Device Name</label>
 		<description>The description of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="createdAt">
 		<item-type>DateTime</item-type>
 		<label>Event DateTime</label>
 		<description>The date and time the event was created</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 	<channel-type id="kind">
 		<item-type>String</item-type>
 		<label>Event Type</label>
 		<description>The kind of event, usually 'motion' or 'ding'</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Enable Polling</label>
 		<description>Account Polling Enabled (on=yes, off=no)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="battery">
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
 		<description>Battery level in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
