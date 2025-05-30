@@ -431,8 +431,10 @@ public class TibberHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("all")
     private void handleNewMessage() {
         String message = messageQueue.poll();
+        // this can be null!
         if (message == null) {
             return;
         }

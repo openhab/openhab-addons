@@ -110,6 +110,7 @@ public class Utils {
      * @param targetMap parameter map to be filled
      * @return true if parameters were given as JSON String
      */
+    @SuppressWarnings("unchecked")
     public static boolean convertParameters(Object parameters, Map<String, Object> targetMap) {
         if (parameters instanceof String json) {
             JsonObject parametersJson = (JsonObject) JsonParser.parseString(json);
