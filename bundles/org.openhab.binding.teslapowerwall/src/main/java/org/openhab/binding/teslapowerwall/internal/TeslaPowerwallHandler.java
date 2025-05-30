@@ -160,11 +160,11 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             }
             if (systemStatus.batteryBlocks != null && systemStatus.batteryBlocks.length > 0) {
                 Map<String, String> properties = editProperties();
-                for (int i = 0; i < (systemStatus.availableBlocks - 1); i++) {
+                for (int i = 0; i < systemStatus.availableBlocks; i++) {
                     properties.put("Battery" + (i + 1) + "-partno", systemStatus.batteryBlocks[i].packagePartNumber);
                     properties.put("Battery" + (i + 1) + "-serial", systemStatus.batteryBlocks[i].packageSerialNumber);
                     properties.put("Battery" + (i + 1) + "-fullPackEnergy",
-                            String.valueOf(systemStatus.batteryBlocks[i].nominalFullPackEnergy));
+                            String.valueOf(systemStatus.batteryBlocks[i].nominalFullPackEnergy) + "kWh");
                     updateProperties(properties);
                 }
             }
