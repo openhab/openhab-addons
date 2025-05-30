@@ -214,7 +214,7 @@ public class SystemStatus {
         @SerializedName("vf_mode")
         public boolean vfMode;
 
-        @SerializedName("Type")
+        @SerializedName("wobble_detected")
         public boolean wobbleDetected;
 
         @SerializedName("charge_power_clamped")
