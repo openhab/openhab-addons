@@ -186,10 +186,13 @@ public class NetworkUtils {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
                 if (networkInterface.isUp() && !networkInterface.isLoopback()) {
+                    logger.trace("Network interface: {} is included in the", networkInterface.getName());
                     outputMap.put(networkInterface.getName(),
                             networkInterface.getInterfaceAddresses().stream()
                                     .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
                                     .collect(Collectors.toSet()));
+                } else {
+                    logger.trace("Network interface: {} is excluded in the search", networkInterface.getName());
                 }
             }
         } catch (SocketException e) {
