@@ -236,7 +236,7 @@ public class TelegramHandler extends BaseThingHandler {
                     case 429:
                         cancelThingOnlineStatusJob();
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Too Many Requests, temporary delaying");
+                                "Too Many Requests; temporarily delaying reconnection.");
                         delayThingOnlineStatus();
                         return;
                     case 502:
