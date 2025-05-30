@@ -137,7 +137,10 @@ public class AbstractComponentConfiguration extends AbstractConfiguration {
         if (manufacturer != null) {
             properties.put(Thing.PROPERTY_VENDOR, manufacturer);
         }
-        final String model = d.getModel();
+        String model = d.getModelId();
+        if (model == null) {
+            model = d.getModel();
+        }
         if (model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, model);
         }
