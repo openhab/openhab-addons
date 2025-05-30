@@ -159,8 +159,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .stateTopic(channelConfiguration.percentageStateTopic, channelConfiguration.percentageValueTemplate)
                     .commandTopic(channelConfiguration.percentageCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.percentageCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).commandFilter(this::handlePercentageCommand)
-                    .build();
+                    .parseCommandValueAsInteger(true).inferOptimistic(channelConfiguration.optimistic)
+                    .commandFilter(this::handlePercentageCommand).build();
         } else {
             primaryChannel = onOffChannel;
             speedChannel = null;
