@@ -24,6 +24,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
-import org.openhab.core.library.unit.Units;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -70,35 +70,18 @@ public class TibberTest {
     @Test
     void testAveragePrices() {
         PriceCalculator calc = new PriceCalculator(readPriceResponse());
-        // Instant start = Instant.now().with(ChronoField.MONTH_OF_YEAR, 5).with(ChronoField.DAY_OF_MONTH, 18)
-        // .with(ChronoField.HOUR_OF_DAY, 13).with(ChronoField.MINUTE_OF_HOUR, 0)
-        // .with(ChronoField.SECOND_OF_MINUTE, 0);
-        Instant start = Instant.parse("2025-05-18T11:00:00.000+02:00");
-        // System.out.println(calc.averagePrice(start, end));
-        calc.calculateAveragePrices();
+        Map<Instant, Double> averagePrices = calc.calculateAveragePrices();
+        assertEquals(24 * 12, averagePrices.size(), "Average Prices in 5 minute steps");
     }
 
     @Test
     void testPriceInfo() {
-        Instant test1 = Instant.parse("2025-05-18T11:00:00.000+02:00");
-        Instant test2 = test1.truncatedTo(ChronoUnit.SECONDS);
-        System.out.println(test1 + " " + test2);
         PriceInfo pInfo = new PriceInfo(0.3456, 30,
                 Instant.parse("2025-05-18T11:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS), 1);
         JsonObject pInfoJson = (JsonObject) JsonParser.parseString(pInfo.toString());
-        System.out.println(pInfoJson);
         assertEquals(0.3456, pInfoJson.get("price").getAsDouble(), "Price JSON");
         assertEquals(30, pInfoJson.get("duration").getAsInt(), "Duration JSON");
         assertEquals("2025-05-18T09:00:00Z", pInfoJson.get("startsAt").getAsString(), "Timestamp JSON");
-    }
-
-    @Test
-    void testJson() {
-        String jsonString = "{\"key\": null}";
-        JsonObject jsonObject = (JsonObject) JsonParser.parseString(jsonString);
-        boolean isNull = jsonObject.get("key").isJsonNull();
-        System.out.println(isNull);
-        System.err.println(Units.KILOWATT_HOUR.getName());
     }
 
     /**
@@ -115,11 +98,9 @@ public class TibberTest {
             for (int i = 0; i < split.length; i++) {
                 String[] split2 = split[i].split("ShellyPlugWaschmaschine_Leistung ->");
                 for (int j = 0; j < split2.length; j++) {
-                    // System.out.println(split2[j]);
                     String[] split3 = split2[j].split("W,");
                     JsonObject entry = new JsonObject();
                     for (int k = 0; k < split3.length; k++) {
-                        // System.out.println(split3[k]);
                         try {
                             double power = Double.valueOf(split3[k]);
                             entry.addProperty("power", power);
@@ -130,23 +111,32 @@ public class TibberTest {
                                     .atZone(ZoneId.systemDefault()).toInstant();
                             entry.addProperty("timestamp", timestamp.toString());
                         } catch (Exception e) {
-                            // e.printStackTrace();
                         }
                     }
-                    // System.out.println(entry.toString());
                     if (!entry.isEmpty()) {
                         curve.add(entry);
                     }
                 }
-                // System.out.println(split[i]);
             }
-            System.out.println(curve);
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }
     }
 
-    @Test
+    void laundryCurveConversion() {
+        String fileName = "src/test/resources/laundry-curve.json";
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
+            assertNotNull(curve);
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
+
+    /**
+     * Generate 15 minute price periods from price-query.json
+     */
     void generate15MinPrices() {
         String fileName = "src/test/resources/price-query-response.json";
         try {
@@ -174,20 +164,7 @@ public class TibberTest {
                         spotPrices15.add(entry15);
                     }
                 }
-                System.out.println(spotPrices15);
             }
-        } catch (IOException e) {
-            fail("Error reading file " + fileName);
-        }
-    }
-
-    @Test
-    void laundryCurveConversion() {
-        String fileName = "src/test/resources/laundry-curve.json";
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
-            List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
-            System.out.println("Curve converted to Java" + curve);
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }

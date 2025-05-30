@@ -86,14 +86,6 @@ public class TibberBindingConstants {
     public static final String WEBSOCKET_URL_QUERY = "{\"query\":\"{viewer {websocketSubscriptionUrl }}\"}";
     public static final String CONNECT_MESSAGE = "{\"type\":\"connection_init\", \"payload\":{\"token\":\"%s\"}}";
     public static final String DISCONNECT_MESSAGE = "{\"type\":\"connection_terminate\",\"payload\":null}";
-    // public static final String SUBSCRIPTION_MESSAGE =
-    // "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription
-    // {\\n liveMeasurement(homeId:\\\"%s\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n
-    // accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n currency\\n minPower\\n
-    // averagePower\\n maxPower\\n"
-    // + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n
-    // accumulatedProduction\\n accumulatedProductionLastHour\\n minPowerProduction\\n maxPowerProduction\\n }\\n
-    // }\\n\"}}";
     public static final String SUBSCRIPTION_MESSAGE = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription { liveMeasurement(homeId:\\\"%s\\\") { timestamp power lastMeterConsumption lastMeterProduction accumulatedConsumption accumulatedConsumptionLastHour accumulatedCost currency minPower averagePower maxPower voltagePhase1 voltagePhase2 voltagePhase3 currentL1 currentL2 currentL3 powerProduction accumulatedProduction accumulatedProductionLastHour minPowerProduction maxPowerProduction }}\"}}";
 
     public static final String[] CURRENCY_QUERY_JSON_PATH = new String[] { "data", "viewer", "home",
@@ -105,7 +97,6 @@ public class TibberBindingConstants {
 
     public static final String EMPTY = "";
 
-    public static final String CRON_15_MINUTES = "0 0/15 * ? * * *";
     public static final String CRON_DAILY_AT = "30 0 %s ? * * *";
 
     public static final String JSON_DATA = "data";

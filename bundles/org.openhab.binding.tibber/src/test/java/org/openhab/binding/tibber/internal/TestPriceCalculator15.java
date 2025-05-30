@@ -45,7 +45,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TestPriceCalculator15 {
 
-    static @Nullable PriceCalculator getPriceCalculator() {
+    @Nullable
+    PriceCalculator getPriceCalculator() {
         String fileName = "src/test/resources/price15-query-response.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -131,8 +132,18 @@ public class TestPriceCalculator15 {
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
-            Map<String, Object> cost = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(), curve);
-            System.out.println("Best Price Curve Calculation " + cost);
+            Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(), curve);
+            assertEquals("2025-05-18T12:45:00Z", result.get("cheapestStart"), "Cheapest Start");
+            assertEquals("2025-05-19T18:45:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
+            Object cheapestPrice = result.get("lowestPrice");
+            assertNotNull(cheapestPrice);
+            assertEquals(0.05459, (double) cheapestPrice, 0.0001, "Cheapest Price");
+            Object highestPrice = result.get("highestPrice");
+            assertNotNull(highestPrice);
+            assertEquals(0.15112, (double) highestPrice, 0.0001, "Most Expensive Price");
+            Object averagePrice = result.get("averagePrice");
+            assertNotNull(averagePrice);
+            assertEquals(0.09123, (double) averagePrice, 0.0001, "Average Price");
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }
@@ -142,6 +153,20 @@ public class TestPriceCalculator15 {
     void testBestPriceCalculation() {
         PriceCalculator calc = getPriceCalculator();
         assertNotNull(calc);
+
+        Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(),
+                List.of(new CurveEntry(1786, 1800)));
+        assertEquals("2025-05-18T12:30:00Z", result.get("cheapestStart"), "Cheapest Start");
+        assertEquals("2025-05-19T18:00:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
+        Object cheapestPrice = result.get("lowestPrice");
+        assertNotNull(cheapestPrice);
+        assertEquals(0.14965, (double) cheapestPrice, 0.0001, "Cheapest Price");
+        Object highestPrice = result.get("highestPrice");
+        assertNotNull(highestPrice);
+        assertEquals(00.40863, (double) highestPrice, 0.0001, "Most Expensive Price");
+        Object averagePrice = result.get("averagePrice");
+        assertNotNull(averagePrice);
+        assertEquals(0.25015, (double) averagePrice, 0.0001, "Average Price");
     }
 
     @Test
@@ -151,6 +176,16 @@ public class TestPriceCalculator15 {
 
         List<ScheduleEntry> schedule = calc.calculateNonConsecutive(calc.priceInfoStart(), calc.priceInfoEnd(), 11000,
                 8 * 3600 + 54 * 60);
-        System.out.println(schedule);
+        assertEquals(7, schedule.size(), "Number of schedules");
+
+        assertEquals(1.04940, schedule.get(0).cost, 0.0001, "Cost Element 1");
+        assertEquals(1800, schedule.get(0).duration, "Duration Element 1");
+        assertEquals("2025-05-18T15:15:00Z", schedule.get(0).start.toString(), "Start Element 1");
+        assertEquals("2025-05-18T15:45:00Z", schedule.get(0).stop.toString(), "Stop Element 1");
+
+        assertEquals(0.53489, schedule.get(1).cost, 0.0001, "Cost Element 2");
+        assertEquals(900, schedule.get(1).duration, "Duration Element 2");
+        assertEquals("2025-05-19T10:15:00Z", schedule.get(1).start.toString(), "Start Element 2");
+        assertEquals("2025-05-19T10:30:00Z", schedule.get(1).stop.toString(), "Stop Element 2");
     }
 }

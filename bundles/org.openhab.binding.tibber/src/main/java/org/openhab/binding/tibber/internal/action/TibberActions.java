@@ -29,6 +29,7 @@ import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
 import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
 import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
+import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
@@ -56,22 +57,20 @@ public class TibberActions implements ThingActions {
     public @ActionOutput(name = "result", label = "Earliest Start", type = "java.time.Instant") Instant priceInfoStart() {
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
-            if (calc != null) {
-                return calc.priceInfoStart();
-            }
+            return calc.priceInfoStart();
+        } else {
+            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
         }
-        return Instant.MAX;
     }
 
     @RuleAction(label = "@text/actionPriceInfoEndLabel", description = "@text/actionPriceInfoEndDescription")
     public @ActionOutput(name = "result", label = "Latest End", type = "java.time.Instant") Instant priceInfoEnd() {
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
-            if (calc != null) {
-                return calc.priceInfoEnd();
-            }
+            return calc.priceInfoEnd();
+        } else {
+            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
         }
-        return Instant.MIN;
     }
 
     @RuleAction(label = "@text/actionListPricesLabel", description = "@text/actionListPricesDescription")
@@ -81,18 +80,19 @@ public class TibberActions implements ThingActions {
         Utils.convertParameters(parameters, parameterMap);
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
-            if (calc != null) {
-                completeConfig(parameterMap);
-                Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
-                Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
-                Boolean ascending = (Boolean) parameterMap.get(PARAM_ASCENDING);
-                if (start != null && stop != null && ascending != null) {
-                    List<PriceInfo> priceList = calc.listPrices(start, stop, ascending);
-                    return "{\"size\":" + priceList.size() + ",\"priceList\":" + priceList.toString() + "}";
-                }
+            completeConfig(parameterMap);
+            Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
+            Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
+            Boolean ascending = (Boolean) parameterMap.get(PARAM_ASCENDING);
+            if (start != null && stop != null && ascending != null) {
+                List<PriceInfo> priceList = calc.listPrices(start, stop, ascending);
+                return "{\"size\":" + priceList.size() + ",\"priceList\":" + priceList.toString() + "}";
+            } else {
+                throw new CalculationParameterException("Cannot perform calculation with parameters " + parameterMap);
             }
+        } else {
+            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
         }
-        return "{}";
     }
 
     @RuleAction(label = "@text/actionBestPricePeriodLabel", description = "@text/actionBestPricePeriodDescription")
@@ -102,46 +102,47 @@ public class TibberActions implements ThingActions {
         Utils.convertParameters(parameters, parameterMap);
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
-            if (calc != null) {
-                completeConfig(parameterMap);
-                Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
-                Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
-                if (start != null && stop != null) {
-                    boolean onlyPeriod = false;
-                    // check if curve is present
-                    Object curve = parameterMap.get(PARAM_CURVE);
-                    if (curve == null) {
-                        // if no curve is given check for power and duration parameters
-                        Object power = parameterMap.get(PARAM_POWER);
-                        int powerValue = 0;
-                        if (power == null) {
-                            onlyPeriod = true;
-                            // simulate with 1000 W otherwise min / max handling won't work in calculation
-                            // cost values will be removed afterwards
-                            powerValue = 1000;
-                        } else {
-                            powerValue = ((Integer) power).intValue();
-                        }
-                        Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
-                        if (duration == null) {
-                            throw new CalculationParameterException(
-                                    "No curve and no duration given for bestPeriod calculation " + parameters);
-                        }
-                        CurveEntry entry = new CurveEntry(powerValue, duration.intValue());
-                        curve = List.of(entry);
+            completeConfig(parameterMap);
+            Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
+            Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
+            if (start != null && stop != null) {
+                boolean onlyPeriod = false;
+                // check if curve is present
+                Object curve = parameterMap.get(PARAM_CURVE);
+                if (curve == null) {
+                    // if no curve is given check for power and duration parameters
+                    Object power = parameterMap.get(PARAM_POWER);
+                    int powerValue = 0;
+                    if (power == null) {
+                        onlyPeriod = true;
+                        // simulate with 1000 W otherwise min / max handling won't work in calculation
+                        // cost values will be removed afterwards
+                        powerValue = 1000;
+                    } else {
+                        powerValue = ((Integer) power).intValue();
                     }
-                    Map<String, Object> result = calc.calculateBestPrice(start, stop, (List<CurveEntry>) curve);
-                    if (onlyPeriod) {
-                        result.remove("lowestPrice");
-                        result.remove("averagePrice");
-                        result.remove("highestPrice");
+                    Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
+                    if (duration == null) {
+                        throw new CalculationParameterException(
+                                "No curve and no duration given for bestPeriod calculation " + parameters);
                     }
-                    Gson gson = new Gson();
-                    return gson.toJson(result);
+                    CurveEntry entry = new CurveEntry(powerValue, duration.intValue());
+                    curve = List.of(entry);
                 }
+                Map<String, Object> result = calc.calculateBestPrice(start, stop, (List<CurveEntry>) curve);
+                if (onlyPeriod) {
+                    result.remove("lowestPrice");
+                    result.remove("averagePrice");
+                    result.remove("highestPrice");
+                }
+                Gson gson = new Gson();
+                return gson.toJson(result);
+            } else {
+                throw new CalculationParameterException("Cannot perform calculation with parameters " + parameterMap);
             }
+        } else {
+            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
         }
-        return "{}";
     }
 
     @RuleAction(label = "@text/actionBestPriceScheduleLabel", description = "@text/actionBestPriceScheduleDescription")
@@ -151,30 +152,31 @@ public class TibberActions implements ThingActions {
         Utils.convertParameters(parameters, parameterMap);
         if (thingHandler.isPresent()) {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
-            if (calc != null) {
-                completeConfig(parameterMap);
-                Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
-                Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
-                Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
-                Integer power = (Integer) parameterMap.get(PARAM_POWER);
-                if (start != null && stop != null && duration != null && power != null) {
-                    List<ScheduleEntry> priceList = calc.calculateNonConsecutive(start, stop, power.intValue(),
-                            duration.intValue());
-                    double totalCost = 0;
-                    for (Iterator<ScheduleEntry> iterator = priceList.iterator(); iterator.hasNext();) {
-                        totalCost += iterator.next().cost;
-                    }
-                    Gson gson = new Gson();
-                    JsonObject result = new JsonObject();
-                    result.addProperty("cost", totalCost);
-                    result.addProperty("size", priceList.size());
-                    JsonArray priceListJson = (JsonArray) JsonParser.parseString(priceList.toString());
-                    result.add("schedule", priceListJson);
-                    return gson.toJson(result);
+            completeConfig(parameterMap);
+            Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
+            Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
+            Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
+            Integer power = (Integer) parameterMap.get(PARAM_POWER);
+            if (start != null && stop != null && duration != null && power != null) {
+                List<ScheduleEntry> priceList = calc.calculateNonConsecutive(start, stop, power.intValue(),
+                        duration.intValue());
+                double totalCost = 0;
+                for (Iterator<ScheduleEntry> iterator = priceList.iterator(); iterator.hasNext();) {
+                    totalCost += iterator.next().cost;
                 }
+                Gson gson = new Gson();
+                JsonObject result = new JsonObject();
+                result.addProperty("cost", totalCost);
+                result.addProperty("size", priceList.size());
+                JsonArray priceListJson = (JsonArray) JsonParser.parseString(priceList.toString());
+                result.add("schedule", priceListJson);
+                return gson.toJson(result);
+            } else {
+                throw new CalculationParameterException("Cannot perform calculation with parameters " + parameterMap);
             }
+        } else {
+            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
         }
-        return "{}";
     }
 
     public static Instant priceInfoStart(ThingActions actions) {
@@ -211,7 +213,7 @@ public class TibberActions implements ThingActions {
     }
 
     /**
-     * Fill parameters with default values if they are not give
+     * Fill parameters with default values if they are not given
      *
      * @param parameterMap
      */

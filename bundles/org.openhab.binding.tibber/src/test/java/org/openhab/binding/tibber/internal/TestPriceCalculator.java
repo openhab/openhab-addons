@@ -46,7 +46,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TestPriceCalculator {
 
-    static @Nullable PriceCalculator getPriceCalculator() {
+    protected @Nullable PriceCalculator getPriceCalculator() {
         String fileName = "src/test/resources/price-query-response.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -71,6 +71,7 @@ public class TestPriceCalculator {
     void testLimits() {
         PriceCalculator calc = getPriceCalculator();
         assertNotNull(calc);
+
         assertEquals(Instant.parse("2025-05-17T22:00:00Z"), calc.priceInfoStart());
         assertEquals(Instant.parse("2025-05-19T22:00:00Z"), calc.priceInfoEnd());
     }
@@ -92,7 +93,6 @@ public class TestPriceCalculator {
 
         // odd numbers
         price = calc.calculatePrice(start.plus(73, ChronoUnit.MINUTES), 823, 3600 * 2 + 39 * 60 + 23); // 9563 seconds
-        System.out.println(start.plus(73, ChronoUnit.MINUTES));
         /**
          * 0.3073 * 2820 s + 0.3039 * 3600 + 0.3025 * 3143
          * 866,586 + 1094,04 + 950,7575
@@ -157,8 +157,18 @@ public class TestPriceCalculator {
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
-            Map<String, Object> cost = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(), curve);
-            System.out.println("Best Price Curve Calculation " + cost);
+            Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(), curve);
+            assertEquals("2025-05-18T12:00:00Z", result.get("cheapestStart"), "Cheapest Start");
+            assertEquals("2025-05-19T18:00:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
+            Object cheapestPrice = result.get("lowestPrice");
+            assertNotNull(cheapestPrice);
+            assertEquals(0.055333, (double) cheapestPrice, 0.0001, "Cheapest Price");
+            Object highestPrice = result.get("highestPrice");
+            assertNotNull(highestPrice);
+            assertEquals(0.150617, (double) highestPrice, 0.0001, "Most Expensive Price");
+            Object averagePrice = result.get("averagePrice");
+            assertNotNull(averagePrice);
+            assertEquals(0.091364, (double) averagePrice, 0.0001, "Average Price");
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }
@@ -168,6 +178,20 @@ public class TestPriceCalculator {
     void testBestPriceCalculation() {
         PriceCalculator calc = getPriceCalculator();
         assertNotNull(calc);
+
+        Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(),
+                List.of(new CurveEntry(1786, 1800)));
+        assertEquals("2025-05-18T12:00:00Z", result.get("cheapestStart"), "Cheapest Start");
+        assertEquals("2025-05-19T18:00:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
+        Object cheapestPrice = result.get("lowestPrice");
+        assertNotNull(cheapestPrice);
+        assertEquals(0.150649, (double) cheapestPrice, 0.0001, "Cheapest Price");
+        Object highestPrice = result.get("highestPrice");
+        assertNotNull(highestPrice);
+        assertEquals(0.410065, (double) highestPrice, 0.0001, "Most Expensive Price");
+        Object averagePrice = result.get("averagePrice");
+        assertNotNull(averagePrice);
+        assertEquals(0.250470, (double) averagePrice, 0.0001, "Average Price");
     }
 
     @Test
@@ -177,6 +201,16 @@ public class TestPriceCalculator {
 
         List<ScheduleEntry> schedule = calc.calculateNonConsecutive(calc.priceInfoStart(), calc.priceInfoEnd(), 11000,
                 8 * 3600 + 54 * 60);
-        System.out.println(schedule);
+        assertEquals(2, schedule.size(), "Number of schedules");
+
+        assertEquals(13.9238, schedule.get(0).cost, 0.0001, "Cost Element 1");
+        assertEquals(25200, schedule.get(0).duration, "Duration Element 1");
+        assertEquals("2025-05-18T08:00:00Z", schedule.get(0).start.toString(), "Start Element 1");
+        assertEquals("2025-05-18T15:00:00Z", schedule.get(0).stop.toString(), "Stop Element 1");
+
+        assertEquals(4.05889, schedule.get(1).cost, 0.0001, "Cost Element 2");
+        assertEquals(6840, schedule.get(1).duration, "Duration Element 2");
+        assertEquals("2025-05-19T11:00:00Z", schedule.get(1).start.toString(), "Start Element 2");
+        assertEquals("2025-05-19T12:54:00Z", schedule.get(1).stop.toString(), "Stop Element 2");
     }
 }
