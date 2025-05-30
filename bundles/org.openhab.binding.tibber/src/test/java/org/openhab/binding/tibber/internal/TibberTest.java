@@ -25,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -48,7 +47,6 @@ import com.google.gson.JsonParser;
 public class TibberTest {
 
     JsonArray readPriceResponse() {
-        TreeMap<Instant, Double> spotPriceMap = new TreeMap<>();
         String fileName = "src/test/resources/price-query-response.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -76,7 +74,6 @@ public class TibberTest {
         // .with(ChronoField.HOUR_OF_DAY, 13).with(ChronoField.MINUTE_OF_HOUR, 0)
         // .with(ChronoField.SECOND_OF_MINUTE, 0);
         Instant start = Instant.parse("2025-05-18T11:00:00.000+02:00");
-        Instant end = start.plus(1, ChronoUnit.DAYS);
         // System.out.println(calc.averagePrice(start, end));
         calc.calculateAveragePrices();
     }

@@ -197,9 +197,6 @@ public class TibberWebsocket {
             Instant sent = pingPongMap.remove(paylodString);
             if (sent == null) {
                 logger.debug("Websocket receiced pong without ping {}", paylodString);
-            } else {
-                // long durationMS = Duration.between(sent, Instant.now()).toMillis();
-                // logger.trace("Websocket receiced pong {} with duration {}", paylodString, durationMS);
             }
         } else if (Frame.Type.PING.equals(frame.getType())) {
             session.ifPresentOrElse((session) -> {
