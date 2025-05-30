@@ -93,7 +93,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGS_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERG3_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHTG3_STR, true, false), //
