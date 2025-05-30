@@ -26,6 +26,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tibber.internal.Utils;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
 import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
@@ -59,7 +60,8 @@ public class PriceCalculator {
                 Instant end = Instant.parse(entryObject.get("startsAt").getAsString());
                 double price = previousEntry.get("total").getAsDouble();
                 previousDuration = (int) Duration.between(start, end).getSeconds();
-                PriceInfo pi = new PriceInfo(price, previousDuration, start);
+                PriceInfo pi = new PriceInfo(price, previousDuration, start,
+                        Utils.mapLevelToInt(previousEntry.get("level").getAsString()));
                 priceMap.put(start, pi);
             }
             previousEntry = entryObject;
@@ -67,12 +69,12 @@ public class PriceCalculator {
 
         // put last element with previousDuration
         Instant lastElementStart = Instant.parse(previousEntry.get("startsAt").getAsString());
-        priceMap.put(lastElementStart,
-                new PriceInfo(previousEntry.get("total").getAsDouble(), previousDuration, lastElementStart));
+        priceMap.put(lastElementStart, new PriceInfo(previousEntry.get("total").getAsDouble(), previousDuration,
+                lastElementStart, Utils.mapLevelToInt(previousEntry.get("level").getAsString())));
 
         // put termination element
         Instant terminationInstant = priceMap.lastKey().plus(previousDuration, ChronoUnit.SECONDS);
-        priceMap.put(terminationInstant, new PriceInfo(Double.MAX_VALUE, 0, terminationInstant));
+        priceMap.put(terminationInstant, new PriceInfo(Double.MAX_VALUE, 0, terminationInstant, 0));
     }
 
     /**

@@ -16,14 +16,10 @@ import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
@@ -48,34 +44,6 @@ import com.google.gson.JsonParser;
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
-    public static void calculateAveragePrices(TreeMap<Instant, Double> priceMap) {
-        Instant calculationInstant = Instant.now().with(ChronoField.MINUTE_OF_HOUR, 0)
-                .with(ChronoField.SECOND_OF_MINUTE, 0);
-        Instant calculationStart = calculationInstant.minus(1, ChronoUnit.DAYS);
-        // continue loop until iterator current point of calculation
-        while (priceMap.ceilingEntry(calculationInstant) != null) {
-            if (priceMap.floorEntry(calculationStart) != null) {
-                // calculate average for 24h
-                double price = 0;
-                Instant iterator = calculationStart;
-                while (iterator.isBefore(calculationInstant)) {
-                    Entry<Instant, Double> floor = priceMap.floorEntry(calculationStart);
-                    Entry<Instant, Double> ceiling = priceMap.ceilingEntry(calculationStart);
-                    if (floor != null && ceiling != null) {
-                        long duration = Duration.between(calculationInstant, ceiling.getKey()).toMinutes();
-                        price += duration * floor.getValue();
-                        iterator = iterator.plus(duration, ChronoUnit.MINUTES);
-                    } else {
-                        LOGGER.warn("Average price calculation out of range");
-                        break;
-                    }
-                }
-            } else {
-                // skip this entry - there are not 24h prices available for calculation
-            }
-        }
-    }
-
     public static JsonObject getJsonObject(JsonObject json, String[] path) {
         JsonObject iterator = json;
         for (int i = 0; i < path.length; i++) {
@@ -98,40 +66,6 @@ public class Utils {
         }
         return EMPTY;
     }
-
-    /**
-     * Conversions for ThingAction calculations
-     */
-
-    // private Map<String, Object> getConfig(String config) {
-    // Map<String, Object> configMap = new HashMap<>();
-    // JsonObject jsonConfig = (JsonObject) JsonParser.parseString(config);
-    // if (jsonConfig.has("earliestStart")) {
-    // configMap.put("earliestStart", Instant.parse(jsonConfig.get("earliestStart").getAsString()));
-    // } else {
-    // configMap.put("earliestStart", Instant.now());
-    // }
-    // if (jsonConfig.has("latestEnd")) {
-    // configMap.put("latestEnd", Instant.parse(jsonConfig.get("latestEnd").getAsString()));
-    // } else {
-    // configMap.put("latestEnd", priceInfoEnd());
-    // }
-    // if (jsonConfig.has("duration")) {
-    // String duration = jsonConfig.get("duration").getAsString();
-    // configMap.put("duration", parseDuration(duration));
-    // } // no default duration
-    // if (jsonConfig.has("power")) {
-    // configMap.put("power", Instant.parse(jsonConfig.get("power").getAsString()));
-    // } else {
-    // configMap.put("power", 0);
-    // }
-    // if (jsonConfig.has("ascending")) {
-    // configMap.put("ascending", Boolean.getBoolean(jsonConfig.get("latestEnd").getAsString()));
-    // } else {
-    // configMap.put("ascending", true);
-    // }
-    // return configMap;
-    // }
 
     /**
      * Converts a duration String with or without unit into seconds. If no unit is attached default is seconds
@@ -265,28 +199,51 @@ public class Utils {
         return curveList;
     }
 
+    /**
+     * Map level String from Tibber response to State.
+     * See https://developer.tibber.com/docs/reference#pricelevel
+     *
+     * @param levelString levelString String according to Tibber API
+     * @return DecimalType if price decoding is successful, UNDEF otherwise
+     */
     public static State mapToState(String levelString) {
-        State levelState = UnDefType.UNDEF;
+        int level = mapLevelToInt(levelString);
+        if (level == Integer.MAX_VALUE) {
+            return UnDefType.UNDEF;
+        } else {
+            return new DecimalType(level);
+        }
+    }
+
+    /**
+     * Map level String from Tibber response to integer.
+     * See https://developer.tibber.com/docs/reference#pricelevel
+     *
+     * @param levelString String according to Tibber API
+     * @return 0 is normal level, negative values cheaper and positive values expensive values.
+     */
+    public static int mapLevelToInt(String levelString) {
         switch (levelString.toLowerCase()) {
             case PRICE_LEVEL_VERY_CHEAP:
-                levelState = new DecimalType(-2);
-                break;
+                return -2;
             case PRICE_LEVEL_CHEAP:
-                levelState = new DecimalType(-1);
-                break;
+                return -1;
             case PRICE_LEVEL_NORMAL:
-                levelState = new DecimalType(0);
-                break;
+                return 0;
             case PRICE_LEVEL_EXPENSIVE:
-                levelState = new DecimalType(1);
-                break;
+                return 1;
             case PRICE_LEVEL_VERY_EXPENSIVE:
-                levelState = new DecimalType(2);
-                break;
+                return 2;
             default:
                 LOGGER.warn("Level {} cannot be mapped", levelString);
-                break;
+                // try fallback
+                if (levelString.toLowerCase().contains("cheap")) {
+                    return -3;
+                }
+                if (levelString.toLowerCase().contains("expensive")) {
+                    return 3;
+                }
+                return Integer.MAX_VALUE;
         }
-        return levelState;
     }
 }

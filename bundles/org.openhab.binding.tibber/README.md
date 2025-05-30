@@ -1,7 +1,7 @@
 # Tibber Binding
 
 The Tibber Binding retrieves `prices` form  [Tibber API](https://developer.tibber.com).
-Users equipped with Tibber Pulse hardware can connect in addition to [live group](#live-group) and [statistics group](#livestatistics-group).
+Users equipped with Tibber Pulse hardware can connect in addition to [live group](#live-group) and [statistics group](#statistics-group).
 
 
 ## Supported Things

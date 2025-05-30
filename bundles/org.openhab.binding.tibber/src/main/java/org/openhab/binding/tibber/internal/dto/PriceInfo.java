@@ -15,8 +15,6 @@ package org.openhab.binding.tibber.internal.dto;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -30,19 +28,13 @@ public class PriceInfo {
     public double price;
     public int durationSeconds;
     public Instant startsAt;
+    public int level;
 
-    public PriceInfo(double price, int durationSeconds, Instant startsAt) {
+    public PriceInfo(double price, int durationSeconds, Instant startsAt, int level) {
         this.price = price;
         this.durationSeconds = durationSeconds;
         this.startsAt = startsAt;
-    }
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> priceInfoMap = new HashMap<>();
-        priceInfoMap.put("price", price);
-        priceInfoMap.put("duration", durationSeconds);
-        priceInfoMap.put("startsAt", startsAt);
-        return priceInfoMap;
+        this.level = level;
     }
 
     public void adjust(Instant earliestStart, Instant latestEnd) {
@@ -60,6 +52,7 @@ public class PriceInfo {
 
     @Override
     public String toString() {
-        return "{\"price\":" + price + ",\"duration\":" + durationSeconds + ",\"startsAt\":\"" + startsAt + "\"}";
+        return "{\"price\":" + price + ",\"duration\":" + durationSeconds + ",\"level\":" + level + ",\"startsAt\":\""
+                + startsAt + "\"}";
     }
 }
