@@ -42,6 +42,10 @@ public class Device extends AbstractConfiguration {
         return getOptionalString("model");
     }
 
+    public @Nullable String getModelId() {
+        return getOptionalString("model_id");
+    }
+
     public @Nullable String getName() {
         return getOptionalString("name");
     }
