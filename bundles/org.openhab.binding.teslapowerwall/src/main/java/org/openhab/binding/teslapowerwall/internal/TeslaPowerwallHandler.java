@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -156,6 +157,12 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             } else {
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
                         new QuantityType<>(0, Units.PERCENT));
+            }
+            if (systemStatus.batteryBlocks != null && systemStatus.batteryBlocks.length > 0) {
+                Map<String, String> properties = editProperties();
+                properties.put("Battery1-partno", systemStatus.batteryBlocks[0].packagePartNumber);
+                properties.put("Battery1-serial", systemStatus.batteryBlocks[0].packageSerialNumber);
+                updateProperties(properties);
             }
         }
         if (meterAggregates != null) {

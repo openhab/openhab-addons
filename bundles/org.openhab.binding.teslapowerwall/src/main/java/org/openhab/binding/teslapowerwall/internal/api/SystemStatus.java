@@ -88,10 +88,10 @@ public class SystemStatus {
     public @NonNullByDefault({}) BatteryBlocks[] batteryBlocks;
 
     @SerializedName("ffr_power_availability_high")
-    public int ffrPowerAvailabilityHigh;
+    public float ffrPowerAvailabilityHigh;
 
     @SerializedName("ffr_power_availability_low")
-    public int ffrPowerAvailabilityLow;
+    public float ffrPowerAvailabilityLow;
 
     @SerializedName("load_charge_constraint")
     public int loadChargeConstraint;
@@ -188,10 +188,10 @@ public class SystemStatus {
         public float nominalFullPackEnergy;
 
         @SerializedName("p_out")
-        public int pOut;
+        public float pOut;
 
         @SerializedName("q_out")
-        public int qOut;
+        public float qOut;
 
         @SerializedName("v_out")
         public float vOut;

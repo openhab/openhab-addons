@@ -53,7 +53,7 @@ public class MeterAggregates {
         public float frequency;
 
         @SerializedName("energy_exported")
-        public int energyExported;
+        public float energyExported;
 
         @SerializedName("energy_imported")
         public float energyImported;
