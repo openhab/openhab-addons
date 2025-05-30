@@ -14,8 +14,6 @@ package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -30,13 +28,5 @@ public class BatterySOE {
     public float soe = 0;
 
     private BatterySOE() {
-    }
-
-    public static BatterySOE parse(String response) {
-        /* parse json string */
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        BatterySOE info = new BatterySOE();
-        info.soe = jsonObject.get("percentage").getAsFloat();
-        return info;
     }
 }

@@ -73,36 +73,35 @@ public class TeslaPowerwallWebTargets {
     public BatterySOE getBatterySOE(String email, String password)
             throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getBatterySOEUri, email, password);
-        logger.trace("getBatterySOE response = {}", response);
         return gson.fromJson(response, BatterySOE.class);
     }
 
+    @Nullable
     public GridStatus getGridStatus(String email, String password)
             throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getGridStatusUri, email, password);
-        logger.trace("getGridStatus response = {}", response);
-        return GridStatus.parse(response);
+        return gson.fromJson(response, GridStatus.class);
     }
 
+    @Nullable
     public SystemStatus getSystemStatus(String email, String password)
             throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getSystemStatusUri, email, password);
-        logger.trace("getSystemStatus response = {}", response);
-        return SystemStatus.parse(response);
+        return gson.fromJson(response, SystemStatus.class);
     }
 
+    @Nullable
     public MeterAggregates getMeterAggregates(String email, String password)
             throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getMeterAggregatesUri, email, password);
-        logger.trace("getMeterAggregates response = {}", response);
-        return MeterAggregates.parse(response);
+        return gson.fromJson(response, MeterAggregates.class);
     }
 
+    @Nullable
     public Operations getOperations(String email, String password)
             throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getOperationUri, email, password);
-        logger.trace("getOperations response = {}", response);
-        return Operations.parse(response);
+        return gson.fromJson(response, Operations.class);
     }
 
     public String getToken(String email, String password)
