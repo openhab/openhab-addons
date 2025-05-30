@@ -53,7 +53,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link TibberWebsocket} is responsible for handling queries to/from Tibber API.
+ * The {@link TibberWebsocket} connects to Tibber and retreives live data for Tibber Pulse.
  *
  * @author Bernd Weymann - Initial contribution
  */

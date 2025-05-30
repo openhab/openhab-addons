@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link TibberConfiguration} class contains fields mapping configuration parameters.
  *
  * @author Stian Kjoglum - Initial contribution
- * @author Bernd Weymann - make config variables public
+ * @author Bernd Weymann - make configuration variables public and introduce updateHour
  */
 @NonNullByDefault
 public class TibberConfiguration {

@@ -15,7 +15,7 @@ package org.openhab.binding.tibber.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CurveEntry} represents one entry of a curve with power and duration.
+ * {@link CurveEntry} represents one entry of a curve with power and duration.
  *
  * @author Bernd Weymann - Initial contribution
  */

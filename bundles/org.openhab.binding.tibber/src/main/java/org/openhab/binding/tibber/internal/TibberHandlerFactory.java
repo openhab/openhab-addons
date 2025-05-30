@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Stian Kjoglum - Initial contribution
- * @author Bernd Weymann - Use HttpClientFactory, CronScheduler and Storage
+ * @author Bernd Weymann - Use HttpClientFactory, CronScheduler and TimeZoneProvider
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.tibber", service = ThingHandlerFactory.class)

@@ -36,7 +36,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link Utils} provides helper calls used across the whole binding.
+ * {@link Utils} provides helper calls used across the whole binding.
  *
  * @author Bernd Weymann - Initial contribution
  */
