@@ -144,7 +144,9 @@ public class TibberHandler extends BaseThingHandler {
         isDisposed = false;
         tibberConfig = getConfigAs(TibberConfiguration.class);
         if (EMPTY.equals(tibberConfig.homeid) || EMPTY.equals(tibberConfig.token)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/status.configuration-error");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
@@ -180,21 +182,20 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private void doInitialize() {
-        Request initRequest = getRequest();
+        Request currencyRequest = getRequest();
         String body = String.format(QUERY_CONTAINER,
                 String.format(getTemplate(CURRENCY_QUERY_RESOURCE_PATH), tibberConfig.homeid));
         logger.info("Query with body {}", body);
-        initRequest.content(new StringContentProvider(body, "utf-8"));
+        currencyRequest.content(new StringContentProvider(body, "utf-8"));
         try {
-            ContentResponse cr = initRequest.send();
+            ContentResponse cr = currencyRequest.send();
             int responseStatus = cr.getStatus();
-            String initResponse = cr.getContentAsString();
-            logger.trace("doInitialze response {} - {}", responseStatus, initResponse);
+            String currencyResponse = cr.getContentAsString();
+            logger.trace("doInitialze response {} - {}", responseStatus, currencyResponse);
             if (responseStatus == 200) {
-                JsonObject jsonResponse = (JsonObject) JsonParser.parseString(initResponse);
+                JsonObject jsonResponse = (JsonObject) JsonParser.parseString(currencyResponse);
                 JsonObject currency = Utils.getJsonObject(jsonResponse, CURRENCY_QUERY_JSON_PATH);
                 if (!currency.isEmpty()) {
-                    // query successful - go online
                     updateStatus(ThingStatus.ONLINE);
 
                     // check if currency is supported
@@ -207,7 +208,7 @@ public class TibberHandler extends BaseThingHandler {
                         logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
                     }
 
-                    // start websocket plus watchdog
+                    // create websocket and watchdog
                     webSocket = Optional.of(new TibberWebsocket(this, tibberConfig, httpClient));
                     websocketWatchdog = Optional
                             .of(scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES));
@@ -224,15 +225,15 @@ public class TibberHandler extends BaseThingHandler {
                     }
 
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Status: " + responseStatus + " - " + initResponse);
+                    logger.warn("Currency cannot be obtained from {}", currencyResponse);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Status: " + responseStatus + " - " + initResponse);
+                        "@text/status.initial-call-failed  [\"" + responseStatus + " - " + currencyResponse + "\"]");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.initial-call-failed  [\"" + e.getMessage() + "\"]");
         }
     }
 
@@ -325,23 +326,25 @@ public class TibberHandler extends BaseThingHandler {
                         });
                         averageCache = avgSeries;
                         sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_AVERAGE), avgSeries);
-
+                        updateStatus(ThingStatus.ONLINE);
                     } catch (JsonSyntaxException | DateTimeParseException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Error communicating with Tibber API: " + e.getMessage());
+                                "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
                     }
                 }
             } else if (jsonResponse.contains("error")) {
                 updatePriceInfoRetry();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error in response from Tibber API: " + jsonResponse);
+                        "@text/status.price-update-failed  [\"" + responseStatus + "\"]");
             } else {
                 updatePriceInfoRetry();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unexpected response from Tibber: " + jsonResponse);
+                        "@text/status.price-update-failed  [\"" + jsonResponse + "\"]");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updatePriceInfoRetry();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
         }
     }
 
