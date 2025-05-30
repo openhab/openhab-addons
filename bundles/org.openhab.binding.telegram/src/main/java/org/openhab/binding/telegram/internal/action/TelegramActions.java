@@ -23,6 +23,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -375,7 +376,7 @@ public class TelegramActions implements ThingActions {
             return false;
         }
         TelegramHandler localHandler = handler;
-        List<Long> chatIdentifiers = List.of();
+        List<Long> chatIdentifiers = Collections.emptyList();
         if (chatIds != null) {
             Long[] chatIdentifiersArray = chatIds; // compiler vs null annotation fix
             chatIdentifiers = List.of(chatIdentifiersArray);
