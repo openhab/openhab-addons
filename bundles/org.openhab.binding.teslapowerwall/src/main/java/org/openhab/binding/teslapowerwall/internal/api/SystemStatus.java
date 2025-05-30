@@ -73,7 +73,7 @@ public class SystemStatus {
     public int hardwareCapabilityAdjustedChargePower;
 
     @SerializedName("grid_services_power")
-    public int gridServicesPower;
+    public float gridServicesPower;
 
     @SerializedName("system_island_state")
     public String systemIslandState = "";
