@@ -43,7 +43,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * {@link TibberActions} which can be sent to a vehicle
+ * {@link TibberActions} for price calculations in rules
  *
  * @author Bernd Weymann - Initial contribution
  */

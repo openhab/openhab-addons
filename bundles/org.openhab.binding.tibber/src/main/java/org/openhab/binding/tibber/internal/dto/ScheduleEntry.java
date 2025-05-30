@@ -17,7 +17,7 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ScheduleEntry} represents one entry of a curve with power and duration.
+ * {@link ScheduleEntry} is one entry of a non consecutive scheduling plan.
  *
  * @author Bernd Weymann - Initial contribution
  */

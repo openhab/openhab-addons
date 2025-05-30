@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PriceInfo} represents one entry of a curve with power and duration.
+ * {@link PriceInfo} object holds values of Tibber price response.
  *
  * @author Bernd Weymann - Initial contribution
  */

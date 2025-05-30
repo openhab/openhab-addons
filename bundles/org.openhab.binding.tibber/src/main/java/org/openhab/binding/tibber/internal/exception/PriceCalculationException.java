@@ -15,7 +15,8 @@ package org.openhab.binding.tibber.internal.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PriceCalculationException} exception is thrown if ThingsActions parameters contains errors
+ * The {@link PriceCalculationException} exception is thrown if price calculations cannot be performed e.g.
+ * stepping over boundaries.
  *
  * @author Bernd Weymann - Initial contribution
  */

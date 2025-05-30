@@ -81,7 +81,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link TibberHandler} is responsible for handling queries to/from Tibber API.
  *
  * @author Stian Kjoglum - Initial contribution
- * @author Bernd Weymann - Use common HttpClient
+ * @author Bernd Weymann - Use common HttpClient, rework of Nullable fields
  */
 @NonNullByDefault
 public class TibberHandler extends BaseThingHandler {
