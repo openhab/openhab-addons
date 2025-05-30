@@ -95,6 +95,7 @@ public class TibberActions implements ThingActions {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @RuleAction(label = "@text/actionBestPricePeriodLabel", description = "@text/actionBestPricePeriodDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPricePeriod(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
@@ -109,6 +110,7 @@ public class TibberActions implements ThingActions {
                 boolean onlyPeriod = false;
                 // check if curve is present
                 Object curve = parameterMap.get(PARAM_CURVE);
+                List<CurveEntry> curveList = null;
                 if (curve == null) {
                     // if no curve is given check for power and duration parameters
                     Object power = parameterMap.get(PARAM_POWER);
@@ -127,9 +129,14 @@ public class TibberActions implements ThingActions {
                                 "No curve and no duration given for bestPeriod calculation " + parameters);
                     }
                     CurveEntry entry = new CurveEntry(powerValue, duration.intValue());
-                    curve = List.of(entry);
+                    curveList = List.of(entry);
+                } else if (curve instanceof List list) {
+                    curveList = list;
+                } else {
+                    throw new CalculationParameterException(
+                            "No curve and no duration given for bestPeriod calculation " + parameters);
                 }
-                Map<String, Object> result = calc.calculateBestPrice(start, stop, (List<CurveEntry>) curve);
+                Map<String, Object> result = calc.calculateBestPrice(start, stop, curveList);
                 if (onlyPeriod) {
                     result.remove("lowestPrice");
                     result.remove("averagePrice");

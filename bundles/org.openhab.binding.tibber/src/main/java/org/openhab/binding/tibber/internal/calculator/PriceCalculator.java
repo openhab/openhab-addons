@@ -67,14 +67,18 @@ public class PriceCalculator {
             previousEntry = entryObject;
         }
 
-        // put last element with previousDuration
-        Instant lastElementStart = Instant.parse(previousEntry.get("startsAt").getAsString());
-        priceMap.put(lastElementStart, new PriceInfo(previousEntry.get("total").getAsDouble(), previousDuration,
-                lastElementStart, Utils.mapLevelToInt(previousEntry.get("level").getAsString())));
+        if (previousEntry != null) {
+            // put last element with previousDuration
+            Instant lastElementStart = Instant.parse(previousEntry.get("startsAt").getAsString());
+            priceMap.put(lastElementStart, new PriceInfo(previousEntry.get("total").getAsDouble(), previousDuration,
+                    lastElementStart, Utils.mapLevelToInt(previousEntry.get("level").getAsString())));
 
-        // put termination element
-        Instant terminationInstant = priceMap.lastKey().plus(previousDuration, ChronoUnit.SECONDS);
-        priceMap.put(terminationInstant, new PriceInfo(Double.MAX_VALUE, 0, terminationInstant, 0));
+            // put termination element
+            Instant terminationInstant = priceMap.lastKey().plus(previousDuration, ChronoUnit.SECONDS);
+            priceMap.put(terminationInstant, new PriceInfo(Double.MAX_VALUE, 0, terminationInstant, 0));
+        } else {
+            logger.warn("Empty spot price update delivered");
+        }
     }
 
     /**
