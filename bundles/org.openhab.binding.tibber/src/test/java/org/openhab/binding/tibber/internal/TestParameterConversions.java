@@ -26,7 +26,7 @@ import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 
 /**
- * The {@link TestParameterConversions} checks the conversion of price calculation parameters.
+ * The {@link TestParameterConversions} tests the conversion of price calculation parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */

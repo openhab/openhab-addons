@@ -20,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link TestActions} checks the conversion of price calculation parameters.
+ * The {@link TestActions} is testing the action implementation.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -72,16 +71,6 @@ public class TestActions {
         assertNotNull(actions);
         assertEquals(Instant.parse("2025-05-17T22:00:00Z"), actions.priceInfoStart());
         assertEquals(Instant.parse("2025-05-19T22:00:00Z"), actions.priceInfoEnd());
-    }
-
-    @Test
-    void testMapToMapConversion() {
-        TibberActions actions = getActions();
-        assertNotNull(actions);
-        Map<String, Object> params = new HashMap<>();
-        params.put("earliestStart", Instant.parse("2025-05-17T22:00:00Z"));
-        params.put("duration", "3600 s");
-        String result = actions.bestPricePeriod(params);
     }
 
     @Test

@@ -24,7 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,7 +38,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link TestPriceCalculator15} checks the conversion of price calculation parameters.
+ * The {@link TestPriceCalculator15} tests price calculation based on 15 minutes price periods
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -47,7 +46,6 @@ import com.google.gson.JsonParser;
 public class TestPriceCalculator15 {
 
     static @Nullable PriceCalculator getPriceCalculator() {
-        TreeMap<Instant, Double> spotPriceMap = new TreeMap<>();
         String fileName = "src/test/resources/price15-query-response.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
