@@ -186,7 +186,7 @@ public class NetworkUtils {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
                 if (networkInterface.isUp() && !networkInterface.isLoopback()) {
-                    logger.trace("Network interface: {} is included in the", networkInterface.getName());
+                    logger.trace("Network interface: {} is included in the search", networkInterface.getName());
                     outputMap.put(networkInterface.getName(),
                             networkInterface.getInterfaceAddresses().stream()
                                     .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
