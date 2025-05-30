@@ -204,8 +204,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                         d = d.movePointLeft(schemaDp.scale);
 
                         if (!schemaDp.unit.isEmpty()) {
-                            updateState(channelId, new QuantityType<>(d.toPlainString() + " " + schemaDp.unit));
-                            return;
+                            // If the item type for the channel is not dimensioned the unit is not usable.
+                            Channel channel = thing.getChannel(channelId);
+                            if (channel != null && !"Number".equals(channel.getAcceptedItemType())) {
+                                updateState(channelId, new QuantityType<>(d.toPlainString() + " " + schemaDp.unit));
+                                return;
+                            }
                         }
                     }
 
@@ -363,12 +367,17 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             }
         } else if (CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
             commandRequest.put(configuration.dp, command.toString());
-        } else if (CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
+        } else if (CHANNEL_TYPE_UID_QUANTITY.equals(channelTypeUID) || CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
             if (command instanceof QuantityType quantityType) {
                 SchemaDp schemaDp = schemaDps.get(channelUID.getId());
 
                 if (schemaDp != null && !schemaDp.unit.isEmpty()) {
-                    quantityType = quantityType.toUnit(schemaDp.unit);
+                    // If the item type for the channel is not dimensioned the unit is not usable and we
+                    // assume whoever sent a quantity instead of a bare number knows what they are doing.
+                    Channel channel = thing.getChannel(channelUID.getId());
+                    if (channel != null && !"Number".equals(channel.getAcceptedItemType())) {
+                        quantityType = quantityType.toUnit(schemaDp.unit);
+                    }
                 }
 
                 if (quantityType != null) {

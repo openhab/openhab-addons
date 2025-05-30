@@ -191,7 +191,7 @@
 
 		<category>Number</category>
 
-		<state pattern="%.3f"></state>
+		<state pattern="%.3f %unit%"></state>
 
 		<config-description>
 			<parameter name="dp" type="integer" required="true">
