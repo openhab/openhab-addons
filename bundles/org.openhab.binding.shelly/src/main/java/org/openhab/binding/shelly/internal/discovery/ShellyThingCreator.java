@@ -560,79 +560,90 @@ public class ShellyThingCreator {
 
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR));
 
-    public static ThingUID getThingUID(String serviceName, String deviceType, String mode, boolean unknown) {
-        String devid = substringAfterLast(serviceName, "-");
-        if (devid.isEmpty()) {
-            throw new IllegalArgumentException("serviceName has improper format: " + serviceName);
-        }
-        return new ThingUID(!unknown ? getThingTypeUID(serviceName, deviceType, mode)
-                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, deviceType, mode), devid);
+    public static ThingUID getThingUID(String serviceName) {
+        return getThingUID(serviceName, "", "");
+    }
+
+    public static ThingUID getThingUID(String serviceName, String deviceType, String mode) {
+        String deviceId = getDeviceIdOrThrow(serviceName);
+        return new ThingUID(getThingTypeUID(serviceName, deviceType, mode), deviceId);
+    }
+
+    public static ThingUID getThingUIDForUnknown(String serviceName, String deviceType, String mode) {
+        String deviceId = getDeviceIdOrThrow(serviceName);
+        return new ThingUID(getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + deviceId, deviceType, mode),
+                deviceId);
     }
 
     public static ThingTypeUID getThingTypeUID(String serviceName, String deviceType, String mode) {
-        return new ThingTypeUID(BINDING_ID, getThingType(serviceName, deviceType, mode));
+        return new ThingTypeUID(BINDING_ID, getThingTypeID(serviceName, deviceType, mode));
     }
 
-    public static ThingTypeUID getUnknownTTUID() {
-        return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR);
+    private static String getDeviceIdOrThrow(String serviceName) {
+        String deviceId = substringAfterLast(serviceName, "-");
+        if (deviceId.isEmpty()) {
+            throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
+        }
+        return deviceId;
     }
 
-    public static String getThingType(String hostname, String deviceType, String mode) {
-        if (THING_TYPE_SHELLYPROTECTED_STR.equals(hostname)) {
+    private static String getThingTypeID(String serviceName, String deviceType, String mode) {
+        if (THING_TYPE_SHELLYPROTECTED_STR.equals(serviceName)) {
             return THING_TYPE_SHELLYPROTECTED_STR;
         }
-        String name = hostname.toLowerCase();
-        String type = substringBefore(name, "-").toLowerCase();
-        String devid = substringAfterLast(name, "-");
-        if (devid.isEmpty() || type.isEmpty()) {
-            throw new IllegalArgumentException("Invalid device name format: " + hostname);
+        String serviceNameLowerCase = serviceName.toLowerCase();
+        String type = substringBefore(serviceNameLowerCase, "-");
+        if (type.isEmpty()) {
+            throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
         }
 
         // First check for special handling
-        if (name.startsWith(THING_TYPE_SHELLY25_PREFIX)) { // Shelly v2.5
-            return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY25_RELAY_STR : THING_TYPE_SHELLY25_ROLLER_STR;
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY25_PREFIX)) { // Shelly v2.5
+            return getRelayOrRollerType(THING_TYPE_SHELLY25_RELAY_STR, THING_TYPE_SHELLY25_ROLLER_STR, mode);
         }
-        if (name.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
-            return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY2_RELAY_STR : THING_TYPE_SHELLY2_ROLLER_STR;
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
+            return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY_STR, THING_TYPE_SHELLY2_ROLLER_STR, mode);
         }
-        if (name.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
-            if (name.startsWith(THING_TYPE_SHELLYPLUGS_STR) || name.contains("-s")) {
+            if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGS_STR) || serviceNameLowerCase.contains("-s")) {
                 return THING_TYPE_SHELLYPLUGS_STR;
             }
-            if (name.startsWith(THING_TYPE_SHELLYPLUGU1_STR)) {
+            if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGU1_STR)) {
                 return THING_TYPE_SHELLYPLUGU1_STR;
             }
             return THING_TYPE_SHELLYPLUG_STR;
         }
-        if (name.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
-            return mode.equals(SHELLY_MODE_COLOR) ? THING_TYPE_SHELLYRGBW2_COLOR_STR : THING_TYPE_SHELLYRGBW2_WHITE_STR;
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
+            return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR_STR : THING_TYPE_SHELLYRGBW2_WHITE_STR;
         }
-        if (name.startsWith(THING_TYPE_SHELLYMOTION_STR)) {
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYMOTION_STR)) {
             // depending on firmware release the Motion advertises under shellymotion-xxx or shellymotionsensor-xxxx
             return THING_TYPE_SHELLYMOTION_STR;
         }
 
-        // Check general mapping
         if (!deviceType.isEmpty()) {
-            String res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType); // by device type
+            String res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType);
             if (res != null) {
                 return res;
             }
 
-            String dt = mode.equals(SHELLY_MODE_RELAY) || mode.equals(SHELLY_MODE_ROLLER) ? deviceType + "-" + mode
-                    : deviceType;
-            res = THING_TYPE_BY_DEVICE_TYPE.get(dt); // <DT>-relay / <DT>-roller
+            String key = switch (mode) {
+                // <DT>-relay / <DT>-roller
+                case SHELLY_MODE_RELAY, SHELLY_MODE_ROLLER -> deviceType + "-" + mode;
+                default -> deviceType;
+            };
+            res = THING_TYPE_BY_DEVICE_TYPE.get(key);
             if (res != null) {
                 return res;
             }
         }
 
-        String res = THING_TYPE_MAPPING.get(type);
-        if (res != null) {
-            return res;
-        }
-        return THING_TYPE_SHELLYUNKNOWN_STR;
+        return THING_TYPE_MAPPING.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN_STR);
+    }
+
+    private static String getRelayOrRollerType(String relayType, String rollerType, String mode) {
+        return SHELLY_MODE_RELAY.equals(mode) ? relayType : rollerType;
     }
 }
