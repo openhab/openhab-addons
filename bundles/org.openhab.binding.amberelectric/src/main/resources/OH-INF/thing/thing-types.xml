@@ -50,6 +50,7 @@
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
