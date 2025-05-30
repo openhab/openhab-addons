@@ -79,7 +79,8 @@ public class TestParameterConversions {
         params.put(PARAM_CURVE, List.of(new CurveEntry(1000, 60)));
         Map<String, Object> convertedParams = new HashMap<>();
         Utils.convertParameters(params, convertedParams);
-        List l = (List) convertedParams.get(PARAM_CURVE);
+        List<?> l = (List<?>) convertedParams.get(PARAM_CURVE);
+        assertNotNull(l);
         assertTrue(l.get(0) instanceof CurveEntry);
     }
 }

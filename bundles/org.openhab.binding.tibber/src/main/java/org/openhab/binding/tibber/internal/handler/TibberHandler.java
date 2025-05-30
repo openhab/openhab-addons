@@ -38,7 +38,6 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -48,6 +47,7 @@ import org.openhab.binding.tibber.internal.Utils;
 import org.openhab.binding.tibber.internal.action.TibberActions;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
+import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -347,13 +347,15 @@ public class TibberHandler extends BaseThingHandler {
         }
     }
 
-    public @Nullable PriceCalculator getPriceCalculator() {
+    public PriceCalculator getPriceCalculator() {
         synchronized (this) {
             if (calculator.isPresent()) {
                 return calculator.get();
+            } else {
+                throw new PriceCalculationException(
+                        "No PriceCalculator available! Maybe OFFLINE or Thing deactivated.");
             }
         }
-        return null;
     }
 
     private State getEnergyPrice(String priceString) {

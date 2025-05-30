@@ -227,7 +227,8 @@ public class PriceCalculator {
         checkBoundaries(earliestStart, latestEnd);
         TreeMap<Instant, PriceInfo> calculationMap = new TreeMap<>();
         for (Entry<Instant, PriceInfo> entry : priceMap.entrySet()) {
-            if (!entry.getKey().isBefore(earliestStart) && !entry.getKey().isAfter(latestEnd)) {
+            if (!entry.getKey().isBefore(earliestStart) && !entry.getKey().isAfter(latestEnd)
+                    && !(Double.MAX_VALUE == entry.getValue().price)) {
                 calculationMap.put(entry.getKey(), entry.getValue());
             }
         }
@@ -354,7 +355,7 @@ public class PriceCalculator {
      * @return last INstant key of priceMap
      */
     public Instant priceInfoEnd() {
-        return priceMap.lastKey();
+        return priceMap.lastKey().plusSeconds(priceMap.lastEntry().getValue().durationSeconds);
     }
 
     /**
@@ -364,11 +365,14 @@ public class PriceCalculator {
      * @param end
      */
     private void checkBoundaries(Instant start, Instant end) {
-        if (start.isBefore(priceMap.firstKey())) {
+        if (!start.isBefore(end)) {
+            throw new PriceCalculationException("Calculation start " + start + " is after end " + end);
+        }
+        if (start.isBefore(priceInfoStart())) {
             throw new PriceCalculationException(
                     "Calculation start " + start + " too early. Please respect priceInfoStart boundary.");
         }
-        if (end.isAfter(priceMap.lastKey())) {
+        if (end.isAfter(priceInfoEnd())) {
             throw new PriceCalculationException(
                     "Calculation end " + end + " too late. Please respect priceInfoEnd boundary.");
         }

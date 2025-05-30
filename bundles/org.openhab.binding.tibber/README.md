@@ -250,7 +250,7 @@ Provide either
 
 Example rule:
 
-```java
+```javascript
 rule "Tibber Price List"
 when
     System started // use your trigger
@@ -285,7 +285,7 @@ Console output:
 
 Example rule:
 
-```java
+```javascript
 import java.util.Map;
 
 var Timer bestPriceTimer = null
@@ -330,7 +330,7 @@ Console output:
 
 ### Calculate best price schedule
 
-```java
+```javascript
 rule "Tibber Schedule Calculation"
 when
     System started // use your trigger

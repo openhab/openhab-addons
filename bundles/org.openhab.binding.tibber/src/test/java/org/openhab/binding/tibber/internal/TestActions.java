@@ -13,13 +13,14 @@
 package org.openhab.binding.tibber.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.tibber.internal.TibberBindingConstants.PRICE_INFO_JSON_PATH;
+import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,8 +28,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.action.TibberActions;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
+import org.openhab.binding.tibber.internal.dto.CurveEntry;
+import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -66,40 +70,126 @@ public class TestActions {
     }
 
     @Test
-    void testEarliestStart() {
+    void testBounadries() {
         TibberActions actions = getActions();
         assertNotNull(actions);
+
         assertEquals(Instant.parse("2025-05-17T22:00:00Z"), actions.priceInfoStart());
         assertEquals(Instant.parse("2025-05-19T22:00:00Z"), actions.priceInfoEnd());
     }
 
     @Test
-    void testSchedule() {
+    void testPriceList() {
+        TibberActions actions = getActions();
+        assertNotNull(actions);
+
+        String result = actions.listPrices(Map.of(PARAM_EARLIEST_START, actions.priceInfoStart()));
+        JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
+        assertEquals(48, resultJson.get("size").getAsInt());
+        JsonArray priceList = resultJson.get("priceList").getAsJsonArray();
+        int previousPrice = Integer.MIN_VALUE;
+        for (JsonElement entry : priceList) {
+            int comparePrice = ((JsonObject) entry).get("price").getAsInt();
+            assertTrue(previousPrice <= comparePrice, previousPrice + "<=" + comparePrice);
+            previousPrice = comparePrice;
+        }
+
+        result = actions.listPrices(Map.of(PARAM_ASCENDING, false, PARAM_EARLIEST_START, actions.priceInfoStart()));
+        resultJson = (JsonObject) JsonParser.parseString(result);
+        assertEquals(48, resultJson.get("size").getAsInt());
+        priceList = resultJson.get("priceList").getAsJsonArray();
+        previousPrice = Integer.MAX_VALUE;
+        for (JsonElement entry : priceList) {
+            int comparePrice = ((JsonObject) entry).get("price").getAsInt();
+            assertTrue(previousPrice >= comparePrice, previousPrice + ">=" + comparePrice);
+            previousPrice = comparePrice;
+        }
+    }
+
+    @Test
+    void testConstantBestPrice() {
         TibberActions actions = getActions();
         assertNotNull(actions);
         Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
 
-        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "8 h 15 m");
-        String result = actions.bestPriceSchedule(params);
+        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "1 h 3 m");
+        String result = actions.bestPricePeriod(params);
         JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
-        System.out.println(result);
-        JsonArray scheduleArray = resultJson.get("schedule").getAsJsonArray();
-        System.out.println("###" + scheduleArray);
-        System.out.println("###" + scheduleArray.get(0));
+        assertEquals("2025-05-18T12:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
+        assertEquals("2025-05-19T18:00:00Z", resultJson.get("mostExpensiveStart").getAsString(),
+                "Most Expensive Start");
+        assertEquals(0.177494, resultJson.get("lowestPrice").getAsDouble(), 0.0001, "Cheapest Price");
+        assertEquals(0.477745, resultJson.get("highestPrice").getAsDouble(), 0.0001, "Most Expensive Price");
+        assertEquals(0.294061, resultJson.get("averagePrice").getAsDouble(), 0.0001, "Average Price");
     }
 
     @Test
     void testCurve() {
         TibberActions actions = getActions();
         assertNotNull(actions);
-        Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
 
+        String fileName = "src/test/resources/laundry-curve.json";
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
+            Map<String, Object> params = Map.of("earliestStart", actions.priceInfoStart(), "curve", curve);
+            String result = actions.bestPricePeriod(params);
+            JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
+            assertEquals("2025-05-18T12:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
+            assertEquals("2025-05-19T18:00:00Z", resultJson.get("mostExpensiveStart").getAsString(),
+                    "Most Expensive Start");
+            assertEquals(0.055333, resultJson.get("lowestPrice").getAsDouble(), 0.0001, "Cheapest Price");
+            assertEquals(0.150617, resultJson.get("highestPrice").getAsDouble(), 0.0001, "Most Expensive Price");
+            assertEquals(0.091364, resultJson.get("averagePrice").getAsDouble(), 0.0001, "Average Price");
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
+
+    @Test
+    void testSchedule() {
+        TibberActions actions = getActions();
+        assertNotNull(actions);
+
+        Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
         Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "8 h 15 m");
         String result = actions.bestPriceSchedule(params);
         JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
-        System.out.println(result);
+        assertEquals(2, resultJson.get("size").getAsInt(), "Number of schedules");
+        assertEquals(1.507325, resultJson.get("cost").getAsDouble(), 0.0001, "Price");
         JsonArray scheduleArray = resultJson.get("schedule").getAsJsonArray();
-        System.out.println("###" + scheduleArray);
-        System.out.println("###" + scheduleArray.get(0));
+        assertNotNull(scheduleArray);
+        assertEquals(1.2658, scheduleArray.get(0).getAsJsonObject().get("cost").getAsDouble(), 0.0001,
+                "Cost Element 1");
+        assertEquals(0.241525, scheduleArray.get(1).getAsJsonObject().get("cost").getAsDouble(), 0.0001,
+                "Cost Element 2");
+        assertEquals(25200, scheduleArray.get(0).getAsJsonObject().get("duration").getAsInt(), "Duration Element 1");
+        assertEquals(4500, scheduleArray.get(1).getAsJsonObject().get("duration").getAsInt(), "Duration Element 2");
+        assertEquals("2025-05-18T08:00:00Z", scheduleArray.get(0).getAsJsonObject().get("start").getAsString(),
+                "Start Element 1");
+        assertEquals("2025-05-19T11:00:00Z", scheduleArray.get(1).getAsJsonObject().get("start").getAsString(),
+                "Start Element 2");
+        assertEquals("2025-05-18T15:00:00Z", scheduleArray.get(0).getAsJsonObject().get("stop").getAsString(),
+                "Stop Element 1");
+        assertEquals("2025-05-19T12:15:00Z", scheduleArray.get(1).getAsJsonObject().get("stop").getAsString(),
+                "Stop Element 2");
+    }
+
+    @Test
+    void testParameterException() {
+        TibberActions actions = getActions();
+        assertNotNull(actions);
+
+        // will not work because now() as default parameter earliestStart is out of bounds
+        try {
+            actions.bestPriceSchedule(Map.of());
+            fail("Wrong parameters exception expected");
+        } catch (CalculationParameterException cpe) {
+            String message = cpe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.startsWith("Cannot perform calculation with parameters"));
+            return;
+        }
+        fail("Wrong parameters exception expected");
     }
 }
