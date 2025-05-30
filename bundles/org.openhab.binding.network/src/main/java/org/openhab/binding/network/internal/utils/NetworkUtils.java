@@ -261,7 +261,7 @@ public class NetworkUtils {
             socket.connect(new InetSocketAddress(host, port), (int) timeout.toMillis());
             success = true;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
-            logger.trace("Could not connect to {}:{}", host, port, e);
+            logger.trace("Could not connect to {}:{} {}", host, port, e.getMessage());
         }
         return new PingResult(success, Duration.between(execStartTime, Instant.now()));
     }
