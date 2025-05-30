@@ -28,7 +28,6 @@ import org.openhab.binding.teslapowerwall.internal.api.SystemStatus;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -171,25 +170,25 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         }
         if (meterAggregates != null) {
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_INST_POWER,
-                    new QuantityType<>(meterAggregates.siteMeterDetails.instantPower, MetricPrefix.KILO(Units.WATT)));
+                    new QuantityType<>(meterAggregates.siteMeterDetails.instantPower, Units.WATT));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_ENERGY_EXPORTED,
                     new QuantityType<>(meterAggregates.siteMeterDetails.energyExported, Units.KILOWATT_HOUR));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_ENERGY_IMPORTED,
                     new QuantityType<>(meterAggregates.siteMeterDetails.energyImported, Units.KILOWATT_HOUR));
-            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_INST_POWER, new QuantityType<>(
-                    meterAggregates.batteryMeterDetails.instantPower, MetricPrefix.KILO(Units.WATT)));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_INST_POWER,
+                    new QuantityType<>(meterAggregates.batteryMeterDetails.instantPower, Units.WATT));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_EXPORTED,
                     new QuantityType<>(meterAggregates.batteryMeterDetails.energyExported, Units.KILOWATT_HOUR));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_IMPORTED,
                     new QuantityType<>(meterAggregates.batteryMeterDetails.energyImported, Units.KILOWATT_HOUR));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_INST_POWER,
-                    new QuantityType<>(meterAggregates.loadMeterDetails.instantPower, MetricPrefix.KILO(Units.WATT)));
+                    new QuantityType<>(meterAggregates.loadMeterDetails.instantPower, Units.WATT));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_ENERGY_EXPORTED,
                     new QuantityType<>(meterAggregates.loadMeterDetails.energyExported, Units.KILOWATT_HOUR));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_ENERGY_IMPORTED,
                     new QuantityType<>(meterAggregates.loadMeterDetails.energyImported, Units.KILOWATT_HOUR));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_INST_POWER,
-                    new QuantityType<>(meterAggregates.solarMeterDetails.instantPower, MetricPrefix.KILO(Units.WATT)));
+                    new QuantityType<>(meterAggregates.solarMeterDetails.instantPower, Units.WATT));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_EXPORTED,
                     new QuantityType<>(meterAggregates.solarMeterDetails.energyExported, Units.KILOWATT_HOUR));
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_IMPORTED,
