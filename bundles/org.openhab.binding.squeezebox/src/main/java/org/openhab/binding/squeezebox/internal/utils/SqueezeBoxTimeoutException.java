@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.squeezebox.internal.utils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /***
  *
  * Exception class to indicate a timeout during comminication with
@@ -20,6 +22,7 @@ package org.openhab.binding.squeezebox.internal.utils;
  * @author Patrik Gfeller - Initial contribution
  *
  */
+@NonNullByDefault
 public class SqueezeBoxTimeoutException extends Exception {
     private static final long serialVersionUID = 4542388088266882905L;
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.math.MathContext;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,7 +79,7 @@ public class FreecurrencyProvider implements CurrencyProvider, ConfigOptionProvi
     private @Nullable ScheduledFuture<?> refreshJob;
     private Map<String, CurrencyInformation> currencies = Map.of();
     private Map<Unit<Currency>, BigDecimal> exchangeRates = Map.of();
-    private @Nullable ZonedDateTime lastUpdated = null;
+    private @Nullable Instant lastUpdated = null;
     private Set<ExchangeRateListener> exchangeRateListeners = new HashSet<>();
 
     @Activate
@@ -133,7 +132,7 @@ public class FreecurrencyProvider implements CurrencyProvider, ConfigOptionProvi
         return rate2.divide(rate1, MathContext.DECIMAL128);
     }
 
-    public @Nullable ZonedDateTime getLastUpdated() {
+    public @Nullable Instant getLastUpdated() {
         return lastUpdated;
     }
 
@@ -181,7 +180,7 @@ public class FreecurrencyProvider implements CurrencyProvider, ConfigOptionProvi
             });
             exchangeRates = newExchangeRates;
             logger.debug("Retrieved exchange rates for {} currencies", newExchangeRates.size());
-            lastUpdated = ZonedDateTime.now();
+            lastUpdated = Instant.now();
 
             // exchange rates are refreshed every day at midnight UTC
             // we refresh one minute later to be sure we are not too early.

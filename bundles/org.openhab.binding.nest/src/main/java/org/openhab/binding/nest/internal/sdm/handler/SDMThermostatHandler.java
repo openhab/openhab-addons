@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -49,7 +49,6 @@ import org.openhab.binding.nest.internal.sdm.dto.SDMTraits.SDMThermostatTemperat
 import org.openhab.binding.nest.internal.sdm.exception.FailedSendingSDMDataException;
 import org.openhab.binding.nest.internal.sdm.exception.InvalidSDMAccessTokenException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -75,8 +74,8 @@ public class SDMThermostatHandler extends SDMBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SDMThermostatHandler.class);
 
-    public SDMThermostatHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public SDMThermostatHandler(Thing thing) {
+        super(thing);
     }
 
     @SuppressWarnings("unchecked")
@@ -108,7 +107,7 @@ public class SDMThermostatHandler extends SDMBaseHandler {
                 }
             } else if (CHANNEL_FAN_TIMER_TIMEOUT.equals(channelUID.getId())) {
                 if (command instanceof DateTimeType dateTimeCommand) {
-                    Duration duration = Duration.between(ZonedDateTime.now(), dateTimeCommand.getZonedDateTime());
+                    Duration duration = Duration.between(Instant.now(), dateTimeCommand.getInstant());
                     executeDeviceCommand(new SDMSetFanTimerRequest(SDMFanTimerMode.ON, duration));
                     delayedRefresh();
                 }
@@ -169,8 +168,8 @@ public class SDMThermostatHandler extends SDMBaseHandler {
         SDMFanTrait fan = traits.fan;
         if (fan != null) {
             updateState(CHANNEL_FAN_TIMER_MODE, OnOffType.from(fan.timerMode == SDMFanTimerMode.ON));
-            updateState(CHANNEL_FAN_TIMER_TIMEOUT, fan.timerTimeout == null ? UnDefType.NULL
-                    : new DateTimeType(fan.timerTimeout.withZoneSameInstant(timeZoneProvider.getTimeZone())));
+            updateState(CHANNEL_FAN_TIMER_TIMEOUT,
+                    fan.timerTimeout == null ? UnDefType.NULL : new DateTimeType(fan.timerTimeout));
         }
 
         SDMThermostatHvacTrait thermostatHvac = traits.thermostatHvac;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.EVCC_REST_A
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.LONG_CONNECTION_TIMEOUT_MILLISEC;
 
 import java.io.IOException;
-import java.time.ZoneId;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -147,9 +147,8 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/limitsoc/" + limitSoC, "POST");
     }
 
-    public String setVehiclePlan(String vehicleName, int planSoC, ZonedDateTime planTime) throws EvccApiException {
-        ZoneId zoneId = timeZoneProvider.getTimeZone();
-        ZonedDateTime adjustedTime = planTime.withZoneSameInstant(zoneId);
+    public String setVehiclePlan(String vehicleName, int planSoC, Instant planTime) throws EvccApiException {
+        ZonedDateTime adjustedTime = planTime.atZone(timeZoneProvider.getTimeZone());
         String formattedTime = adjustedTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         return httpRequest(
                 this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc/" + planSoC + "/" + formattedTime,

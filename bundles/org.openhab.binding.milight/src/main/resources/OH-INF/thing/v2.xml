@@ -11,6 +11,7 @@
 		<label>Color Bulb (old)</label>
 		<description>The oldest produced color bulb. Without a white channel. No saturation support.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="ledbrightness" typeId="ledbrightness"/>

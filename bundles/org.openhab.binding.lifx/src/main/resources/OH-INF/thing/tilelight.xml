@@ -6,6 +6,7 @@
 
 	<thing-type id="tilelight">
 		<label>LIFX Tile Light</label>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="color"/>
 			<channel id="temperature" typeId="temperature"/>

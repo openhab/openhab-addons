@@ -8,6 +8,7 @@
 	<bridge-type id="gateway">
 		<label>Plugwise Home Automation Bridge</label>
 		<description>The Plugwise Home Automation Bridge is needed to connect to the Adam boiler gateway</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description-ref uri="bridge-type:plugwiseha:gateway"/>
 	</bridge-type>
@@ -20,6 +21,7 @@
 
 		<label>Boiler</label>
 		<description>A Plugwise Home Automation controlled boiler</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channels>
 			<channel id="chState" typeId="chState"/>
@@ -62,15 +64,23 @@
 
 		<label>Plugwise Zone</label>
 		<description>A Plugwise Home Automation heating zone</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Zone Temperature</label>
+				<description>Gets the temperature of this zone</description>
+			</channel>
 			<channel id="presetScene" typeId="presetScene"/>
 			<channel id="preHeat" typeId="preHeat"/>
 			<channel id="coolingAllowed" typeId="coolingAllowed"/>
 			<channel id="regulationControl" typeId="regulationControl"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -85,15 +95,19 @@
 
 		<label>Plugwise Radiator Valve</label>
 		<description>A Plugwise Home Automation radiator valve</description>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Zone Temperature</label>
+				<description>Gets the temperature of this zone</description>
+			</channel>
 			<channel id="valvePosition" typeId="valvePosition"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>id</representation-property>
@@ -109,12 +123,22 @@
 
 		<label>Central Heating Pump</label>
 		<description>A Plugwise Home Automation smart plug switch connected to a central heating pump</description>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the Plugwise Smart plug ON or OFF</description>
+			</channel>
 			<channel id="lock" typeId="lock"/>
-			<channel id="powerUsage" typeId="powerUsage"/>
+			<channel id="powerUsage" typeId="system.electric-power">
+				<label>Power Usage</label>
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -129,12 +153,20 @@
 
 		<label>Plugwise Room Thermostat</label>
 		<description>A Plugwise Home Automation room thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Zone Temperature</label>
+				<description>Gets the temperature of this zone</description>
+			</channel>
 			<channel id="offsetTemperature" typeId="offsetTemperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 

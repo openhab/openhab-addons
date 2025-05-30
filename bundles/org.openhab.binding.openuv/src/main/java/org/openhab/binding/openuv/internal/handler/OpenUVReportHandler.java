@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,7 @@ package org.openhab.binding.openuv.internal.handler;
 
 import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -100,8 +99,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
         if ((job == null || job.isCancelled())) {
             State uvMaxTime = openUVData.getUVMaxTime();
             if (uvMaxTime instanceof DateTimeType uvMaxDateTime) {
-                long timeDiff = ChronoUnit.MINUTES.between(ZonedDateTime.now(ZoneId.systemDefault()),
-                        uvMaxDateTime.getZonedDateTime());
+                long timeDiff = ChronoUnit.MINUTES.between(Instant.now(), uvMaxDateTime.getInstant());
                 if (timeDiff > 0) {
                     logger.debug("Scheduling {} in {} minutes", UV_MAX_EVENT, timeDiff);
                     uvMaxJob = scheduler.schedule(() -> {

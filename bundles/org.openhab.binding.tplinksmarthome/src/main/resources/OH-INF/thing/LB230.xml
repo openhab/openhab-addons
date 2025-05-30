@@ -8,7 +8,7 @@
 		<label>LB230</label>
 		<description>TP-Link LB230 Smart Wi-Fi LED Bulb with Color Changing Hue</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>

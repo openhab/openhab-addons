@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Heater</label>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 		<channels>
 			<channel id="heaterState" typeId="state"/>
 			<channel id="heaterEnable" typeId="enable"/>

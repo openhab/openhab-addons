@@ -7,6 +7,7 @@
 	<thing-type id="liquidCheckDevice">
 		<label>Liquid Check Device</label>
 		<category>Sensor</category>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="content" typeId="content-channel"/>

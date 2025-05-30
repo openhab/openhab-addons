@@ -13,6 +13,7 @@
 			<channel id="cpu" typeId="cpuUsage"/>
 			<channel id="disk" typeId="diskUsage"/>
 			<channel id="memory" typeId="memoryUsage"/>
+			<channel id="restart" typeId="restart"/>
 		</channels>
 
 		<representation-property>id</representation-property>

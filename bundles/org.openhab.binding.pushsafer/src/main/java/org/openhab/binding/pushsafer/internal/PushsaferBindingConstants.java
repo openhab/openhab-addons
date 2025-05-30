@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,8 @@ public class PushsaferBindingConstants {
     public static final String DEFAULT_VIBRATION = "1";
     public static final int DEFAULT_CONFIRM = 0;
     public static final boolean DEFAULT_ANSWER = false;
+    public static final String DEFAULT_ANSWEROPTIONS = "";
+    public static final boolean DEFAULT_ANSWERFORCE = false;
     public static final int DEFAULT_TIME2LIVE = 0;
     public static final String DEFAULT_TITLE = "openHAB";
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,16 +38,6 @@ public class ModemDBChange extends DatabaseChange<ModemDBRecord> {
      */
     public static ModemDBChange forAdd(InsteonAddress address, int group, boolean isController, byte[] data) {
         return new ModemDBChange(ModemDBRecord.create(address, group, isController, data), ChangeType.ADD);
-    }
-
-    /**
-     * Factory method for creating a new ModemDBChange for add
-     *
-     * @param record the record to add
-     * @return the modem db change
-     */
-    public static ModemDBChange forAdd(ModemDBRecord record) {
-        return new ModemDBChange(record, ChangeType.ADD);
     }
 
     /**

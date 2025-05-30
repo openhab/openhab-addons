@@ -35,12 +35,25 @@
 			<description>The refresh interval in seconds to poll the UniFi controller</description>
 			<default>10</default>
 		</parameter>
+		<parameter name="timeoutSeconds" type="integer" required="false">
+			<label>Connection Timeout</label>
+			<description>Connection timeout in seconds for API calls to the UniFi Controller.</description>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:unifi:site">
 		<parameter name="sid" type="text" required="true">
 			<label>Site Id</label>
 			<description>The id, name or description of the site</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:unifi:network">
+		<parameter name="nid" type="text" required="true">
+			<label>Network Id</label>
+			<description>The id or name of the network</description>
 		</parameter>
 	</config-description>
 

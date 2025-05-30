@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedZoneStatu
         final List<AreaProperties> areas = super.getAreaProperties();
         if (areas != null) {
             for (AreaProperties areaProperties : areas) {
-                int areaFilter = super.bitFilterForArea(areaProperties);
+                int areaFilter = bitFilterForArea(areaProperties);
 
                 ObjectPropertyRequest<ZoneProperties> objectPropertyRequest = ObjectPropertyRequest
                         .builder(bridgeHandler, ObjectPropertyRequests.ZONE, getThingNumber(), 0).selectNamed()
@@ -115,16 +115,11 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedZoneStatu
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_ZONE_BYPASS:
-                mode = CommandMessage.CMD_SECURITY_BYPASS_ZONE;
-                break;
-            case CHANNEL_ZONE_RESTORE:
-                mode = CommandMessage.CMD_SECURITY_RESTORE_ZONE;
-                break;
-            default:
-                mode = -1;
-        }
+        mode = switch (channelUID.getId()) {
+            case CHANNEL_ZONE_BYPASS -> CommandMessage.CMD_SECURITY_BYPASS_ZONE;
+            case CHANNEL_ZONE_RESTORE -> CommandMessage.CMD_SECURITY_RESTORE_ZONE;
+            default -> -1;
+        };
         logger.debug("mode {} on zone {} with code {}", mode, thingID, command.toFullString());
         char[] code = command.toFullString().toCharArray();
         if (code.length != 4) {
@@ -174,7 +169,7 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedZoneStatu
     @Override
     protected void updateChannels(ExtendedZoneStatus zoneStatus) {
         // 0 Secure. 1 Not ready, 3 Trouble
-        int current = ((zoneStatus.getStatus() >> 0) & 0x03);
+        int current = ((zoneStatus.getStatus()) & 0x03);
         // 0 Secure, 1 Tripped, 2 Reset, but previously tripped
         int latched = ((zoneStatus.getStatus() >> 2) & 0x03);
         // 0 Disarmed, 1 Armed, 2 Bypass user, 3 Bypass system

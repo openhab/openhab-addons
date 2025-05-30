@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,8 +54,8 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
         protected String payloadOff = "OFF";
     }
 
-    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
                 channelConfiguration.payloadOn, channelConfiguration.payloadOff);

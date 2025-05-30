@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class GoveeBindingConstants {
     public static final String PRODUCT_NAME = "productName";
     public static final String HW_VERSION = "wifiHardwareVersion";
     public static final String SW_VERSION = "wifiSoftwareVersion";
-    private static final String BINDING_ID = "govee";
+    public static final String BINDING_ID = "govee";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "govee-light");
@@ -44,4 +44,7 @@ public class GoveeBindingConstants {
     // Limit values of channels
     public static final Double COLOR_TEMPERATURE_MIN_VALUE = 2000.0;
     public static final Double COLOR_TEMPERATURE_MAX_VALUE = 9000.0;
+
+    public static final String PROPERTY_COLOR_TEMPERATURE_MIN = "minKelvin";
+    public static final String PROPERTY_COLOR_TEMPERATURE_MAX = "maxKelvin";
 }

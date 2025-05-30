@@ -23,7 +23,7 @@
 		<representation-property>group</representation-property>
 
 		<config-description>
-			<parameter name="group" type="integer" min="2" max="254" required="true">
+			<parameter name="group" type="integer" min="0" max="255" required="true">
 				<label>Group</label>
 				<description>Insteon scene group number.</description>
 			</parameter>

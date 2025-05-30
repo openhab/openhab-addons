@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/addon.shelly.name</name>
-	<description>@text/addon.shelly.description</description>
+	<name>Shelly Binding</name>
+	<description>This binding integrates Shelly devices that can be controlled via WiFi.</description>
 	<connection>local</connection>
 
 	<config-description>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class SimpleNTPServer {
                 try {
                     socket = new DatagramSocket(port);
                 } catch (SocketException e) {
-                    logger.error("Occured an error {}. Couldn't open a socket on this port:", port, e);
+                    logger.error("Occurred an error {}. Couldn't open a socket on this port:", port, e);
                 }
                 while (isRunning) {
                     try {

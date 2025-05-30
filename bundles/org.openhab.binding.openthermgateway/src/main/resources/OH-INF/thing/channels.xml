@@ -10,6 +10,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Set Dynamically</label>
 		<description>Transparent slave parameter or Fault history buffer value</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -19,6 +22,9 @@
 		<item-type>String</item-type>
 		<label>Send Command</label>
 		<description>Channel to send commands to the OpenTherm Gateway device</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -29,6 +35,10 @@
 		<label>Room Temperature</label>
 		<description>Current sensed room temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -37,6 +47,10 @@
 		<label>Room Setpoint</label>
 		<description>Current room temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -45,6 +59,10 @@
 		<label>Temporary Room Setpoint Override</label>
 		<description>Temporary override room temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -53,6 +71,10 @@
 		<label>Constant Room Setpoint Override</label>
 		<description>Constant override room temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -61,6 +83,10 @@
 		<label>Control Setpoint</label>
 		<description>Central heating water setpoint set at boiler</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -69,6 +95,10 @@
 		<label>Control Setpoint Requested</label>
 		<description>Central heating water setpoint requested by Thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -77,6 +107,10 @@
 		<label>Control Setpoint Override</label>
 		<description>Central heating water setpoint configured on OTGW</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -85,6 +119,10 @@
 		<label>Control Setpoint 2</label>
 		<description>Central heating 2 water setpoint set at boiler</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -93,6 +131,10 @@
 		<label>Control Setpoint 2 Requested</label>
 		<description>Central heating 2 water setpoint requested by Thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -101,6 +143,10 @@
 		<label>Control Setpoint 2 Override</label>
 		<description>Central heating 2 water setpoint configured on OTGW</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -109,6 +155,10 @@
 		<label>Domestic Hot Water Temperature</label>
 		<description>Domestic hot water temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -117,6 +167,10 @@
 		<label>Domestic Hot Water Setpoint</label>
 		<description>Domestic hot water temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -125,6 +179,10 @@
 		<label>Domestic Hot Water Setpoint Override</label>
 		<description>Domestic hot water temperature setpoint override</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -133,6 +191,10 @@
 		<label>Boiler Water Temperature</label>
 		<description>Boiler water temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -141,6 +203,10 @@
 		<label>Return Water Temperature</label>
 		<description>Return water temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -149,13 +215,21 @@
 		<label>Outside Temperature</label>
 		<description>Outside temperature</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="-40" max="100" step="0.1" pattern="%.1f %unit%"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" min="-40" max="100" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="waterpressure">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Central Heating Water Pressure</label>
 		<description>Central heating water pressure</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f bar"/>
 	</channel-type>
 
@@ -163,6 +237,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating Enabled</label>
 		<description>Central heating enabled set at boiler</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -170,6 +248,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating Enabled Thermostat</label>
 		<description>Central heating enabled requested by thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -177,6 +259,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating Overridden</label>
 		<description>Central heating enabled overridden at OTGW</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -184,6 +270,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating 2 Enabled</label>
 		<description>Central heating 2 enabled set at boiler</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -191,6 +281,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating 2 Enabled Thermostat</label>
 		<description>Central heating 2 enabled requested by thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -198,6 +292,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating 2 Overridden</label>
 		<description>Central heating 2 enabled overridden at OTGW</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -205,6 +303,10 @@
 		<item-type>Switch</item-type>
 		<label>Central Heating Active</label>
 		<description>Central heating active</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -212,6 +314,10 @@
 		<item-type>Switch</item-type>
 		<label>Domestic Hot Water Enabled</label>
 		<description>Domestic hot water enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -219,6 +325,10 @@
 		<item-type>Switch</item-type>
 		<label>Domestic Hot Water Active</label>
 		<description>Domestic hot water active</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -226,6 +336,10 @@
 		<item-type>Switch</item-type>
 		<label>Burner Active</label>
 		<description>Burner active</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -233,6 +347,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Modulation Level</label>
 		<description>Relative modulation level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -240,6 +358,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Maximum Relative Modulation Level</label>
 		<description>Maximum relative modulation level</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -247,6 +369,9 @@
 		<item-type>Switch</item-type>
 		<label>Fault Indication</label>
 		<description>Fault indication</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -254,6 +379,9 @@
 		<item-type>Switch</item-type>
 		<label>Service Required</label>
 		<description>Service required</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -261,6 +389,9 @@
 		<item-type>Switch</item-type>
 		<label>Lockout-Reset Enabled</label>
 		<description>Lockout-reset enabled</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -268,6 +399,10 @@
 		<item-type>Switch</item-type>
 		<label>Low Water Pressure Fault</label>
 		<description>Low water pressure fault</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -275,6 +410,10 @@
 		<item-type>Switch</item-type>
 		<label>Gas Or Flame Fault</label>
 		<description>Gas or flame fault</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -282,6 +421,10 @@
 		<item-type>Switch</item-type>
 		<label>Air Pressure Fault</label>
 		<description>Air pressure fault</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -289,6 +432,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Over-Temperature Fault</label>
 		<description>Water over-temperature fault</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -296,6 +443,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>OEM Fault Code</label>
 		<description>OEM fault code</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -303,6 +453,9 @@
 		<item-type>Switch</item-type>
 		<label>Diagnostics Indication</label>
 		<description>Diagnostics indication</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -310,6 +463,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Unsuccessful Burner Starts</label>
 		<description>Unsuccessful burner starts</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -317,6 +473,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Burner Starts</label>
 		<description>Burner starts</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -324,6 +483,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Central Heating Pump Starts</label>
 		<description>Central heating pump starts</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -331,6 +493,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Domestic Hot Water Pump/Valve Starts</label>
 		<description>Domestic hot water pump/valve starts</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -338,6 +503,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Domestic Hot Water Burner Starts</label>
 		<description>Domestic hot water burner starts</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -345,6 +513,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Burner Hours</label>
 		<description>Burner hours</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -352,6 +524,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Central Heating Pump Hours</label>
 		<description>Central heating pump hours</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -359,6 +535,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Domestic Hot Water Pump/Valve Hours</label>
 		<description>Domestic hot water pump/valve hours</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -366,6 +546,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Domestic Hot Water Burner Hours</label>
 		<description>Domestic hot water burner hours</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -373,6 +557,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Transparent Slave Parameter Number</label>
 		<description>Number of transparant slave parameter entries</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -380,6 +567,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Transparent Slave Parameter Entry</label>
 		<description>Transparent slave parameter entry</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -387,6 +577,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fault History Buffer Number</label>
 		<description>Number of fault history buffer entries</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -394,6 +587,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fault History Buffer Entry</label>
 		<description>Fault history buffer entry</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -403,6 +599,10 @@
 		<item-type>Switch</item-type>
 		<label>Ventilation</label>
 		<description>Ventilation enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -410,6 +610,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Bypass Position</label>
 		<description>Bypass position</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">close</option>
@@ -422,6 +626,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Bypass Mode</label>
 		<description>Bypass mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">manual</option>
@@ -434,6 +642,10 @@
 		<item-type>Switch</item-type>
 		<label>Free Ventilation Mode</label>
 		<description>Free ventilation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -441,6 +653,9 @@
 		<item-type>Switch</item-type>
 		<label>Fault Indication</label>
 		<description>Fault indication</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -448,6 +663,10 @@
 		<item-type>Switch</item-type>
 		<label>Ventilation Mode</label>
 		<description>Ventilation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -455,6 +674,10 @@
 		<item-type>Switch</item-type>
 		<label>Bypass Status</label>
 		<description>Bypass status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -462,6 +685,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Bypass Automatic Status</label>
 		<description>Bypass automatic status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">manual</option>
@@ -474,6 +701,10 @@
 		<item-type>Switch</item-type>
 		<label>Free Ventilation Status</label>
 		<description>Free ventilation status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -481,6 +712,9 @@
 		<item-type>Switch</item-type>
 		<label>Diagnostic Indication</label>
 		<description>Diagnostic indication</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -488,6 +722,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Control Setpoint</label>
 		<description>Control setpoint</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Ventilation</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -495,6 +733,9 @@
 		<item-type>Switch</item-type>
 		<label>Service Request</label>
 		<description>Service request</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -502,6 +743,9 @@
 		<item-type>Switch</item-type>
 		<label>Exhaust Fan Fault</label>
 		<description>Exhaust fan fault</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -509,6 +753,9 @@
 		<item-type>Switch</item-type>
 		<label>Inlet Fan Fault</label>
 		<description>Inlet fan fault</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -516,6 +763,10 @@
 		<item-type>Switch</item-type>
 		<label>Frost Protection</label>
 		<description>Frost protection</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -523,6 +774,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fault Code</label>
 		<description>Fault code</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -530,6 +784,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Diagnostic Code</label>
 		<description>Diagnostic code</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -537,6 +794,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>System Type</label>
 		<description>System type</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">central exaust</option>
@@ -549,6 +809,10 @@
 		<item-type>Switch</item-type>
 		<label>Bypass</label>
 		<description>Bypass</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -556,6 +820,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Speed Control</label>
 		<description>Speed control</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">3-speed</option>
@@ -568,6 +835,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Member ID</label>
 		<description>Member ID</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -575,6 +845,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>OpenTherm Version</label>
 		<description>OpenTherm version</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -582,6 +855,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Version Type</label>
 		<description>Version type</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -589,6 +865,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Ventilation</label>
 		<description>Relative ventilation position</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -596,6 +876,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Relative humidity exhaust air</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -603,6 +887,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2 Level</label>
 		<description>CO2 level exhaust air</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d ppm"/>
 	</channel-type>
 
@@ -610,6 +898,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Supply Inlet Temperature</label>
 		<description>Supply inlet temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -617,6 +909,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Supply Outlet Temperature</label>
 		<description>Supply outlet temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -624,6 +920,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Exhaust Inlet Temperature</label>
 		<description>Exhaust inlet temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -631,6 +931,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Exhaust Outlet Temperature</label>
 		<description>Exhaust outlet temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -638,6 +942,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual Exhaust Fan Speed</label>
 		<description>Actual exhaust fan speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
@@ -645,6 +953,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual Inlet Fan Speed</label>
 		<description>Actual inlet fan speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
@@ -652,6 +964,10 @@
 		<item-type>Switch</item-type>
 		<label>Nominal Ventilation Value Transfer</label>
 		<description>Nominal ventilation value transfer enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -659,6 +975,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Nominal Ventilation Value</label>
 		<description>Nominal ventilation value</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">read-only</option>
@@ -671,6 +990,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Nominal Ventilation Value</label>
 		<description>Nominal ventilation value</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ventilation</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -678,6 +1001,10 @@
 		<item-type>Switch</item-type>
 		<label>Filter Check</label>
 		<description>Filter Check enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -685,6 +1012,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Transparent Slave Parameter Number</label>
 		<description>Number of transparent slave parameter entries</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -692,6 +1022,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Transparent Slave Parameter Entry</label>
 		<description>Transparent slave parameter entry</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -699,6 +1032,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fault History Buffer Number</label>
 		<description>Number of fault history buffer entries</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -706,6 +1042,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fault History Buffer Entry</label>
 		<description>Fault history buffer entry</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -713,6 +1052,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ventilation Setpoint</label>
 		<description>Ventilation setpoint override</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false" min="0" max="100" step="1"/>
 	</channel-type>
 

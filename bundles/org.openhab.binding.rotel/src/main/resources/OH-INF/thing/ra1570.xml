@@ -8,6 +8,7 @@
 	<thing-type id="ra1570">
 		<label>RA-1570 Integrated Amplifier</label>
 		<description>Connection to the Rotel RA-1570 integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

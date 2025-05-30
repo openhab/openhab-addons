@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/addon.nanoleaf.name</name>
-	<description>@text/addon.nanoleaf.description</description>
+	<name>Nanoleaf Binding</name>
+	<description>Integrates the Nanoleaf light panels</description>
 	<connection>local</connection>
 
 	<discovery-methods>

@@ -12,6 +12,7 @@
 
 		<label>L610 Series White-Spot</label>
 		<description>Tapo Smart dimmable White-Light-Spot</description>
+		<semantic-equipment-tag>SpotLight</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightBulb"/>
 			<channel-group id="device" typeId="deviceStateS"/>

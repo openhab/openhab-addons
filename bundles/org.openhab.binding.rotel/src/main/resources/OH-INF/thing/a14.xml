@@ -8,6 +8,7 @@
 	<thing-type id="a14">
 		<label>A14 Integrated Amplifier</label>
 		<description>Connection to the Rotel A14 or A14MKII integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

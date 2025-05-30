@@ -7,7 +7,7 @@
 	<thing-type id="tesla-powerwall">
 		<label>Tesla Powerwall</label>
 		<description>Tesla Powerwall</description>
-
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 		<channels>
 			<channel id="grid-status" typeId="grid-status"/>
 			<channel id="grid-services" typeId="grid-services"/>

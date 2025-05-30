@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,8 +38,10 @@ import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -46,6 +49,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,12 +68,97 @@ public class LightsTest {
     private @Mock @NonNullByDefault({}) DeconzDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Mock @NonNullByDefault({}) DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
+    /**
+     * Custom Mockito {@link ArgumentMatcher} to compare the closeness of two {@link HSBType} values.
+     */
+    private static class CloseToHSBType implements ArgumentMatcher<HSBType> {
+        private HSBType target;
+
+        public CloseToHSBType(HSBType target) {
+            this.target = target;
+        }
+
+        @Override
+        public boolean matches(HSBType source) {
+            return source.closeTo(target, 0.02);
+        }
+    }
+
     @BeforeEach
     public void initialize() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
         gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
+    }
+
+    @Test
+    public void extColorTemperatureLightUpdateHSBTest() throws IOException {
+        LightMessage lightMessage = DeconzTest.getObjectFromJson("extended_hsb.json", LightMessage.class, gson);
+        assertNotNull(lightMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "light");
+        ChannelUID channelUIDColor = new ChannelUID(thingUID, CHANNEL_COLOR);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+
+        Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDColor, "Color").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
+        lightThingHandler.setCallback(thingHandlerCallback);
+
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDColor), eq(new HSBType("0,50,100")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt), eq(UnDefType.UNDEF));
+    }
+
+    @Test
+    public void extColorTemperatureLightUpdateXYTest() throws IOException {
+        LightMessage lightMessage = DeconzTest.getObjectFromJson("extended_xy.json", LightMessage.class, gson);
+        assertNotNull(lightMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "light");
+        ChannelUID channelUIDColor = new ChannelUID(thingUID, CHANNEL_COLOR);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+
+        Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDColor, "Color").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
+        lightThingHandler.setCallback(thingHandlerCallback);
+
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDColor),
+                argThat(new CloseToHSBType(new HSBType("357,100,50"))));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt), eq(UnDefType.UNDEF));
+    }
+
+    @Test
+    public void extColorTemperatureLightUpdateCTTest() throws IOException {
+        LightMessage lightMessage = DeconzTest.getObjectFromJson("extended_ct.json", LightMessage.class, gson);
+        assertNotNull(lightMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "light");
+        ChannelUID channelUIDColor = new ChannelUID(thingUID, CHANNEL_COLOR);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+
+        Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDColor, "Color").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
+        lightThingHandler.setCallback(thingHandlerCallback);
+
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDColor),
+                argThat(new CloseToHSBType(new HSBType("43,26,50"))));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt),
+                eq(QuantityType.valueOf(4000, Units.KELVIN)));
     }
 
     @Test
@@ -91,7 +180,32 @@ public class LightsTest {
 
         lightThingHandler.messageReceived(lightMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("21")));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt), eq(new DecimalType("2500")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt),
+                eq(QuantityType.valueOf(2500, Units.KELVIN)));
+    }
+
+    @Test
+    public void colorTemperatureSparseLightUpdateTest() throws IOException {
+        LightMessage lightMessage = DeconzTest.getObjectFromJson("colortemperature-sparse.json", LightMessage.class,
+                gson);
+        assertNotNull(lightMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "light");
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+
+        Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
+        lightThingHandler.setCallback(thingHandlerCallback);
+
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("21")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt),
+                eq(QuantityType.valueOf(2500, Units.KELVIN)));
     }
 
     @Test

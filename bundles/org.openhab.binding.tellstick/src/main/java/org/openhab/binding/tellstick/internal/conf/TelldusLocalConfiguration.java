@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.tellstick.internal.conf;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for Tellstick bridge used to connect to the
  * Telldus local API.
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLocalConfiguration {
-    public String ipAddress;
-    public String accessToken;
-    public long refreshInterval;
+    public String ipAddress = "";
+    public String accessToken = "";
+    public long refreshInterval = 60000;
 }

@@ -9,6 +9,7 @@
 		<label>Unsupported Onkyo AV Receiver</label>
 		<description>Network enabled Onkyo AV Receivers for models that are not officially supported. You may experience some
 			odd behaviors.</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1"/>

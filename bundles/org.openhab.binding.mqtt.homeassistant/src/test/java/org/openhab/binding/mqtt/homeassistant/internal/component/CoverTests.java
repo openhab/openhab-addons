@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,8 @@ public class CoverTests extends AbstractComponentTests {
         assertChannel(component, Cover.COVER_CHANNEL_ID, "zigbee2mqtt/cover/state", "zigbee2mqtt/cover/set/state",
                 "Cover", RollershutterValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/cover/state", "closed");
         assertState(component, Cover.COVER_CHANNEL_ID, UpDownType.DOWN);
         assertState(component, Cover.STATE_CHANNEL_ID, new StringType("closed"));
@@ -120,6 +122,8 @@ public class CoverTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, Cover.COVER_CHANNEL_ID, "esphome/single-car-gdo/cover/door/position/state",
                 "esphome/single-car-gdo/cover/door/position/command", "Cover", RollershutterValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("esphome/single-car-gdo/cover/door/state", "closed");
         assertState(component, Cover.STATE_CHANNEL_ID, new StringType("closed"));
@@ -177,6 +181,8 @@ public class CoverTests extends AbstractComponentTests {
 
         assertChannel(component, Cover.COVER_CHANNEL_ID, "esphome/single-car-gdo/cover/door/position/state",
                 "esphome/single-car-gdo/cover/door/position/command", "Cover", RollershutterValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("esphome/single-car-gdo/cover/door/position/state", "100");
         assertState(component, Cover.COVER_CHANNEL_ID, PercentType.ZERO);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,12 +31,13 @@ public class OnOffResponse implements LGSerialResponse {
 
     private State state;
 
-    public OnOffResponse(int setId, boolean success, String data) {
+    public OnOffResponse(int setId, boolean success, String data, boolean invert) {
         this.setId = setId;
         this.success = success;
 
         if (success) {
-            state = OnOffType.from("01".equals(data));
+            // inverted "00" == on, not inverted "01" == on
+            state = OnOffType.from((invert ? "00" : "01").equals(data));
         } else {
             state = new StringType(data);
         }

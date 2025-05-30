@@ -7,6 +7,7 @@
 	<thing-type id="mower">
 		<label>Mower</label>
 		<description>Mower robot connected via robonect module</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="nameType"/>
 			<channel id="battery" typeId="system.battery-level"/>

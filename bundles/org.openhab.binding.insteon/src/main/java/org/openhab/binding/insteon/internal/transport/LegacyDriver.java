@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyPollManager;
@@ -44,11 +45,11 @@ public class LegacyDriver {
     private Map<InsteonAddress, LegacyModemDBEntry> modemDBEntries = new HashMap<>();
     private ReentrantLock modemDBEntriesLock = new ReentrantLock();
 
-    public LegacyDriver(InsteonLegacyNetworkConfiguration config, LegacyDriverListener listener,
-            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+    public LegacyDriver(InsteonLegacyNetworkConfiguration config, LegacyDriverListener listener, HttpClient httpClient,
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         this.listener = listener;
 
-        this.port = new LegacyPort(config, this, serialPortManager, scheduler);
+        this.port = new LegacyPort(config, this, httpClient, scheduler, serialPortManager);
         this.poller = new LegacyPollManager(scheduler);
         this.requester = new LegacyRequestManager(scheduler);
     }

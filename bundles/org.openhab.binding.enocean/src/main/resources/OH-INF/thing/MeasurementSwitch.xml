@@ -11,7 +11,7 @@
 
 		<label>Energy Measurement Switch</label>
 		<description>Electronic switches and dimmers with energy measurement and local control (EEP: D2-01)</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

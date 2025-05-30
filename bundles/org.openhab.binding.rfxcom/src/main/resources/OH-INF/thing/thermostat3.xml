@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Thermostat3 Sensor</label>
 		<description>A Thermostat3 device.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>

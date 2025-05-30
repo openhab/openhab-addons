@@ -8,7 +8,7 @@
 	<thing-type id="Move" listed="false">
 		<label>Move</label>
 		<description>Represents SONOS Move speaker</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusBlindsHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusDimmerHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusNetworkBridgeHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusNewDimmerHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayWithInputHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusSensorHandler;
@@ -28,6 +29,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusSerialBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB1TSHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB4ANHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB7INHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMB8INHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBDALIHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBELHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBELOHandler;
@@ -100,6 +102,8 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusVMBPIROHandler(thing);
         } else if (VelbusVMB7INHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMB7INHandler(thing);
+        } else if (VelbusVMB8INHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMB8INHandler(thing);
         } else if (VelbusVMBELHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBELHandler(thing);
         } else if (VelbusVMBELOHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -110,6 +114,8 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusVMB1TSHandler(thing);
         } else if (VelbusVMBDALIHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBDALIHandler(thing);
+        } else if (VelbusNewDimmerHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusNewDimmerHandler(thing);
         }
 
         return thingHandler;

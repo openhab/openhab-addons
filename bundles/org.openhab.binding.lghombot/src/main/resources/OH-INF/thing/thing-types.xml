@@ -8,7 +8,7 @@
 		<label>LG HomBot</label>
 		<description>HomBot vacuum robot.</description>
 		<category>CleaningRobot</category>
-
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="stateType"/>
 			<channel id="battery" typeId="batteryType"/>

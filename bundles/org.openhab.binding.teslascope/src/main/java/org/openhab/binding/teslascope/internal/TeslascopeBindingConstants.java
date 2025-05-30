@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,15 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_CENTER_REAR_SEAT_HEATER = "center-rear-seat-heater";
     public static final String CHANNEL_CHARGE = "charge";
     public static final String CHANNEL_CHARGE_ENERGY_ADDED = "charge-energy-added";
+    public static final String CHANNEL_CHARGE_AMPS = "charge-amps";
+    public static final String CHANNEL_CHARGE_CURRENT_REQUEST = "charge-current-request";
+    public static final String CHANNEL_CHARGE_CURRENT_REQUEST_MAX = "charge-current-request-max";
+    public static final String CHANNEL_CHARGE_LIMIT_SOC = "charge-limit-soc";
+    public static final String CHANNEL_CHARGE_LIMIT_SOC_MIN = "charge-limit-soc-min";
+    public static final String CHANNEL_CHARGE_LIMIT_SOC_MAX = "charge-limit-soc-max";
     public static final String CHANNEL_CHARGE_LIMIT_SOC_STANDARD = "charge-limit-soc-standard";
     public static final String CHANNEL_CHARGE_PORT = "charge-port";
+    public static final String CHANNEL_CHARGE_PORT_LATCH = "charge-port-latch";
     public static final String CHANNEL_CHARGE_RATE = "charge-rate";
     public static final String CHANNEL_CHARGER_POWER = "charger-power";
     public static final String CHANNEL_CHARGER_VOLTAGE = "charger-voltage";
@@ -74,6 +81,9 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_LEFT_REAR_SEAT_HEATER = "left-rear-seat-heater";
     public static final String CHANNEL_LEFT_SEAT_HEATER = "left-seat-heater";
     public static final String CHANNEL_LEFT_TEMP_DIRECTION = "left-temp-direction";
+    public static final String CHANNEL_LOCATED_AT_HOME = "located-at-home";
+    public static final String CHANNEL_LOCATED_AT_WORK = "located-at-work";
+    public static final String CHANNEL_LOCATED_AT_FAVORITE = "located-at-favorite";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_MIN_AVAILABLE_TEMP = "min-available-temp";
     public static final String CHANNEL_MAX_AVAILABLE_TEMP = "max-available-temp";

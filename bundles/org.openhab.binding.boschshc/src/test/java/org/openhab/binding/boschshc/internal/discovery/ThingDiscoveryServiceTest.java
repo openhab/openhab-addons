@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -194,7 +194,8 @@ class ThingDiscoveryServiceTest {
         assertThat(result.getThingUID().getId(), is("testDevice_ID"));
         assertThat(result.getBridgeUID().getId(), is("testSHC"));
         assertThat(result.getLabel(), is("Test Name"));
-        assertThat(String.valueOf(result.getProperties().get("Location")), is("TestRoom"));
+        assertThat(String.valueOf(result.getProperties().get(BoschSHCBindingConstants.PROPERTY_LOCATION)),
+                is("TestRoom"));
     }
 
     @Test

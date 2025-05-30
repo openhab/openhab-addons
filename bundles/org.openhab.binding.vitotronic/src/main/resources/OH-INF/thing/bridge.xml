@@ -8,7 +8,7 @@
 		<label>Bridge Vitotronic Optolink Adapter</label>
 		<description>This bridge represents the Vitotronic Optolink adapter
 		</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,17 +95,15 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_BUTTON_PRESS:
-                if (command instanceof OnOffType) {
-                    sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, thingID);
-                    updateChannels();
-                } else {
-                    logger.debug("Invalid command: {}, must be OnOffType", command);
-                }
-                break;
-            default:
-                logger.warn("Unknown channel for Button thing: {}", channelUID);
+        if (CHANNEL_BUTTON_PRESS.equals(channelUID.getId())) {
+            if (command instanceof OnOffType) {
+                sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, thingID);
+                updateChannels();
+            } else {
+                logger.debug("Invalid command: {}, must be OnOffType", command);
+            }
+        } else {
+            logger.warn("Unknown channel for Button thing: {}", channelUID);
         }
     }
 

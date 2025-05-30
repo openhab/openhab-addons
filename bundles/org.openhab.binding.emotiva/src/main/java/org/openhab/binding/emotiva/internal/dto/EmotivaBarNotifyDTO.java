@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,11 @@ public class EmotivaBarNotifyDTO {
     }
 
     public EmotivaBarNotifyDTO(String name) {
-        this.name = name;
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        } else {
+            this.name = name.trim();
+        }
     }
 
     public String getName() {

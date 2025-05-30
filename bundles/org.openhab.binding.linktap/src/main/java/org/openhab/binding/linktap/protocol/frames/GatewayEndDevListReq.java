@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class GatewayEndDevListReq extends TLGatewayFrame {
+public class GatewayEndDevListReq extends GatewayDeviceResponse {
 
     protected static final Pattern FULL_DEVICE_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{20}");
 

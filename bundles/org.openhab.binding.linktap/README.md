@@ -70,14 +70,15 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 
 ### Gateway Configuration
 
-| Name                  | Type   | Description                                                                                                                                                               | Recommended Values | Required | Advanced |
-|-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
-| host                  | String | The hostname / IP address of the gateway device                                                                                                                           |                    | Yes      | No       |
-| username              | String | The username if set for the gateway device                                                                                                                                |                    | No       | No       |
-| password              | String | The password if set for the gateway device                                                                                                                                |                    | No       | No       |
-| enableMDNS            | Switch | On connection whether the mDNS responder should be enabled on the gateway device                                                                                          | true               | No       | Yes      |
-| enforceProtocolLimits | Switch | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                               | true               | No       | Yes      |
-| enableJSONComms       | Switch | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications   | true               | No       | Yes      |
+| Name                   | Type    | Description                                                                                                                                                             | Recommended Values | Required | Advanced |
+|------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
+| host                   | text    | The hostname / IP address of the gateway device                                                                                                                         |                    | Yes      | No       |
+| username               | text    | The username if set for the gateway device                                                                                                                              |                    | No       | No       |
+| password               | text    | The password if set for the gateway device                                                                                                                              |                    | No       | No       |
+| enableMDNS             | boolean | On connection whether the mDNS responder should be enabled on the gateway device                                                                                        | true               | No       | Yes      |
+| enforceProtocolLimits  | boolean | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                             | true               | No       | Yes      |
+| enableJSONComms        | boolean | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications | true               | No       | Yes      |
+| gatewayResponseTimeout | integer | For slow or heavily loaded systems this may need increasing, if communication errors are seen (seconds allowed for responses from the gateway)                          | 3                  | No       | Yes      |
 
 **NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on.
 
@@ -153,7 +154,7 @@ There are 4 different areas of channels:
 - **Device Model**: Q1
 
 ```java
-Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true ] {
+Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true, gatewayResponseTimeout=3 ] {
   Thing device TapValve1 "Outdoor Tap 1"  [ id="D71BC52E985B1200_1", name="ValveLinker_1", enableAlerts=true ]
   Thing device TapValve2 "Outdoor Tap 2"  [ id="D71BC52E985B1200_2", name="ValveLinker_2", enableAlerts=true ]
   Thing device TapValve3 "Outdoor Tap 3"  [ id="D71BC52E985B1200_3", name="ValveLinker_3", enableAlerts=true ]

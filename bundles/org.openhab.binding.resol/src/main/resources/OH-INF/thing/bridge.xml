@@ -8,6 +8,7 @@
 		<description>This bridge represents the Resol VBus-LAN adapter which can be any device with a TCP/IP live port, either
 			the standalone device VBus-LAN Adapter, KM2, DL2/3 or similar.
 		</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>ipAddress</representation-property>
 
 		<config-description>

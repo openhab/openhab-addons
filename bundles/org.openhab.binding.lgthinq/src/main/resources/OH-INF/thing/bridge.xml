@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="lgthinq"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cloud-account">
+		<label>LG ThinQ Gateway</label>
+		<description>A connection to a LG ThinQ Gateway</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="language" type="text" required="true">
+				<label>User Language</label>
+				<description>The User Language registered in LG Account</description>
+				<options>
+					<option value="en-US">American English</option>
+					<option value="nl-BE">Belgium Dutch</option>
+					<option value="en-GB">British English</option>
+					<option value="pt-BR">Brazilian Portuguese</option>
+					<option value="it-IT">Italian</option>
+					<option value="de-LU">Luxembourg German</option>
+					<option value="nl-NL">Netherlands Dutch</option>
+					<option value="pl-PL">Polish</option>
+					<option value="pt-PT">Portugal Portuguese</option>
+					<option value="de-DE">German (Standard)</option>
+					<option value="da-DK">Danish</option>
+					<option value="--">Other</option>
+				</options>
+			</parameter>
+			<parameter name="country" type="text" required="true">
+				<label>User Country</label>
+				<description>The User Country registered in LG Account</description>
+				<options>
+					<option value="US">United States</option>
+					<option value="UK">United Kingdom</option>
+					<option value="BE">Belgium</option>
+					<option value="BR">Brazil</option>
+					<option value="IT">Italy</option>
+					<option value="LU">Luxembourg</option>
+					<option value="NL">Netherlands</option>
+					<option value="PL">Poland</option>
+					<option value="PT">Portugal</option>
+					<option value="DE">Germany</option>
+					<option value="DK">Denmark</option>
+					<option value="NO">Norway</option>
+					<option value="--">Other</option>
+				</options>
+			</parameter>
+			<parameter name="manualLanguage" type="text" required="false">
+				<label>Manual User Lang.</label>
+				<description>Fill this only if selected "Other" in the Language above. Example value: de-DE
+				</description>
+			</parameter>
+			<parameter name="manualCountry" type="text" required="false">
+				<label>Manual User Country</label>
+				<description>Fill this only if selected "Other" in the Country above. Example value: "DE"</description>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username from LG Thinq Personal Account</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password from LG Thinq Personal Account</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="pollingIntervalSec" type="integer">
+				<label>Discovery Interval</label>
+				<description>Polling interval to discover new devices from LG Account (in Seconds >300 or 0 disabled).
+				</description>
+				<default>86400</default>
+			</parameter>
+			<parameter name="alternativeServer" type="text">
+				<advanced>true</advanced>
+				<label>Alt Gateway Server</label>
+				<description>Only used for proxy/test gateway server.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

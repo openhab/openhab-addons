@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,5 +94,10 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
             result = new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());
         }
         return result;
+    }
+
+    @Override
+    public boolean notifyChildDevices() {
+        return true;
     }
 }

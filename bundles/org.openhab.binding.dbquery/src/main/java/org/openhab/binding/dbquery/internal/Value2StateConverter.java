@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Date;
 
@@ -76,9 +74,9 @@ public class Value2StateConverter {
 
     private State convert2DateTime(Object value) {
         if (value instanceof Instant instant) {
-            return new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
+            return new DateTimeType(instant);
         } else if (value instanceof Date date) {
-            return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()));
+            return new DateTimeType(date.toInstant());
         } else if (value instanceof String string) {
             return new DateTimeType(string);
         } else {

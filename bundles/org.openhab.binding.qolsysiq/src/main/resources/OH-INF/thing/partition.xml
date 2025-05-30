@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Partition</label>
 		<description>A Qolsys IQ Partition</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel id="armState" typeId="armState"/>
 			<channel id="alarmState" typeId="alarmState"/>

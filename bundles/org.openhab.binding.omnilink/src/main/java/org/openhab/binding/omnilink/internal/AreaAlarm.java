@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,10 +45,6 @@ public enum AreaAlarm {
 
     public boolean isSet(BigInteger alarmBits) {
         return alarmBits.testBit(bit);
-    }
-
-    public boolean isSet(int alarmBits) {
-        return isSet(BigInteger.valueOf(alarmBits));
     }
 
     public String getChannelUID() {

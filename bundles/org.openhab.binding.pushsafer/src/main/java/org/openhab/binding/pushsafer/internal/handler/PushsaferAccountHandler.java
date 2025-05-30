@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,6 +181,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
         // add answer if defined
         if (DEFAULT_ANSWER != config.answer) {
             builder.withAnswer(config.answer);
+        }
+        // add answeroptions if defined
+        if (DEFAULT_ANSWEROPTIONS != config.answeroptions) {
+            builder.withAnswerOptions(config.answeroptions);
+        }
+        // add answerforce if defined
+        if (DEFAULT_ANSWERFORCE != config.answerforce) {
+            builder.withAnswerForce(config.answerforce);
         }
         // add time2live if defined
         if (DEFAULT_TIME2LIVE != config.time2live) {

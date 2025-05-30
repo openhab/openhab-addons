@@ -8,7 +8,7 @@
 	<bridge-type id="fritzbox">
 		<label>FRITZ!Box</label>
 		<description>A FRITZ!Box router.</description>
-
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
 		<channels>
 			<channel id="incoming_call" typeId="incoming_call"/>
 			<channel id="outgoing_call" typeId="outgoing_call"/>

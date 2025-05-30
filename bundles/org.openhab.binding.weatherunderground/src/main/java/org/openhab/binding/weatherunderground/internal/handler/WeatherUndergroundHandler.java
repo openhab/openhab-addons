@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,7 +36,6 @@ import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJs
 import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonForecast;
 import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonForecastDay;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
@@ -179,7 +177,6 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
 
     private final LocaleProvider localeProvider;
     private final UnitProvider unitProvider;
-    private final TimeZoneProvider timeZoneProvider;
     private final Gson gson;
     private final Map<String, Integer> forecastMap;
 
@@ -189,12 +186,10 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
 
     private @Nullable WeatherUndergroundBridgeHandler bridgeHandler;
 
-    public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider,
-            TimeZoneProvider timeZoneProvider) {
+    public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider) {
         super(thing);
         this.localeProvider = localeProvider;
         this.unitProvider = unitProvider;
-        this.timeZoneProvider = timeZoneProvider;
         gson = new Gson();
         forecastMap = initForecastDayMap();
     }
@@ -358,9 +353,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             case "stationId":
                 return undefOrState(current.getStationId(), new StringType(current.getStationId()));
             case "observationTime":
-                ZoneId zoneId = timeZoneProvider.getTimeZone();
-                return undefOrState(current.getObservationTime(zoneId),
-                        new DateTimeType(current.getObservationTime(zoneId)));
+                return undefOrState(current.getObservationTime(), new DateTimeType(current.getObservationTime()));
             case "conditions":
                 return undefOrState(current.getConditions(), new StringType(current.getConditions()));
             case "temperature":
@@ -433,9 +426,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         String channelTypeId = getChannelTypeId(channelId);
         switch (channelTypeId) {
             case "forecastTime":
-                ZoneId zoneId = timeZoneProvider.getTimeZone();
-                return undefOrState(dayForecast.getForecastTime(zoneId),
-                        new DateTimeType(dayForecast.getForecastTime(zoneId)));
+                return undefOrState(dayForecast.getForecastTime(), new DateTimeType(dayForecast.getForecastTime()));
             case "conditions":
                 return undefOrState(dayForecast.getConditions(), new StringType(dayForecast.getConditions()));
             case "minTemperature":

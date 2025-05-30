@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,9 +71,9 @@ public class EnvoyConnector {
     private static final String INFO_SOFTWARE_END = "</software>";
 
     protected final HttpClient httpClient;
+    protected final Gson gson = new GsonBuilder().create();
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyConnector.class);
-    private final Gson gson = new GsonBuilder().create();
     private final String schema;
 
     private @Nullable DigestAuthentication envoyAuthn;
@@ -205,7 +205,7 @@ public class EnvoyConnector {
         return retrieveData(INVERTERS_URL, json -> Arrays.asList(gson.fromJson(json, InverterDTO[].class)));
     }
 
-    private synchronized <T> T retrieveData(final String urlPath, final Function<String, @Nullable T> jsonConverter)
+    protected synchronized <T> T retrieveData(final String urlPath, final Function<String, @Nullable T> jsonConverter)
             throws EnphaseException {
         final Request request = createRequest(configuration.hostname + urlPath);
 

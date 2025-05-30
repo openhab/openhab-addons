@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,7 +155,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSHT, "", THING_TYPE_SHELLYPLUSHT_STR), //
                 Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHTG3_STR), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE_STR), //
-                Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYUNI_STR), //
+                Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
@@ -174,6 +174,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO1PM, "", THING_TYPE_SHELLYPRO1PM_STR), //
                 Arguments.of(SHELLYDT_PRO1PM_2, "", THING_TYPE_SHELLYPRO1PM_STR), //
                 Arguments.of(SHELLYDT_PRO1PM_3, "", THING_TYPE_SHELLYPRO1PM_STR), //
+                Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPRO1CB_STR), //
                 Arguments.of("SPSW-002XE16EU", "relay", THING_TYPE_SHELLYPRO2_RELAY_STR), //
                 Arguments.of("SPSW-102XE16EU", "relay", THING_TYPE_SHELLYPRO2_RELAY_STR), //
                 Arguments.of("SPSW-202XE16EU", "relay", THING_TYPE_SHELLYPRO2_RELAY_STR), //

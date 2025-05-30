@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -247,7 +247,9 @@ public class JdbcBaseDAO {
     }
 
     public Properties getConnectionProperties() {
-        return new Properties(this.databaseProps);
+        Properties properties = new Properties(databaseProps.size());
+        properties.putAll(databaseProps);
+        return properties;
     }
 
     /**************
@@ -639,8 +641,7 @@ public class JdbcBaseDAO {
                 break;
             case "DATETIMEITEM":
                 vo.setValueTypes(getSqlTypes().get(itemType), java.sql.Timestamp.class);
-                java.sql.Timestamp d = new java.sql.Timestamp(
-                        ((DateTimeType) itemState).getZonedDateTime().toInstant().toEpochMilli());
+                java.sql.Timestamp d = new java.sql.Timestamp(((DateTimeType) itemState).getInstant().toEpochMilli());
                 logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
                 vo.setValue(d);
                 break;
@@ -684,7 +685,7 @@ public class JdbcBaseDAO {
             }
             return unit == null ? DecimalType.valueOf(objectAsString(v)) : QuantityType.valueOf(objectAsString(v));
         } else if (item instanceof DateTimeItem) {
-            return new DateTimeType(objectAsInstant(v).atZone(ZoneId.systemDefault()));
+            return new DateTimeType(objectAsInstant(v));
         } else if (item instanceof ColorItem) {
             return HSBType.valueOf(objectAsString(v));
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
@@ -710,56 +711,52 @@ public class JdbcBaseDAO {
         }
     }
 
-    protected Instant objectAsInstant(Object v) {
-        if (v instanceof Long) {
-            return Instant.ofEpochMilli(((Number) v).longValue());
-        } else if (v instanceof java.sql.Date objectAsDate) {
-            return Instant.ofEpochMilli(objectAsDate.getTime());
-        } else if (v instanceof LocalDateTime objectAsLocalDateTime) {
-            return objectAsLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
-        } else if (v instanceof Instant objectAsInstant) {
-            return objectAsInstant;
-        } else if (v instanceof java.sql.Timestamp objectAsTimestamp) {
-            return objectAsTimestamp.toInstant();
-        } else if (v instanceof java.lang.String objectAsString) {
-            return java.sql.Timestamp.valueOf(objectAsString).toInstant();
-        }
-        throw new UnsupportedOperationException("Date of type '" + v.getClass().getName() + "' is not supported");
+    protected Instant objectAsInstant(Object o) {
+        return switch (o) {
+            case Long l -> Instant.ofEpochMilli(l.longValue());
+            case java.sql.Date d -> Instant.ofEpochMilli(d.getTime());
+            case LocalDateTime ldt -> ldt.atZone(ZoneId.systemDefault()).toInstant();
+            case Instant i -> i;
+            case java.sql.Timestamp ts -> ts.toInstant();
+            case java.lang.String s -> java.sql.Timestamp.valueOf(s).toInstant();
+            default -> throw new UnsupportedOperationException(
+                    "Date of type '" + o.getClass().getName() + "' is not supported");
+        };
     }
 
-    protected Integer objectAsInteger(Object v) {
-        if (v instanceof Byte byteValue) {
-            return byteValue.intValue();
-        } else if (v instanceof Integer intValue) {
-            return intValue;
-        } else if (v instanceof BigDecimal bdValue) {
-            return bdValue.intValue();
-        }
-        throw new UnsupportedOperationException("Integer of type '" + v.getClass().getName() + "' is not supported");
+    protected Integer objectAsInteger(Object o) {
+        return switch (o) {
+            case Byte b -> b.intValue();
+            case Integer i -> i;
+            case BigDecimal bd -> bd.intValue();
+            default -> throw new UnsupportedOperationException(
+                    "Integer of type '" + o.getClass().getName() + "' is not supported");
+        };
     }
 
-    protected Number objectAsNumber(Object value) {
-        if (value instanceof Number valueAsNumber) {
-            return valueAsNumber;
-        }
-        throw new UnsupportedOperationException("Number of type '" + value.getClass().getName() + "' is not supported");
+    protected Number objectAsNumber(Object o) {
+        return switch (o) {
+            case Number n -> n;
+            default -> throw new UnsupportedOperationException(
+                    "Number of type '" + o.getClass().getName() + "' is not supported");
+        };
     }
 
-    protected BigDecimal objectAsBigDecimal(Object value) {
-        if (value instanceof BigDecimal valueAsBigDecimal) {
-            return valueAsBigDecimal;
-        }
-        throw new UnsupportedOperationException(
-                "BigDecimal of type '" + value.getClass().getName() + "' is not supported");
+    protected BigDecimal objectAsBigDecimal(Object o) {
+        return switch (o) {
+            case BigDecimal bd -> bd;
+            default -> throw new UnsupportedOperationException(
+                    "BigDecimal of type '" + o.getClass().getName() + "' is not supported");
+        };
     }
 
-    protected String objectAsString(Object v) {
-        if (v instanceof byte[] objectAsBytes) {
-            return new String(objectAsBytes);
-        } else if (v instanceof String objectAsString) {
-            return objectAsString;
-        }
-        throw new UnsupportedOperationException("String of type '" + v.getClass().getName() + "' is not supported");
+    protected String objectAsString(Object o) {
+        return switch (o) {
+            case byte[] b -> new String(b);
+            case String s -> s;
+            default -> throw new UnsupportedOperationException(
+                    "String of type '" + o.getClass().getName() + "' is not supported");
+        };
     }
 
     protected String formattedIdentifier(String identifier) {

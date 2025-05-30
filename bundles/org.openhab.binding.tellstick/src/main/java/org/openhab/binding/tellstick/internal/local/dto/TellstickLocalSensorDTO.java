@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.tellstick.internal.local.dto;
 
 import java.util.List;
 
-import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
+import org.openhab.binding.tellstick.internal.live.dto.LiveDataType;
 import org.tellstick.device.iface.Device;
 import org.tellstick.enums.DeviceType;
 

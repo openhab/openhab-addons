@@ -9,6 +9,7 @@
 		<label>SmartStrip</label>
 		<description>A Thing to control Revogi SmartStrip</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="overallPlug" typeId="overallPlugActuator"/>

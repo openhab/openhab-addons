@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -343,8 +343,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             WSTimeManagerSettings timeSettings = ihc.getTimeSettings();
             logger.debug("Controller time settings: {}", timeSettings);
 
-            ZonedDateTime time = timeSettings.getTimeAndDateInUTC().getAsZonedDateTime(ZoneId.of("Z"))
-                    .withZoneSameInstant(ZoneId.systemDefault());
+            Instant time = timeSettings.getTimeAndDateInUTC().getAsInstant(ZoneId.of("Z"));
+
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME), new DateTimeType(time));
         } catch (IhcExecption e) {
             logger.warn("Controller uptime information fetch failed, reason: {}.", e.getMessage(), e);
@@ -572,7 +572,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     projectFile = ProjectFileUtils.readFromFile(filePath);
                 } catch (IhcExecption e) {
-                    logger.debug("Error occured when read project file from file '{}', reason {}", filePath,
+                    logger.debug("Error occurred when read project file from file '{}', reason {}", filePath,
                             e.getMessage(), e);
                     loadProject = true;
                 }
@@ -591,7 +591,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     ProjectFileUtils.saveToFile(filePath, data);
                 } catch (IhcExecption e) {
-                    logger.warn("Error occured when trying to write data to file '{}', reason {}", filePath,
+                    logger.warn("Error occurred when trying to write data to file '{}', reason {}", filePath,
                             e.getMessage(), e);
                 }
                 projectFile = ProjectFileUtils.converteBytesToDocument(data);
@@ -671,7 +671,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     @Override
-    public void errorOccured(IhcExecption e) {
+    public void errorOccurred(IhcExecption e) {
         logger.warn("Error occurred on communication to IHC controller: {}", e.getMessage(), e);
         logger.debug("Reconnection request");
         setReconnectRequest(true);
@@ -724,7 +724,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             } catch (ConversionException e) {
                 logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
             } catch (RuntimeException e) {
-                logger.warn("Unknown error occured, reason: {}.", e.getMessage(), e);
+                logger.warn("Unknown error occurred, reason: {}.", e.getMessage(), e);
             }
         });
 
@@ -875,7 +875,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     });
                 });
             } catch (IhcExecption e) {
-                logger.debug("Error occured when fetching RF device information, reason: : {} ", e.getMessage(), e);
+                logger.debug("Error occurred when fetching RF device information, reason: : {} ", e.getMessage(), e);
                 return;
             }
         }

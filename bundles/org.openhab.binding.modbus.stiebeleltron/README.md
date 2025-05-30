@@ -137,14 +137,14 @@ Contact stiebel_eltron_mode_water              "Heating Water [%d]"   { channel=
 Contact stiebel_eltron_mode_cooling             "Cooling [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-cooling" }
 Contact stiebel_eltron_mode_summer             "Summer Mode [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-summer" }
 
-Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_today" }
-Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_total"}
-Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_today" }
-Number:Energy stiebel_eltron_production_water_total            "Water heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_total"}
-Number:Energy stiebel_eltron_consumption_heat_total             "Heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_total"}
-Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_heat_today" }
-Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_today" }
-Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption_water_total"}
+Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production-heat-today" }
+Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production-heat-total"}
+Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production-water-today" }
+Number:Energy stiebel_eltron_production_water_total            "Water heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production-water-total"}
+Number:Energy stiebel_eltron_consumption_heat_total             "Heating power consumption total [%.3f MWh]"  {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption-heat-total"}
+Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption-heat-today" }
+Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#consumption-water-today" }
+Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#consumption-water-total"}
 
 ```
 

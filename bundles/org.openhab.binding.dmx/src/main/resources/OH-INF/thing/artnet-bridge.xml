@@ -6,6 +6,7 @@
 	<bridge-type id="artnet-bridge">
 		<label>ArtNet Bridge</label>
 		<description>The ArtNet bridge represents a single DMX universe connected via ArtNet, only unicast</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="mute" typeId="mute"/>
 		</channels>

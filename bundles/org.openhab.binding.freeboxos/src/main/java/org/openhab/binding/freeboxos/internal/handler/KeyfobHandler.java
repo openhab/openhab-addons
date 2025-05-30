@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -50,11 +48,9 @@ public class KeyfobHandler extends HomeNodeHandler {
     @Override
     protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
         if (channelId.startsWith(KEYFOB_PUSHED)) {
-            return Objects.requireNonNull(endPoint.map(ep -> ep
-                    .getLastChange().map(
-                            change -> (State) (KEYFOB_PUSHED.equals(channelId) ? new DecimalType(change.value())
-                                    : new DateTimeType(ZonedDateTime
-                                            .ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC))))
+            return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
+                    .map(change -> (State) (KEYFOB_PUSHED.equals(channelId) ? new DecimalType(change.value())
+                            : new DateTimeType(Instant.ofEpochSecond(change.timestamp()))))
                     .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
         }
         String value = state.value();

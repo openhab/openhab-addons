@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
@@ -132,11 +131,11 @@ public class MiIoVacuumHandlerTest {
 
         verify(callback, description("Test the start time parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_START_TIME)),
-                eq(new DateTimeType(ZonedDateTime.parse("2024-08-20T19:20:13+02:00")).toZone(ZoneId.systemDefault())));
+                eq(new DateTimeType(ZonedDateTime.parse("2024-08-20T19:20:13+02:00"))));
 
         verify(callback, description("Test the end time parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_END_TIME)),
-                eq(new DateTimeType(ZonedDateTime.parse("2024-08-20T19:20:59+02:00")).toZone(ZoneId.systemDefault())));
+                eq(new DateTimeType(ZonedDateTime.parse("2024-08-20T19:20:59+02:00"))));
 
         verify(callback, description("Test the duration parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_DURATION)),

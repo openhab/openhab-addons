@@ -6,6 +6,7 @@
 
 	<bridge-type id="gateway">
 		<label>Xiaomi Mi Gateway</label>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="network" typeId="network"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class AutomowerConfiguration {
     public @Nullable String mowerId;
     public @Nullable Integer pollingInterval;
+    public @Nullable String mowerZoneId;
 
     @Nullable
     public String getMowerId() {
@@ -40,5 +41,10 @@ public class AutomowerConfiguration {
 
     public void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
+    }
+
+    @Nullable
+    public String getMowerZoneId() {
+        return mowerZoneId;
     }
 }

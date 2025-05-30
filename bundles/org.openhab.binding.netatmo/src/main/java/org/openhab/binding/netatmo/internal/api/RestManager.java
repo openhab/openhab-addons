@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,14 +65,14 @@ public abstract class RestManager {
         URI uri = uriBuilder.build();
         T response = apiBridge.executeUri(uri, method, clazz, payload, contentType, 3);
         if (response instanceof ApiResponse.Ok apiResponseOk && apiResponseOk.failed()) {
-            throw new NetatmoException("Command failed : %s for uri : %s", response.getStatus(), uri.toString());
+            throw new NetatmoException("Command failed: %s for uri: %s", response.getStatus(), uri.toString());
         }
         return response;
     }
 
     private static UriBuilder appendParams(UriBuilder builder, @Nullable Object... params) {
         if (params.length % 2 != 0) {
-            throw new IllegalArgumentException("appendParams : params count must be even");
+            throw new IllegalArgumentException("appendParams: params count must be even");
         }
         for (int i = 0; i < params.length; i += 2) {
             Object param1 = params[i];
@@ -82,7 +82,7 @@ public abstract class RestManager {
                     builder.queryParam(query, param2);
                 }
             } else {
-                throw new IllegalArgumentException("appendParams : even parameters must be Strings");
+                throw new IllegalArgumentException("appendParams: even parameters must be Strings");
             }
         }
         return builder;

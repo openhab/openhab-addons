@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Boiler</label>
 		<description>Boiler and thermostat</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 		<channels>
 			<channel id="roomtemp" typeId="roomtemp"/>
 			<channel id="roomsetpoint" typeId="roomsetpoint"/>

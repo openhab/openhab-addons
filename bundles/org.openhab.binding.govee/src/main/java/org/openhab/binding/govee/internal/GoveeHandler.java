@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,11 @@ package org.openhab.binding.govee.internal;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,10 +29,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.model.Color;
 import org.openhab.binding.govee.internal.model.ColorData;
 import org.openhab.binding.govee.internal.model.EmptyValueQueryStatusData;
+import org.openhab.binding.govee.internal.model.GenericGoveeData;
 import org.openhab.binding.govee.internal.model.GenericGoveeMsg;
 import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
 import org.openhab.binding.govee.internal.model.StatusResponse;
 import org.openhab.binding.govee.internal.model.ValueIntData;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -40,6 +47,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,47 +79,73 @@ import com.google.gson.JsonSyntaxException;
  * https://app-h5.govee.com/user-manual/wlan-guide
  *
  * @author Stefan Höhn - Initial contribution
+ * @author Andrew Fiddian-Green - Added sequential task processing
  */
 @NonNullByDefault
 public class GoveeHandler extends BaseThingHandler {
 
-    /*
-     * Messages to be sent to the Govee devices
-     */
     private static final Gson GSON = new Gson();
+    private static final int REFRESH_SECONDS_MIN = 2;
+    private static final int INTER_COMMAND_DELAY_MILLISEC = 100;
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHandler.class);
+
     protected ScheduledExecutorService executorService = scheduler;
-    @Nullable
-    private ScheduledFuture<?> triggerStatusJob; // send device status update job
+    private @Nullable ScheduledFuture<?> thingTaskSenderTask;
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
 
-    private CommunicationManager communicationManager;
+    private final CommunicationManager communicationManager;
+    private final GoveeStateDescriptionProvider stateDescriptionProvider;
+    private final List<Callable<Boolean>> taskQueue = new ArrayList<>();
 
-    private int lastOnOff;
-    private int lastBrightness;
+    private OnOffType lastSwitch = OnOffType.OFF;
     private HSBType lastColor = new HSBType();
-    private int lastColorTempInKelvin = COLOR_TEMPERATURE_MIN_VALUE.intValue();
+
+    private int lastKelvin;
+    private int minKelvin;
+    private int maxKelvin;
+
+    private int refreshIntervalSeconds;
+    private Instant nextRefreshDueTime = Instant.EPOCH;
 
     /**
-     * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
-     * The device sends it back to the common port and the response is
-     * then received by the common #refreshStatusReceiver
+     * This thing related job <i>thingTaskSender</i> sends the next queued command (if any)
+     * to the Govee device. If there is no queued command and a regular refresh is due then
+     * sends the command to trigger a status refresh.
+     *
+     * The device may send a reply to the common port and if so the response is received by
+     * the refresh status receiver.
      */
-    private final Runnable thingRefreshSender = () -> {
-        try {
-            triggerDeviceStatusRefresh();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
-                            + "\"]");
+    private final Runnable thingTaskSender = () -> {
+        synchronized (taskQueue) {
+            if (taskQueue.isEmpty() && Instant.now().isBefore(nextRefreshDueTime)) {
+                return; // no queued command nor pending refresh
+            }
+            if (taskQueue.isEmpty()) {
+                taskQueue.add(() -> triggerDeviceStatusRefresh());
+                nextRefreshDueTime = Instant.now().plusSeconds(refreshIntervalSeconds);
+            } else if (taskQueue.size() > 20) {
+                logger.info("Command task queue size:{} exceeds limit:20", taskQueue.size());
+            }
+            try {
+                if (taskQueue.remove(0).call()) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                logger.warn("Unexpected List.remove() exception:{}", e.getMessage());
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
+                                + "\"]");
+            }
         }
     };
 
-    public GoveeHandler(Thing thing, CommunicationManager communicationManager) {
+    public GoveeHandler(Thing thing, CommunicationManager communicationManager,
+            GoveeStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.communicationManager = communicationManager;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     public String getHostname() {
@@ -128,140 +162,176 @@ public class GoveeHandler extends BaseThingHandler {
                     "@text/offline.configuration-error.ip-address.missing");
             return;
         }
+
+        minKelvin = Objects.requireNonNullElse(goveeConfiguration.minKelvin, COLOR_TEMPERATURE_MIN_VALUE.intValue());
+        maxKelvin = Objects.requireNonNullElse(goveeConfiguration.maxKelvin, COLOR_TEMPERATURE_MAX_VALUE.intValue());
+        if ((minKelvin < COLOR_TEMPERATURE_MIN_VALUE) || (maxKelvin > COLOR_TEMPERATURE_MAX_VALUE)
+                || (minKelvin >= maxKelvin)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-color-temperature-range");
+            return;
+        }
+
+        thing.setProperty(PROPERTY_COLOR_TEMPERATURE_MIN, Integer.toString(minKelvin));
+        thing.setProperty(PROPERTY_COLOR_TEMPERATURE_MAX, Integer.toString(maxKelvin));
+        stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                minKelvin, maxKelvin);
+
+        refreshIntervalSeconds = goveeConfiguration.refreshInterval;
+        if (refreshIntervalSeconds < REFRESH_SECONDS_MIN) {
+            logger.warn("Config Param refreshInterval={} too low, minimum={}", refreshIntervalSeconds,
+                    REFRESH_SECONDS_MIN);
+            refreshIntervalSeconds = REFRESH_SECONDS_MIN;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
         communicationManager.registerHandler(this);
-        if (triggerStatusJob == null) {
-            logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
 
-            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100,
-                    goveeConfiguration.refreshInterval * 1000L, TimeUnit.MILLISECONDS);
+        if (thingTaskSenderTask == null) {
+            logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
+            thingTaskSenderTask = executorService.scheduleWithFixedDelay(thingTaskSender, INTER_COMMAND_DELAY_MILLISEC,
+                    INTER_COMMAND_DELAY_MILLISEC, TimeUnit.MILLISECONDS);
         }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-
-        ScheduledFuture<?> triggerStatusJobFuture = triggerStatusJob;
-        if (triggerStatusJobFuture != null) {
-            triggerStatusJobFuture.cancel(true);
-            triggerStatusJob = null;
+        taskQueue.clear();
+        ScheduledFuture<?> job = thingTaskSenderTask;
+        if (job != null) {
+            job.cancel(true);
+            thingTaskSenderTask = null;
         }
         communicationManager.unregisterHandler(this);
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
+    public void handleCommand(ChannelUID channelUID, Command commandParam) {
+        Command command = commandParam;
+
+        synchronized (taskQueue) {
+            logger.debug("handleCommand({}, {})", channelUID, command);
+
             if (command instanceof RefreshType) {
-                // we are refreshing all channels at once, as we get all information at the same time
-                triggerDeviceStatusRefresh();
-                logger.debug("Triggering Refresh");
+                taskQueue.add(() -> triggerDeviceStatusRefresh());
             } else {
-                logger.debug("Channel ID {} type {}", channelUID.getId(), command.getClass());
                 switch (channelUID.getId()) {
                     case CHANNEL_COLOR:
-                        if (command instanceof HSBType hsbCommand) {
-                            int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
-                            sendColor(new Color(rgb[0], rgb[1], rgb[2]));
-                        } else if (command instanceof PercentType percent) {
-                            sendBrightness(percent.intValue());
-                        } else if (command instanceof OnOffType onOffCommand) {
-                            sendOnOff(onOffCommand);
+                        if (command instanceof HSBType hsb) {
+                            taskQueue.add(() -> sendColor(hsb));
+                            command = hsb.getBrightness(); // fall through
+                        }
+                        if (command instanceof PercentType percent) {
+                            taskQueue.add(() -> sendBrightness(percent));
+                            command = OnOffType.from(percent.intValue() > 0); // fall through
+                        }
+                        if (command instanceof OnOffType onOff) {
+                            taskQueue.add(() -> sendOnOff(onOff));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
                         }
                         break;
+
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
-                            logger.debug("COLOR_TEMPERATURE: Color Temperature change with Percent Type {}", command);
-                            Double colorTemp = (COLOR_TEMPERATURE_MIN_VALUE + percent.intValue()
-                                    * (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) / 100.0);
-                            lastColorTempInKelvin = colorTemp.intValue();
-                            logger.debug("lastColorTempInKelvin {}", lastColorTempInKelvin);
-                            sendColorTemp(lastColorTempInKelvin);
+                            taskQueue.add(() -> sendKelvin(percentToKelvin(percent)));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
                         }
                         break;
+
                     case CHANNEL_COLOR_TEMPERATURE_ABS:
-                        if (command instanceof QuantityType<?> quantity) {
-                            logger.debug("Color Temperature Absolute change with Percent Type {}", command);
-                            lastColorTempInKelvin = quantity.intValue();
-                            logger.debug("COLOR_TEMPERATURE_ABS: lastColorTempInKelvin {}", lastColorTempInKelvin);
-                            int lastColorTempInPercent = ((Double) ((lastColorTempInKelvin
-                                    - COLOR_TEMPERATURE_MIN_VALUE)
-                                    / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
-                            logger.debug("computed lastColorTempInPercent {}", lastColorTempInPercent);
-                            sendColorTemp(lastColorTempInKelvin);
+                        if (command instanceof QuantityType<?> genericQuantity) {
+                            QuantityType<?> kelvin = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                            if (kelvin == null) {
+                                logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
+                                break;
+                            }
+                            taskQueue.add(() -> sendKelvin(kelvin.intValue()));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
+                        } else if (command instanceof DecimalType kelvin) {
+                            taskQueue.add(() -> sendKelvin(kelvin.intValue()));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
                         }
                         break;
                 }
             }
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
-                            + "\"]");
         }
     }
 
     /**
-     * Initiate a refresh to our thing devicee
-     *
+     * Initiate a refresh to our thing device
      */
-    private void triggerDeviceStatusRefresh() throws IOException {
-        logger.debug("trigger Refresh Status of device {}", thing.getLabel());
-        GenericGoveeRequest lightQuery = new GenericGoveeRequest(
-                new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
-        communicationManager.sendRequest(this, lightQuery);
-    }
-
-    public void sendColor(Color color) throws IOException {
-        lastColor = ColorUtil.rgbToHsb(new int[] { color.r(), color.g(), color.b() });
-
-        GenericGoveeRequest lightColor = new GenericGoveeRequest(
-                new GenericGoveeMsg("colorwc", new ColorData(color, 0)));
-        communicationManager.sendRequest(this, lightColor);
-    }
-
-    public void sendBrightness(int brightness) throws IOException {
-        lastBrightness = brightness;
-        GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
-                new GenericGoveeMsg("brightness", new ValueIntData(brightness)));
-        communicationManager.sendRequest(this, lightBrightness);
-    }
-
-    private void sendOnOff(OnOffType switchValue) throws IOException {
-        lastOnOff = (switchValue == OnOffType.ON) ? 1 : 0;
-        GenericGoveeRequest switchLight = new GenericGoveeRequest(
-                new GenericGoveeMsg("turn", new ValueIntData(lastOnOff)));
-        communicationManager.sendRequest(this, switchLight);
-    }
-
-    private void sendColorTemp(int colorTemp) throws IOException {
-        lastColorTempInKelvin = colorTemp;
-        logger.debug("sendColorTemp {}", colorTemp);
-        GenericGoveeRequest lightColor = new GenericGoveeRequest(
-                new GenericGoveeMsg("colorwc", new ColorData(new Color(0, 0, 0), colorTemp)));
-        communicationManager.sendRequest(this, lightColor);
+    private boolean triggerDeviceStatusRefresh() throws IOException {
+        logger.debug("triggerDeviceStatusRefresh() to {}", thing.getUID());
+        GenericGoveeData data = new EmptyValueQueryStatusData();
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("devStatus", data));
+        communicationManager.sendRequest(this, request);
+        return true;
     }
 
     /**
-     * Creates a Color state by using the last color information from lastColor
-     * The brightness is overwritten either by the provided lastBrightness
-     * or if lastOnOff = 0 (off) then the brightness is set 0
-     *
-     * @see #lastColor
-     * @see #lastBrightness
-     * @see #lastOnOff
-     *
-     * @return the computed state
+     * Send the normalized RGB color parameters.
      */
-    private HSBType getColorState(Color color, int brightness) {
-        PercentType computedBrightness = lastOnOff == 0 ? new PercentType(0) : new PercentType(brightness);
-        int[] rgb = { color.r(), color.g(), color.b() };
-        HSBType hsb = ColorUtil.rgbToHsb(rgb);
-        return new HSBType(hsb.getHue(), hsb.getSaturation(), computedBrightness);
+    public boolean sendColor(HSBType color) throws IOException {
+        logger.debug("sendColor({}) to {}", color, thing.getUID());
+        int[] normalRGB = ColorUtil.hsbToRgb(new HSBType(color.getHue(), color.getSaturation(), PercentType.HUNDRED));
+        GenericGoveeData data = new ColorData(new Color(normalRGB[0], normalRGB[1], normalRGB[2]), 0);
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
+        communicationManager.sendRequest(this, request);
+        return true;
     }
 
-    void handleIncomingStatus(String response) {
+    /**
+     * Send the brightness parameter.
+     */
+    public boolean sendBrightness(PercentType brightness) throws IOException {
+        logger.debug("sendBrightness({}) to {}", brightness, thing.getUID());
+        GenericGoveeData data = new ValueIntData(brightness.intValue());
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("brightness", data));
+        communicationManager.sendRequest(this, request);
+        return true;
+    }
+
+    /**
+     * Send the on-off parameter.
+     */
+    private boolean sendOnOff(OnOffType onOff) throws IOException {
+        logger.debug("sendOnOff({}) to {}", onOff, thing.getUID());
+        GenericGoveeData data = new ValueIntData(onOff == OnOffType.ON ? 1 : 0);
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("turn", data));
+        communicationManager.sendRequest(this, request);
+        return true;
+    }
+
+    /**
+     * Set the color temperature (Kelvin) parameter.
+     */
+    private boolean sendKelvin(int kelvin) throws IOException {
+        logger.debug("sendKelvin({}) to {}", kelvin, thing.getUID());
+        GenericGoveeData data = new ColorData(new Color(0, 0, 0), kelvin);
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
+        communicationManager.sendRequest(this, request);
+        return true;
+    }
+
+    /**
+     * Build an {@link HSBType} from the given normalized {@link Color} RGB parameters, brightness, and on-off state
+     * parameters. If the on parameter is true then use the brightness parameter, otherwise use a brightness of zero.
+     *
+     * @param normalRgbParams record containing the lamp's normalized RGB parameters (0..255)
+     * @param brightnessParam the lamp brightness in range 0..100
+     * @param onParam the lamp on-off state
+     *
+     * @return the respective HSBType
+     */
+    private static HSBType buildHSB(Color normalRgbParams, int brightnessParam, boolean onParam) {
+        HSBType normalColor = ColorUtil
+                .rgbToHsb(new int[] { normalRgbParams.r(), normalRgbParams.g(), normalRgbParams.b() });
+        PercentType brightness = onParam ? new PercentType(brightnessParam) : PercentType.ZERO;
+        return new HSBType(normalColor.getHue(), normalColor.getSaturation(), brightness);
+    }
+
+    public void handleIncomingStatus(String response) {
         if (response.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.empty-response");
@@ -284,47 +354,52 @@ public class GoveeHandler extends BaseThingHandler {
             return;
         }
 
-        logger.trace("Receiving Device State");
-        int newOnOff = message.msg().data().onOff();
-        logger.trace("newOnOff = {}", newOnOff);
-        int newBrightness = message.msg().data().brightness();
-        logger.trace("newBrightness = {}", newBrightness);
-        Color newColor = message.msg().data().color();
-        logger.trace("newColor = {}", newColor);
-        int newColorTempInKelvin = message.msg().data().colorTemInKelvin();
-        logger.trace("newColorTempInKelvin = {}", newColorTempInKelvin);
+        logger.debug("updateDeviceState() for {}", thing.getUID());
 
-        newColorTempInKelvin = (newColorTempInKelvin < COLOR_TEMPERATURE_MIN_VALUE)
-                ? COLOR_TEMPERATURE_MIN_VALUE.intValue()
-                : newColorTempInKelvin;
-        newColorTempInKelvin = (newColorTempInKelvin > COLOR_TEMPERATURE_MAX_VALUE)
-                ? COLOR_TEMPERATURE_MAX_VALUE.intValue()
-                : newColorTempInKelvin;
+        OnOffType sw = OnOffType.from(message.msg().data().onOff() == 1);
+        int brightness = message.msg().data().brightness();
+        Color normalRGB = message.msg().data().color();
+        int kelvin = message.msg().data().colorTemInKelvin();
 
-        int newColorTempInPercent = ((Double) ((newColorTempInKelvin - COLOR_TEMPERATURE_MIN_VALUE)
-                / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
+        logger.trace("Update values: switch:{}, brightness:{}, normalRGB:{}, kelvin:{}", sw, brightness, normalRGB,
+                kelvin);
 
-        HSBType adaptedColor = getColorState(newColor, newBrightness);
+        HSBType color = buildHSB(normalRGB, brightness, true);
 
-        logger.trace("HSB old: {} vs adaptedColor: {}", lastColor, adaptedColor);
-        // avoid noise by only updating if the value has changed on the device
-        if (!adaptedColor.equals(lastColor)) {
-            logger.trace("UPDATING HSB old: {} != {}", lastColor, adaptedColor);
-            updateState(CHANNEL_COLOR, adaptedColor);
+        logger.trace("Compare hsb old:{} to new:{}, switch old:{} to new:{}", lastColor, color, lastSwitch, sw);
+        if ((sw != lastSwitch) || !color.equals(lastColor)) {
+            logger.trace("Update hsb old:{} to new:{}, switch old:{} to new:{}", lastColor, color, lastSwitch, sw);
+            updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, sw == OnOffType.ON));
+            lastSwitch = sw;
+            lastColor = color;
         }
 
-        // avoid noise by only updating if the value has changed on the device
-        logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
-                newColorTempInPercent, newColorTempInKelvin);
-        if (newColorTempInKelvin != lastColorTempInKelvin) {
-            logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
-                    newColorTempInPercent, newColorTempInKelvin);
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
-            updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
+        logger.trace("Compare kelvin old:{} to new:{}", lastKelvin, kelvin);
+        if (kelvin != lastKelvin) {
+            logger.trace("Update kelvin old:{} to new:{}", lastKelvin, kelvin);
+            if (kelvin != 0) {
+                kelvin = Math.round(Math.min(maxKelvin, Math.max(minKelvin, kelvin)));
+                updateState(CHANNEL_COLOR_TEMPERATURE, kelvinToPercent(kelvin));
+                updateState(CHANNEL_COLOR_TEMPERATURE_ABS, QuantityType.valueOf(kelvin, Units.KELVIN));
+            } else {
+                updateState(CHANNEL_COLOR_TEMPERATURE, UnDefType.UNDEF);
+                updateState(CHANNEL_COLOR_TEMPERATURE_ABS, UnDefType.UNDEF);
+            }
+            lastKelvin = kelvin;
         }
+    }
 
-        lastOnOff = newOnOff;
-        lastColor = adaptedColor;
-        lastBrightness = newBrightness;
+    /**
+     * Convert PercentType to Kelvin.
+     */
+    private int percentToKelvin(PercentType percent) {
+        return (int) Math.round((((maxKelvin - minKelvin) * percent.doubleValue() / 100.0) + minKelvin));
+    }
+
+    /**
+     * Convert Kelvin to PercentType.
+     */
+    private PercentType kelvinToPercent(int kelvin) {
+        return new PercentType((int) Math.round((kelvin - minKelvin) * 100.0 / (maxKelvin - minKelvin)));
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,13 +127,11 @@ public class JdbcBaseDAOTest {
                         LocalDateTime.parse("2021-02-01T23:30:02.049"), null,
                         DateTimeType.valueOf("2021-02-01T23:30:02.049")),
                 Arguments.of(new DateTimeItem("Long_DateTimeItem"), Long.valueOf("1612222202049"), null,
-                        new DateTimeType(ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"),
-                                ZoneId.systemDefault()))),
+                        new DateTimeType(Instant.parse("2021-02-01T23:30:02.049Z"))),
                 Arguments.of(new DateTimeItem("Date_DateTimeItem"), java.sql.Date.valueOf("2021-02-01"), null,
                         DateTimeType.valueOf("2021-02-01T00:00:00.000")),
                 Arguments.of(new DateTimeItem("Instant_DateTimeItem"), Instant.parse("2021-02-01T23:30:02.049Z"), null,
-                        new DateTimeType(ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"),
-                                ZoneId.systemDefault()))),
+                        new DateTimeType(Instant.parse("2021-02-01T23:30:02.049Z"))),
                 Arguments.of(new DateTimeItem("String_DateTimeItem"), "2021-02-01 23:30:02.049", null,
                         DateTimeType.valueOf("2021-02-01T23:30:02.049")));
     }

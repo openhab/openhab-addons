@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     protected DateTimeType fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         if ("----".equals(value.getAsString())) {
-            return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
+            return new DateTimeType();
         } else {
             String[] formats = { "EEEE, d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy",
                     "d. LLLL" };

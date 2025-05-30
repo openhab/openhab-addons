@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Thermostatic Valve</label>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channels>
 			<channel id="target_temperature" typeId="temperature"></channel>
 			<channel id="battery_level" typeId="system.battery-level"></channel>

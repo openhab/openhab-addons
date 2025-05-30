@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
@@ -138,9 +139,10 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 service.execute(() -> {
                     try {
                         MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
+                        InetSocketAddress inetSocketAddress = new InetSocketAddress(addr, SDDP_PORT);
                         multiSocket.setSoTimeout(TIMEOUT_MS);
                         multiSocket.setNetworkInterface(netint);
-                        multiSocket.joinGroup(addr);
+                        multiSocket.joinGroup(inetSocketAddress, null);
 
                         while (scanning) {
                             DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
@@ -156,10 +158,13 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                             }
                         }
 
+                        multiSocket.leaveGroup(inetSocketAddress, null);
                         multiSocket.close();
                     } catch (IOException e) {
-                        if (e.getMessage() != null && !e.getMessage().contains("No IP addresses bound to interface")) {
-                            logger.debug("OppoDiscoveryService IOException: {}", e.getMessage(), e);
+                        final String message = e.getMessage();
+                        if (message != null && !message.contains("No IP addresses bound to interface")
+                                && !message.contains("Network interface not configured for IPv4")) {
+                            logger.debug("OppoDiscoveryService IOException: {}", message, e);
                         }
                     }
                 });

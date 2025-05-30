@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.fronius.internal.handler;
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -92,6 +93,15 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         if (localRefreshJob != null) {
             localRefreshJob.cancel(true);
             refreshJob = null;
+        }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+
+        for (FroniusBaseThingHandler service : services) {
+            service.handleBridgeConfigurationUpdate(configurationParameters);
         }
     }
 

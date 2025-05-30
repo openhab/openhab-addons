@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,4 +51,8 @@ public class SonnenBindingConstants {
     public static final String CHANNELENERGYEXPORTEDSTATEPRODUCTION = "energyExportedStateProduction";
     public static final String CHANNELENERGYIMPORTEDSTATECONSUMPTION = "energyImportedStateConsumption";
     public static final String CHANNELENERGYEXPORTEDSTATECONSUMPTION = "energyExportedStateConsumption";
+
+    // List of new Channel ids for battery charging from Grid
+    public static final String CHANNELBATTERYCHARGINGGRID = "batteryChargingFromGrid";
+    public static final String CHANNELBATTERYOPERATIONMODE = "batteryOperationMode";
 }

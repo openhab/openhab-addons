@@ -19,19 +19,13 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Channel Name             | Type            | Description                                                                                   |
-|--------------------------|-----------------|-----------------------------------------------------------------------------------------------|
-| ipAddress                | IP Address      | IP address of the unit.                                                                       |
-| broadcastAddress         | IP Address      | Broadcast address being used for discovery, usually derived from the IP interface address.    |
-| refresh                  | Integer         | Refresh interval in seconds for polling the device status.                                    |
-| currentTemperatureOffset | Decimal         | Offset in Celsius for the current temperature value received from the device.                 |
-| encryptionType           | EncryptionTypes | Encryption type (ECB or GCM) used for communicating with the AC device                        |
-
-The Air Conditioner's IP address is mandatory, all other parameters are optional.
-If the broadcast is not set (default) it will be derived from openHAB's network setting (Check Network Settings in the openHAB UI).
-The binding tries to automatically detect the encryption type when communicating with the AC.
-If this fails, you might need need to set the encryption type manually.
-Only change this if you have a good reason to.
+| Parameter          | Parameter ID             | Required | Default | Description  |
+|--------------------|--------------------------|----------|---------|--------------|
+| IP Address         | ipAddress                | yes      |         | IP address of the unit. |
+| Broadcast Address  | broadcastAddress         | no       |         | Broadcast address being used for discovery, usually derived from the IP interface address. If the broadcast is not set (default) it will be derived from openHAB's network setting (Check Network Settings in the openHAB UI). |
+| Refresh Interval   | refreshInterval          | no       | 60      | Refresh interval in seconds for polling the device status. |
+| Offset Temperature | currentTemperatureOffset | no       | 0       | Offset in Celsius for the current temperature value received from the device. |
+| Encryption Type    | encryptionType           | no       | ECB     | Encryption type used for communicating with the AC device. Options: ECB (firmware version < 1.23), COMBINED (firmware version >= 1.23 - use ECB for decoding the scan responce and GCM for further encryption and decryption) and GCM (used by the latest devices). The binding tries to automatically detect the encryption type, in case it fails, you might need to set the encryption type manually. Only change this if you have a good reason to. |
 
 ## Channels
 
@@ -67,7 +61,7 @@ When changing mode, the air conditioner will be turned on unless "off" is select
 ### Things
 
 ```java
-Thing gree:airconditioner:a1234561 [ ipAddress="192.168.1.111", refresh=2, encryptionType="ECB" ]
+Thing gree:airconditioner:a1234561 [ ipAddress="192.168.1.111", refreshInterval=2, encryptionType="ECB" ]
 ```
 
 ### Items

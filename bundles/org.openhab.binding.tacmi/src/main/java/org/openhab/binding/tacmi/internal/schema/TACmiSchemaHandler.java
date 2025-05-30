@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.tacmi.internal.schema;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -89,9 +90,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
     // this is the units lookup cache.
     protected final Map<String, UnitAndType> unitsCache = new ConcurrentHashMap<>();
     // marks an entry with known un-resolveable unit
-    protected final UnitAndType NULL_MARKER = new UnitAndType(Units.ONE, "");
+    protected static final UnitAndType NULL_MARKER = new UnitAndType(Units.ONE, "");
     // marks an entry with special handling - i.e. 'Imp'
-    protected final UnitAndType SPECIAL_MARKER = new UnitAndType(Units.ONE, "s");
+    protected static final UnitAndType SPECIAL_MARKER = new UnitAndType(Units.ONE, "s");
 
     public TACmiSchemaHandler(final Thing thing, final HttpClient httpClient,
             final TACmiChannelTypeProvider channelTypeProvider) {
@@ -298,7 +299,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                         val = String.format(Locale.US, "%.2f", qt.floatValue());
                     } else if (command instanceof DateTimeType dtt) {
                         // time is transferred as minutes since midnight...
-                        var zdt = dtt.getZonedDateTime();
+                        var zdt = dtt.getZonedDateTime(ZoneId.systemDefault());
                         val = Integer.toString(zdt.getHour() * 60 + zdt.getMinute());
                     } else {
                         val = command.format("%.2f");

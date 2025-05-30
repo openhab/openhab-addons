@@ -7,6 +7,7 @@
 	<thing-type id="stationboard">
 		<label>Stationboard</label>
 		<description>Upcoming departures for a single station.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel typeId="tsv" id="tsv"/>
 		</channels>

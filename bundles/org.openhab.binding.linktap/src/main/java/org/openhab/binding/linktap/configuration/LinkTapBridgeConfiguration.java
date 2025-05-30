@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,4 +28,5 @@ public class LinkTapBridgeConfiguration {
     public boolean enableMDNS = true;
     public boolean enableJSONComms = false;
     public boolean enforceProtocolLimits = true;
+    public int gatewayResponseTimeout = 3;
 }

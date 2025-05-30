@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,6 +67,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -132,7 +133,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        // not needed
+        if (CHANNEL_RESTART.equals(channelUID.getId())) {
+            commandRestart(command);
+        } else {
+            logger.debug("UNSUPPORTED channel {} for bridge {}.", channelUID.getId(), bridgeId);
+        }
+    }
+
+    private void commandRestart(Command command) {
+        if (OnOffType.ON.equals(command)) {
+            commandRestart();
+        }
     }
 
     @Override
@@ -819,6 +830,19 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void commandSetRollerShutterStop(final String deviceId, final ShutterActionType action) {
         executeCommand(deviceId, CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR,
                 (capabilityId) -> client.setRollerShutterAction(capabilityId, action));
+    }
+
+    /**
+     * Restarts the SHC (bridge) device
+     */
+    public void commandRestart() {
+        try {
+            client.setRestartAction(bridgeId);
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Restarting...");
+        } catch (IOException e) {
+            handleClientException(e);
+        }
     }
 
     private void executeCommand(final String deviceId, final String capabilityType,

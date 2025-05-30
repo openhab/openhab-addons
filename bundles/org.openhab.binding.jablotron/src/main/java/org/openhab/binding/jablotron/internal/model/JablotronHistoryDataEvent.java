@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,5 +56,25 @@ public class JablotronHistoryDataEvent {
 
     public String getSectionName() {
         return sectionName;
+    }
+
+    public void setIconType(String iconType) {
+        this.iconType = iconType;
+    }
+
+    public void setEventText(String eventText) {
+        this.eventText = eventText;
+    }
+
+    public void setInvokerName(String invokerName) {
+        this.invokerName = invokerName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = sectionName;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

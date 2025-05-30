@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,9 @@ public class EmotivaConfiguration {
     public int infoPort = 7004;
     public int setupPortTCP = 7100;
     public int menuNotifyPort = 7005;
+    public boolean activateFrontBar = false;
+    public boolean activateOSDMenu = false;
+    public boolean activateZone2 = false;
     public String protocolVersion = DEFAULT_EMOTIVA_PROTOCOL_VERSION;
     public int keepAlive = DEFAULT_KEEP_ALIVE_IN_MILLISECONDS;
     public int retryConnectInMinutes = DEFAULT_RETRY_INTERVAL_MINUTES;

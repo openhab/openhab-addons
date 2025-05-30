@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,8 @@ public class CameraTests extends AbstractComponentTests {
         assertThat(component.getName(), is("cam1"));
 
         assertChannel(component, Camera.CAMERA_CHANNEL_ID, "zigbee2mqtt/cam1/state", "", "cam1", ImageValue.class);
+
+        linkAllChannels(component);
 
         var imageBytes = getResourceAsByteArray("component/image.png");
         publishMessage("zigbee2mqtt/cam1/state", imageBytes);

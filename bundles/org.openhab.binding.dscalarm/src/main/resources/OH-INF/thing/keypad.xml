@@ -13,6 +13,7 @@
 
 		<label>DSC Alarm Keypad</label>
 		<description>Represents the central administrative unit of the DSC Alarm System.</description>
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 
 		<channels>
 			<channel id="keypad_ready_led" typeId="led">

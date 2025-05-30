@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.handler.AirQualityBridgeHandler;
 import org.openhab.binding.airquality.internal.handler.AirQualityStationHandler;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,13 +42,10 @@ import org.osgi.service.component.annotations.Reference;
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(BRIDGE_TYPE_API, THING_TYPE_STATION);
 
-    private final TimeZoneProvider timeZoneProvider;
     private final LocationProvider locationProvider;
 
     @Activate
-    public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider,
-            final @Reference LocationProvider locationProvider) {
-        this.timeZoneProvider = timeZoneProvider;
+    public AirQualityHandlerFactory(final @Reference LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
     }
 
@@ -62,8 +58,7 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return THING_TYPE_STATION.equals(thingTypeUID)
-                ? new AirQualityStationHandler(thing, timeZoneProvider, locationProvider)
+        return THING_TYPE_STATION.equals(thingTypeUID) ? new AirQualityStationHandler(thing, locationProvider)
                 : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing) : null;
     }
 }

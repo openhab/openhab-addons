@@ -11,6 +11,7 @@
 
 		<label>Corona Statistics (Country)</label>
 		<description>Corona statistics for a specific country</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="cases" typeId="cases"/>

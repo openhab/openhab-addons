@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="ams-tray">
+		<label>AMS Tray</label>
+		<description>This channel group represents a single AMS tray.</description>
+		<channels>
+			<channel id="ams-tray-type" typeId="tray-type"/>
+			<channel id="ams-tray-color" typeId="tray-color"/>
+			<channel id="ams-nozzle-temperature-max" typeId="temperature-setpoint">
+				<label>Nozzle Temperature Max</label>
+				<description>Maximum nozzle temperature for tray.</description>
+			</channel>
+			<channel id="ams-nozzle-temperature-min" typeId="temperature-setpoint">
+				<label>Nozzle Temperature Min</label>
+				<description>Minimum nozzle temperature for tray.</description>
+			</channel>
+			<channel id="ams-remain" typeId="percent">
+				<label>Remain</label>
+				<description>Amount of remaining filament.</description>
+			</channel>
+			<channel id="ams-k" typeId="number-advanced">
+				<label>k</label>
+			</channel>
+			<channel id="ams-n" typeId="number-advanced">
+				<label>n</label>
+			</channel>
+			<channel id="ams-tag-uuid" typeId="string-advanced">
+				<label>Tag UUID</label>
+			</channel>
+			<channel id="ams-tray-id-name" typeId="string-advanced">
+				<label>Tray ID Name</label>
+			</channel>
+			<channel id="ams-tray-info-idx" typeId="string-advanced">
+				<label>Tray Info IDX Name</label>
+			</channel>
+			<channel id="ams-tray-sub-brands" typeId="string-advanced">
+				<label>Tray Sub Brands</label>
+			</channel>
+			<channel id="ams-tray-weight" typeId="number-advanced">
+				<label>Tray Weight</label>
+			</channel>
+			<channel id="ams-tray-diameter" typeId="number-advanced">
+				<label>Tray Diameter</label>
+			</channel>
+			<channel id="ams-tray-temperature" typeId="temperature-measurement-advanced">
+				<label>Tray Temperature</label>
+			</channel>
+			<channel id="ams-tray-time" typeId="number-advanced">
+				<label>Tray Time</label>
+			</channel>
+			<channel id="ams-bed-temp-type" typeId="string-advanced">
+				<label>Bed Temperature Type</label>
+			</channel>
+			<channel id="ams-bed-temperature" typeId="temperature-measurement-advanced">
+				<label>Bed Temperature</label>
+			</channel>
+			<channel id="ams-ctype" typeId="number-advanced">
+				<label>ctype</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

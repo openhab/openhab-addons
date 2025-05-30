@@ -8,6 +8,7 @@
 	<thing-type id="observation">
 		<label>FMI Current Weather (Observation)</label>
 		<description>Finnish Meteorological Institute (FMI) weather observation</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current" typeId="current-group"/>
@@ -26,6 +27,7 @@
 	<thing-type id="forecast">
 		<label>FMI Weather Forecast</label>
 		<description>Finnish Meteorological Institute (FMI) weather forecast</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="forecast" typeId="group-forecast">

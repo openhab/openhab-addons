@@ -8,6 +8,7 @@
 	<thing-type id="ipRego6xx">
 		<label>Heat Pump</label>
 		<description>Manage Rego 6xx based heat pump over TCP/IP</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -42,6 +43,7 @@
 	<thing-type id="serialRego6xx">
 		<label>Heat Pump</label>
 		<description>Manage Rego 6xx based heat pump over serial port</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -72,6 +74,7 @@
 	<thing-type id="ipHusdata">
 		<label>Husdata Interface</label>
 		<description>Access heat pump over Husdata interface connected via TCP/IP</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -98,6 +101,7 @@
 	<thing-type id="serialHusdata">
 		<label>Husdata Interface</label>
 		<description>Access heat pump over Husdata interface connected via serial port</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -320,7 +324,7 @@
 	<channel-type id="lastErrorType">
 		<item-type>String</item-type>
 		<label>Last Error Type</label>
-		<description>Information about the alarm type that occured last</description>
+		<description>Information about the alarm type that occurred last</description>
 		<category>Error</category>
 		<state readOnly="true" pattern="%s">
 			<options>

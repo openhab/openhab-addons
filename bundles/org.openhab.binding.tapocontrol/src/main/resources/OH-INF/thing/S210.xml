@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!--S210 THING-TYPE (SMART SWITCH) -->
+	<thing-type id="S210">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="H100"/>
+		</supported-bridge-type-refs>
+
+		<label>S210 Smart Switch</label>
+		<description>Tapo Smart Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="actuator" typeId="smartPlug"/>
+			<channel-group id="device" typeId="childDeviceState"/>
+		</channel-groups>
+		<representation-property>serialNumber</representation-property>
+	</thing-type>
+</thing:thing-descriptions>

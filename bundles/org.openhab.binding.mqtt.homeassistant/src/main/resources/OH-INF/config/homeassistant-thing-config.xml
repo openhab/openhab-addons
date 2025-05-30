@@ -16,28 +16,4 @@
 			<default>homeassistant</default>
 		</parameter>
 	</config-description>
-
-	<config-description uri="thing-type:mqtt:homeassistant-updatable">
-		<parameter-group name="actions">
-			<label>Actions</label>
-		</parameter-group>
-
-		<parameter name="topics" type="text" required="true" multiple="true">
-			<label>MQTT Config Topic</label>
-			<description>List of Home Assistant configuration topics (e.g. button/my-device/restart)</description>
-		</parameter>
-
-		<parameter name="basetopic" type="text" required="true">
-			<label>MQTT Base Prefix</label>
-			<description>MQTT base prefix</description>
-			<default>homeassistant</default>
-		</parameter>
-
-		<parameter name="doUpdate" type="boolean" groupName="actions">
-			<label>Update</label>
-			<description>Request the device do an OTA update</description>
-			<advanced>true</advanced>
-			<default>false</default>
-		</parameter>
-	</config-description>
 </config-description:config-descriptions>

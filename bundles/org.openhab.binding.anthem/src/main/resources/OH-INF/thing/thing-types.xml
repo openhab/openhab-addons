@@ -7,7 +7,7 @@
 	<thing-type id="anthem">
 		<label>Anthem</label>
 		<description>Thing for Anthem AV processor</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="1" typeId="zone">

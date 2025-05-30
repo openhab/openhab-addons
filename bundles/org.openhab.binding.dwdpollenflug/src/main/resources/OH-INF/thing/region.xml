@@ -11,6 +11,7 @@
 
 		<label>DWD Pollen Count Index (Region)</label>
 		<description>Pollen count index for a region or partregion</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="alder" typeId="pollentype">

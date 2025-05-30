@@ -12,6 +12,36 @@
 				<type>roku:control</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="endTime">
+				<type>roku:endTime</type>
+			</add-channel>
+			<add-channel id="progress">
+				<type>roku:progress</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="activeApp">
+				<type>roku:activeApp</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="playMode">
+				<type>roku:playMode</type>
+			</update-channel>
+			<update-channel id="timeElapsed">
+				<type>roku:timeElapsed</type>
+			</update-channel>
+			<update-channel id="timeTotal">
+				<type>roku:timeTotal</type>
+			</update-channel>
+			<update-channel id="endTime">
+				<type>roku:endTime</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="roku:roku_tv">
@@ -28,6 +58,39 @@
 			<add-channel id="control">
 				<type>roku:control</type>
 			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="endTime">
+				<type>roku:endTime</type>
+			</add-channel>
+			<add-channel id="progress">
+				<type>roku:progress</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="activeApp">
+				<type>roku:activeApp</type>
+			</update-channel>
+			<update-channel id="activeChannel">
+				<type>roku:activeChannel</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="playMode">
+				<type>roku:playMode</type>
+			</update-channel>
+			<update-channel id="timeElapsed">
+				<type>roku:timeElapsed</type>
+			</update-channel>
+			<update-channel id="timeTotal">
+				<type>roku:timeTotal</type>
+			</update-channel>
+			<update-channel id="endTime">
+				<type>roku:endTime</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 

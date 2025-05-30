@@ -7,6 +7,7 @@
 	<thing-type id="info" extensible="exchange-rate">
 		<label>Currency Information</label>
 		<description>Provide exchanges rates between currencies and service status information.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lastUpdate" typeId="last-update"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.rf;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.ERR_CONFIG_NO_BRIDGE;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.getValueOrDefault;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
     protected final String uid;
     protected final String deviceId;
     protected @NonNullByDefault({}) TapoHubHandler hub;
-    private TapoChildDeviceData deviceInfo = new TapoChildDeviceData();
+    protected TapoChildDeviceData deviceInfo = new TapoChildDeviceData();
     private Map<String, Object> oldStates = new HashMap<>();
 
     /**

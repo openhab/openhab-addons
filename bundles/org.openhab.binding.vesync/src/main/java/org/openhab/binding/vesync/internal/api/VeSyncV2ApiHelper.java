@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.api;
 
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_LOGIN_ENDPOINT;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_MANAGED_DEVICES_ENDPOINT;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;

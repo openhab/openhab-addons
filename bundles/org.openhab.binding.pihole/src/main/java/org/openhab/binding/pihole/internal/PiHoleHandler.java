@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,11 +94,11 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             hostname = new URI(config.hostname);
         } catch (URISyntaxException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
+                    "@text/handler.init.invalidHostname[\"" + config.hostname + "\"]");
             return;
         }
         if (config.token.isEmpty()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.noToken");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.noToken");
             return;
         }
         adminService = new JettyAdminService(config.token, hostname, httpClient);

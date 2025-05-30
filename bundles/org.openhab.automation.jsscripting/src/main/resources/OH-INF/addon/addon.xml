@@ -5,7 +5,7 @@
 
 	<type>automation</type>
 	<name>JavaScript Scripting</name>
-	<description>This adds a JS (ECMAScript-2021) script engine.</description>
+	<description>This adds a JS (ECMAScript-2024) script engine.</description>
 	<connection>none</connection>
 
 	<service-id>org.openhab.jsscripting</service-id>

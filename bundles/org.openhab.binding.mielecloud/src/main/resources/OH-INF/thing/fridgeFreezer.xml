@@ -12,6 +12,7 @@
 		<label>@text/thing-type.mielecloud.fridge_freezer.label</label>
 		<description>@text/thing-type.mielecloud.fridge_freezer.description</description>
 		<category>WhiteGood</category>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
 
 		<channels>
 			<channel id="operation_state" typeId="operation_state"/>

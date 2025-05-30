@@ -13,7 +13,7 @@
 		<label>CBEMM ICC TEMPO</label>
 		<description>Single-phase Electricity meter with TEMPO option - CBEMM Evolution ICC (aka "Compteur Bleu Electronique
 			Monophasé Multitarif Evolution ICC")</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="isousc" typeId="isouscType"/>
 			<channel id="ptec" typeId="ptecType"/>

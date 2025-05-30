@@ -11,7 +11,7 @@
 
 		<label>Smart Meter</label>
 		<description>The Smart Meter from the LIVISI PowerControl product.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="powerConsumptionWatt" typeId="powerConsumptionWatt"/>
 			<channel id="absoluteEnergyConsumption" typeId="absoluteEnergyConsumption"/>

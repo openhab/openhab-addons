@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.insteon.internal.command;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.ProductData;
+import org.openhab.binding.insteon.internal.device.database.ModemDBChange;
 import org.openhab.binding.insteon.internal.device.database.ModemDBEntry;
 import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
 import org.openhab.binding.insteon.internal.handler.InsteonBridgeHandler;
@@ -40,7 +47,11 @@ public class ModemCommand extends InsteonCommand {
 
     private static final String LIST_ALL = "listAll";
     private static final String LIST_DATABASE = "listDatabase";
+    private static final String LIST_FEATURES = "listFeatures";
+    private static final String LIST_PRODUCT_DATA = "listProductData";
     private static final String RELOAD_DATABASE = "reloadDatabase";
+    private static final String BACKUP_DATABASE = "backupDatabase";
+    private static final String RESTORE_DATABASE = "restoreDatabase";
     private static final String ADD_DATABASE_CONTROLLER = "addDatabaseController";
     private static final String ADD_DATABASE_RESPONDER = "addDatabaseResponder";
     private static final String DELETE_DATABASE_RECORD = "deleteDatabaseRecord";
@@ -48,15 +59,19 @@ public class ModemCommand extends InsteonCommand {
     private static final String CLEAR_DATABASE_CHANGES = "clearDatabaseChanges";
     private static final String ADD_DEVICE = "addDevice";
     private static final String REMOVE_DEVICE = "removeDevice";
+    private static final String RESET = "reset";
     private static final String SWITCH = "switch";
 
-    private static final List<String> SUBCMDS = List.of(LIST_ALL, LIST_DATABASE, RELOAD_DATABASE,
-            ADD_DATABASE_CONTROLLER, ADD_DATABASE_RESPONDER, DELETE_DATABASE_RECORD, APPLY_DATABASE_CHANGES,
-            CLEAR_DATABASE_CHANGES, ADD_DEVICE, REMOVE_DEVICE, SWITCH);
+    private static final List<String> SUBCMDS = List.of(LIST_ALL, LIST_DATABASE, LIST_FEATURES, LIST_PRODUCT_DATA,
+            RELOAD_DATABASE, BACKUP_DATABASE, RESTORE_DATABASE, ADD_DATABASE_CONTROLLER, ADD_DATABASE_RESPONDER,
+            DELETE_DATABASE_RECORD, APPLY_DATABASE_CHANGES, CLEAR_DATABASE_CHANGES, ADD_DEVICE, REMOVE_DEVICE, RESET,
+            SWITCH);
 
     private static final String CONFIRM_OPTION = "--confirm";
     private static final String FORCE_OPTION = "--force";
     private static final String RECORDS_OPTION = "--records";
+
+    private static final String MODEM_DATABASE_FILE_PREFIX = "modem-database";
 
     public ModemCommand(InsteonCommandExtension commandExtension) {
         super(NAME, DESCRIPTION, commandExtension);
@@ -68,7 +83,12 @@ public class ModemCommand extends InsteonCommand {
                 buildCommandUsage(LIST_ALL, "list configured Insteon modem bridges with related channels and status"),
                 buildCommandUsage(LIST_DATABASE + " [" + RECORDS_OPTION + "]",
                         "list all-link database summary or records and pending changes for the Insteon modem"),
+                buildCommandUsage(LIST_FEATURES, "list features for the Insteon modem"),
+                buildCommandUsage(LIST_PRODUCT_DATA, "list product data for the Insteon modem"),
                 buildCommandUsage(RELOAD_DATABASE, "reload all-link database from the Insteon modem"),
+                buildCommandUsage(BACKUP_DATABASE, "backup all-link database from the Insteon modem to a file"),
+                buildCommandUsage(RESTORE_DATABASE + " <filename> " + CONFIRM_OPTION,
+                        "restore all-link database to the Insteon modem from a specific file"),
                 buildCommandUsage(ADD_DATABASE_CONTROLLER + " <address> <group> [<devCat> <subCat> <firmware>]",
                         "add a controller record to all-link database for the Insteon modem"),
                 buildCommandUsage(ADD_DATABASE_RESPONDER + " <address> <group>",
@@ -83,6 +103,7 @@ public class ModemCommand extends InsteonCommand {
                         "add an Insteon device to the modem, optionally providing its address"),
                 buildCommandUsage(REMOVE_DEVICE + " <address> [" + FORCE_OPTION + "]",
                         "remove an Insteon device from the modem"),
+                buildCommandUsage(RESET + " " + CONFIRM_OPTION, "reset the Insteon modem to factory defaults"),
                 buildCommandUsage(SWITCH + " <thingId>",
                         "switch Insteon modem bridge to use if more than one configured and enabled"));
     }
@@ -111,9 +132,37 @@ public class ModemCommand extends InsteonCommand {
                     printUsage(console, args[0]);
                 }
                 break;
+            case LIST_FEATURES:
+                if (args.length == 1) {
+                    listFeatures(console);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
+            case LIST_PRODUCT_DATA:
+                if (args.length == 1) {
+                    listProductData(console);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
             case RELOAD_DATABASE:
                 if (args.length == 1) {
                     reloadDatabase(console);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
+            case BACKUP_DATABASE:
+                if (args.length == 1) {
+                    backupDatabase(console);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
+            case RESTORE_DATABASE:
+                if (args.length == 2 || args.length == 3 && CONFIRM_OPTION.equals(args[2])) {
+                    restoreDatabase(console, args[1], args.length == 3);
                 } else {
                     printUsage(console, args[0]);
                 }
@@ -167,6 +216,13 @@ public class ModemCommand extends InsteonCommand {
                     printUsage(console, args[0]);
                 }
                 break;
+            case RESET:
+                if (args.length == 1 || args.length == 2 && CONFIRM_OPTION.equals(args[1])) {
+                    resetModem(console, args.length == 2);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
             case SWITCH:
                 if (args.length == 2) {
                     switchModem(console, args[1]);
@@ -191,6 +247,10 @@ public class ModemCommand extends InsteonCommand {
                 case LIST_DATABASE:
                     strings = List.of(RECORDS_OPTION);
                     break;
+                case RESTORE_DATABASE:
+                    strings = getBindingDataFilePaths(MODEM_DATABASE_FILE_PREFIX).map(Path::getFileName)
+                            .map(Path::toString).toList();
+                    break;
                 case ADD_DATABASE_CONTROLLER:
                 case ADD_DATABASE_RESPONDER:
                 case REMOVE_DEVICE:
@@ -200,6 +260,10 @@ public class ModemCommand extends InsteonCommand {
                     strings = getModem().getDB().getRecords().stream().map(record -> record.getAddress().toString())
                             .distinct().toList();
                     break;
+                case APPLY_DATABASE_CHANGES:
+                case RESET:
+                    strings = List.of(CONFIRM_OPTION);
+                    break;
                 case SWITCH:
                     strings = getBridgeHandlers().map(InsteonBridgeHandler::getThingId).toList();
                     break;
@@ -207,6 +271,9 @@ public class ModemCommand extends InsteonCommand {
         } else if (cursorArgumentIndex == 2) {
             InsteonAddress address = InsteonAddress.isValid(args[1]) ? new InsteonAddress(args[1]) : null;
             switch (args[0]) {
+                case RESTORE_DATABASE:
+                    strings = List.of(CONFIRM_OPTION);
+                    break;
                 case DELETE_DATABASE_RECORD:
                     if (address != null) {
                         strings = getModem().getDB().getRecords(address).stream()
@@ -242,7 +309,8 @@ public class ModemCommand extends InsteonCommand {
         } else if (entries.isEmpty()) {
             console.println("The all-link database for modem " + address + " is empty");
         } else {
-            console.println("The all-link database for modem " + address + " contains " + entries.size() + " devices:");
+            console.println("The all-link database for modem " + address + " contains " + entries.size() + " devices:"
+                    + (!getModem().getDB().isComplete() ? " (Partial)" : ""));
             print(console, entries);
         }
     }
@@ -255,7 +323,8 @@ public class ModemCommand extends InsteonCommand {
         } else if (records.isEmpty()) {
             console.println("The all-link database for modem " + address + " is empty");
         } else {
-            console.println("The all-link database for modem " + address + " contains " + records.size() + " records:");
+            console.println("The all-link database for modem " + address + " contains " + records.size() + " records:"
+                    + (!getModem().getDB().isComplete() ? " (Partial)" : ""));
             print(console, records);
             listDatabaseChanges(console);
         }
@@ -263,13 +332,39 @@ public class ModemCommand extends InsteonCommand {
 
     private void listDatabaseChanges(Console console) {
         InsteonAddress address = getModem().getAddress();
-        List<String> changes = getModem().getDB().getChanges().stream().map(String::valueOf).toList();
+        List<String> changes = getModem().getDB().getChanges().stream().map(ModemDBChange::toString).toList();
         if (InsteonAddress.UNKNOWN.equals(address)) {
             console.println("No modem found!");
         } else if (!changes.isEmpty()) {
             console.println(
                     "The all-link database for modem " + address + " has " + changes.size() + " pending changes:");
             print(console, changes);
+        }
+    }
+
+    private void listFeatures(Console console) {
+        InsteonAddress address = getModem().getAddress();
+        List<String> features = getModem().getFeatures().stream()
+                .filter(feature -> !feature.isEventFeature() && !feature.isGroupFeature())
+                .map(feature -> String.format("%s: type=%s state=%s isHidden=%s", feature.getName(), feature.getType(),
+                        feature.getState().toFullString(), feature.isHiddenFeature()))
+                .sorted().toList();
+        if (features.isEmpty()) {
+            console.println("The features for modem " + address + " are not defined");
+        } else {
+            console.println("The features for modem " + address + " are:");
+            print(console, features);
+        }
+    }
+
+    private void listProductData(Console console) {
+        InsteonAddress address = getModem().getAddress();
+        ProductData productData = getModem().getProductData();
+        if (productData == null) {
+            console.println("The product data for modem " + address + " is not defined");
+        } else {
+            console.println("The product data for modem " + address + " is:");
+            console.println(productData.toString().replace("|", "\n"));
         }
     }
 
@@ -282,6 +377,73 @@ public class ModemCommand extends InsteonCommand {
             console.println("Reloading all-link database for modem " + address + ".");
             getModem().getDB().clear();
             handler.reset(0);
+        }
+    }
+
+    private void backupDatabase(Console console) {
+        InsteonAddress address = getModem().getAddress();
+        if (InsteonAddress.UNKNOWN.equals(address)) {
+            console.println("No modem found!");
+        } else if (!getModem().getDB().isComplete()) {
+            console.println("The all-link database for modem " + address + " is not loaded yet.");
+        } else if (getModem().getDB().getRecords().isEmpty()) {
+            console.println("The all-link database for modem " + address + " is empty");
+        } else {
+            String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+            String id = address.toString().toLowerCase().replace(".", "");
+            Path path = getBindingDataFilePath(MODEM_DATABASE_FILE_PREFIX + "-" + id + "-" + timestamp + ".dmp");
+            byte[] bytes = getModem().getDB().getRecordDump();
+            int count = bytes.length / ModemDBRecord.SIZE;
+
+            try {
+                Files.createDirectories(path.getParent());
+                Files.write(path, bytes);
+                console.println("Backed up " + count + " database records from modem " + address + " to " + path);
+            } catch (IOException e) {
+                console.println("Failed to write backup file: " + e.getMessage());
+            }
+        }
+    }
+
+    private void restoreDatabase(Console console, String filename, boolean isConfirmed) {
+        InsteonAddress address = getModem().getAddress();
+        if (InsteonAddress.UNKNOWN.equals(address)) {
+            console.println("No modem found!");
+        } else if (!getModem().getDB().isComplete()) {
+            console.println("The all-link database for modem " + address + " is not loaded yet.");
+        } else {
+            Path path = Path.of(filename);
+            if (!path.isAbsolute()) {
+                path = getBindingDataFilePath(filename);
+            }
+
+            try {
+                if (!Files.isReadable(path)) {
+                    console.println("The restore file " + path + " does not exist or is not readable.");
+                } else if (Files.size(path) == 0) {
+                    console.println("The restore file " + path + " is empty.");
+                } else {
+                    InputStream stream = Files.newInputStream(path);
+                    List<ModemDBRecord> records = ModemDBRecord.fromRecordDump(stream);
+                    if (!isConfirmed) {
+                        console.println(
+                                "The restore file " + path + " contains " + records.size() + " database records:");
+                        print(console, records.stream().map(ModemDBRecord::toString).toList());
+                        console.println("Please run the same command with " + CONFIRM_OPTION
+                                + " option to have these database records restored to modem " + address + ".");
+                    } else {
+                        console.println("Restoring " + records.size() + " database records to modem " + address
+                                + " from " + path + "...");
+                        records.forEach(record -> getModem().getDB().markRecordForAddOrModify(record.getAddress(),
+                                record.getGroup(), record.isController(), record.getData()));
+                        getModem().getDB().update();
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                console.println("The restore file " + path + " is invalid.");
+            } catch (IOException e) {
+                console.println("Failed to read restore file: " + e.getMessage());
+            }
         }
     }
 
@@ -313,7 +475,6 @@ public class ModemCommand extends InsteonCommand {
             ModemDBRecord record = getModem().getDB().getRecord(address, group, isController);
             if (record == null) {
                 getModem().getDB().markRecordForAdd(address, group, isController, data);
-
             } else {
                 getModem().getDB().markRecordForModify(record, data);
             }
@@ -402,6 +563,19 @@ public class ModemCommand extends InsteonCommand {
         } else {
             console.println("Removing device " + address + "...");
             getModem().getLinkManager().unlink(new InsteonAddress(address), force);
+        }
+    }
+
+    private void resetModem(Console console, boolean isConfirmed) {
+        InsteonAddress address = getModem().getAddress();
+        if (InsteonAddress.UNKNOWN.equals(address)) {
+            console.println("No modem found!");
+        } else if (!isConfirmed) {
+            console.println("Please run the same command with " + CONFIRM_OPTION + " option to reset modem " + address
+                    + " to factory defaults.");
+        } else {
+            console.println("Resetting modem " + address + " to factory defaults...");
+            getModem().reset();
         }
     }
 

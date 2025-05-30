@@ -12,7 +12,7 @@
 		<description>Bridge representing the Spotify Player in the context of a user account. The bridge is associated with
 			one specific Spotify account. If you want to control your devices in the context of different accounts you have to
 			register a bridge for each account. Go to http://your openHAB address::8080/connectspotify to authorize.</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="accessToken" typeId="accessToken"/>
 
@@ -96,7 +96,7 @@
 		<description>Thing representing a Spotify Connect device. The device exists in the context of the bridge and the
 			Spotify account associated with the bride. This means the same device can be present as a thing under each Spotify
 			bridge you have configured.</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="trackPlay" typeId="trackPlay"/>
 			<channel id="deviceId" typeId="deviceId"/>

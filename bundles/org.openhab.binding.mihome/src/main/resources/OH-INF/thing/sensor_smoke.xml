@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Smoke Sensor</label>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="density" typeId="density"></channel>
 			<channel id="alarm" typeId="smoke_alarm"></channel>

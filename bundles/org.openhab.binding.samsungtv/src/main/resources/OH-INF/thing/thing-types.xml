@@ -7,7 +7,7 @@
 	<thing-type id="tv">
 		<label>Samsung TV</label>
 		<description>Allows to control Samsung TV</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="volume" typeId="volume"/>
 			<channel id="mute" typeId="mute"/>

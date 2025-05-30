@@ -12,6 +12,7 @@
 
 		<label>Washing Machine</label>
 		<description>This is a Miele@home compatible washing machine</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>

@@ -11,6 +11,7 @@
 
 		<label>Freebox Player</label>
 		<description>The player is the device connected to your TV</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="player-actions" id="player-actions"/>

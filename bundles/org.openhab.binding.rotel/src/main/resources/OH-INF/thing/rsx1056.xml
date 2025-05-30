@@ -8,6 +8,7 @@
 	<thing-type id="rsx1056">
 		<label>RSX-1056 Surround Receiver</label>
 		<description>Connection to the Rotel RSX-1056 surround receiver</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="mainZone" typeId="mainZoneType3"/>

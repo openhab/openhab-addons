@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Pump</label>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeedPercent" typeId="pumpSpeedPercent"/>
@@ -46,7 +47,7 @@
 	</channel-type>
 
 	<channel-type id="pumpSpeedRpm">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Pump Speed</label>
 		<description>Pump speed in rpm</description>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>

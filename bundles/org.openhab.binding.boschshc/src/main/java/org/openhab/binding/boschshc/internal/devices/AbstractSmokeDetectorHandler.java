@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,10 +52,8 @@ public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPowere
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 
-        switch (channelUID.getId()) {
-            case CHANNEL_SMOKE_CHECK:
-                this.handleServiceCommand(this.smokeDetectorCheckService, command);
-                break;
+        if (CHANNEL_SMOKE_CHECK.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.smokeDetectorCheckService, command);
         }
     }
 

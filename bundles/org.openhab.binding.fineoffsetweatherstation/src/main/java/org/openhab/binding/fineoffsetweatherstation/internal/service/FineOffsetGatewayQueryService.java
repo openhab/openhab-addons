@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
@@ -44,13 +43,10 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
 
     private final FineOffsetDataParser fineOffsetDataParser;
 
-    private final ConversionContext conversionContext;
-
     public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config,
-            @Nullable ThingStatusListener thingStatusListener, ConversionContext conversionContext) {
+            @Nullable ThingStatusListener thingStatusListener) {
         super(config, thingStatusListener);
         this.fineOffsetDataParser = new FineOffsetDataParser(PROTOCOL);
-        this.conversionContext = conversionContext;
     }
 
     @Override
@@ -95,8 +91,7 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
         byte[] data = executeCommand(Command.CMD_GW1000_LIVEDATA);
         if (data != null) {
             DebugDetails debugDetails = new DebugDetails(data, Command.CMD_GW1000_LIVEDATA, PROTOCOL);
-            List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, conversionContext,
-                    debugDetails);
+            List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, debugDetails);
             for (MeasuredValue measuredValue : measuredValues) {
                 valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
             }
@@ -106,8 +101,7 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
         data = executeCommand(Command.CMD_READ_RAIN);
         if (data != null) {
             DebugDetails debugDetails = new DebugDetails(data, Command.CMD_READ_RAIN, PROTOCOL);
-            List<MeasuredValue> measuredRainValues = fineOffsetDataParser.getRainData(data, conversionContext,
-                    debugDetails);
+            List<MeasuredValue> measuredRainValues = fineOffsetDataParser.getRainData(data, debugDetails);
             for (MeasuredValue measuredValue : measuredRainValues) {
                 valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
             }

@@ -12,6 +12,7 @@
 
 		<label>L510 Series White-Bulb</label>
 		<description>Tapo Smart dimmable White-Light-Bulb</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightBulb"/>
 			<channel-group id="device" typeId="deviceState"/>

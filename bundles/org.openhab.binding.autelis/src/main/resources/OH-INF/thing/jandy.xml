@@ -6,6 +6,7 @@
 	<thing-type id="jandy">
 		<label>Jandy Pool Controller</label>
 		<description>A Jandy pool control thing represents an Autelis pool controller for Jandy systems</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 		<channels>
 			<channel id="system-runstate" typeId="system-runstate"/>
 			<channel id="system-model" typeId="system-model"/>

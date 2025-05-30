@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand WallController Unit</label>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="wallaction" typeId="wallaction">
 				<description>WallController action</description>

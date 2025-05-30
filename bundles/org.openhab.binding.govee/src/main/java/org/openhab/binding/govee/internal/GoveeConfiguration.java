@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.govee.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GoveeConfiguration} contains thing values that are used by the Thing Handler
@@ -24,4 +25,7 @@ public class GoveeConfiguration {
 
     public String hostname = "";
     public int refreshInterval = 5; // in seconds
+
+    public @Nullable Integer minKelvin;
+    public @Nullable Integer maxKelvin;
 }

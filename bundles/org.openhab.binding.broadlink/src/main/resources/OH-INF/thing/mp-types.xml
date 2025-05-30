@@ -7,6 +7,7 @@
 	<thing-type id="mp1">
 		<label>Broadlink MP1</label>
 		<description>The Broadlink MP1 Smart Home Wifi Plug Power Strip 4 Ports Individual Wireless Remote Control.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on-s1" typeId="system.power">
 				<label>Socket 1 Power</label>
@@ -27,6 +28,7 @@
 	<thing-type id="mp1-1k3s2u">
 		<label>Broadlink MP1 1K3S2U</label>
 		<description>The Broadlink MP1 1K3S2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on-s1" typeId="system.power">
 				<label>Socket 1 Power</label>
@@ -48,6 +50,7 @@
 		<label>Broadlink MP2</label>
 		<description>The Broadlink MP2 is a smart socket with Wi-Fi connectivity. It does not support switching individual
 			ports.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 			<channel id="power-consumption" typeId="system.electric-energy"/>

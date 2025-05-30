@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,6 +76,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSI4, //
             THING_TYPE_SHELLYPLUSI4DC, //
             THING_TYPE_SHELLYPLUSDIMMER10V, //
+            THING_TYPE_SHELLYPLUSUNI, //
             THING_TYPE_SHELLYPLUSHT, //
             THING_TYPE_SHELLYPLUSHTG3, //
             THING_TYPE_SHELLYPLUSSMOKE, //
@@ -95,6 +96,7 @@ public class ShellyBindingConstants {
             // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
             THING_TYPE_SHELLYPRO1PM, //
+            THING_TYPE_SHELLYPRO1CB, //
             THING_TYPE_SHELLYPRO2_RELAY, //
             THING_TYPE_SHELLYPRO2PM_RELAY, //
             THING_TYPE_SHELLYPRO2PM_ROLLER, //

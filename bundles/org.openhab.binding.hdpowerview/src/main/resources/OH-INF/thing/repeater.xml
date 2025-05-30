@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>PowerView Repeater</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Repeater</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="color" typeId="system.color">

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,11 +62,51 @@ public class ButtonTests extends AbstractComponentTests {
         assertThat(Objects.requireNonNull(component.getChannel(Button.BUTTON_CHANNEL_ID)).getChannel()
                 .getAutoUpdatePolicy(), is(AutoUpdatePolicy.VETO));
 
+        linkAllChannels(component);
+
         assertThrows(IllegalArgumentException.class,
                 () -> component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("ON")));
         assertNothingPublished("esphome/single-car-gdo/button/restart/command");
         component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("PRESS"));
         assertPublished("esphome/single-car-gdo/button/restart/command", "PRESS");
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testButtonWithCustomPayload() {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                  {
+                    "dev_cla":"restart",
+                    "name":"Restart",
+                    "entity_category":"config",
+                    "cmd_t":"esphome/single-car-gdo/button/restart/command",
+                    "avty_t":"esphome/single-car-gdo/status",
+                    "uniq_id":"78e36d645710-button-ba0e8e32",
+                    "payload_press": "restart",
+                    "dev":{
+                      "ids":"78e36d645710",
+                      "name":"Single Car Garage Door Opener",
+                      "sw":"esphome v2023.10.4 Nov  1 2023, 09:27:02",
+                      "mdl":"esp32dev",
+                      "mf":"espressif"}
+                    }
+                """);
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("Restart"));
+
+        assertChannel(component, Button.BUTTON_CHANNEL_ID, "", "esphome/single-car-gdo/button/restart/command",
+                "Restart", TextValue.class);
+        assertThat(Objects.requireNonNull(component.getChannel(Button.BUTTON_CHANNEL_ID)).getChannel()
+                .getAutoUpdatePolicy(), is(AutoUpdatePolicy.VETO));
+
+        linkAllChannels(component);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("ON")));
+        assertNothingPublished("esphome/single-car-gdo/button/restart/command");
+        component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("PRESS"));
+        assertPublished("esphome/single-car-gdo/button/restart/command", "restart");
     }
 
     @Override

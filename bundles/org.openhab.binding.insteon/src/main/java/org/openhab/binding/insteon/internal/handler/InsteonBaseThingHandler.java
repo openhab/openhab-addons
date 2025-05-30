@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -317,6 +317,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                 .forEach(this::channelLinked);
     }
 
+    protected void unlinkChannels() {
+        getThing().getChannels().stream().map(Channel::getUID).filter(channelHandlers::containsKey)
+                .forEach(this::channelUnlinked);
+    }
+
     @Override
     public void refresh() {
         InsteonModem modem = getModem();
@@ -329,8 +334,6 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
         updateStatus();
     }
-
-    public abstract void updateStatus();
 
     public void updateProperties(Device device) {
         Map<String, String> properties = editProperties();
@@ -372,9 +375,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }

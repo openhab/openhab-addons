@@ -7,7 +7,7 @@
 	<bridge-type id="calendar">
 		<label>Calendar</label>
 		<description>Calendar based on an iCal calendar.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="current_title" typeId="event_current_title"/>
 			<channel id="current_start" typeId="event_current_start"/>
@@ -67,42 +67,68 @@
 		<item-type>String</item-type>
 		<label>Current Event Title</label>
 		<description>Title of the currently present event</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_current_start">
 		<item-type>DateTime</item-type>
 		<label>Current Event Start</label>
 		<description>Start of the currently present event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="event_current_end">
 		<item-type>DateTime</item-type>
 		<label>Current Event End</label>
 		<description>End of the currently present event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="event_current_presence">
 		<item-type>Switch</item-type>
 		<label>Current Event Presence</label>
 		<description>Current presence of an event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_next_title">
 		<item-type>String</item-type>
 		<label>Next Event Title</label>
 		<description>Title of the next starting event in calendar</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_next_start">
 		<item-type>DateTime</item-type>
 		<label>Next Event Start</label>
 		<description>Start of the next event in calendar</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="event_next_end">
 		<item-type>DateTime</item-type>
 		<label>Next Event End</label>
 		<description>End of the next event in calendar</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -110,24 +136,39 @@
 		<item-type>DateTime</item-type>
 		<label>Start of Result</label>
 		<description>Start of the found result in calendar</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="result_end">
 		<item-type>DateTime</item-type>
 		<label>End of Result</label>
 		<description>End of the found result in calendar</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="result_title">
 		<item-type>String</item-type>
 		<label>Title of Result</label>
 		<description>Title of the found result in calendar</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_update">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>The time the calendar was updated successfully last time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-group-type id="result">

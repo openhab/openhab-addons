@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Water Sensor</label>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="contact" typeId="contact"></channel>
 			<channel id="sensor_defect" typeId="sensor_defect"></channel>

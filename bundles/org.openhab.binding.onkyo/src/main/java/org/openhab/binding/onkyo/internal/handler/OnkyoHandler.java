@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -551,7 +551,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
                 populateInputs(selectableInputs);
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.debug("Error occured during Info XML parsing.", e);
+            logger.debug("Error occurred during Info XML parsing.", e);
         }
     }
 

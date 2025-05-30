@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmb2pbn">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB2PBN</label>
+		<description>Push-button interface for Niko 1- or 2-fold push-buttons</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4an">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4AN</label>
+		<description>Analog I/O module</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="alarm" typeId="8channelInputModule"/>
+			<channel-group id="analogInput" typeId="4channelAnalogInputModule"/>
+			<channel-group id="analogOutput" typeId="4channelAnalogOutputModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:13channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4pb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4PB</label>
+		<description>4 button interface module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb6pb-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB6PB-20</label>
+		<description>6 button interface module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="6channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb6in">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB6IN</label>
+		<description>6-channel input module</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="6channelInputModule"/>
+			<channel-group id="button" typeId="6channelButtonModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb6pbn">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB6PBN</label>
+		<description>Push-button interface module for Niko 4- or 6-fold push-button</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="6channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb7in">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB7IN</label>
+		<description>7-channel input module (potentialfree + pulse)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="counter" typeId="4channelCounterModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDeviceWithCounters"/>
+	</thing-type>
+
+	<thing-type id="vmb8in-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB8IN-20</label>
+		<description>8-channel input module (potentialfree + pulse)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="counter" typeId="8channelCounterModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDeviceWith8Counters"/>
+	</thing-type>
+
+	<thing-type id="vmb8ir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB8IR</label>
+		<description>Infrared remote control receiver module</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb8pb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB8PB</label>
+		<description>8-Channel Push Button module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb8pbu">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB8PBU</label>
+		<description>Push-button interface with 8 channels for universal mounting</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbel1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL1</label>
+		<description>Edge-lit one touch button module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel1-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL1-20</label>
+		<description>Edge-lit one touch button module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL2</label>
+		<description>Edge-lit two touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel2-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL2-20</label>
+		<description>Edge-lit two touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL4</label>
+		<description>Edge-lit four touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel4-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL4-20</label>
+		<description>Edge-lit four touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbelo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBELO</label>
+		<description>Edge-lit touch panel with Oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbelo-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBELO-20</label>
+		<description>Edge-lit touch panel with Oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP1</label>
+		<description>Glass control module with 1 touch key</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp1-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP1-2</label>
+		<description>Glass control module with 1 touch key (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp1-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP1-20</label>
+		<description>Glass control module with 1 touch key</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP2</label>
+		<description>Glass control module with 2 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp2-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP2-2</label>
+		<description>Glass control module with 2 touch keys (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp2-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP2-20</label>
+		<description>Glass control module with 2 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4</label>
+		<description>Glass control module with 4 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp4-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4-2</label>
+		<description>Glass control module with 4 touch keys (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp4-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4-20</label>
+		<description>Glass control module with 4 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgpo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGPO</label>
+		<description>Glass control module with oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgpo-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGPO-20</label>
+		<description>Glass control module with oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgpod">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGPOD</label>
+		<description>Glass control module with oled display and temperature controller</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgpod-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGPOD-2</label>
+		<description>Glass control module with oled display and temperature controller (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbkp">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBKP</label>
+		<description>Keypad interface module</description>
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="5SubchannelButtonModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbin">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBIN</label>
+		<description>1-channel input module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbrfr8s">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBRFR8S</label>
+		<description>8 channel RF receiver module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbvp1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMPVP1</label>
+		<description>Doorbird interface module</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+</thing:thing-descriptions>

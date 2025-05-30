@@ -8,6 +8,7 @@
 	<thing-type id="audiogroup">
 		<label>Chromecast Audio Group</label>
 		<description>A Google Chromecast Audio Group device</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="control" typeId="system.media-control"/>
@@ -58,6 +59,7 @@
 	<thing-type id="audio">
 		<label>Chromecast Audio</label>
 		<description>A Google Chromecast Audio device</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="control" typeId="system.media-control"/>
@@ -108,6 +110,7 @@
 	<thing-type id="chromecast">
 		<label>Chromecast</label>
 		<description>A Google Chromecast streaming device</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="control" typeId="system.media-control"/>

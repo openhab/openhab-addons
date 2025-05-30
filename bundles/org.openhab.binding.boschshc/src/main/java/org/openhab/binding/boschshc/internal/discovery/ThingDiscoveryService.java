@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,6 +92,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
             new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
             new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
+            new AbstractMap.SimpleEntry<>("SWD2_PLUS", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS),
             new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
             new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
             new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
@@ -242,7 +243,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
         discoveryResult.withBridge(thingHandler.getThing().getUID());
 
         if (!roomName.isEmpty()) {
-            discoveryResult.withProperty("Location", roomName);
+            discoveryResult.withProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, roomName);
         }
         thingDiscovered(discoveryResult.build());
 

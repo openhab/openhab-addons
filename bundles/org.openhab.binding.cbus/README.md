@@ -9,8 +9,10 @@ This binding connects to C-Gate software which can be downloaded from the [Clips
 There is information about setting up the C-Gate software in the [CBus Forums](https://www.cbusforums.com/forums/c-bus-toolkit-and-c-gate-software.4).
 Make sure that the config/access.txt file allows a connection from computer running openHAB.
 
-Whilst all versions of C-Gate should work 2.11.2 contained a fix for handling Indicator Kill messages for trigger groups.
-Without that they will remain on the last value set and wont match what is shown on CBus devices.
+Whilst all versions of C-Gate should work, some need special attention:
+
+- Versions before 2.11.2 lack a fix for handling Indicator Kill messages for trigger groups. Without that they will remain on the last value set and wont match what is shown on CBus devices.
+- Versions from 3.4.0 or later have `event-millis` set to true by default, the binding cannot handle this. Adapt your cgate configuration file `C-GateConfig.txt` and set `event-millis=no`.
 
 First the CGate Connection bridge needs to be configured with the ip address of the computer running the C-Gate software.
 After this a Bridge is creaed for each network configured on the CBus Network. The CBus Project Name and the network Id for that network

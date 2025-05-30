@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.teleinfo.internal.reader.io;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileInputStream;
-import java.time.Month;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import org.openhab.binding.teleinfo.internal.data.FrameType;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.openhab.binding.teleinfo.util.TestUtils;
-import org.openhab.core.library.types.DateTimeType;
 
 /**
  *
@@ -187,23 +185,9 @@ public class TeleinfoInputStreamTest {
             assertEquals(2741488, frame.getAsInt(Label.EASF01));
             assertEquals(18, frame.getAsInt(Label.PCOUP));
             assertEquals("2021-04-14T08:26:25", frame.getAsDateTime(Label.DATE));
-            DateTimeType dateTime = DateTimeType.valueOf(frame.getAsDateTime(Label.DATE));
-            assertEquals(2021, dateTime.getZonedDateTime().getYear());
-            assertEquals(Month.APRIL, dateTime.getZonedDateTime().getMonth());
-            assertEquals(14, dateTime.getZonedDateTime().getDayOfMonth());
-            assertEquals(8, dateTime.getZonedDateTime().getHour());
-            assertEquals(26, dateTime.getZonedDateTime().getMinute());
-            assertEquals(25, dateTime.getZonedDateTime().getSecond());
 
             assertNotEquals(TeleinfoBindingConstants.NOT_A_CHANNEL, Label.CCASN.getTimestampChannelName());
             assertEquals("2021-04-14T08:00:00", frame.getAsDateTime(Label.CCASN));
-            dateTime = DateTimeType.valueOf(frame.getAsDateTime(Label.CCASN));
-            assertEquals(2021, dateTime.getZonedDateTime().getYear());
-            assertEquals(Month.APRIL, dateTime.getZonedDateTime().getMonth());
-            assertEquals(14, dateTime.getZonedDateTime().getDayOfMonth());
-            assertEquals(8, dateTime.getZonedDateTime().getHour());
-            assertEquals(0, dateTime.getZonedDateTime().getMinute());
-            assertEquals(0, dateTime.getZonedDateTime().getSecond());
         }
     }
 

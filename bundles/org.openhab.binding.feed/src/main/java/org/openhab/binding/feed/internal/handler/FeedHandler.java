@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,6 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -184,8 +182,7 @@ public class FeedHandler extends BaseThingHandler {
                     return;
                 } else {
                     Date date = latestEntry.getPublishedDate();
-                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-                    state = new DateTimeType(zdt);
+                    state = new DateTimeType(date.toInstant());
                 }
                 break;
             case CHANNEL_AUTHOR:

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,6 @@ public class OnvifCodec extends ChannelDuplexHandler {
     @Override
     public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
         if (requestType == RequestType.PullMessages) {
-            onvifConnection.lastPullMessageReceivedTimestamp = System.currentTimeMillis();
             onvifConnection.pullMessageRequests.decrementAndGet();
         }
     }

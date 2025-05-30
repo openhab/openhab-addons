@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.zoneminder.internal.handler;
 
 import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zoneminder.internal.action.ZmActions;
 import org.openhab.binding.zoneminder.internal.config.ZmMonitorConfig;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -57,8 +55,6 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ZmMonitorHandler.class);
 
-    private final TimeZoneProvider timeZoneProvider;
-
     private @Nullable ZmBridgeHandler bridgeHandler;
 
     private @NonNullByDefault({}) String monitorId;
@@ -70,9 +66,8 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     private final Map<String, State> monitorStatusCache = new ConcurrentHashMap<>();
 
-    public ZmMonitorHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public ZmMonitorHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -209,10 +204,8 @@ public class ZmMonitorHandler extends BaseThingHandler {
         updateChannelState(CHANNEL_EVENT_NAME, new StringType(event.getName()));
         updateChannelState(CHANNEL_EVENT_CAUSE, new StringType(event.getCause()));
         updateChannelState(CHANNEL_EVENT_NOTES, new StringType(event.getNotes()));
-        updateChannelState(CHANNEL_EVENT_START, new DateTimeType(
-                ZonedDateTime.ofInstant(event.getStart().toInstant(), timeZoneProvider.getTimeZone())));
-        updateChannelState(CHANNEL_EVENT_END,
-                new DateTimeType(ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
+        updateChannelState(CHANNEL_EVENT_START, new DateTimeType(event.getStart().toInstant()));
+        updateChannelState(CHANNEL_EVENT_END, new DateTimeType(event.getEnd().toInstant()));
         updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
         updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
         updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<>(event.getLength(), Units.SECOND));

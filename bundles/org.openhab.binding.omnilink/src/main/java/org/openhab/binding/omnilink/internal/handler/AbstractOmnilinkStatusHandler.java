@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 
 /**
  * The {@link AbstractOmnilinkStatusHandler} defines some methods that can be used across
- * the many different units exposed by the OmniLink protocol to retrive updated status information.
+ * the many different units exposed by the OmniLink protocol to retrieve updated status information.
  *
  * @author Craig Hamilton - Initial contribution
  * @author Ethan Dye - openHAB3 rewrite

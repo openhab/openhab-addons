@@ -329,7 +329,7 @@ Please prefer formatting as described in the next section whenever possible.
 
 This feature is quite powerful in transforming an item state before it is published to the MQTT broker.
 It has the syntax: `%[flags][width]conversion`.
-Find the full documentation on the [Java](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html) web page.
+Find the full documentation on the [Java](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html) web page.
 
 The default is "%s" which means: Output the item state as string.
 

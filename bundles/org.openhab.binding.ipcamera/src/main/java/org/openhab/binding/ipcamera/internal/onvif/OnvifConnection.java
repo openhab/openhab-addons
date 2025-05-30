@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,10 +141,9 @@ public class OnvifConnection {
     private IpCameraHandler ipCameraHandler;
     // Use/skip events even if camera support them. API cameras skip, as their own methods give better results.
     private boolean usingEvents = false;
-    private int onvifEventServiceType = 0; // 0 = disabled, 1 = PullMessages, 2 = WSBaseSubscription
+    private int onvifEventServiceType = 0; // 0 = auto detect, 1 = disabled, 2 = PullMessages, 3 = WSBaseSubscription
     public AtomicInteger pullMessageRequests = new AtomicInteger();
     private long createSubscriptionTimestamp;
-    public long lastPullMessageReceivedTimestamp;
 
     // These hold the cameras PTZ position in the range that the camera uses, ie
     // mine is -1 to +1
@@ -306,10 +305,10 @@ public class OnvifConnection {
             }
         } catch (IndexOutOfBoundsException e) {
             if (!isConnected) {
-                logger.debug("IndexOutOfBoundsException occured, camera is not connected via ONVIF: {}",
+                logger.debug("IndexOutOfBoundsException occurred, camera is not connected via ONVIF: {}",
                         e.getMessage());
             } else {
-                logger.debug("IndexOutOfBoundsException occured, {}", e.getMessage());
+                logger.debug("IndexOutOfBoundsException occurred, {}", e.getMessage());
             }
         }
         return "notfound";
@@ -388,7 +387,7 @@ public class OnvifConnection {
                 break;
             case PullMessages:
                 try {
-                    eventRecieved(message);
+                    eventReceived(message);
                 } catch (Exception e) {
                     logger.error("Error processing PullMessages error:\n{}\nmessage: {}", e.toString(), message);
                 }
@@ -425,13 +424,18 @@ public class OnvifConnection {
 
     private void setOnvifEventServiceType(boolean cameraSupportsPullPointSupport,
             boolean cameraSupportsSubscriptionPolicySupport) {
-        if (cameraSupportsPullPointSupport && ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 0
-                || ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 2) {
-            onvifEventServiceType = 1;
-        } else if (cameraSupportsSubscriptionPolicySupport
-                && ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 0
-                || ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 3) {
+        // 0 = auto detect, 1 = disabled, 2 = PullMessages, 3 = WSBaseSubscription
+        if (cameraSupportsPullPointSupport && ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 0) {
             onvifEventServiceType = 2;
+        } else if (cameraSupportsSubscriptionPolicySupport
+                && ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 0) {
+            onvifEventServiceType = 3;
+        } else if (ipCameraHandler.cameraConfig.getOnvifEventServiceType() == 0) {
+            logger.warn(
+                    "Camera at {} could not auto detect the ONVIF event method the camera supports, try setting the configuration away from auto to remove this message by forcing an option.",
+                    ipAddress);
+        } else {
+            onvifEventServiceType = ipCameraHandler.cameraConfig.getOnvifEventServiceType();
         }
     }
 
@@ -480,7 +484,7 @@ public class OnvifConnection {
 
     public void createSubscription() {
         if (!getEventsSupported()) {
-            // ONVIF events are disabled or not supported.
+            logger.debug("ONVIF events are disabled or not supported for camera at {}", ipAddress);
             return;
         }
 
@@ -495,9 +499,9 @@ public class OnvifConnection {
 
         // Prefer PullPoint events over WSBaseSubscription because there is no way to check if a WSBaseSubscription is
         // already registered on the camera.
-        if (onvifEventServiceType == 1) {
+        if (onvifEventServiceType == 2) {
             sendOnvifRequest(RequestType.CreatePullPointSubscription, eventXAddr);
-        } else if (onvifEventServiceType == 2) {
+        } else if (onvifEventServiceType == 3) {
             sendOnvifRequest(RequestType.Subscribe, eventXAddr);
         }
     }
@@ -507,20 +511,20 @@ public class OnvifConnection {
      * needed.
      */
     public void checkAndRenewEventSubscription() {
-        if (getEventsSupported()) {
-            // If we get events via PullMessages check if a PullMessages request is running or we just received an
-            // answer in the last second. If this is not the case create a new PullMessages subscription.
-            if (onvifEventServiceType == 1 && pullMessageRequests.intValue() == 0
-                    && System.currentTimeMillis() - lastPullMessageReceivedTimestamp > 1000) {
-                logger.debug("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
-                createSubscription();
-            } else if (!subscriptionXAddr.isEmpty()) {
-                // Renew the active subscription.
-                sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
-            } else {
+        if (getEventsSupported() && onvifEventServiceType == 2) {
+            if (subscriptionXAddr.isEmpty()) {
                 // The camera claims to have event support, but no subscription was created yet. Try to create a new
                 // subscription.
                 createSubscription();
+            } else if (pullMessageRequests.intValue() == 0) {
+                // If we get events via PullMessages, check if a PullMessages request is running. Netty's
+                // IdleStateHandler
+                // will know if any request fails after a set time expires.
+                sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
+                logger.debug("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
+                sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
+            } else {
+                sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
             }
         }
     }
@@ -813,7 +817,7 @@ public class OnvifConnection {
         }
     }
 
-    public void eventRecieved(String eventMessage) {
+    public void eventReceived(String eventMessage) {
         Document xmlDocument;
         try {
             xmlDocument = Helper.loadXMLFromString(eventMessage);
@@ -828,15 +832,7 @@ public class OnvifConnection {
             Element topicElement = (Element) notificationMessageElement.getElementsByTagName("wsnt:Topic").item(0);
             String topic = topicElement.getFirstChild().getNodeValue().replace("tns1:", "");
 
-            String sourceName = "";
-            String sourceValue = "";
             Element sourceElement = (Element) notificationMessageElement.getElementsByTagName("tt:Source").item(0);
-
-            if (sourceElement != null) {
-                Element sourceItemElement = (Element) sourceElement.getElementsByTagName("tt:SimpleItem").item(0);
-                sourceName = sourceItemElement.getAttributes().getNamedItem("Name").getNodeValue();
-                sourceValue = sourceItemElement.getAttributes().getNamedItem("Value").getNodeValue();
-            }
 
             Element dataElement = (Element) notificationMessageElement.getElementsByTagName("tt:Data").item(0);
 
@@ -850,8 +846,7 @@ public class OnvifConnection {
             String dataName = dataItemElement.getAttributes().getNamedItem("Name").getNodeValue();
             String dataValue = dataItemElement.getAttributes().getNamedItem("Value").getNodeValue();
 
-            logger.debug("ONVIF Event Topic: {}, Source name: {}, Source value: {}, Data name: {}, Data value: {}",
-                    topic, sourceName, sourceValue, dataName, dataValue);
+            logger.debug("ONVIF Event Topic: {}, Data name: {}, Data value: {}", topic, dataName, dataValue);
             switch (topic) {
                 case "RuleEngine/CellMotionDetector/Motion":
                     if ("true".equals(dataValue)) {
@@ -1165,7 +1160,7 @@ public class OnvifConnection {
     }
 
     public boolean getEventsSupported() {
-        return onvifEventServiceType > 0;
+        return onvifEventServiceType > 1;// 0 = auto detect, 1 = disabled, 2 = PullMessages, 3 = WSBaseSubscription
     }
 
     public void setIsConnected(boolean isConnected) {

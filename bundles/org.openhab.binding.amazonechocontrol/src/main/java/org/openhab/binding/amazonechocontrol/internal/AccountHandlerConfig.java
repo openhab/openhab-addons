@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,4 +25,5 @@ public class AccountHandlerConfig {
     public int discoverSmartHome = 0;
     public int pollingIntervalSmartHomeAlexa = 60;
     public int pollingIntervalSmartSkills = 120;
+    public int activityRequestDelay = 10;
 }

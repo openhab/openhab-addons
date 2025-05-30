@@ -7,6 +7,7 @@
 		<label>KOSTAL PIKO IQ 10.0</label>
 		<description>Bindings for the KOSTAL PIKO IQ 10.0 solar inverter</description>
 		<category>Inverter</category>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="deviceLocalDCPower" typeId="device-local-dc-power"/>
 			<channel id="deviceLocalHomeconsumptionFromGrid" typeId="device-local-homeconsumption-from-grid"/>

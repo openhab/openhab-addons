@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -21,6 +23,7 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigParser;
@@ -44,6 +47,12 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 @ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
 @NonNullByDefault
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
+    public static final Path JS_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "js");
+    public static final String NODE_DIR = "node_modules";
+    public static final Path JS_LIB_PATH = JS_DEFAULT_PATH.resolve(NODE_DIR);
+
+    public static final String SCRIPT_TYPE = "application/javascript";
+
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
 
@@ -54,8 +63,8 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static List<String> createScriptTypes() {
         // Add those for backward compatibility (existing scripts may rely on those MIME types)
         List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", "graaljs");
-        return Stream.of(factory.getMimeTypes(), factory.getExtensions(), backwardCompat).flatMap(List::stream)
-                .toList();
+        return Stream.of(List.of(SCRIPT_TYPE), factory.getMimeTypes(), factory.getExtensions(), backwardCompat)
+                .flatMap(List::stream).distinct().toList();
     }
 
     private boolean injectionEnabled = true;
