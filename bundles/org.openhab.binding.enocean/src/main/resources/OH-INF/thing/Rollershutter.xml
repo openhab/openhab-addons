@@ -10,8 +10,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Rollershutter Actuator</label>
-		<description>Rollershutter like Eltako FSB14/61/71 or NodOn SIN-2-RS-01 (EEP: A5-37, D2-05)</description>
-
+		<description>Rollershutter like Eltako FSB14/61/71, FJ62 or NodOn SIN-2-RS-01 (EEP: A5-37, D2-05)</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
@@ -30,7 +30,7 @@
 			<parameter name="sendingEEPId" type="text" required="true">
 				<label>EEP for Sending Commands</label>
 				<options>
-					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
+					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71, FJ62</option>
 					<option value="A5_3F_7F_EltakoFRM">Eltako FRM60</option>
 					<option value="D2_05_00">D2-05-00 Rollershutter</option>
 					<option value="D2_05_00_NODON">NODON SIN-2-RS-01 (EEP: D2-05-00)</option>
@@ -46,12 +46,13 @@
 			<parameter name="receivingEEPId" type="text" multiple="true" required="true">
 				<label>EEP for Receiving States</label>
 				<options>
-					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
+					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71, FJ62</option>
 					<option value="A5_3F_7F_EltakoFRM">Eltako FRM60</option>
 					<option value="D2_05_00">D2-05-00 Rollershutter</option>
 					<option value="D2_05_00_NODON">NODON SIN-2-RS-01 (EEP: D2-05-00)</option>
 					<option value="A5_11_03">A5-11-03 Rollershutter status</option>
 					<option value="F6_00_00">PTM200 Rollershutter status</option>
+					<option value="F6_00_00_EltakoFJ62">Eltako FJ62 status</option>
 				</options>
 				<multipleLimit>4</multipleLimit>
 				<limitToOptions>true</limitToOptions>

@@ -8,6 +8,7 @@
 	<bridge-type id="heathub">
 		<label>HeatHub</label>
 		<description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<representation-property>networkAddress</representation-property>
 
@@ -42,6 +43,7 @@
 
 		<label>Boiler Controller</label>
 		<description>The controller attached to the boiler</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channels>
 			<channel id="heatingOverride" typeId="heatingOverride-channel"/>
@@ -65,6 +67,9 @@
 			<channel id="comfortModeState" typeId="comfortModeState-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
 
@@ -76,6 +81,7 @@
 
 		<label>Hot Water</label>
 		<description>The hot water heating system</description>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 
 		<channels>
 			<channel id="hotWaterOverride" typeId="hotWaterOverride-channel"/>
@@ -105,6 +111,7 @@
 
 		<label>Room</label>
 		<description>A Room that contains a thermostat and/or TRV</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -142,6 +149,7 @@
 
 		<label>Thermostat</label>
 		<description>Wireless Thermostat device</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -158,6 +166,9 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -176,6 +187,7 @@
 
 		<label>iTRV</label>
 		<description>Thermostatic Radiator Valve</description>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -192,6 +204,9 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -210,6 +225,7 @@
 
 		<label>Smart Plug</label>
 		<description>Remote controlled Plug Socket</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="plugOutputState" typeId="plugOutputState-channel"/>
@@ -223,6 +239,9 @@
 			<channel id="plugEnergyDelivered" typeId="plugEnergyDelivered-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -294,10 +313,10 @@
 	</channel-type>
 
 	<channel-type id="signalRSSI-channel" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal RSSI</label>
 		<description>The reported network signal RSSI</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="signalLQI-channel" advanced="true">

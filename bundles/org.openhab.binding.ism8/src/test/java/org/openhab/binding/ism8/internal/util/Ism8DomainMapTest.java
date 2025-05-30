@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,9 @@ import org.openhab.binding.ism8.server.DataPointLongValue;
 import org.openhab.binding.ism8.server.DataPointScaling;
 import org.openhab.binding.ism8.server.DataPointValue;
 import org.openhab.binding.ism8.server.IDataPoint;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -118,7 +120,8 @@ public class Ism8DomainMapTest {
             State result = Ism8DomainMap.toOpenHABState(dataPoint);
 
             // assert
-            assertEquals(OnOffType.from(false), result);
+            assertEquals(DecimalType.valueOf("0"), result);
+            assertEquals(OnOffType.from(false), OnOffType.from(DecimalType.valueOf("0").toString()));
         }
         {
             // arrange
@@ -129,7 +132,8 @@ public class Ism8DomainMapTest {
             State result = Ism8DomainMap.toOpenHABState(dataPoint);
 
             // assert
-            assertEquals(OnOffType.from(true), result);
+            assertEquals(DecimalType.valueOf("1"), result);
+            assertEquals(OnOffType.from(true), OnOffType.from(DecimalType.valueOf("1").toString()));
         }
         {
             // arrange
@@ -140,7 +144,8 @@ public class Ism8DomainMapTest {
             State result = Ism8DomainMap.toOpenHABState(dataPoint);
 
             // assert
-            assertEquals(OnOffType.from(true), result);
+            assertEquals(DecimalType.valueOf("1"), result);
+            assertEquals(OnOffType.from(true), OnOffType.from(DecimalType.valueOf("1").toString()));
         }
         {
             // arrange
@@ -151,7 +156,8 @@ public class Ism8DomainMapTest {
             State result = Ism8DomainMap.toOpenHABState(dataPoint);
 
             // assert
-            assertEquals(OnOffType.from(true), result);
+            assertEquals(DecimalType.valueOf("1"), result);
+            assertEquals(OnOffType.from(true), OnOffType.from(DecimalType.valueOf("1").toString()));
         }
         {
             // arrange
@@ -162,9 +168,11 @@ public class Ism8DomainMapTest {
             State result = Ism8DomainMap.toOpenHABState(dataPoint);
 
             // assert
-            assertEquals(OnOffType.from(true), result);
-            // TODO: check if OpenClosedType is appropriate
-            // assertEquals(OpenClosedType.valueOf("OPEN"), result);
+            assertEquals(DecimalType.valueOf("1"), result);
+            assertEquals(OnOffType.ON, OnOffType.from(DecimalType.valueOf("1").toString()));
+            // DecimalType is compatible with Switch and Contact items, OH mapping is 0-off-closed and 1-on-open;
+            // note that this is opposite to definition of KNX DPT 1.009
+            assertEquals(OpenClosedType.CLOSED.as(DecimalType.class), DecimalType.valueOf("0"));
         }
     }
 

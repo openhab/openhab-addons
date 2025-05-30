@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -283,7 +283,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                 return result;
             }).whenComplete((r, t) -> {
                 if (t != null) {
-                    logger.warn("Error occured during discovery of {}", device.getAddress(), t);
+                    logger.warn("Error occurred during discovery of {}", device.getAddress(), t);
                 }
             });
 

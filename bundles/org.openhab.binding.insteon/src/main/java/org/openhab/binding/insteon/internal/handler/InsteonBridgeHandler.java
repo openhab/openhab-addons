@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,14 @@ package org.openhab.binding.insteon.internal.handler;
 import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
 
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonHub1Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonHub2Configuration;
@@ -32,6 +34,7 @@ import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonModem;
 import org.openhab.binding.insteon.internal.device.ProductData;
 import org.openhab.binding.insteon.internal.discovery.InsteonDiscoveryService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -57,19 +60,24 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     private static final int RETRY_INTERVAL = 30; // seconds
     private static final int START_DELAY = 5; // seconds
 
+    private final ScheduledExecutorService insteonScheduler = ThreadPoolManager
+            .getScheduledPool(BINDING_ID + "-" + getThingId());
+
     private @Nullable InsteonModem modem;
     private @Nullable InsteonDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> resetJob;
     private @Nullable ScheduledFuture<?> statisticsJob;
+    private HttpClient httpClient;
     private SerialPortManager serialPortManager;
     private Storage<DeviceCache> storage;
     private ThingRegistry thingRegistry;
 
-    public InsteonBridgeHandler(Bridge bridge, SerialPortManager serialPortManager, StorageService storageService,
-            ThingRegistry thingRegistry) {
+    public InsteonBridgeHandler(Bridge bridge, HttpClient httpClient, SerialPortManager serialPortManager,
+            StorageService storageService, ThingRegistry thingRegistry) {
         super(bridge);
+        this.httpClient = httpClient;
         this.serialPortManager = serialPortManager;
         this.storage = storageService.getStorage(bridge.getUID().toString(), DeviceCache.class.getClassLoader());
         this.thingRegistry = thingRegistry;
@@ -164,7 +172,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
             legacyHandler.disable();
         }
 
-        InsteonModem modem = InsteonModem.makeModem(this, config, scheduler, serialPortManager);
+        InsteonModem modem = InsteonModem.makeModem(this, config, httpClient, insteonScheduler, serialPortManager);
         this.modem = modem;
 
         if (isInitialized()) {
@@ -311,8 +319,9 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
                 return;
             }
 
-            cancelJob(reconnectJob, false);
             updateStatus();
+
+            cancelJob(reconnectJob, false);
         }, 0, RETRY_INTERVAL, TimeUnit.SECONDS);
     }
 
@@ -324,10 +333,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Resetting bridge.");
 
-            resetJob = scheduler.schedule(() -> {
-                initialize();
-                cancelJob(resetJob, false);
-            }, delay, TimeUnit.SECONDS);
+            resetJob = scheduler.schedule(this::initialize, delay, TimeUnit.SECONDS);
         });
     }
 

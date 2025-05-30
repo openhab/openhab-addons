@@ -10,6 +10,7 @@
 			RX-S600,
 			HTR-xxxx
 		</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -79,6 +80,7 @@
 		</supported-bridge-type-refs>
 		<label>Yamaha Receiver Zone</label>
 		<description>Yamaha Receiver Zone</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="zone_channels" id="zone_channels"/>

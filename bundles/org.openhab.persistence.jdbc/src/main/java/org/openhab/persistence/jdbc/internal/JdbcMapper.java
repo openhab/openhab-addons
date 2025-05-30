@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -212,9 +212,10 @@ public class JdbcMapper {
         logTime("alterTableColumn", timerStart, System.currentTimeMillis());
     }
 
-    protected void storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) throws JdbcException {
+    protected void storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date, @Nullable String alias)
+            throws JdbcException {
         logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
-        String tableName = getTable(item);
+        String tableName = getTable(item, alias);
         long timerStart = System.currentTimeMillis();
         if (date == null) {
             conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null));
@@ -353,8 +354,8 @@ public class JdbcMapper {
         }
     }
 
-    protected String getTable(Item item) throws JdbcException {
-        String itemName = item.getName();
+    protected String getTable(Item item, @Nullable String alias) throws JdbcException {
+        String itemName = alias != null ? alias : item.getName();
         if (!initialized) {
             throw new JdbcException("Not initialized, unable to find table for item " + itemName);
         }

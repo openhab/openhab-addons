@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
 
     HueEmulationConfigWithRuntime(Consumer<HueEmulationConfigWithRuntime> r, HueEmulationConfig config,
             String addrString, InetAddress MULTI_ADDR_IPV4, InetAddress MULTI_ADDR_IPV6) throws UnknownHostException {
-        super("HueEmulation UPNP Server");
+        super("OH-io-hueemulation-UPNPServer");
         this.r = r;
         this.config = config;
 
@@ -72,7 +72,7 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
 
     HueEmulationConfigWithRuntime(Consumer<HueEmulationConfigWithRuntime> r, @Nullable HueEmulationConfig config,
             InetAddress MULTI_ADDR_IPV4, InetAddress MULTI_ADDR_IPV6) throws UnknownHostException {
-        super("HueEmulation UPNP Server");
+        super("OH-io-hueemulation-UPNPServer");
         this.r = r;
         this.config = config;
 

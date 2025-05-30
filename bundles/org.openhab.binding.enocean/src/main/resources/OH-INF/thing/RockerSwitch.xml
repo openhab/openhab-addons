@@ -12,7 +12,7 @@
 
 		<label>Rocker Switch</label>
 		<description>Represents a physical Rocker Switch (EEP: F6-02)</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel typeId="system.rawrocker" id="rockerswitchA">
 				<label>Rocker Switch - Channel A</label>

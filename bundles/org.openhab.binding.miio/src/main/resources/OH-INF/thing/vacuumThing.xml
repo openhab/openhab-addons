@@ -6,6 +6,7 @@
 
 	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>

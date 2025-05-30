@@ -36,6 +36,7 @@
 			</ul>
 			]]>
 		</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="status" typeId="bridge-status"/>

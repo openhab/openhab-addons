@@ -9,7 +9,7 @@
 
 		<label>Sure Petcare API Bridge</label>
 		<description>The Sure Petcare Cloud API Bridge</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="refresh" typeId="refreshType"/>
 		</channels>
@@ -55,7 +55,7 @@
 
 		<label>Sure Petcare Household</label>
 		<description>A Sure Petcare household</description>
-
+		<semantic-equipment-tag>PetCare</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
 			<channel id="name" typeId="nameType"/>
@@ -79,7 +79,7 @@
 
 		<label>Sure Petcare Hub Device</label>
 		<description>A Sure Petcare hub device (connects cat flaps, feeders etc. to a network)</description>
-
+		<semantic-equipment-tag>PetCare</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
 			<channel id="name" typeId="nameType"/>
@@ -109,7 +109,7 @@
 
 		<label>Sure Petcare Flap Device</label>
 		<description>A Sure Petcare cat or pet flap device</description>
-
+		<semantic-equipment-tag>PetFlap</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
 			<channel id="name" typeId="nameType"/>
@@ -144,6 +144,7 @@
 			<property name="productType"/>
 			<property name="productName"/>
 			<property name="pairingAt"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
@@ -155,7 +156,7 @@
 
 		<label>Sure Petcare Feeder Device</label>
 		<description>A Sure Petcare pet feeder device</description>
-
+		<semantic-equipment-tag>PetFeeder</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
 			<channel id="name" typeId="nameType"/>
@@ -186,6 +187,7 @@
 			<property name="productType"/>
 			<property name="productName"/>
 			<property name="pairingAt"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
@@ -548,17 +550,17 @@
 	</channel-type>
 
 	<channel-type id="rssiDeviceType" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Strength Device (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%.2f dB"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rssiHubType" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Strength Hub (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%.2f dB"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="bowlsFoodType">

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,10 +81,10 @@ public class CameraServlet extends IpCameraServlet {
             case "/OnvifEvent":
                 ServletInputStream inputStream = req.getInputStream();
                 String xmlData = new String(inputStream.readAllBytes(), "UTF-8");
-                handler.onvifCamera.eventRecieved(xmlData);
+                handler.onvifCamera.eventReceived(xmlData);
                 break;
             default:
-                logger.debug("Recieved unknown request \tPOST:{}", pathInfo);
+                logger.debug("Received unknown request \tPOST:{}", pathInfo);
                 break;
         }
     }

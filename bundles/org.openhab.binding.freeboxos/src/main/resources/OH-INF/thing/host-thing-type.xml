@@ -11,6 +11,7 @@
 
 		<label>Network Device</label>
 		<description>Provides network device reachability</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="connectivity" id="connectivity"/>

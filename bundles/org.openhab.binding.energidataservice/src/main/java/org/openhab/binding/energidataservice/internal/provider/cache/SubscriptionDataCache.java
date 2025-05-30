@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,13 +55,6 @@ public interface SubscriptionDataCache<R> {
      * Flush expired cached values.
      */
     void flush();
-
-    /**
-     * Get the number of future prices in the cache.
-     *
-     * @return number of cached future prices
-     */
-    long getNumberOfFuturePrices();
 
     /**
      * Check if all required historic values are cached, considering

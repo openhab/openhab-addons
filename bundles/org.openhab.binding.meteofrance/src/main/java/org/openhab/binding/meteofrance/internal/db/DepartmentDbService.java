@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.PointType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -49,6 +48,11 @@ public class DepartmentDbService {
 
     public record Department(String id, String name, double northestLat, double southestLat, double eastestLon,
             double westestLon) {
+
+        boolean contains(double latitude, double longitude) {
+            return northestLat >= latitude && southestLat <= latitude && //
+                    westestLon <= longitude && eastestLon >= longitude;
+        }
     }
 
     @Activate
@@ -58,7 +62,7 @@ public class DepartmentDbService {
                 Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             departments.addAll(Arrays.asList(gson.fromJson(reader, Department[].class)));
-            logger.debug("Successfully loaded {} departments", departments.size());
+            logger.debug("Successfully loaded {} French departments", departments.size());
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             logger.warn("Unable to load departments list: {}", e.getMessage());
         }
@@ -67,11 +71,6 @@ public class DepartmentDbService {
     public List<Department> getBounding(PointType location) {
         double latitude = location.getLatitude().doubleValue();
         double longitude = location.getLongitude().doubleValue();
-        return departments.stream().filter(dep -> dep.northestLat >= latitude && dep.southestLat <= latitude
-                && dep.westestLon <= longitude && dep.eastestLon >= longitude).toList();
-    }
-
-    public @Nullable Department getDept(String deptId) {
-        return departments.stream().filter(dep -> dep.id.equalsIgnoreCase(deptId)).findFirst().orElse(null);
+        return departments.stream().filter(dep -> dep.contains(latitude, longitude)).toList();
     }
 }

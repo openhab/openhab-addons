@@ -75,53 +75,53 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### Flap Device Thing (Cat or Pet Flap)
 
-| Channel               | Type     | Description                                                           |
-|-----------------------|----------|-----------------------------------------------------------------------|
-| id                    | Number   | A unique id assigned by the Sure Petcare API                          |
-| name                  | Text     | The name of the flap                                                  |
-| product               | Text     | The type of product (3=pet flap, 6=cat flap)                          |
-| curfewEnabled1        | Switch   | Indicator if curfew #1 configuration is enabled                       |
-| curfewLockTime1       | Text     | The curfew #1 locking time (HH:MM)                                    |
-| curfewUnlockTime1     | Text     | The curfew #1 unlocking time (HH:MM)                                  |
-| curfewEnabled2        | Switch   | Indicator if curfew #2 configuration is enabled                       |
-| curfewLockTime2       | Text     | The curfew #2 locking time (HH:MM)                                    |
-| curfewUnlockTime2     | Text     | The curfew #2 unlocking time (HH:MM)                                  |
-| curfewEnabled3        | Switch   | Indicator if curfew #3 configuration is enabled                       |
-| curfewLockTime3       | Text     | The curfew #3 locking time (HH:MM)                                    |
-| curfewUnlockTime3     | Text     | The curfew #3 unlocking time (HH:MM)                                  |
-| curfewEnabled4        | Switch   | Indicator if curfew #4 configuration is enabled                       |
-| curfewLockTime4       | Text     | The curfew #4 locking time (HH:MM)                                    |
-| curfewUnlockTime4     | Text     | The curfew #4 unlocking time (HH:MM)                                  |
-| lockingMode           | Text     | The locking mode (e.g. in/out, in-only, out-only etc.)                |
-| online                | Switch   | Indicator if the flap is connected to the hub                         |
-| lowBattery            | Switch   | Indicator if the battery voltage is low                               |
-| batteryLevel          | Number   | The battery voltage percentage                                        |
-| batteryVoltage        | Number   | The absolute battery voltage measurement                              |
-| deviceRSSI            | Number   | The received device signal strength in dB                             |
-| hubRSSI               | Number   | The received hub signal strength in dB                                |
+| Channel            | Type         | Description                                                |
+|--------------------|--------------|------------------------------------------------------------|
+| id                 | Number       | A unique id assigned by the Sure Petcare API               |
+| name               | Text         | The name of the flap                                       |
+| product            | Text         | The type of product (3=pet flap, 6=cat flap)               |
+| curfewEnabled1     | Switch       | Indicator if curfew #1 configuration is enabled            |
+| curfewLockTime1    | Text         | The curfew #1 locking time (HH:MM)                         |
+| curfewUnlockTime1  | Text         | The curfew #1 unlocking time (HH:MM)                       |
+| curfewEnabled2     | Switch       | Indicator if curfew #2 configuration is enabled            |
+| curfewLockTime2    | Text         | The curfew #2 locking time (HH:MM)                         |
+| curfewUnlockTime2  | Text         | The curfew #2 unlocking time (HH:MM)                       |
+| curfewEnabled3     | Switch       | Indicator if curfew #3 configuration is enabled            |
+| curfewLockTime3    | Text         | The curfew #3 locking time (HH:MM)                         |
+| curfewUnlockTime3  | Text         | The curfew #3 unlocking time (HH:MM)                       |
+| curfewEnabled4     | Switch       | Indicator if curfew #4 configuration is enabled            |
+| curfewLockTime4    | Text         | The curfew #4 locking time (HH:MM)                         |
+| curfewUnlockTime4  | Text         | The curfew #4 unlocking time (HH:MM)                       |
+| lockingMode        | Text         | The locking mode (e.g. in/out, in-only, out-only etc.)     |
+| online             | Switch       | Indicator if the flap is connected to the hub              |
+| lowBattery         | Switch       | Indicator if the battery voltage is low                    |
+| batteryLevel       | Number       | The battery voltage percentage                             |
+| batteryVoltage     | Number       | The absolute battery voltage measurement                   |
+| deviceRSSI         | Number:Power | The received device signal strength in dB                  |
+| hubRSSI            | Number:Power | The received hub signal strength in dB                     |
 
 ### Feeder Device Thing
 
-| Channel           | Type        | Description                                                                                     |
-|-------------------|-------------|-------------------------------------------------------------------------------------------------|
-| id                | Number      | A unique id assigned by the Sure Petcare API                                                    |
-| name              | Text        | The name of the feeder                                                                          |
-| product           | Text        | The type of product                                                                             |
-| online            | Switch      | Indicator if the feeder is connected to the hub                                                 |
-| lowBattery        | Switch      | Indicator if the battery voltage is low                                                         |
-| batteryLevel      | Number      | The battery voltage percentage                                                                  |
-| batteryVoltage    | Number      | The absolute battery voltage measurement                                                        |
-| deviceRSSI        | Number      | The received device signal strength in dB                                                       |
-| hubRSSI           | Number      | The received hub signal strength in dB                                                          |
-| bowls             | Text        | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
-| bowlsFood         | Text        | The feeder big bowl food type (wet food, dry food or both)                                      |
-| bowlsTarget       | Number:Mass | The feeder big bowl target weight in gram (even if user setting is oz, API stores this in gram) |
-| bowlsFoodLeft     | Text        | The feeder left half bowl food type (wet food, dry food or both)                                |
-| bowlsTargetLeft   | Number:Mass | The feeder left half bowl target weight                                                         |
-| bowlsFoodRight    | Text        | The feeder right half bowl food type (wet food, dry food or both)                               |
-| bowlsTargetRight  | Number:Mass | The feeder right half bowl target weight                                                        |
-| bowlsCloseDelay   | Text        | The feeder lid close delay (fast, normal, slow)                                                 |
-| bowlsTrainingMode | Text        | The feeder training mode (off, full open, almost full open, half closed, almost closed)         |
+| Channel           | Type         | Description                                                                                     |
+|-------------------|--------------|-------------------------------------------------------------------------------------------------|
+| id                | Number       | A unique id assigned by the Sure Petcare API                                                    |
+| name              | Text         | The name of the feeder                                                                          |
+| product           | Text         | The type of product                                                                             |
+| online            | Switch       | Indicator if the feeder is connected to the hub                                                 |
+| lowBattery        | Switch       | Indicator if the battery voltage is low                                                         |
+| batteryLevel      | Number       | The battery voltage percentage                                                                  |
+| batteryVoltage    | Number       | The absolute battery voltage measurement                                                        |
+| deviceRSSI        | Number:Power | The received device signal strength in dB                                                       |
+| hubRSSI           | Number:Power | The received hub signal strength in dB                                                          |
+| bowls             | Text         | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
+| bowlsFood         | Text         | The feeder big bowl food type (wet food, dry food or both)                                      |
+| bowlsTarget       | Number:Mass  | The feeder big bowl target weight in gram (even if user setting is oz, API stores this in gram) |
+| bowlsFoodLeft     | Text         | The feeder left half bowl food type (wet food, dry food or both)                                |
+| bowlsTargetLeft   | Number:Mass  | The feeder left half bowl target weight                                                         |
+| bowlsFoodRight    | Text         | The feeder right half bowl food type (wet food, dry food or both)                               |
+| bowlsTargetRight  | Number:Mass  | The feeder right half bowl target weight                                                        |
+| bowlsCloseDelay   | Text         | The feeder lid close delay (fast, normal, slow)                                                 |
+| bowlsTrainingMode | Text         | The feeder training mode (off, full open, almost full open, half closed, almost closed)         |
 
 ### Pet Thing
 
@@ -139,7 +139,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | locationChanged        | DateTime    | The time when the location was last changed                                         |
 | locationTimeoffset     | String      | Time-Command to set the pet location with a time offset. (10, 30 or 60 minutes ago) |
 | locationChangedThrough | Text        | The device name or username where the pet left/entered the house                    |
-| weight                 | Number:Mass | The pet's weight (in kilogram)                                                      |
+| weight                 | Number:Mass | The pet's weight (in gram)                                                          |
 | dateOfBirth            | DateTime    | The pet's date of birth                                                             |
 | feederDevice           | Text        | The device from which the pet last ate                                              |
 | feederLastChange       | Number:Mass | The last eaten change in gram (big bowl)                                            |

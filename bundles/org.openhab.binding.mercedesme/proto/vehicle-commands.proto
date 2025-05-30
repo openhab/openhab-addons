@@ -1,6 +1,5 @@
 syntax = "proto3";
 package proto;
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "gogo.proto";
 import "google/protobuf/wrappers.proto";
 
@@ -97,6 +96,9 @@ message CommandRequest {
 
     DeactivateVehicleKeys deactivate_vehicle_keys = 48;
     ActivateVehicleKeys activate_vehicle_keys = 49;
+
+    ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;
+    WiperHealthReset wiper_health_reset = 64;
   }
 }
 
@@ -609,3 +611,25 @@ message AutomaticValetParkingActivate {
 message ChargeFlapUnlock {}
 
 message ChargeCouplerUnlock {}
+
+message ChargingBreakClocktimerConfigure {
+  repeated ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;
+}
+
+
+enum ChargingBreakClockTimerEntryStatus {
+  DELETE = 0;
+  INACTIVE = 1;
+  ACTIVE = 2;
+}
+
+message ChargingBreakClockTimerConfigureEntry {
+  ChargingBreakClockTimerEntryStatus action = 1;
+  int32 endTimeHour = 2;
+  int32 endTimeMinute = 3;
+  int32 startTimeHour = 4;
+  int32 startTimeMinute = 5;
+  int32 timerId = 6;
+}
+
+message WiperHealthReset {}

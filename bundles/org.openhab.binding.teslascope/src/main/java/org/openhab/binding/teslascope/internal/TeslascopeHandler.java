@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.teslascope.internal;
 
 import static org.openhab.binding.teslascope.internal.TeslascopeBindingConstants.*;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +78,11 @@ public class TeslascopeHandler extends BaseThingHandler {
                 case TeslascopeBindingConstants.CHANNEL_CHARGE:
                     if (command instanceof OnOffType onOffCommand) {
                         charge(onOffCommand == OnOffType.ON);
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_CHARGE_LIMIT_SOC:
+                    if (command instanceof QuantityType quantityCommand) {
+                        setChargeLimit(quantityCommand);
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE_PORT:
@@ -185,8 +191,12 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE, new StringType(detailedInformation.state));
-            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
-                    new QuantityType<>(detailedInformation.odometer, ImperialUnits.MILE));
+            updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_HOME,
+                    OnOffType.from(1 == detailedInformation.locatedAtHome));
+            updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_WORK,
+                    OnOffType.from(1 == detailedInformation.locatedAtWork));
+            updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_FAVORITE,
+                    OnOffType.from(1 == detailedInformation.locatedAtFavorite));
 
             // charge state
             updateState(TeslascopeBindingConstants.CHANNEL_BATTERY_LEVEL,
@@ -199,13 +209,23 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.chargeState.estBatteryRange, ImperialUnits.MILE));
             // charge_enable_request isn't the right flag to determine if car is charging or not
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE,
-                    OnOffType.from("Charging".equals(detailedInformation.chargeState.chargingState)));
+                    OnOffType.from(
+                            ("DetailedChargeStateCharging".equals(detailedInformation.chargeState.detailedChargeState))
+                                    || "DetailedChargeStateStarting"
+                                            .equals(detailedInformation.chargeState.detailedChargeState)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
                     new QuantityType<>(detailedInformation.chargeState.chargeEnergyAdded, Units.KILOWATT_HOUR));
+            updateState(CHANNEL_CHARGE_LIMIT_SOC, new DecimalType(detailedInformation.chargeState.chargeLimitSoc));
+            updateState(CHANNEL_CHARGE_LIMIT_SOC_MIN,
+                    new DecimalType(detailedInformation.chargeState.chargeLimitSocMin));
+            updateState(CHANNEL_CHARGE_LIMIT_SOC_MAX,
+                    new DecimalType(detailedInformation.chargeState.chargeLimitSocMax));
             updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD,
-                    new DecimalType(detailedInformation.chargeState.chargeLimitSoc / 100));
+                    new DecimalType(detailedInformation.chargeState.chargeLimitSocStd));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT,
                     OnOffType.from(1 == detailedInformation.chargeState.chargePortDoorOpen));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT_LATCH,
+                    OnOffType.from("Engaged".equals(detailedInformation.chargeState.chargePortLatch)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_RATE,
                     new QuantityType<>(detailedInformation.chargeState.chargeRate, ImperialUnits.MILES_PER_HOUR));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGER_POWER,
@@ -214,12 +234,18 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.chargeState.chargerVoltage, Units.VOLT));
             updateState(TeslascopeBindingConstants.CHANNEL_TIME_TO_FULL_CHARGE,
                     new QuantityType<>(detailedInformation.chargeState.timeToFullCharge, Units.HOUR));
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE,
-                    new StringType(detailedInformation.chargeState.chargingState));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE, new StringType(
+                    detailedInformation.chargeState.detailedChargeState.replace("DetailedChargeState", "")));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_PENDING,
                     OnOffType.from(1 == detailedInformation.chargeState.scheduledChargingPending));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_START,
                     new StringType(detailedInformation.chargeState.scheduledChargingStartTime));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_AMPS,
+                    new DecimalType(detailedInformation.chargeState.chargeAmps));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_CURRENT_REQUEST,
+                    new DecimalType(detailedInformation.chargeState.chargeCurrentRequest));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_CURRENT_REQUEST_MAX,
+                    new DecimalType(detailedInformation.chargeState.chargeCurrentRequestMax));
 
             // climate state
             updateState(TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING,
@@ -282,10 +308,15 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.driveState.speed, ImperialUnits.MILES_PER_HOUR));
 
             // vehicle state
+            Map<String, String> properties = editProperties();
+            properties.put("version", detailedInformation.vehicleState.carVersion);
+            updateProperties(properties);
             updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
-                    OnOffType.from(1 == detailedInformation.vehicleState.locked));
+                    OnOffType.from(detailedInformation.vehicleState.locked));
+            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
+                    new QuantityType<>(detailedInformation.vehicleState.odometer, ImperialUnits.MILE));
             updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE,
-                    OnOffType.from(1 == detailedInformation.vehicleState.sentryMode));
+                    OnOffType.from(detailedInformation.vehicleState.sentryMode));
             updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE,
                     OnOffType.from(1 == detailedInformation.vehicleState.valetMode));
             updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE,
@@ -337,15 +368,15 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     protected void setAutoConditioning(boolean b)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startAC" : "stopAC");
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startAC" : "stopAC", "");
     }
 
     protected void charge(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startCharging" : "stopCharging");
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startCharging" : "stopCharging", "");
     }
 
     protected void chargeDoor(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "openChargeDoor" : "closeChargeDoor");
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "openChargeDoor" : "closeChargeDoor", "");
     }
 
     protected void flashLights() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
@@ -372,5 +403,11 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     protected void sentry(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         webTargets.sendCommand(config.publicID, config.apiKey, b ? "enableSentryMode" : "disableSentryMode");
+    }
+
+    protected void setChargeLimit(QuantityType chargeLimit)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        webTargets.sendCommand(config.publicID, config.apiKey, "setChargeLimit",
+                "&limit=" + chargeLimit.toString().replace(" %", ""));
     }
 }

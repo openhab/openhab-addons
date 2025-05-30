@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         return new TypeAdapter<R>() {
             @Override
             public R read(JsonReader in) throws IOException {
-                JsonElement jsonElement = new JsonParser().parse(in);
+                JsonElement jsonElement = JsonParser.parseReader(in);
                 JsonElement labelJsonElement = jsonElement.getAsJsonObject().get(typeFieldName);
 
                 TypeAdapter<R> delegate = null;

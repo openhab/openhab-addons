@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DigiplexBindingConstants {
 
-    private static final String BINDING_ID = "digiplex";
+    public static final String BINDING_ID = "digiplex";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -51,7 +51,6 @@ public class DigiplexBindingConstants {
     public static final String BRIDGE_MESSAGES_SENT = "statistics#messages_sent";
     public static final String BRIDGE_RESPONSES_RECEIVED = "statistics#responses_received";
     public static final String BRIDGE_EVENTS_RECEIVED = "statistics#events_received";
-
     public static final String BRIDGE_TLM_TROUBLE = "troubles#tlm_trouble";
     public static final String BRIDGE_AC_FAILURE = "troubles#ac_failure";
     public static final String BRIDGE_BATTERY_FAILURE = "troubles#battery_failure";

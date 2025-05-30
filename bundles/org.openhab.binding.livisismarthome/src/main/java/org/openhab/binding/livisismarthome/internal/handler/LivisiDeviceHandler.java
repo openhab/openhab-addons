@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -225,7 +225,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandSwitchSiren(Command command, String notificationSound, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof OnOffType && OnOffType.ON.equals(command)) {
+        if (OnOffType.ON.equals(command)) {
             bridgeHandler.commandSwitchSiren(deviceId, notificationSound);
         } else {
             bridgeHandler.commandSwitchSiren(deviceId, SIREN_NONE);

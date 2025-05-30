@@ -11,6 +11,7 @@
 		Independent mode - does not require Internet connectivity (see <b>connectionMode</b> setting for more options).
 		]]></description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ac-controls" typeId="ac-controls-group"/>
@@ -182,6 +183,7 @@
 		<br/><i>Requires Internet connectivity for <b>both</b> openHAB and the HVAC device separately.</i>
 		]]></description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="ac-controls" typeId="ac-controls-group"/>
 			<channel-group id="modes" typeId="modes-group"/>
@@ -316,7 +318,7 @@
 		<category>Climate</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Climate</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>

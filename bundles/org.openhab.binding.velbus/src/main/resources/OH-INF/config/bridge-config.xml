@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:velbus:bridge">
+		<parameter name="port" type="text" required="true">
+			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
+			<label>Serial Port</label>
+			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
+		</parameter>
+		<parameter name="timeUpdateInterval" type="integer" unit="min">
+			<label>Time Update Interval</label>
+			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
+				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<default>360</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="reconnectionInterval" type="integer" unit="s">
+			<label>Reconnection Interval</label>
+			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
+				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="bridge-type:velbus:networkbridge">
+		<parameter name="address" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address or Hostname</label>
+			<description>IP Address or hostname of Velbus server</description>
+		</parameter>
+		<parameter name="port" type="integer" required="true">
+			<label>Port</label>
+			<description>Network port to communicate with Velbus server</description>
+		</parameter>
+		<parameter name="timeUpdateInterval" type="integer" unit="min">
+			<label>Time Update Interval</label>
+			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
+				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<default>360</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="reconnectionInterval" type="integer" unit="s">
+			<label>Reconnection Interval</label>
+			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
+				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

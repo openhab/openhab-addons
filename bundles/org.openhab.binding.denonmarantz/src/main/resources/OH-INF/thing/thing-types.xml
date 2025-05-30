@@ -8,6 +8,7 @@
 	<thing-type id="avr">
 		<label>Denon/Marantz AVR</label>
 		<description>Control a Denon/Marantz AVR.</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>

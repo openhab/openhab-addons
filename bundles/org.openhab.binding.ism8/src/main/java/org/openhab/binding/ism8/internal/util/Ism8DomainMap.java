@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ism8.internal.util;
 
 import java.util.Objects;
@@ -25,6 +24,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ism8.server.IDataPoint;
 import org.openhab.core.library.dimension.VolumetricFlowRate;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -71,8 +71,10 @@ public final class Ism8DomainMap {
             return new QuantityType<Dimensionless>((Double) value, Units.PERCENT);
         } else if (Units.ONE.equals(unit)) {
             return new QuantityType<Dimensionless>((Double) value, Units.ONE);
-        } else if (value instanceof Boolean) {
-            return OnOffType.from((boolean) value);
+        } else if (value instanceof Boolean b) {
+            // DecimalType is compatible with Switch and Contact items, OH mapping is 0-off-closed and 1-on-open;
+            // note that this is opposite to definition of KNX DPT 1.009
+            return b ? DecimalType.valueOf("1") : DecimalType.valueOf("0");
         } else if (value instanceof Byte) {
             return new QuantityType<Dimensionless>((byte) value, Units.ONE);
         } else if (value instanceof Integer) {
