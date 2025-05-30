@@ -12,10 +12,11 @@ The binding does not support auto discovery.
 
 ## Thing Configuration
 
-| Thing Parameter | Default Value | Required | Advanced | Description                                                                    |
-| apiKey          | N/A           | Yes      | No       | The API key from the 'Developer' section of <https://apps.amber.com.au>        |
-| nmi             | N/A           | No       | No       | The NMI (NMI (National Metering Identifier) for your property. Required if you have multiple properties with Amber |
-| refresh         | 60            | No       | Yes      | The refresh rate (in seconds) for querying the API.                            |
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                                           |
+|-----------------|---------------|----------|------------------------------------------------------------------------------------------------------------------|
+| apiKey          | N/A           | Yes      | No       | The API key from the 'Developer' section of <https://apps.amber.com.au>                               |
+| nmi             | N/A           | No       | No       | The NMI (NMI (National Metering Identifier) for your property. Required if you have multiple accounts |
+| refresh         | 60            | No       | Yes      | The refresh rate (in seconds) for querying the API.                                                   |
 
 ## Channels
 
