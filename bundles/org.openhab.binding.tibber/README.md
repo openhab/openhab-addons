@@ -29,7 +29,7 @@ Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.t
 - If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
 - Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
-```json
+```
 {
   viewer {
     homes {
@@ -48,7 +48,7 @@ If user have multiple HomeIds / Pulse, separate Things have to be created for th
 
 ### `price` group
 
-Forecast values og Tibber pricing.
+Current and forecast Tibber price information.
 All read-only.
 
 | Channel ID        | Type                 | Description         | Forecast |
@@ -72,6 +72,9 @@ Mapping:
 The `average` values are not delivered by Tibber API.
 It's calculated by the binding to provide a trend line for the last 24 hours.
 After initial setup the average values will stay NULL until the next day because the previous 24 h prices cannot be obtained by the Tibber API.
+
+Please note forecasts are not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
+The items connected to the above channels needs to be stored in [influxdb](https://www.openhab.org/addons/persistence/influxdb/) or [inmemory](https://www.openhab.org/addons/persistence/inmemory/).
 
 ### `live` group
 
