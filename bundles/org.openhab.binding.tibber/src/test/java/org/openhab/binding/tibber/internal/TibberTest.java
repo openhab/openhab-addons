@@ -24,7 +24,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -88,16 +87,12 @@ public class TibberTest {
         Instant test2 = test1.truncatedTo(ChronoUnit.SECONDS);
         System.out.println(test1 + " " + test2);
         PriceInfo pInfo = new PriceInfo(0.3456, 30,
-                Instant.parse("2025-05-18T11:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS));
+                Instant.parse("2025-05-18T11:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS), 1);
         JsonObject pInfoJson = (JsonObject) JsonParser.parseString(pInfo.toString());
         System.out.println(pInfoJson);
         assertEquals(0.3456, pInfoJson.get("price").getAsDouble(), "Price JSON");
         assertEquals(30, pInfoJson.get("duration").getAsInt(), "Duration JSON");
         assertEquals("2025-05-18T09:00:00Z", pInfoJson.get("startsAt").getAsString(), "Timestamp JSON");
-        Map<String, Object> pInfoMap = pInfo.toMap();
-        assertEquals(0.3456, (Double) pInfoMap.get("price"), "Price Map");
-        assertEquals(30, (Integer) pInfoMap.get("duration"), "Duration Map");
-        assertEquals("2025-05-18T09:00:00Z", pInfoMap.get("startsAt").toString(), "Timestamp Map");
     }
 
     @Test

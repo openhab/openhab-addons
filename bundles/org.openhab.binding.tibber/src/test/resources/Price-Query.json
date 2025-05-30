@@ -1,3 +1,0 @@
-{
-	"query": "{viewer {home (id:\"abc\") {currentSubscription {tomorrow { startsAt total level } today { startsAt total level }}}}}}"
-}
