@@ -63,6 +63,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.osgi.framework.Bundle;
@@ -103,6 +104,10 @@ public class TibberHandler extends BaseThingHandler {
     private int retryCounter = 0;
     private boolean isDisposed = true;
 
+    private TimeSeries priceCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries levelCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries averageCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+
     protected Optional<PriceCalculator> calculator = Optional.empty();
 
     public TibberHandler(Thing thing, HttpClient httpClient, CronScheduler cron, BundleContext bundleContext,
@@ -116,7 +121,22 @@ public class TibberHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands handled
+        if (command instanceof RefreshType) {
+            String group = channelUID.getGroupId();
+            if (GROUP_PRICE.equals(group)) {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_SPOT_PRICES:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICES), priceCache);
+                        break;
+                    case CHANNEL_PRICE_LEVELS:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_PRICE_LEVELS), levelCache);
+                        break;
+                    case CHANNEL_AVERAGE:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_AVERAGE), averageCache);
+                        break;
+                }
+            }
+        }
     }
 
     @Override
@@ -287,8 +307,10 @@ public class TibberHandler extends BaseThingHandler {
                             String levelString = entryObject.get("level").getAsString();
                             timeSeriesLevels.add(startsAt, Utils.mapToState(levelString));
                         }
+                        priceCache = timeSeriesPrices;
                         sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICES),
                                 timeSeriesPrices);
+                        levelCache = timeSeriesLevels;
                         sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_PRICE_LEVELS),
                                 timeSeriesLevels);
                         synchronized (this) {
@@ -301,6 +323,7 @@ public class TibberHandler extends BaseThingHandler {
                             String priceString = String.valueOf(value);
                             avgSeries.add(key, getEnergyPrice(priceString));
                         });
+                        averageCache = avgSeries;
                         sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_AVERAGE), avgSeries);
 
                     } catch (JsonSyntaxException | DateTimeParseException e) {

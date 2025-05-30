@@ -16,8 +16,9 @@
 
 		<properties>
 			<property name="vendor">Tibber</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
+
 		<config-description>
 			<parameter name="token" type="text" required="true">
 				<label>Token</label>
