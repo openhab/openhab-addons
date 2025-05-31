@@ -66,6 +66,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -434,7 +435,7 @@ public class TibberHandler extends BaseThingHandler {
     @SuppressWarnings("all")
     private void handleNewMessage() {
         String message = messageQueue.poll();
-        // this can be null!
+        // This is not dead code, value can be null!
         if (message == null) {
             return;
         }
@@ -442,91 +443,68 @@ public class TibberHandler extends BaseThingHandler {
         JsonObject jsonData = Utils.getJsonObject(jsonMessage, SOCKET_MESSAGE_JSON_PATH);
 
         String value = Utils.getJsonValue(jsonData, "lastMeterConsumption");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, QuantityType.valueOf(value + " kWh"));
-        }
+        updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, value, "kWh");
         value = Utils.getJsonValue(jsonData, "accumulatedConsumption");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, QuantityType.valueOf(value + " kWh"));
-        }
+        updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, value, "kWh");
         value = Utils.getJsonValue(jsonData, "accumulatedConsumptionLastHour");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, QuantityType.valueOf(value + " kWh"));
-        }
+        updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
         value = Utils.getJsonValue(jsonData, "accumulatedCost");
         if (!EMPTY.equals(value)) {
             State costState;
-            if (currencyUnit.isPresent()) {
-                costState = QuantityType.valueOf(value + " " + currencyUnit.get());
+            if (!NULL.equals(value)) {
+                if (currencyUnit.isPresent()) {
+                    costState = QuantityType.valueOf(value + " " + currencyUnit.get());
+                } else {
+                    costState = DecimalType.valueOf(value);
+                }
             } else {
-                costState = DecimalType.valueOf(value);
+                costState = UnDefType.UNDEF;
             }
-            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_COST, costState);
+            updateState(new ChannelUID(thing.getUID(), GROUP_STATISTICS, CHANNEL_DAILY_COST), costState);
         }
         value = Utils.getJsonValue(jsonData, "lastMeterProduction");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, QuantityType.valueOf(value + " kWh"));
-        }
+        updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, value, "kWh");
         value = Utils.getJsonValue(jsonData, "accumulatedProduction");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, QuantityType.valueOf(value + " kWh"));
-        }
+        updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
         value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, QuantityType.valueOf(value + " kWh"));
-        }
+        updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
         value = Utils.getJsonValue(jsonData, "power");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_CONSUMPTION, QuantityType.valueOf(value + " W"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
         value = Utils.getJsonValue(jsonData, "minPower");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, QuantityType.valueOf(value + " W"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
         value = Utils.getJsonValue(jsonData, "maxPower");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, QuantityType.valueOf(value + " W"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
         value = Utils.getJsonValue(jsonData, "powerProduction");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_PRODUCTION, QuantityType.valueOf(value + " W"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
         value = Utils.getJsonValue(jsonData, "minPowerProduction");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_MIN_PRODUCTION, QuantityType.valueOf(value + " W"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
         value = Utils.getJsonValue(jsonData, "maxPowerProduction");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, QuantityType.valueOf(value + " W"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, value, "W");
         value = Utils.getJsonValue(jsonData, "voltagePhase1");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_1, QuantityType.valueOf(value + " V"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_1, value, "V");
         value = Utils.getJsonValue(jsonData, "voltagePhase2");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_2, QuantityType.valueOf(value + " V"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_2, value, "V");
         value = Utils.getJsonValue(jsonData, "voltagePhase3");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_3, QuantityType.valueOf(value + " V"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_3, value, "V");
         value = Utils.getJsonValue(jsonData, "currentL1");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_1, QuantityType.valueOf(value + " A"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_CURRENT_1, value, "A");
         value = Utils.getJsonValue(jsonData, "currentL2");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_2, QuantityType.valueOf(value + " A"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
         value = Utils.getJsonValue(jsonData, "currentL3");
-        if (!EMPTY.equals(value)) {
-            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_3, QuantityType.valueOf(value + " A"));
-        }
+        updateChannel(GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
     }
 
-    private void updateChannel(String group, String channelId, State state) {
-        updateState(new ChannelUID(thing.getUID(), group, channelId), state);
+    private void updateChannel(String group, String channelId, String value, String unit) {
+        if (!EMPTY.equals(value)) {
+            // value is delivered
+            if (!NULL.equals(value)) {
+                // value isn't null
+                updateState(new ChannelUID(thing.getUID(), group, channelId), QuantityType.valueOf(value + " " + unit));
+            } else {
+                // value is null
+                updateState(new ChannelUID(thing.getUID(), group, channelId), UnDefType.UNDEF);
+            }
+        } // value not delivered - don't update
     }
 
     public String getTemplate(String name) {
