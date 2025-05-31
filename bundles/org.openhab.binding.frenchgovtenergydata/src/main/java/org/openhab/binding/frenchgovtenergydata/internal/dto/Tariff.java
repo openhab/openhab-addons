@@ -39,7 +39,7 @@ public class Tariff {
     public final double fixeTTC;
 
     public Tariff(String line, int lenControl) {
-        this.values = line.replace(',', '.').split(";");
+        this.values = line.replace(',', '.').split(";", -1);
         try {
             if (values.length == lenControl) {
 
@@ -48,14 +48,21 @@ public class Tariff {
                         ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
                         : null;
                 this.puissance = Integer.parseInt(values[2]);
-                this.fixeHT = Double.parseDouble(values[3]);
-                this.fixeTTC = Double.parseDouble(values[4]);
+                this.fixeHT = parseDouble(values[3]);
+                this.fixeTTC = parseDouble(values[4]);
             } else {
                 throw new IllegalArgumentException("Unexpected number of data, %d expected".formatted(lenControl));
             }
         } catch (NumberFormatException | DateTimeParseException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }
+    }
+
+    public static double parseDouble(String input) {
+        if (input.isBlank()) {
+            return 0;
+        }
+        return Double.parseDouble(input);
     }
 
     public boolean isActive() {

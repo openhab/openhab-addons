@@ -39,20 +39,20 @@ public class TempoTariff extends Tariff {
     public TempoTariff(String line) {
         super(line, 17);
         try {
-            this.blueHcHT = Double.parseDouble(values[5]);
-            this.blueHcTTC = Double.parseDouble(values[6]);
-            this.blueHpHT = Double.parseDouble(values[7]);
-            this.blueHpTTC = Double.parseDouble(values[8]);
+            this.blueHcHT = parseDouble(values[5]);
+            this.blueHcTTC = parseDouble(values[6]);
+            this.blueHpHT = parseDouble(values[7]);
+            this.blueHpTTC = parseDouble(values[8]);
 
-            this.whiteHcHT = Double.parseDouble(values[9]);
-            this.whiteHcTTC = Double.parseDouble(values[10]);
-            this.whiteHpHT = Double.parseDouble(values[11]);
-            this.whiteHpTTC = Double.parseDouble(values[12]);
+            this.whiteHcHT = parseDouble(values[9]);
+            this.whiteHcTTC = parseDouble(values[10]);
+            this.whiteHpHT = parseDouble(values[11]);
+            this.whiteHpTTC = parseDouble(values[12]);
 
-            this.redHcHT = Double.parseDouble(values[13]);
-            this.redHcTTC = Double.parseDouble(values[14]);
-            this.redHpHT = Double.parseDouble(values[15]);
-            this.redHpTTC = Double.parseDouble(values[16]);
+            this.redHcHT = parseDouble(values[13]);
+            this.redHcTTC = parseDouble(values[14]);
+            this.redHpHT = parseDouble(values[15]);
+            this.redHpTTC = parseDouble(values[16]);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }
