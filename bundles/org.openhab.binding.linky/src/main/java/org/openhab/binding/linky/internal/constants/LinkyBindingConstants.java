@@ -32,25 +32,16 @@ public class LinkyBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis-api");
-    public static final ThingTypeUID THING_TYPE_API_WEB_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis");
     public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,
             "my-electrical-data");
-    public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");
-    public static final ThingTypeUID THING_TYPE_D2L_BRIDGE = new ThingTypeUID(BINDING_ID, "d2l");
+    public static final ThingTypeUID THING_TYPE_WEB_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis");
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
-    public static final ThingTypeUID THING_TYPE_LINKY_LOCAL = new ThingTypeUID(BINDING_ID, "linky-local");
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BASE = new ThingTypeUID(BINDING_ID, "base");
-    public static final ThingTypeUID THING_TYPE_HPHC = new ThingTypeUID(BINDING_ID, "hphc");
-    public static final ThingTypeUID THING_TYPE_TEMPO = new ThingTypeUID(BINDING_ID, "tempo");
 
     public static final ThingTypeUID THING_TYPE_TEMPO_CALENDAR = new ThingTypeUID(BINDING_ID, "tempo-calendar");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_ENEDIS_BRIDGE,
-            THING_TYPE_API_WEB_ENEDIS_BRIDGE, THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY,
-            THING_TYPE_D2L_BRIDGE, THING_TYPE_SERIAL_BRIDGE, THING_TYPE_LINKY_LOCAL, THING_TYPE_BASE, THING_TYPE_HPHC,
-            THING_TYPE_TEMPO, THING_TYPE_TEMPO_CALENDAR);
+            THING_TYPE_WEB_ENEDIS_BRIDGE, THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY,
+            THING_TYPE_TEMPO_CALENDAR);
 
     // Thing properties
     // List of all Channel groups id's

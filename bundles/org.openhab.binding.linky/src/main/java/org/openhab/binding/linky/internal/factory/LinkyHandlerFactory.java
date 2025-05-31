@@ -34,7 +34,6 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -71,7 +70,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
-    private SerialPortManager serialPortManager;
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
@@ -97,15 +95,14 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpService httpService, final @Reference SerialPortManager serialPortManager,
-            ComponentContext componentContext, final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference HttpService httpService, ComponentContext componentContext,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.httpService = httpService;
         this.componentContext = componentContext;
-        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -124,7 +121,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             BridgeRemoteEnedisHandler handler = new BridgeRemoteEnedisHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
-        } else if (THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
+        } else if (THING_TYPE_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeRemoteEnedisWebHandler handler = new BridgeRemoteEnedisWebHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
