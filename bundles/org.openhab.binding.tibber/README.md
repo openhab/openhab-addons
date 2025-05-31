@@ -143,7 +143,7 @@ In case of error `Instant.MIN` is returned.
 
 List prices in ascending / decending _price_ order.
 
-### Parameters
+#### Parameters
 
 | Name          | Type      | Description                           | Default           | Required  |
 |---------------|-----------|---------------------------------------|-------------------|-----------|
@@ -152,8 +152,6 @@ List prices in ascending / decending _price_ order.
 | ascending     | boolean   | Hour when spot prices are updated     | true              | no        |
 
 #### Example
-
-**Rule**
 
 ```javascript
 rule "Tibber Price List"
@@ -207,7 +205,7 @@ JSON Object `priceInfo`
 
 ```json
 {
-    "size": 31,
+    "size": 4,
     "priceList": [
         {
             "price": 0.1623,
@@ -232,178 +230,17 @@ JSON Object `priceInfo`
             "duration": 3600,
             "level": -1,
             "startsAt": "2025-06-01T14:00:00Z"
-        },
-        {
-            "price": 0.18,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T10:00:00Z"
-        },
-        {
-            "price": 0.1841,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T09:00:00Z"
-        },
-        {
-            "price": 0.1854,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T15:00:00Z"
-        },
-        {
-            "price": 0.1859,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T08:00:00Z"
-        },
-        {
-            "price": 0.1866,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T07:00:00Z"
-        },
-        {
-            "price": 0.1894,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T06:00:00Z"
-        },
-        {
-            "price": 0.202,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T05:00:00Z"
-        },
-        {
-            "price": 0.2095,
-            "duration": 3600,
-            "level": -1,
-            "startsAt": "2025-06-01T16:00:00Z"
-        },
-        {
-            "price": 0.2292,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-06-01T04:00:00Z"
-        },
-        {
-            "price": 0.2358,
-            "duration": 2804,
-            "level": 0,
-            "startsAt": "2025-05-31T15:13:16.911343666Z"
-        },
-        {
-            "price": 0.2652,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-06-01T03:00:00Z"
-        },
-        {
-            "price": 0.273,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-06-01T02:00:00Z"
-        },
-        {
-            "price": 0.2747,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-06-01T01:00:00Z"
-        },
-        {
-            "price": 0.2784,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-06-01T00:00:00Z"
-        },
-        {
-            "price": 0.2804,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-06-01T17:00:00Z"
-        },
-        {
-            "price": 0.288,
-            "duration": 3600,
-            "level": 0,
-            "startsAt": "2025-05-31T23:00:00Z"
-        },
-        {
-            "price": 0.2923,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-05-31T16:00:00Z"
-        },
-        {
-            "price": 0.2943,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-06-01T21:00:00Z"
-        },
-        {
-            "price": 0.2967,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-05-31T22:00:00Z"
-        },
-        {
-            "price": 0.298,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-06-01T18:00:00Z"
-        },
-        {
-            "price": 0.308,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-05-31T21:00:00Z"
-        },
-        {
-            "price": 0.3126,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-06-01T20:00:00Z"
-        },
-        {
-            "price": 0.3137,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-06-01T19:00:00Z"
-        },
-        {
-            "price": 0.3429,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-05-31T17:00:00Z"
-        },
-        {
-            "price": 0.3454,
-            "duration": 3600,
-            "level": 1,
-            "startsAt": "2025-05-31T20:00:00Z"
-        },
-        {
-            "price": 0.4155,
-            "duration": 3600,
-            "level": 2,
-            "startsAt": "2025-05-31T18:00:00Z"
-        },
-        {
-            "price": 0.4155,
-            "duration": 3600,
-            "level": 2,
-            "startsAt": "2025-05-31T19:00:00Z"
         }
     ]
-}```
+}
+```
 
 ### `bestPricePeriod`
 
 Calculates best cost for a consecutive period.
 For use cases like dishwasher or laundry.
 
-**Parameters:**
+#### Parameters
 
 | Name          | Type      | Description                                   | Default           | Required  |
 |---------------|-----------|-----------------------------------------------|-------------------|-----------|
@@ -426,65 +263,7 @@ JSON Object `curveEntry`
 | power         | int       | Power in watts                        |
 | duration      | int       | Duration in seconds                   |
 
-**Result:**
-
-JSON encoded `String` result with keys
- 
-| Key                   | Type      | Description                           | 
-|-----------------------|-----------|---------------------------------------|
-| cheapestStart         | String    | Timestamp of cheapest start           |
-| lowestPrice           | double    | Price of the cheapest period          |
-| mostExpensiveStart    | String    | Timestamp of most expensive start     |
-| highestPrice          | double    | Price of the most expensive period    |
-| averagePrice          | double    | Average price within the period       |
-
-### `bestPriceSchedule`
-
-Calculates best cost for a non-consecutive schedule.
-For use cases like battery electric vehicle or heat-pump.
-
-**Parameters:**
-
-| Name          | Type      | Description              w             | Default          | Required  |
-|---------------|-----------|---------------------------------------|-------------------|-----------|
-| earliestStart | Instant   | Earliest start time                   | now               | no        |
-| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
-| power         | int       | Needed power                          | N/A               | no        |
-| duration      | int       | Hour when spot prices are updated     | N/A               | yes       |
-
-**Result:**
-
-JSON encoded `String` result with keys
- 
-| Key           | Type      | Description                           | 
-|---------------|-----------|---------------------------------------|
-| size          | int       | Number of schedules                   |
-| schedule      | JsonArray | Array of `scheduleEntry` elements     |
-
-JSON Object `scheduleEntry`
-
-| Key           | Type      | Description                           | 
-|---------------|-----------|---------------------------------------|
-| timestamp     | String    | String encoded Instant                |
-| duration      | int       | Price duration in seconds             |
-| price         | double    | Price in your currency                |
-
-Provide either 
-
-- `timestamp` - duration will be calculated automatically _or_
-- `duration` if you already know it
-
-## Action Examples
-
-### List prices in ascending order
-
-Example rule:
-
-
-
-### Calculate best price period
-
-Example rule:
+#### Example
 
 ```javascript
 import java.util.Map;
@@ -529,7 +308,46 @@ Console output:
 2025-05-29 16:07:40.967 [INFO ] [ab.core.model.script.TibberBestPrice] - Start your device
 ```
 
-### Calculate best price schedule
+
+#### Result
+
+JSON encoded `String` result with keys
+ 
+| Key                   | Type      | Description                           | 
+|-----------------------|-----------|---------------------------------------|
+| cheapestStart         | String    | Timestamp of cheapest start           |
+| lowestPrice           | double    | Price of the cheapest period          |
+| mostExpensiveStart    | String    | Timestamp of most expensive start     |
+| highestPrice          | double    | Price of the most expensive period    |
+| averagePrice          | double    | Average price within the period       |
+
+#### Example
+
+```json
+{
+    "highestPrice": 0.18921223574999999,
+    "lowestPrice": 0.17497929625,
+    "cheapestStart": "2025-05-31T15:12:58.135876781Z",
+    "averagePrice": 0.1810258046730769,
+    "mostExpensiveStart": "2025-05-31T15:37:58.135876781Z"
+}
+```
+
+### `bestPriceSchedule`
+
+Calculates best cost for a non-consecutive schedule.
+For use cases like battery electric vehicle or heat-pump.
+
+#### Parameters
+
+| Name          | Type      | Description              w             | Default          | Required  |
+|---------------|-----------|---------------------------------------|-------------------|-----------|
+| earliestStart | Instant   | Earliest start time                   | now               | no        |
+| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
+| power         | int       | Needed power                          | N/A               | no        |
+| duration      | int       | Hour when spot prices are updated     | N/A               | yes       |
+
+#### Example
 
 ```javascript
 rule "Tibber Schedule Calculation"
@@ -557,6 +375,8 @@ end
 
 ```
 
+Console output
+
 ```
 2025-05-29 19:42:38.223 [INFO ] [hab.core.model.script.TibberSchedule] - {"cost":17.004625,"size":2,"schedule":[{"start":"2025-05-30T08:00:00Z","stop":"2025-05-30T16:00:00Z","duration":28800,"cost":16.407600000000002},{"start":"2025-05-29T23:00:00Z","stop":"2025-05-29T23:15:00Z","duration":900,"cost":0.5970249999999999}]}
 2025-05-29 19:42:38.225 [INFO ] [hab.core.model.script.TibberSchedule] - Cost : 17.004625 Number of schedules : 2
@@ -566,8 +386,54 @@ end
 2025-05-29 19:42:38.234 [INFO ] [hab.core.model.script.TibberSchedule] - Schedule 1 start: 2025-05-30T01:00+02:00[Europe/Berlin]
 ```
 
+#### Result
+
+JSON encoded `String` result with keys
+ 
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| size          | int       | Number of schedules                   |
+| schedule      | JsonArray | Array of `scheduleEntry` elements     |
+
+JSON Object `scheduleEntry`
+
+| Key           | Type      | Description                           | 
+|---------------|-----------|---------------------------------------|
+| timestamp     | String    | String encoded Instant                |
+| duration      | int       | Price duration in seconds             |
+| price         | double    | Price in your currency                |
+
+Provide either 
+
+- `timestamp` - duration will be calculated automatically _or_
+- `duration` if you already know it
+
+#### Example
+
+```json
+{
+    "cost": 16.092450000000003,
+    "size": 2,
+    "schedule": [
+        {
+            "start": "2025-06-01T08:00:00Z",
+            "stop": "2025-06-01T16:00:00Z",
+            "duration": 28800,
+            "cost": 15.579300000000002
+        },
+        {
+            "start": "2025-06-01T07:00:00Z",
+            "stop": "2025-06-01T07:15:00Z",
+            "duration": 900,
+            "cost": 0.51315
+        }
+    ]
+}
+```
 
 ## Full Example
+
+Full example with `demo.things` and `demo.items`
 
 ### `demo.things` Example
 
