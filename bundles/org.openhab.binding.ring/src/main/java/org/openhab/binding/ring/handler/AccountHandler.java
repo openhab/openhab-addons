@@ -349,7 +349,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         String twofactorCode = config.twofactorCode;
         videoRetentionCount = config.videoRetentionCount;
-        videoStoragePath = ("".equals(config.videoStoragePath)) ? config.videoStoragePath
+        videoStoragePath = !config.videoStoragePath.isEmpty() ? config.videoStoragePath
                 : OpenHAB.getConfigFolder() + "/html/ring/video";
 
         logger.debug("AccountHandler - initialize - VSP: {} OH: {}", config.videoStoragePath,
