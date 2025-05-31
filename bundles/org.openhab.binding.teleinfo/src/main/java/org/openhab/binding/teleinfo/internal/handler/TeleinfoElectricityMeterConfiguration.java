@@ -23,12 +23,39 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TeleinfoElectricityMeterConfiguration {
 
     private String adco = "";
+    private String idd2l = "";
+    private String appKey = "";
+    private String ivKey = "";
 
     public String getAdco() {
         return adco;
     }
 
+    public String getIdd2l() {
+        return idd2l;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public String getIvKey() {
+        return ivKey;
+    }
+
     public void setAdco(String adco) {
         this.adco = adco;
+    }
+
+    public void setIdd2l(String idd2l) {
+        this.idd2l = idd2l;
+    }
+
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
+    }
+
+    public void setIvKey(String ivKey) {
+        this.ivKey = ivKey;
     }
 }
