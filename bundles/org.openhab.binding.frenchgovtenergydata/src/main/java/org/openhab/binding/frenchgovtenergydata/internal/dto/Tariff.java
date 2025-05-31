@@ -40,8 +40,8 @@ public class Tariff {
 
     public Tariff(String line, int lenControl) {
         this.values = line.replace(',', '.').split(";");
-        if (values.length == lenControl) {
-            try {
+        try {
+            if (values.length == lenControl) {
                 this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
                 this.dateFin = !values[1].isEmpty()
                         ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
@@ -49,17 +49,17 @@ public class Tariff {
                 this.puissance = Integer.parseInt(values[2]);
                 this.fixeHT = Double.parseDouble(values[3]);
                 this.fixeTTC = Double.parseDouble(values[4]);
-            } catch (NumberFormatException | DateTimeParseException e) {
-                throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
+            } else {
+                this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
+                this.dateFin = !values[1].isEmpty()
+                        ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
+                        : null;
+                this.puissance = Integer.parseInt(values[2]);
+                this.fixeHT = 0;
+                this.fixeTTC = 0;
             }
-        } else {
-            this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
-            this.dateFin = !values[1].isEmpty()
-                    ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
-                    : null;
-            this.puissance = Integer.parseInt(values[2]);
-            this.fixeHT = 0;
-            this.fixeTTC = 0;
+        } catch (NumberFormatException | DateTimeParseException e) {
+            throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }
     }
 
