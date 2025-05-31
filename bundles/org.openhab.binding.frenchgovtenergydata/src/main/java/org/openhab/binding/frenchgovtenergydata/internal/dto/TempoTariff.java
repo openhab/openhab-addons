@@ -54,7 +54,7 @@ public class TempoTariff extends Tariff {
                 this.redHcTTC = 0;
                 this.redHpHT = 0;
                 this.redHpTTC = 0;
-            } else {
+            } else if (values.length >= 17) {
                 this.blueHcHT = Double.parseDouble(values[5]);
                 this.blueHcTTC = Double.parseDouble(values[6]);
                 this.blueHpHT = Double.parseDouble(values[7]);
