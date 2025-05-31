@@ -49,7 +49,7 @@ public class TibberBindingConstants {
     public static final String GROUP_STATISTICS = "statistics";
 
     // price channels
-    public static final String CHANNEL_SPOT_PRICES = "spot-prices";
+    public static final String CHANNEL_SPOT_PRICE = "spot-price";
     public static final String CHANNEL_PRICE_LEVELS = "level";
     public static final String CHANNEL_AVERAGE = "average";
 

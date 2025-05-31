@@ -7,8 +7,8 @@
 		<label>Price</label>
 		<description>Price Informations</description>
 		<channels>
-			<channel id="spot-prices" typeId="price">
-				<label>Spot Prices</label>
+			<channel id="spot-price" typeId="price">
+				<label>Spot Price</label>
 				<description>Spot prices for today and tomorrow</description>
 			</channel>
 			<channel id="level" typeId="price-level">

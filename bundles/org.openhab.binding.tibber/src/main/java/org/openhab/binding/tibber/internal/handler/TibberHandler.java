@@ -126,8 +126,8 @@ public class TibberHandler extends BaseThingHandler {
             String group = channelUID.getGroupId();
             if (GROUP_PRICE.equals(group)) {
                 switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_SPOT_PRICES:
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICES), priceCache);
+                    case CHANNEL_SPOT_PRICE:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICE), priceCache);
                         break;
                     case CHANNEL_PRICE_LEVELS:
                         sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_PRICE_LEVELS), levelCache);
@@ -307,7 +307,7 @@ public class TibberHandler extends BaseThingHandler {
                             timeSeriesLevels.add(startsAt, Utils.mapToState(levelString));
                         }
                         priceCache = timeSeriesPrices;
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICES),
+                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICE),
                                 timeSeriesPrices);
                         levelCache = timeSeriesLevels;
                         sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_PRICE_LEVELS),
