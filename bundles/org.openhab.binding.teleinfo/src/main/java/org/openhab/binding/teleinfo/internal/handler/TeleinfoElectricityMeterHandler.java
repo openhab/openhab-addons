@@ -159,25 +159,29 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     private void updateStatesForChannels(Frame frame) {
         for (Entry<Label, String> entry : frame.getLabelToValues().entrySet()) {
             Label label = entry.getKey();
-            if (!label.getChannelName().equals(NOT_A_CHANNEL)) {
-                logger.trace("Update channel {} to value {}", label.getChannelName(), entry.getValue());
-                if (label == Label.PTEC) {
-                    updateState(label.getChannelName(), StringType.valueOf(entry.getValue().replace(".", "")));
-                } else if (label.getType() == ValueType.STRING) {
-                    updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
-                } else if (label.getType() == ValueType.INTEGER) {
-                    if (!entry.getValue().isBlank()) {
-                        updateState(label.getChannelName(), QuantityType
-                                .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
+            try {
+                if (!label.getChannelName().equals(NOT_A_CHANNEL)) {
+                    logger.trace("Update channel {} to value {}", label.getChannelName(), entry.getValue());
+                    if (label == Label.PTEC) {
+                        updateState(label.getChannelName(), StringType.valueOf(entry.getValue().replace(".", "")));
+                    } else if (label.getType() == ValueType.STRING) {
+                        updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
+                    } else if (label.getType() == ValueType.INTEGER) {
+                        if (!entry.getValue().isBlank()) {
+                            updateState(label.getChannelName(), QuantityType
+                                    .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
+                        }
                     }
                 }
-            }
-            if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
-                String timestamp = frame.getAsDateTime(label);
-                if (!timestamp.isEmpty()) {
-                    logger.trace("Update channel {} to value {}", label.getTimestampChannelName(), timestamp);
-                    updateState(label.getTimestampChannelName(), DateTimeType.valueOf(timestamp));
+                if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
+                    String timestamp = frame.getAsDateTime(label);
+                    if (!timestamp.isEmpty()) {
+                        logger.trace("Update channel {} to value {}", label.getTimestampChannelName(), timestamp);
+                        updateState(label.getTimestampChannelName(), DateTimeType.valueOf(timestamp));
+                    }
                 }
+            } catch (Exception ex) {
+                logger.warn("Can't update channel {}", label.getChannelName());
             }
         }
         try {

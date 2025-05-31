@@ -302,9 +302,23 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
 
                             try {
                                 Label label = Label.getEnum(channelName);
-                                String val = r1.get(channelName);
-                                if (val != null) {
-                                    frame.put(label, val);
+                                String valueString = r1.get(channelName);
+                                String timestampString = null;
+
+                                if (valueString != null) {
+                                    int delimiterPos = valueString.indexOf('|');
+                                    if (delimiterPos > 0) {
+                                        timestampString = valueString.substring(0, delimiterPos);
+                                        valueString = valueString.substring(delimiterPos + 1);
+                                    } else if (delimiterPos == 0) {
+                                        timestampString = "";
+                                        valueString = "";
+                                    }
+                                    frame.put(label, valueString);
+
+                                    if (timestampString != null) {
+                                        frame.putTimestamp(label, timestampString);
+                                    }
                                 }
                             } catch (IllegalArgumentException e) {
                                 final String error = String.format("The label '%s' is unknown", channelName);
@@ -326,6 +340,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
         }
 
         return res;
+
     }
 
     public @Nullable TeleinfoElectricityMeterHandler getHandlerForIdd2l(long idd2l) {
