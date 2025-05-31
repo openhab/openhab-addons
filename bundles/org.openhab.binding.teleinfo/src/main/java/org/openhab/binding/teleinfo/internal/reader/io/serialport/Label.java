@@ -71,7 +71,7 @@ public enum Label {
     // Standard TIC mode labels
     ADSC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     VTIC(ValueType.INTEGER, NOT_A_CHANNEL, Units.ONE),
-    DATE(ValueType.STRING, NOT_A_CHANNEL, CHANNEL_LSM_DATE, Units.ONE),
+    DATE(ValueType.DATE, CHANNEL_LSM_DATE, Units.ONE),
     NGTF(ValueType.STRING, CHANNEL_LSM_NGTF, Units.ONE),
     LTARF(ValueType.STRING, CHANNEL_LSM_LTARF, Units.ONE),
     EAST(ValueType.INTEGER, CHANNEL_LSM_EAST, Units.WATT_HOUR),

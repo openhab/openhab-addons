@@ -14,6 +14,13 @@ package org.openhab.binding.teleinfo.internal.handler;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -166,6 +173,21 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                         updateState(label.getChannelName(), StringType.valueOf(entry.getValue().replace(".", "")));
                     } else if (label.getType() == ValueType.STRING) {
                         updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
+                    } else if (label.getType() == ValueType.DATE) {
+                        String value = entry.getValue();
+                        if (value.isBlank()) {
+                            value = frame.getLabelToTimestamp().get(label);
+                        }
+
+                        if (value != null && !value.isEmpty()) {
+                            Instant timestampConv = getAsInstant(value);
+
+                            if (timestampConv != null) {
+                                logger.trace("Update channel {} to value {}", label.getChannelName(), value);
+
+                                updateState(label.getChannelName(), new DateTimeType(timestampConv));
+                            }
+                        }
                     } else if (label.getType() == ValueType.INTEGER) {
                         if (!entry.getValue().isBlank()) {
                             updateState(label.getChannelName(), QuantityType
@@ -250,6 +272,30 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
 
     public String getIvKey() {
         return this.ivKey;
+    }
+
+    protected @Nullable Instant getAsInstant(String timestamp) {
+        LocalDateTime res;
+
+        if (timestamp.isEmpty()) {
+            return null;
+        }
+
+        if (timestamp.startsWith("H") || timestamp.startsWith("E") || timestamp.startsWith(" ")) {
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyMMdd[HH][mm][ss]");
+            res = LocalDateTime.parse(timestamp.substring(1), df);
+
+            // Handle summer time
+            if (timestamp.startsWith("E")) {
+                res = res.minusHours(1);
+            }
+        } else {
+            DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("MMM ppd yyyy")
+                    .toFormatter(Locale.ENGLISH);
+            res = LocalDate.parse(timestamp, df).atStartOfDay();
+        }
+
+        return res.toInstant(ZoneOffset.of("+1"));
     }
 
 }
