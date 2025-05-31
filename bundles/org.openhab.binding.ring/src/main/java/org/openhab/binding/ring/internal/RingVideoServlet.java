@@ -34,6 +34,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,7 @@ public class RingVideoServlet extends HttpServlet {
         restClient = new RestClient();
         try {
             httpService.registerServlet(SERVLET_VIDEO_PATH, this, null, httpService.createDefaultHttpContext());
-        } catch (Exception e) {
+        } catch (NamespaceException | ServletException e) {
             logger.warn("Register servlet fails", e);
         }
     }

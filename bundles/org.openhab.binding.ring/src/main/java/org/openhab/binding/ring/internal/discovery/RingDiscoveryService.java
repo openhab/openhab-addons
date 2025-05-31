@@ -96,11 +96,7 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting device search...");
-        try {
-            discover();
-        } catch (Exception e) {
-            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-        }
+        discover();
     }
 
     @Override
