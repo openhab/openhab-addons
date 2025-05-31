@@ -31,6 +31,7 @@ public class FrenchGovtEnergyDataBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BASE = new ThingTypeUID(BINDING_ID, "base");
     public static final ThingTypeUID THING_TYPE_HPHC = new ThingTypeUID(BINDING_ID, "hphc");
+    public static final ThingTypeUID THING_TYPE_TEMPO = new ThingTypeUID(BINDING_ID, "tempo");
 
     // List of all Channel ids
     public static final String CHANNEL_TARIFF_START = "tariff-start";
@@ -42,6 +43,21 @@ public class FrenchGovtEnergyDataBindingConstants {
     public static final String CHANNEL_HC_TTC = "hc-ttc";
     public static final String CHANNEL_HP_HT = "hp-ht";
     public static final String CHANNEL_HP_TTC = "hp-ttc";
+
+    public static final String CHANNEL_RED_HC_HT = "red-hc-ht";
+    public static final String CHANNEL_RED_HC_TTC = "red-hc-ttc";
+    public static final String CHANNEL_RED_HP_HT = "red-hp-ht";
+    public static final String CHANNEL_RED_HP_TTC = "red-hp-ttc";
+
+    public static final String CHANNEL_WHITE_HC_HT = "white-hc-ht";
+    public static final String CHANNEL_WHITE_HC_TTC = "white-hc-ttc";
+    public static final String CHANNEL_WHITE_HP_HT = "white-hp-ht";
+    public static final String CHANNEL_WHITE_HP_TTC = "white-hp-ttc";
+
+    public static final String CHANNEL_BLUE_HC_HT = "blue-hc-ht";
+    public static final String CHANNEL_BLUE_HC_TTC = "blue-hc-ttc";
+    public static final String CHANNEL_BLUE_HP_HT = "blue-hp-ht";
+    public static final String CHANNEL_BLUE_HP_TTC = "blue-hp-ttc";
 
     public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
 }
