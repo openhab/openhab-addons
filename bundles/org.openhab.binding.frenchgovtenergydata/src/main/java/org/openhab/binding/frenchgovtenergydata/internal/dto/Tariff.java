@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -30,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Tariff {
     protected static final DateTimeFormatter TARIFF_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    protected final String[] values;
+    protected final @NonNull String[] values;
     public final ZonedDateTime dateDebut;
     public final @Nullable ZonedDateTime dateFin;
     public final int puissance;
@@ -52,7 +53,13 @@ public class Tariff {
                 throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
             }
         } else {
-            throw new IllegalArgumentException("Unexpected number of data, %d expected".formatted(lenControl));
+            this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
+            this.dateFin = !values[1].isEmpty()
+                    ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
+                    : null;
+            this.puissance = Integer.parseInt(values[2]);
+            this.fixeHT = 0;
+            this.fixeTTC = 0;
         }
     }
 
