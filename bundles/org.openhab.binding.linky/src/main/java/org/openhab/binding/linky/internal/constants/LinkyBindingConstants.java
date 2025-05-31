@@ -63,7 +63,6 @@ public class LinkyBindingConstants {
     public static final String LINKY_REMOTE_WEEKLY_GROUP = "weekly";
     public static final String LINKY_REMOTE_MONTHLY_GROUP = "monthly";
     public static final String LINKY_REMOTE_YEARLY_GROUP = "yearly";
-    public static final String LINKY_REMOTE_MAIN_GROUP = "main";
     public static final String LINKY_TEMPO_CALENDAR_GROUP = "tempo-calendar";
     public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "load-curve";
 
@@ -102,29 +101,27 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_TEMPO_TOMORROW_INFO = "tempo-info-tomorrow";
     public static final String CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES = "tempo-info-timeseries";
 
-    public static final String CHANNEL_IDENTITY = "identity";
+    public static final String PROPERTY_IDENTITY = "identity";
 
-    public static final String CHANNEL_CONTRACT_SUBSCRIBED_POWER = "contract-subscribed-power";
-    public static final String CHANNEL_CONTRACT_LAST_ACTIVATION_DATE = "contract-last-activationdate";
-    public static final String CHANNEL_CONTRACT_DISTRIBUTION_TARIFF = "contract-distribution-tariff";
-    public static final String CHANNEL_CONTRACT_OFF_PEAK_HOURS = "contract-offpeak-hours";
-    public static final String CHANNEL_CONTRACT_CONTRACT_STATUS = "contract-status";
-    public static final String CHANNEL_CONTRACT_CONTRACT_TYPE = "contract-type";
-    public static final String CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE = "contract-lastdistribution-tariff-changedate";
-    public static final String CHANNEL_CONTRACT_SEGMENT = "contract-segment";
+    public static final String PROPERTY_CONTRACT_LAST_ACTIVATION_DATE = "contractLastActivationdate";
+    public static final String PROPERTY_CONTRACT_DISTRIBUTION_TARIFF = "contractDistributionTariff";
+    public static final String PROPERTY_CONTRACT_OFF_PEAK_HOURS = "contractOffpeakHours";
+    public static final String PROPERTY_CONTRACT_CONTRACT_STATUS = "contractStatus";
+    public static final String PROPERTY_CONTRACT_CONTRACT_TYPE = "contractType";
+    public static final String PROPERTY_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE = "contractLastdistributionTariffChangedate";
+    public static final String PROPERTY_CONTRACT_SEGMENT = "contractSegment";
 
-    public static final String CHANNEL_USAGEPOINT_ID = "usage-point-id";
-    public static final String CHANNEL_USAGEPOINT_STATUS = "usage-point-status";
-    public static final String CHANNEL_USAGEPOINT_METER_TYPE = "usage-point-meter-type";
+    public static final String PROPERTY_USAGEPOINT_ID = "usagePointId";
+    public static final String PROPERTY_USAGEPOINT_STATUS = "usagePointStatus";
+    public static final String PROPERTY_USAGEPOINT_METER_TYPE = "usagePointMeterType";
 
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_CITY = "usage-point-address-city";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY = "usage-point-address-country";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE = "usage-point-address-insee-code";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "usage-point-address-postal-code";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_STREET = "usage-point-address-street";
+    public static final String PROPERTY_USAGEPOINT_METER_ADDRESS_CITY = "usagePointCity";
+    public static final String PROPERTY_USAGEPOINT_METER_ADDRESS_COUNTRY = "usagePointCountry";
+    public static final String PROPERTY_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "usagePointPostalCode";
+    public static final String PROPERTY_USAGEPOINT_METER_ADDRESS_STREET = "usagePointStreet";
 
-    public static final String CHANNEL_CONTACT_MAIL = "contact-mail";
-    public static final String CHANNEL_CONTACT_PHONE = "contact-phone";
+    public static final String PROPERTY_CONTACT_MAIL = "contact-mail";
+    public static final String PROPERTY_CONTACT_PHONE = "contact-phone";
 
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";
@@ -133,20 +130,6 @@ public class LinkyBindingConstants {
     // List of all Channel ids
 
     public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
-
-    public static final String NOT_A_CHANNEL = "";
-
-    public static final String THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER = "invalidFrameCounter";
-
-    public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
-    public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER = "meter-manufacturer";
-    public static final String THING_ELECTRICITY_METER_PROPERTY_TYPE = "meter-type";
-    public static final String THING_ELECTRICITY_METER_PROPERTY_CATEGORY = "meter-category";
-    public static final String THING_ELECTRICITY_METER_PROPERTY_MATRICULE = "meter-matricule";
-    public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURE_YEAR = "meter-manufacture-year";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
 
     public static final String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/linky.thingstate.serial_notfound";
     public static final String ERROR_OFFLINE_SERIAL_INUSE = "@text/linky.thingstate.serial_inuse";

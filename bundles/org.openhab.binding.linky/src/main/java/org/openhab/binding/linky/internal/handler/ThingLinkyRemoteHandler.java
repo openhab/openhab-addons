@@ -53,7 +53,6 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -189,6 +188,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 if (bridgeHandler instanceof BridgeRemoteApiHandler && config.prmId.isBlank()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.config-error-mandatory-settings");
+                    return;
                 }
 
                 if (!config.prmId.isBlank()) {
@@ -198,6 +198,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-mandatory-settings");
+
+                return;
             }
         }
     }
@@ -242,6 +244,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
                         .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
+                updateStatus(ThingStatus.ONLINE);
+
                 if (lcPollingJob != null) {
                     lcPollingJob.cancel(false);
                     pollingJob = null;
@@ -262,45 +266,27 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             String firstName = values.identity.firstname;
             String lastName = values.identity.lastname;
 
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_IDENTITY,
-                    new StringType(title + " " + firstName + " " + lastName));
+            Map<String, String> props = this.editProperties();
 
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SEGMENT, new StringType(values.contract.segment));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_CONTRACT_STATUS,
-                    new StringType(values.contract.contractStatus));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_CONTRACT_TYPE,
-                    new StringType(values.contract.contractType));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_DISTRIBUTION_TARIFF,
-                    new StringType(values.contract.distributionTariff));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_LAST_ACTIVATION_DATE,
-                    new StringType(values.contract.lastActivationDate));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
-                    new StringType(values.contract.lastDistributionTariffChangeDate));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_OFF_PEAK_HOURS,
-                    new StringType(values.contract.offpeakHours));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SEGMENT, new StringType(values.contract.segment));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SUBSCRIBED_POWER,
-                    new StringType(values.contract.subscribedPower));
+            props.put(PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
+            props.put(PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
+            props.put(PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
+            props.put(PROPERTY_CONTRACT_CONTRACT_TYPE, values.contract.contractType);
+            props.put(PROPERTY_CONTRACT_DISTRIBUTION_TARIFF, values.contract.distributionTariff);
+            props.put(PROPERTY_CONTRACT_LAST_ACTIVATION_DATE, values.contract.lastActivationDate);
+            props.put(PROPERTY_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                    values.contract.lastDistributionTariffChangeDate);
+            props.put(PROPERTY_CONTRACT_OFF_PEAK_HOURS, values.contract.offpeakHours);
+            props.put(PROPERTY_USAGEPOINT_STATUS, values.usagePoint.usagePointStatus);
+            props.put(PROPERTY_USAGEPOINT_METER_TYPE, values.usagePoint.meterType);
+            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_CITY, values.usagePoint.usagePointAddresses.city);
+            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_COUNTRY, values.usagePoint.usagePointAddresses.country);
+            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, values.usagePoint.usagePointAddresses.postalCode);
+            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_STREET, values.usagePoint.usagePointAddresses.street);
+            props.put(PROPERTY_CONTACT_MAIL, values.contact.email);
+            props.put(PROPERTY_CONTACT_PHONE, values.contact.phone);
 
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_ID, new StringType(values.usagePoint.usagePointId));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_STATUS,
-                    new StringType(values.usagePoint.usagePointStatus));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_TYPE,
-                    new StringType(values.usagePoint.meterType));
-
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_CITY,
-                    new StringType(values.usagePoint.usagePointAddresses.city));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY,
-                    new StringType(values.usagePoint.usagePointAddresses.country));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
-                    new StringType(values.usagePoint.usagePointAddresses.postalCode));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
-                    new StringType(values.usagePoint.usagePointAddresses.inseeCode));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_STREET,
-                    new StringType(values.usagePoint.usagePointAddresses.street));
-
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_MAIL, new StringType(values.contact.email));
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_PHONE, new StringType(values.contact.phone));
+            this.updateProperties(props);
 
             if (values.identity.internId == null) {
                 values.identity.internId = values.identity.firstname + " " + values.identity.lastname;
@@ -308,31 +294,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             userId = values.identity.internId;
             updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA"));
         }, () -> {
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_IDENTITY, UnDefType.UNDEF);
-
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_CONTRACT_STATUS, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_CONTRACT_TYPE, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_DISTRIBUTION_TARIFF, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_LAST_ACTIVATION_DATE, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
-                    UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_OFF_PEAK_HOURS, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SUBSCRIBED_POWER, UnDefType.UNDEF);
-
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_ID, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_STATUS, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_TYPE, UnDefType.UNDEF);
-
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_CITY, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_USAGEPOINT_METER_ADDRESS_STREET, UnDefType.UNDEF);
-
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_MAIL, UnDefType.UNDEF);
-            updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_PHONE, UnDefType.UNDEF);
         });
     }
 

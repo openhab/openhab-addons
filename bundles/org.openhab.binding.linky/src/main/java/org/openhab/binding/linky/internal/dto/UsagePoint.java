@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.util.Arrays;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -53,11 +55,12 @@ public class UsagePoint {
         result.usagePointId = prmInfo.idPrm;
         result.usagePointStatus = prmDetail.syntheseContractuelleDto.niveauOuvertureServices().libelle();
         result.meterType = prmDetail.situationComptageDto.dispositifComptage().typeComptage().code();
-        result.usagePointAddresses = result.new AddressInfo();
 
+        result.usagePointAddresses = result.new AddressInfo();
         result.usagePointAddresses.street = prmDetail.adresse.ligne4();
         result.usagePointAddresses.locality = prmDetail.adresse.ligne6();
-        result.usagePointAddresses.city = prmDetail.adresse.ligne6().split(" ")[1];
+        String[] cityParts = prmDetail.adresse.ligne6().split(" ");
+        result.usagePointAddresses.city = String.join(" ", Arrays.copyOfRange(cityParts, 1, cityParts.length));
         result.usagePointAddresses.postalCode = prmDetail.adresse.ligne6().split(" ")[0];
         result.usagePointAddresses.inseeCode = "";
         result.usagePointAddresses.country = "";
