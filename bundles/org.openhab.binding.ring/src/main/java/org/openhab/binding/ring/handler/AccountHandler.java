@@ -72,8 +72,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
-    private @Nullable Runnable runnableToken = null;
-    private @Nullable Runnable runnableEvent = null;
     private @Nullable Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private @NonNullByDefault({}) HttpService httpService;
@@ -190,12 +188,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         } else if (command instanceof OnOffType) {
             OnOffType xcommand = (OnOffType) command;
             switch (channelUID.getId()) {
-                /*
-                 * case CHANNEL_CONTROL_STATUS:
-                 * status = xcommand;
-                 * updateState(channelUID, status);
-                 * break;
-                 */
                 case CHANNEL_CONTROL_ENABLED:
                     if (!enabled.equals(xcommand)) {
                         enabled = xcommand;
@@ -218,20 +210,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    protected void startAutomaticRefresh(final int refreshInterval) {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    minuteTick();
-                } catch (final Exception e) {
-                    logger.debug("AbstractHandler - Exception occurred during execution of startAutomaticRefresh(): {}",
-                            e.getMessage(), e);
-                }
-            }
-        };
+    private void refresh() {
+        try {
+            minuteTick();
+        } catch (final Exception e) {
+            logger.debug("AbstractHandler - Exception occurred during execution of startAutomaticRefresh(): {}",
+                    e.getMessage(), e);
+        }
+    }
 
-        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshInterval, TimeUnit.SECONDS);
+    protected void startAutomaticRefresh(final int refreshInterval) {
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
     }
 
     protected void stopAutomaticRefresh() {
@@ -320,7 +309,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    public @NonNullByDefault({}) String getHardwareId() {
+    public String getHardwareId() {
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
         String hardwareId = config.hardwareId;
         logger.debug("getHardwareId H:{}", hardwareId);
@@ -405,10 +394,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Invalid response from api.ring.com");
-            } catch (Exception e) {
-                logger.debug("Initialization failed when initializing Ring Account handler {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Initialization failed: " + e.getMessage());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -541,48 +526,41 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
+    private void refreshToken() {
+        try {
+            if (restClient != null) {
+                if (registry != null) {
+                    refreshRegistry();
+                }
+                // restClient.refresh_session(userProfile.getRefreshToken());
+                Configuration config = getThing().getConfiguration();
+                String hardwareId = (String) config.get("hardwareId");
+                userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "", hardwareId);
+            }
+        } catch (Exception e) {
+            logger.debug(
+                    "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
+                    e.getMessage(), e);
+        }
+    }
+
+    private void refreshEvent() {
+        try {
+            eventTick();
+        } catch (final Exception e) {
+            logger.debug(
+                    "AccountHandler - startSessionRefresh - Exception occurred during execution of eventTick(): {}",
+                    e.getMessage(), e);
+        }
+    }
+
     /**
      * Refresh the profile every 20 minutes
      */
     protected void startSessionRefresh(int refreshInterval) {
         logger.debug("startSessionRefresh {}", refreshInterval);
-        runnableToken = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (restClient != null) {
-                        if (registry != null) {
-                            refreshRegistry();
-                        }
-                        // restClient.refresh_session(userProfile.getRefreshToken());
-                        Configuration config = getThing().getConfiguration();
-                        String hardwareId = (String) config.get("hardwareId");
-                        userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "",
-                                hardwareId);
-                    }
-                } catch (Exception e) {
-                    logger.debug(
-                            "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
-                            e.getMessage(), e);
-                }
-            }
-        };
-
-        runnableEvent = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    eventTick();
-                } catch (final Exception e) {
-                    logger.debug(
-                            "AccountHandler - startSessionRefresh - Exception occurred during execution of eventTick(): {}",
-                            e.getMessage(), e);
-                }
-            }
-        };
-
-        jobTokenRefresh = scheduler.scheduleWithFixedDelay(runnableToken, 90, 600, TimeUnit.SECONDS);
-        eventRefresh = scheduler.scheduleWithFixedDelay(runnableEvent, refreshInterval, refreshInterval,
+        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, 90, 600, TimeUnit.SECONDS);
+        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, refreshInterval, refreshInterval,
                 TimeUnit.SECONDS);
     }
 
@@ -600,10 +578,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         eventRefresh = null;
     }
 
-    String getLocalMAC() throws Exception {
+    String getLocalMAC() throws IOException {
         // get local ip from OH system settings
         String localIP = networkAddressService.getPrimaryIpv4HostAddress();
-        if ((localIP == null) || (localIP.isEmpty())) {
+        if ((localIP == null) || (localIP.isBlank())) {
             logger.debug("No local IP selected in openHAB system configuration");
             return "";
         }

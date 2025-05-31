@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ring.handler;
 
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -59,9 +58,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing AbstractRingHandler");
-        Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, getThing().getUID().getId());
-        updateProperties(properties);
     }
 
     /**
@@ -74,23 +70,20 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
      */
     protected abstract void minuteTick();
 
+    private void refresh() {
+        try {
+            minuteTick();
+        } catch (final Exception e) {
+            logger.debug("AbstractHandler - Exception occurred during execution of startAutomaticRefresh(): {}",
+                    e.getMessage(), e);
+        }
+    }
+
     /**
      * Check every 60 seconds if one of the alarm times is reached.
      */
     protected void startAutomaticRefresh(final int refreshInterval) {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    minuteTick();
-                } catch (final Exception e) {
-                    logger.debug("AbstractHandler - Exception occurred during execution of startAutomaticRefresh(): {}",
-                            e.getMessage(), e);
-                }
-            }
-        };
-
-        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshInterval, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
         refreshState();
     }
 
