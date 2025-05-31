@@ -132,7 +132,7 @@
 		<category>text</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<tag>Mode</tag>
 		</tags>
 		<command>
 			<options>
@@ -161,7 +161,7 @@
 		</description>
 		<category>switch</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
@@ -205,7 +205,7 @@
 		<category>receiver</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<tag>Channel</tag>
 		</tags>
 		<command>
 			<options>
