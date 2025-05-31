@@ -57,11 +57,12 @@ public class Utils {
             if (iterator.has(path[i])) {
                 iterator = iterator.getAsJsonObject(path[i]);
             } else {
-                LOGGER.warn("Path {} not found in JSON {}", path[i], json.toString());
+                LOGGER.error("Unable to resolve path {} from {}", Utils.path(path), json);
                 return new JsonObject();
+                // all paths are tested according to Tibber API. If this happens binding needs to be adapted
             }
         }
-        return iterator; // TODO define better return valeu
+        return iterator;
     }
 
     /**
@@ -81,6 +82,20 @@ public class Utils {
             }
         }
         return EMPTY;
+    }
+
+    /**
+     * Return String path separated with /
+     *
+     * @param path array of Strings
+     * @return String representation with / separator for each path entry
+     */
+    public static String path(String[] path) {
+        StringBuffer strBuffer = new StringBuffer();
+        for (int i = 0; i < path.length; i++) {
+            strBuffer.append("/" + path[i]);
+        }
+        return strBuffer.toString();
     }
 
     /**
