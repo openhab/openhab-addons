@@ -39,37 +39,20 @@ public class TempoTariff extends Tariff {
     public TempoTariff(String line) {
         super(line, 17);
         try {
-            if (values.length == 3) {
-                this.blueHcHT = 0;
-                this.blueHcTTC = 0;
-                this.blueHpHT = 0;
-                this.blueHpTTC = 0;
+            this.blueHcHT = Double.parseDouble(values[5]);
+            this.blueHcTTC = Double.parseDouble(values[6]);
+            this.blueHpHT = Double.parseDouble(values[7]);
+            this.blueHpTTC = Double.parseDouble(values[8]);
 
-                this.whiteHcHT = 0;
-                this.whiteHcTTC = 0;
-                this.whiteHpHT = 0;
-                this.whiteHpTTC = 0;
+            this.whiteHcHT = Double.parseDouble(values[9]);
+            this.whiteHcTTC = Double.parseDouble(values[10]);
+            this.whiteHpHT = Double.parseDouble(values[11]);
+            this.whiteHpTTC = Double.parseDouble(values[12]);
 
-                this.redHcHT = 0;
-                this.redHcTTC = 0;
-                this.redHpHT = 0;
-                this.redHpTTC = 0;
-            } else if (values.length >= 17) {
-                this.blueHcHT = Double.parseDouble(values[5]);
-                this.blueHcTTC = Double.parseDouble(values[6]);
-                this.blueHpHT = Double.parseDouble(values[7]);
-                this.blueHpTTC = Double.parseDouble(values[8]);
-
-                this.whiteHcHT = Double.parseDouble(values[9]);
-                this.whiteHcTTC = Double.parseDouble(values[10]);
-                this.whiteHpHT = Double.parseDouble(values[11]);
-                this.whiteHpTTC = Double.parseDouble(values[12]);
-
-                this.redHcHT = Double.parseDouble(values[13]);
-                this.redHcTTC = Double.parseDouble(values[14]);
-                this.redHpHT = Double.parseDouble(values[15]);
-                this.redHpTTC = Double.parseDouble(values[16]);
-            }
+            this.redHcHT = Double.parseDouble(values[13]);
+            this.redHcTTC = Double.parseDouble(values[14]);
+            this.redHpHT = Double.parseDouble(values[15]);
+            this.redHpTTC = Double.parseDouble(values[16]);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }

@@ -42,6 +42,7 @@ public class Tariff {
         this.values = line.replace(',', '.').split(";");
         try {
             if (values.length == lenControl) {
+
                 this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
                 this.dateFin = !values[1].isEmpty()
                         ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
@@ -50,13 +51,7 @@ public class Tariff {
                 this.fixeHT = Double.parseDouble(values[3]);
                 this.fixeTTC = Double.parseDouble(values[4]);
             } else {
-                this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
-                this.dateFin = !values[1].isEmpty()
-                        ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)
-                        : null;
-                this.puissance = Integer.parseInt(values[2]);
-                this.fixeHT = 0;
-                this.fixeTTC = 0;
+                throw new IllegalArgumentException("Unexpected number of data, %d expected".formatted(lenControl));
             }
         } catch (NumberFormatException | DateTimeParseException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
