@@ -166,8 +166,10 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                 } else if (label.getType() == ValueType.STRING) {
                     updateState(label.getChannelName(), StringType.valueOf(entry.getValue()));
                 } else if (label.getType() == ValueType.INTEGER) {
-                    updateState(label.getChannelName(), QuantityType
-                            .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
+                    if (!entry.getValue().isBlank()) {
+                        updateState(label.getChannelName(), QuantityType
+                                .valueOf(label.getFactor() * Integer.parseInt(entry.getValue()), label.getUnit()));
+                    }
                 }
             }
             if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
