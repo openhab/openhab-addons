@@ -27,6 +27,11 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public enum Label {
 
+    // ID D2L Channels
+    _ID_D2L(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    _TYPE_TRAME(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    _DATE_FIRMWARE(ValueType.DATE, NOT_A_CHANNEL, Units.ONE),
+
     // Historical labels
     ADCO(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     OPTARIF(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
@@ -98,6 +103,9 @@ public enum Label {
     PREF(ValueType.INTEGER, CHANNEL_LSM_PREF, Units.VOLT_AMPERE, 1000),
     PCOUP(ValueType.INTEGER, CHANNEL_LSM_PCOUP, Units.VOLT_AMPERE, 1000),
     SINSTS(ValueType.INTEGER, CHANNEL_LSM_SINSTS, Units.VOLT_AMPERE),
+    SINST1(ValueType.INTEGER, CHANNEL_LSM_SINSTS1, Units.VOLT_AMPERE),
+    SINST2(ValueType.INTEGER, CHANNEL_LSM_SINSTS2, Units.VOLT_AMPERE),
+    SINST3(ValueType.INTEGER, CHANNEL_LSM_SINSTS3, Units.VOLT_AMPERE),
     SINSTS1(ValueType.INTEGER, CHANNEL_LSM_SINSTS1, Units.VOLT_AMPERE),
     SINSTS2(ValueType.INTEGER, CHANNEL_LSM_SINSTS2, Units.VOLT_AMPERE),
     SINSTS3(ValueType.INTEGER, CHANNEL_LSM_SINSTS3, Units.VOLT_AMPERE),

@@ -55,6 +55,11 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     protected TeleinfoElectricityMeterConfiguration configuration = new TeleinfoElectricityMeterConfiguration();
     private boolean wasLastFrameShort = false;
 
+    private String appKey = "";
+    private String ivKey = "";
+    private long idd2l = -1;
+    private String adco = "";
+
     public TeleinfoElectricityMeterHandler(Thing thing) {
         super(thing);
     }
@@ -68,7 +73,20 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
         }
+
         configuration = getConfigAs(TeleinfoElectricityMeterConfiguration.class);
+
+        adco = configuration.getAdco();
+        logger.debug("Initializing Linky handler for {}", adco);
+
+        appKey = configuration.getAppKey();
+        ivKey = configuration.getIvKey();
+        String idd2lSt = configuration.getIdd2l();
+        if (!idd2lSt.isBlank()) {
+            idd2l = Long.parseLong(idd2lSt);
+        } else {
+            idd2l = -1;
+        }
     }
 
     @Override
@@ -211,4 +229,21 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             updateState(label.getChannelName(), UnDefType.NULL);
         }
     }
+
+    public long getIdd2l() {
+        return this.idd2l;
+    }
+
+    public String getAdco() {
+        return this.adco;
+    }
+
+    public String getAppKey() {
+        return this.appKey;
+    }
+
+    public String getIvKey() {
+        return this.ivKey;
+    }
+
 }
