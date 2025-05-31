@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="frenchgovtenergydata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hphc">
+		<label>HP-HC Tariff</label>
+		<description>High / Low usage Tariff Subscription</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="tariff-start" typeId="timestamp"/>
+			<channel id="fixed-ht" typeId="price-ht">
+				<label>Fixed Price HT</label>
+				<description>Yearly fixed price excluding taxes.</description>
+			</channel>
+			<channel id="fixed-ttc" typeId="price-ttc">
+				<label>Fixed Price TTC</label>
+				<description>Yearly fixed price including taxes.</description>
+			</channel>
+			<channel id="hc-ht" typeId="energy-price-ht">
+				<label>Low Hours Price HT</label>
+				<description>Low hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="hc-ttc" typeId="energy-price-ttc">
+				<label>Low Hours Price TTC</label>
+				<description>Low hours energy price in €/kWh including taxes.</description>
+			</channel>
+			<channel id="hp-ht" typeId="energy-price-ht">
+				<label>High Hours Price HT</label>
+				<description>High hours energy price in €/kWh excluding taxes.</description>
+			</channel>
+			<channel id="hp-ttc" typeId="energy-price-ttc">
+				<label>High Hours Price TTC</label>
+				<description>High hours energy price in €/kWh including taxes.</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="puissance" type="integer" min="3" max="36">
+				<default>6</default>
+				<label>Power Output</label>
+				<description>PDL power output (in kVA)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
