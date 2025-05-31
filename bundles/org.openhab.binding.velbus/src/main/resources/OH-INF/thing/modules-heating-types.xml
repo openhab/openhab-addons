@@ -12,6 +12,7 @@
 
 		<label>VMB1TS</label>
 		<description>Temperature Sensor Module</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="1channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="thermostat" typeId="thermostat"/>

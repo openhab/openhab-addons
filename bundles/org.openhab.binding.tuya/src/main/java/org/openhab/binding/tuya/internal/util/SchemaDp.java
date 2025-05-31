@@ -33,11 +33,13 @@ public class SchemaDp {
             "Boolean", "bool", //
             "Enum", "enum", //
             "Integer", "value", //
+            "String", "string", //
             "Json", "string");
 
     public int id = 0;
     public String code = "";
     public String type = "";
+    public String label = "";
     public @Nullable Double min;
     public @Nullable Double max;
     public @Nullable List<String> range;

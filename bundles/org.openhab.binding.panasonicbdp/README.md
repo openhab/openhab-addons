@@ -66,6 +66,7 @@ Some notes:
 - The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
 - There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
 - Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
+- Netflix is no longer supported on the BD models.
 
 ## Channels
 
@@ -77,8 +78,8 @@ The following channels are available:
 | button          | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
 | control         | Player      | RW         | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind.                       |
 | player-status   | String      | R          | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. |
-| time-elapsed    | Number:Time | R          | The total number of seconds of playback time elapsed.                                 |
-| time-total      | Number:Time | R          | The total length of the current playing title in seconds. Not on UHD models.          |
+| time-elapsed    | Number:Time | R          | The total playback time elapsed.                                                      |
+| time-total      | Number:Time | R          | The total length of the current playing title. Not on UHD models.                     |
 | chapter-current | Number      | R          | The current chapter number. Not on UHD models.                                        |
 | chapter-total   | Number      | R          | The total number of chapters in the current title. Not on UHD models.                 |
 
@@ -99,8 +100,8 @@ Switch Player_Power            "Power"                     { channel="panasonicb
 String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:bd-player:mybdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd-player:mybdplayer:player-status" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
-Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="panasonicbdp:bd-player:mybdplayer:time-total" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%s]"        { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
+Number:Time Player_TimeTotal   "Total Time: [%s]"          { channel="panasonicbdp:bd-player:mybdplayer:time-total" }
 Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbdp:bd-player:mybdplayer:chapter-current" }
 Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbdp:bd-player:mybdplayer:chapter-total" }
 
@@ -109,7 +110,7 @@ Switch Player_Power            "Power"                     { channel="panasonicb
 String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:uhd-player:myuhdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd-player:myuhdplayer:player-status" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%s]"        { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
 ```
 
 ### `panasonicbdp.sitemap` Example

@@ -8,6 +8,7 @@
 
 		<label>Modern Forms Fan</label>
 		<description>Modern Forms and WAC Lighting Smart Ceiling Fans</description>
+		<semantic-equipment-tag>CeilingFan</semantic-equipment-tag>
 
 		<channels>
 			<channel id="fan-on" typeId="fan-on"/>

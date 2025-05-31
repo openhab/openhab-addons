@@ -18,8 +18,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Energy;
@@ -105,7 +103,7 @@ public class SenseEnergyMonitorActions implements ThingActions {
         SenseEnergyApiGetTrends trends;
         try {
             trends = localDeviceHandler.getApi().getTrendData(localDeviceHandler.getId(), trendScale, localDateTime);
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (SenseEnergyApiException e) {
             logger.warn("queryEnergyTrends function failed - {}", e.getMessage());
             return Collections.emptyMap();
         }

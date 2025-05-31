@@ -12,6 +12,7 @@
 /bundles/org.openhab.automation.jythonscripting/ @HolgerHees
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.automation.pwm/ @fwolter
+/bundles/org.openhab.automation.pythonscripting/ @HolgerHees
 /bundles/org.openhab.binding.adorne/ @theiding
 /bundles/org.openhab.binding.ahawastecollection/ @soenkekueper
 /bundles/org.openhab.binding.airgradient/ @austvik
@@ -51,7 +52,7 @@
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
-/bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft
+/bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft @jlaur
 /bundles/org.openhab.binding.bluetooth.hdpowerview/ @andrewfg
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
@@ -103,6 +104,7 @@
 /bundles/org.openhab.binding.electroluxappliance/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
+/bundles/org.openhab.binding.emby/ @volfan6415
 /bundles/org.openhab.binding.emotiva/ @espenaf
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.energidataservice/ @jlaur
@@ -133,6 +135,7 @@
 /bundles/org.openhab.binding.freecurrency/ @J-N-K
 /bundles/org.openhab.binding.frenchgovtenergydata/ @clinique
 /bundles/org.openhab.binding.fronius/ @trokohl @florian-h05
+/bundles/org.openhab.binding.froniuswattpilot/ @florian-h05
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg @andrewfg
@@ -323,7 +326,7 @@
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
 /bundles/org.openhab.binding.renault/ @dougculnane
 /bundles/org.openhab.binding.resol/ @ramack
-/bundles/org.openhab.binding.revogi/ @andibraeu
+/bundles/org.openhab.binding.revogi/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
@@ -331,7 +334,6 @@
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.sagercaster/ @clinique
-/bundles/org.openhab.binding.saicismart/ @tisoft @dougculnane
 /bundles/org.openhab.binding.salus/ @magx2
 /bundles/org.openhab.binding.samsungtv/ @NickWaterton
 /bundles/org.openhab.binding.satel/ @druciak
@@ -496,7 +498,6 @@
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @mherwege
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
-/itests/org.openhab.binding.wemo.tests/ @hmerk
 /itests/org.openhab.persistence.mapdb.tests/ @openhab/add-ons-maintainers
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

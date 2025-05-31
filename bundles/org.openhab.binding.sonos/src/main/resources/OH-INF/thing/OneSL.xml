@@ -9,7 +9,7 @@
 		<!-- Label without column (:) because of device pairing name restrictions -->
 		<label>One SL</label>
 		<description>Represents SONOS One SL speaker</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

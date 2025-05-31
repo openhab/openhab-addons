@@ -8,7 +8,7 @@
 	<thing-type id="sonnenbattery">
 		<label>Sonnen Battery</label>
 		<description>Monitoring of a sonnen battery.</description>
-
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<channels>
 			<channel id="batteryChargingState" typeId="batteryChargingState"/>
 			<channel id="batteryDischargingState" typeId="batteryDischargingState"/>

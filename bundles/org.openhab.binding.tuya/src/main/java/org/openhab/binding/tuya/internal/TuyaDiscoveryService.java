@@ -34,6 +34,7 @@ import org.openhab.binding.tuya.internal.cloud.TuyaOpenAPI;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceListInfo;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.handler.ProjectHandler;
+import org.openhab.binding.tuya.internal.local.UdpDiscoverySender;
 import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -64,6 +65,9 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
     private final Gson gson = new Gson();
     private @NonNullByDefault({}) Storage<String> storage;
     private @Nullable ScheduledFuture<?> discoveryJob;
+    private @Nullable ScheduledFuture<?> broadcastJob;
+
+    private final UdpDiscoverySender udpDiscoverySender = new UdpDiscoverySender();
 
     public TuyaDiscoveryService() {
         super(ProjectHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
@@ -136,6 +140,11 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
 
     @Override
     protected synchronized void stopScan() {
+        ScheduledFuture<?> broadcastJob = this.broadcastJob;
+        if (broadcastJob != null) {
+            broadcastJob.cancel(true);
+            this.broadcastJob = null;
+        }
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
     }
@@ -163,6 +172,12 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 1, 5, TimeUnit.MINUTES);
         }
+
+        ScheduledFuture<?> broadcastJob = this.broadcastJob;
+        if (broadcastJob == null || broadcastJob.isDone() || broadcastJob.isCancelled()) {
+            this.broadcastJob = scheduler.scheduleWithFixedDelay(udpDiscoverySender::sendMessage, 5, 10,
+                    TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -171,6 +186,11 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         if (discoveryJob != null) {
             discoveryJob.cancel(true);
             this.discoveryJob = null;
+        }
+        ScheduledFuture<?> broadcastJob = this.broadcastJob;
+        if (broadcastJob != null) {
+            broadcastJob.cancel(true);
+            this.broadcastJob = null;
         }
     }
 }

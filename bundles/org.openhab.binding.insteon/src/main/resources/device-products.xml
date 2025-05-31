@@ -1054,16 +1054,19 @@
 		<description>USB Adapter</description>
 		<model>2448A7</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x20" productKey="0x00007E">
 		<description>USB Adapter</description>
 		<model>2448A7</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x21" productKey="0x00008E">
 		<description>USB Adapter (HouseLinc)</description>
 		<model>2448A7H</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x22" productKey="0x00008F">
 		<description>Central Controller Interface</description>
@@ -1074,6 +1077,7 @@
 		<description>USB Adapter (HouseLinc)</description>
 		<model>2448A7H</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x24" productKey="0x0000A2">
 		<description>TouchLinc</description>

@@ -16,10 +16,12 @@ import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY_NEW;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_REFRESH;
 import static org.openhab.binding.tuya.internal.local.CommandType.HEART_BEAT;
+import static org.openhab.binding.tuya.internal.local.CommandType.REQ_DEVINFO;
 import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_FINISH;
 import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_START;
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_3;
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_4;
+import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_5;
 import static org.openhab.binding.tuya.internal.local.TuyaDevice.*;
 
 import java.nio.ByteBuffer;
@@ -86,7 +88,11 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
         if (msg.content == null || msg.content instanceof Map<?, ?>) {
             Map<String, Object> content = (Map<String, Object>) msg.content;
             Map<String, Object> payload = new HashMap<>();
-            if (protocol == V3_4) {
+            if (msg.commandType == REQ_DEVINFO) {
+                if (content != null) {
+                    payload.putAll(content);
+                }
+            } else if (protocol == V3_4 || protocol == V3_5) {
                 payload.put("protocol", 5);
                 payload.put("t", System.currentTimeMillis() / 1000);
                 Map<String, Object> data = new HashMap<>();
@@ -123,8 +129,11 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
             return;
         }
 
-        Optional<byte[]> bufferOptional = protocol == V3_4 ? encode34(msg.commandType, payloadBytes, sessionKey)
-                : encodePre34(msg.commandType, payloadBytes, sessionKey, protocol);
+        Optional<byte[]> bufferOptional = switch (protocol) {
+            case V3_5 -> encode35(msg.commandType, payloadBytes, sessionKey);
+            case V3_4 -> encode34(msg.commandType, payloadBytes, sessionKey);
+            default -> encodePre34(msg.commandType, payloadBytes, sessionKey, protocol);
+        };
 
         bufferOptional.ifPresentOrElse(buffer -> {
             if (logger.isTraceEnabled()) {
@@ -234,6 +243,46 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
 
         // Add postfix
         buffer.putInt(0x0000AA55);
+
+        return Optional.of(buffer.array());
+    }
+
+    private Optional<byte[]> encode35(CommandType commandType, byte[] payloadBytes, byte[] sessionKey) {
+        byte[] rawPayload = payloadBytes;
+
+        if (commandType != DP_QUERY && commandType != HEART_BEAT && commandType != DP_QUERY_NEW
+                && commandType != SESS_KEY_NEG_START && commandType != SESS_KEY_NEG_FINISH && commandType != DP_REFRESH
+                && commandType != REQ_DEVINFO) {
+            rawPayload = new byte[payloadBytes.length + 15];
+            System.arraycopy("3.5".getBytes(StandardCharsets.UTF_8), 0, rawPayload, 0, 3);
+            System.arraycopy(payloadBytes, 0, rawPayload, 15, payloadBytes.length);
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(rawPayload.length + 22 + 12 + 16);
+
+        // Add prefix
+        buffer.putInt(0x00006699);
+        // Add unknown 2 bytes
+        buffer.putShort((short) 0x0000);
+        // Add sequence number and command
+        buffer.putInt(++sequenceNo);
+        buffer.putInt(commandType.getCode());
+        // Add length: 12 byte IV/nonce + payload length + 16 byte GCM Tag
+        buffer.putInt(rawPayload.length + 12 + 16);
+        // Get header data for GCM AAD
+        byte[] header = new byte[14];
+        System.arraycopy(buffer.array(), 4, header, 0, 14);
+
+        byte[] encryptedPayload = CryptoUtil.encryptAesGcm(rawPayload, sessionKey, header, null);
+        if (encryptedPayload == null) {
+            return Optional.empty();
+        }
+
+        // Add encrypted payload
+        buffer.put(encryptedPayload);
+
+        // Add postfix
+        buffer.putInt(0x00009966);
 
         return Optional.of(buffer.array());
     }

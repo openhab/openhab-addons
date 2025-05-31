@@ -8,7 +8,7 @@
 	<thing-type id="project">
 		<label>Tuya Cloud Project</label>
 		<description>This thing represents a single cloud project. Needed for discovery.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
@@ -43,7 +43,7 @@
 			</parameter>
 			<parameter name="dataCenter" type="text" required="true">
 				<label>Data Center</label>
-				<description>The data center for for your Tuya account</description>
+				<description>The data center for your Tuya account</description>
 				<options>
 					<option value="https://openapi.tuyacn.com">China</option>
 					<option value="https://openapi.tuyaus.com">Western America</option>
@@ -84,6 +84,7 @@
 					<option value="3.1">3.1</option>
 					<option value="3.3">3.3</option>
 					<option value="3.4">3.4</option>
+					<option value="3.5">3.5</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<advanced>true</advanced>

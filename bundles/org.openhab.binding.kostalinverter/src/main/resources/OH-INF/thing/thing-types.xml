@@ -7,6 +7,7 @@
 	<thing-type id="kostalinverter">
 		<label>Kostal Inverter</label>
 		<description>Kostal Inverter</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel typeId="device-local-ac-current-power" id="acPower"/>
 			<channel typeId="statistic-yield-total" id="totalEnergy"/>

@@ -12,6 +12,7 @@
 
 		<label>VMB1BL</label>
 		<description>1-channel blind control module for din rail</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="rollershutter"/>
 		</channels>
@@ -27,6 +28,7 @@
 
 		<label>VMB1BLS</label>
 		<description>1-channel blind control module for universal mounting</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="rollershutter"/>
 		</channels>
@@ -42,6 +44,7 @@
 
 		<label>VMB2BL</label>
 		<description>2-channel blind control module</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="rollershutter"/>
 			<channel id="CH2" typeId="rollershutter"/>
@@ -58,6 +61,7 @@
 
 		<label>VMB2BLE</label>
 		<description>2-channel blind control module with extended possibilities</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="rollershutter"/>
 			<channel id="CH2" typeId="rollershutter"/>
@@ -74,6 +78,7 @@
 
 		<label>VMB2BLE-10</label>
 		<description>2-channel blind control module with extended possibilities</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="CH1" typeId="rollershutter"/>
 			<channel id="CH2" typeId="rollershutter"/>
