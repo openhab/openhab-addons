@@ -224,8 +224,6 @@ public class TibberHandler extends BaseThingHandler {
                                 .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, hour)));
                     }
 
-                } else {
-                    logger.warn("Currency cannot be obtained from {}", currencyResponse);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -441,57 +439,58 @@ public class TibberHandler extends BaseThingHandler {
         }
         JsonObject jsonMessage = (JsonObject) JsonParser.parseString(message);
         JsonObject jsonData = Utils.getJsonObject(jsonMessage, SOCKET_MESSAGE_JSON_PATH);
-
-        String value = Utils.getJsonValue(jsonData, "lastMeterConsumption");
-        updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, value, "kWh");
-        value = Utils.getJsonValue(jsonData, "accumulatedConsumption");
-        updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, value, "kWh");
-        value = Utils.getJsonValue(jsonData, "accumulatedConsumptionLastHour");
-        updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
-        value = Utils.getJsonValue(jsonData, "accumulatedCost");
-        if (!EMPTY.equals(value)) {
-            State costState;
-            if (!NULL.equals(value)) {
-                if (currencyUnit.isPresent()) {
-                    costState = QuantityType.valueOf(value + " " + currencyUnit.get());
+        if (!jsonData.isEmpty()) {
+            String value = Utils.getJsonValue(jsonData, "lastMeterConsumption");
+            updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedConsumption");
+            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedConsumptionLastHour");
+            updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedCost");
+            if (!EMPTY.equals(value)) {
+                State costState;
+                if (!NULL.equals(value)) {
+                    if (currencyUnit.isPresent()) {
+                        costState = QuantityType.valueOf(value + " " + currencyUnit.get());
+                    } else {
+                        costState = DecimalType.valueOf(value);
+                    }
                 } else {
-                    costState = DecimalType.valueOf(value);
+                    costState = UnDefType.UNDEF;
                 }
-            } else {
-                costState = UnDefType.UNDEF;
+                updateState(new ChannelUID(thing.getUID(), GROUP_STATISTICS, CHANNEL_DAILY_COST), costState);
             }
-            updateState(new ChannelUID(thing.getUID(), GROUP_STATISTICS, CHANNEL_DAILY_COST), costState);
+            value = Utils.getJsonValue(jsonData, "lastMeterProduction");
+            updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedProduction");
+            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
+            updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "power");
+            updateChannel(GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "minPower");
+            updateChannel(GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "maxPower");
+            updateChannel(GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "powerProduction");
+            updateChannel(GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "minPowerProduction");
+            updateChannel(GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "maxPowerProduction");
+            updateChannel(GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "voltagePhase1");
+            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_1, value, "V");
+            value = Utils.getJsonValue(jsonData, "voltagePhase2");
+            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_2, value, "V");
+            value = Utils.getJsonValue(jsonData, "voltagePhase3");
+            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_3, value, "V");
+            value = Utils.getJsonValue(jsonData, "currentL1");
+            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_1, value, "A");
+            value = Utils.getJsonValue(jsonData, "currentL2");
+            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
+            value = Utils.getJsonValue(jsonData, "currentL3");
+            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
         }
-        value = Utils.getJsonValue(jsonData, "lastMeterProduction");
-        updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, value, "kWh");
-        value = Utils.getJsonValue(jsonData, "accumulatedProduction");
-        updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
-        value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
-        updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
-        value = Utils.getJsonValue(jsonData, "power");
-        updateChannel(GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
-        value = Utils.getJsonValue(jsonData, "minPower");
-        updateChannel(GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
-        value = Utils.getJsonValue(jsonData, "maxPower");
-        updateChannel(GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
-        value = Utils.getJsonValue(jsonData, "powerProduction");
-        updateChannel(GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
-        value = Utils.getJsonValue(jsonData, "minPowerProduction");
-        updateChannel(GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
-        value = Utils.getJsonValue(jsonData, "maxPowerProduction");
-        updateChannel(GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, value, "W");
-        value = Utils.getJsonValue(jsonData, "voltagePhase1");
-        updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_1, value, "V");
-        value = Utils.getJsonValue(jsonData, "voltagePhase2");
-        updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_2, value, "V");
-        value = Utils.getJsonValue(jsonData, "voltagePhase3");
-        updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_3, value, "V");
-        value = Utils.getJsonValue(jsonData, "currentL1");
-        updateChannel(GROUP_LIVE, CHANNEL_CURRENT_1, value, "A");
-        value = Utils.getJsonValue(jsonData, "currentL2");
-        updateChannel(GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
-        value = Utils.getJsonValue(jsonData, "currentL3");
-        updateChannel(GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
     }
 
     private void updateChannel(String group, String channelId, String value, String unit) {
