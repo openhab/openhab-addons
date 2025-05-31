@@ -150,21 +150,32 @@ public class Frame implements Serializable {
         }
     }
 
+    public boolean containsInitializedKey(Label label) {
+        if (labelToValues.containsKey(label)) {
+            String value = labelToValues.get(label);
+            if (value != null && !value.isBlank()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public Phase getPhase() throws InvalidFrameException {
-        if (labelToValues.containsKey(Label.IINST)) {
+        if (containsInitializedKey(Label.IINST)) {
             return Phase.ONE_PHASED;
-        } else if (labelToValues.containsKey(Label.IINST1)) {
+        } else if (containsInitializedKey(Label.IINST1)) {
             return Phase.THREE_PHASED;
         }
         throw new InvalidFrameException();
     }
 
     public boolean isShortFrame() {
-        return !labelToValues.containsKey(Label.ISOUSC);
+        return !containsInitializedKey(Label.ISOUSC);
     }
 
     public Evolution getEvolution() {
-        if (labelToValues.containsKey(Label.PAPP)) {
+        if (containsInitializedKey(Label.PAPP)) {
             return Evolution.ICC;
         }
         return Evolution.NONE;
@@ -191,17 +202,17 @@ public class Frame implements Serializable {
     }
 
     public TeleinfoTicMode getTicMode() throws InvalidFrameException {
-        if (labelToValues.containsKey(Label.ADCO)) {
+        if (containsInitializedKey(Label.ADCO)) {
             return TeleinfoTicMode.HISTORICAL;
-        } else if (labelToValues.containsKey(Label.ADSC)) {
+        } else if (containsInitializedKey(Label.ADSC)) {
             return TeleinfoTicMode.STANDARD;
         }
         throw new InvalidFrameException();
     }
 
     public FrameType getStandardType() throws InvalidFrameException {
-        boolean isProd = labelToValues.containsKey(Label.EAIT);
-        boolean isThreePhase = labelToValues.containsKey(Label.IRMS2);
+        boolean isProd = containsInitializedKey(Label.EAIT);
+        boolean isThreePhase = containsInitializedKey(Label.IRMS2);
         if (isProd && isThreePhase) {
             return FrameType.LSMT_PROD;
         }
