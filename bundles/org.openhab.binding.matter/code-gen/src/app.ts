@@ -154,10 +154,18 @@ function toEnumField(str: string): string {
         str = 'V' + str;
     }
 
-    // Perform the existing transformations
-    return str.replace(/([a-z])([A-Z])/g, '$1_$2')
+    // First split camelCase words by inserting underscores
+    str = str
+        // Split between lowercase and uppercase letters
+        .replace(/([a-z])([A-Z])/g, '$1_$2')
+        // Split between uppercase letters followed by lowercase
+        .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2')
+        // Replace any remaining spaces with underscores
         .replace(/\s+/g, '_')
+        // Finally convert to uppercase
         .toUpperCase();
+
+    return str;
 }
 
 function toUpperSnakeCase(str: string | undefined) {

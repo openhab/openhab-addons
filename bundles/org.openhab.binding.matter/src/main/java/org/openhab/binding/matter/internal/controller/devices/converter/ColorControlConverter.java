@@ -63,6 +63,14 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
 
     // We will wait up for this time to receive multiple color updates before we update the color values
     private static final int UPDATE_DELAY = 500;
+    // These are the default values, as well as the min and max limits for the color temperature mireds defined in the
+    // Matter spec
+    private static final int MAX_MIREDS = 65279;
+    private static final int MIN_MIREDS = 1; // this was 0 until matter 1.4
+    // These are sane defaults that should be used if the device does not provide a valid range (aka if using default
+    // MIN / MAX)
+    private static final int MAX_DEFAULT_MIREDS = 667; // 1500K
+    private static final int MIN_DEFAULT_MIREDS = 154;
     protected boolean supportsHue = false;
     protected boolean supportsColorTemperature = false;
     private LevelControlCluster.OptionsBitmap levelControlOptionsBitmap = new LevelControlCluster.OptionsBitmap(true,
@@ -74,7 +82,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     // Color attributes from the device
     private int colorTempPhysicalMinMireds = 0;
     private int colorTempPhysicalMaxMireds = 0;
-    private EnhancedColorModeEnum lastColorMode = EnhancedColorModeEnum.CURRENT_XAND_CURRENT_Y;
+    private EnhancedColorModeEnum lastColorMode = EnhancedColorModeEnum.CURRENT_X_AND_CURRENT_Y;
     private int lastHue = 0;
     private int lastSaturation = 0;
     private int lastX = 0;
@@ -90,12 +98,16 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
         super(cluster, handler, endpointNumber, labelPrefix);
         supportsHue = initializingCluster.featureMap.hueSaturation;
         supportsColorTemperature = initializingCluster.featureMap.colorTemperature;
-        // The inovelli device sends a max mireds of 65279 (uint16 max value), but this should never exceed 667 (1500K)
-        colorTempPhysicalMaxMireds = Math
-                .min(Optional.ofNullable(initializingCluster.colorTempPhysicalMaxMireds).orElse(0), 667);
-        // the inovelli device sends a min mireds of 0 , but this should never be less than 154 (6500Kk)
-        colorTempPhysicalMinMireds = Math
-                .max(Optional.ofNullable(initializingCluster.colorTempPhysicalMinMireds).orElse(0), 154);
+        // The inovelli device for example sends a max mireds of 65279 (matter spec max value), which means they did not
+        // actually set the max mireds, but this should never really exceed 667 (1500K)
+        Integer maxMireds = initializingCluster.colorTempPhysicalMaxMireds;
+        colorTempPhysicalMaxMireds = (maxMireds == null || maxMireds >= MAX_MIREDS) ? MAX_DEFAULT_MIREDS
+                : Math.min(maxMireds, MAX_DEFAULT_MIREDS);
+        // the inovelli device for example sends a min mireds of 0 (matter 1.3 default) which means they did not
+        // actually set the min mireds, but this should never really be less than 154 (6500K)in real life
+        Integer minMireds = initializingCluster.colorTempPhysicalMinMireds;
+        colorTempPhysicalMinMireds = (minMireds == null || minMireds <= MIN_MIREDS) ? MIN_DEFAULT_MIREDS
+                : Math.max(minMireds, MIN_DEFAULT_MIREDS);
     }
 
     @Override
@@ -229,7 +241,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                         case CURRENT_HUE_AND_CURRENT_SATURATION:
                             hueSaturationState = ColorUpdateState.WAITING1;
                             break;
-                        case CURRENT_XAND_CURRENT_Y:
+                        case CURRENT_X_AND_CURRENT_Y:
                             xyState = ColorUpdateState.WAITING1;
                             break;
                         case COLOR_TEMPERATURE_MIREDS:
@@ -308,7 +320,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 }
                 temperatureModeToColor();
                 break;
-            case CURRENT_XAND_CURRENT_Y:
+            case CURRENT_X_AND_CURRENT_Y:
                 if (xyState.isReady()) {
                     updateColorXY();
                 } else {
@@ -322,7 +334,6 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 } else {
                     startUpdateTimer(this::updateColorTemperature);
                 }
-                colorModeToTemperature();
                 break;
             default:
                 logger.debug("Unknown color mode: {}", lastColorMode);
@@ -410,6 +421,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
         updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
                 QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
         colorTemperatureState = ColorUpdateState.READY;
+        colorModeToTemperature();
     }
 
     private void changeColorHueSaturation(HSBType color) {

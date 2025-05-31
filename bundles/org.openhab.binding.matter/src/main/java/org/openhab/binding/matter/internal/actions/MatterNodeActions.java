@@ -42,6 +42,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParseException;
+
 /**
  * The {@link MatterNodeActions} exposes Matter related actions for the Matter Node Thing.
  *
@@ -83,7 +85,7 @@ public class MatterNodeActions implements ThingActions {
                 try {
                     PairingCodes code = client.enhancedCommissioningWindow(handler.getNodeId()).get();
                     return Map.of("manualPairingCode", code.manualPairingCode, "qrPairingCode", code.qrPairingCode);
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (InterruptedException | ExecutionException | JsonParseException e) {
                     logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
                 }
             }
@@ -129,7 +131,7 @@ public class MatterNodeActions implements ThingActions {
                     return result.isEmpty()
                             ? translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_FABRICS)
                             : result;
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (InterruptedException | ExecutionException | JsonParseException e) {
                     logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }

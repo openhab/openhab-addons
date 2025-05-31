@@ -99,7 +99,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final MatterChannelTypeProvider channelTypeProvider;
     protected final MatterConfigDescriptionProvider configDescriptionProvider;
     protected final TranslationService translationService;
-    protected HashMap<Integer, DeviceType> devices = new HashMap<>();
+    protected Map<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
     private @Nullable ScheduledFuture<?> pollingTask;
 
@@ -126,8 +126,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     /**
      * When processing endpoints, give implementers the ability to ignore certain endpoints
      * 
-     * @param endpoint
-     * @return
+     * @param endpoint the endpoint to check
      */
     protected boolean shouldAddEndpoint(Endpoint endpoint) {
         return true;
@@ -305,6 +304,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param endpointId The endpoint ID.
      * @param clusterId The cluster ID.
      * @return CompletableFuture<T>
+     * @throws JsonParseException when completing the future if the cluster cannot be deserialized
      */
     public <T extends BaseCluster> CompletableFuture<T> readCluster(Class<T> type, Integer endpointId,
             Integer clusterId) {

@@ -413,7 +413,7 @@ public class ColorControlCluster extends BaseCluster {
 
     public enum ColorModeEnum implements MatterEnum {
         CURRENT_HUE_AND_CURRENT_SATURATION(0, "Current Hue And Current Saturation"),
-        CURRENT_XAND_CURRENT_Y(1, "Current X And Current Y"),
+        CURRENT_X_AND_CURRENT_Y(1, "Current X And Current Y"),
         COLOR_TEMPERATURE_MIREDS(2, "Color Temperature Mireds");
 
         public final Integer value;
@@ -437,7 +437,7 @@ public class ColorControlCluster extends BaseCluster {
 
     public enum EnhancedColorModeEnum implements MatterEnum {
         CURRENT_HUE_AND_CURRENT_SATURATION(0, "Current Hue And Current Saturation"),
-        CURRENT_XAND_CURRENT_Y(1, "Current X And Current Y"),
+        CURRENT_X_AND_CURRENT_Y(1, "Current X And Current Y"),
         COLOR_TEMPERATURE_MIREDS(2, "Color Temperature Mireds"),
         ENHANCED_CURRENT_HUE_AND_CURRENT_SATURATION(3, "Enhanced Current Hue And Current Saturation");
 

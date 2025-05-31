@@ -16,6 +16,7 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_T
 
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +58,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler {
     protected BigInteger nodeId = BigInteger.valueOf(0);
     private Integer pollInterval = 0;
-    private ConcurrentHashMap<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
+    private Map<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
 
     public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
@@ -72,7 +73,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
         NodeConfiguration config = getConfigAs(NodeConfiguration.class);
         nodeId = new BigInteger(config.nodeId);
         pollInterval = config.pollInterval;
-        logger.debug("initialize endpoint {}", nodeId);
+        logger.debug("initialize node {}", nodeId);
         super.initialize();
     }
 

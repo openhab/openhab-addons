@@ -97,18 +97,14 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                             "Number:Temperature")
                     .withType(CHANNEL_THERMOSTAT_LOCALTEMPERATURE).build();
 
-            StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%.1f %unit%")
-                    .build().toStateDescription();
-            channels.put(tempChannel, stateDescription);
+            channels.put(tempChannel, null);
         }
         if (initializingCluster.outdoorTemperature != null) {
             Channel tempChannel = ChannelBuilder
                     .create(new ChannelUID(channelGroupUID, CHANNEL_ID_THERMOSTAT_OUTDOORTEMPERATURE),
                             "Number:Temperature")
                     .withType(CHANNEL_THERMOSTAT_OUTDOORTEMPERATURE).build();
-            StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%.1f %unit%")
-                    .build().toStateDescription();
-            channels.put(tempChannel, stateDescription);
+            channels.put(tempChannel, null);
         }
         if (initializingCluster.featureMap.heating) {
             Channel tempChannel = ChannelBuilder

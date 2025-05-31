@@ -52,8 +52,7 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Get all nodes that are commissioned / paired to this controller
      *
-     * @param onlyConnected filter to nodes that are currently connected
-     * @return a list of node IDs
+     * @return a future that returns a list of node IDs
      */
     public CompletableFuture<List<BigInteger>> getCommissionedNodeIds() {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "listNodes", new Object[0]);
@@ -102,22 +101,6 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * @return a future that completes when the data is requested
      */
     public CompletableFuture<Void> requestEndpointData(BigInteger nodeId, Integer endpointId) {
-        CompletableFuture<JsonElement> future = sendMessage("nodes", "requestEndpointData",
-                new Object[] { nodeId, endpointId });
-        return future.thenAccept(obj -> {
-            // Do nothing, just to complete the future
-        });
-    }
-
-    /**
-     * Request a specific cluster attribute data for a single endpoint
-     * 
-     * @param nodeId the node ID to request data for
-     * @param endpointId the endpoint ID to request data for
-     * @param clusterId the cluster ID to request data for
-     * @return a future that completes when the data is requested
-     */
-    public CompletableFuture<Void> requestClusterData(BigInteger nodeId, Integer endpointId, Integer clusterId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "requestEndpointData",
                 new Object[] { nodeId, endpointId });
         return future.thenAccept(obj -> {
@@ -177,6 +160,7 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * 
      * @param nodeId the node ID to get the pairing codes for
      * @return a future that completes when the pairing codes are retrieved
+     * @throws JsonParseException when completing the future if the pairing codes cannot be deserialized
      */
     public CompletableFuture<PairingCodes> enhancedCommissioningWindow(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "enhancedCommissioningWindow",
@@ -204,10 +188,11 @@ public class MatterControllerClient extends MatterWebsocketClient {
     }
 
     /**
-     * Get the fabrics for a node, fabrics aer the list of matter networks the node is joined to
+     * Get the fabrics for a node, fabrics are the list of matter networks the node is joined to
      * 
      * @param nodeId the node ID to get the fabrics for
      * @return a future that completes when the fabrics are retrieved or an exception is thrown
+     * @throws JsonParseException when completing the future if the fabrics cannot be deserialized
      */
     public CompletableFuture<List<OperationalCredentialsCluster.FabricDescriptorStruct>> getFabrics(BigInteger nodeId) {
         Object[] clusterArgs = { String.valueOf(nodeId) };
@@ -275,11 +260,12 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Read all attributes from a cluster
      * 
-     * @param type the class class to deserialize the cluster to
+     * @param type the class type to deserialize the cluster to
      * @param nodeId the node ID to read the cluster from
      * @param endpointId the endpoint ID to read the cluster from
      * @param clusterId the cluster ID to read the cluster from
      * @return a future that completes when the cluster is read
+     * @throws JsonParseException when completing the future if the cluster cannot be deserialized
      */
     public <T extends BaseCluster> CompletableFuture<T> readCluster(Class<T> type, BigInteger nodeId,
             Integer endpointId, Integer clusterId) {
@@ -317,6 +303,7 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * Get the session information for the controller
      * 
      * @return a future that completes when the session information is retrieved
+     * @throws JsonParseException when completing the future if the session information cannot be deserialized
      */
     public CompletableFuture<ActiveSessionInformation[]> getSessionInformation() {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "sessionInformation", new Object[0]);
