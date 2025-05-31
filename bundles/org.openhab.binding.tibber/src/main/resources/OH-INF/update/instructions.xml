@@ -112,7 +112,7 @@
 				<label>Voltage 2</label>
 				<description>Electric potential on phase 2</description>
 			</add-channel>
-			<add-channel id="voltage1" groupIds="live">
+			<add-channel id="voltage3" groupIds="live">
 				<type>tibber:voltage</type>
 				<label>Voltage 3</label>
 				<description>Electric potential on phase 3</description>

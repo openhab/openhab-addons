@@ -44,6 +44,13 @@ import com.google.gson.JsonParser;
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
+    /**
+     * JSONObjects form Tibber API are deeply nested. Helper function to get a JSONObject from a defined path.
+     *
+     * @param json JsonObject to be queried
+     * @param path array of JSON keys defining the path to a JsonObject
+     * @return JsonObejt from after iterating though the path
+     */
     public static JsonObject getJsonObject(JsonObject json, String[] path) {
         JsonObject iterator = json;
         for (int i = 0; i < path.length; i++) {
@@ -54,14 +61,23 @@ public class Utils {
                 return new JsonObject();
             }
         }
-        return iterator;
+        return iterator; // TODO define better return valeu
     }
 
+    /**
+     * Get the value from the key of a JsonObject
+     *
+     * @param json JsonObject to be queried
+     * @param key as String
+     * @return value as String, "null" if JSON value is null, EMPTY if key isn't present
+     */
     public static String getJsonValue(JsonObject json, String key) {
         if (json.has(key)) {
             JsonElement elem = json.get(key);
             if (!elem.isJsonNull()) {
                 return elem.getAsString();
+            } else {
+                return NULL;
             }
         }
         return EMPTY;

@@ -96,6 +96,7 @@ public class TibberBindingConstants {
     public static final String[] SOCKET_MESSAGE_JSON_PATH = new String[] { "payload", "data", "liveMeasurement" };
 
     public static final String EMPTY = "";
+    public static final String NULL = "null";
 
     public static final String CRON_DAILY_AT = "30 0 %s ? * * *";
 
