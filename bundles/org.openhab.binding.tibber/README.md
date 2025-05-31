@@ -53,7 +53,7 @@ All read-only.
 
 | Channel ID        | Type                 | Description         | Forecast |
 |-------------------|----------------------|---------------------|----------|
-| spot-prices       | Number:EnergyPrice   | Spot Prices         | yes      |
+| spot-price        | Number:EnergyPrice   | Spot Prices         | yes      |
 | level             | Number               | Price Level         | yes      |
 | average           | Number:EnergyPrice   | Average 24h         | yes      |
 
@@ -444,7 +444,7 @@ Thing tibber:tibberapi:xyz [ homeid="xxx", token="xxxxxxx", updateHour=13 ]
 ### `demo.items` Example
 
 ```java
-Number:EnergyPrice          Tibber_API_Spot_Prices              "Spot Prices"               {channel="tibber:tibberapi:xyz:price#spot-prices"}
+Number:EnergyPrice          Tibber_API_Spot_Prices              "Spot Prices"               {channel="tibber:tibberapi:xyz:price#spot-price"}
 Number                      Tibber_API_Price_Level              "Price Level"               {channel="tibber:tibberapi:xyz:price#level"}
 Number:EnergyPrice          Tibber_API_Average                  "Average Price"             {channel="tibber:tibberapi:xyz:price#average"}
 
