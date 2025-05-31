@@ -206,8 +206,197 @@ JSON Object `priceInfo`
 #### Example
 
 ```json
-{"size":31,"priceList":[{"price":0.1623,"duration":3600,"level":-1,"startsAt":"2025-06-01T12:00:00Z"}, {"price":0.168,"duration":3600,"level":-1,"startsAt":"2025-06-01T13:00:00Z"}, {"price":0.1712,"duration":3600,"level":-1,"startsAt":"2025-06-01T11:00:00Z"}, {"price":0.1794,"duration":3600,"level":-1,"startsAt":"2025-06-01T14:00:00Z"}, {"price":0.18,"duration":3600,"level":-1,"startsAt":"2025-06-01T10:00:00Z"}, {"price":0.1841,"duration":3600,"level":-1,"startsAt":"2025-06-01T09:00:00Z"}, {"price":0.1854,"duration":3600,"level":-1,"startsAt":"2025-06-01T15:00:00Z"}, {"price":0.1859,"duration":3600,"level":-1,"startsAt":"2025-06-01T08:00:00Z"}, {"price":0.1866,"duration":3600,"level":-1,"startsAt":"2025-06-01T07:00:00Z"}, {"price":0.1894,"duration":3600,"level":-1,"startsAt":"2025-06-01T06:00:00Z"}, {"price":0.202,"duration":3600,"level":-1,"startsAt":"2025-06-01T05:00:00Z"}, {"price":0.2095,"duration":3600,"level":-1,"startsAt":"2025-06-01T16:00:00Z"}, {"price":0.2292,"duration":3600,"level":0,"startsAt":"2025-06-01T04:00:00Z"}, {"price":0.2358,"duration":2804,"level":0,"startsAt":"2025-05-31T15:13:16.911343666Z"}, {"price":0.2652,"duration":3600,"level":0,"startsAt":"2025-06-01T03:00:00Z"}, {"price":0.273,"duration":3600,"level":0,"startsAt":"2025-06-01T02:00:00Z"}, {"price":0.2747,"duration":3600,"level":0,"startsAt":"2025-06-01T01:00:00Z"}, {"price":0.2784,"duration":3600,"level":0,"startsAt":"2025-06-01T00:00:00Z"}, {"price":0.2804,"duration":3600,"level":0,"startsAt":"2025-06-01T17:00:00Z"}, {"price":0.288,"duration":3600,"level":0,"startsAt":"2025-05-31T23:00:00Z"}, {"price":0.2923,"duration":3600,"level":1,"startsAt":"2025-05-31T16:00:00Z"}, {"price":0.2943,"duration":3600,"level":1,"startsAt":"2025-06-01T21:00:00Z"}, {"price":0.2967,"duration":3600,"level":1,"startsAt":"2025-05-31T22:00:00Z"}, {"price":0.298,"duration":3600,"level":1,"startsAt":"2025-06-01T18:00:00Z"}, {"price":0.308,"duration":3600,"level":1,"startsAt":"2025-05-31T21:00:00Z"}, {"price":0.3126,"duration":3600,"level":1,"startsAt":"2025-06-01T20:00:00Z"}, {"price":0.3137,"duration":3600,"level":1,"startsAt":"2025-06-01T19:00:00Z"}, {"price":0.3429,"duration":3600,"level":1,"startsAt":"2025-05-31T17:00:00Z"}, {"price":0.3454,"duration":3600,"level":1,"startsAt":"2025-05-31T20:00:00Z"}, {"price":0.4155,"duration":3600,"level":2,"startsAt":"2025-05-31T18:00:00Z"}, {"price":0.4155,"duration":3600,"level":2,"startsAt":"2025-05-31T19:00:00Z"}]}
-```
+{
+    "size": 31,
+    "priceList": [
+        {
+            "price": 0.1623,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T12:00:00Z"
+        },
+        {
+            "price": 0.168,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T13:00:00Z"
+        },
+        {
+            "price": 0.1712,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T11:00:00Z"
+        },
+        {
+            "price": 0.1794,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T14:00:00Z"
+        },
+        {
+            "price": 0.18,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T10:00:00Z"
+        },
+        {
+            "price": 0.1841,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T09:00:00Z"
+        },
+        {
+            "price": 0.1854,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T15:00:00Z"
+        },
+        {
+            "price": 0.1859,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T08:00:00Z"
+        },
+        {
+            "price": 0.1866,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T07:00:00Z"
+        },
+        {
+            "price": 0.1894,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T06:00:00Z"
+        },
+        {
+            "price": 0.202,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T05:00:00Z"
+        },
+        {
+            "price": 0.2095,
+            "duration": 3600,
+            "level": -1,
+            "startsAt": "2025-06-01T16:00:00Z"
+        },
+        {
+            "price": 0.2292,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-06-01T04:00:00Z"
+        },
+        {
+            "price": 0.2358,
+            "duration": 2804,
+            "level": 0,
+            "startsAt": "2025-05-31T15:13:16.911343666Z"
+        },
+        {
+            "price": 0.2652,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-06-01T03:00:00Z"
+        },
+        {
+            "price": 0.273,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-06-01T02:00:00Z"
+        },
+        {
+            "price": 0.2747,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-06-01T01:00:00Z"
+        },
+        {
+            "price": 0.2784,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-06-01T00:00:00Z"
+        },
+        {
+            "price": 0.2804,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-06-01T17:00:00Z"
+        },
+        {
+            "price": 0.288,
+            "duration": 3600,
+            "level": 0,
+            "startsAt": "2025-05-31T23:00:00Z"
+        },
+        {
+            "price": 0.2923,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-05-31T16:00:00Z"
+        },
+        {
+            "price": 0.2943,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-06-01T21:00:00Z"
+        },
+        {
+            "price": 0.2967,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-05-31T22:00:00Z"
+        },
+        {
+            "price": 0.298,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-06-01T18:00:00Z"
+        },
+        {
+            "price": 0.308,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-05-31T21:00:00Z"
+        },
+        {
+            "price": 0.3126,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-06-01T20:00:00Z"
+        },
+        {
+            "price": 0.3137,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-06-01T19:00:00Z"
+        },
+        {
+            "price": 0.3429,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-05-31T17:00:00Z"
+        },
+        {
+            "price": 0.3454,
+            "duration": 3600,
+            "level": 1,
+            "startsAt": "2025-05-31T20:00:00Z"
+        },
+        {
+            "price": 0.4155,
+            "duration": 3600,
+            "level": 2,
+            "startsAt": "2025-05-31T18:00:00Z"
+        },
+        {
+            "price": 0.4155,
+            "duration": 3600,
+            "level": 2,
+            "startsAt": "2025-05-31T19:00:00Z"
+        }
+    ]
+}```
 
 ### `bestPricePeriod`
 
