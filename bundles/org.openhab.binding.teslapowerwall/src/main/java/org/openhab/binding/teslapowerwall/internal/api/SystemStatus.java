@@ -31,46 +31,46 @@ public class SystemStatus {
     public float batteryTargetPower;
 
     @SerializedName("battery_target_reactive_power")
-    public int batteryTargetReactivePower;
+    public float batteryTargetReactivePower;
 
     @SerializedName("nominal_full_pack_energy")
-    public int nominalFullPackEnergy;
+    public float nominalFullPackEnergy;
 
     @SerializedName("nominal_energy_remaining")
-    public int nominalEnergyRemaining;
+    public float nominalEnergyRemaining;
 
     @SerializedName("max_power_energy_remaining")
-    public int maxPowerEnergyRemaining;
+    public float maxPowerEnergyRemaining;
 
     @SerializedName("max_power_energy_to_be_charged")
-    public int maxPowerEnergyToBeCharged;
+    public float maxPowerEnergyToBeCharged;
 
     @SerializedName("max_charge_power")
-    public int maxChargePower;
+    public float maxChargePower;
 
     @SerializedName("max_discharge_power")
-    public int maxDischargePower;
+    public float maxDischargePower;
 
     @SerializedName("max_apparent_power")
-    public int maxApparentPower;
+    public float maxApparentPower;
 
     @SerializedName("instantaneous_max_discharge_power")
-    public int instantaneousMaxDischargePower;
+    public float instantaneousMaxDischargePower;
 
     @SerializedName("instantaneous_max_charge_power")
-    public int instantaneousMaxChargePower;
+    public float instantaneousMaxChargePower;
 
     @SerializedName("instantaneous_max_apparent_power")
-    public int instantaneousMaxApparentPower;
+    public float instantaneousMaxApparentPower;
 
     @SerializedName("hardware_capability_charge_power")
-    public int hardwareCapabilityChargePower;
+    public float hardwareCapabilityChargePower;
 
     @SerializedName("hardware_capability_discharge_power")
-    public int hardwareCapabilityDischargePower;
+    public float hardwareCapabilityDischargePower;
 
     @SerializedName("hardware_capability_adjusted_charge_power")
-    public int hardwareCapabilityAdjustedChargePower;
+    public float hardwareCapabilityAdjustedChargePower;
 
     @SerializedName("grid_services_power")
     public float gridServicesPower;
@@ -94,19 +94,19 @@ public class SystemStatus {
     public float ffrPowerAvailabilityLow;
 
     @SerializedName("load_charge_constraint")
-    public int loadChargeConstraint;
+    public float loadChargeConstraint;
 
     @SerializedName("max_sustained_ramp_rate")
-    public int maxSustainedRampRate;
+    public float maxSustainedRampRate;
 
     @SerializedName("can_reboot")
     public String canReboot = "";
 
     @SerializedName("smart_inv_delta_p")
-    public int smartInvDeltaP;
+    public float smartInvDeltaP;
 
     @SerializedName("smart_inv_delta_q")
-    public int smartInvDeltaQ;
+    public float smartInvDeltaQ;
 
     @SerializedName("last_toggle_timestamp")
     public String lastToggleTimestamp = "";
@@ -115,7 +115,7 @@ public class SystemStatus {
     public float solarRealPowerLimit;
 
     @SerializedName("score")
-    public int score;
+    public float score;
 
     @SerializedName("blocks_controlled")
     public int blocksControlled;
@@ -124,46 +124,46 @@ public class SystemStatus {
     public boolean primary;
 
     @SerializedName("auxiliary_load")
-    public int auxiliaryLoad;
+    public float auxiliaryLoad;
 
     @SerializedName("all_enable_lines_high")
     public boolean allEnableLinesHigh;
 
     @SerializedName("inverter_nominal_usable_power")
-    public int inverterNominalUsablePower;
+    public float inverterNominalUsablePower;
 
     @SerializedName("system_available_charge_power_design_pf")
-    public int systemAvailableChargePowerDesignPf;
+    public float systemAvailableChargePowerDesignPf;
 
     @SerializedName("system_available_discharge_power_design_pf")
-    public int systemAvailableDischargePowerDesignPf;
+    public float systemAvailableDischargePowerDesignPf;
 
     @SerializedName("system_available_charge_power_unity_pf")
-    public int systemAvailableChargePowerUnityPf;
+    public float systemAvailableChargePowerUnityPf;
 
     @SerializedName("system_available_discharge_power_unity_pf")
-    public int systemAvailableDischargePowerUnityPf;
+    public float systemAvailableDischargePowerUnityPf;
 
     @SerializedName("system_charge_power_capability_design_pf")
-    public int systemChargePowerCapabilityDesignPf;
+    public float systemChargePowerCapabilityDesignPf;
 
     @SerializedName("system_discharge_power_capability_design_pf")
-    public int systemDischargePowerCapabilityDesignPf;
+    public float systemDischargePowerCapabilityDesignPf;
 
     @SerializedName("system_charge_power_capability_unity_pf")
-    public int systemChargePowerCapabilityUnityPf;
+    public float systemChargePowerCapabilityUnityPf;
 
     @SerializedName("system_discharge_power_capability_unity_pf")
-    public int systemDischargePowerCapabilityUnityPf;
+    public float systemDischargePowerCapabilityUnityPf;
 
     @SerializedName("system_adjusted_charge_power_capability_design_pf")
-    public int systemAdjustedChargePowerCapabilityDesignPf;
+    public float systemAdjustedChargePowerCapabilityDesignPf;
 
     @SerializedName("system_adjusted_charge_power_capability_unity_pf")
-    public int systemAdjustedChargePowerCapabilityUnityPf;
+    public float systemAdjustedChargePowerCapabilityUnityPf;
 
     @SerializedName("expected_energy_remaining")
-    public int expectedEnergyRemaining;
+    public float expectedEnergyRemaining;
 
     public class BatteryBlocks {
         @SerializedName("Type")
@@ -203,10 +203,10 @@ public class SystemStatus {
         public float iOut;
 
         @SerializedName("energy_charged")
-        public int energyCharged;
+        public float energyCharged;
 
         @SerializedName("energy_discharged")
-        public int energyDischarged;
+        public float energyDischarged;
 
         @SerializedName("off_grid")
         public boolean offGrid;
