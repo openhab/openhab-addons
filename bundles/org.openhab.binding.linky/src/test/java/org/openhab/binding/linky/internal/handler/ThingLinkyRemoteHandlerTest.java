@@ -13,6 +13,7 @@
 package org.openhab.binding.linky.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.core.i18n.LocaleProvider;
@@ -47,9 +49,14 @@ public class ThingLinkyRemoteHandlerTest {
     @Mock
     TimeZoneProvider tzProvider;
 
+    @Mock
+    LinkyThingRemoteConfiguration config;
+
     @BeforeEach
     public void setUp() {
+        when(thing.getConfiguration()).thenReturn(new LinkyThingRemoteConfiguration());
     }
+
     /*
      * @AfterAll
      * public void tearDown() {
