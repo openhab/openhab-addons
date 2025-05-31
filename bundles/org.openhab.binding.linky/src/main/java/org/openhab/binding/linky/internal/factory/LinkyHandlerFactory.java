@@ -24,16 +24,10 @@ import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.handler.BridgeLocalD2LHandler;
-import org.openhab.binding.linky.internal.handler.BridgeLocalSerialHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteMyElectricalDataHandler;
-import org.openhab.binding.linky.internal.handler.ThingLinkyLocalHandler;
 import org.openhab.binding.linky.internal.handler.ThingLinkyRemoteHandler;
-import org.openhab.binding.linky.internal.handler.ThingTariffBaseHandler;
-import org.openhab.binding.linky.internal.handler.ThingTariffHpHcHandler;
-import org.openhab.binding.linky.internal.handler.ThingTariffTempoHandler;
 import org.openhab.binding.linky.internal.handler.ThingTempoCalendarHandler;
 import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -138,26 +132,8 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             BridgeRemoteMyElectricalDataHandler handler = new BridgeRemoteMyElectricalDataHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
-        } else if (THING_TYPE_D2L_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, gson);
-            return handler;
-        } else if (THING_TYPE_SERIAL_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeLocalSerialHandler handler = new BridgeLocalSerialHandler((Bridge) thing, serialPortManager, gson);
-            return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider);
-            return handler;
-        } else if (THING_TYPE_LINKY_LOCAL.equals(thing.getThingTypeUID())) {
-            ThingLinkyLocalHandler handler = new ThingLinkyLocalHandler(thing, localeProvider);
-            return handler;
-        } else if (THING_TYPE_BASE.equals(thing.getThingTypeUID())) {
-            ThingHandler handler = new ThingTariffBaseHandler(thing);
-            return handler;
-        } else if (THING_TYPE_HPHC.equals(thing.getThingTypeUID())) {
-            ThingHandler handler = new ThingTariffHpHcHandler(thing);
-            return handler;
-        } else if (THING_TYPE_TEMPO.equals(thing.getThingTypeUID())) {
-            ThingHandler handler = new ThingTariffTempoHandler(thing);
             return handler;
         } else if (THING_TYPE_TEMPO_CALENDAR.equals(thing.getThingTypeUID())) {
             ThingHandler handler = new ThingTempoCalendarHandler(thing);
