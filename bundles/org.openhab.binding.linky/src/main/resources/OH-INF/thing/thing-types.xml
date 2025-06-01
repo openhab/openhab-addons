@@ -17,22 +17,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="info" advanced="false">
-		<item-type>String</item-type>
-		<label>Information</label>
-		<description>an basic textual information from the supplier contract</description>
-		<category>energy</category>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="info-adv" advanced="true">
-		<item-type>String</item-type>
-		<label>Information</label>
-		<description>an basic textual information from the supplier contract</description>
-		<category>energy</category>
-		<state readOnly="true"></state>
-	</channel-type>
-
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
