@@ -131,6 +131,9 @@
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 			<channel id="child_lock" typeId="child_lock"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description>
 			<parameter name="haId" type="text" required="true">
@@ -149,6 +152,7 @@
 		<description>Home Connect connected combined washer dryer appliance.</description>
 		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
@@ -173,6 +177,9 @@
 			<channel id="program_progress_state" typeId="program_progress_state"/>
 			<channel id="child_lock" typeId="child_lock"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description>
 			<parameter name="haId" type="text" required="true">

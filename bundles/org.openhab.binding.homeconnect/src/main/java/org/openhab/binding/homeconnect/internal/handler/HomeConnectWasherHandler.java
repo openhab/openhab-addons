@@ -55,6 +55,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
+        handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
         handlers.put(CHANNEL_DOOR_STATE, defaultDoorStateChannelUpdateHandler());
         handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
         handlers.put(CHANNEL_OPERATION_STATE, defaultOperationStateChannelUpdateHandler());
@@ -102,6 +103,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default event handlers
+        handlers.put(EVENT_POWER_STATE, defaultPowerStateEventHandler());
         handlers.put(EVENT_DOOR_STATE, defaultDoorStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, updateRemoteControlActiveAndProgramOptionsStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
