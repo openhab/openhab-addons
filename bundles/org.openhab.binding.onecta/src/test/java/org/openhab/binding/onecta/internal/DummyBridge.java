@@ -154,7 +154,7 @@ public class DummyBridge implements Bridge {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override

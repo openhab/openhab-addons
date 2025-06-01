@@ -88,6 +88,7 @@ public class OnectaGatewayHandlerTest {
     public void initializeShouldCallTheCallback() {
         // we expect the handler#initialize method to call the callbackMock during execution and
         // pass it the thingMock and a ThingStatusInfo object containing the ThingStatus of the thingMock.
+        when(dataTransServiceMock.isAvailable()).thenReturn(true);
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(thingMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
     }

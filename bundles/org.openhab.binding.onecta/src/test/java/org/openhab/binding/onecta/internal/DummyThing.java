@@ -150,7 +150,7 @@ public class DummyThing implements Thing {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override
