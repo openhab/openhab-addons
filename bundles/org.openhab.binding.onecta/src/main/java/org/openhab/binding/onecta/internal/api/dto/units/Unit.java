@@ -29,7 +29,7 @@ public class Unit {
     private String deviceModel;
     private GatwaySubValueBoolean IsCloudConnectionUp;
     private List<ManagementPoint> managementPoints;
-    private String embeddedID;
+    private String embeddedId;
     private String timestamp;
 
     public String getId() {
@@ -56,8 +56,8 @@ public class Unit {
         return managementPoints;
     }
 
-    public String getEmbeddedID() {
-        return embeddedID;
+    public String getEmbeddedId() {
+        return embeddedId;
     }
 
     public String getTimestamp() {

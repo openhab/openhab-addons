@@ -62,7 +62,10 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
     @Override
     public void initialize() {
         config = getConfigAs(OnectaConfiguration.class);
-        updateStatus(ThingStatus.ONLINE);
+        if (dataTransService.isAvailable()) {
+            refreshDevice();
+        }
+        thing.setProperty(PROPERTY_GW_NAME, "");
     }
 
     @Override
@@ -70,8 +73,9 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
-            logger.debug("refreshGateway : {}", dataTransService.getUnitName());
-
+            logger.debug("refreshDevice : {}, {}", dataTransService.getManagementPointType(),
+                    dataTransService.getUnitName());
+            updateStatus(ThingStatus.ONLINE);
             getThing().setProperty(PROPERTY_GW_NAME, dataTransService.getUnitName());
 
             updateState(CHANNEL_GW_DAYLIGHTSAVINGENABLED, getDaylightSavingTimeEnabled());

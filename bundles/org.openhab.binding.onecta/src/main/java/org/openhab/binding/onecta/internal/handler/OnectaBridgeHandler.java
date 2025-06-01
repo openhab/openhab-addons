@@ -114,7 +114,9 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
                 List<Thing> things = getThing().getThings();
                 for (Thing t : things) {
-                    ((AbstractOnectaHandler) Objects.requireNonNull(t.getHandler())).refreshDevice();
+                    if (t.isEnabled()) {
+                        ((AbstractOnectaHandler) Objects.requireNonNull(t.getHandler())).refreshDevice();
+                    }
                 }
             } catch (DaikinCommunicationException e) {
                 logger.debug("DaikinCommunicationException: {}", e.getMessage());

@@ -158,9 +158,9 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
         config = getConfigAs(OnectaConfiguration.class);
         channelsRefreshDelay = new ChannelsRefreshDelay(
                 Long.parseLong(thing.getConfiguration().get("refreshDelay").toString()) * 1000);
-
-        updateStatus(ThingStatus.ONLINE);
-
+        if (dataTransService.isAvailable()) {
+            refreshDevice();
+        }
         thing.setProperty(CHANNEL_AC_NAME, "");
     }
 
@@ -169,8 +169,10 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
-            logger.debug("refreshDevice : {}", dataTransService.getUnitName());
+            logger.debug("refreshDevice : {}, {}", dataTransService.getManagementPointType(),
+                    dataTransService.getUnitName());
 
+            updateStatus(ThingStatus.ONLINE);
             getThing().setProperty(PROPERTY_AC_NAME, dataTransService.getUnitName());
 
             updateState(CHANNEL_AC_RAWDATA, getRawData());

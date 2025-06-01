@@ -38,6 +38,7 @@ public class DataTransportService {
     public DataTransportService(String unitId, Enums.ManagementPoint managementPointType) {
         this.unitId = unitId;
         this.managementPointType = managementPointType;
+        this.refreshUnit();
     }
 
     public void refreshUnit() {
@@ -51,6 +52,10 @@ public class DataTransportService {
 
     public Boolean isAvailable() {
         return this.unit != null && getManagementPoint(this.managementPointType) != null;
+    }
+
+    public Enums.ManagementPoint getManagementPointType() {
+        return managementPointType;
     }
 
     public ManagementPoint getManagementPoint(Enums.ManagementPoint managementPoint) {

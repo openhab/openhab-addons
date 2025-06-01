@@ -60,7 +60,9 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
     @Override
     public void initialize() {
         config = getConfigAs(OnectaConfiguration.class);
-        updateStatus(ThingStatus.ONLINE);
+        if (dataTransService.isAvailable()) {
+            refreshDevice();
+        }
     }
 
     @Override
@@ -72,7 +74,10 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
-            logger.debug("refreshIndoorUnit : {}", dataTransService.getUnitName());
+            logger.debug("refreshDevice : {}, {}", dataTransService.getManagementPointType(),
+                    dataTransService.getUnitName());
+
+            updateStatus(ThingStatus.ONLINE);
 
             getThing().setProperty(PROPERTY_IDU_MODELINFO, getModelInfo().toString());
             getThing().setProperty(PROPERTY_IDU_SOFTWAREVERSION, getSoftwareVerion().toString());
