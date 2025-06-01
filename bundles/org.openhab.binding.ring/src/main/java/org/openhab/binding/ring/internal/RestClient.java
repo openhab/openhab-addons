@@ -240,6 +240,8 @@ public class RestClient {
                 case 401:
                     // break;
                     throw new AuthenticationException("Invalid request");
+                case 429:
+                    throw new AuthenticationException("Account ratelimited");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
@@ -396,6 +398,8 @@ public class RestClient {
                     }
                 case 401:
                     throw new AuthenticationException("Invalid username or password.");
+                case 429:
+                    throw new AuthenticationException("Account ratelimited");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
@@ -598,6 +602,8 @@ public class RestClient {
                     }
                 case 401:
                     throw new AuthenticationException("Invalid username or password.");
+                case 429:
+                    throw new AuthenticationException("Account ratelimited");
                 default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());

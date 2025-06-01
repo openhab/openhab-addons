@@ -6,7 +6,7 @@
 
 	<!-- Account Bridge Type -->
 	<bridge-type id="account">
-		<label>Binding Bridge</label>
+		<label>Ring Account Bridge</label>
 		<description>Account with ring.com to access the devices</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
