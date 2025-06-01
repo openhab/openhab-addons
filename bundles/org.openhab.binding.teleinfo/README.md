@@ -62,11 +62,11 @@ Once the serial controller added, electricity meters will automatically appear a
 
 ## Thing Configuration
 
-| Thing type           | Parameter    | Meaning                               | Possible values                 |
-|----------------------|--------------|---------------------------------------|---------------------------------|
-| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX, rfc2217://ip:port |
-|                      | `ticMode`    | TIC mode                              | `STANDARD`, `HISTORICAL` (default) |
-| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number                |
+| Thing type           | Parameter    | Meaning                               | Possible values                     |
+|----------------------|--------------|---------------------------------------|-------------------------------------|
+| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX, rfc2217://ip:port     |
+|                      | `ticMode`    | TIC mode                              | `STANDARD`, `HISTORICAL` (default)  |
+| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number                    |
 
 ## Channels
 
@@ -114,41 +114,79 @@ Channel availability depends on the electricity connection (single or three-phas
 
 The following channels are available on all Linky telemeters in standard TIC mode.
 
-| Channel                         | Type                      | Description                                                                 |
-|---------------------------------|---------------------------|-----------------------------------------------------------------------------|
-| commonLSMGroup#ngtf             | `String`                  | Provider schedule name                                                      |
-| commonLSMGroup#ltarf            | `String`                  | Current pricing label                                                       |
-| commonLSMGroup#east             | `Number:Energy`           | Total active energy withdrawn                                               |
-| commonLSMGroup#easf_XX_         | `Number:Energy`           | Active energy withdrawn from provider on index _XX, XX_ in {01,...,10}      |
-| commonLSMGroup#easd_XX_         | `Number:Energy`           | Active energy withdrawn from distributor on index _XX, XX_ in {01,...,04}   |
-| commonLSMGroup#irms1            | `Number:ElectricCurrent`  | RMS Current on phase 1                                                      |
-| commonLSMGroup#urms1            | `Number:Potential`        | RMS Voltage on phase 1                                                      |
-| commonLSMGroup#pref             | `Number:Power`            | Reference apparent power                                                    |
-| commonLSMGroup#pcoup            | `Number:Power`            | Apparent power rupture capacity                                             |
-| commonLSMGroup#sinsts           | `Number:Power`            | Instantaneous withdrawn apparent power                                      |
-| commonLSMGroup#smaxsn           | `Number:Power`            | Maximum withdrawn apparent power of the day                                 |
-| commonLSMGroup#smaxsnMinus1     | `Number:Power`            | Maximum withdrawn apparent power of the previous day                        |
-| commonLSMGroup#ccasn            | `Number:Power`            | Active charge point N                                                       |
-| commonLSMGroup#ccasnMinus1      | `Number:Power`            | Active charge point N-1                                                     |
-| commonLSMGroup#umoy1            | `Number:Potential`        | Mean Voltage on phase 1                                                     |
-| commonLSMGroup#dpm_X_           | `String`                  | Start of mobile peak period _X, X_ in {1,2,3}                               |
-| commonLSMGroup#fpm_X_           | `String`                  | End of mobile peak period _X, X_ in {1,2,3}                                 |
-| commonLSMGroup#msg1             | `String`                  | Short message                                                               |
-| commonLSMGroup#msg2             | `String`                  | Very short message                                                          |
-| commonLSMGroup#ntarf            | `String`                  | Index of current pricing                                                    |
-| commonLSMGroup#njourf           | `String`                  | Number of current provider schedule                                         |
-| commonLSMGroup#njourfPlus1      | `String`                  | Number of next day provider schedule                                        |
-| commonLSMGroup#pjourfPlus1      | `String`                  | Profile of next day provider schedule                                       |
-| commonLSMGroup#ppointe          | `String`                  | Profile of next rush day                                                    |
-| commonLSMGroup#date             | `DateTime`                | Date and Time                                                               |
-| commonLSMGroup#smaxsnDate       | `DateTime`                | Timestamp of SMAXSN value                                                   |
-| commonLSMGroup#smaxsnMinus1Date | `DateTime`                | Timestamp of SMAXSN-1 value                                                 |
-| commonLSMGroup#ccasnDate        | `DateTime`                | Timestamp of CCASN value                                                    |
-| commonLSMGroup#ccasnMinus1Date  | `DateTime`                | Timestamp of CCASN-1 value                                                  |
-| commonLSMGroup#umoy1Date        | `DateTime`                | Timestamp of UMOY1 value                                                    |
-| commonLSMGroup#dpm_X_Date       | `DateTime`                | Date of DPM_X_, _X_ in {1,2,3}                                              |
-| commonLSMGroup#fpm_X_Date       | `DateTime`                | Date of FPM_X_, _X_ in {1,2,3}                                              |
-| commonLSMGroup#relais_X_        | `Switch`                  | state of relais _X, X_ in {1,...,8}                                         |
+| Channel                         		| Type                           | Description                                                                 |
+|---------------------------------------|--------------------------------|-----------------------------------------------------------------------------|
+| commonLSMGroup#ngtf             		| `String`                       | Provider schedule name                                                      |
+| commonLSMGroup#ltarf            		| `String`                       | Current pricing label                                                       |
+| commonLSMGroup#east             		| `Number:Energy`                | Total active energy withdrawn                                               |
+| commonLSMGroup#easf_XX_         		| `Number:Energy`                | Active energy withdrawn from provider on index _XX, XX_ in {01,...,10}      |
+| commonLSMGroup#easd_XX_         		| `Number:Energy`                | Active energy withdrawn from distributor on index _XX, XX_ in {01,...,04}   |
+| commonLSMGroup#irms1            		| `Number:ElectricCurrent`       | RMS Current on phase 1                                                      |
+| commonLSMGroup#urms1            		| `Number:Potential`             | RMS Voltage on phase 1                                                      |
+| commonLSMGroup#pref             		| `Number:Power`                 | Reference apparent power                                                    |
+| commonLSMGroup#pcoup            		| `Number:Power`                 | Apparent power rupture capacity                                             |
+| commonLSMGroup#sinsts           		| `Number:Power`                 | Instantaneous withdrawn apparent power                                      |
+| commonLSMGroup#smaxsn           		| `Number:Power`                 | Maximum withdrawn apparent power of the day                                 |
+| commonLSMGroup#smaxsnMinus1    		| `Number:Power`                 | Maximum withdrawn apparent power of the previous day                        |
+| commonLSMGroup#ccasn            		| `Number:Power`                 | Active charge point N                                                       |
+| commonLSMGroup#ccasnMinus1      		| `Number:Power`                 | Active charge point N-1                                                     |
+| commonLSMGroup#umoy1            		| `Number:Potential`             | Mean Voltage on phase 1                                                     |
+| commonLSMGroup#dpm_X_           		| `String`                       | Start of mobile peak period _X, X_ in {1,2,3}                               |
+| commonLSMGroup#fpm_X_           		| `String`                       | End of mobile peak period _X, X_ in {1,2,3}                                 |
+| commonLSMGroup#msg1             		| `String`                       | Short message                                                               |
+| commonLSMGroup#msg2             		| `String`                       | Very short message                                                          |
+| commonLSMGroup#ntarf            		| `String`                       | Index of current pricing                                                    |
+| commonLSMGroup#njourf           		| `String`                       | Number of current provider schedule                                         |
+| commonLSMGroup#njourfPlus1      		| `String`                       | Number of next day provider schedule                                        |
+| commonLSMGroup#pjourfPlus1      		| `String`                       | Profile of next day provider schedule                                       |
+| commonLSMGroup#ppointe          		| `String`                       | Profile of next rush day                                                    |
+| commonLSMGroup#date             		| `DateTime`                     | Date and Time                                                               |
+| commonLSMGroup#smaxsnDate       		| `DateTime`                     | Timestamp of SMAXSN value                                                   |
+| commonLSMGroup#smaxsnMinus1Date 		| `DateTime`                     | Timestamp of SMAXSN-1 value                                                 |
+| commonLSMGroup#ccasnDate        		| `DateTime`                     | Timestamp of CCASN value                                                    |
+| commonLSMGroup#ccasnMinus1Date  		| `DateTime`                     | Timestamp of CCASN-1 value                                                  |
+| commonLSMGroup#umoy1Date        		| `DateTime`                     | Timestamp of UMOY1 value                                                    |
+| commonLSMGroup#dpm_X_Date     		| `DateTime`                     | Date of DPM_X_, _X_ in {1,2,3}                                              |
+| commonLSMGroup#fpm_X_Date      		| `DateTime`                     | Date of FPM_X_, _X_ in {1,2,3}                                              |
+| commonLSMGroup#relais_X_        		| `Switch`                       | state of relais _X, X_ in {1,...,8}                                         |
+| commonLSMGroup#irms1f                 | `current`                      | Floating value for Irms1                                                          |
+| commonLSMGroup#cosphi                 | `powerFactor`                  | Channel to feed external cosPhi calculation                                       |
+| commonLSMGroup#sactive                | `power`                    	 | Active power calculate from apparent power and Cosphi                             |
+| commonLSMGroup#sreactive              | `power`              	     	 | Reactive power calculate from apparent power and Cosphi                           |
+| commonLSMGroup#contac-sec             | `contact`                  	 | Stge decode : contact Sec Value                                                   |
+| commonLSMGroup#cut-off                | `cutoff`                   	 | Stge decode :  of cutoff                                                      |
+| commonLSMGroup#cache                  | `contact`                  	 | Stge decode : linky cache state                                                   |
+| commonLSMGroup#over-voltage           | `over-voltage-state`       	 | Stge decode : overvoltage state                                               |
+| commonLSMGroup#exceeding-power        | `exceeding-power-state`    	 | Stge decode : exceding power state                                            |
+| commonLSMGroup#function               | `function`                 	 | Stge decode : function                                                        |
+| commonLSMGroup#direction              | `direction`                	 | Stge decode : direction                                                       |
+| commonLSMGroup#supplier-rate          | `rate`                     	 | Stge decode : supplier rate index                                                 |
+| commonLSMGroup#distributor-rate       | `rate`                     	 | Stge decode : distributor rate index                                              |
+| commonLSMGroup#clock                  | `contact`                  	 | Stge decode : clock state                                                         |
+| commonLSMGroup#plc                    | `plc`                      	 | Stge decode : PLC                                                             |
+| commonLSMGroup#outputcom              | `ouputcomState`            	 | Stge decode : Output com state                                                |
+| commonLSMGroup#plc-state              | `plcState`                 	 | Stge decode : PLC state                                                       |
+| commonLSMGroup#plc-synchro            | `synchroPlcState`         	 | Stge decode : PLC Synchro state                                               |
+| commonLSMGroup#tempo-today            | `tempo`                    	 | Stge decode : Today tempo color                                                   |
+| commonLSMGroup#tempo-tomorrow         | `tempo`                    	 | Stge decode : Tomorrow tempo color                                                |
+| commonLSMGroup#advice-moving-tips     | `movingTips`               	 | Stge decode : Advice of moving tips                                           |
+| commonLSMGroup#moving-tips            | `movingTips`               	 | Stge decode : Current moving tips                                             |
+| commonLSMGroup#pjourf1-plus1          | `String`                   	 | Pjourf decode : Slot 1                                                            |
+| commonLSMGroup#pjourf2-plus1          | `String`                   	 | Pjourf decode : Slot 2                                                            |
+| commonLSMGroup#pjourf3-plus1          | `String`                   	 | Pjourf decode : Slot 3                                                            |
+| commonLSMGroup#pjourf4-plus1          | `String`                   	 | Pjourf decode : Slot 4                                                            |
+| commonLSMGroup#pjourf5-plus1          | `String`                   	 | Pjourf decode : Slot 5                                                            |
+| commonLSMGroup#pjourf6-plus1          | `String`                   	 | Pjourf decode : Slot 6                                                            |
+| commonLSMGroup#pjourf7-plus1          | `String`                   	 | Pjourf decode : Slot 7                                                            |
+| commonLSMGroup#pjourf8-plus1          | `String`                   	 | Pjourf decode : Slot 8                                                            |
+| commonLSMGroup#ppointe1               | `String`                   	 | PPointe decode : Slot 1                                                           |
+| commonLSMGroup#ppointe2               | `String`                   	 | PPointe decode : Slot 2                                                           |
+| commonLSMGroup#ppointe3               | `String`                   	 | PPointe decode : Slot 3                                                           |
+| commonLSMGroup#ppointe4               | `String`                   	 | PPointe decode : Slot 4                                                           |
+| commonLSMGroup#ppointe5               | `String`                   	 | PPointe decode : Slot 5                                                           |
+| commonLSMGroup#ppointe6               | `String`                   	 | PPointe decode : Slot 6                                                           |
+| commonLSMGroup#ppointe7               | `String`                   	 | PPointe decode : Slot 7                                                           |
+| commonLSMGroup#ppointe8               | `String`                   	 | PPointe decode : Slot 8                                                           |
 
 #### Three phase only channels
 
