@@ -188,29 +188,7 @@ Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:myelectricaldata:lo
 
 The retrieved information is available in multiple groups.
 
-- The Main group will give information about the contract linked to this linky.
 
-  | Channel ID                                        | Item Type         | Description                                                                   |
-  |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | main#identitiy                                    | info              | The full name of the contract older                                           |
-  | main#contract-subscribed-power                    | info              | The subscribed max Power                                                      |
-  | main#contract-last-activationdate                 | info              | The contract activation date                                                  |
-  | main#contract-distribution-tariff                 | info              | The current applied tarif                                                     |
-  | main#contract-offpeak-hours                       | info              | The OffPeakHour link to your contract                                         |
-  | main#contract-status                              | info              | The current contract status                                                   |
-  | main#contract-type                                | info              | The contract type                                                             |
-  | main#contract-lastdistribution-tariff-changedate  | info              | The date of the last tariff change                                            |
-  | main#contract-segment                             | info              | The customer segment for this contract                                        |
-  | main#usage-point-id                               | info              | The distribution / usage point uniq indentifier                               |
-  | main#usage-point-status                           | info              | The usage point current state                                                 |
-  | main#usage-point-meter-type                       | info              | The usage point meter type                                                    |
-  | main#usage-point-address-city                     | info              | The usage point City                                                          |
-  | main#usage-point-address-country                  | info              | The usage point Country                                                       |
-  | main#usage-point-address-insee-code               | info              | The usage point Insee Code                                                    |
-  | main#usage-point-address-postal-code              | info              | The usage point Postal Code                                                   |
-  | main#usage-point-address-street                   | info              | The usage point Address Street                                                |
-  | main#contact-mail                                 | info              | The usage point Contact Mail                                                  |
-  | main#contact-phone                                | info              | The usage point Contact Phone                                                 |
 
 - The daily group will give consumtion information with day granularity
 
@@ -264,6 +242,30 @@ The retrieved information is available in multiple groups.
   |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
   | load-curve#power                                  | power             | The load curve data                                                           |
 
+
+- You will also find some Information as properties on the linky things
+
+  | Channel ID                                        | Description                                                                   |
+  |---------------------------------------------------|-------------------------------------------------------------------------------|
+  | identitiy                                         | The full name of the contract older                                           |
+  | contractSubscribedPower                           | The subscribed max Power                                                      |
+  | contractLastActivationdate                        | The contract activation date                                                  |
+  | contractDistributionTariff                        | The current applied tarif                                                     |
+  | contractOffpeakHours                              | The OffPeakHour link to your contract                                         |
+  | contractStatus                                    | The current contract status                                                   |
+  | contractType                                      | The contract type                                                             |
+  | contractLastdistributionTariffChangedate          | The date of the last tariff change                                            |
+  | contractSegment                                   | The customer segment for this contract                                        |
+  | usagePointId                                      | The distribution / usage point uniq indentifier                               |
+  | usagePointStatus                                  | The usage point current state                                                 |
+  | usagePointMeterType                               | The usage point meter type                                                    |
+  | usagePointCity                                    | The usage point City                                                          |
+  | usagePointCountry                                 | The usage point Country                                                       |
+  | usagePointPostalCode                              | The usage point Postal Code                                                   |
+  | usagePointStreet                                  | The usage point Address Street                                                |
+  | contactMail                                       | The usage point Contact Mail                                                  |
+  | contactPhone                                      | The usage point Contact Phone                                                 |
+  
 ### Full Example
 
 #### Remote Enedis Web Connection
