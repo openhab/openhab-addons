@@ -198,9 +198,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-mandatory-settings");
-
-                return;
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
