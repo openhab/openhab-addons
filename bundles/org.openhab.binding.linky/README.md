@@ -4,8 +4,6 @@ This binding enables the exploitation of electricity consumption data, mainly fo
 It supports different functionalities:
 
 - Connection to Enedis to retrieve consumption data online.
-- Direct connection to an electricity meter, such as Linky Meter, to access real-time data.
-- Connection to the data.gouv.fr API to obtain regulated electricity prices.
 - Connection to the RTE API to get Tempo Red/White/Blue calendar information.
 
 
@@ -234,7 +232,7 @@ The retrieved information is available in multiple groups.
   | yearly#lastYear                                   | consumption       | Last year energy usage                                                        |
   | yearly#year-2                                     | consumption       | year-2 energy usage                                                           |
   | yearly#consumption                                | consumption       | timeseries for years energy usage                                             |
-  | yearly#maxPower                                   | power             | timeseries for max-power yearly usage                                         |
+  | yearly#max-power                                  | power             | timeseries for max-power yearly usage                                         |
  
 - The load-curve group will give you access to load curve data with granularity as low as 30mn
 
