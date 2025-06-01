@@ -44,11 +44,11 @@ public class ExpiringDayCache<V> {
     private final String name;
     private final int beginningHour;
     private final int beginningMinute;
-
     private Supplier<@Nullable V> action;
 
     private @Nullable V value;
     private LocalDateTime expiresAt;
+    public boolean missingData = false;
 
     /**
      * Create a new instance.
@@ -78,6 +78,18 @@ public class ExpiringDayCache<V> {
             logger.debug("getValue from cache \"{}\" is returning a cached value", name);
         }
         return Optional.ofNullable(cachedValue);
+    }
+
+    /**
+     * Returns if the value is Present or not.
+     */
+    public boolean isPresent() {
+        V cachedValue = value;
+        return (cachedValue != null && !isExpired());
+    }
+
+    public void invalidate() {
+        value = null;
     }
 
     /**

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="tempo-calendar">
+		<label>Tempo</label>
+		<channels>
+			<channel id="tempo-info-today" typeId="tempo-value">
+				<label>Tempo Today Color</label>
+			</channel>
+			<channel id="tempo-info-tomorrow" typeId="tempo-value">
+				<label>Tempo Today Color</label>
+			</channel>
+			<channel id="tempo-info-timeseries" typeId="tempo-value">
+				<label>Tempo Day Information</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
