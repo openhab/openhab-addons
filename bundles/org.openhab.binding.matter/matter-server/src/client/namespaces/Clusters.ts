@@ -1,21 +1,19 @@
 import { Logger } from "@matter/general";
-import { ControllerNode } from "../ControllerNode";
-import { convertJsonDataWithModel } from "../../util/Json";
 import { ClusterId, ValidationError } from "@matter/main/types";
-import * as MatterClusters from "@matter/types/clusters";
-import { SupportedAttributeClient } from "@matter/protocol"
 import { ClusterModel, MatterModel } from "@matter/model";
-import { camelize, capitalize } from "../../util/String";
+import { SupportedAttributeClient } from "@matter/protocol";
+import { convertJsonDataWithModel } from "../../util/Json";
+import { capitalize } from "../../util/String";
+import { ControllerNode } from "../ControllerNode";
 
 const logger = Logger.get("Clusters");
 
 /**
- * This class is used for websocket clients interacting with Matter Clusters to send commands like OnOff, LevelControl, etc... 
+ * This class is used for websocket clients interacting with Matter Clusters to send commands like OnOff, LevelControl, etc...
  * Methods not marked as private are intended to be exposed to websocket clients
  */
 export class Clusters {
-    constructor(private controllerNode: ControllerNode) {
-    }
+    constructor(private controllerNode: ControllerNode) {}
 
     /**
      * Dynamically executes a command on a specified cluster within a device node.
@@ -41,34 +39,40 @@ export class Clusters {
             throw new Error(`Cluster ID for ${clusterName} not found`);
         }
 
-        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
+        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterName} not found`);
         }
-        
+
         const uppercaseName = capitalize(commandName);
         const command = cluster.commands.find(c => c.name === uppercaseName);
         if (command == undefined) {
             throw new Error(`Cluster Function ${commandName} not found`);
         }
 
-        let convertedArgs: any = undefined; 
+        let convertedArgs: any = undefined;
         if (args !== undefined && Object.keys(args).length > 0) {
             convertedArgs = convertJsonDataWithModel(command, args);
         }
-        
+
         return clusterClient.commands[commandName](convertedArgs);
     }
 
     /**
      * Writes an attribute to a device (not all attributes are writable)
-     * @param nodeId 
-     * @param endpointId 
-     * @param clusterName 
-     * @param attributeName 
-     * @param value 
+     * @param nodeId
+     * @param endpointId
+     * @param clusterName
+     * @param attributeName
+     * @param value
      */
-    async writeAttribute(nodeId: number, endpointId: number, clusterName: string, attributeName: string, value: string) {
+    async writeAttribute(
+        nodeId: number,
+        endpointId: number,
+        clusterName: string,
+        attributeName: string,
+        value: string,
+    ) {
         let parsedValue: any;
         try {
             parsedValue = JSON.parse(value);
@@ -76,7 +80,7 @@ export class Clusters {
             try {
                 parsedValue = JSON.parse(`"${value}"`);
             } catch (innerError) {
-                throw new Error(`ERROR: Could not parse value ${value} as JSON.`)
+                throw new Error(`ERROR: Could not parse value ${value} as JSON.`);
             }
         }
 
@@ -90,14 +94,14 @@ export class Clusters {
             throw new Error(`Cluster ID for ${clusterName} not found`);
         }
 
-        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
+        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterName} not found`);
         }
-        
+
         const attributeClient = clusterClient.attributes[attributeName];
         if (!(attributeClient instanceof SupportedAttributeClient)) {
-            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`)
+            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`);
         }
 
         const uppercaseName = capitalize(attributeName);
@@ -114,20 +118,21 @@ export class Clusters {
             );
         } catch (error) {
             if (error instanceof ValidationError) {
-                throw new Error(`Could not validate data for attribute ${attributeName} to ${Logger.toJSON(parsedValue)}: ${error}${error.fieldName !== undefined ? ` in field ${error.fieldName}` : ""}`,
-                )
+                throw new Error(
+                    `Could not validate data for attribute ${attributeName} to ${Logger.toJSON(parsedValue)}: ${error}${error.fieldName !== undefined ? ` in field ${error.fieldName}` : ""}`,
+                );
             } else {
-                throw new Error(`Could not set attribute ${attributeName} to ${Logger.toJSON(parsedValue)}: ${error}`)
+                throw new Error(`Could not set attribute ${attributeName} to ${Logger.toJSON(parsedValue)}: ${error}`);
             }
         }
     }
 
     /**
      * Reads an attribute from a device
-     * @param nodeId 
-     * @param endpointId 
-     * @param clusterName 
-     * @param attributeName 
+     * @param nodeId
+     * @param endpointId
+     * @param clusterName
+     * @param attributeName
      */
     async readAttribute(nodeId: number, endpointId: number, clusterName: string, attributeName: string) {
         const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
@@ -140,14 +145,14 @@ export class Clusters {
             throw new Error(`Cluster ID for ${clusterName} not found`);
         }
 
-        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
+        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterName} not found`);
         }
-        
+
         const attributeClient = clusterClient.attributes[attributeName];
         if (!(attributeClient instanceof SupportedAttributeClient)) {
-            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`)
+            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`);
         }
 
         const uppercaseName = capitalize(attributeName);
@@ -159,31 +164,32 @@ export class Clusters {
         return await attributeClient.get(true);
     }
 
-     /**
+    /**
      * Requests all attributes data for a single endpoint and its children
-     * @param nodeId 
-     * @param endpointId 
-     * @returns 
+     * @param nodeId
+     * @param endpointId
+     * @returns
      */
-     async readCluster(nodeId: string | number, endpointId: number, clusterNameOrId: string | number) {
+    async readCluster(nodeId: string | number, endpointId: number, clusterNameOrId: string | number) {
         const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device === undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
 
-        const clusterId = typeof clusterNameOrId === 'string' ? this.#clusterForName(clusterNameOrId).id : clusterNameOrId;
+        const clusterId =
+            typeof clusterNameOrId === "string" ? this.#clusterForName(clusterNameOrId).id : clusterNameOrId;
         if (clusterId === undefined) {
             throw new Error(`Cluster ID for ${clusterNameOrId} not found`);
         }
-        
-        const clusterClient = device.getClusterClientById(ClusterId(clusterId));       
+
+        const clusterClient = device.getClusterClientById(ClusterId(clusterId));
         if (clusterClient === undefined) {
             throw new Error(`Cluster client for ${clusterNameOrId} not found`);
         }
 
         const clusterData: any = {
             id: clusterClient.id,
-            name: clusterClient.name
+            name: clusterClient.name,
         };
 
         // Serialize attributes

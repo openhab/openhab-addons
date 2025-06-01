@@ -1,9 +1,9 @@
 import { Logger } from "@matter/general";
-import { ControllerNode } from "./ControllerNode";
-import { Nodes } from "./namespaces/Nodes";
-import { Clusters } from "./namespaces/Clusters";
 import { WebSocketSession } from "../app";
 import { Controller } from "../Controller";
+import { ControllerNode } from "./ControllerNode";
+import { Clusters } from "./namespaces/Clusters";
+import { Nodes } from "./namespaces/Nodes";
 
 const logger = Logger.get("ClientController");
 
@@ -11,21 +11,23 @@ const logger = Logger.get("ClientController");
  * This class exists to expose the "nodes" and "clusters" namespaces to websocket clients
  */
 export class ClientController extends Controller {
-
     nodes?: Nodes;
     clusters?: Clusters;
     controllerNode: ControllerNode;
     controllerName: string;
 
-    constructor(override ws: WebSocketSession, override params: URLSearchParams) {
+    constructor(
+        override ws: WebSocketSession,
+        override params: URLSearchParams,
+    ) {
         super(ws, params);
-        const stringId = this.params.get('nodeId');
+        const stringId = this.params.get("nodeId");
         const nodeId = stringId != null ? parseInt(stringId) : null;
-        let storagePath = this.params.get('storagePath');
-        let controllerName = this.params.get('controllerName');
+        let storagePath = this.params.get("storagePath");
+        let controllerName = this.params.get("controllerName");
 
         if (nodeId === null || storagePath === null || controllerName === null) {
-            throw new Error('Missing required parameters in the request');
+            throw new Error("Missing required parameters in the request");
         }
 
         this.controllerName = controllerName;
@@ -56,12 +58,12 @@ export class ClientController extends Controller {
 
         logger.debug(`Executing function ${namespace}.${functionName}(${Logger.toJSON(args)})`);
 
-        if (typeof controllerAny[namespace] !== 'object') {
+        if (typeof controllerAny[namespace] !== "object") {
             throw new Error(`Namespace ${namespace} not found`);
         }
 
         baseObject = controllerAny[namespace];
-        if (typeof baseObject[functionName] !== 'function') {
+        if (typeof baseObject[functionName] !== "function") {
             throw new Error(`Function ${functionName} not found`);
         }
 

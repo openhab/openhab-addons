@@ -1,24 +1,21 @@
-import { NodeCommissioningOptions } from "@project-chip/matter.js";
-import { GeneralCommissioning, OperationalCredentialsCluster } from "@matter/main/clusters";
-import { ManualPairingCodeCodec, QrPairingCodeCodec, QrCode, NodeId, FabricIndex } from "@matter/types";
 import { Logger } from "@matter/main";
+import { GeneralCommissioning, OperationalCredentialsCluster } from "@matter/main/clusters";
+import { FabricIndex, ManualPairingCodeCodec, NodeId, QrCode, QrPairingCodeCodec } from "@matter/types";
+import { NodeCommissioningOptions } from "@project-chip/matter.js";
 import { ControllerNode } from "../ControllerNode";
 
 const logger = Logger.get("matter");
-
 
 /**
  * This class is used for exposing Matter nodes. This includes node lifecycle functions, node fabrics, node data, and other node related methods to websocket clients.
  * Methods not marked as private are intended to be exposed to websocket clients
  */
 export class Nodes {
-
-    constructor(private controllerNode: ControllerNode) {
-    }
+    constructor(private controllerNode: ControllerNode) {}
 
     /**
      * Returns all commissioned nodes Ids
-     * @returns 
+     * @returns
      */
     async listNodes() {
         if (this.controllerNode.commissioningController === undefined) {
@@ -26,24 +23,24 @@ export class Nodes {
         }
         return this.controllerNode.getCommissionedNodes();
     }
-    
+
     /**
      * Initializes a node and connects to it
-     * @param nodeId 
-     * @returns 
+     * @param nodeId
+     * @returns
      */
     async initializeNode(nodeId: string | number) {
         return this.controllerNode.initializeNode(nodeId);
     }
-    
+
     /**
      * Requests all attributes data for a node
-     * @param nodeId 
-     * @returns 
+     * @param nodeId
+     * @returns
      */
     async requestAllData(nodeId: string | number) {
-         const node = await this.controllerNode.getNode(nodeId);
-         if (node.initialized) {
+        const node = await this.controllerNode.getNode(nodeId);
+        if (node.initialized) {
             return this.controllerNode.sendSerializedNode(node);
         } else {
             throw new Error(`Node ${nodeId} not initialized`);
@@ -52,9 +49,9 @@ export class Nodes {
 
     /**
      * Requests all attributes data for a single endpoint and its children
-     * @param nodeId 
-     * @param endpointId 
-     * @returns 
+     * @param nodeId
+     * @param endpointId
+     * @returns
      */
     async requestEndpointData(nodeId: string | number, endpointId: number) {
         const node = await this.controllerNode.getNode(nodeId);
@@ -64,25 +61,29 @@ export class Nodes {
             throw new Error(`Node ${nodeId} not initialized`);
         }
     }
-    
+
     /**
      * Pairs a node using a pairing code, supports multiple pairing code formats
-     * @param pairingCode 
-     * @param shortDiscriminator 
-     * @param setupPinCode 
-     * @returns 
+     * @param pairingCode
+     * @param shortDiscriminator
+     * @param setupPinCode
+     * @returns
      */
-    async pairNode(pairingCode: string | undefined, shortDiscriminator: number | undefined, setupPinCode: number | undefined) {
+    async pairNode(
+        pairingCode: string | undefined,
+        shortDiscriminator: number | undefined,
+        setupPinCode: number | undefined,
+    ) {
         let discriminator: number | undefined;
         let nodeIdStr: string | undefined;
         let ipPort: number | undefined;
         let ip: string | undefined;
         let instanceId: string | undefined;
-        let ble = false
+        let ble = false;
 
         if (typeof pairingCode === "string" && pairingCode.trim().length > 0) {
             pairingCode = pairingCode.trim();
-            if (pairingCode.toUpperCase().indexOf('MT:') == 0) {
+            if (pairingCode.toUpperCase().indexOf("MT:") == 0) {
                 const qrcode = QrPairingCodeCodec.decode(pairingCode.toUpperCase())[0];
                 setupPinCode = qrcode.passcode;
                 discriminator = qrcode.discriminator;
@@ -104,30 +105,27 @@ export class Nodes {
 
         const options = {
             discovery: {
-                knownAddress:
-                    ip !== undefined && ipPort !== undefined
-                        ? { ip, port: ipPort, type: "udp" }
-                        : undefined,
+                knownAddress: ip !== undefined && ipPort !== undefined ? { ip, port: ipPort, type: "udp" } : undefined,
                 identifierData:
                     instanceId !== undefined
                         ? { instanceId }
                         : discriminator !== undefined
-                            ? { longDiscriminator: discriminator }
-                            : shortDiscriminator !== undefined
-                                ? { shortDiscriminator }
-                                : {},
+                          ? { longDiscriminator: discriminator }
+                          : shortDiscriminator !== undefined
+                            ? { shortDiscriminator }
+                            : {},
                 discoveryCapabilities: {
                     ble,
                     onIpNetwork: true,
                 },
             },
-            passcode: setupPinCode
+            passcode: setupPinCode,
         } as NodeCommissioningOptions;
 
         options.commissioning = {
             nodeId: nodeId !== undefined ? NodeId(nodeId) : undefined,
             regulatoryLocation: GeneralCommissioning.RegulatoryLocationType.Outdoor, // Set to the most restrictive if relevant
-            regulatoryCountryCode: "XX"
+            regulatoryCountryCode: "XX",
         };
 
         if (this.controllerNode.Store.has("WiFiSsid") && this.controllerNode.Store.has("WiFiPassword")) {
@@ -136,21 +134,14 @@ export class Nodes {
                 wifiCredentials: await this.controllerNode.Store.get<string>("WiFiPassword", ""),
             };
         }
-        if (
-            this.controllerNode.Store.has("ThreadName") &&
-            this.controllerNode.Store.has("ThreadOperationalDataset")
-        ) {
+        if (this.controllerNode.Store.has("ThreadName") && this.controllerNode.Store.has("ThreadOperationalDataset")) {
             options.commissioning.threadNetwork = {
                 networkName: await this.controllerNode.Store.get<string>("ThreadName", ""),
-                operationalDataset: await this.controllerNode.Store.get<string>(
-                    "ThreadOperationalDataset",
-                    "",
-                ),
+                operationalDataset: await this.controllerNode.Store.get<string>("ThreadOperationalDataset", ""),
             };
         }
 
-        const commissionedNodeId =
-            await this.controllerNode.commissioningController.commissionNode(options);
+        const commissionedNodeId = await this.controllerNode.commissioningController.commissionNode(options);
 
         console.log(`Commissioned Node: ${commissionedNodeId}`);
         return commissionedNodeId;
@@ -158,7 +149,7 @@ export class Nodes {
 
     /**
      * Disconnects a node
-     * @param nodeId 
+     * @param nodeId
      */
     async disconnectNode(nodeId: number | string) {
         const node = this.controllerNode.getNode(nodeId);
@@ -167,7 +158,7 @@ export class Nodes {
 
     /**
      * Reconnects a node
-     * @param nodeId 
+     * @param nodeId
      */
     async reconnectNode(nodeId: number | string) {
         const node = await this.controllerNode.getNode(nodeId);
@@ -176,8 +167,8 @@ export class Nodes {
 
     /**
      * Returns the fabrics for a node. Fabrics are the set of matter networks that the node has been commissioned to (openhab, Alexa, Google, Apple, etc)
-     * @param nodeId 
-     * @returns 
+     * @param nodeId
+     * @returns
      */
     async getFabrics(nodeId: number | string) {
         const node = await this.controllerNode.getNode(nodeId);
@@ -190,9 +181,9 @@ export class Nodes {
 
     /**
      * Removes a fabric from a node, effectively decommissioning the node from the specific network
-     * @param nodeId 
-     * @param index 
-     * @returns 
+     * @param nodeId
+     * @param index
+     * @returns
      */
     async removeFabric(nodeId: number | string, index: number) {
         if (this.controllerNode.commissioningController === undefined) {
@@ -210,7 +201,6 @@ export class Nodes {
             throw new Error(`OperationalCredentialsCluster for node ${nodeId} not found.`);
         }
 
-
         const fabricInstance = FabricIndex(index);
         const ourFabricIndex = await operationalCredentialsCluster.getCurrentFabricIndexAttribute(true);
 
@@ -223,24 +213,24 @@ export class Nodes {
 
     /**
      * Removes a node from the commissioning controller
-     * @param nodeId 
+     * @param nodeId
      */
     async removeNode(nodeId: number | string) {
-       await this.controllerNode.removeNode(nodeId);
+        await this.controllerNode.removeNode(nodeId);
     }
 
     /**
      * Returns active session information for all connected nodes.
-     * @returns 
+     * @returns
      */
     sessionInformation() {
-        return this.controllerNode.commissioningController?.getActiveSessionInformation() || {}
+        return this.controllerNode.commissioningController?.getActiveSessionInformation() || {};
     }
 
     /**
      * Opens a basic commissioning window for a node allowing for manual pairing to an additional fabric.
-     * @param nodeId 
-     * @param timeout 
+     * @param nodeId
+     * @param timeout
      */
     async basicCommissioningWindow(nodeId: number | string, timeout = 900) {
         const node = await this.controllerNode.getNode(nodeId);
@@ -250,9 +240,9 @@ export class Nodes {
 
     /**
      * Opens an enhanced commissioning window for a node allowing for QR code pairing to an additional fabric.
-     * @param nodeId 
-     * @param timeout 
-     * @returns 
+     * @param nodeId
+     * @param timeout
+     * @returns
      */
     async enhancedCommissioningWindow(nodeId: number | string, timeout = 900) {
         const node = await this.controllerNode.getNode(nodeId);
@@ -262,16 +252,14 @@ export class Nodes {
         const { qrPairingCode, manualPairingCode } = data;
 
         console.log(QrCode.get(qrPairingCode));
-        console.log(
-            `QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`,
-        );
+        console.log(`QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`);
         console.log(`Manual pairing code: ${manualPairingCode}`);
         return data;
     }
 
     /**
      * Logs the structure of a node
-     * @param nodeId 
+     * @param nodeId
      */
     async logNode(nodeId: number | string) {
         const node = await this.controllerNode.getNode(nodeId);

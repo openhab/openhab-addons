@@ -1,11 +1,10 @@
+import { Thermostat } from "@matter/main/clusters";
 import { Endpoint } from "@matter/node";
+import { ThermostatServer } from "@matter/node/behaviors/thermostat";
 import { ThermostatDevice } from "@matter/node/devices/thermostat";
-import { ThermostatServer } from '@matter/node/behaviors/thermostat';
-import { Thermostat } from '@matter/main/clusters';
-import { GenericDeviceType } from './GenericDeviceType';
+import { GenericDeviceType } from "./GenericDeviceType";
 
 export class ThermostatDeviceType extends GenericDeviceType {
-
     override createEndpoint(clusterValues: Record<string, any>) {
         let controlSequenceOfOperation = -1;
         const features: Thermostat.Feature[] = [];
@@ -23,26 +22,30 @@ export class ThermostatDeviceType extends GenericDeviceType {
         }
 
         if (controlSequenceOfOperation < 0) {
-            throw new Error("At least heating, cooling or both must be added")
+            throw new Error("At least heating, cooling or both must be added");
         }
 
         clusterValues.thermostat.controlSequenceOfOperation = controlSequenceOfOperation;
 
-        const endpoint = new Endpoint(ThermostatDevice.with(this.createOnOffServer().with(), ThermostatServer.with(
-            ...features
-        ), ...this.defaultClusterServers()), {
-            ...this.endPointDefaults(),
-            ...clusterValues
-
+        const endpoint = new Endpoint(
+            ThermostatDevice.with(
+                this.createOnOffServer().with(),
+                ThermostatServer.with(...features),
+                ...this.defaultClusterServers(),
+            ),
+            {
+                ...this.endPointDefaults(),
+                ...clusterValues,
+            },
+        );
+        endpoint.events.thermostat.occupiedHeatingSetpoint$Changed?.on(value => {
+            this.sendBridgeEvent("thermostat", "occupiedHeatingSetpoint", value);
         });
-        endpoint.events.thermostat.occupiedHeatingSetpoint$Changed?.on((value) => {
-            this.sendBridgeEvent('thermostat','occupiedHeatingSetpoint', value);
+        endpoint.events.thermostat.occupiedCoolingSetpoint$Changed?.on(value => {
+            this.sendBridgeEvent("thermostat", "occupiedCoolingSetpoint", value);
         });
-        endpoint.events.thermostat.occupiedCoolingSetpoint$Changed?.on((value) => {
-            this.sendBridgeEvent('thermostat','occupiedCoolingSetpoint', value);
-        });
-        endpoint.events.thermostat.systemMode$Changed.on((value) => {
-            this.sendBridgeEvent('thermostat','systemMode', value);
+        endpoint.events.thermostat.systemMode$Changed.on(value => {
+            this.sendBridgeEvent("thermostat", "systemMode", value);
         });
         return endpoint;
     }
@@ -60,11 +63,11 @@ export class ThermostatDeviceType extends GenericDeviceType {
                 absMinCoolSetpointLimit: 0,
                 maxCoolSetpointLimit: 3500,
                 absMaxCoolSetpointLimit: 3500,
-                minSetpointDeadBand: 0
+                minSetpointDeadBand: 0,
             },
             onOff: {
-                onOff: false
-            }
-        }
+                onOff: false,
+            },
+        };
     }
 }

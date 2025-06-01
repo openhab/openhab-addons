@@ -9,7 +9,8 @@
         "build-clean": "tsc --build --clean",
         "start": "ts-node src/app.ts",
         "webpack": "webpack --mode production",
-        "webpack-dev": "webpack --mode development"
+        "webpack-dev": "webpack --mode development",
+        "format": "prettier --write \"src/**/*.ts\""
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.5",
@@ -21,7 +22,9 @@
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
         "webpack": "^5.88.2",
-        "webpack-cli": "^5.1.4"
+        "webpack-cli": "^5.1.4",
+        "prettier": "^3.5.3",
+        "prettier-plugin-organize-imports": "^4.1.0"
     },
     "dependencies": {
         "@matter/main": "v0.14.0-alpha.0-20250531-7ed2d6da8",

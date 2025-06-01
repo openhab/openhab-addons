@@ -22,7 +22,7 @@ export enum EventType {
     EventTriggered = "eventTriggered",
     NodeStateInformation = "nodeStateInformation",
     NodeData = "nodeData",
-    BridgeEvent = "bridgeEvent"
+    BridgeEvent = "bridgeEvent",
 }
 
 export interface Message {
