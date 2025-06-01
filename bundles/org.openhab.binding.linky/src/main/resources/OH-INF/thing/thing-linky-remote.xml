@@ -19,7 +19,6 @@
 		</description>
 
 		<channel-groups>
-			<channel-group typeId="main" id="main"/>
 			<channel-group typeId="load-curve" id="load-curve"/>
 			<channel-group typeId="daily" id="daily"/>
 			<channel-group typeId="weekly" id="weekly"/>
