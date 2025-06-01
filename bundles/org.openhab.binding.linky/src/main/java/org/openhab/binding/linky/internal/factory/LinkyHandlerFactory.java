@@ -10,13 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.factory;
 
 import static java.time.temporal.ChronoField.*;
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -24,19 +22,19 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteMyElectricalDataHandler;
+import org.openhab.binding.linky.internal.handler.ThingLinkyRemoteHandler;
+import org.openhab.binding.linky.internal.handler.ThingTempoCalendarHandler;
 import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.TrustAllTrustManager;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -46,8 +44,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.http.HttpService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,20 +54,23 @@ import com.google.gson.JsonDeserializer;
  * The {@link LinkyHandlerFactory} is responsible for creating things handlers.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
+@Component(immediate = true, service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final DateTimeFormatter LINKY_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = new DateTimeFormatterBuilder()
-            .appendPattern("uuuu-MM-dd'T'HH:mm").optionalStart().appendLiteral(':').appendValue(SECOND_OF_MINUTE, 2)
-            .optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).toFormatter();
+            .appendPattern("uuuu-MM-dd['T'][' ']HH:mm").optionalStart().appendLiteral(':')
+            .appendValue(SECOND_OF_MINUTE, 2).optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).toFormatter();
 
-    private static final int REQUEST_BUFFER_SIZE = 8000;
-    private static final int RESPONSE_BUFFER_SIZE = 200000;
+    private final HttpClientFactory httpClientFactory;
+    private final OAuthFactory oAuthFactory;
+    private final HttpService httpService;
+    private final ComponentContext componentContext;
+    private final TimeZoneProvider timeZoneProvider;
 
-    private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
                     (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
@@ -88,62 +88,55 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                                     .atStartOfDay();
                         }
                     })
-            .registerTypeAdapter(Double.class, new DoubleTypeAdapter()).serializeNulls().create();
+            .registerTypeAdapter(Double.class, new DoubleTypeAdapter()).create();
+
     private final LocaleProvider localeProvider;
-    private final HttpClient httpClient;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference HttpClientFactory httpClientFactory, final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
+            final @Reference HttpService httpService, ComponentContext componentContext,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            sslContextFactory.setSslContext(sslContext);
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
-                    e);
-        } catch (KeyManagementException e) {
-            logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
-        }
-        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
-        httpClient.setFollowRedirects(false);
-        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
-        httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
+        this.httpClientFactory = httpClientFactory;
+        this.oAuthFactory = oAuthFactory;
+        this.httpService = httpService;
+        this.componentContext = componentContext;
     }
 
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
-        }
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.warn("Unable to stop Jetty HttpClient {}", e.getMessage());
-        }
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_LINKY.equals(thingTypeUID);
+        return SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        return supportsThingType(thing.getThingTypeUID())
-                ? new LinkyHandler(thing, localeProvider, gson, httpClient, timeZoneProvider)
-                : null;
+        if (THING_TYPE_API_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
+            BridgeRemoteEnedisHandler handler = new BridgeRemoteEnedisHandler((Bridge) thing, this.httpClientFactory,
+                    this.oAuthFactory, this.httpService, componentContext, gson);
+            return handler;
+        } else if (THING_TYPE_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
+            BridgeRemoteEnedisWebHandler handler = new BridgeRemoteEnedisWebHandler((Bridge) thing,
+                    this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
+            return handler;
+        } else if (THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
+            BridgeRemoteMyElectricalDataHandler handler = new BridgeRemoteMyElectricalDataHandler((Bridge) thing,
+                    this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
+            return handler;
+        } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+            ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider);
+            return handler;
+        } else if (THING_TYPE_TEMPO_CALENDAR.equals(thing.getThingTypeUID())) {
+            ThingHandler handler = new ThingTempoCalendarHandler(thing);
+            return handler;
+        }
+
+        return null;
     }
 }
