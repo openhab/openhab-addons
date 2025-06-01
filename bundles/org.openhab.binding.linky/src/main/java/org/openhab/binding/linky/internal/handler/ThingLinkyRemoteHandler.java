@@ -268,25 +268,26 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             Map<String, String> props = this.editProperties();
 
-            props.put(PROPERTY_USAGEPOINT_ID, values.usagePoint.usagePointId);
+            addProps(props, PROPERTY_USAGEPOINT_ID, values.usagePoint.usagePointId);
 
-            props.put(PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
-            props.put(PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
-            props.put(PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
-            props.put(PROPERTY_CONTRACT_CONTRACT_TYPE, values.contract.contractType);
-            props.put(PROPERTY_CONTRACT_DISTRIBUTION_TARIFF, values.contract.distributionTariff);
-            props.put(PROPERTY_CONTRACT_LAST_ACTIVATION_DATE, values.contract.lastActivationDate);
-            props.put(PROPERTY_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+            addProps(props, PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
+            addProps(props, PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
+            addProps(props, PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
+            addProps(props, PROPERTY_CONTRACT_CONTRACT_TYPE, values.contract.contractType);
+            addProps(props, PROPERTY_CONTRACT_DISTRIBUTION_TARIFF, values.contract.distributionTariff);
+            addProps(props, PROPERTY_CONTRACT_LAST_ACTIVATION_DATE, values.contract.lastActivationDate);
+            addProps(props, PROPERTY_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
                     values.contract.lastDistributionTariffChangeDate);
-            props.put(PROPERTY_CONTRACT_OFF_PEAK_HOURS, values.contract.offpeakHours);
-            props.put(PROPERTY_USAGEPOINT_STATUS, values.usagePoint.usagePointStatus);
-            props.put(PROPERTY_USAGEPOINT_METER_TYPE, values.usagePoint.meterType);
-            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_CITY, values.usagePoint.usagePointAddresses.city);
-            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_COUNTRY, values.usagePoint.usagePointAddresses.country);
-            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, values.usagePoint.usagePointAddresses.postalCode);
-            props.put(PROPERTY_USAGEPOINT_METER_ADDRESS_STREET, values.usagePoint.usagePointAddresses.street);
-            props.put(PROPERTY_CONTACT_MAIL, values.contact.email);
-            props.put(PROPERTY_CONTACT_PHONE, values.contact.phone);
+            addProps(props, PROPERTY_CONTRACT_OFF_PEAK_HOURS, values.contract.offpeakHours);
+            addProps(props, PROPERTY_USAGEPOINT_STATUS, values.usagePoint.usagePointStatus);
+            addProps(props, PROPERTY_USAGEPOINT_METER_TYPE, values.usagePoint.meterType);
+            addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_CITY, values.usagePoint.usagePointAddresses.city);
+            addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_COUNTRY, values.usagePoint.usagePointAddresses.country);
+            addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
+                    values.usagePoint.usagePointAddresses.postalCode);
+            addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_STREET, values.usagePoint.usagePointAddresses.street);
+            addProps(props, PROPERTY_CONTACT_MAIL, values.contact.email);
+            addProps(props, PROPERTY_CONTACT_PHONE, values.contact.phone);
 
             this.updateProperties(props);
 
@@ -297,6 +298,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA"));
         }, () -> {
         });
+    }
+
+    private void addProps(Map<String, String> props, String key, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+
+        props.put(key, value);
     }
 
     private @Nullable MetaData getMetaData() {
