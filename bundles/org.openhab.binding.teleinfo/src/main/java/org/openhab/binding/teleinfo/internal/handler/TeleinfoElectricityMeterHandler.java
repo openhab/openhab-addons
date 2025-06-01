@@ -555,5 +555,4 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             idx++;
         }
     }
-
 }

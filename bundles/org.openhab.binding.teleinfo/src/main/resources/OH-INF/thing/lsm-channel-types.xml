@@ -54,7 +54,7 @@
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	
+
 	<channel-type id="powerFactorType">
 		<item-type>Number:Power</item-type>
 		<label>Teleinfo PowerFactor Type</label>
@@ -75,14 +75,14 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
-	
+
 	<channel-type id="contactType">
 		<item-type>Contact</item-type>
 		<label>Contact Type</label>
 		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
-	
+
 	<channel-type id="cutoffType">
 		<item-type>Number</item-type>
 		<label>Cutoff Type</label>
@@ -99,7 +99,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="switchType">
 		<item-type>Switch</item-type>
 		<label>Switch Type</label>
@@ -239,7 +239,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="tempoType">
 		<item-type>Number</item-type>
 		<label>Tempo Color Information</label>
@@ -253,7 +253,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="rateType">
 		<item-type>Number</item-type>
 		<label>Numeric Rate Type</label>
