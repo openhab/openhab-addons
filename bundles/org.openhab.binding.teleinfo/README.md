@@ -28,7 +28,7 @@ The method for changing the TIC mode of a Linky meter is explained [here](https:
 
 ## Supported Things
 
-### Historical TIC mode
+### Historical TIC Mode
 
 Historical TIC mode is the only mode of all telemeters before Linky models and the default mode for Linky telemeters.
 
@@ -54,7 +54,7 @@ The Teleinfo binding provides support for both single-phase and three-phase conn
 | cbetm_hc_electricitymeter                  | three-phase  | HCHP         |               |
 | cbetm_tempo_electricitymeter               | three-phase  | Tempo        |               |
 
-### Standard TIC mode
+### Standard TIC Mode
 
 Linky telemeters add a new `Standard` mode with more detailed information but still provide information on the legacy format under the `Historical` denomination.
 
@@ -134,7 +134,7 @@ For D2L-connected meters, you will need to enter the appKey and ivKey for decryp
 
 ## Channels
 
-### Historical TIC mode
+### Historical TIC Mode
 
 Channel availability depends on the electricity connection (single or three-phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
 
@@ -172,7 +172,7 @@ Channel availability depends on the electricity connection (single or three-phas
 | pejp     | `Number:Time`             | Prior notice to EJP start                                | All    | EJP   |
 | demain   | `String`                  | Following day color                                      | All    | Tempo |
 
-### Standard TIC mode
+### Standard TIC Mode
 
 #### Common channels
 
@@ -288,7 +288,7 @@ Number
 ```
 
 
-#### Three phase only channels
+#### Three Phase Only Channels
 
 These channels are available on the following telemeters:
 
@@ -307,7 +307,7 @@ These channels are available on the following telemeters:
 | threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                      |
 | threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                    |
 
-#### Producer only channels
+#### Producer Only Channels
 
 These channels are available on the following telemeters:
 
@@ -330,7 +330,7 @@ These channels are available on the following telemeters:
 
 ## Full Example
 
-### Historical TIC mode
+### Historical TIC Mode
 
 The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `031528042289`:
 
@@ -356,7 +356,7 @@ Number:Energy TLInfoEDF_HCHP "HCHP" <energy> {channel="teleinfo:cbemm_evolution_
 String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hhphc"}
 ```
 
-### Standard TIC mode
+### Standard TIC Mode
 
 The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289`:
 
@@ -380,7 +380,7 @@ String TLInfoEDF_NGTF "NGTF" <energy> ["Status"] {channel="teleinfo:lsmm_electri
 DateTime TLInfoEDF_SMAXSN_DATE "SMAXSN_DATE" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#smaxsnDate"}
 ```
 
-### Standard TIC mode with D2l
+### Standard TIC Mode With D2l
 
 The following `things` file declare a D2L controller listenning on tcp port 7845 for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289`:
 AppKey and ivKey will be used to decrypt the traffic.
@@ -391,7 +391,7 @@ Bridge teleinfo:d2lcontroller:teleinfoD2L "D2lBridge" [ listenningPort="7845"] {
 ```
 
 
-## Tested hardware
+## Tested Hardware
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
 
@@ -458,6 +458,3 @@ NJOURF  00      &
 NJOURF+1        00      B
 PJOURF+1        00004001 06004002 16004001 NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE      1
 ```
-
-
-
