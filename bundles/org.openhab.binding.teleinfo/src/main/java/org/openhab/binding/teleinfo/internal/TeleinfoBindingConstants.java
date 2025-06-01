@@ -208,16 +208,12 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_MOVING_TIPS_ADVICE = "calcGroup#moving-tips";
     public static final String CHANNEL_MOVING_TIPS = "calcGroup#advice-moving-tips";
 
-    public static final String CHANNEL_ID_D2L = "calcGroup#id-d2l";
-    public static final String CHANNEL_TYPE_TRAME = "calcGroup#type-trame";
-    public static final String CHANNEL_DATE_FIRMWARE = "calcGroup#date-firmware";
-
-    public static final String CHANNEL_ADSC = "calcGroup#adsc";
-    public static final String CHANNEL_VTIC = "calcGroup#vtic";
-    public static final String CHANNEL_ADCO = "calcGroup#adco";
-
     public static final String NOT_A_CHANNEL = "";
 
+    public static final String THING_ELECTRICITY_METER_PROPERTY_IDD2L = "id-d2l";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_TYPETRAME = "type-trame";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_DATE_FIRMWARE = "date-firmware";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_VTIC = "vtic";
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
     public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER = "meter-manufacturer";
     public static final String THING_ELECTRICITY_METER_PROPERTY_TYPE = "meter-type";

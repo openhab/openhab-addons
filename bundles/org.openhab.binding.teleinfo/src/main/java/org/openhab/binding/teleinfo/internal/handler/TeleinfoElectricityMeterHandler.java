@@ -185,6 +185,8 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         double urms = 0.0;
         double sinst = 0.0;
 
+        Map<String, String> props = this.editProperties();
+
         for (Entry<Label, String> entry : frame.getLabelToValues().entrySet()) {
             Label label = entry.getKey();
             try {
@@ -216,52 +218,62 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                         }
                     }
 
-                    if (label == Label.STGE) {
-                        handleStgePayload(entry.getValue());
-                    }
-                    if (label == Label.ADSC || label == Label.ADCO) {
-                        String adco = frame.get(Label.ADCO) != null ? frame.get(Label.ADCO) : frame.get(Label.ADSC);
-
-                        if (adco.length() == 12) {
-                            String oldMatricule = getThing().getProperties()
-                                    .get(THING_ELECTRICITY_METER_PROPERTY_MATRICULE);
-
-                            if (oldMatricule == null || oldMatricule.isBlank()) {
-                                String manufacturerSt = adco.substring(0, 2);
-                                String year = adco.substring(2, 4);
-                                String type = adco.substring(4, 6);
-                                String matricule = adco.substring(6, 12);
-
-                                Meter meter = Meter.getCompteurForId(Integer.parseInt(type));
-                                Manufacturer manufacturer = Manufacturer
-                                        .getManufacturerForId(Integer.parseInt(manufacturerSt));
-
-                                Map<String, String> props = this.editProperties();
-                                props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER, manufacturer.getLabel());
-                                props.put(THING_ELECTRICITY_METER_PROPERTY_TYPE, meter.getLabel());
-                                props.put(THING_ELECTRICITY_METER_PROPERTY_MATRICULE, matricule);
-                                props.put(THING_ELECTRICITY_METER_PROPERTY_CATEGORY,
-                                        meter.getCompteurType().getLabel());
-                                props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURE_YEAR,
-                                        "" + ((Integer.parseInt(year) + 2000)));
-
-                                this.updateProperties(props);
-                            }
-                        }
-                    } else if (label == Label.RELAIS) {
+                    // handle special case channel that will need additionnal decoding
+                    if (label == Label.RELAIS) {
                         handleRelaisPayload(entry.getValue());
                     } else if (label == Label.PJOURF_PLUS_1) {
                         handlePayload(Label.PJOURF_PLUS_1.name(), entry.getValue());
                     } else if (label == Label.PPOINTE) {
                         handlePayload(Label.PPOINTE.name(), entry.getValue());
-                    }
-
-                    if (label == Label.URMS1) {
+                    } else if (label == Label.STGE) {
+                        handleStgePayload(entry.getValue());
+                    } else if (label == Label.URMS1) {
                         urms = Double.valueOf(entry.getValue());
                     } else if (label == Label.SINSTS) {
                         sinst = Double.valueOf(entry.getValue());
                     }
+                } else {
+                    // handle some channel that we want to have has properties for reference
+                    if (label == Label._TYPE_TRAME) {
+                        props.put(THING_ELECTRICITY_METER_PROPERTY_TYPETRAME, entry.getValue());
+                    } else if (label == Label._DATE_FIRMWARE) {
+                        props.put(THING_ELECTRICITY_METER_PROPERTY_DATE_FIRMWARE, entry.getValue());
+                    } else if (label == Label.VTIC) {
+                        props.put(THING_ELECTRICITY_METER_PROPERTY_VTIC, entry.getValue());
+                    } else if (label == Label.ADSC || label == Label.ADCO) {
+                        String secondaryAddress = frame.get(Label.ADCO) != null ? frame.get(Label.ADCO)
+                                : frame.get(Label.ADSC);
 
+                        if (secondaryAddress != null && secondaryAddress.length() == 12) {
+                            String oldMatricule = getThing().getProperties()
+                                    .get(THING_ELECTRICITY_METER_PROPERTY_MATRICULE);
+
+                            if (oldMatricule == null || oldMatricule.isBlank()) {
+                                String manufacturerSt = secondaryAddress.substring(0, 2);
+                                String year = secondaryAddress.substring(2, 4);
+                                String type = secondaryAddress.substring(4, 6);
+                                String matricule = secondaryAddress.substring(6, 12);
+
+                                Meter meter = Meter.getCompteurForId(Integer.parseInt(type));
+                                Manufacturer manufacturer = Manufacturer
+                                        .getManufacturerForId(Integer.parseInt(manufacturerSt));
+
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_IDD2L, "" + idd2l);
+
+                                if (manufacturer != null) {
+                                    props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER, manufacturer.getLabel());
+                                }
+                                if (meter != null) {
+                                    props.put(THING_ELECTRICITY_METER_PROPERTY_TYPE, meter.getLabel());
+                                    props.put(THING_ELECTRICITY_METER_PROPERTY_CATEGORY,
+                                            meter.getCompteurType().getLabel());
+                                }
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_MATRICULE, matricule);
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURE_YEAR,
+                                        "" + ((Integer.parseInt(year) + 2000)));
+                            }
+                        }
+                    }
                 }
                 if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
                     String timestamp = frame.getAsDateTime(label);
@@ -317,6 +329,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             logger.warn("Can not find TIC mode.");
         }
 
+        this.updateProperties(props);
         updateCalcVars(urms, sinst);
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
     }
