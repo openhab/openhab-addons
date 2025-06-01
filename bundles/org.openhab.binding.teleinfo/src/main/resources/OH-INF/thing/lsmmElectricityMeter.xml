@@ -7,6 +7,7 @@
 	<thing-type id="lsmm_electricitymeter" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialcontroller"/>
+			<bridge-type-ref id="d2lcontroller"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky Single-phase</label>
