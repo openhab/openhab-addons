@@ -156,12 +156,12 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, onOffCommand);
         } else if (command instanceof PercentType percentType) {
             if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_COLOR_TEMPERATURE)) {
-                ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(
-                        percentTypeToMireds(percentType), 0, initializingCluster.options, initializingCluster.options);
-                handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
                 if (!lastOnOff) {
                     handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
                 }
+                ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(
+                        percentTypeToMireds(percentType), 0, initializingCluster.options, initializingCluster.options);
+                handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
             } else {
                 if (percentType.equals(PercentType.ZERO)) {
                     handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.off());
@@ -420,10 +420,11 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     }
 
     private void updateColorTemperature() {
-        if (lastOnOff)
+        if (lastOnOff) {
             updateState(CHANNEL_ID_COLOR_TEMPERATURE, miredsToPercentType(lastColorTemperatureMireds));
-        updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
-                QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
+            updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
+                    QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
+        }
         colorTemperatureState = ColorUpdateState.READY;
         colorModeToTemperature();
     }
