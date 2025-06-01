@@ -116,7 +116,6 @@ public class TeleinfoDiscoveryService extends AbstractThingHandlerDiscoveryServi
     }
 
     private void detectNewElectricityMeterFromReceivedFrame(final Frame frameSample) {
-
         logger.debug("New eletricity meter detection from frame {}", frameSample);
         if (frameSample.get(Label.ADCO) == null && frameSample.get(Label.ADSC) == null) {
             throw new IllegalStateException("Missing ADCO or ADSC key");
