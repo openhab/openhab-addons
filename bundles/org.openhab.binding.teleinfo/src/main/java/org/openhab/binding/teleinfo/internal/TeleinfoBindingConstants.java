@@ -179,34 +179,34 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_LSM_UMOY2_DATE = "threePhasedLSMGroup#umoy2Date";
     public static final String CHANNEL_LSM_UMOY3_DATE = "threePhasedLSMGroup#umoy3Date";
 
-    public static final String CHANNEL_RELAIS = "calcGroup#relais";
+    public static final String CHANNEL_RELAIS = "commonLSMGroup#relais";
 
-    public static final String CHANNEL_PJOURF_IDX = "calcGroup#pjourf";
-    public static final String CHANNEL_PPOINTE_IDX = "calcGroup#ppointe";
+    public static final String CHANNEL_PJOURF_IDX = "commonLSMGroup#pjourf";
+    public static final String CHANNEL_PPOINTE_IDX = "commonLSMGroup#ppointe";
 
-    public static final String CHANNEL_IRMS1F = "calcGroup#irms1f";
-    public static final String CHANNEL_COSPHI = "calcGroup#cosphi";
-    public static final String CHANNEL_SACTIVE = "calcGroup#sactive";
-    public static final String CHANNEL_SREACTIVE = "calcGroup#sreactive";
+    public static final String CHANNEL_IRMS1F = "commonLSMGroup#irms1f";
+    public static final String CHANNEL_COSPHI = "commonLSMGroup#cosphi";
+    public static final String CHANNEL_SACTIVE = "commonLSMGroup#sactive";
+    public static final String CHANNEL_SREACTIVE = "commonLSMGroup#sreactive";
 
-    public static final String CHANNEL_CONTACT_SEC = "calcGroup#contact-sec";
-    public static final String CHANNEL_CACHE = "calcGroup#cache";
-    public static final String CHANNEL_CUT_OFF = "calcGroup#cut-off";
-    public static final String CHANNEL_OVER_VOLTAGE = "calcGroup#over-voltage";
-    public static final String CHANNEL_EXCEEDING_POWER = "calcGroup#exceeding-power";
-    public static final String CHANNEL_FUNCTION = "calcGroup#function";
-    public static final String CHANNEL_DIRECTION = "calcGroup#direction";
-    public static final String CHANNEL_SUPPLIER_RATE = "calcGroup#supplier-rate";
-    public static final String CHANNEL_DISTRIBUTOR_RATE = "calcGroup#distributor-rate";
-    public static final String CHANNEL_CLOCK = "calcGroup#clock";
-    public static final String CHANNEL_PLC = "calcGroup#plc";
-    public static final String CHANNEL_COM_OUTPUT = "calcGroup#outputcom";
-    public static final String CHANNEL_PLC_STATE = "calcGroup#plc-state";
-    public static final String CHANNEL_PLC_SYNCHRO = "calcGroup#plc-synchro";
-    public static final String CHANNEL_TEMPO_TODAY = "calcGroup#tempo-today";
-    public static final String CHANNEL_TEMPO_TOMORROW = "calcGroup#tempo-tomorrow";
-    public static final String CHANNEL_MOVING_TIPS_ADVICE = "calcGroup#moving-tips";
-    public static final String CHANNEL_MOVING_TIPS = "calcGroup#advice-moving-tips";
+    public static final String CHANNEL_CONTACT_SEC = "commonLSMGroup#contact-sec";
+    public static final String CHANNEL_CACHE = "commonLSMGroup#cache";
+    public static final String CHANNEL_CUT_OFF = "commonLSMGroup#cut-off";
+    public static final String CHANNEL_OVER_VOLTAGE = "commonLSMGroup#over-voltage";
+    public static final String CHANNEL_EXCEEDING_POWER = "commonLSMGroup#exceeding-power";
+    public static final String CHANNEL_FUNCTION = "commonLSMGroup#function";
+    public static final String CHANNEL_DIRECTION = "commonLSMGroup#direction";
+    public static final String CHANNEL_SUPPLIER_RATE = "commonLSMGroup#supplier-rate";
+    public static final String CHANNEL_DISTRIBUTOR_RATE = "commonLSMGroup#distributor-rate";
+    public static final String CHANNEL_CLOCK = "commonLSMGroup#clock";
+    public static final String CHANNEL_PLC = "commonLSMGroup#plc";
+    public static final String CHANNEL_COM_OUTPUT = "commonLSMGroup#outputcom";
+    public static final String CHANNEL_PLC_STATE = "commonLSMGroup#plc-state";
+    public static final String CHANNEL_PLC_SYNCHRO = "commonLSMGroup#plc-synchro";
+    public static final String CHANNEL_TEMPO_TODAY = "commonLSMGroup#tempo-today";
+    public static final String CHANNEL_TEMPO_TOMORROW = "commonLSMGroup#tempo-tomorrow";
+    public static final String CHANNEL_MOVING_TIPS_ADVICE = "commonLSMGroup#moving-tips";
+    public static final String CHANNEL_MOVING_TIPS = "commonLSMGroup#advice-moving-tips";
 
     public static final String NOT_A_CHANNEL = "";
 
