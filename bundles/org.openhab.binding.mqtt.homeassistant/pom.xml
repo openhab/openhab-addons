@@ -22,6 +22,8 @@
       !jdk.vm.ci.services</bnd.importpackage>
 
     <graalpy.version>24.2.0</graalpy.version>
+    <!-- define a property to overwrite it on Windows, as venv has a different structure -->
+    <graalpy.executable>bin/python3</graalpy.executable>
   </properties>
 
   <dependencies>
@@ -157,7 +159,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <executable>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/venv/bin/python3</executable>
+              <executable>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/venv/${graalpy.executable}</executable>
               <arguments>
                 <argument>-m</argument>
                 <argument>compileall</argument>
@@ -203,4 +205,16 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <graalpy.executable>Scripts/python</graalpy.executable>
+      </properties>
+    </profile>
+  </profiles>
 </project>
