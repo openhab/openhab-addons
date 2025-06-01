@@ -365,7 +365,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                         hardwareId);
                 saveRefreshTokenToFile(userProfile.getRefreshToken());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
                 config.twofactorCode = "";
                 updatedConfiguration.put("twofactorCode", config.twofactorCode);
                 updateConfiguration(updatedConfiguration);
