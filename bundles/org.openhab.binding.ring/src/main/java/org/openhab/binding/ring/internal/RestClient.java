@@ -160,7 +160,7 @@ public class RestClient {
                     throw new AuthenticationException("Invalid username or password");
                 case 429:
                     throw new AuthenticationException("Account ratelimited");
-            default:
+                default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
