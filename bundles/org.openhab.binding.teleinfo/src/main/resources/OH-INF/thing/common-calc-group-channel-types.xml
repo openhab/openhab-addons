@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="calcGroupType">
+		<label>Calc</label>
+		<channels>
+			<channel id="irms1f" typeId="currentType">
+				<label>Irms 1f</label>
+				<description>Intensity (floating value)</description>
+			</channel>
+
+			<channel id="cosphi" typeId="powerFactorType">
+				<label>CosPhi</label>
+				<description>CosPhi (floating value)</description>
+			</channel>
+
+			<channel id="sactive" typeId="powerType">
+				<label>Sactive</label>
+				<description>Instantaneous withdrawn active power</description>
+			</channel>
+
+			<channel id="sreactive" typeId="powerType">
+				<label>Sreactive</label>
+				<description>Instantaneous withdrawn reactive power</description>
+			</channel>
+
+			<channel id="contact-sec" typeId="contactType">
+				<label>Dry Contact</label>
+				<description>State of main relay</description>
+			</channel>
+
+			<channel id="cut-off" typeId="cutoffType">
+				<label>Cut Off</label>
+				<description>State of Cut Off switch</description>
+			</channel>
+
+			<channel id="cache" typeId="contactType">
+				<label>Cache</label>
+				<description>State of linky cache switch</description>
+			</channel>
+
+
+			<channel id="over-voltage" typeId="overVoltageStateType">
+				<label>Over Voltage</label>
+				<description>State of over voltage</description>
+			</channel>
+
+			<channel id="exceeding-power" typeId="exceedingPowerStateType">
+				<label>Exceeding</label>
+				<description>State of exceeding</description>
+			</channel>
+
+			<channel id="function" typeId="functionType">
+				<label>Function</label>
+				<description>State of functionnality : consummer/producer</description>
+			</channel>
+
+			<channel id="direction" typeId="directionType">
+				<label>Direction</label>
+				<description>Direction of the active energy</description>
+			</channel>
+
+			<channel id="supplier-rate" typeId="rateType">
+				<label>Supplier Rate</label>
+				<description>The supplier rate</description>
+			</channel>
+
+			<channel id="distributor-rate" typeId="rateType">
+				<label>Distributor Rate</label>
+				<description>The distributor rate</description>
+			</channel>
+
+			<channel id="clock" typeId="clockStateType">
+				<label>Clock State</label>
+				<description>State Of Clock</description>
+			</channel>
+
+			<channel id="plc" typeId="plcType">
+				<label>Plc Type</label>
+				<description>Type of PLC</description>
+			</channel>
+
+			<channel id="outputcom" typeId="ouputcomStateType">
+				<label>Communication Output State</label>
+				<description>State of communication output</description>
+			</channel>
+
+			<channel id="plc-state" typeId="plcStateType">
+				<label>Plc State</label>
+				<description>State of PLC</description>
+			</channel>
+
+			<channel id="plc-synchro" typeId="synchroPlcStateType">
+				<label>Plc Synchro</label>
+				<description>State of PLC Synchro</description>
+			</channel>
+
+			<channel id="tempo-today" typeId="tempoType">
+				<label>Tempo Today</label>
+				<description>State of coupure switch</description>
+			</channel>
+
+			<channel id="tempo-tomorrow" typeId="tempoType">
+				<label>Tempo Tomorrow</label>
+				<description>State of coupure switch</description>
+			</channel>
+
+			<channel id="advice-moving-tips" typeId="movingTipsType">
+				<label>Moving Tips Advice</label>
+				<description>State of moving tips adviceh</description>
+			</channel>
+
+			<channel id="moving-tips" typeId="movingTipsType">
+				<label>Moving Tips</label>
+				<description>State of moving tips</description>
+			</channel>
+
+			<channel id="pjourf1-plus1" typeId="stringType">
+				<label>Pjour f1 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe1" typeId="stringType">
+				<label>Ppointe 1</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf2-plus1" typeId="stringType">
+				<label>Pjour f2 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe2" typeId="stringType">
+				<label>Ppointe 2</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf3-plus1" typeId="stringType">
+				<label>Pjour f3 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe3" typeId="stringType">
+				<label>Ppointe 3</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf4-plus1" typeId="stringType">
+				<label>Pjour f4 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe4" typeId="stringType">
+				<label>Ppointe 4</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf5-plus1" typeId="stringType">
+				<label>Pjour f5 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe5" typeId="stringType">
+				<label>Ppointe 5</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf6-plus1" typeId="stringType">
+				<label>Pjour f6 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe6" typeId="stringType">
+				<label>Ppointe 6</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf7-plus1" typeId="stringType">
+				<label>Pjour f7 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe7" typeId="stringType">
+				<label>Ppointe 7</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="pjourf8-plus1" typeId="stringType">
+				<label>Pjour f8 +1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe8" typeId="stringType">
+				<label>Ppointe 8</label>
+				<description>Profile of next rush day</description>
+			</channel>
+			
+            <channel id="id-d2l" typeId="stringType">
+                <label>id-d2l</label>
+                <description>The id of the D2L</description>
+            </channel>
+            
+            <channel id="type-trame" typeId="stringType">
+                <label>type-trame</label>
+                <description>The type of frame</description>
+            </channel>
+            
+            <channel id="date-firmware" typeId="stringType">
+                <label>date-firmware</label>
+                <description>The firmware date</description>
+            </channel>
+            
+            <channel id="adco" typeId="stringType">
+                <label>adco</label>
+                <description>The adco</description>
+            </channel>
+            
+            <channel id="adsc" typeId="stringType">
+                <label>adsc</label>
+                <description>The adsc</description>
+            </channel>
+            
+            <channel id="vtic" typeId="stringType">
+                <label>vtic</label>
+                <description>The vtic version</description>
+            </channel>
+            
+            
+			
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

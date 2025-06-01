@@ -15,6 +15,7 @@
 		<channel-groups>
 			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
 			<channel-group id="producerLSMGroup" typeId="producerLSMGroupType"/>
+			<channel-group id="calcGroup" typeId="calcGroupType"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>
