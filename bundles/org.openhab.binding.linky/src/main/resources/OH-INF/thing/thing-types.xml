@@ -33,13 +33,6 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="info-date-adv" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Information Date</label>
-		<description>an basic date information from the supplier contract</description>
-		<state readOnly="true" pattern="%1$tF"/>
-	</channel-type>
-
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
