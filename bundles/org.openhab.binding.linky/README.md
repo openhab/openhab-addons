@@ -246,6 +246,7 @@ The retrieved information is available in multiple groups.
   | Channel ID                                        | Description                                                                   |
   |---------------------------------------------------|-------------------------------------------------------------------------------|
   | identitiy                                         | The full name of the contract older                                           |
+  | customerId										  | The internal Enedis customer ID												  |
   | contractSubscribedPower                           | The subscribed max Power                                                      |
   | contractLastActivationdate                        | The contract activation date                                                  |
   | contractDistributionTariff                        | The current applied tarif                                                     |
