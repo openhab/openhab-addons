@@ -111,8 +111,8 @@ public class LinkyBindingConstants {
     public static final String PROPERTY_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "usagePointPostalCode";
     public static final String PROPERTY_USAGEPOINT_METER_ADDRESS_STREET = "usagePointStreet";
 
-    public static final String PROPERTY_CONTACT_MAIL = "contact-mail";
-    public static final String PROPERTY_CONTACT_PHONE = "contact-phone";
+    public static final String PROPERTY_CONTACT_MAIL = "contactMail";
+    public static final String PROPERTY_CONTACT_PHONE = "contactPhone";
 
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";
