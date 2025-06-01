@@ -26,14 +26,8 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public enum Label {
-
-    // ID D2L Channels
-    _ID_D2L(ValueType.STRING, CHANNEL_ID_D2L, Units.ONE),
-    _TYPE_TRAME(ValueType.STRING, CHANNEL_TYPE_TRAME, Units.ONE),
-    _DATE_FIRMWARE(ValueType.DATE, CHANNEL_DATE_FIRMWARE, Units.ONE),
-
     // Historical labels
-    ADCO(ValueType.STRING, CHANNEL_ADCO, Units.ONE),
+    ADCO(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     OPTARIF(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     BASE(ValueType.INTEGER, CHANNEL_BASE_FRAME_BASE, Units.WATT_HOUR),
     HCHC(ValueType.INTEGER, CHANNEL_HC_FRAME_HCHC, Units.WATT_HOUR),
@@ -69,8 +63,8 @@ public enum Label {
     DEMAIN(ValueType.STRING, CHANNEL_TEMPO_FRAME_DEMAIN, Units.ONE),
 
     // Standard TIC mode labels
-    ADSC(ValueType.STRING, CHANNEL_ADSC, Units.ONE),
-    VTIC(ValueType.STRING, CHANNEL_VTIC, Units.ONE),
+    ADSC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    VTIC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     DATE(ValueType.DATE, CHANNEL_LSM_DATE, Units.ONE),
     NGTF(ValueType.STRING, CHANNEL_LSM_NGTF, Units.ONE),
     LTARF(ValueType.STRING, CHANNEL_LSM_LTARF, Units.ONE),
@@ -147,9 +141,12 @@ public enum Label {
     PJOURF_PLUS_1(ValueType.STRING, CHANNEL_LSM_PJOURF_PLUS_1, Units.ONE),
     PPOINTE(ValueType.STRING, CHANNEL_LSM_PPOINTE, Units.ONE),
 
-    // ===============================================================
+    // ID D2L Channels
+    _ID_D2L(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    _TYPE_TRAME(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    _DATE_FIRMWARE(ValueType.DATE, NOT_A_CHANNEL, Units.ONE),
+
     // Additional Calculated Channels
-    // ===============================================================
     IRMS1F(ValueType.INTEGER, CHANNEL_IRMS1F, Units.AMPERE),
     COSPHI(ValueType.INTEGER, CHANNEL_COSPHI, Units.ONE),
     SACTIVE(ValueType.INTEGER, CHANNEL_SACTIVE, Units.WATT),
