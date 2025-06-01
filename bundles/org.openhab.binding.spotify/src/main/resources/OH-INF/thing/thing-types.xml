@@ -209,16 +209,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
-		<item-type>Number</item-type>
-		<label>Track Duration (ms)</label>
-		<description>The duration of the currently played track (ms)</description>
-		<state readOnly="true"/>
+		<item-type>Number:Time</item-type>
+		<label>Track Duration</label>
+		<description>The duration of the currently played track</description>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
-		<item-type>Number</item-type>
-		<label>Track Progress (ms)</label>
-		<description>The progress of the currently played track (ms)</description>
-		<state readOnly="true"/>
+		<item-type>Number:Time</item-type>
+		<label>Track Progress</label>
+		<description>The progress of the currently played track</description>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDuration">
 		<item-type>String</item-type>
