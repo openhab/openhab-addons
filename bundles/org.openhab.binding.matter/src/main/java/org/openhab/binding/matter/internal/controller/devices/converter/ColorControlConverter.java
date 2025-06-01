@@ -65,23 +65,22 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     private static final int UPDATE_DELAY = 500;
     // These are the default values, as well as the min and max limits for the color temperature mireds defined in the
     // Matter spec
-    private static final int MAX_MIREDS = 65279;
-    private static final int MIN_MIREDS = 1; // this was 0 until matter 1.4
+    protected static final int MAX_MIREDS = 65279;
+    protected static final int MIN_MIREDS = 1; // this was 0 until matter 1.4
     // These are sane defaults that should be used if the device does not provide a valid range (aka if using default
     // MIN / MAX)
-    private static final int MAX_DEFAULT_MIREDS = 667; // 1500K
-    private static final int MIN_DEFAULT_MIREDS = 154;
+    protected static final int MAX_DEFAULT_MIREDS = 667; // 1500K
+    protected static final int MIN_DEFAULT_MIREDS = 153;
     protected boolean supportsHue = false;
     protected boolean supportsColorTemperature = false;
+    protected int colorTempPhysicalMinMireds = 0;
+    protected int colorTempPhysicalMaxMireds = 0;
     private LevelControlCluster.OptionsBitmap levelControlOptionsBitmap = new LevelControlCluster.OptionsBitmap(true,
             true);
     private boolean lastOnOff = true;
     private HSBType lastHSB = new HSBType("0,0,0");
     private @Nullable ScheduledFuture<?> colorUpdateTimer = null;
     private ScheduledExecutorService colorUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
-    // Color attributes from the device
-    private int colorTempPhysicalMinMireds = 0;
-    private int colorTempPhysicalMaxMireds = 0;
     private EnhancedColorModeEnum lastColorMode = EnhancedColorModeEnum.CURRENT_X_AND_CURRENT_Y;
     private int lastHue = 0;
     private int lastSaturation = 0;
@@ -101,13 +100,11 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
         // The inovelli device for example sends a max mireds of 65279 (matter spec max value), which means they did not
         // actually set the max mireds, but this should never really exceed 667 (1500K)
         Integer maxMireds = initializingCluster.colorTempPhysicalMaxMireds;
-        colorTempPhysicalMaxMireds = (maxMireds == null || maxMireds >= MAX_MIREDS) ? MAX_DEFAULT_MIREDS
-                : Math.min(maxMireds, MAX_DEFAULT_MIREDS);
+        colorTempPhysicalMaxMireds = (maxMireds == null || maxMireds >= MAX_MIREDS) ? MAX_DEFAULT_MIREDS : maxMireds;
         // the inovelli device for example sends a min mireds of 0 (matter 1.3 default) which means they did not
-        // actually set the min mireds, but this should never really be less than 154 (6500K)in real life
+        // actually set the min mireds, but this should never really be less than 153 (6500K) in real life
         Integer minMireds = initializingCluster.colorTempPhysicalMinMireds;
-        colorTempPhysicalMinMireds = (minMireds == null || minMireds <= MIN_MIREDS) ? MIN_DEFAULT_MIREDS
-                : Math.max(minMireds, MIN_DEFAULT_MIREDS);
+        colorTempPhysicalMinMireds = (minMireds == null || minMireds <= MIN_MIREDS) ? MIN_DEFAULT_MIREDS : minMireds;
     }
 
     @Override
