@@ -268,6 +268,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             Map<String, String> props = this.editProperties();
 
+            props.put(PROPERTY_USAGEPOINT_ID, values.usagePoint.usagePointId);
+
             props.put(PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
             props.put(PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
             props.put(PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
