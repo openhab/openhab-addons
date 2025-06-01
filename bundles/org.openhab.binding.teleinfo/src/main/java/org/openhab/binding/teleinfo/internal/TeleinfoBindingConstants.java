@@ -210,11 +210,12 @@ public class TeleinfoBindingConstants {
 
     public static final String NOT_A_CHANNEL = "";
 
+    public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+
     public static final String THING_ELECTRICITY_METER_PROPERTY_IDD2L = "id-d2l";
     public static final String THING_ELECTRICITY_METER_PROPERTY_TYPETRAME = "type-trame";
     public static final String THING_ELECTRICITY_METER_PROPERTY_DATE_FIRMWARE = "date-firmware";
     public static final String THING_ELECTRICITY_METER_PROPERTY_VTIC = "vtic";
-    public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
     public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER = "meter-manufacturer";
     public static final String THING_ELECTRICITY_METER_PROPERTY_TYPE = "meter-type";
     public static final String THING_ELECTRICITY_METER_PROPERTY_CATEGORY = "meter-category";
