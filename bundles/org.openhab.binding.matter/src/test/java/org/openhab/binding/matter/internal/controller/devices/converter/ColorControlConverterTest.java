@@ -233,7 +233,7 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         // Test when minMireds is null
         mockColorCluster.colorTempPhysicalMinMireds = null;
         ColorControlConverter converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
-        assertEquals(154, converter.colorTempPhysicalMinMireds);
+        assertEquals(ColorControlConverter.MIN_DEFAULT_MIREDS, converter.colorTempPhysicalMinMireds);
 
         // Test when minMireds is <= MIN_MIREDS
         mockColorCluster.colorTempPhysicalMinMireds = ColorControlConverter.MIN_MIREDS;
