@@ -56,7 +56,6 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
     @Override
     public void initialize() {
         MSpaVisitorAccountConfiguration config = getConfigAs(MSpaVisitorAccountConfiguration.class);
-
         // generate visitor id if necessary
         if (UNKNOWN.equals(config.visitorId)) {
             Configuration updateConfig = editConfiguration();
@@ -67,7 +66,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         // check for configuration errors
         if (UNKNOWN.equals(config.grantCode) || UNKNOWN.equals(config.region)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing configuration parameters");
+                    "@test/status.mspa.visitor-account.config-parameter-missing");
             return;
         }
         visitorConfig = Optional.of(config);

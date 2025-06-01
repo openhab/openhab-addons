@@ -15,6 +15,7 @@ package org.openhab.binding.mspa.internal.handler;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -29,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
 import org.openhab.binding.mspa.internal.config.MSpaPoolConfiguration;
@@ -149,8 +151,8 @@ public class MSpaPool extends BaseThingHandler {
                     int status = cr.getStatus();
                     String response = cr.getContentAsString();
                     if (status == 200) {
-                        logger.trace("Command Response {}", response);
-                        scheduler.schedule(this::updateData, 5, TimeUnit.SECONDS);
+                        // schedule update to confirm new settings
+                        scheduler.schedule(this::updateData, 10, TimeUnit.SECONDS);
                     } else {
                         logger.warn("Error sending command {} - {}", commandBody.toString(), response);
                     }
@@ -168,7 +170,7 @@ public class MSpaPool extends BaseThingHandler {
         config = getConfigAs(MSpaPoolConfiguration.class);
         if (UNKNOWN.equals(config.deviceId) || UNKNOWN.equals(config.productId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing configuration parameters");
+                    "@text/status.mspa.pool.config-parameter-missing");
             return;
         }
 
@@ -185,13 +187,16 @@ public class MSpaPool extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     setCommandOptions();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Token invalid");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/status.mspa.invalid-token");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong bridge configured");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/status.mspa.pool.wrong-bridge");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/status.mspa.pool.no-bridge");
         }
     }
 
@@ -204,8 +209,10 @@ public class MSpaPool extends BaseThingHandler {
 
     private void updateData() {
         if (account.isPresent()) {
+            if (checkOnline()) {
+                return;
+            }
             Request dataRequest = account.get().getRequest(POST, DEVICE_SHADOW_ENDPOINT);
-
             JSONObject body = new JSONObject();
             body.put("device_id", config.deviceId);
             body.put("product_id", config.productId);
@@ -222,8 +229,54 @@ public class MSpaPool extends BaseThingHandler {
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("Failed to get data - reason {}", e.getMessage());
             }
-
         }
+    }
+
+    private boolean checkOnline() {
+        Request deviceListRequest = account.get().getRequest(GET, DEVICE_LIST_ENDPOINT);
+        try {
+            ContentResponse cr = deviceListRequest.timeout(10, TimeUnit.SECONDS).send();
+            int status = cr.getStatus();
+            String response = cr.getContentAsString();
+            if (status == 200) {
+                JSONObject devices = new JSONObject(response);
+                if (devices.has("data")) {
+                    JSONObject data = devices.getJSONObject("data");
+                    if (data.has("list")) {
+                        JSONArray list = data.getJSONArray("list");
+                        for (Iterator<Object> iter = list.iterator(); iter.hasNext();) {
+                            Object entry = iter.next();
+                            if (entry instanceof JSONObject jsonEntry) {
+                                if (jsonEntry.has("device_id")) {
+                                    if (config.deviceId.equals(jsonEntry.getString("device_id"))) {
+                                        if (jsonEntry.has("is_online")) {
+                                            boolean online = jsonEntry.getBoolean("is_online");
+                                            if (online) {
+                                                updateStatus(ThingStatus.ONLINE);
+                                            } else {
+                                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                                        "@text/status.mspa.pool.offline");
+                                            }
+                                            return online;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/status.mspa.pool.request-failed [\"Pool missing in device list. Check permission in MSpa app\"]");
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/status.mspa.pool.request-failed [\"" + status + "\"]");
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Online query failed with reason {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.mspa.pool.request-failed [\"" + e.getMessage() + "\"]");
+        }
+        return false;
     }
 
     public void distributeData(String response) {

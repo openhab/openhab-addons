@@ -84,7 +84,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             discovery.addAccount(this);
             startDiscovery();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.invalid-token");
         }
     }
 
@@ -138,12 +138,12 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        // ownerConfig.ifPresent(config -> {
-        // store.remove(config.email);
-        // });
-        // visitorConfig.ifPresent(config -> {
-        // store.remove(config.visitorId);
-        // });
+        ownerConfig.ifPresent(config -> {
+            store.remove(config.email);
+        });
+        visitorConfig.ifPresent(config -> {
+            store.remove(config.visitorId);
+        });
     }
 
     public String getToken() {

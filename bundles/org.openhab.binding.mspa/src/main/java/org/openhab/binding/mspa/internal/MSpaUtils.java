@@ -35,6 +35,12 @@ import org.slf4j.LoggerFactory;
 public class MSpaUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MSpaUtils.class);
 
+    /**
+     * Gets hash value from md5 algorithm
+     *
+     * @param input for calculating hash value
+     * @return md5 hash value
+     */
     public static String getMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -47,6 +53,14 @@ public class MSpaUtils {
         return UNKNOWN;
     }
 
+    /**
+     * Get signature to sign a query or command towards MSpa cloud.
+     *
+     * @param nonce to sgin
+     * @param timestamp to sign
+     * @param region to sign
+     * @return signature of the 3 above parameters as upper case md5 hash
+     */
     public static String getSignature(String nonce, long timestamp, String region) {
         String appId = APP_IDS.get(region);
         String appSecret = APP_SECRETS.get(region);
@@ -60,6 +74,12 @@ public class MSpaUtils {
         return UNKNOWN;
     }
 
+    /**
+     * Get password hash for command or query authorization
+     *
+     * @param password as input
+     * @return lower case md5 hash
+     */
     public static String getPasswordHash(String password) {
         String passwordHash = getMd5(password);
         if (UNKNOWN.equals(password)) {
@@ -69,12 +89,20 @@ public class MSpaUtils {
         }
     }
 
+    /**
+     * Decode token delivered by MSpa cloud
+     *
+     * @param content as JSIN encoded String
+     * @return AccessToken object
+     */
     public static AccessTokenResponse decodeNewToken(String content) {
         JSONObject json = new JSONObject(content);
         if (json.has("data")) {
             JSONObject data = json.getJSONObject("data");
             if (data.has("token")) {
                 AccessTokenResponse response = new AccessTokenResponse();
+                // set data manually cause they aren't delivered. Also no refresh token available - simply get a new
+                // token!
                 response.setCreatedOn(Instant.now());
                 response.setExpiresIn(24 * 60 * 60);
                 response.setAccessToken(data.getString("token"));
@@ -84,6 +112,12 @@ public class MSpaUtils {
         return getInvalidToken();
     }
 
+    /**
+     * Decode token from JSONObject
+     *
+     * @param json as JSONObject
+     * @return AccessToken object
+     */
     public static AccessTokenResponse decodeStoredToken(JSONObject json) {
         if (json.has("token") && json.has("created") && json.has("expires")) {
             AccessTokenResponse response = new AccessTokenResponse();
@@ -103,13 +137,24 @@ public class MSpaUtils {
         return json;
     }
 
+    /**
+     * Gets default invalid token
+     *
+     * @return invalid and expired token
+     */
     public static AccessTokenResponse getInvalidToken() {
         AccessTokenResponse response = new AccessTokenResponse();
         response.setAccessToken(UNKNOWN);
         return response;
     }
 
-    public static boolean isTokenValid(AccessTokenResponse response) {
-        return !UNKNOWN.equals(response.getAccessToken());
+    /**
+     * Check if token is valid
+     *
+     * @param token to checked
+     * @return true if valid, false otherwise
+     */
+    public static boolean isTokenValid(AccessTokenResponse token) {
+        return !UNKNOWN.equals(token.getAccessToken());
     }
 }

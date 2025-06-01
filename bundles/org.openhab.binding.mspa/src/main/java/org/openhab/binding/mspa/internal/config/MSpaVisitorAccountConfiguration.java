@@ -28,9 +28,4 @@ public class MSpaVisitorAccountConfiguration {
     public String visitorId = UNKNOWN;
     public String grantCode = UNKNOWN;
     public String region = UNKNOWN;
-
-    @Override
-    public String toString() {
-        return visitorId + ":" + grantCode + ":" + region;
-    }
 }

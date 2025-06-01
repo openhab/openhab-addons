@@ -28,8 +28,7 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * {@link MSpaDiscoveryService} will be notified from Bridge {@link AccountHandler} regarding
- * associated vehicles and provides DiscoveryResults
+ * {@link MSpaDiscoveryService} starts manual scan on all Accounts. No background scan.
  *
  * @author Bernd Weymann - Initial Contribution
  */

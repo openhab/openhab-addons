@@ -53,11 +53,9 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
     @Override
     public void initialize() {
         MSpaOwnerAccountConfiguration config = getConfigAs(MSpaOwnerAccountConfiguration.class);
-
-        // check for configuration errors
         if (UNKNOWN.equals(config.email) || UNKNOWN.equals(config.password) || UNKNOWN.equals(config.region)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing configuration parameters");
+                    "@text/status.mspa.owner-account.config-parameter-missing");
             return;
         }
         ownerConfig = Optional.of(config);
@@ -72,13 +70,11 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
         } else {
             requestToken();
         }
-
         super.initialize();
     }
 
     @Override
     public void requestToken() {
-        logger.info("Request token");
         Request tokenRequest = getRequest(POST, TOKEN_ENDPOINT);
         JSONObject body = new JSONObject();
         body.put("account", ownerConfig.get().email);

@@ -23,7 +23,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Dynamic provider of command options while leaving other state description fields as original.
+ * {{@link MSpaCommandOptionProvider} for commands options calculated during runtime.
  *
  * @author Bernd Weymann - Initial contribution
  */

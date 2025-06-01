@@ -104,18 +104,18 @@ class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public ChannelBuilder createChannelBuilder(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
-        return mock();
+        return mock(ChannelBuilder.class);
     }
 
     @Override
     public ChannelBuilder editChannel(Thing thing, ChannelUID channelUID) {
-        return mock();
+        return mock(ChannelBuilder.class);
     }
 
     @Override
     public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
             ChannelGroupTypeUID channelGroupTypeUID) {
-        return List.of();
+        return List.of(mock(ChannelBuilder.class));
     }
 
     @Override
