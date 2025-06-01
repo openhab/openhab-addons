@@ -158,7 +158,9 @@ public class RestClient {
                 case 400:
                 case 401:
                     throw new AuthenticationException("Invalid username or password");
-                default:
+                case 429:
+                    throw new AuthenticationException("Account ratelimited");
+            default:
                     logger.error("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
@@ -690,6 +692,7 @@ public class RestClient {
                 String filename = event.getDoorbot().getDescription().replace(" ", "") + "-" + event.getKind() + "-"
                         + event.getCreatedAt().replace(":", "-") + ".mp4";
                 String fullfilepath = filePath + (filePath.endsWith(sep) ? "" : sep) + filename;
+                logger.info("fullfilepath = {}", fullfilepath);
                 path = Paths.get(fullfilepath);
                 boolean urlFound = false;
                 if (Files.notExists(path)) {
@@ -706,6 +709,7 @@ public class RestClient {
                                 InputStream in = url.openStream();
                                 Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 in.close();
+                                logger.info("fullfilepath.length() = {}", fullfilepath.length());
                                 if (fullfilepath.length() > 0) {
                                     urlFound = true;
                                     break;
