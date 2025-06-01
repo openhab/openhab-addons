@@ -268,9 +268,17 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             Map<String, String> props = this.editProperties();
 
+            if (values.identity.internId == null) {
+                values.identity.internId = values.identity.firstname + " " + values.identity.lastname;
+            }
+            userId = values.identity.internId;
+
+            addProps(props, USER_ID, userId);
+
             addProps(props, PROPERTY_USAGEPOINT_ID, values.usagePoint.usagePointId);
 
             addProps(props, PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
+
             addProps(props, PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
             addProps(props, PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
             addProps(props, PROPERTY_CONTRACT_CONTRACT_TYPE, values.contract.contractType);
@@ -279,6 +287,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             addProps(props, PROPERTY_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
                     values.contract.lastDistributionTariffChangeDate);
             addProps(props, PROPERTY_CONTRACT_OFF_PEAK_HOURS, values.contract.offpeakHours);
+            addProps(props, PROPERTY_CONTRACT_SUBSCRIBED_POWER, values.contract.subscribedPower + " kVA");
+
             addProps(props, PROPERTY_USAGEPOINT_STATUS, values.usagePoint.usagePointStatus);
             addProps(props, PROPERTY_USAGEPOINT_METER_TYPE, values.usagePoint.meterType);
             addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_CITY, values.usagePoint.usagePointAddresses.city);
@@ -286,16 +296,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
                     values.usagePoint.usagePointAddresses.postalCode);
             addProps(props, PROPERTY_USAGEPOINT_METER_ADDRESS_STREET, values.usagePoint.usagePointAddresses.street);
+
             addProps(props, PROPERTY_CONTACT_MAIL, values.contact.email);
             addProps(props, PROPERTY_CONTACT_PHONE, values.contact.phone);
 
             this.updateProperties(props);
-
-            if (values.identity.internId == null) {
-                values.identity.internId = values.identity.firstname + " " + values.identity.lastname;
-            }
-            userId = values.identity.internId;
-            updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA"));
         }, () -> {
         });
     }

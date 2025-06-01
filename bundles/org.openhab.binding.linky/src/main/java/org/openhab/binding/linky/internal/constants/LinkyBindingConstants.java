@@ -101,6 +101,7 @@ public class LinkyBindingConstants {
     public static final String PROPERTY_CONTRACT_CONTRACT_TYPE = "contractType";
     public static final String PROPERTY_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE = "contractLastdistributionTariffChangedate";
     public static final String PROPERTY_CONTRACT_SEGMENT = "contractSegment";
+    public static final String PROPERTY_CONTRACT_SUBSCRIBED_POWER = "contractSubscribedPower";
 
     public static final String PROPERTY_USAGEPOINT_ID = "usagePointId";
     public static final String PROPERTY_USAGEPOINT_STATUS = "usagePointStatus";
