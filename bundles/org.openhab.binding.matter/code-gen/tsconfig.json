@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    // Participate in workspace
+    "composite": true,
+
+    // Add compatibility with CommonJS modules
+    "esModuleInterop": true,
+
+    // Compile incrementally using tsbuildinfo state file
+    "incremental": true,
+
+    // We should probably boost this at least to ES 2017
+    "target": "es2020",
+
+    // Generate modules as ES2020 or CommonJS
+    "module": "commonjs",
+
+    // Use node-style dependency resolution
+    "moduleResolution": "node",
+
+    "lib": ["ES2015", "DOM"],
+
+    // Do not load globals from node_modules by default
+    "types": [
+      "node"
+    ],
+
+    // Enforce a subset of our code conventions
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true
+  }
+}
