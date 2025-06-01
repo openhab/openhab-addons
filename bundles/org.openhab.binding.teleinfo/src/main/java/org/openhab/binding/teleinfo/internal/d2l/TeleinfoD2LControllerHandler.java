@@ -151,7 +151,6 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
             socket.register(selector, SelectionKey.OP_ACCEPT);
 
             while (getThing().getStatus() == ThingStatus.ONLINE) {
-                // logger.debug("pool socket");
                 if (selector.select(3000) == 0) {
                     continue;
                 }
@@ -172,7 +171,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
 
                     if (selectionKey.isAcceptable()) {
                         SocketChannel client = socket.accept();
-                        logger.info("Accept: {} {}", client.getLocalAddress(), client.getRemoteAddress());
+                        logger.debug("Accept: {} {}", client.getLocalAddress(), client.getRemoteAddress());
 
                         client.configureBlocking(false);
                         client.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
@@ -288,7 +287,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
                 int payloadType = byteBufferDecode.get(20) & 0x7f;
 
                 String st1 = new String(plainText, 22, payloadLength);
-                logger.info("frame with payload: {}", payloadType);
+                logger.trace("frame with payload: {}", payloadType);
 
                 if (payloadType == 0x03) {
                     // PUSH_JSON request
