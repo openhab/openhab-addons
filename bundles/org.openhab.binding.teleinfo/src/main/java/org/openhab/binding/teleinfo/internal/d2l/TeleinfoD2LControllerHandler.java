@@ -340,7 +340,6 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
         }
 
         return res;
-
     }
 
     public @Nullable TeleinfoElectricityMeterHandler getHandlerForIdd2l(long idd2l) {
