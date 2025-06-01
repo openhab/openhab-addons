@@ -1,8 +1,7 @@
-import { Bytes } from "@matter/general";
+import { Bytes, Logger } from "@matter/general";
 import { ValueModel } from "@matter/model";
 import { ValidationDatatypeMismatchError } from "@matter/types";
 import { camelize } from "./String";
-import { Logger } from "@matter/general";
 
 const logger = Logger.get("Clusters");
 
