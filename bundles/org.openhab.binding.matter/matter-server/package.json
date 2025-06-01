@@ -1,0 +1,43 @@
+{
+    "name": "matter-server",
+    "version": "0.1.0",
+    "description": "",
+    "bin": "dist/src/app.js",
+    "scripts": {
+        "clean": "tsc --clean",
+        "build": "tsc --build",
+        "build-clean": "tsc --build --clean",
+        "start": "ts-node src/app.ts",
+        "webpack": "webpack --mode production",
+        "webpack-dev": "webpack --mode development"
+    },
+    "devDependencies": {
+        "@types/bn.js": "^5.1.5",
+        "@types/node": "^20.9.0",
+        "@types/uuid": "^9.0.7",
+        "@types/ws": "^8.5.10",
+        "@types/yargs": "^17.0.32",
+        "ts-loader": "^9.4.4",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.2.2",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
+    },
+    "dependencies": {
+        "@matter/main": "v0.14.0-alpha.0-20250531-7ed2d6da8",
+        "@matter/node": "v0.14.0-alpha.0-20250531-7ed2d6da8",
+        "@project-chip/matter.js" : "v0.14.0-alpha.0-20250531-7ed2d6da8",
+        "uuid": "^9.0.1",
+        "ws": "^8.18.0",
+        "yargs": "^17.7.2"
+    },
+    "files": [
+        "dist/**/*",
+        "src/**/*",
+        "LICENSE",
+        "README.md"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}
