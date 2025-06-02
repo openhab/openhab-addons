@@ -104,6 +104,8 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO3EM, //
             THING_TYPE_SHELLYPROEM50, //
             THING_TYPE_SHELLYPRO4PM, //
+            THING_TYPE_SHELLYPRODIMMER1PM, //
+            THING_TYPE_SHELLYPRODIMMER2PM, //
 
             // Shelly BLU
             THING_TYPE_SHELLYBLUBUTTON, //
