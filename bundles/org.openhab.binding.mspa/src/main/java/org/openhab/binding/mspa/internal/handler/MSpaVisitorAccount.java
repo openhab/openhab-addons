@@ -66,7 +66,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         // check for configuration errors
         if (UNKNOWN.equals(config.grantCode) || UNKNOWN.equals(config.region)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@test/status.mspa.visitor-account.config-parameter-missing");
+                    "@text/status.mspa.visitor-account.config-parameter-missing");
             return;
         }
         visitorConfig = Optional.of(config);
@@ -101,7 +101,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                 validGrants.put(configuredGrants[i], storedGrants.get(configuredGrants[i]));
             } else {
                 // not granted yet
-                Request grantRequest = getRequest(POST, GRAND_DEVICE_ENDPOINT);
+                Request grantRequest = getRequest(POST, GRANT_DEVICE_ENDPOINT);
                 JSONObject body = new JSONObject();
                 body.put("push_type", "android");
                 body.put("registration_id", "");

@@ -40,9 +40,6 @@ public class MSpaConstants {
     public static final String REGION_US = "US";
     public static final String REGION_CHINA = "CH";
 
-    public static final String VIDEO_URL = "https://donghuiprodappconfig.s3.eu-central-1.amazonaws.com/video(1).html";
-    public static final String VIDEO_URL2 = "https://donghuiprodappconfig.s3.eu-central-1.amazonaws.com/video.html";
-
     public static final Map<String, String> HOSTS = Map.of(REGION_ROW, "https://api.iot.the-mspa.com", REGION_US,
             "https://api.usiot.the-mspa.com", REGION_CHINA, "https://api.mspa.mxchip.com.cn");
     public static final Map<String, String> WSS_HOSTS = Map.of(REGION_ROW,
@@ -59,7 +56,7 @@ public class MSpaConstants {
     public static final String DEVICE_SHADOW_ENDPOINT = "/api/device/thing_shadow/";
     public static final String COMMAND_ENDPOINT = "/api/device/command/";
     public static final String VISITOR_ENDPOINT = "/api/enduser/visitor/";
-    public static final String GRAND_DEVICE_ENDPOINT = "/api/enduser/grant_device/";
+    public static final String GRANT_DEVICE_ENDPOINT = "/api/enduser/grant_device/";
 
     public static final String GET = "GET";
     public static final String POST = "POST";

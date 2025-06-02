@@ -282,7 +282,7 @@ public class MSpaPool extends BaseThingHandler {
                     }
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/status.mspa.pool.request-failed [\"Pool missing in device list. Check permission in MSpa app\"]");
+                        "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-missing" + "\"]");
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.mspa.pool.request-failed [\"" + status + "\"]");

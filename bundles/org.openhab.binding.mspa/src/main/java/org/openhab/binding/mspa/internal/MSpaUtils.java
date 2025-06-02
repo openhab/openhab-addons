@@ -84,7 +84,7 @@ public class MSpaUtils {
      */
     public static String getPasswordHash(String password) {
         String passwordHash = getMd5(password);
-        if (UNKNOWN.equals(password)) {
+        if (UNKNOWN.equals(passwordHash)) {
             return UNKNOWN;
         } else {
             return passwordHash.toLowerCase();
