@@ -1,26 +1,26 @@
 # MSpa Binding
 
-Connect your MSpa Pools with openHAB if you have them connected to your MSpa-Link IOS or Android App.
+Connect your MSpa Pools with openHAB if you have them connected to your MSpa-Link IOS or Android app.
 
-Check in beforehand how your pool shall be connected to openHAB
+Check in beforehand how your pool shall be connected to openHAB.
 You can have 
 
-- one owner-account: you registered one account with MSpa-Link App. This will steal your token and you're not able to operate openHAB and Smartphone MSpa-Link in parallel.
-- two owner-account: you need to register two accounts with different email addresses to avoid stealing token - one used for Smartphone App and one for openHAB
-- visitor-account: allow pool access with QR code provided by MSpa-Link App
+- one owner-account: you registered one account with MSpa-Link app. This will _steal_ your token and you're not able to operate openHAB and Smartphone MSpa-Link app in parallel.
+- two owner-account: you need to register two accounts with different email addresses to avoid stealing token - one used for Smartphone app and one for openHAB.
+- visitor-account: allow pool access with QR code provided by MSpa-Link app.
 
 ## Supported Things
 
-- `owner-account`: Bridge connecting to your account
-- `visitor-account`: Bridge connecting to your account
+- `owner-account`: Bridge connecting to your account with `email` and `password` credentials
+- `visitor-account`: Bridge connecting to your account with `grantCode` credentials
 - `pool`: Pool connected to your account
 
 ## Discovery
 
 Bridge `owner-account` or `visitor-account` needs to be setup manually with your credentials.
-Your `pool` are detected automatically after the bridge goes ONLINE.
+Your `pool` is automatically detected after the bridge goes ONLINE.
 There's no automatic background scan.
-If you connect a new pool start discovery manually.
+If you connect a new pool afterwards start discovery manually.
 
 
 ## Thing Configuration
@@ -44,18 +44,17 @@ Region options
 | Name              | Type    | Description                                         | Default | Required | 
 |-------------------|---------|-----------------------------------------------------|---------|----------|
 | visitorId         | text    | Random 16 digit id with lower case hex characters   | N/A     | no/yes   |
-| grantCode         | text    | Grant from QR code presented by MSpa-Link App       | N/A     | yes      |
+| grantCode         | text    | Grant from QR code presented by MSpa-Link app       | N/A     | yes      |
 | region            | text    | Region where your country is located                | ROW     | yes      |
 
-The `visitorId` is generated if you create the `visitor-account` via openHAB UI so it's not mandatory. 
-Once generated don't loose it e.g. when deleting the account because all grants are bound to this Id!
+The `visitorId` is generated if you create the first time a `visitor-account` via openHAB UI so it's not mandatory. 
+Once generated don't loose it e.g. when deleting the account thing because all grants are bound to this `visitorId`!
 If you use textual configuration you need to generate your own `visitorId` as 16 digit hex lower case characters.
 
-
-The `grantCode` is a QR code provided by MSpa-Link App.
+The `grantCode` is a QR code provided by MSpa-Link app.
 On your main screen click on _the gear_ top left, _Devices_ and then _share the spa_ which presents you a QR code.
-Scan it with a third party QR App and put the displayed String into the `grantCode` section and save configuration immediately. 
-This code is available for a limited time to grant access.
+Scan it with a third party QR app and put the displayed String into the `grantCode` section and save configuration immediately. 
+This `grantCode` is valid for a limited time to grant access.
 
 Region options
 
@@ -72,7 +71,9 @@ Region options
 | refreshInterval   | integer   | Refresh interval in minutes           | 15        | yes      | yes        |
 
 The configuration parameters `deviceId` and `productId` cannot be determined manually in beforehand.
-They are detected after succesful login or after granting access.
+They are detected after successful bridge creation or after granting access.
+
+The `refreshInterval` minimum possible value is 5 minutes.
 
 ## Channels
 
