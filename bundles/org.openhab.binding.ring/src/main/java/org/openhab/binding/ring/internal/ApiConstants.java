@@ -102,7 +102,7 @@ public class ApiConstants {
     public static final String DEVICES_CHIMES = "chimes";
     public static final String DEVICES_STICKUP_CAMS = "stickup_cams";
     public static final String DEVICES_BASE_STATIONS = "base_stations";
-    public static final String DEVICES_OTHER = "other";
+    public static final String DEVICES_OTHERDEVICE = "otherdevice";
 
     // JSON data names for generic devices
     public static final String DEVICE_ID = "id";

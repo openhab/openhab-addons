@@ -54,13 +54,13 @@
 
 		</config-description>
 	</bridge-type>
-	<!-- Other Thing Type -->
-	<thing-type id="other">
+	<!-- Other Device Thing Type -->
+	<thing-type id="otherdevice">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
-		<label>Other Binding Thing</label>
-		<description>A Ring Other device</description>
+		<label>Other Device Binding Thing</label>
+		<description>A Ring Other Device device</description>
 		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>

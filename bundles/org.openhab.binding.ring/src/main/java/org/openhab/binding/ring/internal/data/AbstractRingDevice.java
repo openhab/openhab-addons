@@ -52,7 +52,7 @@ public abstract class AbstractRingDevice implements RingDevice {
      */
     private @NonNullByDefault({}) RingDeviceHandler ringDeviceHandler;
 
-    public AbstractRingDevice(JsonObject jsonObject) {
+    protected AbstractRingDevice(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 

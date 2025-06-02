@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.AccountHandler;
 import org.openhab.binding.ring.handler.ChimeHandler;
 import org.openhab.binding.ring.handler.DoorbellHandler;
-import org.openhab.binding.ring.handler.OtherHandler;
+import org.openhab.binding.ring.handler.OtherDeviceHandler;
 import org.openhab.binding.ring.handler.StickupcamHandler;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -94,8 +94,8 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
             return new ChimeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
             return new StickupcamHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_OTHER)) {
-            return new OtherHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_OTHERDEVICE)) {
+            return new OtherDeviceHandler(thing);
         }
         return null;
     }

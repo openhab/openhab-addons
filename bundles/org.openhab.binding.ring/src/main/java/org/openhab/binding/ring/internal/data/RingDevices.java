@@ -35,13 +35,13 @@ public class RingDevices {
     private List<Doorbell> doorbells = new ArrayList<>();
     private List<Stickupcam> stickupcams = new ArrayList<>();
     private List<Chime> chimes = new ArrayList<>();
-    private List<Other> others = new ArrayList<>();
+    private List<OtherDevice> otherdevices = new ArrayList<>();
 
     public RingDevices(JsonObject jsonRingDevices, RingAccount ringAccount) {
         addDoorbells((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_DOORBOTS), ringAccount);
         addStickupCams((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_STICKUP_CAMS), ringAccount);
         addChimes((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_CHIMES), ringAccount);
-        addOthers((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_OTHER), ringAccount);
+        addOtherDevices((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_OTHERDEVICE), ringAccount);
     }
 
     /**
@@ -115,11 +115,11 @@ public class RingDevices {
      *
      * @param jsonOther
      */
-    private final void addOthers(JsonArray jsonOthers, RingAccount ringAccount) {
-        for (Object obj : jsonOthers) {
-            Other other = new Other((JsonObject) obj);
-            other.setRingAccount(ringAccount);
-            others.add(other);
+    private final void addOtherDevices(JsonArray jsonOtherDevices, RingAccount ringAccount) {
+        for (Object obj : jsonOtherDevices) {
+            OtherDevice otherdevice = new OtherDevice((JsonObject) obj);
+            otherdevice.setRingAccount(ringAccount);
+            otherdevices.add(otherdevice);
         }
     }
 
@@ -128,8 +128,8 @@ public class RingDevices {
      *
      * @return
      */
-    public Collection<Other> getOthers() {
-        return others;
+    public Collection<OtherDevice> getOtherDevices() {
+        return otherdevices;
     }
 
     /**
@@ -142,7 +142,7 @@ public class RingDevices {
         result.addAll(doorbells);
         result.addAll(stickupcams);
         result.addAll(chimes);
-        result.addAll(others);
+        result.addAll(otherdevices);
         return result;
     }
 }

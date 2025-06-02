@@ -51,7 +51,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
      *
      * @param thing
      */
-    public AbstractRingHandler(final Thing thing) {
+    protected AbstractRingHandler(final Thing thing) {
         super(thing);
     }
 

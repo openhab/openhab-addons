@@ -37,7 +37,7 @@ public class RingBindingConstants {
     public static final ThingTypeUID THING_TYPE_DOORBELL = new ThingTypeUID(BINDING_ID, "doorbell");
     public static final ThingTypeUID THING_TYPE_CHIME = new ThingTypeUID(BINDING_ID, "chime");
     public static final ThingTypeUID THING_TYPE_STICKUPCAM = new ThingTypeUID(BINDING_ID, "stickupcam");
-    public static final ThingTypeUID THING_TYPE_OTHER = new ThingTypeUID(BINDING_ID, "other");
+    public static final ThingTypeUID THING_TYPE_OTHERDEVICE = new ThingTypeUID(BINDING_ID, "otherdevice");
 
     // List of all Channel ids
     public static final String CHANNEL_CONTROL_STATUS = "control#status";
@@ -53,7 +53,7 @@ public class RingBindingConstants {
 
     public static final String SERVLET_VIDEO_PATH = "/ring/video";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME, THING_TYPE_STICKUPCAM, THING_TYPE_OTHER)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME, THING_TYPE_STICKUPCAM,
+                    THING_TYPE_OTHERDEVICE).collect(Collectors.toSet()));
 }
