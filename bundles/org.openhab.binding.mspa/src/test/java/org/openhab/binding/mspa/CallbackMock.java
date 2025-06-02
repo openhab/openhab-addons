@@ -13,6 +13,7 @@
 package org.openhab.binding.mspa;
 
 import static org.mockito.Mockito.mock;
+import static org.openhab.binding.mspa.internal.MSpaConstants.THING_TYPE_POOL;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -47,8 +48,16 @@ import org.openhab.core.types.TimeSeries;
 class CallbackMock implements ThingHandlerCallback {
     Hashtable<String, State> states = new Hashtable<>();
 
+    public int numberOfUpdates() {
+        return states.size();
+    }
+
     public Hashtable<String, State> getStates() {
         return states;
+    }
+
+    public @Nullable State getState(String channel) {
+        return states.get(channel);
     }
 
     @Override
@@ -104,18 +113,18 @@ class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public ChannelBuilder createChannelBuilder(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
-        return mock(ChannelBuilder.class);
+        return ChannelBuilder.create(new ChannelUID(new ThingUID(THING_TYPE_POOL, "test"), "test-channel"));
     }
 
     @Override
     public ChannelBuilder editChannel(Thing thing, ChannelUID channelUID) {
-        return mock(ChannelBuilder.class);
+        return ChannelBuilder.create(new ChannelUID(new ThingUID(THING_TYPE_POOL, "test"), "test-channel"));
     }
 
     @Override
     public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
             ChannelGroupTypeUID channelGroupTypeUID) {
-        return List.of(mock(ChannelBuilder.class));
+        return List.of();
     }
 
     @Override

@@ -82,7 +82,7 @@ class TestGeneric {
         configMap.put("password", "pwd");
         configMap.put("region", "ROW");
 
-        SslContextFactory sslContextFactory = new SslContextFactory(true);
+        SslContextFactory sslContextFactory = new SslContextFactory.Client(true);
         HttpClient client = new HttpClient(sslContextFactory);
         try {
             client.start();

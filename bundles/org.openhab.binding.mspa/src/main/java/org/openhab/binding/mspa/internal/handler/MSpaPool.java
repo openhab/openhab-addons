@@ -176,6 +176,11 @@ public class MSpaPool extends BaseThingHandler {
                     "@text/status.mspa.pool.config-parameter-missing");
             return;
         }
+        if (config.refreshInterval < 5) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/status.mspa.pool.refresh-too-low");
+            return;
+        }
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -254,6 +259,7 @@ public class MSpaPool extends BaseThingHandler {
                                 if (jsonEntry.has("device_id")) {
                                     if (config.deviceId.equals(jsonEntry.getString("device_id"))) {
                                         if (deviceProperties.isEmpty()) {
+                                            // update device properties one time after initialization
                                             Map<String, String> devicePropertiesMap = MSpaUtils
                                                     .getDeviceProperties(jsonEntry.toMap());
                                             thing.setProperties(devicePropertiesMap);

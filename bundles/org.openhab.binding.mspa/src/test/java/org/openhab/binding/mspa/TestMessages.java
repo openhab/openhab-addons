@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -122,58 +121,57 @@ class TestMessages {
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             pool.distributeData(content);
-            Hashtable<String, State> stateUpdates = callback.getStates();
-            assertEquals(10, stateUpdates.size(), "Number of state updates");
+            assertEquals(10, callback.numberOfUpdates(), "Number of state updates");
 
-            State heater = stateUpdates.get(HEATER);
+            State heater = callback.getState(HEATER);
             assertNotNull(heater, "Heater available");
             assertTrue(heater instanceof OnOffType, "Heater OnOffType");
             assertTrue(OnOffType.ON.equals(heater), "Heater is ON");
 
-            State jetStream = stateUpdates.get(JET_STREAM);
+            State jetStream = callback.getState(JET_STREAM);
             assertNotNull(jetStream, "Jet-Stream available");
             assertTrue(jetStream instanceof OnOffType, "Jet-Stream OnOffType");
             assertTrue(OnOffType.OFF.equals(jetStream), "Jet-Stream is OFF");
 
-            State bubbles = stateUpdates.get(BUBBLES);
+            State bubbles = callback.getState(BUBBLES);
             assertNotNull(bubbles, "Bubbles available");
             assertTrue(bubbles instanceof OnOffType, "Bubbles OnOffType");
             assertTrue(OnOffType.OFF.equals(bubbles), "Bubbles are OFF");
 
-            State bubbleLevel = stateUpdates.get(BUBBLE_LEVEL);
+            State bubbleLevel = callback.getState(BUBBLE_LEVEL);
             assertNotNull(bubbleLevel, "Bubble level available");
             assertTrue(bubbleLevel instanceof DecimalType, "Bubble level DecimalType");
             DecimalType bubbleLevelDecimal = (DecimalType) bubbleLevel;
             assertEquals(1, bubbleLevelDecimal.intValue(), "Bubble level value");
 
-            State circulation = stateUpdates.get(CIRCULATE);
+            State circulation = callback.getState(CIRCULATE);
             assertNotNull(circulation, "Circulation available");
             assertTrue(circulation instanceof OnOffType, "Circulation OnOffType");
             assertTrue(OnOffType.ON.equals(circulation), "Circulation is ON");
 
-            State uvc = stateUpdates.get(UVC);
+            State uvc = callback.getState(UVC);
             assertNotNull(uvc, "UVC available");
             assertTrue(uvc instanceof OnOffType, "UVC OnOffType");
             assertTrue(OnOffType.OFF.equals(uvc), "UVC is OFF");
 
-            State ozone = stateUpdates.get(OZONE);
+            State ozone = callback.getState(OZONE);
             assertNotNull(ozone, "Ozone available");
             assertTrue(ozone instanceof OnOffType, "Ozone OnOffType");
             assertTrue(OnOffType.OFF.equals(ozone), "Ozone is OFF");
 
-            State lock = stateUpdates.get(LOCK);
+            State lock = callback.getState(LOCK);
             assertNotNull(lock, "Lock available");
             assertTrue(lock instanceof OnOffType, "Lock OnOffType");
             assertTrue(OnOffType.OFF.equals(lock), "Lock is OFF");
 
-            State temp = stateUpdates.get(WATER_CURRENT_TEMPERATURE);
+            State temp = callback.getState(WATER_CURRENT_TEMPERATURE);
             assertNotNull(temp, "Water temperature available");
             assertTrue(temp instanceof QuantityType, "Water temperature QuantityType");
             QuantityType<?> tempQuantity = (QuantityType<?>) temp;
             assertEquals(SIUnits.CELSIUS, tempQuantity.getUnit(), "Water temperature unit");
             assertEquals(41, tempQuantity.doubleValue(), 0.1, "Water temperature unit");
 
-            State targetTemp = stateUpdates.get(WATER_TARGET_TEMPERATURE);
+            State targetTemp = callback.getState(WATER_TARGET_TEMPERATURE);
             assertNotNull(targetTemp, "Target water temperature available");
             assertTrue(targetTemp instanceof QuantityType, "Target water temperature QuantityType");
             QuantityType<?> targetTempQuantity = (QuantityType<?>) targetTemp;
