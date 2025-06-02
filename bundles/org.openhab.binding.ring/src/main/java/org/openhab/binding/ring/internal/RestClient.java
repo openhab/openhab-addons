@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -33,10 +34,10 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -49,16 +50,17 @@ import org.openhab.binding.ring.internal.data.DataFactory;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
 import org.openhab.binding.ring.internal.data.Profile;
 import org.openhab.binding.ring.internal.data.RingDevices;
-import org.openhab.binding.ring.internal.data.RingEvent;
+import org.openhab.binding.ring.internal.data.RingEventTO;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Wim Vissers - Initial contribution
@@ -69,9 +71,11 @@ import com.google.gson.JsonParser;
 
 @NonNullByDefault
 public class RestClient {
-
+    private static final Type RING_EVENT_LIST_TYPE = new TypeToken<List<RingEventTO>>() {
+    }.getType();
     private static final int CONNECTION_TIMEOUT = 12000;
     private final Logger logger = LoggerFactory.getLogger(RestClient.class);
+    private final Gson gson = new Gson();
 
     private static final String METHOD_POST = "POST";
     private static final String METHOD_GET = "GET";
@@ -537,22 +541,18 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws JsonParseException
      */
-    public synchronized List<RingEvent> getHistory(@Nullable Profile profile, int limit)
+    public synchronized List<RingEventTO> getHistory(@Nullable Profile profile, int limit)
             throws AuthenticationException, JsonParseException {
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
         if (!jsonResult.isBlank()) {
-            JsonArray obj = JsonParser.parseString(jsonResult).getAsJsonArray();
-            List<RingEvent> result = new ArrayList<>(limit);
-            for (Object jsonEvent : obj) {
-                result.add(new RingEvent((JsonObject) jsonEvent));
-            }
-            return result;
+            return Objects.requireNonNull(gson.fromJson(jsonResult, RING_EVENT_LIST_TYPE));
         } else {
-            return new ArrayList<>(0);
+            return List.of();
         }
     }
 
-    public String downloadEventVideo(RingEvent event, @Nullable Profile profile, String filePath, int retentionCount) {
+    public String downloadEventVideo(RingEventTO event, @Nullable Profile profile, String filePath,
+            int retentionCount) {
         try {
             Path path = Paths.get(filePath);
 
@@ -566,14 +566,14 @@ public class RestClient {
                 // get FileSystem object
                 FileSystem fs = path.getFileSystem();
                 String sep = fs.getSeparator();
-                String filename = event.getDoorbot().getDescription().replace(" ", "") + "-" + event.getKind() + "-"
+                String filename = event.doorbot.description.replace(" ", "") + "-" + event.kind + "-"
                         + event.getCreatedAt().replace(":", "-") + ".mp4";
                 String fullfilepath = filePath + (filePath.endsWith(sep) ? "" : sep) + filename;
                 logger.info("fullfilepath = {}", fullfilepath);
                 path = Paths.get(fullfilepath);
                 boolean urlFound = false;
                 if (Files.notExists(path)) {
-                    String eventId = event.getEventId();
+                    long eventId = event.id;
                     StringBuilder vidUrl = new StringBuilder();
                     vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId)
                             .append(ApiConstants.URL_RECORDING_END);
