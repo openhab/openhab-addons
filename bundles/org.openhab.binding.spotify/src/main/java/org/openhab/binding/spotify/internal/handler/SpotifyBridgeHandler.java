@@ -13,6 +13,7 @@
 package org.openhab.binding.spotify.internal.handler;
 
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -58,8 +59,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -487,7 +490,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 playerInfo.getProgressMs());
         if (!lastTrackId.equals(trackId)) {
             lastTrackId = trackId;
-            updateChannelState(CHANNEL_PLAYED_TRACKDURATION_MS, new DecimalType(item.getDurationMs()));
+            updateChannelState(CHANNEL_PLAYED_TRACKDURATION_MS,
+                    new QuantityType<>(item.getDurationMs(), MILLI(Units.SECOND)));
             final String formattedProgress;
             synchronized (MUSIC_TIME_FORMAT) {
                 // synchronize because SimpleDateFormat is not thread safe
@@ -653,7 +657,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             synchronized (MUSIC_TIME_FORMAT) {
                 formattedProgress = MUSIC_TIME_FORMAT.format(new Date(progress));
             }
-            updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_MS, new DecimalType(progress));
+            updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_MS, new QuantityType<>(progress, MILLI(Units.SECOND)));
             updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_FMT, formattedProgress);
         }
 
