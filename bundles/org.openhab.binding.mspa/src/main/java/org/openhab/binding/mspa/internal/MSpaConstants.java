@@ -40,7 +40,6 @@ public class MSpaConstants {
     public static final String REGION_US = "US";
     public static final String REGION_CHINA = "CH";
 
-    // com.mixchip.mylibra.base.BaseAPi
     public static final String VIDEO_URL = "https://donghuiprodappconfig.s3.eu-central-1.amazonaws.com/video(1).html";
     public static final String VIDEO_URL2 = "https://donghuiprodappconfig.s3.eu-central-1.amazonaws.com/video.html";
 

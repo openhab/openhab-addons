@@ -58,7 +58,7 @@ public class MSpaUtils {
     /**
      * Get signature to sign a query or command towards MSpa cloud.
      *
-     * @param nonce to sgin
+     * @param nonce to sign
      * @param timestamp to sign
      * @param region to sign
      * @return signature of the 3 above parameters as upper case md5 hash
@@ -131,6 +131,12 @@ public class MSpaUtils {
         return getInvalidToken();
     }
 
+    /**
+     * Converts AccessTokenResponse to JSON object for storage
+     *
+     * @param atr AccessTokenResponse
+     * @return JSONObject with fields from atr
+     */
     public static JSONObject token2Json(AccessTokenResponse atr) {
         JSONObject json = new JSONObject();
         json.put("token", atr.getAccessToken());
@@ -160,6 +166,12 @@ public class MSpaUtils {
         return !UNKNOWN.equals(token.getAccessToken());
     }
 
+    /**
+     * Provides property Map for discovery
+     *
+     * @param properties map from API call
+     * @return Map<String,Object> for discovery
+     */
     public static Map<String, Object> getDiscoveryProperties(Map<String, Object> properties) {
         Map<String, Object> discoveryProperties = new HashMap<>();
         DEVICE_PROPERTY_MAPPING.forEach((key, targetKey) -> {
@@ -171,6 +183,12 @@ public class MSpaUtils {
         return discoveryProperties;
     }
 
+    /**
+     * Provides property Map for Thing properties
+     *
+     * @param properties map from API call
+     * @return Map<String,String> for Thing.setProperties
+     */
     public static Map<String, String> getDeviceProperties(Map<String, Object> properties) {
         Map<String, String> deviceProperties = new HashMap<>();
         getDiscoveryProperties(properties).forEach((key, value) -> {
