@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.ring.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +36,7 @@ public class RingDeviceRegistry {
     /**
      * static Singleton instance.
      */
-    private static volatile RingDeviceRegistry instance = new RingDeviceRegistry();
+    private static RingDeviceRegistry instance = new RingDeviceRegistry();
     /**
      * The logger.
      */
@@ -144,13 +142,7 @@ public class RingDeviceRegistry {
      * @return the (possibly empty) collection.
      */
     public Collection<RingDevice> getRingDevices(Status filterStatus) {
-        List<RingDevice> result = new ArrayList<>();
-        for (RingDevice device : devices.values()) {
-            if (device.getRegistrationStatus().equals(filterStatus)) {
-                result.add(device);
-            }
-        }
-        return result;
+        return devices.values().stream().filter(d -> d.getRegistrationStatus().equals(filterStatus)).toList();
     }
 
     /**

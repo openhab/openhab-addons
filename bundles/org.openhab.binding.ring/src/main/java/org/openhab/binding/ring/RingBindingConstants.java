@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.ring;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -53,7 +50,6 @@ public class RingBindingConstants {
 
     public static final String SERVLET_VIDEO_PATH = "/ring/video";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME, THING_TYPE_STICKUPCAM,
-                    THING_TYPE_OTHERDEVICE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL,
+            THING_TYPE_CHIME, THING_TYPE_STICKUPCAM, THING_TYPE_OTHERDEVICE);
 }

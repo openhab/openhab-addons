@@ -54,12 +54,8 @@ public class RingCommandExtension extends AbstractConsoleCommandExtension {
             logger.trace("Received Login Command: {} [username: {}, password: {}, 2FA: {}]", args[0], args[2], "***",
                     "***");
             Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            ThingUID thingUID = new ThingUID(args[0]);
+            thing = thingRegistry.get(thingUID);
             ThingHandler thingHandler = null;
             AccountHandler handler = null;
             if (thing != null) {

@@ -68,19 +68,13 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    private void refresh() {
+        discover();
+    }
+
     @Override
     protected void startBackgroundDiscovery() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    discover();
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-                }
-            }
-        };
-        discoveryJob = scheduler.scheduleWithFixedDelay(runnable, 0, 120, TimeUnit.SECONDS);
+        discoveryJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 120, TimeUnit.SECONDS);
     }
 
     @Override

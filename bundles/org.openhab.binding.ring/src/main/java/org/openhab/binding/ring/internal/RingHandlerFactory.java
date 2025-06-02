@@ -50,11 +50,11 @@ import org.slf4j.LoggerFactory;
         RingHandlerFactory.class }, immediate = true, configurationPid = "binding.ring")
 @NonNullByDefault
 public class RingHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(RingHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(RingHandlerFactory.class);
 
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
 
-    private HttpService httpService;
+    private final HttpService httpService;
     private int httpPort;
     private @Nullable ComponentContext componentContext;
 
@@ -82,8 +82,8 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            if (thing instanceof Bridge) {
-                return new AccountHandler((Bridge) thing, networkAddressService, httpService, httpPort);
+            if (thing instanceof Bridge bridge) {
+                return new AccountHandler(bridge, networkAddressService, httpService, httpPort);
             } else {
                 logger.warn("Account Bridge configured as legacy Thing");
                 return null;
@@ -99,32 +99,4 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-    /*
-     * @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
-     * protected void setHttpService(HttpService httpService) {
-     * this.httpService = httpService;
-     * }
-     *
-     * protected void unsetHttpService(HttpService httpService) {
-     * this.httpService = null;
-     * }
-     *
-     * @Reference
-     * protected void setComponentContext(ComponentContext componentContext) {
-     * this.componentContext = componentContext;
-     * }
-     *
-     * protected void unsetComponentContext(ComponentContext componentContext) {
-     * this.componentContext = null;
-     * }
-     *
-     * @Reference
-     * protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-     * this.networkAddressService = networkAddressService;
-     * }
-     *
-     * protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-     * this.networkAddressService = null;
-     * }
-     */
 }

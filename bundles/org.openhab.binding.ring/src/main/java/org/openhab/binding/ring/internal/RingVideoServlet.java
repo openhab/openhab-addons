@@ -66,7 +66,6 @@ public class RingVideoServlet extends HttpServlet {
         FileSystem fs = path.getFileSystem();
         String sep = fs.getSeparator();
         this.videoStoragePath = videoStoragePath + (videoStoragePath.endsWith(sep) ? "" : sep);
-        restClient = new RestClient();
         try {
             httpService.registerServlet(SERVLET_VIDEO_PATH, this, null, httpService.createDefaultHttpContext());
         } catch (NamespaceException | ServletException e) {
@@ -78,46 +77,42 @@ public class RingVideoServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
-            if (ipAddress == null) {
-                ipAddress = request.getRemoteAddr();
-            }
-            String path = request.getRequestURI().substring(0, SERVLET_VIDEO_PATH.length());
-            logger.trace("RingVideo: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
-                    request.getRemoteHost(), request.getServerPort(), request.getProtocol());
-            if (!request.getMethod().equalsIgnoreCase(HttpMethod.GET.toString())) {
-                logger.error("RingVideo: Unexpected method='{}'", request.getMethod());
-            }
-            if (!path.equalsIgnoreCase(SERVLET_VIDEO_PATH)) {
-                logger.error("RingVideo: Invalid request received - path = {}", path);
-                return;
-            }
+        String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+        String path = request.getRequestURI().substring(0, SERVLET_VIDEO_PATH.length());
+        logger.trace("RingVideo: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
+                request.getRemoteHost(), request.getServerPort(), request.getProtocol());
+        if (!request.getMethod().equalsIgnoreCase(HttpMethod.GET.toString())) {
+            logger.warn("RingVideo: Unexpected method='{}'", request.getMethod());
+        }
+        if (!path.equalsIgnoreCase(SERVLET_VIDEO_PATH)) {
+            logger.warn("RingVideo: Invalid request received - path = {}", path);
+            return;
+        }
 
-            String uri = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
+        String uri = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
 
-            logger.debug("RingVideo: {} video '{}' requested", request.getMethod(), uri);
+        logger.debug("RingVideo: {} video '{}' requested", request.getMethod(), uri);
 
-            String filename = videoStoragePath + uri;
-            File toBeCopied = new File(filename);
-            String mimeType = URLConnection.guessContentTypeFromName(toBeCopied.getName());
-            String contentDisposition = String.format("attachment; filename=%s", toBeCopied.getName());
-            int fileSize = Long.valueOf(toBeCopied.length()).intValue();
-            response.setHeader("Content-Disposition", contentDisposition);
-            response.setContentLength(fileSize);
-            response.setContentType(mimeType);
+        String filename = videoStoragePath + uri;
+        File toBeCopied = new File(filename);
+        String mimeType = URLConnection.guessContentTypeFromName(toBeCopied.getName());
+        String contentDisposition = String.format("attachment; filename=%s", toBeCopied.getName());
+        int fileSize = Long.valueOf(toBeCopied.length()).intValue();
+        response.setHeader("Content-Disposition", contentDisposition);
+        response.setContentLength(fileSize);
+        response.setContentType(mimeType);
 
-            response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
-            try (OutputStream out = response.getOutputStream()) {
-                Path videoPath = toBeCopied.toPath();
-                Files.copy(videoPath, out);
-                out.flush();
-            } catch (IOException e) {
-                // handle exception
-                logger.error("RingVideo: Unable to process request: {}", e.getMessage());
-            }
-        } catch (Exception e) {
+        try (OutputStream out = response.getOutputStream()) {
+            Path videoPath = toBeCopied.toPath();
+            Files.copy(videoPath, out);
+            out.flush();
+        } catch (IOException e) {
+            // handle exception
             logger.error("RingVideo: Unable to process request: {}", e.getMessage());
         }
     }

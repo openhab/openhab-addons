@@ -39,10 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,8 +81,6 @@ public class RestClient {
 
     /**
      * Create a new client with the given server and port address.
-     *
-     * @param endPoint
      */
     public RestClient() {
         logger.info("Creating Ring client for API version {} on endPoint {}", ApiConstants.API_VERSION,
@@ -94,9 +90,9 @@ public class RestClient {
     /**
      * Post data to given url
      *
-     * @param url
+     * @param resourceUrl
      * @param data
-     * @param unamePassword username:password if applicable, otherwise null
+     * @param oauthToken
      * @return the servers response
      * @throws AuthenticationException
      *
@@ -114,12 +110,7 @@ public class RestClient {
             conn.setUseCaches(false);
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
             conn.setRequestProperty("Authorization", "Bearer " + oauthToken);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                    return true;
-                }
-            });
+            conn.setHostnameVerifier((hostname, session) -> true);
             // SSL setting
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
@@ -141,7 +132,6 @@ public class RestClient {
             conn.setSSLSocketFactory(context.getSocketFactory());
             conn.setRequestMethod(METHOD_POST);
 
-            // conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset: UTF-8");
             conn.setRequestProperty("X-API-LANG", "en");
             conn.setRequestProperty("Content-length", "gzip, deflate");
             conn.setDoOutput(true);
@@ -152,16 +142,14 @@ public class RestClient {
             logger.debug("RestApi postRequest: {}, response code: {}, message {}.", resourceUrl, conn.getResponseCode(),
                     conn.getResponseMessage());
             switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
+                case 200, 201:
                     break;
-                case 400:
-                case 401:
+                case 400, 401:
                     throw new AuthenticationException("Invalid username or password");
                 case 429:
                     throw new AuthenticationException("Account ratelimited");
                 default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
+                    logger.warn("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
@@ -183,8 +171,8 @@ public class RestClient {
     /**
      * Get data from given url
      *
-     * @param url
-     * @param data
+     * @param resourceUrl
+     * @param profile
      * @return the servers response
      * @throws AuthenticationException
      */
@@ -198,12 +186,7 @@ public class RestClient {
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                    return true;
-                }
-            });
+            conn.setHostnameVerifier((hostname, session) -> true);
             // SSL setting
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
@@ -233,17 +216,15 @@ public class RestClient {
             conn.setConnectTimeout(12000);
 
             switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
+                case 200, 201:
                     break;
-                case 400:
-                case 401:
+                case 400, 401:
                     // break;
                     throw new AuthenticationException("Invalid request");
                 case 429:
                     throw new AuthenticationException("Account ratelimited");
                 default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
+                    logger.warn("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
@@ -287,7 +268,7 @@ public class RestClient {
                 RingUtils.sanitizeData(refreshToken), RingUtils.sanitizeData(twofactorCode),
                 RingUtils.sanitizeData(hardwareId));
 
-        if ((!"".equals(twofactorCode))) {
+        if (!twofactorCode.isBlank()) {
             logger.debug("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
@@ -323,7 +304,7 @@ public class RestClient {
 
             map.put("client_id", "ring_official_android");
             map.put("scope", "client");
-            if ("".equals(refreshToken)) {
+            if (refreshToken.isBlank()) {
                 logger.debug("RestClient - getOauthToken - refreshToken null or empty {}",
                         RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "password");
@@ -340,12 +321,7 @@ public class RestClient {
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                    return true;
-                }
-            });
+            conn.setHostnameVerifier((hostname, session) -> true);
             // SSL setting
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
@@ -387,8 +363,7 @@ public class RestClient {
                     conn.getResponseCode(), conn.getResponseMessage());
 
             switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
+                case 200, 201:
                     break;
                 case 400:
                     throw new AuthenticationException("Two factor authentication enabled, enter code");
@@ -401,7 +376,7 @@ public class RestClient {
                 case 429:
                     throw new AuthenticationException("Account ratelimited");
                 default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
+                    logger.warn("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
@@ -431,94 +406,13 @@ public class RestClient {
         return baos;
     }
 
-    public Boolean refreshSession(String refreshToken) {
-        logger.debug("RestClient - refreshSession {}", RingUtils.sanitizeData(refreshToken));
-        String result = null;
-        String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
-        try {
-            Map<String, String> map = new HashMap<String, String>();
-
-            map.put("grant_type", "refresh_token");
-            map.put("refresh_token", refreshToken);
-
-            URL url = new URI(resourceUrl).toURL();
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                    return true;
-                }
-            });
-            // SSL setting
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
-                @Override
-                public X509Certificate @Nullable [] getAcceptedIssuers() {
-                    return null;
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
-                        throws CertificateException {
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
-                        throws CertificateException {
-                }
-            } }, null);
-            conn.setSSLSocketFactory(context.getSocketFactory());
-            conn.setRequestMethod(METHOD_POST);
-
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset: UTF-8");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-
-            StringJoiner sj = new StringJoiner("&");
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
-            }
-            byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-
-            conn.setFixedLengthStreamingMode(length);
-            conn.connect();
-            OutputStream os = conn.getOutputStream();
-            os.write(out);
-
-            switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
-                    break;
-                case 400:
-                case 401:
-                    return false;
-                default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    return false;
-            }
-            logger.debug("RestApi resource: {}, response code: {}.", resourceUrl, conn.getResponseCode());
-
-            result = readFullyAsString(conn.getInputStream(), "UTF-8");
-            conn.disconnect();
-
-            logger.debug("RestApi response: {}.", result);
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
-            logger.error("ERROR!", ex);
-            // ex.printStackTrace();
-        }
-        return true;
-    }
-
     /**
      * Post data to given url
      *
-     * @param url
-     * @param data
-     * @param unamePassword username:password if applicable, otherwise null
+     * @param authCode
+     * @param username
+     * @param password
+     * @param hardwareId
      * @return the servers response
      * @throws AuthenticationException
      *
@@ -550,12 +444,7 @@ public class RestClient {
             conn.setRequestProperty("2fa-code", authCode);
             conn.setRequestProperty("hardware_id", hardwareId);
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                    return true;
-                }
-            });
+            conn.setHostnameVerifier((hostname, session) -> true);
             // SSL setting
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
@@ -591,8 +480,7 @@ public class RestClient {
                     conn.getResponseMessage());
 
             switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
+                case 200, 201:
                     break;
                 case 400:
                     throw new AuthenticationException("2 factor enabled, enter code");
@@ -605,7 +493,7 @@ public class RestClient {
                 case 429:
                     throw new AuthenticationException("Account ratelimited");
                 default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
+                    logger.warn("Unhandled http response code: {}", conn.getResponseCode());
                     throw new AuthenticationException("Failed : HTTP error code : " + conn.getResponseCode());
             }
 
@@ -652,7 +540,7 @@ public class RestClient {
     public synchronized List<RingEvent> getHistory(@Nullable Profile profile, int limit)
             throws AuthenticationException, JsonParseException {
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
-        if (!"".equals(jsonResult)) {
+        if (!jsonResult.isBlank()) {
             JsonArray obj = JsonParser.parseString(jsonResult).getAsJsonArray();
             List<RingEvent> result = new ArrayList<>(limit);
             for (Object jsonEvent : obj) {
@@ -661,23 +549,6 @@ public class RestClient {
             return result;
         } else {
             return new ArrayList<>(0);
-        }
-    }
-
-    public String getRecordingURL(String eventId, Profile profile) {
-        try {
-            StringBuilder vidUrl = new StringBuilder();
-            vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId).append(ApiConstants.URL_RECORDING_END);
-
-            String jsonResult = getRequest(vidUrl.toString(), profile);
-            JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
-            return obj.get("url").getAsString();
-        } catch (AuthenticationException e) {
-            logger.error("Authentication exception in getRecordingURL", e);
-            return "";
-        } catch (JsonParseException e) {
-            logger.error("Parse exception in getRecordingURL!", e);
-            return "";
         }
     }
 
@@ -716,12 +587,12 @@ public class RestClient {
                                 Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 in.close();
                                 logger.info("fullfilepath.length() = {}", fullfilepath.length());
-                                if (fullfilepath.length() > 0) {
+                                if (!fullfilepath.isEmpty()) {
                                     urlFound = true;
                                     break;
                                 }
                             }
-                        } catch (Exception e) {
+                        } catch (AuthenticationException | URISyntaxException e) {
                             logger.debug("RingVideo: Error downloading file: {}", e.getMessage());
                         } finally {
                             Thread.sleep(15000);
@@ -729,7 +600,6 @@ public class RestClient {
                     }
                 }
                 if (urlFound) {
-                    // 2020-02-10T20:54:09.000Z
                     File directory = new File(filePath);
                     File[] logFiles = directory.listFiles();
                     long oldestDate = Long.MAX_VALUE;
@@ -756,7 +626,7 @@ public class RestClient {
             } else {
                 return "";
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             logger.error("RingVideo: Unable to process request: {}", e.getMessage());
             return "";
         }

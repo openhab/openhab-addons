@@ -49,7 +49,7 @@ public class RingDevices {
      *
      * @param jsonDoorbells
      */
-    private final void addDoorbells(JsonArray jsonDoorbells, RingAccount ringAccount) {
+    private void addDoorbells(JsonArray jsonDoorbells, RingAccount ringAccount) {
         for (Object obj : jsonDoorbells) {
             Doorbell doorbell = new Doorbell((JsonObject) obj);
             doorbell.setRingAccount(ringAccount);
@@ -71,7 +71,7 @@ public class RingDevices {
      *
      * @param jsonStickupcams
      */
-    private final void addStickupCams(JsonArray jsonStickupcams, RingAccount ringAccount) {
+    private void addStickupCams(JsonArray jsonStickupcams, RingAccount ringAccount) {
         for (Object obj : jsonStickupcams) {
             Stickupcam stickupcam = new Stickupcam((JsonObject) obj);
             stickupcam.setRingAccount(ringAccount);
@@ -93,7 +93,7 @@ public class RingDevices {
      *
      * @param jsonChimes
      */
-    private final void addChimes(JsonArray jsonChimes, RingAccount ringAccount) {
+    private void addChimes(JsonArray jsonChimes, RingAccount ringAccount) {
         for (Object obj : jsonChimes) {
             Chime chime = new Chime((JsonObject) obj);
             chime.setRingAccount(ringAccount);
@@ -115,7 +115,7 @@ public class RingDevices {
      *
      * @param jsonOther
      */
-    private final void addOtherDevices(JsonArray jsonOtherDevices, RingAccount ringAccount) {
+    private void addOtherDevices(JsonArray jsonOtherDevices, RingAccount ringAccount) {
         for (Object obj : jsonOtherDevices) {
             OtherDevice otherdevice = new OtherDevice((JsonObject) obj);
             otherdevice.setRingAccount(ringAccount);

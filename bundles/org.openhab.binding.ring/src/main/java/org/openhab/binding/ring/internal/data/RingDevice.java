@@ -34,49 +34,49 @@ public interface RingDevice {
      *
      * @return the device id.
      */
-    public String getId();
+    String getId();
 
     /**
      * Get the device device_id.
      *
      * @return the device device_id.
      */
-    public String getDeviceId();
+    String getDeviceId();
 
     /**
      * Get the device description.
      *
      * @return the device description.
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * Get the device firmware version.
      *
      * @return the device firmware version.
      */
-    public String getFirmwareVersion();
+    String getFirmwareVersion();
 
     /**
      * Get the device time zone.
      *
      * @return the device time zone.
      */
-    public String getTimeZone();
+    String getTimeZone();
 
     /**
      * Get the device kind.
      *
      * @return the device kind.
      */
-    public String getKind();
+    String getKind();
 
     /**
      * Get battery level
      *
      * @return battery level (%)
      */
-    public Integer getBattery();
+    Integer getBattery();
 
     /**
      * Get the DiscoveryResult object to identify the device as
@@ -84,51 +84,51 @@ public interface RingDevice {
      *
      * @return the device as DiscoveryResult instance.
      */
-    public DiscoveryResult getDiscoveryResult();
+    DiscoveryResult getDiscoveryResult();
 
     /**
      * Get the registration status.
      *
      * @return
      */
-    public RingDeviceRegistry.Status getRegistrationStatus();
+    RingDeviceRegistry.Status getRegistrationStatus();
 
     /**
      * Set the registration status.
      *
      * @param registrationStatus
      */
-    public void setRegistrationStatus(RingDeviceRegistry.Status registrationStatus);
+    void setRegistrationStatus(RingDeviceRegistry.Status registrationStatus);
 
     /**
      * Get the linked Ring account.
      *
      * @return the account.
      */
-    public RingAccount getRingAccount();
+    RingAccount getRingAccount();
 
     /**
      * Set the linked Ring account.
      *
      * @param ringAccount
      */
-    public void setRingAccount(RingAccount ringAccount);
+    void setRingAccount(RingAccount ringAccount);
 
     /**
      * Get the linked Ring Device Handler.
      *
      * @return the handler.
      */
-    public RingDeviceHandler getRingDeviceHandler();
+    RingDeviceHandler getRingDeviceHandler();
 
     /**
      * Set the linked Ring Device Handler.
      *
      * @param ringDeviceHandler the handler.
      */
-    public void setRingDeviceHandler(RingDeviceHandler ringDeviceHandler);
+    void setRingDeviceHandler(RingDeviceHandler ringDeviceHandler);
 
-    public void setJsonObject(JsonObject jsonObject);
+    void setJsonObject(JsonObject jsonObject);
 
-    public JsonObject getJsonObject();
+    JsonObject getJsonObject();
 }

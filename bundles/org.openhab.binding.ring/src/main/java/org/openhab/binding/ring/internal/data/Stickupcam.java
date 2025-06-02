@@ -30,7 +30,7 @@ public class Stickupcam extends AbstractRingDevice {
     /**
      * Create Stickup Cam instance from JSON object.
      *
-     * @param jsonStickupCam the JSON Stickup Cam retrieved from the Ring API.
+     * @param jsonStickupcam the JSON Stickup Cam retrieved from the Ring API.
      */
     public Stickupcam(JsonObject jsonStickupcam) {
         super(jsonStickupcam);

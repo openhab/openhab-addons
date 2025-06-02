@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link RingDoorbellHandler} is responsible for handling commands, which are
+ * The {@link AccountHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Wim Vissers - Initial contribution
@@ -119,9 +119,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private String videoStoragePath = "";
 
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
 
-    private int httpPort;
+    private final int httpPort;
 
     public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, HttpService httpService,
             int httpPort) {
@@ -186,8 +186,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                     break;
             }
-        } else if (command instanceof OnOffType) {
-            OnOffType xcommand = (OnOffType) command;
+        } else if (command instanceof OnOffType xcommand) {
             switch (channelUID.getId()) {
                 case CHANNEL_CONTROL_ENABLED:
                     if (!enabled.equals(xcommand)) {
@@ -195,7 +194,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
                             Configuration config = getThing().getConfiguration();
-                            Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
+                            int refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
                             startAutomaticRefresh(refreshInterval);
                         } else {
                             stopAutomaticRefresh();
@@ -329,7 +328,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 updatedConfiguration.put("hardwareId", config.hardwareId);
                 updateConfiguration(updatedConfiguration);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.debug("getHardwareId failed to get local mac address {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Initialization failed: " + e.getMessage());
@@ -342,7 +341,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         logger.debug("Initializing Ring Account handler");
 
         AccountConfiguration config = getConfigAs(AccountConfiguration.class);
-        Integer refreshInterval = config.refreshInterval;
+        int refreshInterval = config.refreshInterval;
         String username = config.username;
         String password = config.password;
         String hardwareId = getHardwareId();
@@ -538,7 +537,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 String hardwareId = (String) config.get("hardwareId");
                 userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "", hardwareId);
             }
-        } catch (Exception e) {
+        } catch (AuthenticationException | DuplicateIdException e) {
             logger.debug(
                     "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
                     e.getMessage(), e);
