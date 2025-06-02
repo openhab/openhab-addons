@@ -657,7 +657,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             synchronized (MUSIC_TIME_FORMAT) {
                 formattedProgress = MUSIC_TIME_FORMAT.format(new Date(progress));
             }
-            updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_MS, new DecimalType(progress));
+            updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_MS, new QuantityType<>(progress, MILLI(Units.SECOND)));
             updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_FMT, formattedProgress);
         }
 
