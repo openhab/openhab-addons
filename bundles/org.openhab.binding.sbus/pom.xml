@@ -18,8 +18,7 @@
     <dependency>
       <groupId>ro.ciprianpascu</groupId>
       <artifactId>j2sbus</artifactId>
-      <version>1.5.8</version>
-      <scope>compile</scope>
+      <version>1.5.9</version>
     </dependency>
   </dependencies>
 
