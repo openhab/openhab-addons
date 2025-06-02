@@ -214,4 +214,40 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         // Verify brightness remains 0 since device is off (2 updates, one for onOff, one for level)
         verify(mockHandler, times(2)).updateState(eq(1), eq("colorcontrol-color"), eq(new HSBType("180,100,0")));
     }
+
+    @Test
+    void testConstructorWithDefaultMaxMireds() {
+        // Test when maxMireds is null
+        mockColorCluster.colorTempPhysicalMaxMireds = null;
+        ColorControlConverter converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
+        assertEquals(667, converter.colorTempPhysicalMaxMireds);
+
+        // Test when maxMireds is >= MAX_MIREDS
+        mockColorCluster.colorTempPhysicalMaxMireds = ColorControlConverter.MAX_MIREDS;
+        converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
+        assertEquals(ColorControlConverter.MAX_DEFAULT_MIREDS, converter.colorTempPhysicalMaxMireds);
+    }
+
+    @Test
+    void testConstructorWithDefaultMinMireds() {
+        // Test when minMireds is null
+        mockColorCluster.colorTempPhysicalMinMireds = null;
+        ColorControlConverter converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
+        assertEquals(ColorControlConverter.MIN_DEFAULT_MIREDS, converter.colorTempPhysicalMinMireds);
+
+        // Test when minMireds is <= MIN_MIREDS
+        mockColorCluster.colorTempPhysicalMinMireds = ColorControlConverter.MIN_MIREDS;
+        converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
+        assertEquals(ColorControlConverter.MIN_DEFAULT_MIREDS, converter.colorTempPhysicalMinMireds);
+    }
+
+    @Test
+    void testConstructorWithValidMireds() {
+        // Test with valid values
+        mockColorCluster.colorTempPhysicalMinMireds = 200;
+        mockColorCluster.colorTempPhysicalMaxMireds = 400;
+        ColorControlConverter converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
+        assertEquals(200, converter.colorTempPhysicalMinMireds);
+        assertEquals(400, converter.colorTempPhysicalMaxMireds);
+    }
 }
