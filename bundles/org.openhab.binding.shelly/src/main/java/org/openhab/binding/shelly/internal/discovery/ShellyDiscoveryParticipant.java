@@ -150,6 +150,6 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.debug("Not a " + VENDOR + " device!");
             return null;
         }
-        return ShellyThingCreator.getThingUID(serviceName, "", "", false);
+        return ShellyThingCreator.getThingUID(serviceName);
     }
 }
