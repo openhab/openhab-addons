@@ -122,9 +122,9 @@ public abstract class AbstractRingDevice implements RingDevice {
      * @return battery level (%)
      */
     @Override
-    public Integer getBattery() {
+    public int getBattery() {
         if (jsonObject.get(ApiConstants.DEVICE_BATTERY) != null) {
-            return Integer.parseInt(jsonObject.get(ApiConstants.DEVICE_BATTERY).getAsString());
+            return jsonObject.get(ApiConstants.DEVICE_BATTERY).getAsInt();
         } else {
             return 0;
         }

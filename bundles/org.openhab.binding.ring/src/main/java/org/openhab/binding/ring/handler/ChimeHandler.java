@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.ring.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.Chime;
@@ -72,7 +70,7 @@ public class ChimeHandler extends RingDeviceHandler {
         // "Can not access device as username and/or password are invalid");
         if (this.refreshJob == null) {
             Configuration config = getThing().getConfiguration();
-            Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
+            int refreshInterval = (int) config.get("refreshInterval");
             startAutomaticRefresh(refreshInterval);
         }
     }

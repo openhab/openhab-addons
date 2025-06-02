@@ -14,8 +14,6 @@ package org.openhab.binding.ring.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTERY;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.OtherDevice;
@@ -38,7 +36,7 @@ import org.openhab.core.types.Command;
 
 @NonNullByDefault
 public class OtherDeviceHandler extends RingDeviceHandler {
-    private Integer lastBattery = -1;
+    private int lastBattery = -1;
 
     public OtherDeviceHandler(Thing thing) {
         super(thing);
@@ -77,7 +75,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         // "Can not access device as username and/or password are invalid");
         if (this.refreshJob == null) {
             Configuration config = getThing().getConfiguration();
-            Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
+            int refreshInterval = (int) config.get("refreshInterval");
             startAutomaticRefresh(refreshInterval);
         }
     }
@@ -99,10 +97,10 @@ public class OtherDeviceHandler extends RingDeviceHandler {
             initialize();
         }
 
-        if ((device != null) && (!device.getBattery().equals(lastBattery))) {
+        if ((device != null) && (device.getBattery() != lastBattery)) {
             logger.debug("Battery Level: {}", device.getBattery());
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
-            updateState(channelUID, new DecimalType(device.getBattery().toString()));
+            updateState(channelUID, new DecimalType(device.getBattery()));
             lastBattery = device.getBattery();
         } else if (device != null) {
             logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(), device.getBattery(),

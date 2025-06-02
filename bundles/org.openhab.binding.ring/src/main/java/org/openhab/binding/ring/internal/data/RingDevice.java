@@ -76,7 +76,7 @@ public interface RingDevice {
      *
      * @return battery level (%)
      */
-    Integer getBattery();
+    int getBattery();
 
     /**
      * Get the DiscoveryResult object to identify the device as

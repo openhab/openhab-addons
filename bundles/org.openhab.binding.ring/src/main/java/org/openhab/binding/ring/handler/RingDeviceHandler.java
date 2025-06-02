@@ -14,8 +14,6 @@ package org.openhab.binding.ring.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -89,15 +87,14 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                     updateState(channelUID, enabled);
                     break;
                 case CHANNEL_STATUS_BATTERY:
-                    updateState(channelUID, new DecimalType(device.getBattery().toString()));
+                    updateState(channelUID, new DecimalType(device.getBattery()));
                     break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                     break;
             }
             refreshState();
-        } else if (command instanceof OnOffType) {
-            OnOffType xcommand = (OnOffType) command;
+        } else if (command instanceof OnOffType xcommand) {
             switch (channelUID.getId()) {
                 case CHANNEL_CONTROL_ENABLED:
                     if (!enabled.equals(xcommand)) {
@@ -105,7 +102,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
                             Configuration config = getThing().getConfiguration();
-                            Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
+                            int refreshInterval = (int) config.get("refreshInterval");
                             startAutomaticRefresh(refreshInterval);
                         } else {
                             stopAutomaticRefresh();
