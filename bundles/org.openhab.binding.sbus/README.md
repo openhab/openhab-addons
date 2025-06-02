@@ -19,7 +19,9 @@ Auto-discovery is not supported at this moment.
 
 ## Binding Configuration
 
-The binding itself does not require any special configuration but if you choose to deploy openhab in a docker container, it is mandatory to do it with `network_mode: host`, otherwise, the messages flowing on the host network, won't reach the internal docker networks.
+The binding itself does not require any special configuration.
+
+*note*  If openHAB is deployed in a Docker container, you must set the `network_mode` to host. Without this setting, messages on the host network will not reach the Docker container's internal networks.
 
 *note*  If openHAB is deployed in a Docker container, you must set the `network_mode` to host. Without this setting, messages on the host network will not reach the Docker container's internal networks.
 
