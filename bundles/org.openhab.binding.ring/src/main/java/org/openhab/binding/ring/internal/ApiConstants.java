@@ -65,7 +65,7 @@ public class ApiConstants {
     public static final String DEVICES_DOORBOTS = "doorbots";
     public static final String DEVICES_CHIMES = "chimes";
     public static final String DEVICES_STICKUP_CAMS = "stickup_cams";
-    public static final String DEVICES_OTHERDEVICE = "otherdevice";
+    public static final String DEVICES_OTHERDEVICE = "other";
 
     // JSON data names for generic devices
     public static final String DEVICE_ID = "id";
