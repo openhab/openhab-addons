@@ -17,6 +17,7 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -33,6 +34,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
+import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.config.MSpaPoolConfiguration;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -62,13 +64,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MSpaPool extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MSpaPool.class);
+    private final MSpaCommandOptionProvider commandProvider;
+    private final UnitProvider unitProvider;
 
     private MSpaPoolConfiguration config = new MSpaPoolConfiguration();
+    private Optional<Map<String, String>> deviceProperties = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<MSpaBaseAccount> account = Optional.empty();
     private String dataCache = (new JSONObject()).toString();
-    private final MSpaCommandOptionProvider commandProvider;
-    private final UnitProvider unitProvider;
 
     public MSpaPool(Thing thing, UnitProvider unitProvider, MSpaCommandOptionProvider commandProvider) {
         super(thing);
@@ -205,6 +208,7 @@ public class MSpaPool extends BaseThingHandler {
         refreshJob.ifPresent(job -> {
             job.cancel(true);
         });
+        deviceProperties = Optional.empty();
     }
 
     private void updateData() {
@@ -249,6 +253,12 @@ public class MSpaPool extends BaseThingHandler {
                             if (entry instanceof JSONObject jsonEntry) {
                                 if (jsonEntry.has("device_id")) {
                                     if (config.deviceId.equals(jsonEntry.getString("device_id"))) {
+                                        if (deviceProperties.isEmpty()) {
+                                            Map<String, String> devicePropertiesMap = MSpaUtils
+                                                    .getDeviceProperties(jsonEntry.toMap());
+                                            thing.setProperties(devicePropertiesMap);
+                                            deviceProperties = Optional.of(devicePropertiesMap);
+                                        }
                                         if (jsonEntry.has("is_online")) {
                                             boolean online = jsonEntry.getBoolean("is_online");
                                             if (online) {

@@ -15,7 +15,7 @@
 				"device_alias": "F-OS063W",
 				"binding_time": "2025-05-07 23:14:17",
 				"activate_time": "2025-05-07-15",
-				"product_id": "6AI9NK",
+				"product_id": "test_product_id",
 				"mac": "test_mac",
 				"sn": "test_serial",
 				"modelid": null,
@@ -31,7 +31,7 @@
 				"service_region": "eu-central-1",
 				"activate_ip": "ip",
 				"url": "https://s3.eu-central-1.amazonaws.com/donghuiprodpic/a7bdbcbebbd7e7634b86c258d195ca180614e056/1660288071.796046.png",
-				"product_tub_pk": "LK7XJM",
+				"product_tub_pk": "test",
 				"device_uuid": null
 			}
 		]

@@ -113,7 +113,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                     int status = cr.getStatus();
                     String response = cr.getContentAsString();
                     if (status == 200) {
-                        logger.info("Device granted {}", response);
+                        logger.debug("Device granted {}", response);
                         validGrants.put(configuredGrants[i], Instant.now().toString());
                     } else {
                         logger.warn("Device grant failed {} : {}", cr.getReason(), response);
@@ -130,7 +130,6 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
 
     @Override
     public void requestToken() {
-        logger.info("Request guest token");
         Request tokenRequest = getRequest(POST, VISITOR_ENDPOINT);
         JSONObject body = new JSONObject();
         body.put("visitor_id", visitorConfig.get().visitorId);

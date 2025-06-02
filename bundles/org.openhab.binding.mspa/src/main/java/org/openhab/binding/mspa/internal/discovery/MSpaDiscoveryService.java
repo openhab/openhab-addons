@@ -60,7 +60,7 @@ public class MSpaDiscoveryService extends AbstractDiscoveryService {
     public void deviceDiscovered(ThingTypeUID ttUid, ThingUID bridgeUid, Map<String, Object> properties) {
         Object deviceId = properties.get("deviceId");
         String label = "MSpa Pool";
-        Object model = properties.get("product_series");
+        Object model = properties.get("productSeries");
         if (model != null) {
             label = label.concat(" " + model.toString());
         }

@@ -81,4 +81,9 @@ public class MSpaConstants {
     public static final String LOCK = "lock";
 
     public static final String COMMAND_TEMPLATE = new String("{\"desired\": {\"state\": {\"desired\": {%s}}}}");
+
+    public static final Map<String, String> DEVICE_PROPERTY_MAPPING = Map.of("device_id", "deviceId", "product_id",
+            "productId", "sn", "serialNumber", "app_id", "appId", "name", "name", "software_version", "softwareVersion",
+            "enduser_id", "enduserId", "url", "pictureUrl", "product_series", "productSeries", "service_region",
+            "serviceRegion");
 }

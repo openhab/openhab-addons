@@ -17,6 +17,8 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -156,5 +158,24 @@ public class MSpaUtils {
      */
     public static boolean isTokenValid(AccessTokenResponse token) {
         return !UNKNOWN.equals(token.getAccessToken());
+    }
+
+    public static Map<String, Object> getDiscoveryProperties(Map<String, Object> properties) {
+        Map<String, Object> discoveryProperties = new HashMap<>();
+        DEVICE_PROPERTY_MAPPING.forEach((key, targetKey) -> {
+            Object propertyValue = properties.get(key);
+            if (propertyValue != null) {
+                discoveryProperties.put(targetKey, propertyValue);
+            }
+        });
+        return discoveryProperties;
+    }
+
+    public static Map<String, String> getDeviceProperties(Map<String, Object> properties) {
+        Map<String, String> deviceProperties = new HashMap<>();
+        getDiscoveryProperties(properties).forEach((key, value) -> {
+            deviceProperties.put(key, value.toString());
+        });
+        return deviceProperties;
     }
 }

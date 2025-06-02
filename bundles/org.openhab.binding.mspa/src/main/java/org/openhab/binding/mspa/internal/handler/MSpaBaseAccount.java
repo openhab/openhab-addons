@@ -120,15 +120,9 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
                     if (entry instanceof JSONObject jsonEntry) {
                         // ensure necessary ids are present
                         if (jsonEntry.has("device_id") && jsonEntry.has("product_id")) {
-                            String deviceId = jsonEntry.getString("device_id");
-                            String productId = jsonEntry.getString("product_id");
-                            // replace keys to match with configuration variables
                             Map<String, Object> properties = jsonEntry.toMap();
-                            properties.remove("device_id");
-                            properties.remove("product_id");
-                            properties.put("deviceId", deviceId);
-                            properties.put("productId", productId);
-                            discovery.deviceDiscovered(THING_TYPE_POOL, this.getThing().getUID(), properties);
+                            Map<String, Object> discoveryProperties = MSpaUtils.getDiscoveryProperties(properties);
+                            discovery.deviceDiscovered(THING_TYPE_POOL, this.getThing().getUID(), discoveryProperties);
                         }
                     }
                 });
@@ -176,7 +170,6 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         } else if (POST.equals(method)) {
             request = httpClient.POST(HOSTS.get(region) + endPoint);
         } else {
-            logger.info("Request {} not supported", method);
             return httpClient.newRequest(HOSTS.get(region) + endPoint);
         }
 

@@ -12,16 +12,23 @@
  */
 package org.openhab.binding.mspa;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.discovery.MSpaDiscoveryService;
 import org.openhab.binding.mspa.internal.handler.MSpaVisitorAccount;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -31,13 +38,42 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.BridgeImpl;
 
 /**
- * {@link TestToken} test can be used to request a real token
+ * {@link TestGeneric} for some basic tests
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-class TestToken {
+class TestGeneric {
     private static VolatileStorageService storageService = new VolatileStorageService();
+
+    @Test
+    void testDeviceProperties() {
+        String fileName = "src/test/resources/DeviceListResponse.json";
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            JSONObject devices = new JSONObject(content);
+            if (devices.has("data")) {
+                JSONObject data = devices.getJSONObject("data");
+                if (data.has("list")) {
+                    JSONArray list = data.getJSONArray("list");
+                    JSONObject device = list.getJSONObject(0);
+                    Map<String, Object> deviceProperties = MSpaUtils.getDiscoveryProperties(device.toMap());
+                    Object deviceId = deviceProperties.get("deviceId");
+                    assertNotNull(deviceId, "Device ID must be available");
+                    assertEquals("test_device_id", deviceId.toString(), "Device ID value");
+                    Object productId = deviceProperties.get("productId");
+                    assertNotNull(productId, "Product ID must be available");
+                    assertEquals("test_product_id", productId.toString(), "Device ID value");
+                } else {
+                    fail("No list found");
+                }
+            } else {
+                fail("No data found");
+            }
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
 
     public void testToken() {
         Bridge thing = new BridgeImpl(THING_TYPE_VISITOR_ACCOUNT, new ThingUID("test", "account"));
