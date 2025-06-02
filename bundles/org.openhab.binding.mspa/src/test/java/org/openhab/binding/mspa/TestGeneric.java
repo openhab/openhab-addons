@@ -48,7 +48,7 @@ class TestGeneric {
 
     @Test
     void testDeviceProperties() {
-        String fileName = "src/test/resources/DeviceListResponse.json";
+        String fileName = "src/test/resources/DevicelistResponse.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             JSONObject devices = new JSONObject(content);
