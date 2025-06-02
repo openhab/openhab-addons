@@ -188,12 +188,12 @@ public class RestClient {
      * @return the servers response
      * @throws AuthenticationException
      */
-    private String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
+    private String getRequest(String resourceUrl, @Nullable Profile profile) throws AuthenticationException {
         String result = "";
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
             StringBuilder output = new StringBuilder();
-            URL url = new URI(resourceUrl).toURL();// + "?" + data);
+            URL url = new URI(resourceUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
@@ -632,10 +632,10 @@ public class RestClient {
      * @throws AuthenticationException when request is invalid.
      * @throws JsonParseException when response is invalid JSON.
      */
-    public RingDevices getRingDevices(Profile profile, RingAccount ringAccount)
+    public RingDevices getRingDevices(@Nullable Profile profile, RingAccount ringAccount)
             throws JsonParseException, AuthenticationException {
         logger.debug("RestClient - getRingDevices");
-        String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);// DataFactory.getDevicesParams(profile));
+        String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);
         JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
         return new RingDevices(obj, ringAccount);
     }
@@ -649,7 +649,7 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws JsonParseException
      */
-    public synchronized List<RingEvent> getHistory(Profile profile, int limit)
+    public synchronized List<RingEvent> getHistory(@Nullable Profile profile, int limit)
             throws AuthenticationException, JsonParseException {
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
         if (!"".equals(jsonResult)) {
@@ -681,7 +681,7 @@ public class RestClient {
         }
     }
 
-    public String downloadEventVideo(RingEvent event, Profile profile, String filePath, int retentionCount) {
+    public String downloadEventVideo(RingEvent event, @Nullable Profile profile, String filePath, int retentionCount) {
         try {
             Path path = Paths.get(filePath);
 

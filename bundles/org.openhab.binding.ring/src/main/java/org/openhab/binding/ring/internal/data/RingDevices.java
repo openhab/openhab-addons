@@ -32,10 +32,10 @@ import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class RingDevices {
-    private @NonNullByDefault({}) List<Doorbell> doorbells;
-    private @NonNullByDefault({}) List<Stickupcam> stickupcams;
-    private @NonNullByDefault({}) List<Chime> chimes;
-    private @NonNullByDefault({}) List<Other> others;
+    private List<Doorbell> doorbells = new ArrayList<>();
+    private List<Stickupcam> stickupcams = new ArrayList<>();
+    private List<Chime> chimes = new ArrayList<>();
+    private List<Other> others = new ArrayList<>();
 
     public RingDevices(JsonObject jsonRingDevices, RingAccount ringAccount) {
         addDoorbells((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_DOORBOTS), ringAccount);
@@ -49,8 +49,7 @@ public class RingDevices {
      *
      * @param jsonDoorbells
      */
-    private final void addDoorbells(@NonNullByDefault({}) JsonArray jsonDoorbells, RingAccount ringAccount) {
-        doorbells = new ArrayList<>();
+    private final void addDoorbells(JsonArray jsonDoorbells, RingAccount ringAccount) {
         for (Object obj : jsonDoorbells) {
             Doorbell doorbell = new Doorbell((JsonObject) obj);
             doorbell.setRingAccount(ringAccount);
@@ -72,8 +71,7 @@ public class RingDevices {
      *
      * @param jsonStickupcams
      */
-    private final void addStickupCams(@NonNullByDefault({}) JsonArray jsonStickupcams, RingAccount ringAccount) {
-        stickupcams = new ArrayList<>();
+    private final void addStickupCams(JsonArray jsonStickupcams, RingAccount ringAccount) {
         for (Object obj : jsonStickupcams) {
             Stickupcam stickupcam = new Stickupcam((JsonObject) obj);
             stickupcam.setRingAccount(ringAccount);
@@ -95,8 +93,7 @@ public class RingDevices {
      *
      * @param jsonChimes
      */
-    private final void addChimes(@NonNullByDefault({}) JsonArray jsonChimes, RingAccount ringAccount) {
-        chimes = new ArrayList<>();
+    private final void addChimes(JsonArray jsonChimes, RingAccount ringAccount) {
         for (Object obj : jsonChimes) {
             Chime chime = new Chime((JsonObject) obj);
             chime.setRingAccount(ringAccount);
@@ -118,8 +115,7 @@ public class RingDevices {
      *
      * @param jsonOther
      */
-    private final void addOthers(@NonNullByDefault({}) JsonArray jsonOthers, RingAccount ringAccount) {
-        others = new ArrayList<>();
+    private final void addOthers(JsonArray jsonOthers, RingAccount ringAccount) {
         for (Object obj : jsonOthers) {
             Other other = new Other((JsonObject) obj);
             other.setRingAccount(ringAccount);

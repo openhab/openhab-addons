@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -74,7 +75,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable ScheduledFuture<?> eventRefresh = null;
     private @Nullable Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
-    private @NonNullByDefault({}) HttpService httpService;
+    private final HttpService httpService;
     private final String thingId;
 
     // Current status
@@ -88,19 +89,19 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The user profile retrieved when authenticating.
      */
-    private @NonNullByDefault({}) Profile userProfile;
+    private @Nullable Profile userProfile;
     /**
      * The registry.
      */
-    private @NonNullByDefault({}) RingDeviceRegistry registry;
+    private @Nullable RingDeviceRegistry registry;
     /**
      * The RestClient is used to connect to the Ring Account.
      */
-    private @NonNullByDefault({}) RestClient restClient;
+    private @Nullable RestClient restClient;
     /**
      * The list with events.
      */
-    private @NonNullByDefault({}) List<RingEvent> lastEvents;
+    private List<RingEvent> lastEvents = new ArrayList<>();
     /**
      * The index to the current event.
      */

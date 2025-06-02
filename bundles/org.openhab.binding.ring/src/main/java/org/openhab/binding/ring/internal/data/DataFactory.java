@@ -23,17 +23,6 @@ import org.openhab.binding.ring.internal.ApiConstants;
 @NonNullByDefault
 public class DataFactory {
     public static String getOauthData(String username, String password) {
-        /*
-         * Map<String, String> map = new HashMap<String, String>();
-         *
-         * paramBuilder pb = new ParamBuilder(false);
-         * map.put("client_id", "ring_official_android");
-         * map.put("grant_type", "password");
-         * map.put("scope", "client");
-         * map.put("username", username);
-         * map.put("password", password);
-         * return pb.toString();
-         */
         return "";
     }
 
@@ -50,7 +39,7 @@ public class DataFactory {
         pb.add("device[metadata][device_model]", "VirtualBox");
         pb.add("device[metadata][resolution]", "600x800");
         pb.add("device[metadata][app_version]", "1.7.29");
-        pb.add("device[metadata][app_instalation_date]", "");
+        pb.add("device[metadata][app_installation_date]", "");
         pb.add("device[metadata][os_version]", "4.4.4");
         pb.add("device[metadata][manufacturer]", "innotek GmbH");
         pb.add("device[metadata][is_tablet]", "true");
@@ -84,23 +73,4 @@ public class DataFactory {
         pb.add("limit", "" + limit);
         return pb.toString();
     }
-
-    /**
-     * Construct the url to retrieve the recorded video.
-     *
-     * @param profile the user profile for the authentication token.
-     * @param ringEvent the ring event for the id.
-     * @return a url to the recorded video.
-     */
-    /*
-     * public static String getDingVideoUrl(Profile profile, RingEvent ringEvent) {
-     * // return "Not implemented by binding";
-     * StringBuilder b = new StringBuilder();
-     * b.append(ApiConstants.URL_RECORDING_START).append(ringEvent.getEventId())
-     * .append(ApiConstants.URL_RECORDING_END);
-     * // .append("?api_version=").append(ApiConstants.API_VERSION).append("&auth_token=")
-     * // .append(profile.getAuthenticationToken());
-     * return b.toString();
-     * }
-     */
 }

@@ -17,6 +17,7 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
@@ -45,7 +46,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     /**
      * The RingDevice instance linked to this thing.
      */
-    protected @NonNullByDefault({}) RingDevice device;
+    protected @Nullable RingDevice device;
 
     public RingDeviceHandler(Thing thing) {
         super(thing);
@@ -62,15 +63,17 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     protected void linkDevice(String id, Class<?> deviceClass)
             throws DeviceNotFoundException, IllegalDeviceClassException {
         device = RingDeviceRegistry.getInstance().getRingDevice(id);
-        if (device.getClass().equals(deviceClass)) {
-            device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
-            device.setRingDeviceHandler(this);
-            thing.setProperty("Description", device.getDescription());
-            thing.setProperty("Kind", device.getKind());
-            thing.setProperty("Device ID", device.getDeviceId());
-        } else {
-            throw new IllegalDeviceClassException(
-                    "Class '" + deviceClass.getName() + "' expected but '" + device.getClass().getName() + "' found.");
+        if (device != null) {
+            if (deviceClass.equals(device.getClass())) {
+                device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
+                device.setRingDeviceHandler(this);
+                thing.setProperty("Description", device.getDescription());
+                thing.setProperty("Kind", device.getKind());
+                thing.setProperty("Device ID", device.getDeviceId());
+            } else {
+                throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
+                        + device.getClass().getName() + "' found.");
+            }
         }
     }
 
