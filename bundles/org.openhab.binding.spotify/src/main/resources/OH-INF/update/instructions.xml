@@ -12,6 +12,14 @@
 			<update-channel id="trackProgressMs">
 				<type>spotify:currentlyPlayedTrackProgressMs</type>
 			</update-channel>
+
+			<update-channel id="trackDuration">
+				<type>spotify:currentlyPlayedTrackDuration</type>
+			</update-channel>
+
+			<update-channel id="trackProgress">
+				<type>spotify:currentlyPlayedTrackProgress</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
