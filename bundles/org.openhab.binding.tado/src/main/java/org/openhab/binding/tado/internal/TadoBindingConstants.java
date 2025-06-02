@@ -139,6 +139,7 @@ public class TadoBindingConstants {
     // Configuration
     public static final String CONFIG_ZONE_ID = "id";
     public static final String CONFIG_MOBILE_DEVICE_ID = "id";
+    public static final String CONFIG_USE_RFC8628 = "useRfc8628";
 
     // Properties
     public static final String PROPERTY_ZONE_NAME = "name";

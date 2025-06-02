@@ -410,6 +410,7 @@ A keystore file with a self-signed certificate is created automatically.
 This certificate is used for pairing between the Bridge and the Bosch Smart Home Controller.
 
 On the Smart Home Controller Bridge, paring mode must be enabled after the `shc` Thing was created:
+
 - Smart Home Controller: _Press and hold the button until the LED starts blinking to enable pairing mode_.
 - Smart Home Controller II: _Press the button briefly to enable pairing mode_.
 

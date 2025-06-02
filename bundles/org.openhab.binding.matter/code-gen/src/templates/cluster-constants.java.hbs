@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// AUTO-GENERATED, DO NOT EDIT!
+
+package org.openhab.binding.matter.internal.client.dto.cluster.gen;
+
+import org.openhab.core.thing.type.ChannelTypeUID;
+
+/**
+ *
+ * ClusterThingTypes
+ * @author Dan Cunningham - Initial contribution
+ */
+public class ClusterConstants {
+
+{{#each clusters}}
+    // {{name}} Cluster
+{{#each children}}
+{{#if (isDepreciated this)}}
+{{else}}
+{{#if (isAttribute this)}}
+{{#if access}}
+    public static final String CHANNEL_NAME_{{asUpperCase ../name}}_{{asUpperCase name}} = "{{asUpperCamelCase name}}";
+    public static final String CHANNEL_LABEL_{{asUpperCase ../name}}_{{asUpperCase name}} = "{{asTitleCase name}}";
+    public static final String CHANNEL_ID_{{asUpperCase ../name}}_{{asUpperCase name}} = "{{asLowerCase ../name}}-{{asLowerCase name}}";
+    public static final ChannelTypeUID CHANNEL_{{asUpperCase ../name}}_{{asUpperCase name}} = new ChannelTypeUID(
+        "matter:" + CHANNEL_ID_{{asUpperCase ../name}}_{{asUpperCase name}});
+
+{{/if}}
+{{/if}}
+{{/if}}
+{{/each}}
+{{/each}}
+}
