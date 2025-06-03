@@ -79,6 +79,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        getToken();
         if (MSpaUtils.isTokenValid(token)) {
             updateStatus(ThingStatus.ONLINE);
             discovery.addAccount(this);
@@ -106,7 +107,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
                 logger.warn("Failed to get device list - reason {}", response);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Failed to get device list - reason {}", e.getMessage());
+            logger.warn("Failed to get device list - reason {}", e.toString());
         }
     }
 
@@ -140,16 +141,21 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         });
     }
 
+    /**
+     * Gets token as String if AccessToken is valid and not expired. If not try to request a new token. Thing is set to
+     * ONLINE / OFFLINE based on request result.
+     *
+     * @return token as String, UNKNOWN in case of unsuccessful refresh
+     */
     public String getToken() {
         if (MSpaUtils.isTokenValid(token)) {
-            if (token.isExpired(Instant.now(), 60)) {
-                requestToken();
-                if (MSpaUtils.isTokenValid(token)) {
-                    return token.getAccessToken();
-                }
-            } else {
+            return token.getAccessToken();
+        } else {
+            requestToken();
+            // token shall be fine now.
+            if (MSpaUtils.isTokenValid(token)) {
                 return token.getAccessToken();
-            }
+            } // else fall through to UNKNOWN
         }
         return UNKNOWN;
     }
@@ -180,10 +186,10 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         request.header("sign", MSpaUtils.getSignature(nonce, timestamp, region));
         request.header(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
         request.header(HttpHeader.USER_AGENT, "okhttp/4.9.0");
-        if (MSpaUtils.isTokenValid(token)) {
-            request.header(HttpHeader.AUTHORIZATION, "token " + token.getAccessToken());
+        if (!TOKEN_ENDPOINT.equals(endPoint) && !VISITOR_ENDPOINT.equals(endPoint)) {
+            // no authorization header if token shall be requested
+            request.header(HttpHeader.AUTHORIZATION, "token " + getToken());
         }
-
         return request;
     }
 
@@ -194,7 +200,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
                 JSONObject storedJson = new JSONObject(storedString);
                 return storedJson;
             } catch (JSONException e) {
-                logger.warn("Persistence store {} format exception {}", storedString, e.getMessage());
+                logger.warn("Persistence store {} format exception {}", storedString, e.toString());
             }
         }
         return new JSONObject("{}");

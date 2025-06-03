@@ -18,9 +18,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -29,13 +28,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MSpaUtils} providing several helper functions
+ * The {@link MSpaUtils} class provides several helper functions for interacting with MSpa cloud services.
+ * It includes methods for generating cryptographic hashes, signing requests, decoding and validating tokens,
+ * and mapping device properties for discovery and configuration.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class MSpaUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MSpaUtils.class);
+    private static final int EXPIRATION_TIME_SEC = 24 * 60 * 60;
 
     /**
      * Gets hash value from md5 algorithm
@@ -48,9 +50,11 @@ public class MSpaUtils {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(input.getBytes());
             byte[] digest = md.digest();
-            return DatatypeConverter.printHexBinary(digest);
+            return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("MD5 Algorithm not supported");
+            LOGGER.error(
+                    "MD5 Algorithm not supported. Exception: {}. Please verify the Java runtime environment for supported algorithms.",
+                    e.toString());
         }
         return UNKNOWN;
     }
@@ -92,7 +96,7 @@ public class MSpaUtils {
     }
 
     /**
-     * Decode token delivered by MSpa cloud
+     * Decode token delivered by MSpa cloud. Expiration and creation set manually, no refresh token provided by MSpa
      *
      * @param content as JSIN encoded String
      * @return AccessToken object
@@ -103,10 +107,12 @@ public class MSpaUtils {
             JSONObject data = json.getJSONObject("data");
             if (data.has("token")) {
                 AccessTokenResponse response = new AccessTokenResponse();
-                // set data manually cause they aren't delivered. Also no refresh token available - simply get a new
+                // Set data manually because the MSpa cloud does not provide refresh tokens in its response.
+                // This means the application must request a new token each time the current one expires,
+                // potentially increasing the frequency of authentication requests to the MSpa cloud.
                 // token!
                 response.setCreatedOn(Instant.now());
-                response.setExpiresIn(24 * 60 * 60);
+                response.setExpiresIn(EXPIRATION_TIME_SEC);
                 response.setAccessToken(data.getString("token"));
                 return response;
             }
@@ -115,7 +121,7 @@ public class MSpaUtils {
     }
 
     /**
-     * Decode token from JSONObject
+     * Decode token from JSONObject obtained from storage. All keys must be present.
      *
      * @param json as JSONObject
      * @return AccessToken object
@@ -140,7 +146,7 @@ public class MSpaUtils {
     public static JSONObject token2Json(AccessTokenResponse atr) {
         JSONObject json = new JSONObject();
         json.put("token", atr.getAccessToken());
-        json.put("created", atr.getCreatedOn());
+        json.put("created", atr.getCreatedOn().toString());
         json.put("expires", atr.getExpiresIn());
         return json;
     }
@@ -157,13 +163,13 @@ public class MSpaUtils {
     }
 
     /**
-     * Check if token is valid
+     * Check if token is valid and not expired
      *
      * @param token to checked
      * @return true if valid, false otherwise
      */
     public static boolean isTokenValid(AccessTokenResponse token) {
-        return !UNKNOWN.equals(token.getAccessToken());
+        return !token.isExpired(Instant.now(), 1) && !UNKNOWN.equals(token.getAccessToken());
     }
 
     /**
@@ -175,11 +181,14 @@ public class MSpaUtils {
     public static Map<String, Object> getDiscoveryProperties(Map<String, Object> properties) {
         Map<String, Object> discoveryProperties = new HashMap<>();
         DEVICE_PROPERTY_MAPPING.forEach((key, targetKey) -> {
+            // Retrieve the value of the property using the key from the API call
             Object propertyValue = properties.get(key);
             if (propertyValue != null) {
+                // Map the retrieved property value to the target key for discovery
                 discoveryProperties.put(targetKey, propertyValue);
             }
         });
+
         return discoveryProperties;
     }
 
@@ -195,5 +204,19 @@ public class MSpaUtils {
             deviceProperties.put(key, value.toString());
         });
         return deviceProperties;
+    }
+
+    /**
+     * Get the message out of a cloud response
+     *
+     * @param response as String
+     * @return message from JSON object, UNKNOWN otherwise
+     */
+    public static String checkResponse(String response) {
+        JSONObject responseJson = new JSONObject(response);
+        if (responseJson.has("message")) {
+            return responseJson.getString("message");
+        }
+        return UNKNOWN;
     }
 }

@@ -52,10 +52,10 @@ public class MSpaConstants {
             REGION_US, "87025c9ecd18906d27225fe79cb68349", REGION_CHINA, "87025c9ecd18906d27225fe79cb68349");
 
     public static final String TOKEN_ENDPOINT = "/api/enduser/get_token/";
+    public static final String VISITOR_ENDPOINT = "/api/enduser/visitor/";
     public static final String DEVICE_LIST_ENDPOINT = "/api/enduser/devices/";
     public static final String DEVICE_SHADOW_ENDPOINT = "/api/device/thing_shadow/";
     public static final String COMMAND_ENDPOINT = "/api/device/command/";
-    public static final String VISITOR_ENDPOINT = "/api/enduser/visitor/";
     public static final String GRANT_DEVICE_ENDPOINT = "/api/enduser/grant_device/";
 
     public static final String GET = "GET";

@@ -79,92 +79,77 @@ public class MSpaPool extends BaseThingHandler {
         this.unitProvider = unitProvider;
     }
 
+    @SuppressWarnings("unchecked")
+    public Optional<JSONObject> createCommandBody(String channelId, Command command) {
+        String commandDetail = UNKNOWN;
+
+        if (command instanceof OnOffType onOff) {
+            int on = OnOffType.ON.equals(onOff) ? 1 : 0;
+            commandDetail = switch (channelId) {
+                case HEATER -> "\"heater_state\":" + on;
+                case JET_STREAM -> "\"jet_state\":" + on;
+                case BUBBLES -> "\"bubble_state\":" + on;
+                case CIRCULATE -> "\"filter_state\":" + on;
+                case UVC -> "\"uvc_state\":" + on;
+                case OZONE -> "\"ozone_state\":" + on;
+                case LOCK -> "\"safety_lock\":" + on;
+                default -> UNKNOWN;
+            };
+        } else if (command instanceof DecimalType decimal) {
+            commandDetail = switch (channelId) {
+                case BUBBLE_LEVEL -> "\"bubble_level\":" + Math.min(Math.max(1, decimal.intValue()), 3);
+                default -> UNKNOWN;
+            };
+        } else if (command instanceof QuantityType qt) {
+            /**
+             * Water temperature handling by MSpa is proprietary. Values from / to device are based on °C but values
+             * are times two! Conversion to °F for command needs separate handling.
+             */
+            QuantityType<?> temperature = qt.toUnit(SIUnits.CELSIUS);
+            if (temperature != null) {
+                commandDetail = switch (channelId) {
+                    case WATER_TARGET_TEMPERATURE ->
+                        "\"temperature_setting\":" + Math.min(Math.max(20, temperature.intValue()), 40) * 2;
+                    default -> UNKNOWN;
+                };
+            } else {
+                logger.warn("Unsupported command with unit {} for channel {}", qt.getUnit(), channelId);
+            }
+        }
+
+        if (!UNKNOWN.equals(commandDetail)) {
+            String commandString = String.format(COMMAND_TEMPLATE, commandDetail);
+            return Optional.of(new JSONObject(commandString));
+        }
+        return Optional.empty();
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         if (command instanceof RefreshType) {
             distributeData(dataCache);
         } else {
-            // prepare for command execution
-            JSONObject commandBody = new JSONObject();
-            if (command instanceof OnOffType onOff) {
-                int on = OnOffType.ON.equals(onOff) ? 1 : 0;
-                String commandDetail = UNKNOWN;
-                switch (channelId) {
-                    case HEATER:
-                        commandDetail = "\"heater_state\":" + on;
-                        break;
-                    case JET_STREAM:
-                        commandDetail = "\"jet_state\":" + on;
-                        break;
-                    case BUBBLES:
-                        commandDetail = "\"bubble_state\":" + on;
-                        break;
-                    case CIRCULATE:
-                        commandDetail = "\"filter_state\":" + on;
-                        break;
-                    case UVC:
-                        commandDetail = "\"uvc_state\":" + on;
-                        break;
-                    case OZONE:
-                        commandDetail = "\"ozone_state\":" + on;
-                        break;
-                    case LOCK:
-                        commandDetail = "\"safety_lock\":" + on;
-                        break;
-                }
-                if (!UNKNOWN.equals(commandDetail)) {
-                    String commandString = String.format(COMMAND_TEMPLATE, commandDetail);
-                    commandBody = new JSONObject(commandString);
-                }
-            } else if (command instanceof DecimalType decimal) {
-                String commandDetail = UNKNOWN;
-                switch (channelId) {
-                    case BUBBLE_LEVEL:
-                        int adjustedLevel = Math.min(Math.max(1, decimal.intValue()), 3);
-                        commandDetail = "\"bubble_level\":" + adjustedLevel;
-                        break;
-                }
-                if (!UNKNOWN.equals(commandDetail)) {
-                    String commandString = String.format(COMMAND_TEMPLATE, commandDetail);
-                    commandBody = new JSONObject(commandString);
-                }
-            } else if (command instanceof QuantityType qt) {
-                // still to investigate target values
-                String commandDetail = UNKNOWN;
-                switch (channelId) {
-                    case WATER_TARGET_TEMPERATURE:
-                        int adjustedTemperature = Math.min(Math.max(10, qt.intValue()), 40);
-                        commandDetail = "\"temperature_setting\":" + adjustedTemperature * 2;
-                        break;
-                }
-                if (!UNKNOWN.equals(commandDetail)) {
-                    String commandString = String.format(COMMAND_TEMPLATE, commandDetail);
-                    commandBody = new JSONObject(commandString);
-                }
-            }
-            // command is calculated so send
-            if (!commandBody.isEmpty() && !account.isEmpty()) {
-                commandBody.put("device_id", config.deviceId);
-                commandBody.put("product_id", config.productId);
-                Request commandRequest = account.get().getRequest(POST, COMMAND_ENDPOINT);
-                commandRequest.content(new StringContentProvider(commandBody.toString(), "utf-8"));
-                try {
-                    ContentResponse cr = commandRequest.timeout(10, TimeUnit.SECONDS).send();
-                    int status = cr.getStatus();
-                    String response = cr.getContentAsString();
-                    if (status == 200) {
-                        // schedule update to confirm new settings
-                        scheduler.schedule(this::updateData, 10, TimeUnit.SECONDS);
-                    } else {
-                        logger.warn("Error sending command {} - {}", commandBody.toString(), response);
+            createCommandBody(channelId, command).ifPresent(commandBody -> {
+                account.ifPresent(acc -> {
+                    commandBody.put("device_id", config.deviceId);
+                    commandBody.put("product_id", config.productId);
+                    Request commandRequest = acc.getRequest(POST, COMMAND_ENDPOINT);
+                    commandRequest.content(new StringContentProvider(commandBody.toString(), "utf-8"));
+                    try {
+                        ContentResponse cr = commandRequest.timeout(10, TimeUnit.SECONDS).send();
+                        int status = cr.getStatus();
+                        String response = cr.getContentAsString();
+                        if (status == 200) {
+                            scheduler.schedule(this::updateData, 10, TimeUnit.SECONDS);
+                        } else {
+                            logger.warn("Error sending command {} - {}", commandBody.toString(), response);
+                        }
+                    } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                        logger.warn("Error sending command {} - {}", commandBody.toString(), e.toString());
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.warn("Error sending command {} - {}", commandBody.toString(), e.getMessage());
-                }
-            } else {
-                logger.info("Either command ({}) or account ({}) empty", commandBody, account.isEmpty());
-            }
+                });
+            });
         }
     }
 
@@ -184,15 +169,14 @@ public class MSpaPool extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge != null) {
-            updateStatus(ThingStatus.UNKNOWN);
             BridgeHandler handler = bridge.getHandler();
             if (handler instanceof MSpaBaseAccount accountHandler) {
                 account = Optional.of(accountHandler);
                 String token = accountHandler.getToken();
                 if (!UNKNOWN.equals(token)) {
+                    updateStatus(ThingStatus.UNKNOWN);
                     refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateData, 2,
                             config.refreshInterval * 60, TimeUnit.SECONDS));
-                    updateStatus(ThingStatus.ONLINE);
                     setCommandOptions();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -218,7 +202,7 @@ public class MSpaPool extends BaseThingHandler {
 
     private void updateData() {
         if (account.isPresent()) {
-            if (checkOnline()) {
+            if (!checkOnline()) {
                 return;
             }
             Request dataRequest = account.get().getRequest(POST, DEVICE_SHADOW_ENDPOINT);
@@ -233,10 +217,10 @@ public class MSpaPool extends BaseThingHandler {
                 if (status == 200) {
                     distributeData(response);
                 } else {
-                    logger.warn("Failed to get data - reason {}", response);
+                    logger.info("Failed to get data - reason {}", response);
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Failed to get data - reason {}", e.getMessage());
+                logger.warn("Failed to get data - reason {}", e.toString());
             }
         }
     }
@@ -288,9 +272,8 @@ public class MSpaPool extends BaseThingHandler {
                         "@text/status.mspa.pool.request-failed [\"" + status + "\"]");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Online query failed with reason {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/status.mspa.pool.request-failed [\"" + e.getMessage() + "\"]");
+                    "@text/status.mspa.pool.request-failed [\"" + e.toString() + "\"]");
         }
         return false;
     }
@@ -303,6 +286,10 @@ public class MSpaPool extends BaseThingHandler {
             if (rawData.has("heater_state")) {
                 updateState(HEATER, OnOffType.from(rawData.getInt("heater_state") == 1));
             }
+            /**
+             * Water temperature handling by MSpa is proprietary. Values from / to device are based on °C but values
+             * are times two! Conversion to °F for update handled by OH.
+             */
             if (rawData.has("water_temperature")) {
                 updateState(WATER_CURRENT_TEMPERATURE,
                         QuantityType.valueOf(rawData.getInt("water_temperature") / 2.0, SIUnits.CELSIUS));
@@ -338,6 +325,7 @@ public class MSpaPool extends BaseThingHandler {
     private void setCommandOptions() {
         List<CommandOption> commandOptions = new ArrayList<>();
         Unit<Temperature> temperatureUnit = unitProvider.getUnit(Temperature.class);
+        // Set command options for UI from 30 °C (86 °F) to 40 °C (104 °F)
         if (ImperialUnits.FAHRENHEIT.equals(temperatureUnit)) {
             for (int i = 86; i < 105; i++) {
                 commandOptions.add(new CommandOption(i + " °F", i + " °F"));

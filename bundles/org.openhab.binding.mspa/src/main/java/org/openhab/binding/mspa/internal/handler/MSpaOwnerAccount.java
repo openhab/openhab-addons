@@ -59,18 +59,15 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
             return;
         }
         ownerConfig = Optional.of(config);
-        // request token if necessary
+        // restore token from storage
         JSONObject storage = getStorage(config.email);
         if (storage.has(TOKEN)) {
             JSONObject tokenResponse = storage.getJSONObject(TOKEN);
             token = MSpaUtils.decodeStoredToken(tokenResponse);
-            if (!MSpaUtils.isTokenValid(token)) {
-                requestToken();
-            }
-        } else {
-            requestToken();
         }
-        super.initialize();
+        updateStatus(ThingStatus.UNKNOWN);
+        // token validation takes place in base class and can cause http rquest
+        scheduler.schedule(super::initialize, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -83,6 +80,7 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
         body.put("registration_id", EMPTY);
         body.put("push_type", "android");
         tokenRequest.content(new StringContentProvider(body.toString(), "utf-8"));
+        String failReason = null;
         try {
             ContentResponse cr = tokenRequest.timeout(10000, TimeUnit.MILLISECONDS).send();
             int status = cr.getStatus();
@@ -96,13 +94,22 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
                     persistence.put(TOKEN, tokenStore);
                     persist(persistenceId, persistence);
                 } else {
-                    logger.warn("Failed to get token - reason {}", response);
+                    failReason = MSpaUtils.checkResponse(response);
+                    logger.warn("Failed to get token - reason {}", failReason);
                 }
             } else {
-                logger.warn("Failed to get token - reason {}", cr.getReason());
+                failReason = cr.getReason();
+                logger.warn("Failed to get token - reason {}", failReason);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Failed to get token - reason {}", e.getMessage());
+            failReason = e.toString();
+            logger.warn("Failed to get token - reason {}", failReason);
+        }
+        if (failReason != null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.mspa.token-request-error [\"" + failReason + "\"]");
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 }

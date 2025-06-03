@@ -70,19 +70,20 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
             return;
         }
         visitorConfig = Optional.of(config);
-        // request token if necessary
+        // restore token from storage
         JSONObject storage = getStorage(config.visitorId);
         if (storage.has(TOKEN)) {
             JSONObject tokenResponse = storage.getJSONObject(TOKEN);
             token = MSpaUtils.decodeStoredToken(tokenResponse);
-            if (!MSpaUtils.isTokenValid(token)) {
-                requestToken();
-            }
-        } else {
-            requestToken();
         }
-        grantDevices();
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.schedule(this::doInitialize, 0, TimeUnit.SECONDS);
+    }
+
+    private void doInitialize() {
+        // both calls can end in an http request so they're executed asynchronous
         super.initialize();
+        grantDevices();
     }
 
     private void grantDevices() {
@@ -119,9 +120,8 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                         logger.warn("Device grant failed {} : {}", cr.getReason(), response);
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.warn("Device grant failed - reason {}", e.getMessage());
+                    logger.warn("Device grant failed - reason {}", e.toString());
                 }
-
             }
         }
         persistence.put(GRANTS, validGrants);
@@ -138,6 +138,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         body.put("push_type", "android");
         body.put("lan_code", "EN");
         tokenRequest.content(new StringContentProvider(body.toString(), "utf-8"));
+        String failReason = null;
         try {
             ContentResponse cr = tokenRequest.timeout(10000, TimeUnit.MILLISECONDS).send();
             int status = cr.getStatus();
@@ -151,13 +152,22 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                     persistence.put(TOKEN, tokenStore);
                     persist(persistenceId, persistence);
                 } else {
-                    logger.warn("Failed to get token - reason {}", response);
+                    failReason = MSpaUtils.checkResponse(response);
+                    logger.warn("Failed to get token - reason {}", failReason);
                 }
             } else {
-                logger.warn("Failed to get token - reason {}", cr.getReason());
+                failReason = cr.getReason();
+                logger.warn("Failed to get token - reason {}", failReason);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Failed to get token - reason {}", e.getMessage());
+            failReason = e.toString();
+            logger.warn("Failed to get token - reason {}", failReason);
+        }
+        if (failReason != null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.mspa.token-request-error [\"" + failReason + "\"]");
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 }
