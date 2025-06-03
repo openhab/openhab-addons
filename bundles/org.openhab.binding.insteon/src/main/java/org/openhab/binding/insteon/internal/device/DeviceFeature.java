@@ -237,9 +237,9 @@ public class DeviceFeature {
     public int getComponentId() {
         int componentId = 0;
         if (device instanceof InsteonDevice insteonDevice && isControllerOrResponderFeature()) {
-            // use feature group as component id if device has more than one controller or responder feature,
+            // use feature group as component id if device has more than one controller or responder feature group,
             // set to 1 if device link db has a matching record, otherwise fall back to 0
-            if (insteonDevice.getControllerOrResponderFeatures().size() > 1) {
+            if (insteonDevice.getControllerOrResponderFeatureGroups().size() > 1) {
                 componentId = getGroup();
             } else if (insteonDevice.getLinkDB().hasComponentIdRecord(1, isControllerFeature())) {
                 componentId = 1;
