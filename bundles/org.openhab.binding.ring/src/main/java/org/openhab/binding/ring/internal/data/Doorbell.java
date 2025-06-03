@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -31,9 +32,10 @@ public class Doorbell extends AbstractRingDevice {
      * Create Doorbell instance from JSON object.
      *
      * @param jsonDoorbell the JSON doorbell (doorbot) retrieved from the Ring API.
+     * @param ringAccount the Ring Account in use
      */
-    public Doorbell(JsonObject jsonDoorbell) {
-        super(jsonDoorbell);
+    public Doorbell(JsonObject jsonDoorbell, RingAccount ringAccount) {
+        super(jsonDoorbell, ringAccount);
     }
 
     /**

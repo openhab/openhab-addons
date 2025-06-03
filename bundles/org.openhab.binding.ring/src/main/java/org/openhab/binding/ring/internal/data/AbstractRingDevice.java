@@ -46,14 +46,15 @@ public abstract class AbstractRingDevice implements RingDevice {
     /**
      * The linked Ring account.
      */
-    private @NonNullByDefault({}) RingAccount ringAccount;
+    private final RingAccount ringAccount;
     /**
      * The linked RingDeviceHandler.
      */
     private @NonNullByDefault({}) RingDeviceHandler ringDeviceHandler;
 
-    protected AbstractRingDevice(JsonObject jsonObject) {
+    protected AbstractRingDevice(JsonObject jsonObject, RingAccount ringAccount) {
         this.jsonObject = jsonObject;
+        this.ringAccount = ringAccount;
     }
 
     /**
@@ -178,16 +179,6 @@ public abstract class AbstractRingDevice implements RingDevice {
     @Override
     public RingAccount getRingAccount() {
         return ringAccount;
-    }
-
-    /**
-     * Set the linked Ring account.
-     *
-     * @param ringAccount
-     */
-    @Override
-    public void setRingAccount(RingAccount ringAccount) {
-        this.ringAccount = ringAccount;
     }
 
     @Override

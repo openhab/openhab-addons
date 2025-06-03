@@ -48,11 +48,11 @@ public class RingDevices {
      * Helper method to create the doorbell list.
      *
      * @param jsonDoorbells
+     * @param ringAccount
      */
     private void addDoorbells(JsonArray jsonDoorbells, RingAccount ringAccount) {
         for (Object obj : jsonDoorbells) {
-            Doorbell doorbell = new Doorbell((JsonObject) obj);
-            doorbell.setRingAccount(ringAccount);
+            Doorbell doorbell = new Doorbell((JsonObject) obj, ringAccount);
             doorbells.add(doorbell);
         }
     }
@@ -70,11 +70,11 @@ public class RingDevices {
      * Helper method to create the stickupcam list.
      *
      * @param jsonStickupcams
+     * @param ringAccount
      */
     private void addStickupCams(JsonArray jsonStickupcams, RingAccount ringAccount) {
         for (Object obj : jsonStickupcams) {
-            Stickupcam stickupcam = new Stickupcam((JsonObject) obj);
-            stickupcam.setRingAccount(ringAccount);
+            Stickupcam stickupcam = new Stickupcam((JsonObject) obj, ringAccount);
             stickupcams.add(stickupcam);
         }
     }
@@ -92,11 +92,11 @@ public class RingDevices {
      * Helper method to create the chime list.
      *
      * @param jsonChimes
+     * @param ringAccount
      */
     private void addChimes(JsonArray jsonChimes, RingAccount ringAccount) {
         for (Object obj : jsonChimes) {
-            Chime chime = new Chime((JsonObject) obj);
-            chime.setRingAccount(ringAccount);
+            Chime chime = new Chime((JsonObject) obj, ringAccount);
             chimes.add(chime);
         }
     }
@@ -114,11 +114,11 @@ public class RingDevices {
      * Helper method to create the other list.
      *
      * @param jsonOther
+     * @param ringAccount
      */
     private void addOtherDevices(JsonArray jsonOtherDevices, RingAccount ringAccount) {
         for (Object obj : jsonOtherDevices) {
-            OtherDevice otherdevice = new OtherDevice((JsonObject) obj);
-            otherdevice.setRingAccount(ringAccount);
+            OtherDevice otherdevice = new OtherDevice((JsonObject) obj, ringAccount);
             otherdevices.add(otherdevice);
         }
     }

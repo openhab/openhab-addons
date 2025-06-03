@@ -108,13 +108,6 @@ public interface RingDevice {
     RingAccount getRingAccount();
 
     /**
-     * Set the linked Ring account.
-     *
-     * @param ringAccount
-     */
-    void setRingAccount(RingAccount ringAccount);
-
-    /**
      * Get the linked Ring Device Handler.
      *
      * @return the handler.

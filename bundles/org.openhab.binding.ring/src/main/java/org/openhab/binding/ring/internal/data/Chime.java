@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -29,9 +30,10 @@ public class Chime extends AbstractRingDevice {
      * Create Chime instance from JSON object.
      *
      * @param jsonChime the JSON Chime retrieved from the Ring API.
+     * @param ringAccount the Ring Account in use
      */
-    public Chime(JsonObject jsonChime) {
-        super(jsonChime);
+    public Chime(JsonObject jsonChime, RingAccount ringAccount) {
+        super(jsonChime, ringAccount);
     }
 
     /**

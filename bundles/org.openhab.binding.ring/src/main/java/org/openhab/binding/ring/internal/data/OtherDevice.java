@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -29,9 +30,10 @@ public class OtherDevice extends AbstractRingDevice {
      * Create OtherDevice instance from JSON object.
      *
      * @param jsonOtherDevice the JSON Other retrieved from the Ring API.
+     * @param ringAccount the Ring Account in use
      */
-    public OtherDevice(JsonObject jsonOtherDevice) {
-        super(jsonOtherDevice);
+    public OtherDevice(JsonObject jsonOtherDevice, RingAccount ringAccount) {
+        super(jsonOtherDevice, ringAccount);
     }
 
     /**

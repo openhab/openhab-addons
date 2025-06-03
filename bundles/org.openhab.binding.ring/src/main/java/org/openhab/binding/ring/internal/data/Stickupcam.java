@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -31,9 +32,10 @@ public class Stickupcam extends AbstractRingDevice {
      * Create Stickup Cam instance from JSON object.
      *
      * @param jsonStickupcam the JSON Stickup Cam retrieved from the Ring API.
+     * @param ringAccount the Ring Account in use
      */
-    public Stickupcam(JsonObject jsonStickupcam) {
-        super(jsonStickupcam);
+    public Stickupcam(JsonObject jsonStickupcam, RingAccount ringAccount) {
+        super(jsonStickupcam, ringAccount);
     }
 
     /**
