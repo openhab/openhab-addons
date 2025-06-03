@@ -127,6 +127,8 @@ Import-Package: \
 	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.18.2,2.18.3)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
+	de.focus_shift.jollyday-core;version='[1.5.0,1.5.1)',\
+	de.focus_shift.jollyday-jackson;version='[1.5.0,1.5.1)',\
 	org.graalvm.sdk.collections;bundle-version="24.2.0",\
 	org.graalvm.sdk.jniutils;bundle-version="24.2.0",\
 	org.graalvm.sdk.nativeimage;bundle-version="24.2.0",\
