@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RingAccount;
@@ -42,7 +43,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     /**
      * The registration status.
      */
-    private @NonNullByDefault({}) RingDeviceRegistry.Status registrationStatus;
+    private RingDeviceRegistry.Status registrationStatus = RingDeviceRegistry.Status.ADDED;
     /**
      * The linked Ring account.
      */
@@ -50,7 +51,7 @@ public abstract class AbstractRingDevice implements RingDevice {
     /**
      * The linked RingDeviceHandler.
      */
-    private @NonNullByDefault({}) RingDeviceHandler ringDeviceHandler;
+    private @Nullable RingDeviceHandler ringDeviceHandler;
 
     protected AbstractRingDevice(JsonObject jsonObject, RingAccount ringAccount) {
         this.jsonObject = jsonObject;
@@ -157,6 +158,7 @@ public abstract class AbstractRingDevice implements RingDevice {
      * @return the handler.
      */
     @Override
+    @Nullable
     public RingDeviceHandler getRingDeviceHandler() {
         return ringDeviceHandler;
     }
