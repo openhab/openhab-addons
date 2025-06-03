@@ -34,17 +34,17 @@ public class EsoJsonElements {
 
     public static List<String> getJsonElementsEso() {
         final List<String> jsonElementsEso = new ArrayList<>();
-        jsonElementsEso.add(new String("id"));
-        jsonElementsEso.add(new String("ubat"));
-        jsonElementsEso.add(new String("ibat"));
-        jsonElementsEso.add(new String("wbatprod"));
-        jsonElementsEso.add(new String("wbatcons"));
-        jsonElementsEso.add(new String("soc"));
-        jsonElementsEso.add(new String("relaystatus"));
-        jsonElementsEso.add(new String("temp"));
-        jsonElementsEso.add(new String("faultcode"));
-        jsonElementsEso.add(new String("udc"));
-        jsonElementsEso.add(new String("ts"));
+        jsonElementsEso.add("id");
+        jsonElementsEso.add("ubat");
+        jsonElementsEso.add("ibat");
+        jsonElementsEso.add("wbatprod");
+        jsonElementsEso.add("wbatcons");
+        jsonElementsEso.add("soc");
+        jsonElementsEso.add("relaystatus");
+        jsonElementsEso.add("temp");
+        jsonElementsEso.add("faultcode");
+        jsonElementsEso.add("udc");
+        jsonElementsEso.add("ts");
         return jsonElementsEso;
     }
 }

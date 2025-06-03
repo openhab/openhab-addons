@@ -16,12 +16,12 @@ This number is to identify the respective Sso Pv-string.
 
 ## Supported Things
 
-This binding supports one Thing, the energyhub. This hub allows data to be captured from the different parts of the system such as:
+This binding supports one Thing, the `energyhub`. This hub allows data to be captured from the different parts of the energy system such as:
 
-- `ehub`: EnergyHub Wall and EnergyHub XL.
-- `sso` : Solar string optimizer.
-- `eso` : Bidirectional DC/DC converter for connection of battery.
-- `esm` : Energy Storage Module.
+- ehub: EnergyHub Wall and EnergyHub XL.
+- sso : Solar string optimizer.
+- eso : Bidirectional DC/DC converter for connection of battery.
+- esm : Energy Storage Module.
 
 ## Discovery
 

@@ -34,15 +34,15 @@ public class SsoJsonElements {
 
     public static List<String> getJsonElementsSso() {
         final List<String> jsonElementsSso = new ArrayList<>();
-        jsonElementsSso.add(new String("id"));
-        jsonElementsSso.add(new String("upv"));
-        jsonElementsSso.add(new String("ipv"));
-        jsonElementsSso.add(new String("wpv"));
-        jsonElementsSso.add(new String("relaystatus"));
-        jsonElementsSso.add(new String("temp"));
-        jsonElementsSso.add(new String("faultcode"));
-        jsonElementsSso.add(new String("udc"));
-        jsonElementsSso.add(new String("ts"));
+        jsonElementsSso.add("id");
+        jsonElementsSso.add("upv");
+        jsonElementsSso.add("ipv");
+        jsonElementsSso.add("wpv");
+        jsonElementsSso.add("relaystatus");
+        jsonElementsSso.add("temp");
+        jsonElementsSso.add("faultcode");
+        jsonElementsSso.add("udc");
+        jsonElementsSso.add("ts");
         return jsonElementsSso;
     }
 }

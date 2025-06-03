@@ -35,13 +35,13 @@ public class EsmJsonElements {
 
     public static List<String> getJsonElementsEsm() {
         final List<String> jsonElementsEsm = new ArrayList<>();
-        jsonElementsEsm.add(new String("id"));
-        jsonElementsEsm.add(new String("soh"));
-        jsonElementsEsm.add(new String("soc"));
-        jsonElementsEsm.add(new String("ratedcapacity"));
-        jsonElementsEsm.add(new String("ratedpower"));
-        jsonElementsEsm.add(new String("status"));
-        jsonElementsEsm.add(new String("ts"));
+        jsonElementsEsm.add("id");
+        jsonElementsEsm.add("soh");
+        jsonElementsEsm.add("soc");
+        jsonElementsEsm.add("ratedcapacity");
+        jsonElementsEsm.add("ratedpower");
+        jsonElementsEsm.add("status");
+        jsonElementsEsm.add("ts");
         return jsonElementsEsm;
     }
 }

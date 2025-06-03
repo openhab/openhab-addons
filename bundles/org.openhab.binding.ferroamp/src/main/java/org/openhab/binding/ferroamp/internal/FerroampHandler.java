@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,6 +55,8 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     private static List<FerroampChannelConfiguration> channelConfigSsoS4 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigEso = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigEsm = new ArrayList<>();
+
+    private @Nullable ScheduledFuture<?> ferroampPoller;
 
     public FerroampHandler(Thing thing) {
         super(thing);
@@ -98,10 +101,24 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
                     FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
             updateStatus(ThingStatus.UNKNOWN);
-            scheduler.scheduleWithFixedDelay(this::pollTask, 60, ferroampConfig.refreshInterval, TimeUnit.SECONDS);
+            ferroampPoller = scheduler.scheduleWithFixedDelay(this::pollTask, 60, ferroampConfig.refreshInterval,
+                    TimeUnit.SECONDS);
             this.setFerroampConnection(ferroampConnection);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (ferroampConnection != null) {
+            ferroampConnection.stop();
+        }
+        final ScheduledFuture<?> localPoller = ferroampPoller;
+
+        if (localPoller != null && !localPoller.isCancelled()) {
+            localPoller.cancel(true);
+            ferroampPoller = null;
         }
     }
 
