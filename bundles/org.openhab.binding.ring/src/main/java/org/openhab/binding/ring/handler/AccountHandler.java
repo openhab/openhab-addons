@@ -40,7 +40,6 @@ import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
@@ -153,7 +152,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     break;
                 case CHANNEL_EVENT_CREATED_AT:
                     if (eventListOk) {
-                        updateState(channelUID, new DateTimeType(lastEvents.get(eventIndex).getCreatedAt()));
+                        updateState(channelUID, lastEvents.get(eventIndex).getCreatedAt());
                     }
                     break;
                 case CHANNEL_EVENT_KIND:
@@ -482,7 +481,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 if (lastEvents.get(0).id != id) {
                     logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.get(0).id);
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT),
-                            new DateTimeType(lastEvents.get(0).getCreatedAt()));
+                            lastEvents.get(0).getCreatedAt());
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND),
                             new StringType(lastEvents.get(0).kind));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID),
@@ -546,8 +545,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     protected void startSessionRefresh(int refreshInterval) {
         logger.debug("startSessionRefresh {}", refreshInterval);
-        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, 90, 600, TimeUnit.SECONDS);
-        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, refreshInterval, refreshInterval,
+        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, 600, TimeUnit.SECONDS);
+        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
                 TimeUnit.SECONDS);
     }
 

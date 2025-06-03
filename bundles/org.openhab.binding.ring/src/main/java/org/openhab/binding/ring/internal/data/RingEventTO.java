@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ring.internal.data;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,6 +20,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DateTimeType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -29,11 +31,16 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class RingEventTO {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    private static final long serialVersionUID = 1L;
     public long id = 0;
+    @SerializedName("created_at")
     public String createdAt = "";
     public boolean answered;
     public String kind = "";
     public boolean favorite;
+    @SerializedName("snapshot_url")
     public @Nullable String snapshotUrl;
     public Map<String, String> recording = Map.of();
     public List<Object> events = List.of();
@@ -44,10 +51,8 @@ public class RingEventTO {
      *
      * @return the date/time.
      */
-    public String getCreatedAt() {
-        ZonedDateTime gmtTime = LocalDateTime
-                .parse(createdAt, DateTimeFormatter.ofPattern("yyy-MM-dd'T'HH:mm:ss.SSS'Z'")).atZone(ZoneId.of("GMT"));
-        LocalDateTime localTime = gmtTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-        return localTime.toString();
+    public DateTimeType getCreatedAt() {
+        return new DateTimeType(
+                ZonedDateTime.parse(createdAt, DATE_TIME_FORMATTER).withZoneSameInstant(ZoneId.systemDefault()));
     }
 }

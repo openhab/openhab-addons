@@ -71,7 +71,7 @@ import com.google.gson.reflect.TypeToken;
 
 @NonNullByDefault
 public class RestClient {
-    private static final Type RING_EVENT_LIST_TYPE = new TypeToken<List<RingEventTO>>() {
+    public static final Type RING_EVENT_LIST_TYPE = new TypeToken<List<RingEventTO>>() {
     }.getType();
     private static final int CONNECTION_TIMEOUT = 12000;
     private final Logger logger = LoggerFactory.getLogger(RestClient.class);
@@ -567,7 +567,7 @@ public class RestClient {
                 FileSystem fs = path.getFileSystem();
                 String sep = fs.getSeparator();
                 String filename = event.doorbot.description.replace(" ", "") + "-" + event.kind + "-"
-                        + event.getCreatedAt().replace(":", "-") + ".mp4";
+                        + event.getCreatedAt().toString().replace(":", "-") + ".mp4";
                 String fullfilepath = filePath + (filePath.endsWith(sep) ? "" : sep) + filename;
                 logger.info("fullfilepath = {}", fullfilepath);
                 path = Paths.get(fullfilepath);
