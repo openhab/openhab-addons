@@ -60,6 +60,7 @@
 
 		<properties>
 			<property name="user"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>clientId</representation-property>
