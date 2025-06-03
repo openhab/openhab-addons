@@ -53,7 +53,7 @@ public class ConfigMetadata extends BaseMetadata {
         switch (type) {
             case NUMBER:
                 return Type.INTEGER;
-            // return Type.DECIMAL; // depends on scale?
+            // Might be future cases that require DECIMAL, might depend on scale?
             case COLOR:
                 return Type.TEXT;
             case BOOLEAN:

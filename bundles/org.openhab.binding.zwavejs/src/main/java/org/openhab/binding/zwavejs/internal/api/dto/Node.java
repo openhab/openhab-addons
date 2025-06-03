@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -55,5 +55,5 @@ public class Node {
     public int zwavePlusNodeType;
     public int zwavePlusRoleType;
     public int highestSecurityClass;
-    public Date lastSeen;
+    public Instant lastSeen;
 }

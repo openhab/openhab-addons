@@ -95,7 +95,9 @@ public class ZwaveJSActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (ZwaveJSBridgeHandler) handler;
+        if (handler instanceof ZwaveJSBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
+        }
     }
 
     @Override

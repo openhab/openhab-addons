@@ -21,10 +21,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.zwavejs.internal.api.adapter.InstantAdapter;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 
@@ -49,7 +51,8 @@ public class DataUtil {
 
     public static <T> T fromJson(String fileName, Type typeOfT) throws IOException {
         try (Reader reader = openDataReader(fileName)) {
-            Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+            Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+                    .registerTypeAdapter(Instant.class, new InstantAdapter()).create();
 
             return gson.fromJson(reader, typeOfT);
         }

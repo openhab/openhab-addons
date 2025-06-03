@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CommunicationException extends Exception {
 
-    private static final long serialVersionUID = -1895774551653276530L;
+    private static final long serialVersionUID = 1L;
 
     /*
      * Constructs a new CommunicationException with the specified detail message.

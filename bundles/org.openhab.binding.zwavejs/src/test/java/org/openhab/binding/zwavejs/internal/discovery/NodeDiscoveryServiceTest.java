@@ -14,8 +14,16 @@ package org.openhab.binding.zwavejs.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_FREQ_LISTENING;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_IS_LISTENING;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_IS_ROUTING;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_IS_SECURE;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_LASTSEEN;
+import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.openhab.core.thing.Thing.PROPERTY_VENDOR;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +69,7 @@ public class NodeDiscoveryServiceTest {
         node.isListening = true;
         node.isRouting = true;
         node.isSecure = true;
-        node.lastSeen = Date.from(java.time.Instant.parse("2023-10-01T12:00:00Z"));
+        node.lastSeen = Instant.parse("2023-10-01T12:00:00Z");
         node.isFrequentListening = true;
 
         ThingUID bridgeUID = new ThingUID("zwavejs", "bridge");
@@ -75,13 +83,14 @@ public class NodeDiscoveryServiceTest {
         DiscoveryResult result = captor.getValue();
         Map<String, Object> expectedProperties = new HashMap<>();
         expectedProperties.put("id", node.nodeId);
-        expectedProperties.put("isListening", node.isListening);
-        expectedProperties.put("isRouting", node.isRouting);
-        expectedProperties.put("isSecure", node.isSecure);
-        expectedProperties.put("manufacturer", node.deviceConfig.manufacturer);
-        expectedProperties.put("product", node.deviceConfig.label);
-        expectedProperties.put("lastSeen", node.lastSeen);
-        expectedProperties.put("isFrequentListening", node.isFrequentListening);
+        expectedProperties.put(PROPERTY_NODE_IS_LISTENING, node.isListening);
+        expectedProperties.put(PROPERTY_NODE_IS_ROUTING, node.isRouting);
+        expectedProperties.put(PROPERTY_NODE_IS_SECURE, node.isSecure);
+        expectedProperties.put(PROPERTY_VENDOR, node.deviceConfig.manufacturer);
+        expectedProperties.put(PROPERTY_MODEL_ID, node.deviceConfig.label);
+        expectedProperties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen);
+        expectedProperties.put(PROPERTY_NODE_FREQ_LISTENING, node.isFrequentListening);
+        expectedProperties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion);
 
         assertEquals(expectedProperties, result.getProperties());
         assertEquals(bridgeUID, result.getBridgeUID());

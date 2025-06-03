@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -36,6 +37,7 @@ import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
+import org.openhab.binding.zwavejs.internal.api.adapter.InstantAdapter;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.ServerInitializeCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.ServerListeningCommand;
@@ -102,7 +104,8 @@ public class ZWaveJSClient implements WebSocketListener {
                 .registerSubtype(ResultMessage.class, "result").registerSubtype(EventMessage.class, "event");
 
         this.gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
-                .registerTypeAdapterFactory(typeAdapterFactory).create();
+                .registerTypeAdapter(Instant.class, new InstantAdapter()).registerTypeAdapterFactory(typeAdapterFactory)
+                .create();
     }
 
     /**
@@ -143,9 +146,7 @@ public class ZWaveJSClient implements WebSocketListener {
 
         Future<?> localSessionFuture = sessionFuture;
         if (localSessionFuture != null) {
-            if (!localSessionFuture.isDone()) {
-                localSessionFuture.cancel(true);
-            }
+            localSessionFuture.cancel(true);
         }
     }
 
@@ -306,7 +307,7 @@ public class ZWaveJSClient implements WebSocketListener {
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Error invoking event listener on websockettext: {}.", e.getStackTrace().toString(), e);
+                logger.debug("Error invoking event listener on websockettext: {}.", e.getStackTrace().toString());
             } else {
                 logger.warn("Error invoking event listener on websockettext", e);
             }

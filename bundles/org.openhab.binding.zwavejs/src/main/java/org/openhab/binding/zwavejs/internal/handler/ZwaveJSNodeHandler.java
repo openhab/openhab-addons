@@ -222,7 +222,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         executorService.execute(() -> {
             internalInitialize();
         });
@@ -247,11 +246,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
-        if (!handler.registerNodeListener(this)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Could not register node listener");
-            return;
-        }
+        handler.registerNodeListener(this);
         Node nodeDetails = handler.requestNodeDetails(config.id);
         if (nodeDetails == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -286,7 +281,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     @Override
     public void onNodeAdded(Node node) {
-        // onNodeStateChanged(node);
+        // not supported, as this is a handler for an existing node
     }
 
     @Override

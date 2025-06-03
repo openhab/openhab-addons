@@ -13,13 +13,12 @@
 package org.openhab.binding.zwavejs.internal.discovery;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,8 +48,7 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = NodeDiscoveryService.class)
 @NonNullByDefault
 public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<ZwaveJSBridgeHandler> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_NODE)
-            .collect(Collectors.toUnmodifiableSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_NODE);
 
     private static final int SEARCH_TIME = 10;
 
@@ -120,10 +118,11 @@ public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<Z
             properties.put(PROPERTY_NODE_IS_LISTENING, node.isListening);
             properties.put(PROPERTY_NODE_IS_ROUTING, node.isRouting);
             properties.put(PROPERTY_NODE_IS_SECURE, node.isSecure);
-            properties.put(PROPERTY_NODE_MANUFACTURER, manufacturer);
-            properties.put(PROPERTY_NODE_PRODUCT, product);
+            properties.put(PROPERTY_VENDOR, manufacturer);
+            properties.put(PROPERTY_MODEL_ID, product);
             properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen);
             properties.put(PROPERTY_NODE_FREQ_LISTENING, node.isFrequentListening);
+            properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                     .withProperties(properties).withBridge(getBridgeUID()).withRepresentationProperty(CONFIG_NODE_ID)

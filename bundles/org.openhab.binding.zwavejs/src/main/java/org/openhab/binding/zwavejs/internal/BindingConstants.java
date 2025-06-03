@@ -57,9 +57,6 @@ public class BindingConstants {
     public static final String PROPERTY_SERVER_VERSION = "serverVersion";
     public static final String PROPERTY_SCHEMA_MIN = "minSchemaVersion";
     public static final String PROPERTY_SCHEMA_MAX = "maxSchemaVersion";
-
-    public static final String PROPERTY_NODE_MANUFACTURER = "manufacturer";
-    public static final String PROPERTY_NODE_PRODUCT = "product";
     public static final String PROPERTY_NODE_IS_SECURE = "isSecure";
     public static final String PROPERTY_NODE_IS_LISTENING = "isListening";
     public static final String PROPERTY_NODE_IS_ROUTING = "isRouting";

@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.naming.CommunicationException;
 
@@ -65,6 +67,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
 
     protected ScheduledExecutorService executorService = scheduler;
     private @Nullable NodeDiscoveryService discoveryService;
+    private @Nullable ScheduledFuture<?> initialConnection;
     private ZWaveJSClient client;
 
     public ZwaveJSBridgeHandler(Bridge bridge, WebSocketFactory wsFactory) {
@@ -89,9 +92,11 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            startClient(config);
-        });
+        initialConnection = scheduler.scheduleWithFixedDelay(new Runnable() {
+            public void run() {
+                startClient(config);
+            }
+        }, 0, 120, TimeUnit.SECONDS);
     }
 
     protected void startClient(ZwaveJSBridgeConfiguration config) {
@@ -100,10 +105,19 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             client.start("ws://" + config.hostname + ":" + config.port);
             client.addEventListener(this);
             // the thing is set to online when the response/events are received
+            stopInitialConnectionJob();
         } catch (CommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    private void stopInitialConnectionJob() {
+        ScheduledFuture<?> initialConnection = this.initialConnection;
+        if (initialConnection != null) {
+            initialConnection.cancel(false);
+            this.initialConnection = null;
         }
     }
 
@@ -169,11 +183,8 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 if (discovery != null) {
                     discovery.addNodeDiscovery(node);
                 }
-
-                lastNodeStates.put(nodeId, node);
-            } else {
-                lastNodeStates.put(nodeId, node);
             }
+            lastNodeStates.put(nodeId, node);
             lastNodeStatesCopy.remove(nodeId);
         }
 
@@ -216,13 +227,11 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
     }
 
     @Override
-    public boolean registerNodeListener(ZwaveNodeListener nodeListener) {
+    public void registerNodeListener(ZwaveNodeListener nodeListener) {
         final Integer id = nodeListener.getId();
-        if (!nodeListeners.containsKey(id)) {
+        if (nodeListeners.put(id, nodeListener) != null) {
             logger.debug("Node {}. Registering listener", id);
-            nodeListeners.put(id, nodeListener);
         }
-        return true;
     }
 
     @Override
@@ -235,7 +244,6 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         logger.debug("Registering Z-Wave discovery listener");
         if (discoveryService == null) {
             discoveryService = listener;
-            // getFullState.forEach(listener::adNodeDiscovery);
             getFullState();
             return true;
         }
@@ -260,6 +268,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
 
     @Override
     public void dispose() {
+        stopInitialConnectionJob();
         client.stop();
         super.dispose();
     }

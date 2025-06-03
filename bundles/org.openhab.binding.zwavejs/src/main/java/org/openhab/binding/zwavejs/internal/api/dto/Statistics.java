@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,7 +37,7 @@ public class Statistics {
     public int commandsDroppedRX;
     public int commandsDroppedTX;
     public double rtt;
-    public Date lastSeen;
+    public Instant lastSeen;
     public int rssi;
     public Lwr lwr;
 }

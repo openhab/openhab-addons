@@ -49,9 +49,8 @@ public interface ZwaveEventListener {
      *
      * @param nodeListener the listener to be registered
      * 
-     * @return true if the listener was successfully registered, false otherwise
      */
-    boolean registerNodeListener(ZwaveNodeListener nodeListener);
+    void registerNodeListener(ZwaveNodeListener nodeListener);
 
     /*
      * Unregisters a previously registered node listener.

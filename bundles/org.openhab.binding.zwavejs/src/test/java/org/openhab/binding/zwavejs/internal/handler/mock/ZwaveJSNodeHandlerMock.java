@@ -150,7 +150,6 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
         when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(bridge.getHandler()).thenReturn(handler);
         when(bridge.getConfiguration()).thenReturn(createBridgeConfig(configAsChannel));
-        when(handler.registerNodeListener(any())).thenReturn(true);
         return bridge;
     }
 }
