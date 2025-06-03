@@ -1727,6 +1727,10 @@ public abstract class CommandHandler extends BaseFeatureHandler {
      * I/O linc momentary duration command handler
      */
     public static class IOLincMomentaryDurationCommandHandler extends CommandHandler {
+        private static final double DEFAULT_DURATION = 2;
+        private static final double MIN_DURATION = 0.1;
+        private static final double MAX_DURATION = 6300;
+
         IOLincMomentaryDurationCommandHandler(DeviceFeature feature) {
             super(feature);
         }
@@ -1740,34 +1744,26 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         public void handleCommand(InsteonChannelConfiguration config, Command cmd) {
             try {
                 double duration = getDuration(cmd);
-                if (duration != -1) {
-                    InsteonAddress address = getInsteonDevice().getAddress();
-                    int prescaler = 1;
-                    int delay = (int) Math.round(duration * 10);
-                    if (delay > 255) {
-                        prescaler = (int) Math.ceil(delay / 255.0);
-                        delay = (int) Math.round(delay / (double) prescaler);
-                    }
-                    boolean setCRC = getInsteonDevice().getInsteonEngine().supportsChecksum();
-                    // define ext command message to set momentary duration delay
-                    Msg delayMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
-                            new byte[] { (byte) 0x01, (byte) 0x06, (byte) delay }, setCRC);
-                    // define ext command message to set momentary duration prescaler
-                    Msg prescalerMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
-                            new byte[] { (byte) 0x01, (byte) 0x07, (byte) prescaler }, setCRC);
-                    // send requests
-                    feature.sendRequest(delayMsg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent momentary duration delay {} request to {}", nm(),
-                                HexUtils.getHexString(delay), address);
-                    }
-                    feature.sendRequest(prescalerMsg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent momentary duration prescaler {} request to {}", nm(),
-                                HexUtils.getHexString(prescaler), address);
-                    }
-                } else {
-                    logger.warn("{}: got unexpected momentary duration command {}, ignoring request", nm(), cmd);
+                int multiplier = getDurationMultiplier(duration);
+                int delay = (int) Math.round(duration * 10 / multiplier);
+                InsteonAddress address = getInsteonDevice().getAddress();
+                boolean setCRC = getInsteonDevice().getInsteonEngine().supportsChecksum();
+                // define ext command message to set momentary duration delay
+                Msg delayMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
+                        new byte[] { (byte) 0x01, (byte) 0x06, (byte) delay }, setCRC);
+                // define ext command message to set momentary duration multiplier
+                Msg multiplierMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
+                        new byte[] { (byte) 0x01, (byte) 0x07, (byte) multiplier }, setCRC);
+                // send requests
+                feature.sendRequest(delayMsg);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: sent momentary duration delay {} request to {}", nm(),
+                            HexUtils.getHexString(delay), address);
+                }
+                feature.sendRequest(multiplierMsg);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: sent momentary duration multiplier {} request to {}", nm(),
+                            HexUtils.getHexString(multiplier), address);
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -1777,12 +1773,29 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         }
 
         private double getDuration(Command cmd) {
+            double duration = DEFAULT_DURATION;
             if (cmd instanceof DecimalType time) {
-                return time.doubleValue();
+                duration = time.doubleValue();
             } else if (cmd instanceof QuantityType<?> time) {
-                return Objects.requireNonNullElse(time.toInvertibleUnit(Units.SECOND), time).doubleValue();
+                duration = Objects.requireNonNullElse(time.toInvertibleUnit(Units.SECOND), time).doubleValue();
             }
-            return -1;
+            return Math.max(MIN_DURATION, Math.min(MAX_DURATION, duration));
+        }
+
+        private int getDurationMultiplier(double duration) {
+            int delay = (int) Math.round(duration * 10);
+            // multiplier discrete steps as used by the insteon app
+            int multiplier = 1;
+            if (delay > 51000) {
+                multiplier = 250;
+            } else if (delay > 25500) {
+                multiplier = 200;
+            } else if (delay > 2550) {
+                multiplier = 100;
+            } else if (delay > 255) {
+                multiplier = 10;
+            }
+            return multiplier;
         }
     }
 

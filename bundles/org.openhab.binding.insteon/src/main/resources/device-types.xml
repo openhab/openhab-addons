@@ -825,8 +825,8 @@
 	<!-- Sensors and Actuators -->
 
 	<device-type name="SensorsActuators_IOLinc">
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="contact" group="2">GenericSensorContact</feature>
+		<feature name="switch">IOLincRelaySwitch</feature>
+		<feature name="contact">GenericSensorContact</feature>
 		<feature-group name="extDataGroup" type="ExtDataGroup">
 			<feature name="momentaryDuration">IOLincMomentaryDuration</feature>
 		</feature-group>
@@ -834,9 +834,10 @@
 			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
 			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
 			<feature name="relaySensorFollow" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="relaySensorInverted" bit="6" on="0x0E" off="0x0F" inverted="true">OpFlags</feature>
 			<feature name="relayMode">IOLincRelayMode</feature>
 		</feature-group>
-		<default-link name="relay" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="sensor" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
 	</device-type>
 
 	<device-type name="SensorsActuators_Siren">

@@ -230,6 +230,16 @@
 		<poll-handler>NoPollHandler</poll-handler>
 	</feature-type>
 
+	<feature-type name="IOLincRelaySwitch" link="responder">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">IOLincRelaySwitchOnMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">IOLincRelaySwitchOffMsgHandler</message-handler>
+		<message-handler command="0x19">IOLincRelaySwitchReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">SwitchOnOffCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
 	<feature-type name="IOLincRelayMode">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
 		<message-handler command="0x19">IOLincRelayModeReplyHandler</message-handler>
@@ -1102,5 +1112,6 @@
 		<message-handler command="0x16" group="1">X10EventMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
 	</feature-type>
 </xml>
