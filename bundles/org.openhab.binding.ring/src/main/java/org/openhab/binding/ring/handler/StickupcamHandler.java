@@ -48,8 +48,6 @@ public class StickupcamHandler extends RingDeviceHandler {
         logger.debug("Initializing Stickupcam handler");
         super.initialize();
 
-        // Configuration config = getThing().getConfiguration();
-
         RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
         String id = getThing().getUID().getId();
         if (registry.isInitialized()) {
