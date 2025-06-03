@@ -20,7 +20,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,13 +34,12 @@ import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.RingVideoServlet;
 import org.openhab.binding.ring.internal.data.Profile;
 import org.openhab.binding.ring.internal.data.RingDevices;
-import org.openhab.binding.ring.internal.data.RingEvent;
+import org.openhab.binding.ring.internal.data.RingEventTO;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
@@ -100,7 +98,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The list with events.
      */
-    private List<RingEvent> lastEvents = new ArrayList<>();
+    private List<RingEventTO> lastEvents = List.of();
     /**
      * The index to the current event.
      */
@@ -136,7 +134,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            boolean eventListOk = lastEvents != null && lastEvents.size() > eventIndex;
+            boolean eventListOk = lastEvents.size() > eventIndex;
             switch (channelUID.getId()) {
                 case CHANNEL_EVENT_URL:
                     if (eventListOk) {
@@ -154,23 +152,22 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     break;
                 case CHANNEL_EVENT_CREATED_AT:
                     if (eventListOk) {
-                        updateState(channelUID, new DateTimeType(lastEvents.get(eventIndex).getCreatedAt()));
+                        updateState(channelUID, lastEvents.get(eventIndex).getCreatedAt());
                     }
                     break;
                 case CHANNEL_EVENT_KIND:
                     if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).getKind()));
+                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).kind));
                     }
                     break;
                 case CHANNEL_EVENT_DOORBOT_ID:
                     if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).getDoorbot().getId()));
+                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.id));
                     }
                     break;
                 case CHANNEL_EVENT_DOORBOT_DESCRIPTION:
                     if (eventListOk) {
-                        updateState(channelUID,
-                                new StringType(lastEvents.get(eventIndex).getDoorbot().getDescription()));
+                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.description));
                     }
                     break;
                 /*
@@ -460,8 +457,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    protected void getVideo(RingEvent event) {
-        logger.debug("AccountHandler - getVideo - Event id: {}", event.getEventId());
+    protected void getVideo(RingEventTO event) {
+        logger.debug("AccountHandler - getVideo - Event id: {}", event.id);
         logger.debug("AccountHandler - getVideo - VSP: {}", videoStoragePath);
         String videoFile = restClient.downloadEventVideo(event, userProfile, videoStoragePath, videoRetentionCount);
         String localIP = networkAddressService.getPrimaryIpv4HostAddress();
@@ -476,24 +473,22 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     protected void eventTick() {
         try {
-            String id = lastEvents == null || lastEvents.isEmpty() ? "?" : lastEvents.get(0).getEventId();
+            long id = lastEvents.isEmpty() ? 0 : lastEvents.get(0).id;
             lastEvents = restClient.getHistory(userProfile, 1);
-            if (lastEvents != null && !lastEvents.isEmpty()) {
+            if (!lastEvents.isEmpty()) {
                 logger.debug("AccountHandler - eventTick - Event id: {} lastEvents: {}", id,
-                        lastEvents.get(0).getEventId().equals(id));
-                if (!lastEvents.get(0).getEventId().equals(id)) {
-                    logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.get(0).getEventId());
+                        lastEvents.get(0).id == id);
+                if (lastEvents.get(0).id != id) {
+                    logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.get(0).id);
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT),
-                            new DateTimeType(lastEvents.get(0).getCreatedAt()));
+                            lastEvents.get(0).getCreatedAt());
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND),
-                            new StringType(lastEvents.get(0).getKind()));
+                            new StringType(lastEvents.get(0).kind));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID),
-                            new StringType(lastEvents.get(0).getDoorbot().getId()));
+                            new StringType(lastEvents.get(0).doorbot.id));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
-                            new StringType(lastEvents.get(0).getDoorbot().getDescription()));
-                    runnableVideo = () -> {
-                        getVideo(lastEvents.get(0));
-                    };
+                            new StringType(lastEvents.get(0).doorbot.description));
+                    runnableVideo = () -> getVideo(lastEvents.get(0));
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
                         videoExecutorService.submit(runnableVideo);
@@ -550,8 +545,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     protected void startSessionRefresh(int refreshInterval) {
         logger.debug("startSessionRefresh {}", refreshInterval);
-        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, 90, 600, TimeUnit.SECONDS);
-        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, refreshInterval, refreshInterval,
+        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, 600, TimeUnit.SECONDS);
+        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
                 TimeUnit.SECONDS);
     }
 

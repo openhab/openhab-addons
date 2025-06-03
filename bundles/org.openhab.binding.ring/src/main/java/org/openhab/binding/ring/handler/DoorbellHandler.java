@@ -14,11 +14,14 @@ package org.openhab.binding.ring.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTERY;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.Doorbell;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -76,7 +79,8 @@ public class DoorbellHandler extends RingDeviceHandler {
         // "Can not access device as username and/or password are invalid");
         if (this.refreshJob == null) {
             Configuration config = getThing().getConfiguration();
-            int refreshInterval = (int) config.get("refreshInterval");
+            int refreshInterval = ConfigParser
+                    .valueAsOrElse(config.get("refreshInterval"), BigDecimal.class, BigDecimal.valueOf(500)).intValue();
             startAutomaticRefresh(refreshInterval);
         }
     }
