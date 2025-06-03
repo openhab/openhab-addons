@@ -174,7 +174,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
 
             final @Nullable ZwaveNodeListener nodeListener = nodeListeners.get(nodeId);
             if (nodeListener == null) {
-                if (Status.DEAD.equals(node.status)) {
+                if (Status.DEAD == node.status) {
                     logger.warn("Node {}. Ignored due to state: {}", nodeId, node.status);
                     continue;
                 }

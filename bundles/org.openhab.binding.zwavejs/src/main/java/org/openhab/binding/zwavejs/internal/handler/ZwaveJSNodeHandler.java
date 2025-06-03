@@ -152,9 +152,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         if (command instanceof OnOffType onOffCommand) {
             if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
-                zwaveCommand.value = OnOffType.ON.equals(onOffCommand) ? 255 : 0;
+                zwaveCommand.value = OnOffType.ON == onOffCommand ? 255 : 0;
             } else {
-                zwaveCommand.value = onOffCommand.equals(channelConfig.inverted ? OnOffType.OFF : OnOffType.ON);
+                zwaveCommand.value = onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON);
             }
         } else if (command instanceof HSBType hsbTypeCommand) {
             int[] rgb = ColorUtil.hsbToRgb(hsbTypeCommand);
@@ -188,8 +188,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         } else if (command instanceof NextPreviousType nextPreviousCommand) {
             throw new UnsupportedOperationException();
         } else if (command instanceof OpenClosedType openClosedCommand) {
-            zwaveCommand.value = openClosedCommand
-                    .equals(channelConfig.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            zwaveCommand.value = openClosedCommand == (channelConfig.inverted ? OpenClosedType.CLOSED
+                    : OpenClosedType.OPEN);
         } else if (command instanceof PlayPauseType stringCommand) {
             throw new UnsupportedOperationException();
         } else if (command instanceof PointType pointCommand) {
@@ -253,7 +253,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     "@text/offline.conf-error.no-node-details");
             return;
         }
-        if (Status.DEAD.equals(nodeDetails.status)) {
+        if (Status.DEAD == nodeDetails.status) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("The Z-Wave JS state of this node is: {}", nodeDetails.status));
             return;
