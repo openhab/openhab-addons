@@ -67,6 +67,15 @@ public class AutomowerWebSocketAdapter {
         unansweredPings = 0;
 
         logger.debug("Connected to Husqvarna WebSocket ({})", session.getRemoteAddress().getHostString());
+
+        // Initialize MowerStatus via polling the REST API
+        logger.debug("Polling Automowers for initial state / after reconnect of WebSocket");
+        // Poll all automowers to get their initial state
+        // This is necessary because the WebSocket does not provide the initial state
+        // and we need to have the initial state before subscribing to the WebSocket messages
+        // This will also recover potential lost WebSocket messages during WebSocket reconnect
+        handler.pollAutomowers(bridge);
+
         // Subscribe to all messages after connecting
         try {
             String subscribeAllMessage = "{\"type\":\"subscribe\",\"topics\":[\"*\"]}";

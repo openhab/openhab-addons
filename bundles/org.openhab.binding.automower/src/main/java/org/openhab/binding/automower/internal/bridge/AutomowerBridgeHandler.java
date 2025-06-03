@@ -15,6 +15,7 @@ package org.openhab.binding.automower.internal.bridge;
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
@@ -106,12 +108,30 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         return automowerHandlers.get(thingId);
     }
 
-    private void pollAutomowers(AutomowerBridge bridge) {
+    public synchronized void pollAutomowers(AutomowerBridge bridge) {
         MowerListResult automowers;
         try {
             automowers = bridge.getAutomowers();
-            updateStatus(ThingStatus.ONLINE);
-            logger.debug("Found {} automowers", automowers.getData().size());
+            List<Mower> mowers = automowers.getData();
+            if (mowers == null || mowers.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/comm-error-no-mowers-found");
+                logger.debug("No automowers found in the response from REST API");
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Found {} automowers in the response from REST API", mowers.size());
+                // Update all known AutomowerHandlers with the data from the REST API
+                for (Mower mower : mowers) {
+                    String id = mower.getId();
+                    AutomowerHandler automowerHandler = getAutomowerHandlerByThingId(id);
+                    if (automowerHandler != null) {
+                        logger.debug("Data from REST API for known AutomowerHandler with id: {}", id);
+                        automowerHandler.updateAutomowerStateViaREST(mower);
+                    } else {
+                        logger.debug("Data from REST API for unknown AutomowerHandler with id: {}", id);
+                    }
+                }
+            }
         } catch (AutomowerCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error-query-mowers-failed");
@@ -168,9 +188,10 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             if (this.bridge == null) {
                 AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
                 this.bridge = currentBridge;
-                startAutomowerBridgePolling(currentBridge, pollingIntervalS);
-
+                // connect WebSocket and poll automower state via REST API once after connection
                 connectWebSocket(new AutomowerWebSocketAdapter(this, currentBridge));
+                // setup polling of automowers via REST API
+                startAutomowerBridgePolling(currentBridge, pollingIntervalS);
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -186,8 +207,8 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
         if (currentPollingJob == null) {
             final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
-            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge), 1,
-                    pollingIntervalToUse, TimeUnit.SECONDS);
+            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge),
+                    pollingIntervalToUse, pollingIntervalToUse, TimeUnit.SECONDS);
         }
     }
 

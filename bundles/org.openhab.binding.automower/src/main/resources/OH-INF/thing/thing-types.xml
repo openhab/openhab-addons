@@ -30,8 +30,8 @@
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
 				<label>Polling Interval</label>
-				<default>3600</default>
-				<description>How often the bridge should query the available automowers</description>
+				<default>300</default>
+				<description>How often the current Automower® states should be polled using REST API</description>
 			</parameter>
 		</config-description>
 
@@ -77,11 +77,6 @@
 				<description>The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is
 					automatically
 					filled when the thing is discovered.</description>
-			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false" unit="s">
-				<label>Polling Interval</label>
-				<default>600</default>
-				<description>How often the current Automower® state should be polled</description>
 			</parameter>
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>

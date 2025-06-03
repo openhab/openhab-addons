@@ -20,20 +20,19 @@ Once the bridge is created and configured, openHAB will automatically discover a
 `bridge:`
 
 - appKey (mandatory): The Application Key is required to communicate with the Automower® Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/). This application also needs to be connected to the ["Authentication API" and the "Automower® Connect API"](https://developer.husqvarnagroup.cloud/docs/getting-started)
-- appSecret (mandatory): The Application Secret is required to communicate with the Automower® Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/).
-- pollingInterval (optional): How often the bridge should query the available automowers (in seconds). Default is 1h (3600s).
+- appSecret (mandatory): The Application Secret is required to communicate with the Automower® Connect API. It can be obtained by registering an Application on [the Husqvarna 
+- pollingInterval (optional): How often the current Automower® states should be polled in seconds via REST API. Default is 5min (300s)
+
+Keep in mind that the REST API should not be queried too frequently. According to Husqvarna's guidelines, each application key is limited to 10.000 requests per month and 1 request per second.
+
+With the default polling interval of 5min, the bridge will make approximately 8.640 requests per month. As the states are polled from the `bridge`, the number does not scale with the number of `automower`.
+
+In addition to periodic polling, the binding also receives event-triggered notifications whenever there are changes to the Automower®'s status, position, settings, or messages.
 
 `automower:`
 
 - mowerId (mandatory): The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is automatically filled when the thing is discovered
-- pollingInterval (optional): How often the current Automower® state should be polled in seconds. Default is 10min (600s)
 - mowerZoneId (optional): Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system
-
-Keep in mind that the bridge and Automower® status should not be queried too frequently. According to Husqvarna's guidelines, each application key is limited to 10,000 requests per month and 1 request per second.
-
-With the default polling interval of 1 hour, the bridge will make approximately 720 requests per month. For Automower® devices, the default polling interval of 10 minutes results in about 8,600 requests per month per mower (2 requests are sent per cycle). If you have multiple Automower® devices, the total number of requests will increase significantly, as each additional mower will double the request count.
-
-In addition to periodic polling, the binding also receives event-triggered notifications whenever there are changes to the Automower®'s status, position, settings, or messages.
 
 ## Channels
 
