@@ -194,7 +194,7 @@ This is useful for:
 
 ### Color Control and On/Off Functionality
 
-The Color item type in OpenHAB inherently supports both color selection and on/off functionality:
+The Color item type in openHAB inherently supports both color selection and on/off functionality:
 - The color picker controls hue and saturation
 - The brightness component (0-100%) functions as the on/off control
   - When brightness is 0%, the light is OFF
