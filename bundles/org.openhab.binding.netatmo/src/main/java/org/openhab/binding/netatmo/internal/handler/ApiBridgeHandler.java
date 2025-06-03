@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
@@ -161,6 +162,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+        freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
         if (!configuration.webHookUrl.isBlank()
@@ -294,11 +296,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
+        if (connectJob.isPresent()) {
+            throw new NetatmoException("Connection pending, request will not be accepted in the meantime.");
+        }
+
+        logger.debug("executeUri {}  {} ", method.toString(), uri);
+        Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
+
         try {
-            logger.debug("executeUri {}  {} ", method.toString(), uri);
-
-            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
-
             if (!authenticate(null, null)) {
                 prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
@@ -452,5 +457,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public Optional<WebhookServlet> getWebHookServlet() {
         return webHookServlet;
+    }
+
+    public @Nullable Duration getTimeBeforeReconnect() {
+        return connectJob.map(job -> Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS))).orElse(null);
     }
 }
