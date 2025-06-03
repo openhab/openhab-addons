@@ -130,6 +130,10 @@ Import-Package: \
 	de.focus_shift.jollyday-core;version='[1.5.0,1.5.1)',\
 	de.focus_shift.jollyday-jackson;version='[1.5.0,1.5.1)',\
 	org.threeten.extra;version='[1.8.0,1.8.1)',\
+	#
+   	# Do NOT add org.apache.servicemix.specs.stax-api-1.2 or stax2-api as runbundle,
+   	# as they break the CI build causing issues with GraalPy.
+   	#
 	org.graalvm.sdk.collections;bundle-version="24.2.0",\
 	org.graalvm.sdk.jniutils;bundle-version="24.2.0",\
 	org.graalvm.sdk.nativeimage;bundle-version="24.2.0",\
