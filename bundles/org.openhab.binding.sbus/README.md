@@ -23,8 +23,6 @@ The binding itself does not require any special configuration.
 
 *note*  If openHAB is deployed in a Docker container, you must set the `network_mode` to host. Without this setting, messages on the host network will not reach the Docker container's internal networks.
 
-*note*  If openHAB is deployed in a Docker container, you must set the `network_mode` to host. Without this setting, messages on the host network will not reach the Docker container's internal networks.
-
 ## Thing Configuration
 
 ### Bridge Configuration
@@ -32,70 +30,44 @@ The binding itself does not require any special configuration.
 The Sbus Bridge has the following configuration parameters:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced |
-|---------|---------|------------------------------------------------------|---------|----------|-----------|
+|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
 | host    | text    | IP address of the Sbus device (typically broadcast)  | N/A     | yes      | no        |
 | port    | integer | UDP port number                                      | 6000    | no       | no        |
 
-### RGBW Controller Configuration
+### RGBW Controller, Contact, Switch, Temperature Configuration
 
 | Name    | Type    | Description                                          | Default | Required | Advanced |
-|---------|---------|------------------------------------------------------|---------|----------|-----------|
+|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
 | subnetId| integer | Subnet ID the RGBW controller is part of             | N/A     | yes      | no        |
 | id      | integer | Device ID of the RGBW controller                     | N/A     | yes      | no        |
 | refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
-
-### Temperature Sensor Configuration
-
-| Name    | Type    | Description                                          | Default | Required | Advanced |
-|---------|---------|------------------------------------------------------|---------|----------|-----------|
-| subnetId| integer | Subnet ID the temperature sensor is part of          | N/A     | yes      | no        |
-| id      | integer | Device ID of the temperature sensor                  | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
-
-### Switch Controller Configuration
-
-| Name    | Type    | Description                                          | Default | Required | Advanced |
-|---------|---------|------------------------------------------------------|---------|----------|-----------|
-| subnetId| integer | Subnet ID the switch controller is part of           | N/A     | yes      | no        |
-| id      | integer | Device ID of the switch controller                   | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
-
-### Contact Sensor Configuration
-
-| Name    | Type    | Description                                          | Default | Required | Advanced |
-|---------|---------|------------------------------------------------------|---------|----------|-----------|
-| subnetId| integer | Subnet ID the contact sensor is part of              | N/A     | yes      | no        |
-| id      | integer | Device ID of the contact sensor                      | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
-
-### Color Channel Configuration
-
-The color channel of RGBW controllers supports these additional parameters:
-
-| Parameter   | Type    | Description                                          | Default | Required | Advanced |
-|-------------|---------|------------------------------------------------------|---------|----------|-----------|
-| channelNumber | integer | The physical channel number on the Sbus device     | N/A     | yes      | no        |
-| enableWhite | boolean | Controls the white component support for RGB palette | true    | no       | yes       |
 
 ## Channels
 
 ### RGBW Controller Channels
 
 | Channel | Type   | Read/Write | Description                                                |
-|---------|--------|------------|------------------------------------------------------------|
+|:--------|:-------|:----------:|:-----------------------------------------------------------|
 | color   | Color  | RW         | HSB color picker that controls RGBW components (0-100%). Can be configured to disable the white channel. |
 | switch  | Switch | RW         | On/Off control for the RGBW output with optional timer     |
+
+The color channel of RGBW controllers supports these additional parameters:
+
+| Parameter   | Type    | Description                                          | Default | Required | Advanced |
+|:------------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
+| channelNumber | integer | The physical channel number on the Sbus device     | N/A     | yes      | no        |
+| enableWhite | boolean | Controls the white component support for RGB palette | true    | no       | yes       |
 
 ### Temperature Sensor Channels
 
 | Channel     | Type                | Read/Write | Description                    |
-|-------------|---------------------|------------|--------------------------------|
+|:------------|:--------------------|:----------:|:-------------------------------|
 | temperature | Number:Temperature  | R          | Current temperature reading. Can be configured to use Celsius (default) or Fahrenheit units    |
 
 ### Switch Controller Channels
 
 | Channel | Type           | Read/Write | Description                                               |
-|---------|----------------|------------|-----------------------------------------------------------|
+|:--------|:---------------|:----------:|:----------------------------------------------------------|
 | switch  | Switch         | RW         | Basic ON/OFF state control                                |
 | dimmer  | Dimmer         | RW         | ON/OFF state with timer transition                        |
 | paired  | Rollershutter  | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters)|
@@ -103,7 +75,7 @@ The color channel of RGBW controllers supports these additional parameters:
 ### Contact Sensor Channels
 
 | Channel | Type    | Read/Write | Description                                               |
-|---------|---------|------------|-----------------------------------------------------------|
+|:--------|:--------|:----------:|:----------------------------------------------------------|
 | contact | Contact | R          | Contact state (OPEN/CLOSED)                               |
 
 ## Full Example
