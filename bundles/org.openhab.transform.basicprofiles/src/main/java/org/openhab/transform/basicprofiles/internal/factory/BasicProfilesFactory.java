@@ -42,6 +42,7 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.util.BundleResolver;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceCountingStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceTimeStateProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.FlatLineProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericCommandTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericToggleSwitchTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.InvertStateProfile;
@@ -52,6 +53,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandPro
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -72,6 +74,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID THRESHOLD_UID = new ProfileTypeUID(SCOPE, "threshold");
     public static final ProfileTypeUID TIME_RANGE_COMMAND_UID = new ProfileTypeUID(SCOPE, "time-range-command");
     public static final ProfileTypeUID STATE_FILTER_UID = new ProfileTypeUID(SCOPE, "state-filter");
+    public static final ProfileTypeUID FLAT_LINE_UID = new ProfileTypeUID(SCOPE, "flat-line");
 
     private static final ProfileType PROFILE_TYPE_GENERIC_COMMAND = ProfileTypeBuilder
             .newTrigger(GENERIC_COMMAND_UID, "Generic Command") //
@@ -108,13 +111,17 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
             .newState(STATE_FILTER_UID, "State Filter").build();
 
+    private static final ProfileType PROFILE_TYPE_FLAT_LINE = ProfileTypeBuilder
+            .newState(FLAT_LINE_UID, "Flat Line (No Input Activity)").withSupportedItemTypes(CoreItemFactory.SWITCH)
+            .build();
+
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID);
+            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, FLAT_LINE_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
             PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER);
+            PROFILE_STATE_FILTER, PROFILE_TYPE_FLAT_LINE);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -123,6 +130,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private final Bundle bundle;
     private final ItemRegistry itemRegistry;
     private final TimeZoneProvider timeZoneProvider;
+    private final Set<AutoCloseable> closeables = ConcurrentHashMap.newKeySet();
 
     @Activate
     public BasicProfilesFactory(final @Reference ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService,
@@ -137,26 +145,48 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext context) {
+        Profile retVal;
         if (GENERIC_COMMAND_UID.equals(profileTypeUID)) {
-            return new GenericCommandTriggerProfile(callback, context);
+            retVal = new GenericCommandTriggerProfile(callback, context);
         } else if (GENERIC_TOGGLE_SWITCH_UID.equals(profileTypeUID)) {
-            return new GenericToggleSwitchTriggerProfile(callback, context);
+            retVal = new GenericToggleSwitchTriggerProfile(callback, context);
         } else if (DEBOUNCE_COUNTING_UID.equals(profileTypeUID)) {
-            return new DebounceCountingStateProfile(callback, context);
+            retVal = new DebounceCountingStateProfile(callback, context);
         } else if (DEBOUNCE_TIME_UID.equals(profileTypeUID)) {
-            return new DebounceTimeStateProfile(callback, context);
+            retVal = new DebounceTimeStateProfile(callback, context);
         } else if (INVERT_UID.equals(profileTypeUID)) {
-            return new InvertStateProfile(callback);
+            retVal = new InvertStateProfile(callback);
         } else if (ROUND_UID.equals(profileTypeUID)) {
-            return new RoundStateProfile(callback, context);
+            retVal = new RoundStateProfile(callback, context);
         } else if (THRESHOLD_UID.equals(profileTypeUID)) {
-            return new ThresholdStateProfile(callback, context);
+            retVal = new ThresholdStateProfile(callback, context);
         } else if (TIME_RANGE_COMMAND_UID.equals(profileTypeUID)) {
-            return new TimeRangeCommandProfile(callback, context, timeZoneProvider);
+            retVal = new TimeRangeCommandProfile(callback, context, timeZoneProvider);
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
-            return new StateFilterProfile(callback, context, itemRegistry);
+            retVal = new StateFilterProfile(callback, context, itemRegistry);
+        } else if (FLAT_LINE_UID.equals(profileTypeUID)) {
+            retVal = new FlatLineProfile(callback, context);
+        } else {
+            retVal = null;
         }
-        return null;
+        if (retVal instanceof AutoCloseable closeable) {
+            closeables.add(closeable);
+        }
+        return retVal;
+    }
+
+    /**
+     * Note: I wonder if the OH Core {@link ProfileFactory} instances should do this too?
+     */
+    @Deactivate
+    public void deactivate() {
+        for (AutoCloseable closeable : closeables) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+            }
+        }
+        closeables.clear();
     }
 
     @Override
