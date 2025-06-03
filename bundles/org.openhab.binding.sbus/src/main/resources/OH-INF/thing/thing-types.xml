@@ -103,7 +103,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>Sbus Contact Sensor</label>
+		<label>Contact Sensor</label>
 		<description>Sbus contact sensor device</description>
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<config-description>
