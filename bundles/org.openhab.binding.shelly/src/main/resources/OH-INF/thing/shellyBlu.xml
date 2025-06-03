@@ -18,6 +18,24 @@
 		<config-description-ref uri="thing-type:shelly:blubattery"/>
 	</thing-type>
 
+	<thing-type id="shellybluwallswitch4">
+		<label>Shelly BLU Wall Switch 4</label>
+		<description>@text/thing-type.shelly.shellybluwallswitch4.description</description>
+		<category>WallSwitch</category>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="status1" typeId="buttonState"/>
+			<channel-group id="status2" typeId="buttonState"/>
+			<channel-group id="status3" typeId="buttonState"/>
+			<channel-group id="status4" typeId="buttonState"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:blubattery"/>
+	</thing-type>
+
 	<thing-type id="shellybludw">
 		<label>Shelly BLU Door/Window</label>
 		<description>@text/thing-type.shelly.shellybludw.description</description>

@@ -190,6 +190,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO4PM_2, "", THING_TYPE_SHELLYPRO4PM_STR), //
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON_STR), //
+                Arguments.of(SHELLYDT_BLUWALLSWITCH4, "", THING_TYPE_SHELLYBLUWALLSWITCH4_STR), //
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW_STR), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION_STR), //
                 Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT_STR), //
@@ -201,8 +202,9 @@ public class ShellyThingCreatorTest {
     @Test
     void getThingUIDReturnsThingTypeMatchingServiceName() {
         Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION,
-                THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUGW, THING_TYPE_SHELLYBLUBUTTON, THING_TYPE_SHELLY2_RELAY,
-                THING_TYPE_SHELLY2_ROLLER, THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY,
+                THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUGW, THING_TYPE_SHELLYBLUBUTTON,
+                THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
+                THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY,
                 new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPLUSHTG3_STR),
                 new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPLUS2PM_RELAY_STR),
                 new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPLUS2PM_ROLLER_STR),

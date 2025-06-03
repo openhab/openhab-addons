@@ -1,7 +1,7 @@
 /*
  * This script uses the BLE scan functionality in scripting to pass scan results to openHAB
  * Supported BLU Devices: BLU Button 1, BLU Door/Window, BLU Motion, BLU H&T
- * Version 0.4
+ * Version 0.5
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT"];
@@ -23,6 +23,7 @@ let uint24 = 4;
 let int24 = 5;
 let uint32 = 6;
 let int32 = 7;
+let BTH_BUTTON_INDEX = 0x3a;
 
 let BTH = [];
 BTH[0x00] = { n: "pid", t: uint8 };
@@ -114,18 +115,31 @@ let BTHomeDecoder = {
 
     let _bth;
     let _value;
+    var bttns = new Array();
     while (buffer.length > 0) {
-      _bth = BTH[buffer.at(0)];
+      let bthIdx = buffer.at(0);
+      buffer = buffer.slice(1);
+      _bth = BTH[bthIdx];
       if (typeof _bth === "undefined") {
         console.log("BTH: unknown type");
         break;
       }
-      buffer = buffer.slice(1);
       _value = this.getBufValue(_bth.t, buffer);
       if (_value === null) break;
       if (typeof _bth.f !== "undefined") _value = _value * _bth.f;
-      result[_bth.n] = _value;
+      if (bthIdx === BTH_BUTTON_INDEX) {
+        bttns.push(_value)
+      }
+      else
+      {
+        result[_bth.n] = _value;
+      }
       buffer = buffer.slice(getByteSize(_bth.t));
+    }
+    // Add button events if any
+    if(bttns.length >= 1)
+    {
+      result["Buttons"] = bttns;
     }
     return result;
   },

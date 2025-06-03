@@ -65,6 +65,10 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
                 ttype = THING_TYPE_SHELLYBLUBUTTON_STR;
                 tuid = THING_TYPE_SHELLYBLUBUTTON;
                 break;
+            case SHELLYDT_BLUWALLSWITCH4:
+                ttype = THING_TYPE_SHELLYBLUWALLSWITCH4_STR;
+                tuid = THING_TYPE_SHELLYBLUWALLSWITCH4;
+                break;
             case SHELLYDT_BLUDW:
                 ttype = THING_TYPE_SHELLYBLUDW_STR;
                 tuid = THING_TYPE_SHELLYBLUDW;
