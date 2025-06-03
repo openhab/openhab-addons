@@ -15,12 +15,6 @@
   <name>openHAB Add-ons :: Bundles :: MQTT HomeAssistant Convention</name>
 
   <properties>
-    <bnd.importpackage>!sun.misc.*,
-      !sun.reflect.*,
-      !com.sun.management.*,
-      !jdk.internal.reflect.*,
-      !jdk.vm.ci.services</bnd.importpackage>
-
     <graalpy.version>24.2.0</graalpy.version>
     <!-- define a property to overwrite it on Windows, as venv has a different structure -->
     <graalpy.executable>bin/python3</graalpy.executable>
