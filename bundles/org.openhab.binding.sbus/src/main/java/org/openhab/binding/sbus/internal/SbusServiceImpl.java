@@ -78,7 +78,16 @@ public class SbusServiceImpl implements SbusService {
         if (adapter == null) {
             throw new IllegalStateException("SbusAdapter not initialized");
         }
-        return adapter.readStatusChannels(subnetId, id);
+        return adapter.readExecutionStatusChannels(subnetId, id);
+    }
+
+    @Override
+    public boolean[] readContactStatusChannels(int subnetId, int id) throws Exception {
+        final SbusAdapter adapter = this.adapter;
+        if (adapter == null) {
+            throw new IllegalStateException("SbusAdapter not initialized");
+        }
+        return adapter.readContactStatusChannels(subnetId, id);
     }
 
     @Override
@@ -96,7 +105,7 @@ public class SbusServiceImpl implements SbusService {
         if (adapter == null) {
             throw new IllegalStateException("SbusAdapter not initialized");
         }
-        adapter.writeSingleChannel(subnetId, id, channelNumber, value, timer);
+        adapter.writeSingleExecutionChannel(subnetId, id, channelNumber, value, timer);
     }
 
     @Override

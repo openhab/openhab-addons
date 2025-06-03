@@ -55,6 +55,16 @@ public interface SbusService {
     int[] readStatusChannels(int subnetId, int id) throws Exception;
 
     /**
+     * Reads contact status values from device channels.
+     *
+     * @param subnetId the subnet ID of the device
+     * @param id the device ID
+     * @return array of contact status values (true for open, false for closed)
+     * @throws Exception if reading fails
+     */
+    boolean[] readContactStatusChannels(int subnetId, int id) throws Exception;
+
+    /**
      * Writes RGBW values to a device channel.
      *
      * @param subnetId the subnet ID of the device
