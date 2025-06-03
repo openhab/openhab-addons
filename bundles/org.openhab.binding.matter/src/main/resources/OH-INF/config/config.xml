@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:matter">
+		<parameter-group name="bridge">
+			<label>Matter Bridge Configuration.</label>
+			<advanced>false</advanced>
+		</parameter-group>
+		<parameter name="enableBridge" type="boolean" required="false" groupName="bridge">
+			<label>Enable Matter Bridge</label>
+			<description>Enable Matter bridge functionality to expose items to other Matter clients.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="runningState" type="text" required="false" groupName="bridge" readOnly="true">
+			<label>Running State</label>
+			<description>Current running state of the Matter bridge.</description>
+		</parameter>
+		<parameter name="bridgeName" type="text" required="false" groupName="bridge">
+			<label>Bridge name</label>
+			<description>Name of the Matter bridge that is exposed to clients.</description>
+			<default>openHAB Matter Bridge</default>
+		</parameter>
+		<parameter name="qrCode" type="text" required="false" groupName="bridge">
+			<label>Matter QR Pairing Code</label>
+			<context>qrcode</context>
+			<description>QR code used for pairing 3rd party Matter clients.</description>
+		</parameter>
+		<parameter name="manualPairingCode" type="text" required="false" groupName="bridge" readOnly="true">
+			<label>Matter Manual Pairing Code</label>
+			<description>Manual code used for pairing 3rd party Matter clients.</description>
+		</parameter>
+		<parameter name="openCommissioningWindow" type="boolean" required="false" groupName="bridge">
+			<label>Allow Commissioning</label>
+			<description>This will open the commissioning window for 15 minutes, allowing pairings with 3rd party clients.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="passcode" type="integer" min="1" max="99999998" required="true" groupName="bridge">
+			<label>Passcode</label>
+			<description>Defines the Matter bridge passcode, used for commissioning the first client.</description>
+			<default>20202021</default>
+		</parameter>
+		<parameter name="discriminator" type="integer" min="0" max="4095" required="false" groupName="bridge">
+			<label>Discriminator</label>
+			<description>Defines the Matter discriminator which uniquely identifies this bridge on the network. Used for
+				commissioning clients.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="port" type="integer" required="true" groupName="bridge">
+			<label>Port</label>
+			<description>Defines the port the Matter bridge listens on.</description>
+			<default>5540</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="resetBridge" type="boolean" required="false" groupName="bridge">
+			<label>Reset Bridge</label>
+			<description>This will reset the Matter bridge, removing all pairings with 3rd party clients.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
