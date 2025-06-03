@@ -107,6 +107,7 @@ public class ShellyBindingConstants {
 
             // Shelly BLU
             THING_TYPE_SHELLYBLUBUTTON, //
+            THING_TYPE_SHELLYBLUWALLSWITCH4, //
             THING_TYPE_SHELLYBLUDW, //
             THING_TYPE_SHELLYBLUMOTION, //
             THING_TYPE_SHELLYBLUHT, //
