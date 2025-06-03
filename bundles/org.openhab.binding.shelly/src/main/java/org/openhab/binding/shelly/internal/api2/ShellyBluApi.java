@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -59,33 +60,45 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
 
-    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
-            SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
-            SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH, //
-            SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH, //
-            SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH, //
-            SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH, //
-            SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH, //
-            "1", SHELLY_BTNEVENT_1SHORTPUSH, //
-            "2", SHELLY_BTNEVENT_2SHORTPUSH, //
-            "3", SHELLY_BTNEVENT_3SHORTPUSH, //
-            "4", SHELLY_BTNEVENT_LONGPUSH);
+    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.ofEntries( //
+            Map.entry(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH), //
+            Map.entry(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH), //
+            Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH), //
+            Map.entry("1", SHELLY_BTNEVENT_1SHORTPUSH), //
+            Map.entry("2", SHELLY_BTNEVENT_2SHORTPUSH), //
+            Map.entry("3", SHELLY_BTNEVENT_3SHORTPUSH), //
+            Map.entry("4", SHELLY_BTNEVENT_LONGPUSH), //
+            Map.entry("254", SHELLY_BTNEVENT_HOLD));
+
+    private ShellyInputState createShellyInputState() {
+        ShellyInputState input = new ShellyInputState();
+        input.input = 0;
+        input.event = "";
+        input.eventCount = 0;
+        return input;
+    }
 
     /**
      * Regular constructor - called by Thing handler
      *
-     * @param thingName Symbolic thing name
+     * @param thingLabel Symbolic thing name
      * @param thing Thing Handler (ThingHandlerInterface)
      */
-    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
-        super(thingName, thingTable, thing);
-
-        ShellyInputState input = new ShellyInputState();
+    public ShellyBluApi(String thingLabel, ShellyThingTable thingTable, ShellyThingInterface thing) {
+        super(thingLabel, thingTable, thing);
         deviceStatus.inputs = new ArrayList<>();
-        input.input = 0;
-        input.event = "";
-        input.eventCount = 0;
-        deviceStatus.inputs.add(input);
+        ShellyDeviceProfile profile = thing.getProfile();
+
+        // TODO clarify: get number of XML entries of type "button" resp "buttonState" from somewhere in the thing stuff
+        // ?
+        int numInputs = thing.getThingType().equals(THING_TYPE_SHELLYBLUWALLSWITCH4_STR) ? 4 : 1;
+        for (int i = 0; i < numInputs; i++) {
+            deviceStatus.inputs.add(createShellyInputState());
+        }
+        logger.trace("{} ShellyBluApi constructor number of inputs: {}", thingLabel, profile.numInputs);
     }
 
     @Override
@@ -161,6 +174,27 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             } else {
                 inputs = profile.settings.inputs = new ArrayList<>();
                 inputs.add(settings);
+            }
+            profile.status = deviceStatus;
+        }
+
+        if (profile.isMultiButton) {
+            logger.trace("{}: Create inputs profile BLUWS4: ", thingName);
+            profile.numInputs = 4;
+            boolean add = false;
+
+            if (profile.settings.inputs == null) {
+                profile.settings.inputs = new ArrayList<>(profile.numInputs);
+                add = true;
+            }
+
+            for (int i = 0; i < profile.numInputs; i++) {
+                ShellySettingsInput settings = new ShellySettingsInput();
+                settings.btnType = SHELLY_BTNT_MOMENTARY;
+                if (add)
+                    profile.settings.inputs.add(i, settings);
+                else
+                    profile.settings.inputs.set(i, settings);
             }
             profile.status = deviceStatus;
         }
@@ -292,19 +326,27 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.motion = e.data.motionState == 1;
                         }
 
-                        if (e.data.buttonEvent != null) {
-                            ShellyInputState input = deviceStatus.inputs != null ? deviceStatus.inputs.get(0)
-                                    : new ShellyInputState();
-                            input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttonEvent + "");
-                            input.eventCount++;
-                            deviceStatus.inputs.set(0, input);
-                            // sensorData.inputs.set(0, input);
+                        if (e.data.buttonEvents != null) {
+                            logger.trace("{}: Shelly BLU button events received: {}", thingName,
+                                    gson.toJson(e.data.buttonEvents));
+                            for (int bttnIdx = 0; bttnIdx < e.data.buttonEvents.length; bttnIdx++) {
+                                if (e.data.buttonEvents[bttnIdx] != 0) {
+                                    ShellyInputState input = deviceStatus.inputs != null
+                                            ? deviceStatus.inputs.get(bttnIdx)
+                                            : new ShellyInputState();
+                                    input.event = mapValue(MAP_INPUT_EVENT_TYPE, e.data.buttonEvents[bttnIdx] + "");
+                                    input.eventCount++;
+                                    deviceStatus.inputs.set(bttnIdx, input);
 
-                            String group = getProfile().getInputGroup(0);
-                            String suffix = profile.getInputSuffix(0);
-                            t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix, getStringType(input.event));
-                            t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix, getDecimal(input.eventCount));
-                            t.triggerButton(profile.getInputGroup(0), 0, input.event);
+                                    String group = getProfile().getInputGroup(bttnIdx);
+                                    String suffix = profile.getInputSuffix(bttnIdx);
+                                    t.updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix,
+                                            getStringType(input.event));
+                                    t.updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix,
+                                            getDecimal(input.eventCount));
+                                    t.triggerButton(profile.getInputGroup(bttnIdx), bttnIdx, input.event);
+                                }
+                            }
                         }
                         updated |= ShellyComponents.updateDeviceStatus(t, deviceStatus);
                         updated |= ShellyComponents.updateSensors(getThing(), deviceStatus);

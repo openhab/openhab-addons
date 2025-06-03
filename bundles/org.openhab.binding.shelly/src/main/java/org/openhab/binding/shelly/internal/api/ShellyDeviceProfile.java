@@ -97,6 +97,7 @@ public class ShellyDeviceProfile {
     public boolean isHT = false; // true for H&T
     public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
+    public boolean isMultiButton = false; // true for a Shelly BLU Wall Switch 4
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
     public boolean isSmoke = false; // true for Shelly Smoke
@@ -231,6 +232,7 @@ public class ShellyDeviceProfile {
                 || thingType.equals(THING_TYPE_SHELLYPLUSI4DC_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR) || thingType.equals(THING_TYPE_SHELLYBUTTON2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUBUTTON_STR);
+        isMultiButton = thingType.equals(THING_TYPE_SHELLYBLUWALLSWITCH4_STR);
         isTRV = thingType.equals(THING_TYPE_SHELLYTRV_STR);
         isWall = thingType.equals(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
         is3EM = thingType.equals(THING_TYPE_SHELLY3EM_STR) || thingType.startsWith(THING_TYPE_SHELLYPRO3EM_STR);
@@ -277,6 +279,8 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
+        } else if (isMultiButton) {
+            return CHANNEL_GROUP_STATUS + idx;
         } else if (isSensor) {
             return CHANNEL_GROUP_SENSOR;
         }
@@ -293,7 +297,7 @@ public class ShellyDeviceProfile {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
-        } else if (isIX) {
+        } else if (isIX || isMultiButton) {
             return CHANNEL_GROUP_STATUS + idx;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
@@ -307,7 +311,7 @@ public class ShellyDeviceProfile {
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
-        if (isRGBW2 || isIX) {
+        if (isRGBW2 || isIX || isMultiButton) {
             return ""; // RGBW2 has only 1 channel
         } else if (isRoller || isDimmer) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
@@ -330,7 +334,7 @@ public class ShellyDeviceProfile {
         List<ShellySettingsRgbwLight> lights = settings.lights;
         if (isButton) {
             return true;
-        } else if (isIX && inputs != null && idx < inputs.size()) {
+        } else if ((isMultiButton || isIX) && inputs != null && idx < inputs.size()) {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
@@ -433,6 +437,8 @@ public class ShellyDeviceProfile {
         switch (model) {
             case SHELLYDT_BLUBUTTON:
                 return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
+            case SHELLYDT_BLUWALLSWITCH4:
+                return (THING_TYPE_SHELLYBLUWALLSWITCH4_STR + "-" + mac).toLowerCase();
             case SHELLYDT_BLUDW:
                 return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
             case SHELLYDT_BLUMOTION:

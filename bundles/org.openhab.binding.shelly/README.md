@@ -125,12 +125,13 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type        | Model                                                  | Vendor ID |
-| ----------------- | ------------------------------------------------------ | --------- |
-| shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
-| shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
-| shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
-| shellybluht       | Shelly BLU H&T                                         | SBMO      |
+| thing-type           | Model                                    | Vendor ID               |
+| -------------------- | ---------------------------------------- | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1                      | SBBT-002C               |
+| shellybluwallswitch4 | Shelly BLU Wall Switch 4                 | SBBT-004CEU             |
+| shellybludw          | Shelly BLU Door/Windows                  | SBDW                    |
+| shellyblumotion      | Shelly BLU Motion                        | SBMO                    |
+| shellybluht          | Shelly BLU H&T                           | SBMO                    |
 
 ### Special Thing Types
 
@@ -433,6 +434,7 @@ The following trigger types are sent:
 | LONG_PRESSED       | The button was pressed for a longer time (lastEvent=L)              |
 | SHORT_LONG_PRESSED | A short followed by a long button push (lastEvent=SL)               |
 | LONG_SHORT_PRESSED | A long followed by a short button push (lastEvent=LS)               |
+| HOLDING            | A button continuously pressed (holded) (lastEvent=H)                |
 
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events.
@@ -1530,6 +1532,20 @@ See notes on discovery of Shelly BLU devices above.
 | Group   | Channel       | Type     | read-only | Description                                                                         |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
 | status  | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                        |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status  | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                 ??????????????                                       |
 |         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
 |         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
