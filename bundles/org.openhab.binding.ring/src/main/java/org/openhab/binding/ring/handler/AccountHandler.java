@@ -16,6 +16,7 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
@@ -39,6 +40,7 @@ import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -190,7 +192,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
                             Configuration config = getThing().getConfiguration();
-                            int refreshInterval = (int) config.get("refreshInterval");
+                            int refreshInterval = ConfigParser.valueAsOrElse(config.get("refreshInterval"),
+                                    BigDecimal.class, BigDecimal.valueOf(500)).intValue();
+
                             startAutomaticRefresh(refreshInterval);
                         } else {
                             stopAutomaticRefresh();
