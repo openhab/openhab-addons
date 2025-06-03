@@ -16,7 +16,6 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
@@ -194,7 +193,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
                             Configuration config = getThing().getConfiguration();
-                            int refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
+                            int refreshInterval = (int) config.get("refreshInterval");
                             startAutomaticRefresh(refreshInterval);
                         } else {
                             stopAutomaticRefresh();
@@ -294,7 +293,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             refreshRegistry();
             updateStatus(ThingStatus.ONLINE);
-        } catch (DuplicateIdException ignored) {
+        } catch (DuplicateIdException dup) {
+            logger.debug("Ring device with duplicate id detected, ignoring device");
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
             registry = null;
@@ -491,17 +491,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                             new StringType(lastEvents.get(0).getDoorbot().getId()));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
                             new StringType(lastEvents.get(0).getDoorbot().getDescription()));
-                    runnableVideo = new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                getVideo(lastEvents.get(0));
-                            } catch (final Exception e) {
-                                logger.debug(
-                                        "AccountHandler - startSessionRefresh - Exception occurred during execution of eventTick(): {}",
-                                        e.getMessage(), e);
-                            }
-                        }
+                    runnableVideo = () -> {
+                        getVideo(lastEvents.get(0));
                     };
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
