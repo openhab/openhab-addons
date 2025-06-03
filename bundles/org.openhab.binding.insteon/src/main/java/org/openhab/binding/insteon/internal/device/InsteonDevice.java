@@ -112,8 +112,9 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         return getFeatures().stream().filter(DeviceFeature::isResponderFeature).toList();
     }
 
-    public List<DeviceFeature> getControllerOrResponderFeatures() {
-        return getFeatures().stream().filter(DeviceFeature::isControllerOrResponderFeature).toList();
+    public List<Integer> getControllerOrResponderFeatureGroups() {
+        return getFeatures().stream().filter(DeviceFeature::isControllerOrResponderFeature).map(DeviceFeature::getGroup)
+                .distinct().toList();
     }
 
     public List<DeviceFeature> getFeatures(String type) {
