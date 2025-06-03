@@ -191,8 +191,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                         if (enableWhite) {
                             rgbw = ColorUtil.hsbToRgbw(hsbCommand);
                         } else {
-                            rgbw = new int[] { ColorUtil.hsbToRgb(hsbCommand)[0], ColorUtil.hsbToRgb(hsbCommand)[1],
-                                    ColorUtil.hsbToRgb(hsbCommand)[2], 0 };
+                            var converted = ColorUtil.hsbToRgb(hsbCommand);
+                            rgbw = new int[] { converted[0], converted[1], converted[2], 0 };
                         }
                         adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw);
                         adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 100, -1);
