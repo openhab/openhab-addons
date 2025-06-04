@@ -180,7 +180,7 @@ public class RestClient {
      * @return the servers response
      * @throws AuthenticationException
      */
-    private String getRequest(String resourceUrl, @Nullable Profile profile) throws AuthenticationException {
+    private String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
         String result = "";
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
@@ -524,7 +524,7 @@ public class RestClient {
      * @throws AuthenticationException when request is invalid.
      * @throws JsonParseException when response is invalid JSON.
      */
-    public RingDevices getRingDevices(@Nullable Profile profile, RingAccount ringAccount)
+    public RingDevices getRingDevices(Profile profile, RingAccount ringAccount)
             throws JsonParseException, AuthenticationException {
         logger.debug("RestClient - getRingDevices");
         String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);
@@ -541,7 +541,7 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws JsonParseException
      */
-    public synchronized List<RingEventTO> getHistory(@Nullable Profile profile, int limit)
+    public synchronized List<RingEventTO> getHistory(Profile profile, int limit)
             throws AuthenticationException, JsonParseException {
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
         if (!jsonResult.isBlank()) {
@@ -551,8 +551,7 @@ public class RestClient {
         }
     }
 
-    public String downloadEventVideo(RingEventTO event, @Nullable Profile profile, String filePath,
-            int retentionCount) {
+    public String downloadEventVideo(RingEventTO event, Profile profile, String filePath, int retentionCount) {
         try {
             Path path = Paths.get(filePath);
 

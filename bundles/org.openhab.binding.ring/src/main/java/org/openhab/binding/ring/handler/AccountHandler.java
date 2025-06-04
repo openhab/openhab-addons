@@ -88,7 +88,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The user profile retrieved when authenticating.
      */
-    private @Nullable Profile userProfile;
+    private Profile userProfile = new Profile();
     /**
      * The registry.
      */

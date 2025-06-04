@@ -84,7 +84,6 @@ import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class Profile {
-    // ADD REFRESH TOKEN
     private JsonObject jsonProfile = new JsonObject();
     private JsonObject jsonFeatures = new JsonObject();
     private String refreshToken = "";
@@ -217,5 +216,8 @@ public class Profile {
             throw new IllegalArgumentException("No value found for feature: " + feature);
         }
         return "true".equalsIgnoreCase(result);
+    }
+
+    public Profile() {
     }
 }
