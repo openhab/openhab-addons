@@ -55,6 +55,7 @@ public class DeviceSchema {
         public double min = Double.MIN_VALUE;
         public double max = Double.MAX_VALUE;
         public int scale = 0;
+        public int step = 1;
         public String unit = "";
     }
 
