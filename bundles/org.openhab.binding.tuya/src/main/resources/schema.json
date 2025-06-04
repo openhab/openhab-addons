@@ -718,10 +718,6 @@
 		"doorcontact_state": {
 			"id": 1,
 			"type": "bool"
-		},
-		"temper_alarm": {
-			"id": 4,
-			"type": "bool"
 		}
 	},
 	"0rwvmsnhgieurwuf": {
@@ -1054,6 +1050,15 @@
 			"id": 1,
 			"type": "bool"
 		},
+		"ProgramMode": {
+			"id": 116,
+			"range": [
+				"0",
+				"1",
+				"2"
+			],
+			"type": "enum"
+		},
 		"SensorType": {
 			"id": 102,
 			"range": [
@@ -1066,7 +1071,7 @@
 		"TempActivate": {
 			"id": 104,
 			"max": 9,
-			"min": 2,
+			"min": 1,
 			"type": "value"
 		},
 		"TempComp": {
@@ -1664,6 +1669,14 @@
 			],
 			"type": "enum"
 		},
+		"cur_calibration": {
+			"id": 3,
+			"range": [
+				"start",
+				"end"
+			],
+			"type": "enum"
+		},
 		"percent_control": {
 			"id": 2,
 			"max": 100,
@@ -1731,6 +1744,10 @@
 			"max": 2500,
 			"min": 0,
 			"type": "value"
+		},
+		"cycle_time": {
+			"id": 41,
+			"type": "string"
 		},
 		"switch_on": {
 			"id": 1,
@@ -2213,6 +2230,10 @@
 		}
 	},
 	"1oritrbfwyxuuwp5": {
+		"alarm_message": {
+			"id": 185,
+			"type": "raw"
+		},
 		"basic_flip": {
 			"id": 103,
 			"type": "bool"
@@ -5171,7 +5192,8 @@
 		"pir_state": {
 			"id": 1,
 			"range": [
-				"pir"
+				"pir",
+				"none"
 			],
 			"type": "enum"
 		},
@@ -5475,10 +5497,6 @@
 		"milight": {
 			"id": 101,
 			"type": "raw"
-		},
-		"scene_data": {
-			"id": 25,
-			"type": "string"
 		},
 		"switch_led": {
 			"id": 20,
@@ -5905,6 +5923,15 @@
 			"id": 1,
 			"type": "bool"
 		},
+		"ProgramMode": {
+			"id": 116,
+			"range": [
+				"0",
+				"1",
+				"2"
+			],
+			"type": "enum"
+		},
 		"SensorType": {
 			"id": 102,
 			"range": [
@@ -5917,7 +5944,7 @@
 		"TempActivate": {
 			"id": 104,
 			"max": 9,
-			"min": 2,
+			"min": 1,
 			"type": "value"
 		},
 		"TempComp": {
@@ -7404,6 +7431,12 @@
 			"max": 100,
 			"min": 0,
 			"type": "value"
+		},
+		"quick_calibration_1": {
+			"id": 10,
+			"max": 900,
+			"min": 1,
+			"type": "value"
 		}
 	},
 	"4vaa9g7nmidldl77": {
@@ -8245,9 +8278,29 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_timing": {
+			"id": 209,
+			"type": "raw"
+		},
+		"music_data": {
+			"id": 27,
+			"type": "string"
+		},
+		"random_timing": {
+			"id": 210,
+			"type": "raw"
+		},
+		"rhythm_mode": {
+			"id": 30,
+			"type": "raw"
+		},
 		"scene_data": {
 			"id": 25,
 			"type": "string"
+		},
+		"sleep_mode": {
+			"id": 31,
+			"type": "raw"
 		},
 		"switch_led": {
 			"id": 20,
@@ -8258,6 +8311,10 @@
 			"max": 1000,
 			"min": 0,
 			"type": "value"
+		},
+		"wakeup_mode": {
+			"id": 32,
+			"type": "raw"
 		},
 		"work_mode": {
 			"id": 21,
@@ -8326,12 +8383,6 @@
 			],
 			"type": "enum"
 		},
-		"electricity_left": {
-			"id": 6,
-			"max": 100,
-			"min": 0,
-			"type": "value"
-		},
 		"fault": {
 			"id": 18,
 			"type": "bitmap"
@@ -8356,9 +8407,11 @@
 			"id": 1,
 			"type": "bool"
 		},
-		"power_go": {
-			"id": 2,
-			"type": "bool"
+		"residual_electricity": {
+			"id": 6,
+			"max": 100,
+			"min": 0,
+			"type": "value"
 		},
 		"seek": {
 			"id": 13,
@@ -8376,6 +8429,10 @@
 				"6"
 			],
 			"type": "enum"
+		},
+		"switch_go": {
+			"id": 2,
+			"type": "bool"
 		},
 		"temp_unseen": {
 			"id": 102,
@@ -9994,7 +10051,7 @@
 		"temp_current": {
 			"id": 1,
 			"max": 600,
-			"min": -200,
+			"min": 0,
 			"type": "value"
 		},
 		"temp_unit_convert": {
@@ -10225,6 +10282,15 @@
 			"max": 5,
 			"min": 0,
 			"type": "value"
+		},
+		"relay_status": {
+			"id": 38,
+			"range": [
+				"off",
+				"on",
+				"memory"
+			],
+			"type": "enum"
 		},
 		"switch_1": {
 			"id": 1,
@@ -10466,6 +10532,12 @@
 		}
 	},
 	"7qx0q329p61h1ace": {
+		"battery_percent": {
+			"id": 107,
+			"max": 101,
+			"min": 0,
+			"type": "value"
+		},
 		"child_lock": {
 			"id": 40,
 			"type": "bool"
@@ -10478,10 +10550,18 @@
 			"id": 10,
 			"type": "bool"
 		},
+		"graph_valve_state": {
+			"id": 110,
+			"type": "bool"
+		},
+		"light_mode": {
+			"id": 106,
+			"type": "raw"
+		},
 		"lower_temp": {
 			"id": 26,
-			"max": 1000,
-			"min": 0.5,
+			"max": 3000,
+			"min": 50,
 			"type": "value"
 		},
 		"mfg_model": {
@@ -10508,20 +10588,32 @@
 		},
 		"temp_adjust_step": {
 			"id": 102,
-			"max": 5,
-			"min": 0.1,
+			"max": 50,
+			"min": 1,
+			"type": "value"
+		},
+		"temp_calib": {
+			"id": 109,
+			"max": 99,
+			"min": -99,
+			"type": "value"
+		},
+		"temp_calib_step": {
+			"id": 108,
+			"max": 50,
+			"min": 1,
 			"type": "value"
 		},
 		"temp_current": {
 			"id": 24,
-			"max": 10000,
+			"max": 1000,
 			"min": -300,
 			"type": "value"
 		},
 		"temp_set": {
 			"id": 16,
-			"max": 1000,
-			"min": 0.5,
+			"max": 3000,
+			"min": 50,
 			"type": "value"
 		},
 		"temp_unit_convert": {
@@ -10534,7 +10626,7 @@
 		},
 		"upper_temp": {
 			"id": 19,
-			"max": 10000,
+			"max": 3000,
 			"min": 50,
 			"type": "value"
 		},
@@ -12110,6 +12202,10 @@
 			"id": 26,
 			"type": "bitmap"
 		},
+		"overcharge_switch": {
+			"id": 46,
+			"type": "bool"
+		},
 		"power_coe": {
 			"id": 24,
 			"max": 1000000000,
@@ -12131,10 +12227,6 @@
 		},
 		"switch_1": {
 			"id": 1,
-			"type": "bool"
-		},
-		"switch_overcharge": {
-			"id": 46,
 			"type": "bool"
 		},
 		"test_bit": {
@@ -13810,13 +13902,13 @@
 			"min": -22,
 			"type": "value"
 		},
-		"SilentMode": {
+		"SilentMdoe": {
 			"id": 117,
 			"type": "bool"
 		},
 		"SpeedPercentage": {
 			"id": 104,
-			"max": 100,
+			"max": 150,
 			"min": 0,
 			"type": "value"
 		},
@@ -15487,7 +15579,10 @@
 				"workcompleted",
 				"charging",
 				"chargecompleted",
-				"pause"
+				"pause",
+				"cleanning",
+				"mopping",
+				"docking"
 			],
 			"type": "enum"
 		},
@@ -17946,6 +18041,12 @@
 				"3"
 			],
 			"type": "enum"
+		},
+		"tr_timecon": {
+			"id": 9,
+			"max": 120,
+			"min": 10,
+			"type": "value"
 		}
 	},
 	"U3JAXVgJIsEmht9o": {
@@ -18819,6 +18920,12 @@
 			],
 			"type": "enum"
 		},
+		"delay_time": {
+			"id": 10,
+			"max": 65535,
+			"min": 0,
+			"type": "value"
+		},
 		"ir_code": {
 			"id": 3,
 			"type": "string"
@@ -18835,6 +18942,10 @@
 			"id": 6,
 			"type": "string"
 		},
+		"key_code4": {
+			"id": 11,
+			"type": "string"
+		},
 		"key_study": {
 			"id": 7,
 			"type": "raw"
@@ -18847,9 +18958,19 @@
 			"id": 9,
 			"type": "raw"
 		},
+		"key_study4": {
+			"id": 12,
+			"type": "raw"
+		},
 		"study_code": {
 			"id": 2,
 			"type": "raw"
+		},
+		"type": {
+			"id": 13,
+			"max": 255,
+			"min": 0,
+			"type": "value"
 		}
 	},
 	"X8cgVQFK8lk5hZea": {
@@ -19957,6 +20078,15 @@
 			"min": 0,
 			"type": "value"
 		},
+		"brightness": {
+			"id": 152,
+			"range": [
+				"high",
+				"mid",
+				"low"
+			],
+			"type": "enum"
+		},
 		"child_lock": {
 			"id": 12,
 			"type": "bool"
@@ -19984,6 +20114,24 @@
 				"manual",
 				"off",
 				"on"
+			],
+			"type": "enum"
+		},
+		"motor_dir": {
+			"id": 151,
+			"range": [
+				"normal",
+				"reverse"
+			],
+			"type": "enum"
+		},
+		"screen_orientation": {
+			"id": 116,
+			"range": [
+				"up",
+				"right",
+				"down",
+				"left"
 			],
 			"type": "enum"
 		},
@@ -22311,6 +22459,10 @@
 			"id": 26,
 			"type": "bitmap"
 		},
+		"overcharge_switch": {
+			"id": 46,
+			"type": "bool"
+		},
 		"power_coe": {
 			"id": 24,
 			"max": 1000000000,
@@ -22332,10 +22484,6 @@
 		},
 		"switch_1": {
 			"id": 1,
-			"type": "bool"
-		},
-		"switch_overcharge": {
-			"id": 46,
 			"type": "bool"
 		},
 		"test_bit": {
@@ -22852,20 +23000,7 @@
 		"work_state": {
 			"id": 3,
 			"range": [
-				"cold",
-				"hot",
-				"wind",
-				"comfortable",
-				"energy",
-				"auto",
-				"holiday",
-				"manual",
-				"eco",
-				"sleep",
-				"dry",
-				"program",
-				"floor_heat",
-				"auxiliary_heat"
+				"hot"
 			],
 			"type": "enum"
 		}
@@ -23591,6 +23726,18 @@
 			"min": 10,
 			"type": "value"
 		},
+		"brightness_control": {
+			"id": 85,
+			"max": 254,
+			"min": 1,
+			"type": "value"
+		},
+		"color_temp_control": {
+			"id": 86,
+			"max": 370,
+			"min": 153,
+			"type": "value"
+		},
 		"colour_data": {
 			"id": 24,
 			"type": "string"
@@ -23605,6 +23752,20 @@
 			"min": 0,
 			"type": "value"
 		},
+		"hs_color_set": {
+			"id": 88,
+			"type": "string"
+		},
+		"mode_current": {
+			"id": 2,
+			"range": [
+				"white",
+				"colour",
+				"scene",
+				"music"
+			],
+			"type": "enum"
+		},
 		"music_data": {
 			"id": 27,
 			"type": "string"
@@ -23616,6 +23777,10 @@
 		"scene_data": {
 			"id": 25,
 			"type": "string"
+		},
+		"switch": {
+			"id": 83,
+			"type": "bool"
 		},
 		"switch_led": {
 			"id": 20,
@@ -25531,6 +25696,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"child_lock": {
+			"id": 40,
+			"type": "bool"
+		},
 		"countdown_1": {
 			"id": 9,
 			"max": 86400,
@@ -25555,6 +25724,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_time": {
+			"id": 41,
+			"type": "string"
+		},
 		"electric_coe": {
 			"id": 23,
 			"max": 1000000,
@@ -25571,11 +25744,38 @@
 			"id": 26,
 			"type": "bitmap"
 		},
+		"light_mode": {
+			"id": 39,
+			"range": [
+				"relay",
+				"pos",
+				"none",
+				"on"
+			],
+			"type": "enum"
+		},
+		"overcharge_switch": {
+			"id": 46,
+			"type": "bool"
+		},
 		"power_coe": {
 			"id": 24,
 			"max": 1000000,
 			"min": 0,
 			"type": "value"
+		},
+		"random_time": {
+			"id": 42,
+			"type": "string"
+		},
+		"relay_status": {
+			"id": 38,
+			"range": [
+				"off",
+				"on",
+				"memory"
+			],
+			"type": "enum"
 		},
 		"switch_1": {
 			"id": 1,
@@ -26739,7 +26939,7 @@
 		},
 		"tr_timecon": {
 			"id": 10,
-			"max": 60,
+			"max": 180,
 			"min": 1,
 			"type": "value"
 		}
@@ -27274,6 +27474,14 @@
 		"window_check": {
 			"id": 8,
 			"type": "bool"
+		},
+		"work_state": {
+			"id": 3,
+			"range": [
+				"standy",
+				"heating"
+			],
+			"type": "enum"
 		}
 	},
 	"cGmiBQ7xNKsfmbpK": {
@@ -27451,13 +27659,13 @@
 			"min": -22,
 			"type": "value"
 		},
-		"SilentMode": {
+		"SilentMdoe": {
 			"id": 117,
 			"type": "bool"
 		},
 		"SpeedPercentage": {
 			"id": 104,
-			"max": 100,
+			"max": 150,
 			"min": 0,
 			"type": "value"
 		},
@@ -32656,8 +32864,8 @@
 		},
 		"temp_set": {
 			"id": 16,
-			"max": 35,
-			"min": 0,
+			"max": 45,
+			"min": 5,
 			"type": "value"
 		},
 		"upper_temp": {
@@ -33050,8 +33258,7 @@
 			"range": [
 				"auto",
 				"manual",
-				"holiday",
-				"holidayready"
+				"holiday"
 			],
 			"type": "enum"
 		},
@@ -33297,16 +33504,12 @@
 			"id": 22,
 			"max": 1000,
 			"min": 10,
-			"scale": 0,
-			"step": 1,
 			"type": "value"
 		},
 		"countdown": {
 			"id": 26,
 			"max": 86400,
 			"min": 0,
-			"scale": 0,
-			"step": 1,
 			"type": "value"
 		},
 		"switch_led": {
@@ -33570,7 +33773,7 @@
 			"min": -22,
 			"type": "value"
 		},
-		"SilentMode": {
+		"SilentMdoe": {
 			"id": 117,
 			"type": "bool"
 		},
@@ -34824,8 +35027,7 @@
 				"auto",
 				"cool",
 				"fan",
-				"dry",
-				"heat"
+				"dry"
 			],
 			"type": "enum"
 		},
@@ -35350,10 +35552,6 @@
 		}
 	},
 	"eyEYwtdx9VhexxLW": {
-		"LED": {
-			"id": 7,
-			"type": "bool"
-		},
 		"add_ele": {
 			"id": 3,
 			"max": 500000,
@@ -35567,6 +35765,10 @@
 			"id": 26,
 			"type": "bitmap"
 		},
+		"overcharge_switch": {
+			"id": 46,
+			"type": "bool"
+		},
 		"power_coe": {
 			"id": 24,
 			"max": 1000000000,
@@ -35588,10 +35790,6 @@
 		},
 		"switch_1": {
 			"id": 1,
-			"type": "bool"
-		},
-		"switch_overcharge": {
-			"id": 46,
 			"type": "bool"
 		},
 		"test_bit": {
@@ -37006,10 +37204,6 @@
 		}
 	},
 	"fisdfvcxqj6dr8av": {
-		"C_F": {
-			"id": 101,
-			"type": "bool"
-		},
 		"ChildLock": {
 			"id": 6,
 			"type": "bool"
@@ -37099,8 +37293,16 @@
 			"min": 5,
 			"type": "value"
 		},
+		"c_f": {
+			"id": 101,
+			"type": "bool"
+		},
 		"ext_temp_display": {
 			"id": 108,
+			"type": "bool"
+		},
+		"frost": {
+			"id": 10,
 			"type": "bool"
 		},
 		"low_temp_limit": {
@@ -41542,7 +41744,7 @@
 		"qidongwencha": {
 			"id": 105,
 			"max": 95,
-			"min": 10,
+			"min": 5,
 			"type": "value"
 		},
 		"reset": {
@@ -41580,14 +41782,14 @@
 		},
 		"temp_set": {
 			"id": 2,
-			"max": 700,
-			"min": 0,
+			"max": 950,
+			"min": 50,
 			"type": "value"
 		},
 		"upper_temp": {
 			"id": 21,
-			"max": 70,
-			"min": 20,
+			"max": 95,
+			"min": 15,
 			"type": "value"
 		},
 		"week_program3": {
@@ -41613,8 +41815,8 @@
 		},
 		"xianwen": {
 			"id": 107,
-			"max": 80,
-			"min": 20,
+			"max": 60,
+			"min": 5,
 			"type": "value"
 		},
 		"zhufan": {
@@ -42168,6 +42370,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_time": {
+			"id": 43,
+			"type": "string"
+		},
 		"random_time": {
 			"id": 42,
 			"type": "string"
@@ -42188,6 +42394,19 @@
 		"switch_2": {
 			"id": 2,
 			"type": "bool"
+		},
+		"switch_inching": {
+			"id": 44,
+			"type": "string"
+		},
+		"switch_type": {
+			"id": 47,
+			"range": [
+				"flip",
+				"sync",
+				"button"
+			],
+			"type": "enum"
 		}
 	},
 	"h3bhzu9m0ig80rdu": {
@@ -45353,7 +45572,7 @@
 	"i4fg8sszym1rtqz7": {
 		"add_ele": {
 			"id": 17,
-			"max": 50000,
+			"max": 500000,
 			"min": 0,
 			"type": "value"
 		},
@@ -45454,7 +45673,7 @@
 		},
 		"total_ele": {
 			"id": 105,
-			"max": 50000,
+			"max": 50000000,
 			"min": 0,
 			"type": "value"
 		},
@@ -45478,6 +45697,10 @@
 		},
 		"basic_flip": {
 			"id": 103,
+			"type": "bool"
+		},
+		"basic_indicator": {
+			"id": 101,
 			"type": "bool"
 		},
 		"basic_nightvision": {
@@ -46157,7 +46380,7 @@
 		"TempSet": {
 			"id": 103,
 			"max": 960,
-			"min": 200,
+			"min": 0,
 			"type": "value"
 		},
 		"TempShow": {
@@ -47053,6 +47276,10 @@
 		"fault": {
 			"id": 11,
 			"type": "bitmap"
+		},
+		"log_unseen": {
+			"id": 102,
+			"type": "string"
 		},
 		"mode": {
 			"id": 27,
@@ -49700,6 +49927,10 @@
 		}
 	},
 	"jhScexmS2WhfeOnt": {
+		"beep": {
+			"id": 101,
+			"type": "bool"
+		},
 		"bright_value": {
 			"id": 7,
 			"max": 255,
@@ -49725,6 +49956,10 @@
 			"max": 360,
 			"min": 0,
 			"type": "value"
+		},
+		"fault": {
+			"id": 22,
+			"type": "bitmap"
 		},
 		"mode": {
 			"id": 2,
@@ -49819,6 +50054,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_time": {
+			"id": 43,
+			"type": "string"
+		},
 		"random_time": {
 			"id": 42,
 			"type": "string"
@@ -49835,6 +50074,19 @@
 		"switch_1": {
 			"id": 1,
 			"type": "bool"
+		},
+		"switch_inching": {
+			"id": 44,
+			"type": "string"
+		},
+		"switch_type": {
+			"id": 47,
+			"range": [
+				"flip",
+				"sync",
+				"button"
+			],
+			"type": "enum"
 		}
 	},
 	"jjwg6bVTD6wizPJb": {
@@ -49903,6 +50155,12 @@
 			],
 			"type": "enum"
 		},
+		"delay_time": {
+			"id": 10,
+			"max": 65535,
+			"min": 0,
+			"type": "value"
+		},
 		"fan": {
 			"id": 104,
 			"range": [
@@ -49929,6 +50187,10 @@
 			"id": 6,
 			"type": "string"
 		},
+		"key_code4": {
+			"id": 11,
+			"type": "string"
+		},
 		"key_study": {
 			"id": 7,
 			"type": "raw"
@@ -49939,6 +50201,10 @@
 		},
 		"key_study3": {
 			"id": 9,
+			"type": "raw"
+		},
+		"key_study4": {
+			"id": 12,
 			"type": "raw"
 		},
 		"mode": {
@@ -49966,8 +50232,14 @@
 		},
 		"temperature": {
 			"id": 103,
-			"max": 30,
-			"min": 16,
+			"max": 40,
+			"min": 10,
+			"type": "value"
+		},
+		"type": {
+			"id": 13,
+			"max": 255,
+			"min": 0,
 			"type": "value"
 		}
 	},
@@ -50003,6 +50275,10 @@
 		"music_data": {
 			"id": 27,
 			"type": "string"
+		},
+		"power_memory": {
+			"id": 33,
+			"type": "raw"
 		},
 		"rhythm_mode": {
 			"id": 30,
@@ -53055,13 +53331,13 @@
 			"min": -22,
 			"type": "value"
 		},
-		"SilentMode": {
+		"SilentMdoe": {
 			"id": 117,
 			"type": "bool"
 		},
 		"SpeedPercentage": {
 			"id": 104,
-			"max": 100,
+			"max": 150,
 			"min": 0,
 			"type": "value"
 		},
@@ -56244,8 +56520,7 @@
 			"range": [
 				"COOL",
 				"FAN",
-				"DRY",
-				"HEAT"
+				"DRY"
 			],
 			"type": "enum"
 		},
@@ -56265,7 +56540,7 @@
 		},
 		"temp_set": {
 			"id": 2,
-			"max": 86,
+			"max": 30,
 			"min": 16,
 			"type": "value"
 		},
@@ -57625,6 +57900,14 @@
 		}
 	},
 	"mons5k8vujpgrymq": {
+		"alarm": {
+			"id": 231,
+			"range": [
+				"0",
+				"1"
+			],
+			"type": "enum"
+		},
 		"alarm_message": {
 			"id": 185,
 			"type": "raw"
@@ -61209,6 +61492,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"factory_data": {
+			"id": 101,
+			"type": "raw"
+		},
 		"fault": {
 			"id": 10,
 			"type": "bitmap"
@@ -61218,10 +61505,6 @@
 			"max": 99999999,
 			"min": 0,
 			"type": "value"
-		},
-		"meter_clear": {
-			"id": 101,
-			"type": "raw"
 		},
 		"phase_a": {
 			"id": 6,
@@ -61346,13 +61629,25 @@
 			"id": 27,
 			"type": "string"
 		},
+		"power_memory": {
+			"id": 33,
+			"type": "raw"
+		},
 		"scene_data": {
 			"id": 25,
 			"type": "string"
 		},
+		"sleep_mode": {
+			"id": 31,
+			"type": "raw"
+		},
 		"switch_led": {
 			"id": 20,
 			"type": "bool"
+		},
+		"wakeup_mode": {
+			"id": 32,
+			"type": "raw"
 		},
 		"work_mode": {
 			"id": 21,
@@ -62543,15 +62838,6 @@
 		}
 	},
 	"of0VDuFcWsBTfzWt": {
-		"relay_status": {
-			"id": 7,
-			"range": [
-				"0",
-				"1",
-				"2"
-			],
-			"type": "enum"
-		},
 		"switch_all": {
 			"id": 6,
 			"max": 1,
@@ -62710,9 +62996,29 @@
 			"id": 33,
 			"type": "raw"
 		},
+		"edge_brush_life": {
+			"id": 17,
+			"max": 12000,
+			"min": 0,
+			"type": "value"
+		},
+		"edge_brush_life_reset": {
+			"id": 18,
+			"type": "bool"
+		},
 		"fault": {
 			"id": 28,
 			"type": "bitmap"
+		},
+		"filter_life": {
+			"id": 21,
+			"max": 9000,
+			"min": 0,
+			"type": "value"
+		},
+		"filter_reset": {
+			"id": 22,
+			"type": "bool"
 		},
 		"language": {
 			"id": 36,
@@ -62752,6 +63058,16 @@
 			"id": 2,
 			"type": "bool"
 		},
+		"rag_life": {
+			"id": 23,
+			"max": 9000,
+			"min": 0,
+			"type": "value"
+		},
+		"rag_life_reset": {
+			"id": 24,
+			"type": "bool"
+		},
 		"request": {
 			"id": 16,
 			"range": [
@@ -62770,6 +63086,16 @@
 			"max": 100,
 			"min": 0,
 			"type": "value"
+		},
+		"roll_brush_life": {
+			"id": 19,
+			"max": 18000,
+			"min": 0,
+			"type": "value"
+		},
+		"roll_brush_life_reset": {
+			"id": 20,
+			"type": "bool"
 		},
 		"seek": {
 			"id": 11,
@@ -63594,9 +63920,29 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_timing": {
+			"id": 209,
+			"type": "raw"
+		},
+		"music_data": {
+			"id": 27,
+			"type": "string"
+		},
+		"random_timing": {
+			"id": 210,
+			"type": "raw"
+		},
+		"rhythm_mode": {
+			"id": 30,
+			"type": "raw"
+		},
 		"scene_data": {
 			"id": 25,
 			"type": "string"
+		},
+		"sleep_mode": {
+			"id": 31,
+			"type": "raw"
 		},
 		"switch_led": {
 			"id": 20,
@@ -63607,6 +63953,10 @@
 			"max": 1000,
 			"min": 0,
 			"type": "value"
+		},
+		"wakeup_mode": {
+			"id": 32,
+			"type": "raw"
 		},
 		"work_mode": {
 			"id": 21,
@@ -63626,6 +63976,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_time": {
+			"id": 43,
+			"type": "string"
+		},
 		"random_time": {
 			"id": 42,
 			"type": "string"
@@ -63642,6 +63996,10 @@
 		"switch_1": {
 			"id": 1,
 			"type": "bool"
+		},
+		"switch_inching": {
+			"id": 44,
+			"type": "string"
 		}
 	},
 	"otgubehqq8hdov54": {
@@ -65453,7 +65811,7 @@
 			"min": -22,
 			"type": "value"
 		},
-		"SilentMode": {
+		"SilentMdoe": {
 			"id": 117,
 			"type": "bool"
 		},
@@ -69201,13 +69559,13 @@
 			"min": -22,
 			"type": "value"
 		},
-		"SilentMode": {
+		"SilentMdoe": {
 			"id": 117,
 			"type": "bool"
 		},
 		"SpeedPercentage": {
 			"id": 104,
-			"max": 100,
+			"max": 150,
 			"min": 0,
 			"type": "value"
 		},
@@ -69686,8 +70044,8 @@
 		},
 		"temperature": {
 			"id": 103,
-			"max": 30,
-			"min": 16,
+			"max": 40,
+			"min": 10,
 			"type": "value"
 		},
 		"type": {
@@ -70507,6 +70865,10 @@
 		}
 	},
 	"rahgfyryabpbyrql": {
+		"alarm_message": {
+			"id": 185,
+			"type": "raw"
+		},
 		"basic_flip": {
 			"id": 103,
 			"type": "bool"
@@ -70531,6 +70893,10 @@
 		"basic_private": {
 			"id": 105,
 			"type": "bool"
+		},
+		"initiative_message": {
+			"id": 212,
+			"type": "raw"
 		},
 		"motion_sensitivity": {
 			"id": 106,
@@ -71367,6 +71733,10 @@
 			"max": 86400,
 			"min": 0,
 			"type": "value"
+		},
+		"music_data": {
+			"id": 27,
+			"type": "string"
 		},
 		"remote_switch": {
 			"id": 101,
@@ -80529,6 +80899,10 @@
 			"min": 0,
 			"type": "value"
 		},
+		"cycle_timing": {
+			"id": 209,
+			"type": "raw"
+		},
 		"debug_data": {
 			"id": 29,
 			"type": "string"
@@ -80543,6 +80917,10 @@
 		},
 		"power_memory": {
 			"id": 33,
+			"type": "raw"
+		},
+		"random_timing": {
+			"id": 210,
 			"type": "raw"
 		},
 		"rhythm_mode": {
@@ -86402,9 +86780,39 @@
 			"id": 33,
 			"type": "raw"
 		},
+		"dust_collection_num": {
+			"id": 37,
+			"max": 4,
+			"min": 0,
+			"type": "value"
+		},
+		"dust_collection_switch": {
+			"id": 38,
+			"type": "bool"
+		},
+		"edge_brush_life": {
+			"id": 17,
+			"max": 200,
+			"min": 0,
+			"type": "value"
+		},
+		"edge_brush_life_reset": {
+			"id": 18,
+			"type": "bool"
+		},
 		"fault": {
 			"id": 28,
 			"type": "bitmap"
+		},
+		"filter_life": {
+			"id": 21,
+			"max": 150,
+			"min": 0,
+			"type": "value"
+		},
+		"filter_reset": {
+			"id": 22,
+			"type": "bool"
 		},
 		"language": {
 			"id": 36,
@@ -86438,6 +86846,16 @@
 			"id": 2,
 			"type": "bool"
 		},
+		"rag_life": {
+			"id": 23,
+			"max": 150,
+			"min": 0,
+			"type": "value"
+		},
+		"rag_life_reset": {
+			"id": 24,
+			"type": "bool"
+		},
 		"request": {
 			"id": 16,
 			"range": [
@@ -86449,6 +86867,16 @@
 		},
 		"reset_map": {
 			"id": 13,
+			"type": "bool"
+		},
+		"roll_brush_life": {
+			"id": 19,
+			"max": 300,
+			"min": 0,
+			"type": "value"
+		},
+		"roll_brush_life_reset": {
+			"id": 20,
 			"type": "bool"
 		},
 		"seek": {
@@ -87570,10 +87998,6 @@
 			"id": 101,
 			"type": "raw"
 		},
-		"scene_data": {
-			"id": 25,
-			"type": "string"
-		},
 		"switch_led": {
 			"id": 20,
 			"type": "bool"
@@ -88008,6 +88432,12 @@
 			"max": 100,
 			"min": 0,
 			"type": "value"
+		},
+		"tr_timecon": {
+			"id": 10,
+			"max": 120,
+			"min": 10,
+			"type": "value"
 		}
 	},
 	"yAimpd7WEEwBi5wj": {
@@ -88406,32 +88836,11 @@
 		}
 	},
 	"ybcslrwtbwghwhot": {
-		"child_lock": {
-			"id": 41,
-			"type": "bool"
-		},
 		"countdown_1": {
 			"id": 9,
 			"max": 86400,
 			"min": 0,
 			"type": "value"
-		},
-		"cycle_time": {
-			"id": 42,
-			"type": "string"
-		},
-		"light_mode": {
-			"id": 40,
-			"range": [
-				"relay",
-				"pos",
-				"none"
-			],
-			"type": "enum"
-		},
-		"random_time": {
-			"id": 43,
-			"type": "string"
 		},
 		"relay_status": {
 			"id": 38,
@@ -88445,10 +88854,6 @@
 		"switch_1": {
 			"id": 1,
 			"type": "bool"
-		},
-		"switch_inching": {
-			"id": 44,
-			"type": "string"
 		}
 	},
 	"ybewzarmqc8w2hpe": {
@@ -89852,13 +90257,13 @@
 		},
 		"temperature_max_set": {
 			"id": 108,
-			"max": 50,
+			"max": 80,
 			"min": -20,
 			"type": "value"
 		},
 		"temperature_min_set": {
 			"id": 107,
-			"max": 50,
+			"max": 80,
 			"min": -20,
 			"type": "value"
 		},
@@ -91543,6 +91948,10 @@
 			"id": 154,
 			"type": "raw"
 		},
+		"initiative_message": {
+			"id": 212,
+			"type": "raw"
+		},
 		"ipc_c_lock": {
 			"id": 232,
 			"type": "bool"
@@ -91669,6 +92078,15 @@
 			],
 			"type": "enum"
 		},
+		"email": {
+			"id": 139,
+			"range": [
+				"USA",
+				"EUR",
+				"JP"
+			],
+			"type": "enum"
+		},
 		"fan_mode": {
 			"id": 109,
 			"range": [
@@ -91684,6 +92102,15 @@
 			"max": 540000,
 			"min": 0,
 			"type": "value"
+		},
+		"hotline": {
+			"id": 140,
+			"range": [
+				"USA",
+				"EUR",
+				"JP"
+			],
+			"type": "enum"
 		},
 		"main_brush_time": {
 			"id": 120,
@@ -91771,6 +92198,10 @@
 				"stop"
 			],
 			"type": "enum"
+		},
+		"remote_ctrl_switch": {
+			"id": 151,
+			"type": "bool"
 		},
 		"request_data": {
 			"id": 125,
