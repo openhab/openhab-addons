@@ -19,6 +19,8 @@
 const http = require('https');
 const fs = require('fs');
 
+const prevSchemas = require('../../../src/main/resources/schema.json');
+
 const schemaJson = fs.createWriteStream("../../../target/in-schema.json");
 http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/schema.json", function(response) {
     response.setEncoding('utf8');
@@ -32,6 +34,9 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
         let convertedSchemas = {};
 
         for (productKey in knownSchemas) {
+            if (process.argv[2] == 'existing' && typeof prevSchemas[productKey] == 'undefined') {
+                continue;
+            }
             try {
                 let schema = JSON.parse(knownSchemas[productKey].schema);
                 let convertedSchema = {};
@@ -60,7 +65,16 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
             }
         }
 
-        fs.writeFile('../resources/schema.json', JSON.stringify(convertedSchemas, null, '\t'), (err) => {
+        const replacer = (key, value) =>
+            value instanceof Object && !(value instanceof Array) ?
+                Object.keys(value)
+                    .sort()
+                    .reduce((sorted, key) => {
+                        sorted[key] = value[key];
+                        return sorted;
+                    }, {}) : value;
+
+        fs.writeFile('../resources/schema.json', JSON.stringify(convertedSchemas, replacer, '\t'), (err) => {
             if (err) throw err;
         });
     });
