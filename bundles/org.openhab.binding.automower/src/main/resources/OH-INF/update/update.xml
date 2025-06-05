@@ -58,6 +58,10 @@
 			<remove-channel id="position#49-pos"/>
 			<remove-channel id="position#50-pos"/>
 
+			<add-channel id="start_in_work_area" groupIds="command">
+				<type>automower:startInWorkArea</type>
+			</add-channel>
+
 			<!-- Messages -->
 			<remove-channel id="message#01-msg-timestamp"/>
 			<remove-channel id="message#01-msg-code"/>
@@ -310,9 +314,20 @@
 			<remove-channel id="message#50-msg-severity"/>
 			<remove-channel id="message#50-msg-gps-position"/>
 
-			<!-- Positions -->
-			<add-channel id="start_in_work_area" groupIds="command">
-				<type>automower:startInWorkArea</type>
+			<add-channel id="msg-timestamp" groupIds="message">
+				<type>automower:messageTimeType</type>
+			</add-channel>
+			<add-channel id="msg-code" groupIds="message">
+				<type>automower:messageCodeType</type>
+			</add-channel>
+			<add-channel id="msg-text" groupIds="message">
+				<type>automower:messageType</type>
+			</add-channel>
+			<add-channel id="msg-severity" groupIds="message">
+				<type>automower:messageSeverityType</type>
+			</add-channel>
+			<add-channel id="msg-gps-position" groupIds="message">
+				<type>automower:messagePositionType</type>
 			</add-channel>
 		</instruction-set>
 
