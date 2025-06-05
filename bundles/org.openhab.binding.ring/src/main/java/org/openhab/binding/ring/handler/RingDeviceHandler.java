@@ -67,9 +67,11 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
             if (deviceClass.equals(device.getClass())) {
                 device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
                 device.setRingDeviceHandler(this);
-                thing.setProperty("Description", deviceTO.description);
-                thing.setProperty("Kind", deviceTO.kind);
-                thing.setProperty("Device ID", deviceTO.deviceId);
+                if (deviceTO != null) {
+                    thing.setProperty("Description", deviceTO.description);
+                    thing.setProperty("Kind", deviceTO.kind);
+                    thing.setProperty("Device ID", deviceTO.deviceId);
+                }
             } else {
                 throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
                         + device.getClass().getName() + "' found.");
@@ -90,7 +92,9 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                     break;
                 case CHANNEL_STATUS_BATTERY:
                     RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-                    updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
+                    if (deviceTO != null) {
+                        updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
+                    }
                     break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());

@@ -68,11 +68,13 @@ public class RingDeviceRegistry {
      */
     public void addRingDevice(RingDevice ringDevice) throws DuplicateIdException {
         RingDeviceTO deviceTO = gson.fromJson(ringDevice.getJsonObject(), RingDeviceTO.class);
-        if (devices.containsKey(deviceTO.id)) {
-            throw new DuplicateIdException("Ring device with duplicate id " + deviceTO.id + " ignored");
-        } else {
-            ringDevice.setRegistrationStatus(Status.ADDED);
-            devices.put(deviceTO.id, ringDevice);
+        if (deviceTO != null) {
+            if (devices.containsKey(deviceTO.id)) {
+                throw new DuplicateIdException("Ring device with duplicate id " + deviceTO.id + " ignored");
+            } else {
+                ringDevice.setRegistrationStatus(Status.ADDED);
+                devices.put(deviceTO.id, ringDevice);
+            }
         }
     }
 
@@ -82,14 +84,16 @@ public class RingDeviceRegistry {
     public synchronized void addRingDevices(Collection<RingDevice> ringDevices) {
         for (RingDevice device : ringDevices) {
             RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-            logger.debug("RingDeviceRegistry - addRingDevices - Trying: {}", deviceTO.id);
-            try {
-                addRingDevice(device);
-            } catch (DuplicateIdException e) {
-                logger.debug(
-                        "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating Json.",
-                        deviceTO.id);
-                devices.get(deviceTO.id).setJsonObject(device.getJsonObject());
+            if (deviceTO != null) {
+                logger.debug("RingDeviceRegistry - addRingDevices - Trying: {}", deviceTO.id);
+                try {
+                    addRingDevice(device);
+                } catch (DuplicateIdException e) {
+                    logger.debug(
+                            "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating Json.",
+                            deviceTO.id);
+                    devices.get(deviceTO.id).setJsonObject(device.getJsonObject());
+                }
             }
         }
         initialized = true;

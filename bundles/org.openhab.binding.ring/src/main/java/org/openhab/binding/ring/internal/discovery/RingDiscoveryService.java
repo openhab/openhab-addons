@@ -69,8 +69,10 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
         RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
         for (RingDevice device : registry.getRingDevices(RingDeviceRegistry.Status.ADDED)) {
             RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-            thingDiscovered(device.getDiscoveryResult());
-            registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
+            if (deviceTO != null) {
+                thingDiscovered(device.getDiscoveryResult());
+                registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
+            }
         }
     }
 

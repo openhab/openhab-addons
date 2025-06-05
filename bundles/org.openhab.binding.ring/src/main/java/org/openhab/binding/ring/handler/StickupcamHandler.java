@@ -110,7 +110,7 @@ public class StickupcamHandler extends RingDeviceHandler {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
             updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
             lastBattery = deviceTO.health.batteryPercentage;
-        } else if (device != null) {
+        } else if (deviceTO != null) {
             logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
                     deviceTO.health.batteryPercentage, lastBattery);
 

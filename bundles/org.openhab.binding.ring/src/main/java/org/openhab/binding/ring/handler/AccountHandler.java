@@ -279,7 +279,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             saveRefreshTokenToFile(userProfile.getRefreshToken());
         } catch (AuthenticationException ex) {
             logger.debug("AuthenticationException when initializing Ring Account handler{}", ex.getMessage());
-            if ((ex.getMessage() != null) && ex.getMessage().startsWith("Two factor")) {
+            String message = ex.getMessage();
+            if ((message != null) && message.startsWith("Two factor")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -382,7 +383,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 startSessionRefresh(refreshInterval);
             } catch (AuthenticationException ex) {
                 logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
-                if ((ex.getMessage() != null) && ex.getMessage().startsWith("Two factor")) {
+                String message = ex.getMessage();
+                if ((message != null) && message.startsWith("Two factor")) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -402,9 +404,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private void refreshRegistry() throws JsonParseException, AuthenticationException, DuplicateIdException {
         logger.debug("AccountHandler - refreshRegistry");
         RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
-        if (registry != null) {
-            registry.addRingDevices(ringDevices.getRingDevices());
-        }
+        registry.addRingDevices(ringDevices.getRingDevices());
     }
 
     protected void minuteTick() {
@@ -513,9 +513,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void refreshToken() {
         try {
-            if (registry != null) {
-                refreshRegistry();
-            }
+            refreshRegistry();
             Configuration config = getThing().getConfiguration();
             String hardwareId = (String) config.get("hardwareId");
             userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "", hardwareId);

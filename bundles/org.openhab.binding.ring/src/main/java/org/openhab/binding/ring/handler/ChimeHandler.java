@@ -48,8 +48,6 @@ public class ChimeHandler extends RingDeviceHandler {
         logger.debug("Initializing Chime handler");
         super.initialize();
 
-        // Configuration config = getThing().getConfiguration();
-
         RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
         String id = getThing().getUID().getId();
         if (registry.isInitialized()) {

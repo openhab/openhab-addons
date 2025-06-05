@@ -55,8 +55,6 @@ public class DoorbellHandler extends RingDeviceHandler {
         logger.debug("Initializing Doorbell handler");
         super.initialize();
 
-        // Configuration config = getThing().getConfiguration();
-
         RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
         String id = getThing().getUID().getId();
         if (registry.isInitialized()) {
@@ -111,7 +109,7 @@ public class DoorbellHandler extends RingDeviceHandler {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
             updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
             lastBattery = deviceTO.health.batteryPercentage;
-        } else if (device != null) {
+        } else if (deviceTO != null) {
             logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
                     deviceTO.health.batteryPercentage, lastBattery);
         }
