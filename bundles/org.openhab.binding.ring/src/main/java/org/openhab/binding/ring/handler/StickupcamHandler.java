@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
+import org.openhab.binding.ring.internal.data.RingDeviceTO;
 import org.openhab.binding.ring.internal.data.Stickupcam;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
@@ -30,6 +31,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 /**
  * The handler for a Ring Video Stickup Cam.
  *
@@ -41,6 +45,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
+    private final Gson gson = new Gson();
 
     public StickupcamHandler(Thing thing) {
         super(thing);
@@ -99,15 +104,15 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (device == null) {
             initialize();
         }
-
-        if ((device != null) && (device.getBattery() != lastBattery)) {
-            logger.debug("Battery Level: {}", device.getBattery());
+        RingDeviceTO deviceTO = gson.fromJson((JsonObject) device.getJsonObject(), RingDeviceTO.class);
+        if ((deviceTO != null) && (deviceTO.health.batteryPercentage != lastBattery)) {
+            logger.debug("Battery Level: {}", deviceTO.battery);
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
-            updateState(channelUID, new DecimalType(device.getBattery()));
-            lastBattery = device.getBattery();
+            updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
+            lastBattery = deviceTO.health.batteryPercentage;
         } else if (device != null) {
-            logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(), device.getBattery(),
-                    lastBattery);
+            logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
+                    deviceTO.health.batteryPercentage, lastBattery);
 
         }
     }

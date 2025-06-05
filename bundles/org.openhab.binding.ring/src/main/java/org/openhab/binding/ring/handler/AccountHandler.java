@@ -96,7 +96,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The RestClient is used to connect to the Ring Account.
      */
-    private @Nullable RestClient restClient;
+    private RestClient restClient = new RestClient();
     /**
      * The list with events.
      */
@@ -104,7 +104,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The index to the current event.
      */
-    private int eventIndex;
+    private int eventIndex = 0;
 
     private @Nullable ExecutorService videoExecutorService;
 
@@ -130,7 +130,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.httpService = httpService;
         this.videoExecutorService = Executors.newCachedThreadPool();
         this.thingId = this.getThing().getUID().getId();
-        eventIndex = 0;
     }
 
     @Override
@@ -280,7 +279,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             saveRefreshTokenToFile(userProfile.getRefreshToken());
         } catch (AuthenticationException ex) {
             logger.debug("AuthenticationException when initializing Ring Account handler{}", ex.getMessage());
-            if (ex.getMessage().startsWith("Two factor")) {
+            if ((ex.getMessage() != null) && ex.getMessage().startsWith("Two factor")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -385,7 +384,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 startSessionRefresh(refreshInterval);
             } catch (AuthenticationException ex) {
                 logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
-                if (ex.getMessage().startsWith("Two factor")) {
+                if ((ex.getMessage() != null) && ex.getMessage().startsWith("Two factor")) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -406,7 +405,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         logger.debug("AccountHandler - refreshRegistry");
         RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
         registry = RingDeviceRegistry.getInstance();
-        registry.addRingDevices(ringDevices.getRingDevices());
+        if (registry != null) {
+            registry.addRingDevices(ringDevices.getRingDevices());
+        }
     }
 
     protected void minuteTick() {
@@ -495,7 +496,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     runnableVideo = () -> getVideo(lastEvents.get(0));
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
-                        videoExecutorService.submit(runnableVideo);
+                        service.submit(runnableVideo);
                     }
                 }
             } else {
@@ -518,15 +519,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void refreshToken() {
         try {
-            if (restClient != null) {
-                if (registry != null) {
-                    refreshRegistry();
-                }
-                // restClient.refresh_session(userProfile.getRefreshToken());
-                Configuration config = getThing().getConfiguration();
-                String hardwareId = (String) config.get("hardwareId");
-                userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "", hardwareId);
+            if (registry != null) {
+                refreshRegistry();
             }
+            Configuration config = getThing().getConfiguration();
+            String hardwareId = (String) config.get("hardwareId");
+            userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "", hardwareId);
         } catch (AuthenticationException | DuplicateIdException e) {
             logger.debug(
                     "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",

@@ -21,11 +21,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
+import org.openhab.binding.ring.internal.data.RingDeviceTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The RingDiscoveryService is responsible for auto detecting a Ring
@@ -42,6 +45,8 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(RingDiscoveryService.class);
     private @Nullable ScheduledFuture<?> discoveryJob;
+
+    private final Gson gson = new Gson();
 
     public RingDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 5, true);
@@ -63,8 +68,9 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
     private void discover() {
         RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
         for (RingDevice device : registry.getRingDevices(RingDeviceRegistry.Status.ADDED)) {
+            RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
             thingDiscovered(device.getDiscoveryResult());
-            registry.setStatus(device.getId(), RingDeviceRegistry.Status.DISCOVERED);
+            registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
         }
     }
 

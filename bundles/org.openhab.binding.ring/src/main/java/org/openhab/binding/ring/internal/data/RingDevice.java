@@ -31,55 +31,6 @@ import com.google.gson.JsonObject;
 public interface RingDevice {
 
     /**
-     * Get the device id.
-     *
-     * @return the device id.
-     */
-    String getId();
-
-    /**
-     * Get the device device_id.
-     *
-     * @return the device device_id.
-     */
-    String getDeviceId();
-
-    /**
-     * Get the device description.
-     *
-     * @return the device description.
-     */
-    String getDescription();
-
-    /**
-     * Get the device firmware version.
-     *
-     * @return the device firmware version.
-     */
-    String getFirmwareVersion();
-
-    /**
-     * Get the device time zone.
-     *
-     * @return the device time zone.
-     */
-    String getTimeZone();
-
-    /**
-     * Get the device kind.
-     *
-     * @return the device kind.
-     */
-    String getKind();
-
-    /**
-     * Get battery level
-     *
-     * @return battery level (%)
-     */
-    int getBattery();
-
-    /**
      * Get the DiscoveryResult object to identify the device as
      * discovered thing.
      *

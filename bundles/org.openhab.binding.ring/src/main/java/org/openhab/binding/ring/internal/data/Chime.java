@@ -44,9 +44,10 @@ public class Chime extends AbstractRingDevice {
      */
     @Override
     public DiscoveryResult getDiscoveryResult() {
+        RingDeviceTO deviceTO = gson.fromJson(getJsonObject(), RingDeviceTO.class);
         DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID("ring:chime:" + getRingAccount().getThingId() + ":" + getId()))
-                .withLabel("Ring Chime - " + getDescription()).build();
+                .create(new ThingUID("ring:chime:" + getRingAccount().getThingId() + ":" + deviceTO.id))
+                .withLabel("Ring Chime - " + deviceTO.description).build();
         return result;
     }
 }

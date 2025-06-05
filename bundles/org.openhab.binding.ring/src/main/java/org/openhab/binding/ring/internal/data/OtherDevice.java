@@ -44,9 +44,10 @@ public class OtherDevice extends AbstractRingDevice {
      */
     @Override
     public DiscoveryResult getDiscoveryResult() {
+        RingDeviceTO deviceTO = gson.fromJson(getJsonObject(), RingDeviceTO.class);
         DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID("ring:otherdevice:" + getRingAccount().getThingId() + ":" + getId()))
-                .withLabel("Ring Other Device - " + getDescription()).build();
+                .create(new ThingUID("ring:otherdevice:" + getRingAccount().getThingId() + ":" + deviceTO.id))
+                .withLabel("Ring Other Device - " + deviceTO.description).build();
         return result;
     }
 }

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
+import org.openhab.binding.ring.internal.data.RingDeviceTO;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
@@ -30,6 +31,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link RingDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -40,6 +43,8 @@ import org.openhab.core.types.RefreshType;
 
 @NonNullByDefault
 public abstract class RingDeviceHandler extends AbstractRingHandler {
+
+    private final Gson gson = new Gson();
 
     /**
      * The RingDevice instance linked to this thing.
@@ -62,12 +67,13 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
             throws DeviceNotFoundException, IllegalDeviceClassException {
         device = RingDeviceRegistry.getInstance().getRingDevice(id);
         if (device != null) {
+            RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
             if (deviceClass.equals(device.getClass())) {
                 device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
                 device.setRingDeviceHandler(this);
-                thing.setProperty("Description", device.getDescription());
-                thing.setProperty("Kind", device.getKind());
-                thing.setProperty("Device ID", device.getDeviceId());
+                thing.setProperty("Description", deviceTO.description);
+                thing.setProperty("Kind", deviceTO.kind);
+                thing.setProperty("Device ID", deviceTO.deviceId);
             } else {
                 throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
                         + device.getClass().getName() + "' found.");
@@ -87,7 +93,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                     updateState(channelUID, enabled);
                     break;
                 case CHANNEL_STATUS_BATTERY:
-                    updateState(channelUID, new DecimalType(device.getBattery()));
+                    RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
+                    updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
                     break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());

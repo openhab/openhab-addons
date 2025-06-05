@@ -46,9 +46,10 @@ public class Stickupcam extends AbstractRingDevice {
      */
     @Override
     public DiscoveryResult getDiscoveryResult() {
+        RingDeviceTO deviceTO = gson.fromJson(getJsonObject(), RingDeviceTO.class);
         DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID("ring:stickupcam:" + getRingAccount().getThingId() + ":" + getId()))
-                .withLabel("Ring Video Stickup Cam - " + getDescription()).build();
+                .create(new ThingUID("ring:stickupcam:" + getRingAccount().getThingId() + ":" + deviceTO.id))
+                .withLabel("Ring Video Stickup Cam - " + deviceTO.description).build();
         return result;
     }
 }

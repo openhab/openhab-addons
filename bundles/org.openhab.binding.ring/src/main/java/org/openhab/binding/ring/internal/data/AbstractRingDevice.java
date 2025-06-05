@@ -15,12 +15,12 @@ package org.openhab.binding.ring.internal.data;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
-import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -34,6 +34,7 @@ import com.google.gson.JsonObject;
 public abstract class AbstractRingDevice implements RingDevice {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractRingDevice.class);
+    public final Gson gson = new Gson();
 
     /**
      * The JsonObject contains the data retrieved from the Ring API,
@@ -56,80 +57,6 @@ public abstract class AbstractRingDevice implements RingDevice {
     protected AbstractRingDevice(JsonObject jsonObject, RingAccount ringAccount) {
         this.jsonObject = jsonObject;
         this.ringAccount = ringAccount;
-    }
-
-    /**
-     * Get the device id.
-     *
-     * @return the device id.
-     */
-    @Override
-    public String getId() {
-        return jsonObject.get(ApiConstants.DEVICE_ID).getAsString();
-    }
-
-    /**
-     * Get the device device_id.
-     *
-     * @return the device device_id.
-     */
-    @Override
-    public String getDeviceId() {
-        return jsonObject.get(ApiConstants.DEVICE_DEVICE_ID).getAsString();
-    }
-
-    /**
-     * Get the device description.
-     *
-     * @return the device description.
-     */
-    @Override
-    public String getDescription() {
-        return jsonObject.get(ApiConstants.DEVICE_DESCRIPTION).getAsString();
-    }
-
-    /**
-     * Get the device firmware version.
-     *
-     * @return the device firmware version.
-     */
-    @Override
-    public String getFirmwareVersion() {
-        return jsonObject.get(ApiConstants.DEVICE_FIRMWARE_VERSION).getAsString();
-    }
-
-    /**
-     * Get the device time zone.
-     *
-     * @return the device time zone.
-     */
-    @Override
-    public String getTimeZone() {
-        return jsonObject.get(ApiConstants.DEVICE_TIME_ZONE).getAsString();
-    }
-
-    /**
-     * Get the device kind.
-     *
-     * @return the device kind.
-     */
-    @Override
-    public String getKind() {
-        return jsonObject.get(ApiConstants.DEVICE_KIND).getAsString();
-    }
-
-    /**
-     * Get battery level
-     *
-     * @return battery level (%)
-     */
-    @Override
-    public int getBattery() {
-        if (jsonObject.get(ApiConstants.DEVICE_BATTERY) != null) {
-            return jsonObject.get(ApiConstants.DEVICE_BATTERY).getAsInt();
-        } else {
-            return 0;
-        }
     }
 
     /**

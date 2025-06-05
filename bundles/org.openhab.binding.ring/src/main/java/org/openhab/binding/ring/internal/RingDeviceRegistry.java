@@ -18,10 +18,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.data.RingDevice;
+import org.openhab.binding.ring.internal.data.RingDeviceTO;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * Singleton registry of found devices.
@@ -32,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class RingDeviceRegistry {
+    private final Gson gson = new Gson();
 
     /**
      * static Singleton instance.
@@ -70,12 +74,12 @@ public class RingDeviceRegistry {
      * Add a new ring device.
      */
     public void addRingDevice(RingDevice ringDevice) throws DuplicateIdException {
-        if (devices.containsKey(ringDevice.getId())) {
-            // logger.trace("Ring device with duplicate id " + ringDevice.getId() + " ignored");
-            throw new DuplicateIdException("Ring device with duplicate id " + ringDevice.getId() + " ignored");
+        RingDeviceTO deviceTO = gson.fromJson(ringDevice.getJsonObject(), RingDeviceTO.class);
+        if (devices.containsKey(deviceTO.id)) {
+            throw new DuplicateIdException("Ring device with duplicate id " + deviceTO.id + " ignored");
         } else {
             ringDevice.setRegistrationStatus(Status.ADDED);
-            devices.put(ringDevice.getId(), ringDevice);
+            devices.put(deviceTO.id, ringDevice);
         }
     }
 
@@ -84,14 +88,15 @@ public class RingDeviceRegistry {
      */
     public synchronized void addRingDevices(Collection<RingDevice> ringDevices) {
         for (RingDevice device : ringDevices) {
-            logger.debug("RingDeviceRegistry - addRingDevices - Trying: {}", device.getId());
+            RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
+            logger.debug("RingDeviceRegistry - addRingDevices - Trying: {}", deviceTO.id);
             try {
                 addRingDevice(device);
             } catch (DuplicateIdException e) {
                 logger.debug(
                         "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating Json.",
-                        device.getId());
-                devices.get(device.getId()).setJsonObject(device.getJsonObject());
+                        deviceTO.id);
+                devices.get(deviceTO.id).setJsonObject(device.getJsonObject());
             }
         }
         initialized = true;

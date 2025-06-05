@@ -48,29 +48,4 @@ public class DataFactory {
         pb.add("api_version", "" + ApiConstants.API_VERSION);
         return pb.toString();
     }
-
-    /**
-     * Get GET parameters for the ring_devices API resource.
-     *
-     * @return
-     */
-    public static String getDevicesParams(Profile profile) {
-        ParamBuilder pb = new ParamBuilder(false);
-        pb.add("auth_token", profile.getAuthenticationToken());
-        pb.add("api_version", "" + ApiConstants.API_VERSION);
-        return pb.toString();
-    }
-
-    /**
-     * Get GET parameters for the ring_history API resource.
-     *
-     * @return
-     */
-    public static String getHistoryParams(Profile profile, int limit) {
-        ParamBuilder pb = new ParamBuilder(false);
-        pb.add("auth_token", profile.getAuthenticationToken());
-        pb.add("api_version", "" + ApiConstants.API_VERSION);
-        pb.add("limit", "" + limit);
-        return pb.toString();
-    }
 }
