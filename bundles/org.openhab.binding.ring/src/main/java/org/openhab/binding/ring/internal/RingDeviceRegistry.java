@@ -40,7 +40,7 @@ public class RingDeviceRegistry {
     /**
      * static Singleton instance.
      */
-    private static RingDeviceRegistry instance = new RingDeviceRegistry();
+    private final static RingDeviceRegistry INSTANCE = new RingDeviceRegistry();
     /**
      * The logger.
      */
@@ -57,17 +57,10 @@ public class RingDeviceRegistry {
     private ConcurrentHashMap<String, RingDevice> devices = new ConcurrentHashMap<>();
 
     /**
-     * Private constructor for singleton.
-     */
-    public RingDeviceRegistry() {
-        devices = new ConcurrentHashMap<>();
-    }
-
-    /**
      * Return a singleton instance of RingDeviceRegistry.
      */
     public static RingDeviceRegistry getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**

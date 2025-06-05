@@ -92,7 +92,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The registry.
      */
-    private @Nullable RingDeviceRegistry registry;
+    private final RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
     /**
      * The RestClient is used to connect to the Ring Account.
      */
@@ -297,12 +297,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("Ring device with duplicate id detected, ignoring device");
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
-            registry = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
             logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
         } catch (JsonParseException pe1) {
-            registry = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "JsonParseException response from ring.com");
             logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
@@ -404,7 +402,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private void refreshRegistry() throws JsonParseException, AuthenticationException, DuplicateIdException {
         logger.debug("AccountHandler - refreshRegistry");
         RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
-        registry = RingDeviceRegistry.getInstance();
         if (registry != null) {
             registry.addRingDevices(ringDevices.getRingDevices());
         }
@@ -444,13 +441,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     } catch (DuplicateIdException ignored) {
                         updateStatus(ThingStatus.ONLINE);
                     } catch (AuthenticationException ae) {
-                        registry = null;
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "AuthenticationException response from ring.com");
                         logger.debug("RestClient reported AuthenticationException in finally block: {}",
                                 ae.getMessage());
                     } catch (JsonParseException pe1) {
-                        registry = null;
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "JsonParseException response from ring.com");
                         logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
@@ -503,7 +498,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
             }
         } catch (AuthenticationException ex) {
-            registry = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
             logger.debug(
@@ -612,6 +606,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public void dispose() {
         stopSessionRefresh();
+        stopAutomaticRefresh();
         ExecutorService service = this.videoExecutorService;
         if (service != null) {
             service.shutdownNow();

@@ -16,9 +16,11 @@ The binding currently supports Ring Video Doorbell, Stick Up Cameras, Chimes, an
 Auto-discovery is supported by this binding. 
 After (manually) adding a Ring Account bridge, registered doorbells and chimes will be auto discovered.
 
-## Binding Configuration
+## Account Configuration
 
-Binding configuration is necessary. The easiest way to do this is from the UI. Just add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password. 
+Account configuration is necessary. 
+The easiest way to do this is from the UI. 
+Just add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password. 
 Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for events. 
 If hardware ID is not specified, the MAC address of the system running OpenHAB is used.
 | Parameter           | Description                                                         | Default     |
@@ -41,8 +43,8 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 
 ### Events group (Ring Account Binding Thing only):
 
-| Channel Type ID                | Item Type | Description                                                                      |
-|--------------------------------|-----------|----------------------------------------------------------------------------------|
+| Channel Type ID    | Item Type | Description                                                                                  |
+|--------------------|-----------|----------------------------------------------------------------------------------------------|
 | url                | String    | The URL to a recorded video (only when subscribed on ring.com)                               |
 | createdAt          | DateTime  | The date and time the event was created                                                      |
 | kind               | String    | The kind of event, usually 'motion' or 'ding'                                                |

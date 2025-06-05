@@ -87,7 +87,7 @@ public class RestClient {
      * Create a new client with the given server and port address.
      */
     public RestClient() {
-        logger.info("Creating Ring client for API version {} on endPoint {}", ApiConstants.API_VERSION,
+        logger.debug("Creating Ring client for API version {} on endPoint {}", ApiConstants.API_VERSION,
                 ApiConstants.API_BASE);
     }
 
@@ -167,7 +167,6 @@ public class RestClient {
             logger.trace("RestApi postRequest response: {}.", result);
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("RestApi error in postRequest!", ex);
-            // ex.printStackTrace();
         }
         return result;
     }
@@ -391,7 +390,6 @@ public class RestClient {
             logger.debug("RestClient response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException | URISyntaxException ex) {
             logger.error("RestApi: Error in getOauthToken!", ex);
-            // ex.printStackTrace();
         }
         return oauthToken;
     }
@@ -626,7 +624,7 @@ public class RestClient {
                 return "";
             }
         } catch (IOException | InterruptedException e) {
-            logger.error("RingVideo: Unable to process request: {}", e.getMessage());
+            logger.warn("RingVideo: Unable to process request: {}", e.getMessage());
             return "";
         }
     }
