@@ -14,7 +14,6 @@
 package org.openhab.binding.zwavejs.internal.api.adapter;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 
