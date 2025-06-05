@@ -44,10 +44,10 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class DoorbellHandler extends RingDeviceHandler {
     private int lastBattery = -1;
-    private final Gson gson = new Gson();
 
-    public DoorbellHandler(Thing thing) {
+    public DoorbellHandler(Thing thing, Gson gson) {
         super(thing);
+        this.gson = gson;
     }
 
     @Override

@@ -37,6 +37,8 @@ import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link RingHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -57,6 +59,8 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private int httpPort;
     private @Nullable ComponentContext componentContext;
+
+    public final Gson gson = new Gson();
 
     @Activate
     public RingHandlerFactory(@Reference NetworkAddressService networkAddressService,
@@ -89,13 +93,13 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
                 return null;
             }
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
-            return new DoorbellHandler(thing);
+            return new DoorbellHandler(thing, gson);
         } else if (thingTypeUID.equals(THING_TYPE_CHIME)) {
-            return new ChimeHandler(thing);
+            return new ChimeHandler(thing, gson);
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
-            return new StickupcamHandler(thing);
+            return new StickupcamHandler(thing, gson);
         } else if (thingTypeUID.equals(THING_TYPE_OTHERDEVICE)) {
-            return new OtherDeviceHandler(thing);
+            return new OtherDeviceHandler(thing, gson);
         }
         return null;
     }

@@ -27,8 +27,10 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 
+import com.google.gson.Gson;
+
 /**
- * The handler for a Ring CHime.
+ * The handler for a Ring Chime.
  *
  * @author Ben Rosenblum - Initial contribution
  *
@@ -36,8 +38,9 @@ import org.openhab.core.types.Command;
 
 @NonNullByDefault
 public class ChimeHandler extends RingDeviceHandler {
-    public ChimeHandler(Thing thing) {
+    public ChimeHandler(Thing thing, Gson gson) {
         super(thing);
+        this.gson = gson;
     }
 
     @Override

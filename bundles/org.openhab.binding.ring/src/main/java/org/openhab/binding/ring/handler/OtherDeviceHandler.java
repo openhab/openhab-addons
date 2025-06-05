@@ -43,10 +43,10 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class OtherDeviceHandler extends RingDeviceHandler {
     private int lastBattery = -1;
-    private final Gson gson = new Gson();
 
-    public OtherDeviceHandler(Thing thing) {
+    public OtherDeviceHandler(Thing thing, Gson gson) {
         super(thing);
+        this.gson = gson;
     }
 
     @Override

@@ -45,10 +45,10 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
-    private final Gson gson = new Gson();
 
-    public StickupcamHandler(Thing thing) {
+    public StickupcamHandler(Thing thing, Gson gson) {
         super(thing);
+        this.gson = gson;
     }
 
     @Override

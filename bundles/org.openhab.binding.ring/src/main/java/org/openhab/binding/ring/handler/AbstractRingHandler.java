@@ -26,6 +26,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link AbstractRingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -36,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public abstract class AbstractRingHandler extends BaseThingHandler {
+
+    public Gson gson = new Gson();
 
     // Current status
     protected OnOffType status = OnOffType.OFF;
@@ -51,8 +55,13 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
      *
      * @param thing
      */
-    protected AbstractRingHandler(final Thing thing) {
+    protected AbstractRingHandler(Thing thing) {
         super(thing);
+    }
+
+    protected AbstractRingHandler(Thing thing, Gson gson) {
+        super(thing);
+        this.gson = gson;
     }
 
     @Override
