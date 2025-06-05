@@ -278,27 +278,27 @@ public class ZWaveJSClient implements WebSocketListener {
 
         if (baseEvent.type == null) {
             logger.warn("Event with unknown type received.");
-            logger.trace("DATA >> {}", message);
+            logger.trace("RECV | {}", message);
         } else if (baseEvent instanceof ResultMessage resultMessage) {
             if (resultMessage.success && (resultMessage.result != null && resultMessage.result.status != 5)) {
                 logger.debug("onWebSocketText received message type: {}, success: {}", baseEvent.type,
                         resultMessage.success);
-                logger.trace("DATA >> {}", message);
+                logger.trace("RECV | {}", message);
             } else {
                 logger.warn(
                         "onWebSocketText received message type: {}, success: {}, status: {}, error_code: {}, message: {}",
                         baseEvent.type, resultMessage.success,
                         resultMessage.result != null ? resultMessage.result.status : "null", resultMessage.errorCode,
                         resultMessage.message != null ? resultMessage.message : resultMessage.zwaveErrorMessage);
-                logger.trace("DATA >> {}", message);
+                logger.trace("RECV | {}", message);
             }
         } else if (baseEvent instanceof EventMessage eventMessage) {
             logger.trace("onWebSocketText received EventMessage, type: {}", eventMessage.event.event);
-            logger.trace("DATA >> {}", message);
+            logger.trace("RECV | {}", message);
         } else {
             logger.trace("onWebSocketText received message class type: {}, event type: {}",
                     baseEvent.getClass().getSimpleName(), baseEvent.type);
-            logger.trace("DATA >> {}", message);
+            logger.trace("RECV | {}", message);
         }
 
         try {
@@ -341,7 +341,7 @@ public class ZWaveJSClient implements WebSocketListener {
                 return;
             }
             logger.debug("Sending command: {}.", command.getClass().getSimpleName());
-            logger.debug("DATA >> {}", commandAsJson);
+            logger.debug("SEND | {}", commandAsJson);
             synchronized (sendLock) {
                 endpoint.sendString(commandAsJson);
             }
