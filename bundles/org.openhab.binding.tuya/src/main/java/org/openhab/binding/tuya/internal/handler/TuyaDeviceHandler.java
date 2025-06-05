@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.tuya.internal.handler;
 
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_COLOR;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_DIMMER;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.BINDING_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_IR_CODE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_NUMBER;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_QUANTITY;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_STRING;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_SWITCH;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_IP;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.DIMMER_CHANNEL_CODES;
+import static org.openhab.core.library.CoreItemFactory.COLOR;
+import static org.openhab.core.library.CoreItemFactory.DIMMER;
 import static org.openhab.core.library.CoreItemFactory.NUMBER;
+import static org.openhab.core.library.CoreItemFactory.STRING;
+import static org.openhab.core.library.CoreItemFactory.SWITCH;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -71,7 +72,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -79,7 +79,6 @@ import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,10 +95,6 @@ import io.netty.channel.EventLoopGroup;
  */
 @NonNullByDefault
 public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSubscriber, DeviceStatusListener {
-    private static final List<String> COLOUR_CHANNEL_CODES = List.of("colour_data");
-    private static final List<String> DIMMER_CHANNEL_CODES = List.of("bright_value", "bright_value_1", "bright_value_2",
-            "temp_value");
-
     private final Logger logger = LoggerFactory.getLogger(TuyaDeviceHandler.class);
 
     private final Gson gson;
@@ -136,6 +131,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
     }
 
+    public @Nullable SchemaDp getSchemaForChannelId(String channelId) {
+        return schemaDps.get(channelId);
+    }
+
     @Override
     public void processDeviceStatus(Map<Integer, Object> deviceStatus) {
         // Older devices may need to use the control method to request device status.
@@ -170,28 +169,33 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 return;
             }
 
+            Channel channel = thing.getChannel(channelId);
+            String acceptedItemType = (channel != null ? channel.getAcceptedItemType() : "");
+
             try {
-                if (value instanceof String stringValue && CHANNEL_TYPE_UID_COLOR.equals(channelTypeUID)) {
+                if (value instanceof String stringValue && COLOR.equals(acceptedItemType)) {
                     oldColorMode = stringValue.length() == 14;
                     updateState(channelId, ConversionUtil.hexColorDecode(stringValue));
                     return;
-                } else if (value instanceof String stringValue && CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
+                } else if (value instanceof String stringValue && STRING.equals(acceptedItemType)) {
                     updateState(channelId, new StringType(stringValue));
                     return;
-                } else if (Double.class.isAssignableFrom(value.getClass())
-                        && CHANNEL_TYPE_UID_DIMMER.equals(channelTypeUID)) {
+                } else if (Double.class.isAssignableFrom(value.getClass()) && DIMMER.equals(acceptedItemType)) {
                     updateState(channelId,
                             ConversionUtil.brightnessDecode((double) value, 0, channelConfiguration.max));
                     return;
-                } else if (Double.class.isAssignableFrom(value.getClass())
-                        && CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
-                    updateState(channelId, new DecimalType((double) value));
-                    return;
-                } else if (value instanceof String string && CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
-                    updateState(channelId, new DecimalType(string));
-                    return;
+                } else if (CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
+                    // Deprecated: retained for compatibility with old Things that have not been re-added.
+                    // This MUST come before the startsWith("Number") case that follows!
+                    if (Double.class.isAssignableFrom(value.getClass())) {
+                        updateState(channelId, new DecimalType((double) value));
+                        return;
+                    } else if (value instanceof String string) {
+                        updateState(channelId, new DecimalType(string));
+                        return;
+                    }
                 } else if ((Double.class.isAssignableFrom(value.getClass()) || value instanceof String)
-                        && CHANNEL_TYPE_UID_QUANTITY.equals(channelTypeUID)) {
+                        && acceptedItemType != null && acceptedItemType.startsWith(NUMBER)) {
                     BigDecimal d;
                     if (value instanceof String stringValue) {
                         d = new BigDecimal(stringValue);
@@ -213,8 +217,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
                     updateState(channelId, new DecimalType(d));
                     return;
-                } else if (Boolean.class.isAssignableFrom(value.getClass())
-                        && CHANNEL_TYPE_UID_SWITCH.equals(channelTypeUID)) {
+                } else if (Boolean.class.isAssignableFrom(value.getClass()) && SWITCH.equals(acceptedItemType)) {
                     updateState(channelId, OnOffType.from((boolean) value));
                     return;
                 } else if (value instanceof String && CHANNEL_TYPE_UID_IR_CODE.equals(channelTypeUID)) {
@@ -322,7 +325,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        if (CHANNEL_TYPE_UID_COLOR.equals(channelTypeUID)) {
+        Channel channel = thing.getChannel(channelUID.getId());
+        String acceptedItemType = (channel != null ? channel.getAcceptedItemType() : "");
+
+        if (COLOR.equals(acceptedItemType)) {
             if (command instanceof HSBType) {
                 commandRequest.put(configuration.dp, ConversionUtil.hexColorEncode((HSBType) command, oldColorMode));
                 ChannelConfiguration workModeConfig = channelIdToConfiguration.get("work_mode");
@@ -354,7 +360,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     commandRequest.put(configuration.dp2, OnOffType.ON.equals(command));
                 }
             }
-        } else if (CHANNEL_TYPE_UID_DIMMER.equals(channelTypeUID)) {
+        } else if (DIMMER.equals(acceptedItemType)) {
             if (command instanceof PercentType percentCommand) {
                 int value = ConversionUtil.brightnessEncode(percentCommand, 0, configuration.max);
                 if (configuration.reversed) {
@@ -375,17 +381,16 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     commandRequest.put(configuration.dp2, OnOffType.ON.equals(command));
                 }
             }
-        } else if (CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
+        } else if (STRING.equals(acceptedItemType)) {
             commandRequest.put(configuration.dp, command.toString());
-        } else if (CHANNEL_TYPE_UID_QUANTITY.equals(channelTypeUID) || CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
+        } else if (acceptedItemType != null && acceptedItemType.startsWith(NUMBER)) {
             if (command instanceof QuantityType quantityType) {
                 SchemaDp schemaDp = schemaDps.get(channelUID.getId());
 
                 if (schemaDp != null && !schemaDp.unit.isEmpty()) {
                     // If the item type for the channel is not dimensioned the unit is not usable and we
                     // assume whoever sent a quantity instead of a bare number knows what they are doing.
-                    Channel channel = thing.getChannel(channelUID.getId());
-                    if (channel != null && !NUMBER.equals(channel.getAcceptedItemType())) {
+                    if (!NUMBER.equals(acceptedItemType)) {
                         quantityType = quantityType.toUnit(schemaDp.unit);
                     }
                 }
@@ -404,7 +409,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                         configuration.sendAsString ? String.format("%d", decimalType.intValue())
                                 : decimalType.intValue());
             }
-        } else if (CHANNEL_TYPE_UID_SWITCH.equals(channelTypeUID)) {
+        } else if (SWITCH.equals(acceptedItemType)) {
             if (command instanceof OnOffType) {
                 commandRequest.put(configuration.dp, OnOffType.ON.equals(command));
             }
@@ -548,72 +553,36 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             String channelId = e.getKey();
             SchemaDp schemaDp = e.getValue();
 
+            ChannelTypeUID channeltypeUID = new ChannelTypeUID(BINDING_ID, configuration.productId + "_" + channelId);
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-            String acceptedItemType = null;
+
             Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
             configuration.put("dp", schemaDp.id);
 
-            ChannelTypeUID channeltypeUID;
-            if (COLOUR_CHANNEL_CODES.contains(channelId)) {
-                channeltypeUID = CHANNEL_TYPE_UID_COLOR;
-            } else if (DIMMER_CHANNEL_CODES.contains(channelId)) {
-                channeltypeUID = CHANNEL_TYPE_UID_DIMMER;
+            if (DIMMER_CHANNEL_CODES.contains(channelId)) {
                 configuration.put("min", schemaDp.min);
                 configuration.put("max", schemaDp.max);
-            } else if ("bool".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_SWITCH;
             } else if ("enum".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_STRING;
                 List<String> range = Objects.requireNonNullElse(schemaDp.range, List.of());
                 configuration.put("range", String.join(",", range));
-            } else if ("string".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_STRING;
             } else if ("value".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_NUMBER;
-                configuration.put("min", schemaDp.min);
-                configuration.put("max", schemaDp.max);
-
-                if (schemaDp.scale > 0 || !schemaDp.unit.isEmpty()) {
-                    channeltypeUID = CHANNEL_TYPE_UID_QUANTITY;
-
-                    if (!schemaDp.unit.isEmpty()) {
-                        Unit<?> unit = schemaDp.parsedUnit;
-                        if (unit == null) {
-                            unit = UnitUtils.parseUnit(schemaDp.unit);
-                            schemaDp.parsedUnit = unit;
-                        }
-
-                        if (unit != null) {
-                            String dimension = UnitUtils.getDimensionName(unit);
-                            if (dimension != null) {
-                                acceptedItemType = "Number:" + dimension;
-                            } else {
-                                logger.warn("{} has unit \"{}\" but openHAB doesn't know the dimension", channelId,
-                                        schemaDp.unit);
-                            }
-                        }
+                if (schemaDp.scale > 0) {
+                    Double d = schemaDp.min;
+                    if (d != null) {
+                        configuration.put("min", new BigDecimal(d).movePointLeft(schemaDp.scale));
                     }
-                }
-            } else {
-                // e.g. type "raw", add empty channel
-                return Map.entry("", ChannelBuilder.create(channelUID).build());
-            }
 
-            if (schemaDp.label.isEmpty()) {
-                schemaDp.label = schemaDp.code;
-
-                String label = StringUtils.capitalizeByWhitespace(schemaDp.code.replaceAll("_", " "));
-                if (label != null) {
-                    label = label.trim();
-                    if (!label.isEmpty()) {
-                        schemaDp.label = label;
+                    d = schemaDp.max;
+                    if (d != null) {
+                        configuration.put("max", new BigDecimal(d).movePointLeft(schemaDp.scale));
                     }
+                } else {
+                    configuration.put("min", schemaDp.min);
+                    configuration.put("max", schemaDp.max);
                 }
             }
 
             return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID) //
-                    .withAcceptedItemType(acceptedItemType) //
-                    .withLabel(schemaDp.label) //
                     .withConfiguration(new Configuration(configuration)) //
                     .build());
         }).filter(c -> !c.getKey().isEmpty())

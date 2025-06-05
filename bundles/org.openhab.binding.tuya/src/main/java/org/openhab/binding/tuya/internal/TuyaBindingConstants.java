@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tuya.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -24,7 +26,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class TuyaBindingConstants {
-    private static final String BINDING_ID = "tuya";
+    public static final String BINDING_ID = "tuya";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECT = new ThingTypeUID(BINDING_ID, "project");
@@ -38,13 +40,12 @@ public class TuyaBindingConstants {
     public static final String CONFIG_IP = "ip";
     public static final String CONFIG_PROTOCOL = "protocol";
 
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_COLOR = new ChannelTypeUID(BINDING_ID, "color");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_DIMMER = new ChannelTypeUID(BINDING_ID, "dimmer");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_QUANTITY = new ChannelTypeUID(BINDING_ID, "quantity");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_STRING = new ChannelTypeUID(BINDING_ID, "string");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_SWITCH = new ChannelTypeUID(BINDING_ID, "switch");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");
+
+    public static final List<String> COLOUR_CHANNEL_CODES = List.of("colour_data");
+    public static final List<String> DIMMER_CHANNEL_CODES = List.of("bright_value", "bright_value_1", "bright_value_2",
+            "temp_value");
 
     // The heartbeat interval specifies the maximum amount of time that can pass without us
     // sending anything to a device. Once the heartbeat interval is reached we send a heartbeat
