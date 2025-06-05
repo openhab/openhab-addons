@@ -20,12 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.zwavejs.internal.CommandClassConstants;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
@@ -56,6 +59,8 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -351,7 +356,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             ZwaveJSTypeGeneratorResult result = typeGenerator.generate(thing.getUID(), node, configurationAsChannels);
 
             ThingBuilder builder = editThing();
-
             if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
                 builder.withLocation(result.location);
             }
@@ -371,6 +375,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 List<Channel> channels = new ArrayList<Channel>(result.channels.entrySet().stream()
                         .sorted(Map.Entry.<String, Channel> comparingByKey()).map(m -> m.getValue()).toList());
                 builder.withChannels(channels);
+            }
+
+            if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
+                thing.setSemanticEquipmentTag(getEquipmentTag());
             }
 
             updateThing(builder.build());
@@ -416,5 +424,49 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             handler.unregisterNodeListener(this);
         }
         super.dispose();
+    }
+
+    private @Nullable SemanticTag getEquipmentTag() {
+        Set<Integer> commandClassIds = thing.getChannels().stream()
+                .map(channel -> channel.getConfiguration().as(ZwaveJSChannelConfiguration.class))
+                .filter(Objects::nonNull).map(config -> Integer.valueOf(config.commandClassId))
+                .collect(Collectors.toSet());
+
+        if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_LIGHT_SOURCE_EQUIPMENT)) {
+            return Equipment.LIGHT_SOURCE;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_ALARM_DEVICE_EQUIPMENT)) {
+            return Equipment.ALARM_DEVICE;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_AUDIO_VISUAL_EQUIPMENT)) {
+            return Equipment.AUDIO_VISUAL;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_BATTERY_EQUIPMENT)) {
+            return Equipment.BATTERY;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_CONTROL_DEVICE_EQUIPMENT)) {
+            return Equipment.CONTROL_DEVICE;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_DISPLAY_EQUIPMENT)) {
+            return Equipment.DISPLAY;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_GATE_EQUIPMENT)) {
+            return Equipment.GATE;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_HUMIDIFIER_EQUIPMENT)) {
+            return Equipment.HUMIDIFIER;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_HVAC_EQUIPMENT)) {
+            return Equipment.HVAC;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_IRRIGATION_EQUIPMENT)) {
+            return Equipment.IRRIGATION;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_LOCK_EQUIPMENT)) {
+            return Equipment.LOCK;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_METER_EQUIPMENT)) {
+            return Equipment.ELECTRIC_METER;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_POWER_SUPPLY_EQUIPMENT)) {
+            return Equipment.POWER_SUPPLY;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_SENSOR_EQUIPMENT)) {
+            return Equipment.SENSOR;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_THERMOSTAT_EQUIPMENT)) {
+            return Equipment.THERMOSTAT;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_WINDOW_COVERING_EQUIPMENT)) {
+            return Equipment.WINDOW_COVERING;
+        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_ZONE_EQUIPMENT)) {
+            return Equipment.ZONE;
+        }
+        return null;
     }
 }
