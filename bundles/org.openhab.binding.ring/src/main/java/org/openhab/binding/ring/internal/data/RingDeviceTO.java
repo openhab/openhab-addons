@@ -13,7 +13,6 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.internal.ApiConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,27 +25,27 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class RingDeviceTO {
 
-    @SerializedName(ApiConstants.DEVICE_ID)
+    @SerializedName("id")
     public String id = "";
 
-    @SerializedName(ApiConstants.DEVICE_KIND)
+    @SerializedName("kind")
     public String kind = "";
 
-    @SerializedName(ApiConstants.DEVICE_DESCRIPTION)
+    @SerializedName("description")
     public String description = "";
 
-    @SerializedName(ApiConstants.DEVICE_DEVICE_ID)
+    @SerializedName("device_id")
     public String deviceId = "";
 
-    @SerializedName(ApiConstants.DEVICE_TIME_ZONE)
+    @SerializedName("time_zone")
     public String timeZone = "";
 
-    @SerializedName(ApiConstants.DEVICE_FIRMWARE_VERSION)
+    @SerializedName("firmware_version")
     public String firmwareVersion = "";
 
     public @NonNullByDefault({}) Health health;
 
-    @SerializedName(ApiConstants.DEVICE_BATTERY)
+    @SerializedName("battery_life")
     public String battery = "";
 
     public class Health {

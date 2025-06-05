@@ -37,42 +37,9 @@ public class ApiConstants {
 
     public static final String URL_RECORDING = "/clients_api/dings/{0}/recording";
 
-    // JSON data names for profile
-    public static final String PROFILE_AUTHENTICATION_TOKEN = "authentication_token";
-    public static final String PROFILE_ID = "id";
-    public static final String PROFILE_EMAIL = "email";
-    public static final String PROFILE_HARDWARE_ID = "hardware_id";
-    public static final String PROFILE_FIRST_NAME = "first_name";
-    public static final String PROFILE_LAST_NAME = "last_name";
-    public static final String PROFILE_PHONE_NUMBER = "phone_number";
-    public static final String PROFILE_USER_FLOW = "user_flow";
-    public static final String PROFILE_EXPLORER_PROGRAM_TERMS = "explorer_program_terms";
-
-    // JSON names for events
-    public static final String EVENT_ID = "id";
-    public static final String EVENT_CREATED_AT = "created_at";
-    public static final String EVENT_ANSWERED = "answered";
-    public static final String EVENT_KIND = "kind";
-    public static final String EVENT_FAVORITE = "favorite";
-    public static final String EVENT_SNAPSHOT_URL = "snapshot_url";
-    public static final String EVENT_DOORBOT = "doorbot";
-
-    // JSON names for doorbot
-    public static final String DOORBOT_ID = "id";
-    public static final String DOORBOT_DESCRIPTION = "description";
-
     // JSON data names for ring devices
     public static final String DEVICES_DOORBOTS = "doorbots";
     public static final String DEVICES_CHIMES = "chimes";
     public static final String DEVICES_STICKUP_CAMS = "stickup_cams";
     public static final String DEVICES_OTHERDEVICE = "other";
-
-    // JSON data names for generic devices
-    public static final String DEVICE_ID = "id";
-    public static final String DEVICE_DESCRIPTION = "description";
-    public static final String DEVICE_DEVICE_ID = "device_id";
-    public static final String DEVICE_FIRMWARE_VERSION = "firmware_version";
-    public static final String DEVICE_TIME_ZONE = "time_zone";
-    public static final String DEVICE_KIND = "kind";
-    public static final String DEVICE_BATTERY = "battery_life";
 }
