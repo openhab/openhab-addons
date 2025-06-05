@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="persistence:victoriametrics">
+
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>This group defines connection parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="tags">
+			<label>Additional Tags</label>
+			<description>This group defines additional tags which can be added to your measurements.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="misc">
+			<label>Miscellaneous</label>
+			<description>This group defines miscellaneous parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter name="url" type="text" required="true" groupName="connection">
+			<context>url</context>
+			<label>Victoria Metrics URL</label>
+			<!-- VictoriaMetrics default is port 8428, not 8086 -->
+			<description>The VictoriaMetrics base URL (e.g., http://127.0.0.1:8428)</description>
+			<default>http://127.0.0.1:8428</default>
+		</parameter>
+
+		<parameter name="user" type="text" required="false" groupName="connection">
+			<label>Username</label>
+			<!-- Only relevant if using HTTP basic auth (not default in VM OSS) -->
+			<description>Basic auth username (only needed if HTTP Basic Auth is enabled in VictoriaMetrics).</description>
+		</parameter>
+
+		<parameter name="password" type="text" required="false" groupName="connection">
+			<context>password</context>
+			<label>Password</label>
+			<!-- Only relevant if using HTTP basic auth (not default in VM OSS) -->
+			<description>Basic auth password (only needed if HTTP Basic Auth is enabled in VictoriaMetrics).</description>
+		</parameter>
+
+		<parameter name="token" type="text" required="false" groupName="connection">
+			<label>Authentication Token</label>
+			<!-- VM supports Bearer token only on some enterprise setups -->
+			<description>The token to authenticate (Bearer token, typically used in VictoriaMetrics Enterprise or if
+				reverse proxy
+				requires it).</description>
+		</parameter>
+
+		<parameter name="source" type="text" required="true" groupName="connection">
+			<label>Source Tag Value</label>
+			<!-- VM supports multi-tenancy via "db" query param; not always needed -->
+			<description>The name of the source tag (change this if you need to manage multiple openhab instances on the same
+				endpoint)</description>
+			<default>openhab</default>
+		</parameter>
+
+		<parameter name="replaceUnderscore" type="boolean" required="true" groupName="misc">
+			<label>Replace Underscore</label>
+			<description>Whether underscores "_" in item names should be replaced by a dot "." ("test_item" -> "test.item"). Only
+				for measurement name, not for tags. Also applies to alias names.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
+			<label>Add Category Tag</label>
+			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is used.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addTypeTag" type="boolean" required="true" groupName="tags">
+			<label>Add Type Tag</label>
+			<description>Should the item type be included as tag "type"?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addLabelTag" type="boolean" required="true" groupName="tags">
+			<label>Add Label Tag</label>
+			<description>Should the item label be included as tag "label"? If no label is set, "n/a" is used.</description>
+			<default>false</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>

@@ -1,0 +1,131 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.persistence.victoriametrics.internal;
+
+import java.util.Map;
+import java.util.StringJoiner;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.config.core.ConfigParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Contains this addon configurable parameters
+ *
+ * @author Joan Pujol Espinar - Initial contribution
+ * @author Franz - Initial VictoriaMetrics adaptation
+ */
+@NonNullByDefault
+public class VictoriaMetricsConfiguration {
+    public static final String URL_PARAM = "url";
+    public static final String TOKEN_PARAM = "token";
+    public static final String USER_PARAM = "user";
+    public static final String PASSWORD_PARAM = "password";
+    public static final String SOURCE_PARAM = "source";
+    public static final String REPLACE_UNDERSCORE_PARAM = "replaceUnderscore";
+    public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
+    public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
+    public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
+    private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
+    private final String url;
+    private final String user;
+    private final String password;
+    private final String token;
+    private final String sourceName;
+    private final boolean replaceUnderscore;
+    private final boolean addCategoryTag;
+    private final boolean addTypeTag;
+    private final boolean addLabelTag;
+
+    public VictoriaMetricsConfiguration(Map<String, Object> config) {
+        // Set VictoriaMetrics default port
+        url = ConfigParser.valueAsOrElse(config.get(URL_PARAM), String.class, "http://127.0.0.1:8428");
+        user = ConfigParser.valueAsOrElse(config.get(USER_PARAM), String.class, "openhab");
+        password = ConfigParser.valueAsOrElse(config.get(PASSWORD_PARAM), String.class, "");
+        token = ConfigParser.valueAsOrElse(config.get(TOKEN_PARAM), String.class, "");
+        sourceName = ConfigParser.valueAsOrElse(config.get(SOURCE_PARAM), String.class, "openhab");
+        replaceUnderscore = ConfigParser.valueAsOrElse(config.get(REPLACE_UNDERSCORE_PARAM), Boolean.class, false);
+        addCategoryTag = ConfigParser.valueAsOrElse(config.get(ADD_CATEGORY_TAG_PARAM), Boolean.class, false);
+        addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
+        addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
+    }
+
+    public boolean isValid() {
+        // VM OSS: allow blank credentials
+        boolean hasBasicCredentials = !user.isBlank();
+        boolean hasPassword = !password.isBlank();
+        boolean hasToken = !token.isBlank();
+        boolean hasValidCredentials = (!hasBasicCredentials || hasPassword) || hasToken;
+        boolean hasDatabase = !sourceName.isBlank();
+        boolean valid = hasValidCredentials && hasDatabase;
+        if (valid) {
+            return true;
+        } else {
+            String msg = "VictoriaMetrics configuration isn't valid. Addon won't work: ";
+            StringJoiner reason = new StringJoiner(",");
+            if (hasBasicCredentials && !hasPassword) {
+                reason.add("User defined but no password");
+            }
+            if (!hasDatabase) {
+                reason.add("No database name / tenant defined");
+            }
+            logger.warn("{} {}", msg, reason);
+            return false;
+        }
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public boolean isReplaceUnderscore() {
+        return replaceUnderscore;
+    }
+
+    public boolean isAddCategoryTag() {
+        return addCategoryTag;
+    }
+
+    public boolean isAddTypeTag() {
+        return addTypeTag;
+    }
+
+    public boolean isAddLabelTag() {
+        return addLabelTag;
+    }
+
+    @Override
+    public String toString() {
+        return "VictoriaMetricsConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
+                + " chars'" + " , token='" + token.length() + " chars'" + ", sourceName='" + sourceName
+                + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag=" + addCategoryTag + ", addTypeTag="
+                + addTypeTag + ", addLabelTag=" + addLabelTag + '}';
+    }
+}
