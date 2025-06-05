@@ -88,6 +88,7 @@ public abstract class BaseMetadata {
     public @Nullable Object writeProperty;
     public @Nullable Map<String, String> optionList;
     public @Nullable String commandClassName;
+    public @Nullable String propertyKey;
 
     protected final Object value;
     protected final @Nullable Integer min;
@@ -98,6 +99,7 @@ public abstract class BaseMetadata {
         this.commandClassName = value.commandClassName;
         this.commandClassId = value.commandClass;
         this.endpoint = value.endpoint;
+        this.propertyKey = value.propertyKey;
         this.writable = value.metadata.writeable;
         this.min = value.metadata.min;
         this.max = value.metadata.max;
@@ -563,6 +565,7 @@ public abstract class BaseMetadata {
         sb.append(", value=" + value);
         sb.append(", itemType=" + itemType);
         sb.append(", writable=" + writable);
+        sb.append(", propertyKey=" + propertyKey);
         sb.append(", writeProperty=" + writeProperty);
         sb.append(", itemType=" + itemType);
         sb.append("]");

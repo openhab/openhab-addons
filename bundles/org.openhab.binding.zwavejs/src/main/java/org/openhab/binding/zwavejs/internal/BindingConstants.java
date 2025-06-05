@@ -46,6 +46,7 @@ public class BindingConstants {
     public static final String CONFIG_CHANNEL_COMMANDCLASS_NAME = "commandClassName";
     public static final String CONFIG_CHANNEL_COMMANDCLASS_ID = "commandClassId";
     public static final String CONFIG_CHANNEL_ENDPOINT = "endpoint";
+    public static final String CONFIG_CHANNEL_PROPERTY_KEY = "propertyKey";
     public static final String CONFIG_CHANNEL_WRITE_PROPERTY = "writeProperty";
     public static final String CONFIG_CHANNEL_INVERTED = "inverted";
     public static final String CONFIG_CHANNEL_FACTOR = "factor";

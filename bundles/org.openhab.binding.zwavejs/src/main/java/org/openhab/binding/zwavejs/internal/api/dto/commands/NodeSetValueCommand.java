@@ -31,6 +31,7 @@ public class NodeSetValueCommand extends BaseCommand {
         this.valueId = new ValueId();
         this.valueId.commandClass = config.commandClassId;
         this.valueId.endpoint = config.endpoint;
+        this.valueId.propertyKey = config.propertyKey;
         this.valueId.property = config.writeProperty;
     }
 }

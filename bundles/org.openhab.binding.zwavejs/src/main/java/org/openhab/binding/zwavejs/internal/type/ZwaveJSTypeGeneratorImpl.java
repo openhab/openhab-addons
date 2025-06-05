@@ -200,6 +200,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_ID, details.commandClassId);
         newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_NAME, details.commandClassName);
         newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, details.endpoint);
+        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_PROPERTY_KEY, details.propertyKey);
         newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_FACTOR, details.factor);
         newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_INVERTED, false);
 
