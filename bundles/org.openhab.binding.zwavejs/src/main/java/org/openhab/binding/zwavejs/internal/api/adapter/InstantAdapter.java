@@ -14,7 +14,9 @@
 package org.openhab.binding.zwavejs.internal.api.adapter;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,7 +45,12 @@ public class InstantAdapter extends TypeAdapter<@Nullable Instant> {
         if (in == null) {
             return null;
         }
-        String str = in.nextString();
-        return str == null ? null : Instant.parse(str);
+
+        try {
+            return Instant.parse(in.nextString());
+        } catch (DateTimeParseException e) {
+            // If the string cannot be parsed as an Instant, return null
+            return null;
+        }
     }
 }
