@@ -24,9 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,11 +45,11 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String SERVICE_TYPE = "_zwave-js-server._tcp.local.";
     private static final String MDNS_PROPERTY_HOME_ID = "homeId";
 
-    protected final ThingRegistry thingRegistry;
+    private final TranslationProvider translationProvider;
 
     @Activate
-    public BridgeMDNSDiscoveryParticipant(final @Reference ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
+    public BridgeMDNSDiscoveryParticipant(@Reference TranslationProvider translationProvider) {
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -68,7 +69,9 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         if (Objects.nonNull(uid)) {
             String host = service.getHostAddresses()[0];
             String homeId = service.getPropertyString(MDNS_PROPERTY_HOME_ID);
-            String label = String.format(DISCOVERY_GATEWAY_LABEL_PATTERN, host);
+            String thingID = uid.getAsString().split(ThingUID.SEPARATOR)[1];
+            String label = translationProvider.getText(FrameworkUtil.getBundle(getClass()),
+                    "discovery.%s.label".formatted(thingID), null, null, host);
 
             DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
                     .withLabel(label) //
