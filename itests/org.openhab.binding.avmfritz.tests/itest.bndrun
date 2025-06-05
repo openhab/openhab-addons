@@ -93,4 +93,5 @@ Fragment-Host: org.openhab.binding.avmfritz
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
 	org.jupnp;version='[3.0.3,3.0.4)',\
-	jakarta.annotation-api;version='[2.1.1,2.1.2)'
+	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
+	org.openhab.core.semantics;version='[5.0.0,5.0.1)'
