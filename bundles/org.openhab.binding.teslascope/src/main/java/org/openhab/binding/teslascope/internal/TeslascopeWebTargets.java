@@ -42,6 +42,11 @@ public class TeslascopeWebTargets {
         this.httpClient = httpClient;
     }
 
+    public String getVehicleList(String apiKey)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        return invoke(BASE_URI + "/vehicles?api_key=" + apiKey);
+    }
+
     public String getDetailedInformation(String publicID, String apiKey)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         return invoke(BASE_URI + publicID + "/detailed?api_key=" + apiKey);

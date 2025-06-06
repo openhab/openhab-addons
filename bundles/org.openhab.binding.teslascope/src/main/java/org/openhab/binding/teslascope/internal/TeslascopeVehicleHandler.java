@@ -33,6 +33,7 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,19 +52,35 @@ import com.google.gson.Gson;
  * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
-public class TeslascopeHandler extends BaseThingHandler {
+public class TeslascopeVehicleHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TeslascopeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TeslascopeVehicleHandler.class);
 
-    private TeslascopeConfiguration config = new TeslascopeConfiguration();
+    @Nullable
+    TeslascopeAccountHandler bridgeHandler;
+    private TeslascopeVehicleConfiguration config = new TeslascopeVehicleConfiguration();
     private TeslascopeWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
     private final Gson gson = new Gson();
 
-    public TeslascopeHandler(Thing thing, HttpClient httpClient) {
+    public TeslascopeVehicleHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         webTargets = new TeslascopeWebTargets(httpClient);
+    }
+
+    protected String getApiKey() {
+        TeslascopeAccountHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
+            return "";
+        }
+        try {
+            logger.info("apiKey = {}", localBridge.getApiKey());
+            return localBridge.getApiKey();
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            return "";
+        }
     }
 
     @Override
@@ -137,13 +154,19 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(TeslascopeConfiguration.class);
-        if (config.apiKey.isBlank()) {
+        config = getConfigAs(TeslascopeVehicleConfiguration.class);
+        if (config.publicID.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-api-key");
+                    "@text/offline.conf-error.no-public-id");
             return;
         }
 
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No EmeraldHWS Bridge thing selected");
+            return;
+        }
+        bridgeHandler = (TeslascopeAccountHandler) bridge.getHandler();
         updateStatus(ThingStatus.UNKNOWN);
 
         schedulePoll();
@@ -173,7 +196,7 @@ public class TeslascopeHandler extends BaseThingHandler {
         String response = "";
 
         try {
-            response = webTargets.getDetailedInformation(config.publicID, config.apiKey);
+            response = webTargets.getDetailedInformation(config.publicID, getApiKey());
             updateStatus(ThingStatus.ONLINE);
         } catch (TeslascopeAuthenticationException e) {
             logger.debug("Unexpected authentication error connecting to Teslascope API", e);
@@ -368,46 +391,46 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     protected void setAutoConditioning(boolean b)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startAC" : "stopAC", "");
+        webTargets.sendCommand(config.publicID, getApiKey(), b ? "startAC" : "stopAC", "");
     }
 
     protected void charge(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startCharging" : "stopCharging", "");
+        webTargets.sendCommand(config.publicID, getApiKey(), b ? "startCharging" : "stopCharging", "");
     }
 
     protected void chargeDoor(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "openChargeDoor" : "closeChargeDoor", "");
+        webTargets.sendCommand(config.publicID, getApiKey(), b ? "openChargeDoor" : "closeChargeDoor", "");
     }
 
     protected void flashLights() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, "flashLights");
+        webTargets.sendCommand(config.publicID, getApiKey(), "flashLights");
         updateState(TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS, OnOffType.OFF);
     }
 
     protected void honkHorn() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, "honkHorn");
+        webTargets.sendCommand(config.publicID, getApiKey(), "honkHorn");
         updateState(TeslascopeBindingConstants.CHANNEL_HONK_HORN, OnOffType.OFF);
     }
 
     protected void lock(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "lock" : "unlock");
+        webTargets.sendCommand(config.publicID, getApiKey(), b ? "lock" : "unlock");
     }
 
     protected void openFrunk() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, "openFrunk");
+        webTargets.sendCommand(config.publicID, getApiKey(), "openFrunk");
     }
 
     protected void openTrunk() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, "openTrunk");
+        webTargets.sendCommand(config.publicID, getApiKey(), "openTrunk");
     }
 
     protected void sentry(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "enableSentryMode" : "disableSentryMode");
+        webTargets.sendCommand(config.publicID, getApiKey(), b ? "enableSentryMode" : "disableSentryMode");
     }
 
     protected void setChargeLimit(QuantityType chargeLimit)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, "setChargeLimit",
+        webTargets.sendCommand(config.publicID, getApiKey(), "setChargeLimit",
                 "&limit=" + chargeLimit.toString().replace(" %", ""));
     }
 }
