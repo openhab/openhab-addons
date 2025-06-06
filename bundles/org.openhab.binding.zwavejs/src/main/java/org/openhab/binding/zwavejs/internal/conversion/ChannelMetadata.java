@@ -88,15 +88,19 @@ public class ChannelMetadata extends BaseMetadata {
                 || ADVANCED_CHANNELS.contains(commandClassId + "-" + propertyName);
     }
 
+    private static boolean compare(@Nullable Object str1, @Nullable Object str2) {
+        return (str1 == null ? str2 == null : str1.equals(str2));
+    }
+
     public static boolean isSameReadWriteChannel(Configuration configA, Configuration configB) {
         ZwaveJSChannelConfiguration cA = configA.as(ZwaveJSChannelConfiguration.class);
         ZwaveJSChannelConfiguration cB = configB.as(ZwaveJSChannelConfiguration.class);
-        String aWriteProperty = cA.writeProperty;
-        String bWriteProperty = cB.writeProperty;
+
         return cA.endpoint == cB.endpoint //
                 && cA.commandClassId == cB.commandClassId //
-                && ((aWriteProperty != null && !aWriteProperty.equals(bWriteProperty)) //
-                        || (bWriteProperty != null && !bWriteProperty.equals(aWriteProperty)));
+                && compare(cA.propertyKeyInt, cB.propertyKeyInt) //
+                && compare(cA.propertyKeyStr, cB.propertyKeyStr) //
+                && !compare(cA.writeProperty, cB.writeProperty); //
     }
 
     public boolean isIgnoredCommandClass(@Nullable String commandClassName) {

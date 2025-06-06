@@ -23,5 +23,5 @@ public class Args {
     public Object newValue;
     public Object prevValue;
     public String propertyName;
-    public String propertyKey;
+    public Object propertyKey;
 }

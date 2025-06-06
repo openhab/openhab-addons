@@ -369,20 +369,27 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 }
             }
             if (!channelsToRemove.isEmpty()) {
+                logger.trace(null, "Node {}. Removing {} channels", node.nodeId, channelsToRemove.size());
                 builder.withoutChannels(channelsToRemove);
             }
             if (!result.channels.isEmpty()) {
                 List<Channel> channels = new ArrayList<Channel>(result.channels.entrySet().stream()
                         .sorted(Map.Entry.<String, Channel> comparingByKey()).map(m -> m.getValue()).toList());
+                logger.trace(null, "Node {}. Adding {} channels", node.nodeId, channels.size());
                 builder.withChannels(channels);
-            }
-
-            if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
-                thing.setSemanticEquipmentTag(getEquipmentTag());
             }
 
             updateThing(builder.build());
 
+            if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
+                SemanticTag equipmentTag = getEquipmentTag();
+                if (equipmentTag != null) {
+                    logger.debug("Node {}. Setting semantic equipment tag {}", node.nodeId, equipmentTag);
+                    builder.withSemanticEquipmentTag(equipmentTag);
+                } else {
+                    logger.debug("Node {}. No semantic equipment tag set", node.nodeId);
+                }
+            }
             for (Channel channel : thing.getChannels()) {
                 if (result.values.containsKey(channel.getUID().getId()) && isLinked(channel.getUID())) {
                     ChannelMetadata dummy = new ChannelMetadata(getId(), node.values.get(0));
@@ -404,11 +411,16 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     if (!channelIds.contains(entry.getKey())) {
                         logger.trace("Node {}. Setting configuration item {} to {}", node.nodeId, entry.getKey(),
                                 entry.getValue());
-                        configuration.put(entry.getKey(), entry.getValue());
+                        try {
+                            configuration.put(entry.getKey(), entry.getValue());
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("Node {}. Error setting configuration item {} to {}: {}", node.nodeId,
+                                    entry.getKey(), entry.getValue(), e.getMessage());
+                        }
                     }
                 }
                 updateConfiguration(configuration);
-                logger.debug("Done values to configuration items");
+                logger.debug("Node {}. Done values to configuration items", node.nodeId);
             }
         } catch (Exception e) {
             logger.error("Node {}. Error building channels and configuration", node.nodeId, e);

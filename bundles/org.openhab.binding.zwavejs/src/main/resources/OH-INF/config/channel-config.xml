@@ -31,8 +31,12 @@
 			<advanced>true</advanced>
 			<default>1.0</default>
 		</parameter>
-		<parameter name="propertyKey" type="text">
-			<label>Property Key</label>
+		<parameter name="propertyKeyStr" type="text">
+			<label>Property Key Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="propertyKeyInt" type="integer">
+			<label>Property Key Int</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writeProperty" type="text">
@@ -68,8 +72,12 @@
 			<advanced>true</advanced>
 			<default>1.0</default>
 		</parameter>
-		<parameter name="propertyKey" type="text">
-			<label>Property Key</label>
+		<parameter name="propertyKeyStr" type="text">
+			<label>Property Key Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="propertyKeyInt" type="integer">
+			<label>Property Key Int</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writeProperty" type="text">

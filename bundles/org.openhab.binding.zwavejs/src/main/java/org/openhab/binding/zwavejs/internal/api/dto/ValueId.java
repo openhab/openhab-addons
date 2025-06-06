@@ -19,5 +19,5 @@ public class ValueId {
     public Object commandClass;
     public Integer endpoint;
     public String property;
-    public String propertyKey;
+    public Object propertyKey;
 }

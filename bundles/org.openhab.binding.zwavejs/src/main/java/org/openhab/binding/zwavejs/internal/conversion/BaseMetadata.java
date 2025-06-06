@@ -88,7 +88,7 @@ public abstract class BaseMetadata {
     public @Nullable Object writeProperty;
     public @Nullable Map<String, String> optionList;
     public @Nullable String commandClassName;
-    public @Nullable String propertyKey;
+    public @Nullable Object propertyKey;
 
     protected final Object value;
     protected final @Nullable Integer min;
@@ -220,14 +220,17 @@ public abstract class BaseMetadata {
                 .replace(" - ", "-").replace("( ", "(").replace(" )", ")");
     }
 
-    private String normalizeString(@Nullable String input) {
-        return input != null && !input.isBlank()
-                ? "-" + input.trim().toLowerCase().replaceAll(" ", "-").replaceAll("[^a-zA-Z0-9\\-]", "")
-                : "";
+    private String normalizeString(@Nullable Object input) {
+        if (input instanceof Number) {
+            return "-" + input.toString().trim().toLowerCase();
+        } else if (input instanceof String strInput) {
+            return "-" + strInput.trim().toLowerCase().replaceAll(" ", "-").replaceAll("[^a-zA-Z0-9\\-]", "");
+        }
+        return "";
     }
 
     private String generateId(String commandClassName, int endpoint, @Nullable String propertyName,
-            @Nullable String propertyKey) {
+            @Nullable Object propertyKey) {
         String id = normalizeString(commandClassName).replaceFirst("-", "");
         String[] splitted;
         if (propertyName != null && !propertyName.contains("unknown")) {
