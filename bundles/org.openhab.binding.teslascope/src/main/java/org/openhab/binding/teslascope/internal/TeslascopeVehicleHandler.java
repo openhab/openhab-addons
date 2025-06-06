@@ -163,7 +163,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No EmeraldHWS Bridge thing selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Teslascope Bridge selected");
             return;
         }
         bridgeHandler = (TeslascopeAccountHandler) bridge.getHandler();

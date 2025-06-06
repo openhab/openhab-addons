@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.teslascope.internal.api.VehicleList;
 import org.openhab.binding.teslascope.internal.discovery.TeslascopeVehicleDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -36,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link TeslascopeAccountHandler} is responsible for handling commands, which are
@@ -102,31 +105,6 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
             pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
         }
-
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     /**
@@ -136,7 +114,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
      */
     private boolean configure() {
         if (config.apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing email configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing apiKey configuration");
             return false;
         }
         apiKey = config.apiKey;
@@ -145,16 +123,15 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     protected void pollData() {
 
-        String teslascopeVehicles = getVehicleList();
+        String responseVehicleList = getVehicleList();
+        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+        VehicleList vehicleList = new VehicleList();
+        if (vehicleList == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to retrieve Vehicle List");
+            return;
+        }
 
-        this.getThing().getThings().forEach(thing -> {
-            TeslascopeVehicleHandler handler = (TeslascopeVehicleHandler) thing.getHandler();
-            if (handler != null) {
-                // handler.updateChannels();
-            }
-        });
-
-        // UpdateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**

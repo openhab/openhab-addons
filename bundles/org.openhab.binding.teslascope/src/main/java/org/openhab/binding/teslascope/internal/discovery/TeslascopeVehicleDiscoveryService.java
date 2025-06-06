@@ -32,8 +32,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 /**
- * The TeslascopeDiscoveryService is responsible for auto detecting a Tesla
- * vehicle in the Teslascope service.
+ * The TeslascopeVehicleDiscoveryService is responsible for auto detecting a Tesla
+ * vehicle on the Teslascope service.
  *
  * @author paul@smedley.id.au - Initial contribution
  */
