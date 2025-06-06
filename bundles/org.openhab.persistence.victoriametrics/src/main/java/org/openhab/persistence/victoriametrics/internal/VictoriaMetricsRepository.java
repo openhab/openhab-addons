@@ -49,12 +49,24 @@ public class VictoriaMetricsRepository {
     private final VictoriaMetricsMetadataService metadataService;
     private final Gson gson = new Gson();
 
+    /**
+     * Creates a new instance of VictoriaMetricsRepository.
+     *
+     * @param configuration the configuration for connecting to VictoriaMetrics
+     * @param metadataService the service for managing metadata
+     */
     public VictoriaMetricsRepository(VictoriaMetricsConfiguration configuration,
             VictoriaMetricsMetadataService metadataService) {
         this.configuration = configuration;
         this.metadataService = metadataService;
     }
 
+    /**
+     * Checks if the repository is connected to the VictoriaMetrics server.
+     * This could be improved as its called on every write operation and its not really needed.
+     *
+     * @return true if connected, false otherwise
+     */
     public boolean isConnected() {
         try {
             HttpURLConnection conn = getConnection("/api/v1/status/tsdb", "GET");

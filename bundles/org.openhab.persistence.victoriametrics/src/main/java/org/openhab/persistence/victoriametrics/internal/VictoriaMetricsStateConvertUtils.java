@@ -111,6 +111,14 @@ public class VictoriaMetricsStateConvertUtils {
         return new StringType(String.valueOf(value));
     }
 
+    /**
+     * Converts a value to a {@link State} which is suitable for the given {@link Item}.
+     * This is needed for querying a {@link VictoriaMetricsHistoricItem}.
+     *
+     * @param value to be converted to a {@link State}
+     * @param itemToSetState the {@link Item} to get the {@link State} for
+     * @return the state of the item represented by the itemToSetState parameter, else the string value of
+     */
     public static State objectToState(@Nullable Object value, Item itemToSetState) {
         String valueStr = String.valueOf(value);
 
