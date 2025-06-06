@@ -30,4 +30,5 @@ public class VictoriaMetricsConstants {
     public static final String FIELD_SOURCE_NAME = "source";
     public static final int QUERY_MAX_POINTS = 1000;
     public static final int QUERY_DEFAULT_STEP = 60; // seconds
+    public static final long CONNECTION_HEARTBEAT_INTERVAL = 60 * 1000; // 1 minute
 }

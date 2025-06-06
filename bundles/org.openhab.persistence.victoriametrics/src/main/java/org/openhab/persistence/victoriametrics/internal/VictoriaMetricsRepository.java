@@ -16,10 +16,6 @@ import static java.net.URLEncoder.*;
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.*;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -36,6 +32,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import okhttp3.ResponseBody;
+
 /**
  * Manages VictoriaMetrics server interaction maintaining client connection.
  *
@@ -47,7 +45,24 @@ public class VictoriaMetricsRepository {
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsRepository.class);
     private final VictoriaMetricsConfiguration configuration;
     private final VictoriaMetricsMetadataService metadataService;
+
+    /**
+     * Gson instance for JSON parsing and serialization.
+     */
     private final Gson gson = new Gson();
+
+    /**
+     * Cached connection status and last check time to avoid frequent checks on every write operation.
+     */
+    private volatile boolean lastConnectionStatus = false;
+    private volatile long lastConnectionCheckTime = 0;
+
+    /**
+     * Default http client (we use okhttp3 for better performance)
+     */
+    private static final okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder()
+            .retryOnConnectionFailure(true).connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS).build();
 
     /**
      * Creates a new instance of VictoriaMetricsRepository.
@@ -68,19 +83,31 @@ public class VictoriaMetricsRepository {
      * @return true if connected, false otherwise
      */
     public boolean isConnected() {
-        try {
-            HttpURLConnection conn = getConnection("/api/v1/status/tsdb", "GET");
-            int responseCode = conn.getResponseCode();
-            conn.disconnect();
-            if (responseCode == 200) {
-                logger.trace("Connected to VictoriaMetrics at {}", configuration.getUrl());
-                return true;
-            } else {
-                logger.warn("Failed to connect to VictoriaMetrics, response code: {}", responseCode);
-                return false;
+        long now = System.currentTimeMillis();
+        if (now - lastConnectionCheckTime < CONNECTION_HEARTBEAT_INTERVAL) {
+            return lastConnectionStatus;
+        }
+        synchronized (this) {
+            // Double-check inside synchronized block
+            if (now - lastConnectionCheckTime < CONNECTION_HEARTBEAT_INTERVAL) {
+                return lastConnectionStatus;
             }
-        } catch (IOException e) {
-            return false;
+            try {
+                okhttp3.Request request = requestBuilder("/api/v1/status/tsdb").get().build();
+                try (okhttp3.Response response = httpClient.newCall(request).execute()) {
+                    lastConnectionStatus = response.isSuccessful();
+                    if (lastConnectionStatus) {
+                        logger.trace("Connected to VictoriaMetrics at {}", configuration.getUrl());
+                    } else {
+                        logger.warn("Failed to connect to VictoriaMetrics, response code: {}", response.code());
+                    }
+                }
+            } catch (IOException e) {
+                lastConnectionStatus = false;
+            } finally {
+                lastConnectionCheckTime = System.currentTimeMillis();
+            }
+            return lastConnectionStatus;
         }
     }
 
@@ -96,21 +123,22 @@ public class VictoriaMetricsRepository {
             return true;
         }
         try {
-            HttpURLConnection conn = getConnection("/api/v1/import/prometheus", "POST");
-            conn.setDoOutput(true);
-            try (OutputStream os = conn.getOutputStream()) {
-                for (VictoriaMetricsPoint point : points) {
-                    os.write(point.toPrometheusFormat().getBytes());
-                    os.write('\n');
+            StringBuilder bodyBuilder = new StringBuilder();
+            for (VictoriaMetricsPoint point : points) {
+                bodyBuilder.append(point.toPrometheusFormat()).append('\n');
+            }
+            okhttp3.RequestBody body = okhttp3.RequestBody.create(bodyBuilder.toString(),
+                    okhttp3.MediaType.parse("text/plain"));
+            okhttp3.Request request = requestBuilder("/api/v1/import/prometheus").post(body).build();
+            try (okhttp3.Response response = httpClient.newCall(request).execute()) {
+                if (response.code() == 204 || response.code() == 200) {
+                    logger.trace("Wrote {} points to VictoriaMetrics", points.size());
+                    return true;
+                } else {
+                    logger.warn("Failed to write points to VictoriaMetrics, response code: {}", response.code());
+                    return false;
                 }
             }
-            int code = conn.getResponseCode();
-            conn.disconnect();
-            if (code == 204)
-                logger.trace("Wrote {} points to VictoriaMetrics", points.size());
-            else
-                logger.warn("Failed to write points to VictoriaMetrics, response code: {}", code);
-            return code == 204;
         } catch (IOException e) {
             logger.error("Failed to write points to VictoriaMetrics", e);
             return false;
@@ -119,7 +147,6 @@ public class VictoriaMetricsRepository {
 
     public List<VictoriaRow> query(FilterCriteria filter) {
         try {
-            // Build PromQL query for item, filtered by openhab tag and optional time range
             String itemName = filter.getItemName();
             if (itemName == null) {
                 logger.warn("No item name specified for query");
@@ -133,84 +160,69 @@ public class VictoriaMetricsRepository {
             String endpoint;
             String urlString;
             if (filter.getBeginDate() != null && filter.getEndDate() != null) {
-                // Use range query
                 endpoint = "/api/v1/query_range";
                 promql = metricSelector;
                 ZonedDateTime startDate = filter.getBeginDate();
                 ZonedDateTime endDate = filter.getEndDate();
                 ZonedDateTime now = ZonedDateTime.now();
                 // Default to last 24 hours if no dates provided
-                long start = startDate != null ? startDate.toEpochSecond() : now.minusDays(1).toEpochSecond();
+                long start = startDate != null ? startDate.toEpochSecond() : now.minusHours(1).toEpochSecond();
                 long end = endDate != null ? endDate.toEpochSecond() : now.toEpochSecond();
                 // We cannot exceed "maxPointsPerTimeseries", which defaults to 3000
                 int step = Math.max(QUERY_DEFAULT_STEP, (int) ((end - start) / QUERY_MAX_POINTS));
                 urlString = String.format("%s?query=%s&start=%d&end=%d&step=%d", endpoint,
                         encode(promql, StandardCharsets.UTF_8), start, end, step);
             } else {
-                // Instant query
                 endpoint = "/api/v1/query";
                 promql = metricSelector;
                 urlString = String.format("%s?query=%s", endpoint, encode(promql, StandardCharsets.UTF_8));
             }
-            // Prepare HTTP request
-            HttpURLConnection conn = getConnection(urlString, "GET");
-            int code = conn.getResponseCode();
-            if (code != 200) {
-                String responseJson;
-                try (java.io.InputStream is = conn.getInputStream()) {
-                    responseJson = new String(is.readAllBytes());
+            okhttp3.Request request = requestBuilder(urlString).get().build();
+            try (okhttp3.Response response = httpClient.newCall(request).execute()) {
+                String responseJson = response.body().string();
+                if (response.code() != 200) {
+                    JsonObject json = gson.fromJson(responseJson, JsonObject.class);
+                    String errorMessage = json != null ? json.get("error").getAsString() : "Unknown error";
+                    throw new IOException(
+                            "Query failed, code: " + response.code() + ", URL: " + urlString + ", r: " + errorMessage);
                 }
-                conn.disconnect();
                 JsonObject json = gson.fromJson(responseJson, JsonObject.class);
-                String errorMessage = json != null ? json.get("error").getAsString() : "Unknown error";
-                throw new IOException("Query failed, code: " + code + ", URL: " + urlString + ", r: " + errorMessage);
-            }
-            String responseJson;
-            try (java.io.InputStream is = conn.getInputStream()) {
-                responseJson = new String(is.readAllBytes());
-            }
-            conn.disconnect();
-            // Parse JSON response with Gson
-            JsonObject json = gson.fromJson(responseJson, JsonObject.class);
-            if (json == null || !"success".equals(json.get("status").getAsString())) {
-                logger.warn("VictoriaMetrics query failed: {}", responseJson);
-                return List.of();
-            }
-            JsonArray data = json.getAsJsonObject("data").getAsJsonArray("result");
-            List<VictoriaRow> rows = new java.util.ArrayList<>();
-            for (JsonElement el : data) {
-                JsonObject obj = el.getAsJsonObject();
-                String entryName = obj.getAsJsonObject("metric").get("__name__").getAsString();
-                JsonArray values = obj.has("values") ? obj.getAsJsonArray("values") : null; // For range query
-                JsonArray value = obj.has("value") ? obj.getAsJsonArray("value") : null; // For instant query
-                if (values != null) {
-                    // Range query: each "values" entry is [timestamp, value]
-                    for (JsonElement vEl : values) {
-                        JsonArray vArr = vEl.getAsJsonArray();
-                        long ts = vArr.get(0).getAsLong();
-                        String valStr = vArr.get(1).getAsString();
+                if (json == null || !"success".equals(json.get("status").getAsString())) {
+                    logger.warn("VictoriaMetrics query failed: {}", responseJson);
+                    return List.of();
+                }
+                JsonArray data = json.getAsJsonObject("data").getAsJsonArray("result");
+                List<VictoriaRow> rows = new java.util.ArrayList<>();
+                for (JsonElement el : data) {
+                    JsonObject obj = el.getAsJsonObject();
+                    String entryName = obj.getAsJsonObject("metric").get("__name__").getAsString();
+                    JsonArray values = obj.has("values") ? obj.getAsJsonArray("values") : null;
+                    JsonArray value = obj.has("value") ? obj.getAsJsonArray("value") : null;
+                    if (values != null) {
+                        for (JsonElement vEl : values) {
+                            JsonArray vArr = vEl.getAsJsonArray();
+                            long ts = vArr.get(0).getAsLong();
+                            String valStr = vArr.get(1).getAsString();
+                            rows.add(new VictoriaRow(entryName, valStr, Instant.ofEpochSecond(ts)));
+                        }
+                    } else if (value != null) {
+                        long ts = value.get(0).getAsLong();
+                        String valStr = value.get(1).getAsString();
                         rows.add(new VictoriaRow(entryName, valStr, Instant.ofEpochSecond(ts)));
                     }
-                } else if (value != null) {
-                    // Instant query
-                    long ts = value.get(0).getAsLong();
-                    String valStr = value.get(1).getAsString();
-                    rows.add(new VictoriaRow(entryName, valStr, Instant.ofEpochSecond(ts)));
                 }
-            }
-            // Invert if specified
-            if (filter.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
-                rows.sort((r1, r2) -> r2.time.compareTo(r1.time));
-            }
-            // Apply pagination if specified
-            int pageSize = filter.getPageSize();
-            int pageNumber = filter.getPageNumber();
-            int fromIndex = pageNumber * pageSize;
-            int toIndex = Math.min(fromIndex + pageSize, rows.size());
-            if (fromIndex < rows.size()) {
-                return rows.subList(fromIndex, toIndex);
-            } else {
-                return List.of(); // or whatever empty result
+                if (filter.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
+                    rows.sort((r1, r2) -> r2.time.compareTo(r1.time));
+                }
+                int pageSize = filter.getPageSize();
+                int pageNumber = filter.getPageNumber();
+                int fromIndex = pageNumber * pageSize;
+                int toIndex = Math.min(fromIndex + pageSize, rows.size());
+                if (fromIndex < rows.size()) {
+                    return rows.subList(fromIndex, toIndex);
+                } else {
+                    return List.of();
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to query VictoriaMetrics", e);
@@ -227,21 +239,23 @@ public class VictoriaMetricsRepository {
             }
             String name = metadataService.getMeasurementNameOrDefault(itemName);
             String match = name + "{" + FIELD_SOURCE_NAME + "=\"" + configuration.getSourceName() + "\"}";
-            String urlString = "/api/v1/admin/tsdb/delete_series?match[]=" + encode(match, StandardCharsets.UTF_8);
+            StringBuilder urlBuilder = new StringBuilder("/api/v1/admin/tsdb/delete_series?match[]=")
+                    .append(encode(match, StandardCharsets.UTF_8));
             ZonedDateTime start = filter.getBeginDate();
             if (start != null)
-                urlString += "&start=" + (start.toEpochSecond());
+                urlBuilder.append("&start=").append(start.toEpochSecond());
             ZonedDateTime end = filter.getEndDate();
             if (end != null)
-                urlString += "&end=" + (end.toEpochSecond());
-            HttpURLConnection conn = getConnection(urlString, "POST");
-            int code = conn.getResponseCode();
-            conn.disconnect();
-            if (code != 204) {
-                logger.warn("VictoriaMetrics remove failed, response code: {}", code);
-                return false;
+                urlBuilder.append("&end=").append(end.toEpochSecond());
+            okhttp3.RequestBody body = okhttp3.RequestBody.create(new byte[0]);
+            okhttp3.Request request = requestBuilder(urlBuilder.toString()).post(body).build();
+            try (okhttp3.Response response = httpClient.newCall(request).execute()) {
+                if (response.code() != 204) {
+                    logger.warn("VictoriaMetrics remove failed, response code: {}", response.code());
+                    return false;
+                }
+                return true;
             }
-            return true;
         } catch (Exception e) {
             logger.error("Failed to remove data from VictoriaMetrics", e);
             return false;
@@ -289,13 +303,13 @@ public class VictoriaMetricsRepository {
      */
     private String promQLQuery(String promql) throws IOException {
         String url = "/api/v1/query?query=" + encode(promql, StandardCharsets.UTF_8);
-        HttpURLConnection conn = getConnection(url, "GET");
-        int code = conn.getResponseCode();
-        if (code != 200) {
-            throw new IOException("VictoriaMetrics query failed, response code: " + code);
-        }
-        try (java.io.InputStream is = conn.getInputStream()) {
-            return new String(is.readAllBytes());
+        okhttp3.Request request = requestBuilder(url).get().build();
+        try (okhttp3.Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("VictoriaMetrics query failed, response code: " + response.code());
+            }
+            ResponseBody body = response.body();
+            return body != null ? body.string() : "";
         }
     }
 
@@ -303,31 +317,28 @@ public class VictoriaMetricsRepository {
      * Creates a connection to the VictoriaMetrics server with the specified URL and method.
      *
      * @param path the path to the API endpoint
-     * @param method the HTTP method to use (GET, POST, etc.)
-     * @return the HttpURLConnection object
-     * @throws IOException if an error occurs while opening the connection
+     * @return an okhttp3.Request.Builder for the specified path with authentication headers
      */
-    private HttpURLConnection getConnection(String path, String method) throws IOException {
+    private okhttp3.Request.Builder requestBuilder(String path) {
         if (path.startsWith("/"))
             path = path.substring(1);
-        URL url = URI.create(configuration.getUrl() + path).toURL();
-        logger.trace("Connecting at {}", url);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestMethod(method);
-        // Check if the config has an user
-        String username = configuration.getUser();
-        if (!username.isEmpty()) {
-            String auth = username + ":" + configuration.getPassword();
-            String encoded = java.util.Base64.getEncoder().encodeToString(auth.getBytes());
-            conn.setRequestProperty("Authorization", "Basic " + encoded);
-        }
-        // Check if config has a token (enterprise only)
+        // Ensure the base URL ends with a slash
+        String baseUrl = configuration.getUrl();
+        if (!baseUrl.endsWith("/"))
+            baseUrl += "/";
+        // Construct the full URL
+        String fullUrl = baseUrl + path;
+        okhttp3.Request.Builder builder = new okhttp3.Request.Builder().url(fullUrl);
+        String user = configuration.getUser();
         String token = configuration.getToken();
-        if (!token.isEmpty()) {
-            conn.setRequestProperty("Authorization", "Bearer " + token);
+        if (!user.isEmpty()) {
+            String credentials = okhttp3.Credentials.basic(user, configuration.getPassword());
+            builder.header("Authorization", credentials);
+        } else if (!token.isEmpty()) {
+            builder.header("Authorization", "Bearer " + token);
         }
-        return conn;
+        logger.trace("Request to VictoriaMetrics: {}", fullUrl);
+        return builder;
     }
 
     // Row object for result mapping

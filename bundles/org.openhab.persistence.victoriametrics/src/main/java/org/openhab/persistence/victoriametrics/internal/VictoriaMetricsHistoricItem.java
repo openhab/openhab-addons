@@ -24,8 +24,7 @@ import org.openhab.core.types.State;
 /**
  * Java bean used to return items queries results from VictoriaMetrics.
  *
- * @author Joan Pujol Espinar and Theo Weiss - InfluxDB persistence used as reference
- * @author Franz - Initial VictoriaMetrics adaptation
+ * @author Franz - Initial contribution
  */
 @NonNullByDefault
 public class VictoriaMetricsHistoricItem implements HistoricItem {
