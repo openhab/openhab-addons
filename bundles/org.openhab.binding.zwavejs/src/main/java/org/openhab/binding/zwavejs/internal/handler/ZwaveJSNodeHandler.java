@@ -17,6 +17,7 @@ import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,7 +439,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
 
             if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
-                SemanticTag equipmentTag = getEquipmentTag();
+                SemanticTag equipmentTag = getEquipmentTag(result.channels.values());
                 if (equipmentTag != null) {
                     logger.debug("Node {}. Setting semantic equipment tag {}", node.nodeId, equipmentTag);
                     builder.withSemanticEquipmentTag(equipmentTag);
@@ -480,7 +481,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 updateConfiguration(configuration);
                 logger.debug("Node {}. Done values to configuration items", node.nodeId);
             }
-          
+
             supportsColor = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
                     .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value) //
                     .filter(m -> m.containsKey(GREEN)).findAny().isPresent();
@@ -490,9 +491,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             supportsColdWhite = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
                     .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value)
                     .filter(m -> m.containsKey(COLD_WHITE)).findAny().isPresent();
-            logger.debug(
-                    "TODO remove this line: equipmentTag:{}, supportsColor:{}, supportsWarmWhite:{}, supportsColdWhite:{}",
-                    thing.getSemanticEquipmentTag(), supportsColor, supportsWarmWhite, supportsColdWhite);
+            logger.debug("Node {}. supportsColor:{}, supportsWarmWhite:{}, supportsColdWhite:{}", node.nodeId,
+                    supportsColor, supportsWarmWhite, supportsColdWhite);
         } catch (Exception e) {
             logger.error("Node {}. Error building channels and configuration", node.nodeId, e);
         }
@@ -509,8 +509,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         super.dispose();
     }
 
-    private @Nullable SemanticTag getEquipmentTag() {
-        Set<Integer> commandClassIds = thing.getChannels().stream()
+    private @Nullable SemanticTag getEquipmentTag(Collection<Channel> channels) {
+        Set<Integer> commandClassIds = channels.stream()
                 .map(channel -> channel.getConfiguration().as(ZwaveJSChannelConfiguration.class))
                 .filter(Objects::nonNull).map(config -> Integer.valueOf(config.commandClassId))
                 .collect(Collectors.toSet());
