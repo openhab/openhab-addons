@@ -135,6 +135,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
                         properties.put(THING_WATER_METER_PROPERTY_ID_PDS, compteInfo.ID_PDS);
 
                         final String representationProperty = THING_WATER_METER_PROPERTY_NUM_COMPTEUR;
+
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                 .withProperties(properties).withLabel("WaterMeter " + compteInfo.NUM_COMPTEUR)
                                 .withThingType(tpUid).withBridge(thingHandler.getThing().getUID())
