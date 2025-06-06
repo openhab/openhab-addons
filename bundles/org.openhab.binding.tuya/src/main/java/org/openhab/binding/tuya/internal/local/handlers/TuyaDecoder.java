@@ -15,6 +15,7 @@ package org.openhab.binding.tuya.internal.local.handlers;
 import static org.openhab.binding.tuya.internal.local.CommandType.BROADCAST_LPV34;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY_NOT_SUPPORTED;
+import static org.openhab.binding.tuya.internal.local.CommandType.HEART_BEAT;
 import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_RESPONSE;
 import static org.openhab.binding.tuya.internal.local.CommandType.STATUS;
 import static org.openhab.binding.tuya.internal.local.CommandType.UDP;
@@ -256,7 +257,8 @@ public class TuyaDecoder extends ByteToMessageDecoder {
             }
         }
 
-        if (m.commandType != UDP_NEW && m.commandType != UDP && m.commandType != BROADCAST_LPV34) {
+        if (m.commandType != HEART_BEAT && m.commandType != UDP_NEW && m.commandType != UDP
+                && m.commandType != BROADCAST_LPV34) {
             logger.debug("{}{}: Received {}", deviceId, Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""),
                     m);
         } else {
