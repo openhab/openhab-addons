@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CommandClassConstants {
 
-    public static final int COMMAND_CLASS_ALARM = 0x71;
+    public static final Integer COMMAND_CLASS_ALARM = 0x71;
     public static final Integer COMMAND_CLASS_ANTITHEFT = 0x5D;
     public static final Integer COMMAND_CLASS_ANTITHEFT_UNLOCK = 0x7E;
     public static final Integer COMMAND_CLASS_APPLICATION_STATUS = 0x22;

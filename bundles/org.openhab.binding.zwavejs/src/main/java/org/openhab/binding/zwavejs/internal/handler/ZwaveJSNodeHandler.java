@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.zwavejs.internal.handler;
 
-import static org.openhab.binding.zwavejs.internal.BindingConstants.CONFIGURATION_COMMAND_CLASSES;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +30,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.zwavejs.internal.CommandClassConstants;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
@@ -71,6 +72,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.ColorUtil;
@@ -91,6 +93,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private ZwaveJSNodeConfiguration config = new ZwaveJSNodeConfiguration();
     private boolean configurationAsChannels = false;
     protected ScheduledExecutorService executorService = scheduler;
+
+    private boolean supportsColor = false;
+    private boolean supportsWarmWhite = false;
+    private boolean supportsColdWhite = false;
+    private HSBType cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
 
     public ZwaveJSNodeHandler(final Thing thing, final ZwaveJSTypeGenerator typeGenerator) {
         super(thing);
@@ -138,7 +145,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command commandValue) {
+        Command command = commandValue;
         logger.debug("Node {}. Processing command {} type {} for channel {}", config.id, command,
                 command.getClass().getSimpleName(), channelUID);
         ZwaveJSBridgeHandler handler = getBridgeHandler();
@@ -152,18 +160,66 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             logger.debug("Channel {} not found", channelUID);
             return;
         }
+
+        if (command instanceof RefreshType) {
+            // TODO ask bridge to refresh its data
+            return;
+        }
+
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
 
+        boolean isColorChannelCommand = supportsColor && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
+
         if (command instanceof OnOffType onOffCommand) {
-            if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
+            if (isColorChannelCommand) {
+                command = OnOffType.OFF == onOffCommand ? PercentType.ZERO : PercentType.HUNDRED;
+            } else if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
                 zwaveCommand.value = OnOffType.ON == onOffCommand ? 255 : 0;
             } else {
                 zwaveCommand.value = onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON);
             }
-        } else if (command instanceof HSBType hsbTypeCommand) {
-            int[] rgb = ColorUtil.hsbToRgb(hsbTypeCommand);
-            zwaveCommand.value = String.format("%02X%02X%02X", rgb[0], rgb[1], rgb[2]);
+        }
+        // note: HSBType is a child of PercentType so we must explicitly NOT execute this block in such case
+        if (PercentType.class.equals(command.getClass()) && (command instanceof PercentType percentTypeCommand)) {
+            if (isColorChannelCommand) {
+                command = new HSBType(cachedColor.getHue(), cachedColor.getSaturation(), percentTypeCommand);
+            } else {
+                int newValue = percentTypeCommand.intValue();
+                if (channelConfig.inverted) {
+                    newValue = 100 - newValue;
+                }
+                if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && newValue == 100) {
+                    newValue = 99;
+                }
+                zwaveCommand.value = newValue;
+            }
+        }
+        if (command instanceof HSBType hsbTypeCommand) {
+            cachedColor = hsbTypeCommand;
+            HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
+            int[] rgb = ColorUtil.hsbToRgb(hsbFull);
+            if (channelUID.getId().contains(HEX)) { // TODO it is not obvious if there is a better way to do this
+                zwaveCommand.value = "%02X%02X%02X".formatted(rgb[0], rgb[1], rgb[2]);
+            } else {
+                Map<String, Integer> colorMap = new HashMap<>();
+                colorMap.put(RED, rgb[0]);
+                colorMap.put(GREEN, rgb[1]);
+                colorMap.put(BLUE, rgb[2]);
+                if (supportsColdWhite) {
+                    colorMap.put(COLD_WHITE, 0);
+                }
+                if (supportsWarmWhite) {
+                    colorMap.put(WARM_WHITE, 0);
+                }
+                zwaveCommand.value = colorMap;
+            }
+            if (isColorChannelCommand) {
+                // schedule brightness command(s) for dimmer channel(s)
+                PercentType brightness = hsbTypeCommand.getBrightness();
+                thing.getChannels().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType()))
+                        .forEach(c -> scheduler.submit(() -> handleCommand(c.getUID(), brightness)));
+            }
         } else if (command instanceof QuantityType<?> quantityCommand) {
             Unit<?> unit = UnitUtils.parseUnit(channelConfig.incomingUnit);
             if (unit == null) {
@@ -175,15 +231,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 resultValue = resultValue.divide(new BigDecimal(channelConfig.factor));
             }
             zwaveCommand.value = resultValue;
-        } else if (command instanceof PercentType percentTypeCommand) {
-            int newValue = percentTypeCommand.intValue();
-            if (channelConfig.inverted) {
-                newValue = 100 - newValue;
-            }
-            if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && newValue == 100) {
-                newValue = 99;
-            }
-            zwaveCommand.value = newValue;
         } else if (command instanceof DecimalType decimalCommand) {
             zwaveCommand.value = decimalCommand.doubleValue();
         } else if (command instanceof DateTimeType dateTimeCommand) {
@@ -316,13 +363,24 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
                 State state = metadata.setState(event.args.newValue, channelConfig.itemType, channelConfig.incomingUnit,
                         channelConfig.inverted);
+
                 if (state != null) {
-                    try {
-                        updateState(metadata.id, state);
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId,
-                                metadata.id, state.toFullString(), e.getMessage());
+                    if (supportsColor) {
+                        if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType())
+                                && state instanceof HSBType color) {
+                            cachedColor = new HSBType(color.getHue(), color.getSaturation(),
+                                    cachedColor.getBrightness());
+                            state = cachedColor;
+                        }
+                        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())
+                                && state instanceof PercentType brightness) {
+                            cachedColor = new HSBType(cachedColor.getHue(), cachedColor.getSaturation(), brightness);
+                            thing.getChannels().stream()
+                                    .filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType()))
+                                    .forEach(c -> updateState(c.getUID(), cachedColor));
+                        }
                     }
+                    updateState(metadata.id, state);
                 }
             }
         }
@@ -373,14 +431,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
             if (!result.channels.isEmpty()) {
                 List<Channel> channels = new ArrayList<Channel>(result.channels.entrySet().stream()
-                        .sorted(Map.Entry.<String, Channel> comparingByKey()).map(m -> m.getValue()).toList());
+                        .sorted(Map.Entry.<String, Channel>comparingByKey()).map(m -> m.getValue()).toList());
                 builder.withChannels(channels);
+                if (getEquipmentTag(channels) instanceof SemanticTag equipmentTag) {
+                    builder.withSemanticEquipmentTag(equipmentTag);
+                }
             }
-
-            if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
-                thing.setSemanticEquipmentTag(getEquipmentTag());
-            }
-
             updateThing(builder.build());
 
             for (Channel channel : thing.getChannels()) {
@@ -410,6 +466,19 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 updateConfiguration(configuration);
                 logger.debug("Done values to configuration items");
             }
+
+            supportsColor = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
+                    .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value) //
+                    .filter(m -> m.containsKey(GREEN)).findAny().isPresent();
+            supportsWarmWhite = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
+                    .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value)
+                    .filter(m -> m.containsKey(WARM_WHITE)).findAny().isPresent();
+            supportsColdWhite = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
+                    .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value)
+                    .filter(m -> m.containsKey(COLD_WHITE)).findAny().isPresent();
+            logger.debug(
+                    "TODO remove this line: equipmentTag:{}, supportsColor:{}, supportsWarmWhite:{}, supportsColdWhite:{}",
+                    thing.getSemanticEquipmentTag(), supportsColor, supportsWarmWhite, supportsColdWhite);
         } catch (Exception e) {
             logger.error("Node {}. Error building channels and configuration", node.nodeId, e);
         }
@@ -426,45 +495,45 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         super.dispose();
     }
 
-    private @Nullable SemanticTag getEquipmentTag() {
-        Set<Integer> commandClassIds = thing.getChannels().stream()
+    private @Nullable SemanticTag getEquipmentTag(List<Channel> channels) {
+        Set<Integer> commandClassIds = channels.stream()
                 .map(channel -> channel.getConfiguration().as(ZwaveJSChannelConfiguration.class))
                 .filter(Objects::nonNull).map(config -> Integer.valueOf(config.commandClassId))
                 .collect(Collectors.toSet());
 
-        if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_LIGHT_SOURCE_EQUIPMENT)) {
+        if (commandClassIds.removeAll(COMMAND_SET_LIGHT_SOURCE_EQUIPMENT)) {
             return Equipment.LIGHT_SOURCE;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_ALARM_DEVICE_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_ALARM_DEVICE_EQUIPMENT)) {
             return Equipment.ALARM_DEVICE;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_AUDIO_VISUAL_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_AUDIO_VISUAL_EQUIPMENT)) {
             return Equipment.AUDIO_VISUAL;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_BATTERY_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_BATTERY_EQUIPMENT)) {
             return Equipment.BATTERY;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_CONTROL_DEVICE_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_CONTROL_DEVICE_EQUIPMENT)) {
             return Equipment.CONTROL_DEVICE;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_DISPLAY_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_DISPLAY_EQUIPMENT)) {
             return Equipment.DISPLAY;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_GATE_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_GATE_EQUIPMENT)) {
             return Equipment.GATE;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_HUMIDIFIER_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_HUMIDIFIER_EQUIPMENT)) {
             return Equipment.HUMIDIFIER;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_HVAC_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_HVAC_EQUIPMENT)) {
             return Equipment.HVAC;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_IRRIGATION_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_IRRIGATION_EQUIPMENT)) {
             return Equipment.IRRIGATION;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_LOCK_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_LOCK_EQUIPMENT)) {
             return Equipment.LOCK;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_METER_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_METER_EQUIPMENT)) {
             return Equipment.ELECTRIC_METER;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_POWER_SUPPLY_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_POWER_SUPPLY_EQUIPMENT)) {
             return Equipment.POWER_SUPPLY;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_SENSOR_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_SENSOR_EQUIPMENT)) {
             return Equipment.SENSOR;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_THERMOSTAT_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_THERMOSTAT_EQUIPMENT)) {
             return Equipment.THERMOSTAT;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_WINDOW_COVERING_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_WINDOW_COVERING_EQUIPMENT)) {
             return Equipment.WINDOW_COVERING;
-        } else if (commandClassIds.removeAll(CommandClassConstants.COMMAND_SET_ZONE_EQUIPMENT)) {
+        } else if (commandClassIds.removeAll(COMMAND_SET_ZONE_EQUIPMENT)) {
             return Equipment.ZONE;
         }
         return null;
