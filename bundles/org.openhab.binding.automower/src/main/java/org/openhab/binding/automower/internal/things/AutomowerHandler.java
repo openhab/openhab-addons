@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -1198,11 +1199,13 @@ public class AutomowerHandler extends BaseThingHandler {
                         } else {
                             updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
                         }
+
+                        // lastTimeCompleted is in seconds, convert it to milliseconds
                         Long lastTimeCompleted = workArea.getLastTimeCompleted();
                         // If lastTimeCompleted is 0 it means the work area has never been completed
-                        if ((lastTimeCompleted != null) && !lastTimeCompleted.equals(0L)) {
-                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
-                                    new DateTimeType(toZonedDateTime(workArea.getLastTimeCompleted(), mowerZoneId)));
+                        if ((lastTimeCompleted != null) && (lastTimeCompleted != 0L)) {
+                            updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), new DateTimeType(
+                                    toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerZoneId)));
                         } else {
                             updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
                         }
