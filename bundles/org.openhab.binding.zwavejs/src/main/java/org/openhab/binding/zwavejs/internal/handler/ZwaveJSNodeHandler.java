@@ -95,10 +95,27 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private boolean configurationAsChannels = false;
     protected ScheduledExecutorService executorService = scheduler;
 
-    private boolean supportsColor = false;
-    private boolean supportsWarmWhite = false;
-    private boolean supportsColdWhite = false;
-    private HSBType cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
+    private static class ColorInfo {
+        private boolean supportsColor;
+        private boolean supportsWarmWhite;
+        private boolean supportsColdWhite;
+        private HSBType cachedColor;
+
+        public ColorInfo() {
+            supportsColor = false;
+            supportsWarmWhite = false;
+            supportsColdWhite = false;
+            cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
+        }
+
+        @Override
+        public String toString() {
+            return "ColorInfo [supportsColor=" + supportsColor + ", supportsWarmWhite=" + supportsWarmWhite
+                    + ", supportsColdWhite=" + supportsColdWhite + ", cachedColor=" + cachedColor + "]";
+        }
+    }
+
+    private final Map<Integer, ColorInfo> colorInfos = new HashMap<>();
 
     public ZwaveJSNodeHandler(final Thing thing, final ZwaveJSTypeGenerator typeGenerator) {
         super(thing);
@@ -170,7 +187,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
 
-        boolean isColorChannelCommand = supportsColor && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
+        ColorInfo colorInfo = colorInfos.get(channelConfig.endpoint);
+        boolean isColorChannelCommand = colorInfo != null && colorInfo.supportsColor
+                && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
 
         if (command instanceof OnOffType onOffCommand) {
             if (isColorChannelCommand) {
@@ -183,8 +202,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         // note: HSBType is a child of PercentType so we must explicitly NOT execute this block in such case
         if (PercentType.class.equals(command.getClass()) && (command instanceof PercentType percentTypeCommand)) {
-            if (isColorChannelCommand) {
-                command = new HSBType(cachedColor.getHue(), cachedColor.getSaturation(), percentTypeCommand);
+            if (isColorChannelCommand && colorInfo != null) {
+                command = new HSBType(colorInfo.cachedColor.getHue(), colorInfo.cachedColor.getSaturation(),
+                        percentTypeCommand);
             } else {
                 int newValue = percentTypeCommand.intValue();
                 if (channelConfig.inverted) {
@@ -197,7 +217,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
         }
         if (command instanceof HSBType hsbTypeCommand) {
-            cachedColor = hsbTypeCommand;
+            if (isColorChannelCommand && colorInfo != null) {
+                colorInfo.cachedColor = hsbTypeCommand;
+            }
             HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
             int[] rgb = ColorUtil.hsbToRgb(hsbFull);
             if (channelUID.getId().contains(HEX)) { // TODO it is not obvious if there is a better way to do this
@@ -207,11 +229,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 colorMap.put(RED, rgb[0]);
                 colorMap.put(GREEN, rgb[1]);
                 colorMap.put(BLUE, rgb[2]);
-                if (supportsColdWhite) {
-                    colorMap.put(COLD_WHITE, 0);
-                }
-                if (supportsWarmWhite) {
-                    colorMap.put(WARM_WHITE, 0);
+                if (colorInfo != null) {
+                    if (colorInfo.supportsColdWhite) {
+                        colorMap.put(COLD_WHITE, 0);
+                    }
+                    if (colorInfo.supportsWarmWhite) {
+                        colorMap.put(WARM_WHITE, 0);
+                    }
                 }
                 zwaveCommand.value = colorMap;
             }
@@ -219,7 +243,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 // schedule brightness command(s) for dimmer channel(s)
                 PercentType brightness = hsbTypeCommand.getBrightness();
                 thing.getChannels().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType()))
-                        .forEach(c -> scheduler.submit(() -> handleCommand(c.getUID(), brightness)));
+                        .forEach(c -> {
+                            if (c.getConfiguration()
+                                    .as(ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
+                                    && cf.endpoint == channelConfig.endpoint) {
+                                scheduler.submit(() -> handleCommand(c.getUID(), brightness));
+                            }
+                        });
             }
         } else if (command instanceof QuantityType<?> quantityCommand) {
             Unit<?> unit = UnitUtils.parseUnit(channelConfig.incomingUnit);
@@ -366,27 +396,34 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         channelConfig.inverted);
 
                 if (state != null) {
-                    if (supportsColor) {
+                    ColorInfo colorInfo = colorInfos.get(channelConfig.endpoint);
+                    if (colorInfo != null && colorInfo.supportsColor) {
                         if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType())
                                 && state instanceof HSBType color) {
-                            cachedColor = new HSBType(color.getHue(), color.getSaturation(),
-                                    cachedColor.getBrightness());
-                            state = cachedColor;
+                            colorInfo.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
+                                    colorInfo.cachedColor.getBrightness());
+                            state = colorInfo.cachedColor;
                         }
                         if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())
                                 && state instanceof PercentType brightness) {
-                            cachedColor = new HSBType(cachedColor.getHue(), cachedColor.getSaturation(), brightness);
+                            colorInfo.cachedColor = new HSBType(colorInfo.cachedColor.getHue(),
+                                    colorInfo.cachedColor.getSaturation(), brightness);
                             thing.getChannels().stream()
-                                    .filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType()))
-                                    .forEach(c -> updateState(c.getUID(), cachedColor));
+                                    .filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType())).forEach(c -> {
+                                        if (c.getConfiguration().as(
+                                                ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
+                                                && cf.endpoint == channelConfig.endpoint) {
+                                            updateState(c.getUID(), colorInfo.cachedColor);
+                                        }
+                                    });
                         }
                     }
-                try {
-                    updateState(metadata.id, state);
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId,
-                        metadata.id, state.toFullString(), e.getMessage());
-                }
+                    try {
+                        updateState(metadata.id, state);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId,
+                                metadata.id, state.toFullString(), e.getMessage());
+                    }
                 }
             }
         }
@@ -487,17 +524,24 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 logger.debug("Node {}. Done values to configuration items", node.nodeId);
             }
 
-            supportsColor = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
-                    .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value) //
-                    .filter(m -> m.containsKey(GREEN)).findAny().isPresent();
-            supportsWarmWhite = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
-                    .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value)
-                    .filter(m -> m.containsKey(WARM_WHITE)).findAny().isPresent();
-            supportsColdWhite = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
-                    .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value)
-                    .filter(m -> m.containsKey(COLD_WHITE)).findAny().isPresent();
-            logger.debug("Node {}. supportsColor:{}, supportsWarmWhite:{}, supportsColdWhite:{}", node.nodeId,
-                    supportsColor, supportsWarmWhite, supportsColdWhite);
+            node.values.stream().filter(value -> value.commandClass == COMMAND_CLASS_SWITCH_COLOR)
+                    .filter(value -> value.value instanceof Map).forEach(value -> {
+                        Map<?, ?> map = (Map<?, ?>) value.value;
+                        boolean supportsColor = map.containsKey(GREEN);
+                        boolean supportsWarmWhite = map.containsKey(WARM_WHITE);
+                        boolean supportsColdWhite = map.containsKey(COLD_WHITE);
+                        if (supportsColor || supportsWarmWhite || supportsColdWhite) {
+                            ColorInfo colorInfo = colorInfos.getOrDefault(value.endpoint, new ColorInfo());
+                            colorInfo.supportsColor = supportsColor;
+                            colorInfo.supportsWarmWhite = supportsWarmWhite;
+                            colorInfo.supportsColdWhite = supportsColdWhite;
+                            colorInfos.put(value.endpoint, colorInfo);
+                        }
+                    });
+            if (logger.isDebugEnabled()) {
+                colorInfos.entrySet()
+                        .forEach(e -> logger.debug("Node {}, Endpoint {}, {}", node.nodeId, e.getKey(), e.getValue()));
+            }
         } catch (Exception e) {
             logger.error("Node {}. Error building channels and configuration", node.nodeId, e);
         }
