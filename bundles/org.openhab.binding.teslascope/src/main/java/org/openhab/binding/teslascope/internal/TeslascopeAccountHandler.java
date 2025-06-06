@@ -51,8 +51,8 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     private @Nullable TeslascopeAccountConfiguration config;
     protected ScheduledExecutorService executorService = this.scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
-    private @NonNullByDefault({}) TeslascopeWebTargets webTargets;
     private HttpClient httpClient = new HttpClient();
+    private @NonNullByDefault({}) TeslascopeWebTargets webTargets;
     private String apiKey = "";
 
     private final Gson gson = new Gson();
@@ -72,6 +72,20 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     public ThingUID getUID() {
         logger.info("thing.getUID() = {}", thing.getUID());
         return thing.getUID();
+    }
+
+    public String getVehicleList() {
+        try {
+            return webTargets.getVehicleList(apiKey);
+        } catch (TeslascopeAuthenticationException e) {
+            logger.debug("Unexpected authentication error connecting to Teslascope API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return "";
+        } catch (TeslascopeCommunicationException e) {
+            logger.debug("Unexpected error connecting to Teslascope API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return "";
+        }
     }
 
     @Override

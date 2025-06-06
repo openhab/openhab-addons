@@ -30,7 +30,7 @@ public class TeslascopeBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID TESLASCOPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
-    public static final ThingTypeUID TESLASCOPE_THING = new ThingTypeUID(BINDING_ID, "vehicle");
+    public static final ThingTypeUID TESLASCOPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
     // List of all Channel ids
     public static final String CHANNEL_VIN = "vin";
@@ -117,5 +117,5 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_WIPER_BLADE_HEATER = "wiper-blade-heater";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT, TESLASCOPE_THING);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT, TESLASCOPE_VEHICLE);
 }

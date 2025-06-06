@@ -30,6 +30,6 @@ public class VehicleList {
     public String vin = "";
     public String name = "";
 
-    private VehicleList() {
+    public VehicleList() {
     }
 }

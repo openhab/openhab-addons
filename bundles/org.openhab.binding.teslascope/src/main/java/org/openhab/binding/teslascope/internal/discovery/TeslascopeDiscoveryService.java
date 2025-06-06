@@ -14,14 +14,22 @@ package org.openhab.binding.teslascope.internal.discovery;
 
 import static org.openhab.binding.teslascope.internal.TeslascopeBindingConstants.*;
 
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teslascope.internal.TeslascopeAccountHandler;
+import org.openhab.binding.teslascope.internal.api.VehicleList;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 /**
  * The TeslascopeDiscoveryService is responsible for auto detecting a Tesla
@@ -37,8 +45,14 @@ public class TeslascopeDiscoveryService extends AbstractThingHandlerDiscoverySer
     private Logger logger = LoggerFactory.getLogger(TeslascopeDiscoveryService.class);
     private @NonNullByDefault({}) ThingUID bridgeUid;
 
+    private final Gson gson = new Gson();
+
     public TeslascopeDiscoveryService() {
         super(TeslascopeAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, false);
+    }
+
+    protected String getVehicleList() {
+        return getVehicleList();
     }
 
     @Override
@@ -48,22 +62,21 @@ public class TeslascopeDiscoveryService extends AbstractThingHandlerDiscoverySer
     }
 
     private void discover() {
-        /* getapi() and parse the list..... */
-        /*
-         * VehicleList vehicleList = getApi();
-         * int found = 0;
-         * if (api != null) {
-         * HashMap<String, Object> properties = new HashMap<>();
-         * for (int i = 0; i < api.info.property.length; i++) {
-         * for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-         * properties.put("uuid", api.info.property[i].heatpump[j].id);
-         * ThingUID uid = new ThingUID(THING_TYPE_HWS, bridgeUid, api.info.property[i].heatpump[j].id);
-         * thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
-         * .withRepresentationProperty("uuid").withLabel("Teslascope").build());
-         * }
-         * }
-         * }
-         */
+        String responseVehicleList = getVehicleList();
+        logger.info("Vehicle List = {}", responseVehicleList);
+        HashMap<String, Object> properties = new HashMap<>();
+        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+        VehicleList vehicleList = new VehicleList();
+        for (int i = 0; i < jsonArrayVehicleList.size(); i++) {
+            vehicleList = gson.fromJson(jsonArrayVehicleList.get(i), VehicleList.class);
+            if (vehicleList == null) {
+                return;
+            }
+            properties.put("vin", vehicleList.vin);
+            ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUid, vehicleList.publicId);
+            thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
+                    .withRepresentationProperty("publicID").withLabel("Teslascope" + vehicleList.publicId).build());
+        }
     }
 
     @Override
