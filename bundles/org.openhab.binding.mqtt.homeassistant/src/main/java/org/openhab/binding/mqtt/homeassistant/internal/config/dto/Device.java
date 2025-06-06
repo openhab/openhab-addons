@@ -13,61 +13,48 @@
 package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ListOrStringDeserializer;
-
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * Device configuration
  *
  * @author Jochen Klein - Initial contribution
  */
-public class Device {
-    @JsonAdapter(ListOrStringDeserializer.class)
-    protected @Nullable List<String> identifiers;
-    protected @Nullable List<Connection> connections;
-    protected @Nullable String manufacturer;
-    protected @Nullable String model;
-    protected @Nullable String name;
+public class Device extends AbstractConfiguration {
+    public Device(Map<String, Object> config) {
+        super(config);
+    }
 
-    @SerializedName("sw_version")
     protected @Nullable String swVersion;
 
     public @Nullable String getId() {
-        List<String> identifiers = this.identifiers;
+        List<String> identifiers = getIdentifiers();
         return identifiers == null ? null : String.join("_", identifiers);
     }
 
-    @Nullable
-    public List<Connection> getConnections() {
-        return connections;
+    public @Nullable String getManufacturer() {
+        return getOptionalString("manufacturer");
     }
 
-    @Nullable
-    public String getManufacturer() {
-        return manufacturer;
+    public @Nullable String getModel() {
+        return getOptionalString("model");
     }
 
-    @Nullable
-    public String getModel() {
-        return model;
+    public @Nullable String getModelId() {
+        return getOptionalString("model_id");
     }
 
-    @Nullable
-    public String getName() {
-        return name;
+    public @Nullable String getName() {
+        return getOptionalString("name");
     }
 
-    @Nullable
-    public String getSwVersion() {
-        return swVersion;
+    public @Nullable String getSwVersion() {
+        return getOptionalString("sw_version");
     }
 
-    @Nullable
-    public List<String> getIdentifiers() {
-        return identifiers;
+    public @Nullable List<String> getIdentifiers() {
+        return getOptionalStringList("identifiers");
     }
 }

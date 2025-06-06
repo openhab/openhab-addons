@@ -1,5 +1,6 @@
 {
 	"device": {
 		"ids": "A"
-	}
+	},
+	"command_topic": "command"
 }

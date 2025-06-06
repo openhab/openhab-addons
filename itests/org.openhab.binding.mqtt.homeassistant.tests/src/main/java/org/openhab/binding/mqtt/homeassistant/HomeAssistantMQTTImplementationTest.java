@@ -49,7 +49,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinka
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
@@ -59,7 +58,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homeassistant MQTT discovery device
@@ -169,7 +167,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         UnitProvider unitProvider = mock(UnitProvider.class);
 
         final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
-        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        Gson gson = new Gson();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(

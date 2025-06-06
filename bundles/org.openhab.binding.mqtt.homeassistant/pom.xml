@@ -120,6 +120,7 @@
                 <package>awesomeversion==24.6.0</package>
                 <package>Jinja2==3.1.6</package>
                 <package>python-slugify==8.0.4</package>
+                <package>voluptuous==0.15.2</package>
               </packages>
             </configuration>
           </execution>
@@ -136,6 +137,7 @@
                 <package>awesomeversion==24.6.0</package>
                 <package>Jinja2==3.1.6</package>
                 <package>python-slugify==8.0.4</package>
+                <package>voluptuous==0.15.2</package>
               </packages>
             </configuration>
           </execution>

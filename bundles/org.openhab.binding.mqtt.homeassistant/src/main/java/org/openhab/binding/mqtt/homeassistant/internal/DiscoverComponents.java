@@ -103,6 +103,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         HaID haID = new HaID(topic);
         String config = new String(payload);
         AbstractComponent<?> component = null;
+        ComponentDiscovered discoveredListener = this.discoveredListener;
 
         if (config.length() > 0) {
             try {
@@ -122,10 +123,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
                 logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
                         haID.objectID, haID.component, e.getMessage());
             }
-        } else {
-            if (discoveredListener != null) {
-                discoveredListener.componentRemoved(haID);
-            }
+        } else if (discoveredListener != null) {
+            discoveredListener.componentRemoved(haID);
         }
     }
 

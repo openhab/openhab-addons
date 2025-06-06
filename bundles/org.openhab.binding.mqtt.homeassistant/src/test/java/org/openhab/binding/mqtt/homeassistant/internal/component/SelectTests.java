@@ -28,11 +28,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class SelectTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "select/0x54ef44100064b266";
 
-    @SuppressWarnings("null")
     @Test
     public void testSelectWithStateAndCommand() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -44,7 +44,7 @@ public class SelectTests extends AbstractComponentTests {
                         "availability_mode": "all",
                         "command_topic": "zigbee2mqtt/gbos/set/approach_distance",
                         "device": {
-                            "configuration_url": "#/device/0x54ef44100064b266/info",
+                            "configuration_url": "http://localhost/#/device/0x54ef44100064b266/info",
                             "identifiers": [
                                 "zigbee2mqtt_0x54ef44100064b266"
                             ],
@@ -87,7 +87,6 @@ public class SelectTests extends AbstractComponentTests {
         assertNotPublished("zigbee2mqtt/gbos/set/approach_distance", "bogus");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testSelectWithCommandTemplate() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -100,7 +99,7 @@ public class SelectTests extends AbstractComponentTests {
                         "command_topic": "zigbee2mqtt/gbos/set/approach_distance",
                         "command_template": "set to {{ value }}",
                         "device": {
-                            "configuration_url": "#/device/0x54ef44100064b266/info",
+                            "configuration_url": "http://localhost/#/device/0x54ef44100064b266/info",
                             "identifiers": [
                                 "zigbee2mqtt_0x54ef44100064b266"
                             ],
