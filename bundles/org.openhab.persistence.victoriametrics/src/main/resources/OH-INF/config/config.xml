@@ -87,7 +87,8 @@
 
 		<parameter name="addUnitTag" type="boolean" required="true" groupName="tags">
 			<label>Add Unit Tag</label>
-			<description>Should the item measurement unit symbol be included as tag "unit" on QuantityType items? If no unit is set tag will not be added.</description>
+			<description>Should the item measurement unit symbol be included as tag "unit" on QuantityType items? If no unit is
+				set tag will not be added.</description>
 			<default>false</default>
 		</parameter>
 
