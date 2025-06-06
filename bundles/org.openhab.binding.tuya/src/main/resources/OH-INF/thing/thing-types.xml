@@ -89,13 +89,9 @@
 				<limitToOptions>true</limitToOptions>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="10" unit="s">
+			<parameter name="pollingInterval" type="integer" min="0" unit="s">
 				<label>Polling Interval</label>
-				<options>
-					<option value="0">disabled</option>
-				</options>
-				<default>0</default>
-				<limitToOptions>false</limitToOptions>
+				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

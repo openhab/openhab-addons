@@ -50,34 +50,6 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
     }
 
     @Override
-    public void channelActive(@NonNullByDefault({}) ChannelHandlerContext ctx) throws Exception {
-        if (!ctx.channel().hasAttr(TuyaDevice.DEVICE_ID_ATTR) || !ctx.channel().hasAttr(SESSION_KEY_ATTR)) {
-            logger.warn("{}: Failed to retrieve deviceId or sessionKey from ChannelHandlerContext. This is a bug.",
-                    Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));
-            return;
-        }
-        String deviceId = ctx.channel().attr(TuyaDevice.DEVICE_ID_ATTR).get();
-
-        logger.debug("{}{}: Connection established.", deviceId,
-                Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));
-        deviceStatusListener.connectionStatus(true);
-    }
-
-    @Override
-    public void channelInactive(@NonNullByDefault({}) ChannelHandlerContext ctx) throws Exception {
-        if (!ctx.channel().hasAttr(TuyaDevice.DEVICE_ID_ATTR) || !ctx.channel().hasAttr(SESSION_KEY_ATTR)) {
-            logger.warn("{}: Failed to retrieve deviceId or sessionKey from ChannelHandlerContext. This is a bug.",
-                    Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));
-            return;
-        }
-        String deviceId = ctx.channel().attr(TuyaDevice.DEVICE_ID_ATTR).get();
-
-        logger.debug("{}{}: Connection terminated.", deviceId,
-                Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));
-        deviceStatusListener.connectionStatus(false);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void channelRead(@NonNullByDefault({}) ChannelHandlerContext ctx, @NonNullByDefault({}) Object msg)
             throws Exception {
@@ -137,6 +109,8 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
                     return;
                 }
                 ctx.channel().attr(TuyaDevice.SESSION_KEY_ATTR).set(newSessionKey);
+
+                deviceStatusListener.connectionStatus(true);
             }
         }
     }
