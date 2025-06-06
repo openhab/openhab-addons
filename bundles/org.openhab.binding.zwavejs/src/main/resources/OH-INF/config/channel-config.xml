@@ -31,6 +31,10 @@
 			<advanced>true</advanced>
 			<default>1.0</default>
 		</parameter>
+		<parameter name="propertyKey" type="text">
+			<label>Property Key</label>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="writeProperty" type="text">
 			<label>Writeproperty</label>
 			<advanced>true</advanced>
@@ -63,6 +67,10 @@
 			<label>Factor</label>
 			<advanced>true</advanced>
 			<default>1.0</default>
+		</parameter>
+		<parameter name="propertyKey" type="text">
+			<label>Property Key</label>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writeProperty" type="text">
 			<label>Writeproperty</label>
