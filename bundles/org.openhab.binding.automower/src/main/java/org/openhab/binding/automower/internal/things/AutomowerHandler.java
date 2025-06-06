@@ -1198,7 +1198,9 @@ public class AutomowerHandler extends BaseThingHandler {
                         } else {
                             updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), UnDefType.NULL);
                         }
-                        if ((workArea.getLastTimeCompleted() != null) && (workArea.getLastTimeCompleted() != 0)) {
+                        Long lastTimeCompleted = workArea.getLastTimeCompleted();
+                        // If lastTimeCompleted is 0 it means the work area has never been completed
+                        if ((lastTimeCompleted != null) && !lastTimeCompleted.equals(0L)) {
                             updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
                                     new DateTimeType(toZonedDateTime(workArea.getLastTimeCompleted(), mowerZoneId)));
                         } else {
