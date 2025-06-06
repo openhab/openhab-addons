@@ -4,6 +4,8 @@ This service allows you to persist and query states using the [VictoriaMetrics](
 
 VictoriaMetrics integrates seamlessly with powerful visualization tools such as [Grafana](https://grafana.com/).
 
+The binding has been tested with VictoriaMetrics free 1.90.0+, enterprise version has not been tested yet.
+
 ## Database Structure
 
 * Item states are persisted in *measurement* points with names equal to the item's name, alias, or defined via metadata. Each measurement includes a mandatory tag named "item" containing the item name.
