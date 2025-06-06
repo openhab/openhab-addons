@@ -376,14 +376,14 @@ public abstract class BaseMetadata {
             int blue = map.get(BLUE) instanceof Number n ? n.intValue() : -1;
             int warm = map.get(WARM_WHITE) instanceof Number n ? n.intValue() : -1;
             int cold = map.get(COLD_WHITE) instanceof Number n ? n.intValue() : -1;
-            if (red >= 0 && green >= 0 && blue >= 0 && warm < 0 && cold < 0) {
+            if (red >= 0 && green >= 0 && blue >= 0 && warm <= 0 && cold <= 0) {
                 return HSBType.fromRGB(red, green, blue);
-            } else if (warm >= 0 && cold >= 0 && (warm + cold > 0)) {
+            } else if (warm > 0 && cold > 0) {
                 return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(6500 - (4000 * warm / (warm + cold))));
             } else if (warm > 0) {
-                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500));
+                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(6500 - (4000 * warm / 255)));
             } else if (cold > 0) {
-                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(6500));
+                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500 + (4000 * cold / 255)));
             }
             return UnDefType.UNDEF;
         } else {
