@@ -24,6 +24,6 @@ public class Value {
     public int ccVersion;
     public Metadata metadata;
     public Object value;
-    public String propertyKey;
+    public Object propertyKey;
     public String propertyKeyName;
 }

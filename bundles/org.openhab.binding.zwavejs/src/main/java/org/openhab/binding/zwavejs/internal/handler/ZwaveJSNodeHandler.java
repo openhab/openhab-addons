@@ -427,14 +427,23 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 }
             }
             if (!channelsToRemove.isEmpty()) {
+                logger.trace(null, "Node {}. Removing {} channels", node.nodeId, channelsToRemove.size());
                 builder.withoutChannels(channelsToRemove);
             }
             if (!result.channels.isEmpty()) {
                 List<Channel> channels = new ArrayList<Channel>(result.channels.entrySet().stream()
-                        .sorted(Map.Entry.<String, Channel>comparingByKey()).map(m -> m.getValue()).toList());
+                        .sorted(Map.Entry.<String, Channel> comparingByKey()).map(m -> m.getValue()).toList());
+                logger.trace(null, "Node {}. Adding {} channels", node.nodeId, channels.size());
                 builder.withChannels(channels);
-                if (getEquipmentTag(channels) instanceof SemanticTag equipmentTag) {
+            }
+
+            if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
+                SemanticTag equipmentTag = getEquipmentTag();
+                if (equipmentTag != null) {
+                    logger.debug("Node {}. Setting semantic equipment tag {}", node.nodeId, equipmentTag);
                     builder.withSemanticEquipmentTag(equipmentTag);
+                } else {
+                    logger.debug("Node {}. No semantic equipment tag set", node.nodeId);
                 }
             }
             updateThing(builder.build());
@@ -460,13 +469,18 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     if (!channelIds.contains(entry.getKey())) {
                         logger.trace("Node {}. Setting configuration item {} to {}", node.nodeId, entry.getKey(),
                                 entry.getValue());
-                        configuration.put(entry.getKey(), entry.getValue());
+                        try {
+                            configuration.put(entry.getKey(), entry.getValue());
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("Node {}. Error setting configuration item {} to {}: {}", node.nodeId,
+                                    entry.getKey(), entry.getValue(), e.getMessage());
+                        }
                     }
                 }
                 updateConfiguration(configuration);
-                logger.debug("Done values to configuration items");
+                logger.debug("Node {}. Done values to configuration items", node.nodeId);
             }
-
+          
             supportsColor = node.values.stream().filter(v -> v.commandClass == COMMAND_CLASS_SWITCH_COLOR)
                     .filter(v -> (v.value instanceof Map)).map(v -> (Map<?, ?>) v.value) //
                     .filter(m -> m.containsKey(GREEN)).findAny().isPresent();
@@ -495,8 +509,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         super.dispose();
     }
 
-    private @Nullable SemanticTag getEquipmentTag(List<Channel> channels) {
-        Set<Integer> commandClassIds = channels.stream()
+    private @Nullable SemanticTag getEquipmentTag() {
+        Set<Integer> commandClassIds = thing.getChannels().stream()
                 .map(channel -> channel.getConfiguration().as(ZwaveJSChannelConfiguration.class))
                 .filter(Objects::nonNull).map(config -> Integer.valueOf(config.commandClassId))
                 .collect(Collectors.toSet());

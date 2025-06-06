@@ -91,7 +91,7 @@ public abstract class BaseMetadata {
     public @Nullable Object writeProperty;
     public @Nullable Map<String, String> optionList;
     public @Nullable String commandClassName;
-    public @Nullable String propertyKey;
+    public @Nullable Object propertyKey;
 
     protected final Object value;
     protected final @Nullable Integer min;
@@ -183,9 +183,7 @@ public abstract class BaseMetadata {
      * Normalizes the label based on the provided parameters.
      *
      * @param label the label
-     *
      * @param endpoint the endpoint
-     *
      * @param propertyName the property name
      *
      * @return the normalized label
@@ -223,14 +221,17 @@ public abstract class BaseMetadata {
                 .replace(" - ", "-").replace("( ", "(").replace(" )", ")");
     }
 
-    private String normalizeString(@Nullable String input) {
-        return input != null && !input.isBlank()
-                ? "-" + input.trim().toLowerCase().replaceAll(" ", "-").replaceAll("[^a-zA-Z0-9\\-]", "")
-                : "";
+    private String normalizeString(@Nullable Object input) {
+        if (input instanceof Number numberInput) {
+            return "-" + numberInput.toString();
+        } else if (input instanceof String strInput) {
+            return "-" + strInput.trim().toLowerCase().replaceAll(" ", "-").replaceAll("[^a-zA-Z0-9\\-]", "");
+        }
+        return "";
     }
 
     private String generateId(String commandClassName, int endpoint, @Nullable String propertyName,
-            @Nullable String propertyKey) {
+            @Nullable Object propertyKey) {
         String id = normalizeString(commandClassName).replaceFirst("-", "");
         String[] splitted;
         if (propertyName != null && !propertyName.contains("unknown")) {
@@ -265,13 +266,9 @@ public abstract class BaseMetadata {
      * Converts the given value to a State object based on the item type and unit.
      *
      * @param value the value to convert
-     *
      * @param itemType the item type
-     *
      * @param unit the unit of the value
-     *
      * @param inverted whether the value should be inverted
-     *
      * @param factor the factor to apply to the value
      *
      * @return the converted State object, or UnDefType.NULL if the value is null
@@ -394,11 +391,8 @@ public abstract class BaseMetadata {
      * Corrects the metadata type based on the provided value, command class name, and optional list of options.
      *
      * @param type The original metadata type.
-     *
      * @param value The value to determine the type from if the original type is ANY.
-     *
      * @param commandClassName The name of the command class.
-     *
      * @param optionList An optional list of options that may influence the type correction.
      *
      * @return The corrected metadata type.
@@ -424,7 +418,6 @@ public abstract class BaseMetadata {
      * Determines the metadata type from the given value.
      *
      * @param value The value to determine the metadata type from.
-     *
      * @param commandClassName The name of the command class associated with the value.
      *
      * @return The determined metadata type.
