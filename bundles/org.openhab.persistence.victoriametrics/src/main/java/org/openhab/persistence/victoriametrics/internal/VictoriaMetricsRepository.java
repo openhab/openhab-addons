@@ -32,6 +32,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import okhttp3.Protocol;
 import okhttp3.ResponseBody;
 
 /**
@@ -61,6 +62,7 @@ public class VictoriaMetricsRepository {
      * Default http client (we use okhttp3 for better performance)
      */
     private static final okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient.Builder()
+            .protocols(List.of(Protocol.HTTP_1_1)) // VictoriaMetrics supports HTTP/1.1
             .retryOnConnectionFailure(true).connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS).build();
 
