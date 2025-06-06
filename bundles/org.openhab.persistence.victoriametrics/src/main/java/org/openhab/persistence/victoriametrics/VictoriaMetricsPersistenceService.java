@@ -12,10 +12,7 @@
  */
 package org.openhab.persistence.victoriametrics;
 
-import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.TAG_CATEGORY_NAME;
-import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.TAG_ITEM_NAME;
-import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.TAG_LABEL_NAME;
-import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.TAG_TYPE_NAME;
+import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -42,6 +39,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemUtil;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.ModifiablePersistenceService;
@@ -307,6 +305,12 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
             if (configuration.isAddLabelTag()) {
                 String labelName = Objects.requireNonNullElse(itemLabel, "n/a");
                 pointBuilder.withTag(TAG_LABEL_NAME, labelName);
+            }
+            if (configuration.isAddCategoryTag() && state instanceof QuantityType<?> q) {
+                String unit = q.getUnit().getSymbol();
+                if (!unit.isBlank()) {
+                    pointBuilder.withTag(TAG_UNIT_NAME, unit);
+                }
             }
 
             victoriaMetadataService.getMetaData(alias)

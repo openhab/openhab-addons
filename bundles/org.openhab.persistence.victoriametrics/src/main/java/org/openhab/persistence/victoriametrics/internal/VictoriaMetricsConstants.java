@@ -26,6 +26,7 @@ public class VictoriaMetricsConstants {
     public static final String TAG_CATEGORY_NAME = "category";
     public static final String TAG_TYPE_NAME = "type";
     public static final String TAG_LABEL_NAME = "label";
+    public static final String TAG_UNIT_NAME = "unit";
     public static final String FIELD_SOURCE_NAME = "source";
     public static final int QUERY_MAX_POINTS = 1000;
     public static final int QUERY_DEFAULT_STEP = 60; // seconds

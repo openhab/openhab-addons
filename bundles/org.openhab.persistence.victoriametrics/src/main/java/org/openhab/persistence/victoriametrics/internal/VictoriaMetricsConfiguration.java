@@ -37,6 +37,7 @@ public class VictoriaMetricsConfiguration {
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
+    public static final String ADD_UNIT_TAG_PARAM = "addUnitTag";
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
     private final String url;
     private final String user;
@@ -47,6 +48,7 @@ public class VictoriaMetricsConfiguration {
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
     private final boolean addLabelTag;
+    private final boolean addUnitTag;
 
     public VictoriaMetricsConfiguration(Map<String, Object> config) {
         // Set VictoriaMetrics default port
@@ -59,6 +61,7 @@ public class VictoriaMetricsConfiguration {
         addCategoryTag = ConfigParser.valueAsOrElse(config.get(ADD_CATEGORY_TAG_PARAM), Boolean.class, false);
         addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
         addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
+        addUnitTag = ConfigParser.valueAsOrElse(config.get(ADD_UNIT_TAG_PARAM), Boolean.class, false);
     }
 
     public boolean isValid() {
@@ -121,11 +124,16 @@ public class VictoriaMetricsConfiguration {
         return addLabelTag;
     }
 
+    public boolean isAddUnitTag() {
+        return addUnitTag;
+    }
+
     @Override
     public String toString() {
-        return "VictoriaMetricsConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
-                + " chars'" + " , token='" + token.length() + " chars'" + ", sourceName='" + sourceName
-                + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag=" + addCategoryTag + ", addTypeTag="
-                + addTypeTag + ", addLabelTag=" + addLabelTag + '}';
+        return "VictoriaMetricsConfiguration{" + "url='" + url + "', " + "user='" + user + "', " + "password='"
+                + password.length() + " chars'" + " , " + "token='" + token.length() + " chars'" + ", " + "sourceName='"
+                + sourceName + ", " + "replaceUnderscore=" + replaceUnderscore + ", " + "addCategoryTag="
+                + addCategoryTag + ", " + "addTypeTag=" + addTypeTag + ", " + "addLabelTag=" + addLabelTag + ", "
+                + "addUnitTag=" + addUnitTag + '}';
     }
 }

@@ -4,7 +4,7 @@ This service allows you to persist and query states using the [VictoriaMetrics](
 
 VictoriaMetrics integrates seamlessly with powerful visualization tools such as [Grafana](https://grafana.com/).
 
-The binding has been tested with VictoriaMetrics free 1.90.0+, enterprise version has not been tested yet.
+The binding has been tested with VictoriaMetrics free and standalone 1.90.0+, enterprise version or different setups have not been tested yet but should work as well. The service supports both the open source and enterprise versions of VictoriaMetrics.
 
 ## Database Structure
 
@@ -14,7 +14,7 @@ The binding has been tested with VictoriaMetrics free 1.90.0+, enterprise versio
   * **float** for DecimalType and QuantityType
   * **integer** for `OnOffType`, `OpenClosedType` (stored as 0 or 1), and `DateTimeType` (milliseconds since epoch)
   * **string** for all other types
-* Optional additional tags (category, label, or type) can be added to each data point.
+* Optional additional tags (category, label, unit or type) can be added to each data point.
 
 Example entries for an item named "speedtest":
 
@@ -32,7 +32,7 @@ First, set up and run a [VictoriaMetrics](https://victoriametrics.com/) server. 
 Configure this service via the openHAB UI under `Settings` → `Other Services` → `VictoriaMetrics Persistence Service` or in the file `services/victoriametrics.cfg`. File-based configuration takes precedence over UI configuration.
 
 | Property          | Default                                        | Required | Description                                                                                   |
-| ----------------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| ----------------- | ---------------------------------------------- | -------- |-----------------------------------------------------------------------------------------------|
 | url               | [http://127.0.0.1:8428](http://127.0.0.1:8428) | Yes      | VictoriaMetrics server URL (default port: 8428)                                               |
 | user              |                                                | No       | Username for HTTP Basic Auth (optional, only if enabled on VictoriaMetrics)                   |
 | password          |                                                | No       | Password for HTTP Basic Auth (optional, only if enabled on VictoriaMetrics)                   |
@@ -42,6 +42,7 @@ Configure this service via the openHAB UI under `Settings` → `Other Services` 
 | addCategoryTag    | false                                          | Yes      | Include item's category as "category" tag                                                     |
 | addTypeTag        | false                                          | Yes      | Include item's type as "type" tag                                                             |
 | addLabelTag       | false                                          | Yes      | Include item's label as "label" tag (default to "n/a" if unset)                               |
+| addUnitTag        | false                                          | Yes      | Include item's unit as "unit" tag for QuantityType items when available                       |
 
 ## Customized Storage Options
 
