@@ -221,8 +221,8 @@ public abstract class BaseMetadata {
     }
 
     private String normalizeString(@Nullable Object input) {
-        if (input instanceof Number) {
-            return "-" + input.toString().trim().toLowerCase();
+        if (input instanceof Number numberInput) {
+            return "-" + numberInput.toString();
         } else if (input instanceof String strInput) {
             return "-" + strInput.trim().toLowerCase().replaceAll(" ", "-").replaceAll("[^a-zA-Z0-9\\-]", "");
         }
