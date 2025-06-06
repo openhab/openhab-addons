@@ -46,8 +46,7 @@ public class DoorbellHandler extends RingDeviceHandler {
     private int lastBattery = -1;
 
     public DoorbellHandler(Thing thing, Gson gson) {
-        super(thing);
-        this.gson = gson;
+        super(thing, gson);
     }
 
     @Override

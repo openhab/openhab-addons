@@ -45,8 +45,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
     private int lastBattery = -1;
 
     public OtherDeviceHandler(Thing thing, Gson gson) {
-        super(thing);
-        this.gson = gson;
+        super(thing, gson);
     }
 
     @Override

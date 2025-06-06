@@ -59,9 +59,11 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 
 ## Full Example
 
-NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring. The easiest way to currently get that is to define the account bridge and pull the device ID from the last event channel.
+NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring. 
+The easiest way to currently get that is to define the account bridge and pull the device ID from the last event channel.
 
-NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor authentication enabled. If you are using 2 factor authentication, Things MUST be set up through PaperUI
+NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor authentication enabled. 
+If you are using 2 factor authentication, Things MUST be set up through Main UI.
 
 ring.things:
 

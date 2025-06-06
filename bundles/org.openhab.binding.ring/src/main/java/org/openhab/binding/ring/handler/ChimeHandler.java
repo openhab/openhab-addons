@@ -39,8 +39,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ChimeHandler extends RingDeviceHandler {
     public ChimeHandler(Thing thing, Gson gson) {
-        super(thing);
-        this.gson = gson;
+        super(thing, gson);
     }
 
     @Override

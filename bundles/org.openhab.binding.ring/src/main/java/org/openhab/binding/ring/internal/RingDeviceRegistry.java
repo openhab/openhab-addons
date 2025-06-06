@@ -40,7 +40,7 @@ public class RingDeviceRegistry {
     /**
      * static Singleton instance.
      */
-    private final static RingDeviceRegistry INSTANCE = new RingDeviceRegistry();
+    private static final RingDeviceRegistry INSTANCE = new RingDeviceRegistry();
     /**
      * The logger.
      */

@@ -39,7 +39,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public abstract class AbstractRingHandler extends BaseThingHandler {
 
-    public Gson gson = new Gson();
+    public Gson gson;
 
     // Current status
     protected OnOffType status = OnOffType.OFF;
@@ -48,16 +48,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
 
     // Scheduler
     protected @Nullable ScheduledFuture<?> refreshJob;
-
-    /**
-     * There is no default constructor. We have to define a
-     * constructor with Thing object as parameter.
-     *
-     * @param thing
-     */
-    protected AbstractRingHandler(Thing thing) {
-        super(thing);
-    }
 
     protected AbstractRingHandler(Thing thing, Gson gson) {
         super(thing);

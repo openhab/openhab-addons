@@ -31,6 +31,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link RingDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -47,8 +49,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
      */
     protected @Nullable RingDevice device;
 
-    public RingDeviceHandler(Thing thing) {
-        super(thing);
+    public RingDeviceHandler(Thing thing, Gson gson) {
+        super(thing, gson);
     }
 
     /**

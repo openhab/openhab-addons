@@ -171,11 +171,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.description));
                     }
                     break;
-                /*
-                 * case CHANNEL_CONTROL_STATUS:
-                 * updateState(channelUID, status);
-                 * break;
-                 */
                 case CHANNEL_CONTROL_ENABLED:
                     updateState(channelUID, enabled);
                     break;

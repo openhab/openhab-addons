@@ -46,8 +46,7 @@ public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
 
     public StickupcamHandler(Thing thing, Gson gson) {
-        super(thing);
-        this.gson = gson;
+        super(thing, gson);
     }
 
     @Override
