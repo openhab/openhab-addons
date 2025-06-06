@@ -45,8 +45,7 @@ public class Doorbell extends AbstractRingDevice {
      * @return the device as DiscoveryResult instance.
      */
     @Override
-    public DiscoveryResult getDiscoveryResult() {
-        RingDeviceTO deviceTO = gson.fromJson(getJsonObject(), RingDeviceTO.class);
+    public DiscoveryResult getDiscoveryResult(RingDeviceTO deviceTO) {
         DiscoveryResult result = DiscoveryResultBuilder
                 .create(new ThingUID("ring:doorbell:" + getRingAccount().getThingId() + ":" + deviceTO.id))
                 .withLabel("Ring Video Doorbell - " + deviceTO.description).build();

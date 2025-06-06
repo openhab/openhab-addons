@@ -32,7 +32,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * The handler for a Ring Video Stickup Cam.
@@ -104,7 +103,7 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (device == null) {
             initialize();
         }
-        RingDeviceTO deviceTO = gson.fromJson((JsonObject) device.getJsonObject(), RingDeviceTO.class);
+        RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
         if ((deviceTO != null) && (deviceTO.health.batteryPercentage != lastBattery)) {
             logger.debug("Battery Level: {}", deviceTO.battery);
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);

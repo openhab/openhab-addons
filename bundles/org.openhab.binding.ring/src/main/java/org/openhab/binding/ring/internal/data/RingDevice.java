@@ -36,7 +36,7 @@ public interface RingDevice {
      *
      * @return the device as DiscoveryResult instance.
      */
-    DiscoveryResult getDiscoveryResult();
+    DiscoveryResult getDiscoveryResult(RingDeviceTO deviceTO);
 
     /**
      * Get the registration status.
