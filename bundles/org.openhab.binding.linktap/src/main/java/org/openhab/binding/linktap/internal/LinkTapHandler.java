@@ -235,7 +235,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
                             strStore.put(DEVICE_CHANNEL_OH_VOLUME_LIMIT, String.valueOf(targetValue));
                             break;
                     }
-                } else if (command instanceof StringType stringCmd) {
+                } else if (command instanceof StringType) {
                     switch (channelUID.getId()) {
                         case DEVICE_CHANNEL_CHILD_LOCK: {
                             sendRequest(new LockReq(Integer.valueOf(command.toString())));

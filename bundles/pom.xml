@@ -250,6 +250,7 @@
     <module>org.openhab.binding.luxtronikheatpump</module>
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>
+    <module>org.openhab.binding.matter</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcd</module>
     <module>org.openhab.binding.mcp23017</module>

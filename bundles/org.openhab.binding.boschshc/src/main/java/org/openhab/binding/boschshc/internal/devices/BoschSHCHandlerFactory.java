@@ -117,6 +117,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         // Search for mapping for thing type and return handler for it if found. Otherwise return null.
         return supportedThingTypes.stream().filter(mapping -> mapping.thingTypeUID.equals(thingTypeUID)).findFirst()
-                .<@Nullable BaseThingHandler> map(mapping -> mapping.handlerSupplier.apply(thing)).orElse(null);
+                .map(mapping -> mapping.handlerSupplier.apply(thing)).orElse(null);
     }
 }

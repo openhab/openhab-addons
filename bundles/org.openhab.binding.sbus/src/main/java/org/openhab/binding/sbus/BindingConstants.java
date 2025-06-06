@@ -36,6 +36,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE = new ThingTypeUID(BINDING_ID, "temperature");
     public static final ThingTypeUID THING_TYPE_RGBW = new ThingTypeUID(BINDING_ID, "rgbw");
+    public static final ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
 
     // Channel IDs for Switch Device
     public static final String CHANNEL_SWITCH_STATE = "state";
@@ -55,4 +56,5 @@ public class BindingConstants {
     public static final String CHANNEL_TYPE_SWITCH = "switch-channel";
     public static final String CHANNEL_TYPE_DIMMER = "dimmer-channel";
     public static final String CHANNEL_TYPE_PAIRED = "paired-channel";
+    public static final String CHANNEL_TYPE_CONTACT = "contact-channel";
 }

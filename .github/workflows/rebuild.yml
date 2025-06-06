@@ -12,7 +12,7 @@
 name: Rebuild PR
 
 on:
-  pull_request:
+  pull_request_target:
     types: [labeled]
   workflow_dispatch:
     inputs:
@@ -52,12 +52,15 @@ jobs:
     - name: Checkout
       if: ${{ github.head_ref == '' && env.LABEL == 'rebuild' }}
       uses: actions/checkout@v4
+      with:
+        persist-credentials: false
 
     - name: Checkout merge
       if: ${{ github.head_ref != '' && env.LABEL == 'rebuild' }}
       uses: actions/checkout@v4
       with:
         ref: refs/pull/${{github.event.pull_request.number}}/merge
+        persist-credentials: false
 
     - name: List Jobs
       if: ${{ env.LABEL == 'rebuild' }}
