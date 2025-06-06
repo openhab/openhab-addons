@@ -48,6 +48,8 @@ import org.osgi.service.http.HttpService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 
 /**
  * The {@link SedifHandlerFactory} is responsible for creating things handlers.
@@ -64,9 +66,9 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
 
-    private static final DateTimeFormatter SEDIF_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
-    private static final DateTimeFormatter SEDIF_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-    private static final DateTimeFormatter SEDIF_LOCALDATETIME_FORMATTER = DateTimeFormatter
+    public static final DateTimeFormatter SEDIF_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    public static final DateTimeFormatter SEDIF_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    public static final DateTimeFormatter SEDIF_LOCALDATETIME_FORMATTER = DateTimeFormatter
             .ofPattern("uuuu-MM-dd' 'HH:mm:ss");
     // new DateTimeFormatterBuilder()
     // .appendPattern("\"uuuu-MM-dd[' ']HH:mm:ss\"").toFormatter();
@@ -93,7 +95,10 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
         adapter.registerSubtype(ContractDetail.class, "compteInfo", "ContractDetail");
         adapter.registerSubtype(MeterReading.class, "data", "Datas");
 
-        gson = new GsonBuilder().registerTypeAdapterFactory(adapter)
+        gson = new GsonBuilder().registerTypeAdapterFactory(adapter).setDateFormat("yyyy-MM-dd")
+                .registerTypeAdapter(LocalDate.class,
+                        (JsonSerializer<LocalDate>) (src, typeOfSrc,
+                                context) -> new JsonPrimitive(src.format(SEDIF_LOCALDATE_FORMATTER)))
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
                                 .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_FORMATTER))
@@ -123,7 +128,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_SEDIF.equals(thing.getThingTypeUID())) {
-            ThingSedifHandler handler = new ThingSedifHandler(thing, localeProvider, timeZoneProvider);
+            ThingSedifHandler handler = new ThingSedifHandler(thing, localeProvider, timeZoneProvider, gson);
             return handler;
         }
         return null;
