@@ -613,7 +613,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     .withLabel(schemaDp.label) //
                     .withConfiguration(new Configuration(configuration)) //
                     .build());
-        }).filter(c -> !c.getKey().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        }).filter(c -> !c.getKey().isEmpty())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new)));
 
         List<String> channelSuffixes = List.of("", "_1", "_2");
         List<String> switchChannels = List.of("switch_led", "led_switch");
