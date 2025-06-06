@@ -12,32 +12,20 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.sql.Date;
 import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class manages the polling of all devices.
- * Between successive polls of any device there is a quiet time of
- * at least MIN_MSEC_BETWEEN_POLLS. This avoids bunching up of poll messages
- * and keeps the network bandwidth open for other messages.
- *
- * - An entry in the poll queue corresponds to a single device, i.e. each device should
- * have exactly one entry in the poll queue. That entry is created when startPolling()
- * is called, and then re-enqueued whenever it expires.
- * - When a device comes up for polling, its doPoll() method is called, which in turn
- * puts an entry into that devices request queue. So the Poller class actually never
- * sends out messages directly. That is done by the device itself via its request
- * queue. The poller just reminds the device to poll.
+ * Class that manages device poll scheduling
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
@@ -49,236 +37,128 @@ public class PollManager {
 
     private final Logger logger = LoggerFactory.getLogger(PollManager.class);
 
-    private ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> job;
-    private TreeSet<PQEntry> pollQueue = new TreeSet<>();
+    private final long pollInterval;
+    private final ScheduledExecutorService scheduler;
+    private final Map<Device, ScheduledFuture<?>> polls = new ConcurrentHashMap<>();
+    private final AtomicBoolean paused = new AtomicBoolean(false);
+    private volatile int deviceCount = 0;
 
-    /**
-     * Constructor
-     */
-    public PollManager(ScheduledExecutorService scheduler) {
+    public PollManager(long pollInterval, ScheduledExecutorService scheduler) {
+        this.pollInterval = pollInterval;
         this.scheduler = scheduler;
     }
 
-    /**
-     * Returns if poller is running
-     *
-     * @return true if poll queue reader job is defined
-     */
-    private boolean isRunning() {
-        return job != null;
+    public int getPollCount() {
+        return polls.size();
+    }
+
+    public void setDeviceCount(int deviceCount) {
+        this.deviceCount = deviceCount;
     }
 
     /**
-     * Get size of poll queue
-     *
-     * @return number of devices being polled
+     * Pauses poll manager
      */
-    public int getSizeOfQueue() {
-        return pollQueue.size();
-    }
-
-    /**
-     * Register a device for polling.
-     *
-     * @param device device to register for polling
-     * @param pollInterval device poll interval
-     * @param numDev approximate number of total devices
-     */
-    public void startPolling(Device device, long pollInterval, int numDev) {
-        logger.debug("start polling device {}", device.getAddress());
-
-        synchronized (pollQueue) {
-            // try to spread out the scheduling when starting up
-            long pollDelay = pollQueue.size() * pollInterval / (numDev + 1);
-            addToPollQueue(device, pollInterval, System.currentTimeMillis() + pollDelay);
-            pollQueue.notify();
+    public void pause() {
+        if (!paused.getAndSet(true)) {
+            logger.debug("pausing poll manager");
         }
+    }
+
+    /**
+     * Resumes poll manager
+     */
+    public void resume() {
+        if (paused.getAndSet(false)) {
+            logger.debug("resuming poll manager");
+        }
+    }
+
+    /**
+     * Stops poll manager
+     */
+    public void stop() {
+        logger.debug("stopping poll manager");
+        paused.set(false);
+        polls.values().forEach(job -> job.cancel(false));
+        polls.clear();
+    }
+
+    /**
+     * Starts polling a given device
+     *
+     * @param device the device to start polling
+     * @return true if polling is scheduled, otherwise false
+     */
+    public boolean startPolling(Device device) {
+        if (polls.containsKey(device)) {
+            logger.trace("device {} already being polled", device.getAddress());
+            return true;
+        }
+
+        long pollDelay = getNextPollDelay();
+        if (pollDelay > pollInterval) {
+            logger.warn("device {} cannot be polled, increase the poll interval to allow for more devices to be polled",
+                    device.getAddress());
+            return false;
+        }
+
+        logger.debug("start polling device {} in {} msec", device.getAddress(), pollDelay);
+
+        ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> pollDevice(device), pollDelay, pollInterval,
+                TimeUnit.MILLISECONDS);
+
+        polls.put(device, job);
+
+        return true;
     }
 
     /**
      * Stops polling a given device
      *
-     * @param device reference to the device to be polled
+     * @param device the device to stop polling
      */
     public void stopPolling(Device device) {
-        synchronized (pollQueue) {
-            for (Iterator<PQEntry> it = pollQueue.iterator(); it.hasNext();) {
-                if (it.next().getDevice().getAddress().equals(device.getAddress())) {
-                    it.remove();
-                    logger.debug("stopped polling device {}", device.getAddress());
-                }
-            }
-        }
-    }
-
-    /**
-     * Starts the poller thread
-     */
-    public void start() {
-        if (isRunning()) {
-            logger.debug("poll manager already running, not started again");
-            return;
-        }
-        job = scheduler.schedule(new PollQueueReader(), 0, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Stops the poller thread
-     */
-    public void stop() {
-        ScheduledFuture<?> job = this.job;
+        ScheduledFuture<?> job = polls.remove(device);
         if (job != null) {
-            job.cancel(true);
-            this.job = null;
+            job.cancel(false);
+            logger.debug("stopped polling device {}", device.getAddress());
         }
     }
 
     /**
-     * Adds a device to the poll queue. After this call, the device's doPoll() method
-     * will be called according to the polling frequency set.
+     * Returns the next poll delay
      *
-     * @param device the device to poll periodically
-     * @param pollInterval the device poll interval
-     * @param time the target time for the next poll to happen. Note that this time is merely
-     *            a suggestion, and may be adjusted, because there must be at least a minimum gap in polling.
+     * @return the next poll delay
      */
+    private long getNextPollDelay() {
+        long desiredDelay = polls.size() * pollInterval / (deviceCount + 1);
+        Iterator<Long> iterator = polls.values().stream().map(job -> job.getDelay(TimeUnit.MILLISECONDS))
+                .filter(delay -> delay >= desiredDelay - MIN_MSEC_BETWEEN_POLLS).sorted().iterator();
 
-    private void addToPollQueue(Device device, long pollInterval, long time) {
-        long expTime = findNextExpirationTime(device, pollInterval, time);
-        PQEntry queue = new PQEntry(device, pollInterval, expTime);
-        logger.trace("added entry {}", queue);
-        pollQueue.add(queue);
+        long pollDelay = desiredDelay;
+        while (iterator.hasNext()) {
+            long delay = iterator.next();
+            if (delay >= pollDelay + MIN_MSEC_BETWEEN_POLLS) {
+                break;
+            }
+            pollDelay = delay + MIN_MSEC_BETWEEN_POLLS;
+        }
+        return pollDelay;
     }
 
     /**
-     * Finds the best expiration time for a poll queue, i.e. a time slot that is after the
-     * desired expiration time, but does not collide with any of the already scheduled
-     * polls.
+     * Polls a device
      *
-     * @param device device to poll (for logging)
-     * @param pollInterval device poll interval
-     * @param time desired time after which the device should be polled
-     * @return the suggested time to poll
+     * @param device the device to poll
      */
-
-    private long findNextExpirationTime(Device device, long pollInterval, long time) {
-        long expTime;
-        // tailSet finds all those that expire after time - buffer
-        PQEntry queue = new PQEntry(device, pollInterval, time - MIN_MSEC_BETWEEN_POLLS);
-        SortedSet<PQEntry> tailSet = pollQueue.tailSet(queue);
-        if (tailSet.isEmpty()) {
-            // all entries in the poll queue are ahead of the new element,
-            // go ahead and simply add it to the end
-            expTime = time;
+    private void pollDevice(Device device) {
+        if (paused.get()) {
+            logger.trace("poll manager paused, skipping poll for {}", device.getAddress());
         } else {
-            Iterator<PQEntry> it = tailSet.iterator();
-            PQEntry prevQueue = it.next();
-            if (prevQueue.getExpirationTime() > time + MIN_MSEC_BETWEEN_POLLS) {
-                // there is a time slot free before the head of the tail set
-                expTime = time;
-            } else {
-                // look for a gap where we can squeeze in
-                // a new poll while maintaining MIN_MSEC_BETWEEN_POLLS
-                while (it.hasNext()) {
-                    PQEntry currQueue = it.next();
-                    long currTime = currQueue.getExpirationTime();
-                    long prevTime = prevQueue.getExpirationTime();
-                    if (currTime - prevTime >= 2 * MIN_MSEC_BETWEEN_POLLS) {
-                        // found gap
-                        logger.trace("device {} time {} found slot between {} and {}", device.getAddress(), time,
-                                prevTime, currTime);
-                        break;
-                    }
-                    prevQueue = currQueue;
-                }
-                expTime = prevQueue.getExpirationTime() + MIN_MSEC_BETWEEN_POLLS;
-            }
-        }
-        return expTime;
-    }
-
-    private class PollQueueReader implements Runnable {
-        @Override
-        public void run() {
-            logger.debug("starting poll queue thread");
-            try {
-                while (!Thread.interrupted()) {
-                    synchronized (pollQueue) {
-                        if (pollQueue.isEmpty()) {
-                            logger.trace("waiting for poll queue to fill");
-                            pollQueue.wait();
-                            continue;
-                        }
-                        // something is in the queue
-                        long now = System.currentTimeMillis();
-                        PQEntry queue = pollQueue.first();
-                        long delay = queue.getExpirationTime() - now;
-                        if (delay > 0) { // must wait for this item to expire
-                            logger.trace("waiting for {} msec until {} comes due", delay, queue);
-                            pollQueue.wait(delay);
-                        } else { // queue entry has expired, process it!
-                            logger.trace("poll queue {} has expired", queue);
-                            processQueueEntry(now);
-                        }
-                    }
-                }
-            } catch (InterruptedException e) {
-                logger.trace("poll queue thread interrupted!");
-            }
-            logger.debug("exiting poll queue thread!");
-        }
-
-        /**
-         * Takes first element off the poll queue, polls the corresponding device,
-         * and puts the device back into the poll queue to be polled again later.
-         *
-         * @param now the current time
-         */
-        private void processQueueEntry(long now) {
-            PQEntry queue = pollQueue.pollFirst();
-            if (queue != null) {
-                queue.getDevice().doPoll(0L);
-                addToPollQueue(queue.getDevice(), queue.getPollInterval(), now + queue.getPollInterval());
-            }
-        }
-    }
-
-    /**
-     * A poll queue entry corresponds to a single device that needs
-     * to be polled.
-     */
-    private static class PQEntry implements Comparable<PQEntry> {
-        private Device device;
-        private long pollInterval;
-        private long expirationTime;
-
-        PQEntry(Device device, long pollInterval, long expirationTime) {
-            this.device = device;
-            this.pollInterval = pollInterval;
-            this.expirationTime = expirationTime;
-        }
-
-        long getExpirationTime() {
-            return expirationTime;
-        }
-
-        long getPollInterval() {
-            return pollInterval;
-        }
-
-        Device getDevice() {
-            return device;
-        }
-
-        @Override
-        public int compareTo(PQEntry other) {
-            return (int) (expirationTime - other.expirationTime);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s/%tc", device.getAddress(), new Date(expirationTime));
+            logger.debug("polling device {}", device.getAddress());
+            device.poll(0L);
+            logger.trace("next poll for {} scheduled in {} msec", device.getAddress(), pollInterval);
         }
     }
 }

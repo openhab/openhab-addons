@@ -74,21 +74,10 @@ public class DatabaseManager {
             this.job = null;
         }
 
-        if (ldbr.isRunning()) {
-            ldbr.stop();
-        }
-
-        if (ldbw.isRunning()) {
-            ldbw.stop();
-        }
-
-        if (mdbr.isRunning()) {
-            mdbr.stop();
-        }
-
-        if (mdbw.isRunning()) {
-            mdbw.stop();
-        }
+        ldbr.stop();
+        ldbw.stop();
+        mdbr.stop();
+        mdbw.stop();
     }
 
     /**
@@ -107,6 +96,7 @@ public class DatabaseManager {
         if (job == null && !terminated) {
             job = scheduler.schedule(() -> {
                 modem.getRequestManager().pause();
+                modem.getPollManager().pause();
 
                 handleNextOperation();
             }, delay, TimeUnit.MILLISECONDS);
@@ -120,6 +110,7 @@ public class DatabaseManager {
         DatabaseOperation operation = operationQueue.poll();
         if (operation == null || terminated) {
             modem.getRequestManager().resume();
+            modem.getPollManager().resume();
             job = null;
             return;
         }

@@ -343,8 +343,6 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
      * @param modem the discovered modem
      */
     public void modemDiscovered(InsteonModem modem) {
-        modem.setPollInterval(getDevicePollInterval());
-
         initializeChannels(modem);
         updateProperties(modem);
         loadDeviceCache(modem);

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal.device.database;
 
-import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,7 @@ import org.openhab.binding.insteon.internal.transport.PortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.transport.message.Priority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,43 +39,27 @@ public class ModemDBWriter implements PortListener {
     private InsteonModem modem;
     private ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> job;
-    private boolean done = true;
-    private long lastMsgReceived;
+    private volatile boolean done = true;
+    private volatile long lastMsgReceived;
 
     public ModemDBWriter(InsteonModem modem, ScheduledExecutorService scheduler) {
         this.modem = modem;
         this.scheduler = scheduler;
     }
 
-    public boolean isRunning() {
-        return job != null;
-    }
-
     public void write() {
         logger.debug("starting modem database writer");
 
         applyChanges();
-
-        job = scheduler.scheduleWithFixedDelay(() -> {
-            if (System.currentTimeMillis() - lastMsgReceived > DatabaseManager.MESSAGE_TIMEOUT) {
-                logger.debug("modem database writer timed out, aborting");
-                done();
-            }
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     private void applyChanges() {
-        lastMsgReceived = System.currentTimeMillis();
         done = false;
-
         modem.getPort().registerListener(this);
-
         manageNextModemLinkRecord();
     }
 
     public void stop() {
-        logger.debug("modem database writer finished");
-
         ScheduledFuture<?> job = this.job;
         if (job != null) {
             job.cancel(true);
@@ -83,12 +67,13 @@ public class ModemDBWriter implements PortListener {
         }
 
         modem.getPort().unregisterListener(this);
-        modem.getDBM().operationCompleted();
     }
 
     private void done() {
+        logger.debug("modem database writer finished");
         done = true;
         stop();
+        modem.getDBM().operationCompleted();
     }
 
     private void manageNextModemLinkRecord() {
@@ -120,14 +105,24 @@ public class ModemDBWriter implements PortListener {
             msg.setByte("LinkData1", (byte) record.getData1());
             msg.setByte("LinkData2", (byte) record.getData2());
             msg.setByte("LinkData3", (byte) record.getData3());
+            msg.setPriority(Priority.DATABASE);
             modem.writeMessage(msg);
-        } catch (FieldException e) {
-            logger.warn("cannot access field:", e);
-        } catch (IOException e) {
-            logger.warn("error sending manage modem link record query ", e);
-        } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+        } catch (FieldException | InvalidMessageTypeException e) {
+            logger.warn("error creating message", e);
         }
+    }
+
+    private void startAbortTimer() {
+        logger.trace("starting abort timer");
+
+        lastMsgReceived = System.currentTimeMillis();
+
+        job = scheduler.scheduleWithFixedDelay(() -> {
+            if (System.currentTimeMillis() - lastMsgReceived > DatabaseManager.MESSAGE_TIMEOUT) {
+                logger.debug("modem database writer timed out, aborting");
+                done();
+            }
+        }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -142,14 +137,19 @@ public class ModemDBWriter implements PortListener {
     public void messageReceived(Msg msg) {
         lastMsgReceived = msg.getTimestamp();
 
-        if (msg.getCommand() == 0x6F) {
-            // we got a manage link record response
+        if (msg.getCommand() == 0x6F && msg.isReplyAck()) {
+            // we got a manage link record reply ack
             manageNextModemLinkRecord();
         }
     }
 
     @Override
     public void messageSent(Msg msg) {
-        // ignore outbound message
+        if (msg.getCommand() == 0x6F) {
+            // we sent a manage link record message
+            if (!done && job == null) {
+                startAbortTimer();
+            }
+        }
     }
 }
