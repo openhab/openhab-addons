@@ -1,0 +1,45 @@
+        {
+            "id": "a4c6a33a-9c6a-44bf-bdde-f99aff00eca4_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-10-16T12:57:26.000Z",
+            "isReachable": true,
+            "lastSeen": "2024-10-16T13:00:58.000Z",
+            "attributes": {
+                "customName": "",
+                "firmwareVersion": "2.4.4",
+                "hardwareVersion": "1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "TRETAKT Smart plug",
+                "productCode": "E2204",
+                "serialNumber": "D44867FFFE140EDE",
+                "isOn": false,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "childLock": false,
+                "statusLight": true,
+                "identifyPeriod": 0,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "permittingJoin": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        }

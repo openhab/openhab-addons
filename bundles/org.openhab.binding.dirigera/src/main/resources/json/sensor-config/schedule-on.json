@@ -1,0 +1,15 @@
+{
+	"attributes": {
+		"sensorConfig": {
+			"scheduleOn": true,
+			"schedule": {
+				"onCondition": {
+					"time": "%s"
+				},
+				"offCondition": {
+					"time": "%s"
+				}
+			}
+		}
+	}
+}
