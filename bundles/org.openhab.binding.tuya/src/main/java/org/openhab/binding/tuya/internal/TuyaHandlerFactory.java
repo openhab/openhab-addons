@@ -108,7 +108,7 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
                 List<SchemaDp> listDps = Objects.requireNonNullElse(
                         gson.fromJson(storage.get(thing.getUID().getId()), STORAGE_TYPE), //
                         List.of());
-                schemaDps = listDps.stream()
+                schemaDps = listDps.stream().sorted((s1, s2) -> s1.id - s2.id)
                         .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
             }
             return new TuyaDeviceHandler(thing, schemaDps, gson, dynamicCommandDescriptionProvider, eventLoopGroup,
