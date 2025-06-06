@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.teslascope.internal.discovery.TeslascopeDiscoveryService;
+import org.openhab.binding.teslascope.internal.discovery.TeslascopeVehicleDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -145,26 +145,16 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     protected void pollData() {
 
-        try {
-            String teslascopeVehicles = webTargets.getVehicleList(config.apiKey);
+        String teslascopeVehicles = getVehicleList();
 
-            this.getThing().getThings().forEach(thing -> {
-                TeslascopeVehicleHandler handler = (TeslascopeVehicleHandler) thing.getHandler();
-                if (handler != null) {
-                    // handler.updateChannels();
-                }
-            });
+        this.getThing().getThings().forEach(thing -> {
+            TeslascopeVehicleHandler handler = (TeslascopeVehicleHandler) thing.getHandler();
+            if (handler != null) {
+                // handler.updateChannels();
+            }
+        });
 
-            // UpdateStatus(ThingStatus.ONLINE);
-        } catch (TeslascopeAuthenticationException e) {
-            logger.debug("Unexpected authentication error connecting to Teslascope API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
-        } catch (TeslascopeCommunicationException e) {
-            logger.debug("Unexpected error connecting to Teslascope API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return;
-        }
+        // UpdateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -176,6 +166,6 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(TeslascopeDiscoveryService.class);
+        return Set.of(TeslascopeVehicleDiscoveryService.class);
     }
 }
