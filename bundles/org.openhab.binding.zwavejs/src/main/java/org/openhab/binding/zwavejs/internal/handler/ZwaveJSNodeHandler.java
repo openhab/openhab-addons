@@ -381,7 +381,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                                     .forEach(c -> updateState(c.getUID(), cachedColor));
                         }
                     }
+                try {
                     updateState(metadata.id, state);
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId,
+                        metadata.id, state.toFullString(), e.getMessage());
+                }
                 }
             }
         }
