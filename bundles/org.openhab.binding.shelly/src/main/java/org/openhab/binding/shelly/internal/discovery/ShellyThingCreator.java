@@ -606,9 +606,6 @@ public class ShellyThingCreator {
         if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
             return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY_STR, THING_TYPE_SHELLY2_ROLLER_STR, mode);
         }
-        if (serviceNameLowerCase.contains("plugus")) {
-            int i = 1;
-        }
         if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR) && !serviceNameLowerCase.contains("plugus")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
