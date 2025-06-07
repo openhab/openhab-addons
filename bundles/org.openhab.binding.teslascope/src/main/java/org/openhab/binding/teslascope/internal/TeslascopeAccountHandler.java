@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.teslascope.internal;
 
-import static org.openhab.binding.teslascope.internal.TeslascopeBindingConstants.*;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,13 +52,10 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     private @Nullable TeslascopeAccountConfiguration config;
     protected ScheduledExecutorService executorService = this.scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
-    private HttpClient httpClient = new HttpClient();
     private @NonNullByDefault({}) TeslascopeWebTargets webTargets;
     private String apiKey = "";
 
     private final Gson gson = new Gson();
-
-    String token = "";
 
     public TeslascopeAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -99,33 +94,21 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(TeslascopeAccountConfiguration.class);
-
-        if (configure()) {
-            updateStatus(ThingStatus.UNKNOWN);
-            pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval,
-                    TimeUnit.SECONDS);
-        }
-    }
-
-    /**
-     * Check the current configuration
-     *
-     * @return true if the configuration is ok to start polling, false otherwise
-     */
-    private boolean configure() {
         if (config.apiKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing apiKey configuration");
-            return false;
+            return;
         }
-        apiKey = config.apiKey;
-        return true;
+
+        updateStatus(ThingStatus.UNKNOWN);
+        pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     protected void pollData() {
 
         String responseVehicleList = getVehicleList();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        VehicleList vehicleList = new VehicleList();
+        VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
         if (vehicleList == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to retrieve Vehicle List");
             return;
