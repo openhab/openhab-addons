@@ -18,7 +18,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
@@ -236,8 +235,6 @@ public class ZWaveJSClient implements WebSocketListener {
                     logger.warn("Problem starting periodic Ping. {}", e.getMessage());
                 }
             }, 25, 25, TimeUnit.SECONDS);
-
-            this.session = session;
         }
     }
 
@@ -254,13 +251,7 @@ public class ZWaveJSClient implements WebSocketListener {
             session = null;
         }
 
-        try {
-            for (ZwaveEventListener listener : listeners) {
-                listener.onConnectionError(String.format("Error: %s", localThrowable.getMessage()));
-            }
-        } catch (Exception e) {
-            logger.warn("Error invoking event listener on error", e);
-        }
+        notifyListenersOnError(String.format("Error: %s", localThrowable.getMessage()));
     }
 
     @Override
@@ -274,51 +265,76 @@ public class ZWaveJSClient implements WebSocketListener {
             return;
         }
 
-        BaseMessage baseEvent = Objects.requireNonNull(gson.fromJson(message, BaseMessage.class));
-
-        if (baseEvent.type == null) {
-            logger.warn("Event with unknown type received.");
+        BaseMessage baseEvent = null;
+        try {
+            baseEvent = gson.fromJson(message, BaseMessage.class);
+        } catch (Exception ex) {
+            logger.warn("Failed to parse incoming WebSocket message: {}", ex.getMessage());
             logger.trace("RECV | {}", message);
-        } else if (baseEvent instanceof ResultMessage resultMessage) {
-            if (resultMessage.success && (resultMessage.result != null && resultMessage.result.status != 5)) {
-                logger.debug("onWebSocketText received message type: {}, success: {}", baseEvent.type,
-                        resultMessage.success);
-                logger.trace("RECV | {}", message);
-            } else {
-                logger.warn(
-                        "onWebSocketText received message type: {}, success: {}, status: {}, error_code: {}, message: {}",
-                        baseEvent.type, resultMessage.success,
-                        resultMessage.result != null ? resultMessage.result.status : "null", resultMessage.errorCode,
-                        resultMessage.message != null ? resultMessage.message : resultMessage.zwaveErrorMessage);
-                logger.trace("RECV | {}", message);
-            }
-        } else if (baseEvent instanceof EventMessage eventMessage) {
-            logger.trace("onWebSocketText received EventMessage, type: {}", eventMessage.event.event);
-            logger.trace("RECV | {}", message);
-        } else {
-            logger.trace("onWebSocketText received message class type: {}, event type: {}",
-                    baseEvent.getClass().getSimpleName(), baseEvent.type);
-            logger.trace("RECV | {}", message);
+            notifyListenersOnError("Failed to parse message: " + ex.getMessage());
+            return;
         }
 
+        if (baseEvent == null || baseEvent.type == null) {
+            logger.warn("Received event with unknown or null type.");
+            logger.trace("RECV | {}", message);
+            notifyListenersOnError("Received event with unknown or null type.");
+            return;
+        }
+
+        handleBaseEvent(baseEvent, message);
+
+        // Notify listeners
         try {
             for (ZwaveEventListener listener : listeners) {
                 listener.onEvent(baseEvent);
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Error invoking event listener on websockettext: {}.", e.getStackTrace().toString());
+                logger.debug("Error invoking event listener on websockettext: {}", e.toString());
             } else {
                 logger.warn("Error invoking event listener on websockettext", e);
             }
         }
 
+        // Special handling for VersionMessage
         if (baseEvent instanceof VersionMessage) {
             // the binding is starting up, perform schema version handshake
             // also start listening to events
             sendCommand(new ServerInitializeCommand());
             // sendCommand(new StatisticsCommand(false));
             sendCommand(new ServerListeningCommand());
+        }
+    }
+
+    private void handleBaseEvent(BaseMessage baseEvent, String message) {
+        if (baseEvent instanceof ResultMessage resultMessage) {
+            if (resultMessage.success && (resultMessage.result != null && resultMessage.result.status != 5)) {
+                logger.debug("Received ResultMessage type: {}, success: {}", baseEvent.type, resultMessage.success);
+            } else {
+                logger.warn("Received ResultMessage type: {}, success: {}, status: {}, error_code: {}, message: {}",
+                        baseEvent.type, resultMessage.success,
+                        resultMessage.result != null ? resultMessage.result.status : "null", resultMessage.errorCode,
+                        resultMessage.message != null ? resultMessage.message : resultMessage.zwaveErrorMessage);
+            }
+            logger.trace("RECV | {}", message);
+        } else if (baseEvent instanceof EventMessage eventMessage) {
+            logger.trace("Received EventMessage, type: {}", eventMessage.event.event);
+            logger.trace("RECV | {}", message);
+        } else {
+            logger.trace("Received message class type: {}, event type: {}", baseEvent.getClass().getSimpleName(),
+                    baseEvent.type);
+            logger.trace("RECV | {}", message);
+        }
+    }
+
+    private void notifyListenersOnError(String errorMsg) {
+        for (ZwaveEventListener listener : listeners) {
+            try {
+                listener.onConnectionError(errorMsg);
+            } catch (Exception e) {
+                logger.warn("Error invoking event listener on error", e);
+            }
         }
     }
 
@@ -368,11 +384,7 @@ public class ZWaveJSClient implements WebSocketListener {
             reconnectFuture = null;
         }
 
-        ScheduledFuture<?> localKeepAliveFuture = keepAliveFuture;
-        if (localKeepAliveFuture != null) {
-            localKeepAliveFuture.cancel(true);
-            keepAliveFuture = null;
-        }
+        stopKeepAlive();
 
         Future<?> localSessionFuture = sessionFuture;
         if (localSessionFuture != null) {
