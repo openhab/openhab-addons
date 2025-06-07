@@ -158,6 +158,7 @@ Command channels that trigger actions.
 | channel                           | type     | access mode | description                                                                                            | advanced |
 |-----------------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------|----------|
 | command#start                     | Number   | W           | Start the Automower® for the given duration, overriding the schedule                                   | false    |
+| command#start_in_workarea         | Number   | W           | Start the Automower® in the given Work Area, overriding the schedule. The Automower® will continue forever          | false    |
 | command#resume_schedule           | Switch   | W           | Resume the schedule of the Automower®                                                                  | false    |
 | command#pause                     | Switch   | W           | Pause the Automower® at the current location until manual resume                                       | false    |
 | command#park                      | Number   | W           | Park the Automower® for the given duration, overriding the schedule                                    | false    |

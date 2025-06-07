@@ -58,10 +58,6 @@
 			<remove-channel id="position#49-pos"/>
 			<remove-channel id="position#50-pos"/>
 
-			<add-channel id="start_in_work_area" groupIds="command">
-				<type>automower:startInWorkArea</type>
-			</add-channel>
-
 			<!-- Messages -->
 			<remove-channel id="message#01-msg-timestamp"/>
 			<remove-channel id="message#01-msg-code"/>
@@ -329,6 +325,11 @@
 			<add-channel id="msg-gps-position" groupIds="message">
 				<type>automower:messagePositionType</type>
 			</add-channel>
+
+			<!-- Commands -->
+			<add-channel id="start_in_work_area" groupIds="command">
+				<type>automower:startInWorkArea</type>
+			</add-channel>
 		</instruction-set>
 
 		<instruction-set targetVersion="1">
@@ -485,22 +486,22 @@
 			<remove-channel id="position50"/>
 
 			<!-- Commands -->
-			<update-channel id="start" groupIds="commands">
+			<update-channel id="start" groupIds="command">
 				<type>automower:start</type>
 			</update-channel>
-			<update-channel id="resume_schedule" groupIds="commands">
+			<update-channel id="resume_schedule" groupIds="command">
 				<type>automower:resumeSchedule</type>
 			</update-channel>
-			<update-channel id="pause" groupIds="commands">
+			<update-channel id="pause" groupIds="command">
 				<type>automower:pause</type>
 			</update-channel>
-			<update-channel id="park" groupIds="commands">
+			<update-channel id="park" groupIds="command">
 				<type>automower:park</type>
 			</update-channel>
-			<update-channel id="park_until_next_schedule" groupIds="commands">
+			<update-channel id="park_until_next_schedule" groupIds="command">
 				<type>automower:parkUntilNextSchedule</type>
 			</update-channel>
-			<update-channel id="park_until_further_notice" groupIds="commands">
+			<update-channel id="park_until_further_notice" groupIds="command">
 				<type>automower:parkUntilFurtherNotice</type>
 			</update-channel>
 		</instruction-set>
