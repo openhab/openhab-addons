@@ -197,8 +197,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.isRoller = dc.cover0 != null;
-        profile.settings.relays = fillRelaySettings(profile, dc);
-        profile.settings.relays = fillBreakerSettings(profile, dc);
+        profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
         profile.settings.inputs = fillInputSettings(profile, dc);
         profile.settings.rollers = fillRollerSettings(profile, dc);
         profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;

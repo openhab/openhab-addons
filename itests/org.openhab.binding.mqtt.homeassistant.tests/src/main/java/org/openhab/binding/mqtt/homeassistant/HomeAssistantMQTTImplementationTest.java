@@ -46,6 +46,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
@@ -59,7 +60,6 @@ import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.hubspot.jinjava.Jinjava;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homeassistant MQTT discovery device
@@ -79,6 +79,8 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
     private @Mock @NonNullByDefault({}) HomeAssistantChannelLinkageChecker linkageChecker;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
+
+    private static final HomeAssistantPythonBridge python = new HomeAssistantPythonBridge();
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
@@ -168,12 +170,11 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
 
         final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
-        Jinjava jinjava = new Jinjava();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(
                 new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING, scheduler,
-                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, jinjava, unitProvider));
+                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, python, unitProvider));
 
         when(linkageChecker.isChannelLinked(any())).thenReturn(true);
 

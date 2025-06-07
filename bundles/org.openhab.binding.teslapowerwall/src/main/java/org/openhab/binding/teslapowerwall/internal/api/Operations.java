@@ -14,8 +14,7 @@ package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Class for holding the set of parameters used to read the battery mode/reserver.
@@ -25,19 +24,15 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class Operations {
+    @SerializedName("real_mode")
+    public String realMode = "";
 
-    public String mode = "";
-    public double reserve;
+    @SerializedName("reactive_mode")
+    public String reactiveMode = "";
+
+    @SerializedName("backup_reserve_percent")
+    public float backupReservePercent;
 
     private Operations() {
-    }
-
-    public static Operations parse(String response) {
-        /* parse json string */
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        Operations info = new Operations();
-        info.mode = jsonObject.get("real_mode").getAsString();
-        info.reserve = jsonObject.get("backup_reserve_percent").getAsDouble();
-        return info;
     }
 }

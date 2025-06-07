@@ -18,7 +18,7 @@ package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
  * @author Richard Lavoie - Initial contribution
  *
  */
-public class VolumeMuteCommand extends BaseOnOffCommand {
+public class VolumeMuteCommand extends BaseOnOffInvertCommand {
 
     protected VolumeMuteCommand(int setId) {
         super('k', 'e', setId);

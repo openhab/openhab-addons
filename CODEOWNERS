@@ -104,6 +104,7 @@
 /bundles/org.openhab.binding.electroluxappliance/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
+/bundles/org.openhab.binding.emby/ @volfan6415
 /bundles/org.openhab.binding.emotiva/ @espenaf
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.energidataservice/ @jlaur
@@ -216,6 +217,7 @@
 /bundles/org.openhab.binding.luxtronikheatpump/ @sgiehl
 /bundles/org.openhab.binding.magentatv/ @markus7017
 /bundles/org.openhab.binding.mail/ @J-N-K
+/bundles/org.openhab.binding.matter/ @digitaldan
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcd/ @simon-dengler
 /bundles/org.openhab.binding.mcp23017/ @aogorek
@@ -325,8 +327,9 @@
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
 /bundles/org.openhab.binding.renault/ @dougculnane
 /bundles/org.openhab.binding.resol/ @ramack
-/bundles/org.openhab.binding.revogi/ @andibraeu
+/bundles/org.openhab.binding.revogi/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/bundles/org.openhab.binding.ring/ @morph166955
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
 /bundles/org.openhab.binding.roku/ @mlobstein
