@@ -95,13 +95,16 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private boolean configurationAsChannels = false;
     protected ScheduledExecutorService executorService = scheduler;
 
-    private static class ColorInfo {
+    /**
+     * A class encapsulating the color capability of a given light end point
+     */
+    private static class ColorCapability {
         private boolean supportsColor;
         private boolean supportsWarmWhite;
         private boolean supportsColdWhite;
         private HSBType cachedColor;
 
-        public ColorInfo() {
+        public ColorCapability() {
             supportsColor = false;
             supportsWarmWhite = false;
             supportsColdWhite = false;
@@ -110,12 +113,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         @Override
         public String toString() {
-            return "ColorInfo [supportsColor=" + supportsColor + ", supportsWarmWhite=" + supportsWarmWhite
+            return "ColorCapability [supportsColor=" + supportsColor + ", supportsWarmWhite=" + supportsWarmWhite
                     + ", supportsColdWhite=" + supportsColdWhite + ", cachedColor=" + cachedColor + "]";
         }
     }
 
-    private final Map<Integer, ColorInfo> colorInfos = new HashMap<>();
+    // nodes may contain multiple lighting end points; this map has each one's ColorCapability
+    private final Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
 
     public ZwaveJSNodeHandler(final Thing thing, final ZwaveJSTypeGenerator typeGenerator) {
         super(thing);
@@ -187,8 +191,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
 
-        ColorInfo colorInfo = colorInfos.get(channelConfig.endpoint);
-        boolean isColorChannelCommand = colorInfo != null && colorInfo.supportsColor
+        ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+        boolean isColorChannelCommand = colorCap != null && colorCap.supportsColor
                 && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
 
         if (command instanceof OnOffType onOffCommand) {
@@ -202,8 +206,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         // note: HSBType is a child of PercentType so we must explicitly NOT execute this block in such case
         if (PercentType.class.equals(command.getClass()) && (command instanceof PercentType percentTypeCommand)) {
-            if (isColorChannelCommand && colorInfo != null) {
-                command = new HSBType(colorInfo.cachedColor.getHue(), colorInfo.cachedColor.getSaturation(),
+            if (isColorChannelCommand && colorCap != null) {
+                command = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
                         percentTypeCommand);
             } else {
                 int newValue = percentTypeCommand.intValue();
@@ -217,8 +221,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
         }
         if (command instanceof HSBType hsbTypeCommand) {
-            if (isColorChannelCommand && colorInfo != null) {
-                colorInfo.cachedColor = hsbTypeCommand;
+            if (isColorChannelCommand && colorCapabilities != null) {
+                colorCap.cachedColor = hsbTypeCommand;
             }
             HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
             int[] rgb = ColorUtil.hsbToRgb(hsbFull);
@@ -229,11 +233,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 colorMap.put(RED, rgb[0]);
                 colorMap.put(GREEN, rgb[1]);
                 colorMap.put(BLUE, rgb[2]);
-                if (colorInfo != null) {
-                    if (colorInfo.supportsColdWhite) {
+                if (colorCapabilities != null) {
+                    if (colorCap.supportsColdWhite) {
                         colorMap.put(COLD_WHITE, 0);
                     }
-                    if (colorInfo.supportsWarmWhite) {
+                    if (colorCap.supportsWarmWhite) {
                         colorMap.put(WARM_WHITE, 0);
                     }
                 }
@@ -396,24 +400,24 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         channelConfig.inverted);
 
                 if (state != null) {
-                    ColorInfo colorInfo = colorInfos.get(channelConfig.endpoint);
-                    if (colorInfo != null && colorInfo.supportsColor) {
+                    ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+                    if (colorCap != null && colorCap.supportsColor) {
                         if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType())
                                 && state instanceof HSBType color) {
-                            colorInfo.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
-                                    colorInfo.cachedColor.getBrightness());
-                            state = colorInfo.cachedColor;
+                            colorCap.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
+                                    colorCap.cachedColor.getBrightness());
+                            state = colorCap.cachedColor;
                         }
                         if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())
                                 && state instanceof PercentType brightness) {
-                            colorInfo.cachedColor = new HSBType(colorInfo.cachedColor.getHue(),
-                                    colorInfo.cachedColor.getSaturation(), brightness);
+                            colorCap.cachedColor = new HSBType(colorCap.cachedColor.getHue(),
+                                    colorCap.cachedColor.getSaturation(), brightness);
                             thing.getChannels().stream()
                                     .filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType())).forEach(c -> {
                                         if (c.getConfiguration().as(
                                                 ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
                                                 && cf.endpoint == channelConfig.endpoint) {
-                                            updateState(c.getUID(), colorInfo.cachedColor);
+                                            updateState(c.getUID(), colorCap.cachedColor);
                                         }
                                     });
                         }
@@ -531,15 +535,16 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         boolean supportsWarmWhite = map.containsKey(WARM_WHITE);
                         boolean supportsColdWhite = map.containsKey(COLD_WHITE);
                         if (supportsColor || supportsWarmWhite || supportsColdWhite) {
-                            ColorInfo colorInfo = colorInfos.getOrDefault(value.endpoint, new ColorInfo());
-                            colorInfo.supportsColor = supportsColor;
-                            colorInfo.supportsWarmWhite = supportsWarmWhite;
-                            colorInfo.supportsColdWhite = supportsColdWhite;
-                            colorInfos.put(value.endpoint, colorInfo);
+                            ColorCapability colorCap = colorCapabilities.getOrDefault(value.endpoint,
+                                    new ColorCapability());
+                            colorCap.supportsColor = supportsColor;
+                            colorCap.supportsWarmWhite = supportsWarmWhite;
+                            colorCap.supportsColdWhite = supportsColdWhite;
+                            colorCapabilities.put(value.endpoint, colorCap);
                         }
                     });
             if (logger.isDebugEnabled()) {
-                colorInfos.entrySet()
+                colorCapabilities.entrySet()
                         .forEach(e -> logger.debug("Node {}, Endpoint {}, {}", node.nodeId, e.getKey(), e.getValue()));
             }
         } catch (Exception e) {
