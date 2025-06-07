@@ -16,6 +16,7 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.data.RingDeviceTO;
@@ -26,8 +27,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -53,6 +56,17 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         super(thing, gson);
     }
 
+    protected @Nullable RingDeviceRegistry getDeviceRegistry() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof RingAccount ringAccount) {
+                return ringAccount.getDeviceRegistry();
+            }
+        }
+        return null;
+    }
+
     /**
      * Link the device, and update the device with the status CONFIGURED.
      *
@@ -63,8 +77,9 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
      */
     protected void linkDevice(String id, Class<?> deviceClass)
             throws DeviceNotFoundException, IllegalDeviceClassException {
-        device = RingDeviceRegistry.getInstance().getRingDevice(id);
-        if (device != null) {
+        RingDeviceRegistry registry = getDeviceRegistry();
+        if (registry != null) {
+            device = registry.getRingDevice(id);
             RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
             if (deviceClass.equals(device.getClass())) {
                 device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);

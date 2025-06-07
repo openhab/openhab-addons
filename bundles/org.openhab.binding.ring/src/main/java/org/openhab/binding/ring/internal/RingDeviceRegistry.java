@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.data.RingDeviceTO;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
@@ -35,15 +34,8 @@ import com.google.gson.Gson;
 
 @NonNullByDefault
 public class RingDeviceRegistry {
-    private final Gson gson = new Gson();
+    private final Gson gson;
 
-    /**
-     * static Singleton instance.
-     */
-    private static final RingDeviceRegistry INSTANCE = new RingDeviceRegistry();
-    /**
-     * The logger.
-     */
     private final Logger logger = LoggerFactory.getLogger(RingDeviceRegistry.class);
     /**
      * Will be set after initialization.
@@ -54,13 +46,10 @@ public class RingDeviceRegistry {
      * Key: device id.
      * Value: the RingDevice implementation object.
      */
-    private ConcurrentHashMap<String, RingDevice> devices = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, RingDevice> devices = new ConcurrentHashMap<>();
 
-    /**
-     * Return a singleton instance of RingDeviceRegistry.
-     */
-    public static RingDeviceRegistry getInstance() {
-        return INSTANCE;
+    public RingDeviceRegistry(Gson gson) {
+        this.gson = gson;
     }
 
     /**
@@ -115,9 +104,10 @@ public class RingDeviceRegistry {
      * @return the RingDevice instance from the registry.
      * @throws DeviceNotFoundException
      */
-    public @Nullable RingDevice getRingDevice(String id) throws DeviceNotFoundException {
-        if (devices.containsKey(id)) {
-            return devices.get(id);
+    public RingDevice getRingDevice(String id) throws DeviceNotFoundException {
+        RingDevice device = devices.get(id);
+        if (device != null) {
+            return device;
         } else {
             throw new DeviceNotFoundException("Device with id '" + id + "' not found");
         }

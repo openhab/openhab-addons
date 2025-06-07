@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
-import org.openhab.core.config.discovery.DiscoveryResult;
 
 import com.google.gson.JsonObject;
 
@@ -29,15 +28,6 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public interface RingDevice {
-
-    /**
-     * Get the DiscoveryResult object to identify the device as
-     * discovered thing.
-     *
-     * @return the device as DiscoveryResult instance.
-     */
-    DiscoveryResult getDiscoveryResult(RingDeviceTO deviceTO);
-
     /**
      * Get the registration status.
      *

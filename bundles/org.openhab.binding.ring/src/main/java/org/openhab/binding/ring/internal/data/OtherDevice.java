@@ -14,9 +14,6 @@ package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.RingAccount;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.JsonObject;
 
@@ -34,19 +31,5 @@ public class OtherDevice extends AbstractRingDevice {
      */
     public OtherDevice(JsonObject jsonOtherDevice, RingAccount ringAccount) {
         super(jsonOtherDevice, ringAccount);
-    }
-
-    /**
-     * Get the DiscoveryResult object to identify the device as
-     * discovered thing.
-     *
-     * @return the device as DiscoveryResult instance.
-     */
-    @Override
-    public DiscoveryResult getDiscoveryResult(RingDeviceTO deviceTO) {
-        DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID("ring:otherdevice:" + getRingAccount().getThingId() + ":" + deviceTO.id))
-                .withLabel("Ring Other Device - " + deviceTO.description).build();
-        return result;
     }
 }

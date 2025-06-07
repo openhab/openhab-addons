@@ -32,10 +32,10 @@ import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class RingDevices {
-    private List<Doorbell> doorbells = new ArrayList<>();
-    private List<Stickupcam> stickupcams = new ArrayList<>();
-    private List<Chime> chimes = new ArrayList<>();
-    private List<OtherDevice> otherdevices = new ArrayList<>();
+    private final List<Doorbell> doorbells = new ArrayList<>();
+    private final List<Stickupcam> stickupcams = new ArrayList<>();
+    private final List<Chime> chimes = new ArrayList<>();
+    private final List<OtherDevice> otherdevices = new ArrayList<>();
 
     public RingDevices(JsonObject jsonRingDevices, RingAccount ringAccount) {
         addDoorbells((JsonArray) jsonRingDevices.get(ApiConstants.DEVICES_DOORBOTS), ringAccount);

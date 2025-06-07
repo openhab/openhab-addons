@@ -54,9 +54,9 @@ public class DoorbellHandler extends RingDeviceHandler {
         logger.debug("Initializing Doorbell handler");
         super.initialize();
 
-        RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
+        RingDeviceRegistry registry = getDeviceRegistry();
         String id = getThing().getUID().getId();
-        if (registry.isInitialized()) {
+        if (registry != null && registry.isInitialized()) {
             try {
                 linkDevice(id, Doorbell.class);
                 updateStatus(ThingStatus.ONLINE);

@@ -53,9 +53,9 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         logger.debug("Initializing Other Device handler");
         super.initialize();
 
-        RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
+        RingDeviceRegistry registry = getDeviceRegistry();
         String id = getThing().getUID().getId();
-        if (registry.isInitialized()) {
+        if (registry != null && registry.isInitialized()) {
             try {
                 linkDevice(id, OtherDevice.class);
                 updateStatus(ThingStatus.ONLINE);
