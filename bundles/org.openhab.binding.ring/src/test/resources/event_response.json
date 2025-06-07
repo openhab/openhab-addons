@@ -1,0 +1,43 @@
+[
+  {
+    "id": 7511772057612656721,
+    "created_at": "2025-06-03T17:12:03.567Z",
+    "answered": true,
+    "events": [],
+    "kind": "ding",
+    "favorite": false,
+    "snapshot_url": "",
+    "recording": {
+      "status": "ready"
+    },
+    "duration": 62.0,
+    "cv_properties": {
+      "person_detected": null,
+      "stream_broken": false,
+      "detection_type": null,
+      "detection_types": null,
+      "security_alerts": null,
+      "full_description": null,
+      "short_description": null
+    },
+    "properties": {
+      "is_alexa": false,
+      "is_sidewalk": false,
+      "is_autoreply": false,
+      "stark_reviewed": false
+    },
+    "doorbot": {
+      "id": 6000000000,
+      "description": "Haustür",
+      "type": "df_doorbell_clownfish"
+    },
+    "device_placement": null,
+    "geolocation": null,
+    "last_location": null,
+    "siren": null,
+    "is_e2ee": false,
+    "had_subscription": true,
+    "owner_id": "100000000",
+    "riid": "00000000000000000000000000000000"
+  }
+]
