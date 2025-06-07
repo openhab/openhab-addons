@@ -1,6 +1,6 @@
 import { Logger } from "@matter/general";
 
-export function printError(logger: Logger, error: Error, functionName: String) {
+export function printError(logger: Logger, error: Error, functionName: string) {
     logger.error(`Error executing function ${functionName}: ${error.message}`);
     logger.error(`Stack trace: ${error.stack}`);
 
