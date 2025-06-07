@@ -49,6 +49,6 @@ public class FlumeBindingConstants {
     // Properties
     public static final String PROPERTY_ID = "id";
 
-    public static final int DEFAULT_POLLING_INTERVAL_INSTANTANEOUS = 1;
-    public static final int DEFAULT_POLLING_INTERVAL_CUMULATIVE = 5;
+    public static final int DEFAULT_POLLING_INTERVAL_INSTANTANEOUS_MIN = 1;
+    public static final int DEFAULT_POLLING_INTERVAL_CUMULATIVE_MIN = 5;
 }
