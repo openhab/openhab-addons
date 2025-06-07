@@ -235,7 +235,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
         }
         if (command instanceof HSBType hsbTypeCommand) {
-            if (isColorChannelCommand && colorCapabilities != null) {
+            if (isColorChannelCommand && colorCap != null) {
                 colorCap.cachedColor = hsbTypeCommand;
             }
             HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
@@ -247,14 +247,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 colorMap.put(RED, rgb[0]);
                 colorMap.put(GREEN, rgb[1]);
                 colorMap.put(BLUE, rgb[2]);
-                if (colorCapabilities != null) {
-                    if (colorCap.supportsColdWhite) {
-                        colorMap.put(COLD_WHITE, 0);
-                    }
-                    if (colorCap.supportsWarmWhite) {
-                        colorMap.put(WARM_WHITE, 0);
-                    }
+                if (colorCap != null && colorCap.supportsColdWhite) {
+                    colorMap.put(COLD_WHITE, 0);
                 }
+                if (colorCap != null && colorCap.supportsWarmWhite) {
+                    colorMap.put(WARM_WHITE, 0);
+                }
+
                 zwaveCommand.value = colorMap;
             }
             if (isColorChannelCommand) {

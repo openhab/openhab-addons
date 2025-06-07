@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.quantity.Time;
 
@@ -373,7 +374,7 @@ public class ChannelMetadataTest {
         assertEquals(3L, ((Map<?, ?>) details.value).get("green"));
         assertEquals(255L, ((Map<?, ?>) details.value).get("blue"));
         assertNotNull(details.state);
-        assertEquals(HSBType.class, details.state.getClass());
+        assertEquals(HSBType.class, Objects.requireNonNull(details.state).getClass());
         assertEquals(ColorUtil.rgbToHsb(new int[] { 53, 3, 255 }), details.state);
         assertEquals(true, details.writable);
     }
