@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -505,7 +506,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         // Update channels
-        updateChannels(builder, result);
+        builder = updateChannels(builder, result);
+
+        updateThing(builder.build());
 
         // Initialize state for channels and configuration
         initializeChannelAndConfigState(node, result);
@@ -516,7 +519,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return true;
     }
 
-    private void updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
+    private ThingBuilder updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
         List<Channel> channelsToRemove = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
             if (!result.channels.containsKey(channel.getUID().getId())) {
@@ -536,7 +539,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             builder.withChannels(channels);
         }
         if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
-            SemanticTag equipmentTag = getEquipmentTag(builder.build().getChannels());
+            SemanticTag equipmentTag = getEquipmentTag(builder.getChannels());
             if (equipmentTag != null) {
                 logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
                 builder.withSemanticEquipmentTag(equipmentTag);
@@ -544,7 +547,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 logger.debug("Node {}. No semantic equipment tag set", this.config.id);
             }
         }
-        updateThing(builder.build());
+        return builder;
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
@@ -642,7 +645,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Find the first matching equipment tag based on intersection
         for (Map.Entry<Set<Integer>, SemanticTag> entry : equipmentMap.entrySet()) {
-            Set<Integer> intersection = new java.util.HashSet<>(commandClassIds);
+            Set<Integer> intersection = new HashSet<>(commandClassIds);
             intersection.retainAll(entry.getKey());
             if (!intersection.isEmpty()) {
                 return entry.getValue();
