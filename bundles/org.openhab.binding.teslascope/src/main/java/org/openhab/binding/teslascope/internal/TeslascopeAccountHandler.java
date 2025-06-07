@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -100,11 +99,6 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         }
         apiKey = config.apiKey;
         updateStatus(ThingStatus.UNKNOWN);
-        pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval,
-                TimeUnit.SECONDS);
-    }
-
-    protected void pollData() {
 
         String responseVehicleList = getVehicleList();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
@@ -115,13 +109,6 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    /**
-     * The actual polling loop
-     */
-    protected void pollingCode() {
-        pollData();
     }
 
     @Override
