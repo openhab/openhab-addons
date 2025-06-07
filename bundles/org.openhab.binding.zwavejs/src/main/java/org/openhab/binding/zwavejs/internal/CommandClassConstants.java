@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.zwavejs.internal;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 
 /**
  * Contains the Z-Wave predefined command class constants.
@@ -218,5 +221,25 @@ public class CommandClassConstants {
     public static final Set<Integer> COMMAND_SET_ZONE_EQUIPMENT = Set.of(
         COMMAND_CLASS_SCENE_ACTIVATION);
 
-    //@formatter:on
+    //@formatter:on`
+
+    // Map of command class sets to their corresponding equipment tags
+    public static final Map<Set<Integer>, SemanticTag> EQUIPMENTMAP = Map.ofEntries(
+            Map.entry(COMMAND_SET_LIGHT_SOURCE_EQUIPMENT, Equipment.LIGHT_SOURCE),
+            Map.entry(COMMAND_SET_ALARM_DEVICE_EQUIPMENT, Equipment.ALARM_DEVICE),
+            Map.entry(COMMAND_SET_AUDIO_VISUAL_EQUIPMENT, Equipment.AUDIO_VISUAL),
+            Map.entry(COMMAND_SET_BATTERY_EQUIPMENT, Equipment.BATTERY),
+            Map.entry(COMMAND_SET_CONTROL_DEVICE_EQUIPMENT, Equipment.CONTROL_DEVICE),
+            Map.entry(COMMAND_SET_DISPLAY_EQUIPMENT, Equipment.DISPLAY),
+            Map.entry(COMMAND_SET_GATE_EQUIPMENT, Equipment.GATE),
+            Map.entry(COMMAND_SET_HUMIDIFIER_EQUIPMENT, Equipment.HUMIDIFIER),
+            Map.entry(COMMAND_SET_HVAC_EQUIPMENT, Equipment.HVAC),
+            Map.entry(COMMAND_SET_IRRIGATION_EQUIPMENT, Equipment.IRRIGATION),
+            Map.entry(COMMAND_SET_LOCK_EQUIPMENT, Equipment.LOCK),
+            Map.entry(COMMAND_SET_METER_EQUIPMENT, Equipment.ELECTRIC_METER),
+            Map.entry(COMMAND_SET_POWER_SUPPLY_EQUIPMENT, Equipment.POWER_SUPPLY),
+            Map.entry(COMMAND_SET_SENSOR_EQUIPMENT, Equipment.SENSOR),
+            Map.entry(COMMAND_SET_THERMOSTAT_EQUIPMENT, Equipment.THERMOSTAT),
+            Map.entry(COMMAND_SET_WINDOW_COVERING_EQUIPMENT, Equipment.WINDOW_COVERING),
+            Map.entry(COMMAND_SET_ZONE_EQUIPMENT, Equipment.ZONE));
 }
