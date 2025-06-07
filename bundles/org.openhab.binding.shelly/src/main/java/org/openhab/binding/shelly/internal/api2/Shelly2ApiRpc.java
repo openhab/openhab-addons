@@ -44,13 +44,11 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSl
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsWiFiNetwork;
@@ -203,22 +201,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
 
         profile.isEMeter = true;
-        List<ShellySettingsInput> inputs = profile.settings.inputs;
-        profile.numInputs = inputs != null ? inputs.size() : 0;
-
-        List<ShellySettingsRelay> relays = profile.settings.relays;
-        profile.numRelays = relays != null ? relays.size() : 0;
-
-        List<ShellySettingsRoller> rollers = profile.settings.rollers;
-        profile.numRollers = rollers != null ? rollers.size() : 0;
-
+        profile.numInputs = profile.settings.inputs != null ? profile.settings.inputs.size() : 0;
+        profile.numRelays = profile.settings.relays != null ? profile.settings.relays.size() : 0;
+        profile.numRollers = profile.settings.rollers != null ? profile.settings.rollers.size() : 0;
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
-        if (getString(profile.device.mode).isEmpty() && profile.hasRelays) {
-            profile.device.mode = profile.isRoller ? SHELLY_CLASS_ROLLER : SHELLY_CLASS_RELAY;
-        }
 
         ShellySettingsDevice device = profile.device;
-        if (config.serviceName.isEmpty()) {
+        if (config.serviceName.isBlank()) {
             config.serviceName = getString(profile.device.hostname);
         }
         profile.settings.fw = device.fw;
@@ -798,7 +787,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         info.mac = getString(device.mac);
         info.auth = getBool(device.auth);
         info.gen = getInteger(device.gen);
-        info.mode = mapValue(MAP_PROFILE, device.profile);
+        info.mode = mapValue(MAP_PROFILE, getString(device.profile));
         return info;
     }
 

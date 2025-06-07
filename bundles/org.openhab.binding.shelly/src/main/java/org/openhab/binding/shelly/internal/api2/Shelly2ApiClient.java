@@ -148,8 +148,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             SHELLY2_RSTATE_CALIB, SHELLY2_RSTATE_CALIB); // Gen2-only
 
     protected static final Map<String, String> MAP_PROFILE = Map.of(//
-            SHELLY_CLASS_RELAY, SHELLY2_PROFILE_RELAY, //
-            SHELLY_CLASS_ROLLER, SHELLY2_PROFILE_COVER);
+            SHELLY2_PROFILE_RELAY, SHELLY_CLASS_RELAY, //
+            SHELLY2_PROFILE_COVER, SHELLY_CLASS_ROLLER, //
+            SHELLY2_PROFILE_LIGHT, SHELLY_MODE_WHITE, //
+            SHELLY2_PROFILE_RGB, SHELLY_MODE_COLOR, //
+            SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR);
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRelay> fillRelaySettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {
@@ -939,6 +942,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         String value;
         boolean known = key != null && !key.isEmpty() && map.containsKey(key);
         value = known ? getString(map.get(key)) : "";
+        if (!known && !getString(key).isEmpty()) {
+            logger.warn("{}:  Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
+                    map);
+        }
         logger.trace("{}: API value {} was mapped to {}", thingName, key, known ? value : "UNKNOWN");
         return value;
     }
