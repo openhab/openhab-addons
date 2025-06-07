@@ -98,7 +98,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing apiKey configuration");
             return;
         }
-
+        apiKey = config.apiKey;
         updateStatus(ThingStatus.UNKNOWN);
         pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval,
                 TimeUnit.SECONDS);
