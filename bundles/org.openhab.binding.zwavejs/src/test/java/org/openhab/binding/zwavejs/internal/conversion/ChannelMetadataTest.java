@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.zwavejs.internal.conversion;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.measure.quantity.Time;
 
@@ -38,6 +35,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -355,5 +353,28 @@ public class ChannelMetadataTest {
         assertNull(details.description);
         assertEquals(OnOffType.OFF, details.state);
         assertEquals(false, details.writable);
+    }
+
+    @Test
+    public void testChannelDetailsStor5Node2Channel0() throws IOException {
+        Node node = getNodeFromStore("store_5.json", 2);
+
+        ChannelMetadata details = new ChannelMetadata(2, node.values.get(13));
+
+        assertEquals(51, details.commandClassId);
+        assertEquals("color-switch-color", details.id);
+        assertEquals("Color", details.itemType);
+        assertEquals("Target Color", details.label);
+        assertNull(details.description);
+        assertTrue(details.value instanceof Map);
+        assertEquals(0L, ((Map<?, ?>) details.value).get("warmWhite"));
+        assertEquals(0L, ((Map<?, ?>) details.value).get("coldWhite"));
+        assertEquals(53L, ((Map<?, ?>) details.value).get("red"));
+        assertEquals(3L, ((Map<?, ?>) details.value).get("green"));
+        assertEquals(255L, ((Map<?, ?>) details.value).get("blue"));
+        assertNotNull(details.state);
+        assertEquals(HSBType.class, details.state.getClass());
+        assertEquals(ColorUtil.rgbToHsb(new int[] { 53, 3, 255 }), details.state);
+        assertEquals(true, details.writable);
     }
 }

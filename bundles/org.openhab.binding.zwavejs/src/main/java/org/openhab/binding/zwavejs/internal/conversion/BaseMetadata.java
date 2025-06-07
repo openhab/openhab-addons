@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.conversion;
 
+import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
+import org.openhab.core.util.ColorUtil;
 import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +53,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link BaseMetadata} class represents basic metadata information for a Z-Wave node.
  * It contains various properties and methods to handle metadata and state information.
- * 
+ *
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
@@ -144,7 +147,7 @@ public abstract class BaseMetadata {
      * Determines the factor based on the unit string.
      *
      * @param unitString the unit string
-     * 
+     *
      * @return the factor
      */
     protected Double determineFactor(@Nullable String unitString) {
@@ -184,7 +187,7 @@ public abstract class BaseMetadata {
      * @param endpoint the endpoint
      * 
      * @param propertyName the property name
-     * 
+     *
      * @return the normalized label
      */
     private String normalizeLabel(@Nullable String label, int endpoint, String propertyName) {
@@ -204,7 +207,7 @@ public abstract class BaseMetadata {
      * Capitalizes the input string by splitting camelCase words.
      *
      * @param input the input string
-     * 
+     *
      * @return the capitalized string
      */
     private String capitalize(@Nullable String input) {
@@ -273,7 +276,7 @@ public abstract class BaseMetadata {
      * @param inverted whether the value should be inverted
      * 
      * @param factor the factor to apply to the value
-     * 
+     *
      * @return the converted State object, or UnDefType.NULL if the value is null
      */
     protected @Nullable State toState(@Nullable Object value, String itemType, @Nullable Unit<?> unit, boolean inverted,
@@ -367,11 +370,22 @@ public abstract class BaseMetadata {
                 logger.warn("Node {}, invalid color string provided: {}", nodeId, colorStr, e);
                 return UnDefType.UNDEF;
             }
-        } else if (value instanceof Map<?, ?> map && isRGBMap(map)) {
-            int red = ((Number) Objects.requireNonNull(map.get("red"))).intValue();
-            int green = ((Number) Objects.requireNonNull(map.get("green"))).intValue();
-            int blue = ((Number) Objects.requireNonNull(map.get("blue"))).intValue();
-            return HSBType.fromRGB(red, green, blue);
+        } else if (value instanceof Map<?, ?> map && isColorMap(map)) {
+            int red = map.get(RED) instanceof Number n ? n.intValue() : -1;
+            int green = map.get(GREEN) instanceof Number n ? n.intValue() : -1;
+            int blue = map.get(BLUE) instanceof Number n ? n.intValue() : -1;
+            int warm = map.get(WARM_WHITE) instanceof Number n ? n.intValue() : -1;
+            int cold = map.get(COLD_WHITE) instanceof Number n ? n.intValue() : -1;
+            if (red >= 0 && green >= 0 && blue >= 0 && warm <= 0 && cold <= 0) {
+                return HSBType.fromRGB(red, green, blue);
+            } else if (warm > 0 && cold > 0) {
+                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(6500 - (4000 * warm / (warm + cold))));
+            } else if (warm > 0) {
+                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(6500 - (4000 * warm / 255)));
+            } else if (cold > 0) {
+                return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500 + (4000 * cold / 255)));
+            }
+            return UnDefType.UNDEF;
         } else {
             logger.warn("Node {}, unexpected value type for color: {}, please file a bug report", nodeId,
                     value.getClass().getName());
@@ -389,7 +403,7 @@ public abstract class BaseMetadata {
      * @param commandClassName The name of the command class.
      * 
      * @param optionList An optional list of options that may influence the type correction.
-     * 
+     *
      * @return The corrected metadata type.
      */
     protected MetadataType correctedType(MetadataType type, @Nullable Object value, String commandClassName,
@@ -415,7 +429,7 @@ public abstract class BaseMetadata {
      * @param value The value to determine the metadata type from.
      * 
      * @param commandClassName The name of the command class associated with the value.
-     * 
+     *
      * @return The determined metadata type.
      */
     private MetadataType determineTypeFromValue(@Nullable Object value, String commandClassName) {
@@ -424,7 +438,7 @@ public abstract class BaseMetadata {
         } else if (value instanceof Boolean) {
             return MetadataType.BOOLEAN;
         } else if (value instanceof Map<?, ?> treeMap) {
-            if (isRGBMap(treeMap)) {
+            if (isColorMap(treeMap)) {
                 return MetadataType.COLOR;
             } else if (treeMap.containsKey("value")) {
                 return determineTypeFromValue(treeMap.get("value"), commandClassName);
@@ -439,17 +453,17 @@ public abstract class BaseMetadata {
     }
 
     /*
-     * Checks if the given map represents an RGB color map.
-     * An RGB color map should have atleast 3 entries and must contain the keys "red", "green", and "blue", optional is
-     * a 4th element "warmWhite".
+     * Checks if the given map represents an RGB Color or Color Temperature map.
+     * The map should have either all the three keys "red", "green", and "blue",
+     * and/or one or two of the keys "warmWhite" and "coldWhite".
      *
      * @param map the map to check
-     * 
+     *
      * @return true if the map represents an RGB color map, false otherwise
      */
-    private boolean isRGBMap(Map<?, ?> map) {
+    private boolean isColorMap(Map<?, ?> map) {
         return (map.containsKey("red") && map.containsKey("green") && map.containsKey("blue"))
-                && (map.size() == 3 || (map.size() == 4 && map.containsKey("warmWhite")));
+                || map.containsKey("warmWhite") || map.containsKey("coldWhite");
     }
 
     protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, String commandClassName,

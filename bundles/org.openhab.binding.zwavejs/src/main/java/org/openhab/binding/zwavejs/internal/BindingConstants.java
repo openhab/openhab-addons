@@ -69,4 +69,12 @@ public class BindingConstants {
     public static final String CC_NOTIFICATION = "Notification";
 
     public static final List<String> CONFIGURATION_COMMAND_CLASSES = List.of(CC_CONFIGURATION, CC_WAKE_UP);
+
+    // color related keys
+    public static final String RED = "red";
+    public static final String GREEN = "green";
+    public static final String BLUE = "blue";
+    public static final String WARM_WHITE = "warmWhite";
+    public static final String COLD_WHITE = "coldWhite";
+    public static final String HEX = "hex";
 }
