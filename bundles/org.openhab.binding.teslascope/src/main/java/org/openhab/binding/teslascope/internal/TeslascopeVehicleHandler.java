@@ -77,7 +77,6 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             return "";
         }
         try {
-            logger.info("apiKey = {}", localBridge.getApiKey());
             return localBridge.getApiKey();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
