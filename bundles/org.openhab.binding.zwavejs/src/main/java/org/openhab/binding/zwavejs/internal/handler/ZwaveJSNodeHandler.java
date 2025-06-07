@@ -130,20 +130,32 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {
         super.handleConfigurationUpdate(configurationParameters);
-        logger.debug("Node {}. Configuration update", config.id);
+        logger.debug("Node {}. Configuration update: {}", config.id, configurationParameters.keySet());
+
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
+
         Node node = handler.requestNodeDetails(config.id);
         if (node == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-node-details");
             return;
         }
-        ZwaveJSTypeGeneratorResult result = typeGenerator.generate(thing.getUID(), node, true);
 
+        ZwaveJSTypeGeneratorResult result;
+        try {
+            result = typeGenerator.generate(thing.getUID(), node, true);
+        } catch (Exception e) {
+            logger.error("Node {}. Error generating type information during configuration update", config.id, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.build-channels-failed");
+            return;
+        }
+
+        // Process each configuration parameter update
         // TODO are we able to determine the changed parameters? The UI has a hold of 'dirty' parameters
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
             String key = configurationParameter.getKey();
@@ -157,6 +169,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 if (zwaveCommand.value != null) {
                     handler.sendCommand(zwaveCommand);
                 }
+            } else {
+                logger.debug("Node {}. Configuration key '{}' not found in generated channels, skipping.", config.id,
+                        key);
             }
         }
     }
@@ -374,6 +389,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public boolean onNodeStateChanged(Event event) {
         logger.trace("Node {}. State changed event", config.id);
+
+        // Handle configuration value updates
         if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(event.args.commandClassName)) {
             if (event.args.newValue == null) {
                 logger.debug("Node {}. Configuration value not set, because it is null.", config.id);
@@ -383,55 +400,69 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             Configuration configuration = editConfiguration();
             configuration.put(details.id, event.args.newValue);
             updateConfiguration(configuration);
-        } else {
-            ChannelMetadata metadata = new ChannelMetadata(getId(), event);
-            if (!metadata.isIgnoredCommandClass(event.args.commandClassName) && isLinked(metadata.id)) {
-                logger.trace("Getting the configuration for linked channel {}", metadata.id);
-                Channel channel = thing.getChannel(metadata.id);
-                if (channel == null) {
-                    logger.debug("Node {}. Channel {} not found, ignoring event", config.id, metadata.id);
-                    return false;
-                }
-
-                ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration()
-                        .as(ZwaveJSChannelConfiguration.class);
-
-                State state = metadata.setState(event.args.newValue, channelConfig.itemType, channelConfig.incomingUnit,
-                        channelConfig.inverted);
-
-                if (state != null) {
-                    ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-                    if (colorCap != null && colorCap.supportsColor) {
-                        if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType())
-                                && state instanceof HSBType color) {
-                            colorCap.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
-                                    colorCap.cachedColor.getBrightness());
-                            state = colorCap.cachedColor;
-                        }
-                        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())
-                                && state instanceof PercentType brightness) {
-                            colorCap.cachedColor = new HSBType(colorCap.cachedColor.getHue(),
-                                    colorCap.cachedColor.getSaturation(), brightness);
-                            thing.getChannels().stream()
-                                    .filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType())).forEach(c -> {
-                                        if (c.getConfiguration().as(
-                                                ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
-                                                && cf.endpoint == channelConfig.endpoint) {
-                                            updateState(c.getUID(), colorCap.cachedColor);
-                                        }
-                                    });
-                        }
-                    }
-                    try {
-                        updateState(metadata.id, state);
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId,
-                                metadata.id, state.toFullString(), e.getMessage());
-                    }
-                }
-            }
+            return true;
         }
+
+        // Handle channel state updates
+        ChannelMetadata metadata = new ChannelMetadata(getId(), event);
+        if (metadata.isIgnoredCommandClass(event.args.commandClassName) || !isLinked(metadata.id)) {
+            return true;
+        }
+
+        logger.trace("Getting the configuration for linked channel {}", metadata.id);
+        Channel channel = thing.getChannel(metadata.id);
+        if (channel == null) {
+            logger.debug("Node {}. Channel {} not found, ignoring event", config.id, metadata.id);
+            return false;
+        }
+
+        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+
+        State state = metadata.setState(event.args.newValue, channelConfig.itemType, channelConfig.incomingUnit,
+                channelConfig.inverted);
+
+        if (state == null) {
+            return true;
+        }
+
+        // Handle color capability updates
+        ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+        if (colorCap != null && colorCap.supportsColor) {
+            state = handleColorCapabilityUpdate(channel, channelConfig, state, colorCap);
+        }
+
+        try {
+            updateState(metadata.id, state);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId, metadata.id,
+                    state.toFullString(), e.getMessage());
+        }
+
         return true;
+    }
+
+    private State handleColorCapabilityUpdate(Channel channel, ZwaveJSChannelConfiguration channelConfig, State state,
+            ColorCapability colorCap) {
+        if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType()) && state instanceof HSBType color) {
+            // Update cached color, preserve brightness from previous state
+            colorCap.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
+                    colorCap.cachedColor.getBrightness());
+            return colorCap.cachedColor;
+        }
+        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType()) && state instanceof PercentType brightness) {
+            // Update cached color's brightness and synchronize color channels
+            colorCap.cachedColor = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
+                    brightness);
+            thing.getChannels().stream().filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType()))
+                    .forEach(c -> {
+                        if (c.getConfiguration()
+                                .as(ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
+                                && cf.endpoint == channelConfig.endpoint) {
+                            updateState(c.getUID(), colorCap.cachedColor);
+                        }
+                    });
+        }
+        return state;
     }
 
     @Override
@@ -457,101 +488,121 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         configurationAsChannels = Objects.requireNonNull(getBridge()).getConfiguration()
                 .as(ZwaveJSBridgeConfiguration.class).configurationChannels;
+
+        ZwaveJSTypeGeneratorResult result;
         try {
-            ZwaveJSTypeGeneratorResult result = typeGenerator.generate(thing.getUID(), node, configurationAsChannels);
-
-            ThingBuilder builder = editThing();
-            if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
-                builder.withLocation(result.location);
-            }
-
-            List<Channel> channelsToRemove = new ArrayList<>();
-            for (Channel channel : thing.getChannels()) {
-                if (!result.channels.containsKey(channel.getUID().getId())) {
-                    channelsToRemove.add(channel);
-                } else {
-                    result.channels.remove(channel.getUID().getId());
-                }
-            }
-            if (!channelsToRemove.isEmpty()) {
-                logger.trace(null, "Node {}. Removing {} channels", node.nodeId, channelsToRemove.size());
-                builder.withoutChannels(channelsToRemove);
-            }
-            if (!result.channels.isEmpty()) {
-                List<Channel> channels = new ArrayList<Channel>(result.channels.entrySet().stream()
-                        .sorted(Map.Entry.<String, Channel> comparingByKey()).map(m -> m.getValue()).toList());
-                logger.trace(null, "Node {}. Adding {} channels", node.nodeId, channels.size());
-                builder.withChannels(channels);
-            }
-
-            if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
-                SemanticTag equipmentTag = getEquipmentTag(result.channels.values());
-                if (equipmentTag != null) {
-                    logger.debug("Node {}. Setting semantic equipment tag {}", node.nodeId, equipmentTag);
-                    builder.withSemanticEquipmentTag(equipmentTag);
-                } else {
-                    logger.debug("Node {}. No semantic equipment tag set", node.nodeId);
-                }
-            }
-            updateThing(builder.build());
-
-            for (Channel channel : thing.getChannels()) {
-                if (result.values.containsKey(channel.getUID().getId()) && isLinked(channel.getUID())) {
-                    ChannelMetadata dummy = new ChannelMetadata(getId(), node.values.get(0));
-                    ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration()
-                            .as(ZwaveJSChannelConfiguration.class);
-                    State state = dummy.setState(Objects.requireNonNull(result.values.get(channel.getUID().getId())),
-                            channelConfig.itemType, channelConfig.incomingUnit, channelConfig.inverted);
-                    if (state != null) {
-                        updateState(channel.getUID(), state);
-                    }
-                }
-            }
-
-            if (!configurationAsChannels) {
-                Configuration configuration = editConfiguration();
-                List<String> channelIds = thing.getChannels().stream().map(c -> c.getUID().getId()).toList();
-
-                for (Entry<String, Object> entry : result.values.entrySet()) {
-                    if (!channelIds.contains(entry.getKey())) {
-                        logger.trace("Node {}. Setting configuration item {} to {}", node.nodeId, entry.getKey(),
-                                entry.getValue());
-                        try {
-                            configuration.put(entry.getKey(), entry.getValue());
-                        } catch (IllegalArgumentException e) {
-                            logger.warn("Node {}. Error setting configuration item {} to {}: {}", node.nodeId,
-                                    entry.getKey(), entry.getValue(), e.getMessage());
-                        }
-                    }
-                }
-                updateConfiguration(configuration);
-                logger.debug("Node {}. Done values to configuration items", node.nodeId);
-            }
-
-            node.values.stream().filter(value -> value.commandClass == COMMAND_CLASS_SWITCH_COLOR)
-                    .filter(value -> value.value instanceof Map).forEach(value -> {
-                        Map<?, ?> map = (Map<?, ?>) value.value;
-                        boolean supportsColor = map.containsKey(GREEN);
-                        boolean supportsWarmWhite = map.containsKey(WARM_WHITE);
-                        boolean supportsColdWhite = map.containsKey(COLD_WHITE);
-                        if (supportsColor || supportsWarmWhite || supportsColdWhite) {
-                            ColorCapability colorCap = colorCapabilities.getOrDefault(value.endpoint,
-                                    new ColorCapability());
-                            colorCap.supportsColor = supportsColor;
-                            colorCap.supportsWarmWhite = supportsWarmWhite;
-                            colorCap.supportsColdWhite = supportsColdWhite;
-                            colorCapabilities.put(value.endpoint, colorCap);
-                        }
-                    });
-            if (logger.isDebugEnabled()) {
-                colorCapabilities.entrySet()
-                        .forEach(e -> logger.debug("Node {}, Endpoint {}, {}", node.nodeId, e.getKey(), e.getValue()));
-            }
+            result = typeGenerator.generate(thing.getUID(), node, configurationAsChannels);
         } catch (Exception e) {
-            logger.error("Node {}. Error building channels and configuration", node.nodeId, e);
+            logger.error("Node {}. Error generating type information", node.nodeId, e);
+            return false;
         }
 
+        ThingBuilder builder = editThing();
+
+        // Update location if needed
+        if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
+            builder.withLocation(result.location);
+        }
+
+        // Update channels
+        updateChannels(builder, result);
+
+        // Initialize state for channels and configuration
+        initializeChannelAndConfigState(node, result);
+
+        // Detect color capabilities
+        detectColorCapabilities(node);
+
         return true;
+    }
+
+    private void updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
+        List<Channel> channelsToRemove = new ArrayList<>();
+        for (Channel channel : thing.getChannels()) {
+            if (!result.channels.containsKey(channel.getUID().getId())) {
+                channelsToRemove.add(channel);
+            } else {
+                result.channels.remove(channel.getUID().getId());
+            }
+        }
+        if (!channelsToRemove.isEmpty()) {
+            logger.trace(null, "Node {}. Removing {} channels", this.config.id, channelsToRemove.size());
+            builder.withoutChannels(channelsToRemove);
+        }
+        if (!result.channels.isEmpty()) {
+            List<Channel> channels = result.channels.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .map(Map.Entry::getValue).collect(Collectors.toList());
+            logger.trace(null, "Node {}. Adding {} channels", this.config.id, channels.size());
+            builder.withChannels(channels);
+        }
+        if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
+            SemanticTag equipmentTag = getEquipmentTag(builder.build().getChannels());
+            if (equipmentTag != null) {
+                logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
+                builder.withSemanticEquipmentTag(equipmentTag);
+            } else {
+                logger.debug("Node {}. No semantic equipment tag set", this.config.id);
+            }
+        }
+        updateThing(builder.build());
+    }
+
+    private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
+        // Set initial state for linked channels
+        for (Channel channel : thing.getChannels()) {
+            if (result.values.containsKey(channel.getUID().getId()) && isLinked(channel.getUID())) {
+                ChannelMetadata dummy = new ChannelMetadata(getId(), node.values.get(0));
+                ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration()
+                        .as(ZwaveJSChannelConfiguration.class);
+                State state = dummy.setState(Objects.requireNonNull(result.values.get(channel.getUID().getId())),
+                        channelConfig.itemType, channelConfig.incomingUnit, channelConfig.inverted);
+                if (state != null) {
+                    updateState(channel.getUID(), state);
+                }
+            }
+        }
+
+        // Set configuration items if not using configurationAsChannels
+        if (!configurationAsChannels) {
+            Configuration configuration = editConfiguration();
+            List<String> channelIds = thing.getChannels().stream().map(c -> c.getUID().getId()).toList();
+
+            for (Entry<String, Object> entry : result.values.entrySet()) {
+                if (!channelIds.contains(entry.getKey())) {
+                    logger.trace("Node {}. Setting configuration item {} to {}", node.nodeId, entry.getKey(),
+                            entry.getValue());
+                    try {
+                        configuration.put(entry.getKey(), entry.getValue());
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Node {}. Error setting configuration item {} to {}: {}", node.nodeId,
+                                entry.getKey(), entry.getValue(), e.getMessage());
+                    }
+                }
+            }
+            updateConfiguration(configuration);
+            logger.debug("Node {}. Done values to configuration items", node.nodeId);
+        }
+    }
+
+    private void detectColorCapabilities(Node node) {
+        node.values.stream().filter(value -> value.commandClass == COMMAND_CLASS_SWITCH_COLOR)
+                .filter(value -> value.value instanceof Map).forEach(value -> {
+                    Map<?, ?> map = (Map<?, ?>) value.value;
+                    boolean supportsColor = map.containsKey(GREEN);
+                    boolean supportsWarmWhite = map.containsKey(WARM_WHITE);
+                    boolean supportsColdWhite = map.containsKey(COLD_WHITE);
+                    if (supportsColor || supportsWarmWhite || supportsColdWhite) {
+                        ColorCapability colorCap = colorCapabilities.getOrDefault(value.endpoint,
+                                new ColorCapability());
+                        colorCap.supportsColor = supportsColor;
+                        colorCap.supportsWarmWhite = supportsWarmWhite;
+                        colorCap.supportsColdWhite = supportsColdWhite;
+                        colorCapabilities.put(value.endpoint, colorCap);
+                    }
+                });
+        if (logger.isDebugEnabled()) {
+            colorCapabilities.forEach((ep, cap) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, ep, cap));
+        }
     }
 
     @Override
@@ -569,40 +620,33 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 .filter(Objects::nonNull).map(config -> Integer.valueOf(config.commandClassId))
                 .collect(Collectors.toSet());
 
-        if (commandClassIds.removeAll(COMMAND_SET_LIGHT_SOURCE_EQUIPMENT)) {
-            return Equipment.LIGHT_SOURCE;
-        } else if (commandClassIds.removeAll(COMMAND_SET_ALARM_DEVICE_EQUIPMENT)) {
-            return Equipment.ALARM_DEVICE;
-        } else if (commandClassIds.removeAll(COMMAND_SET_AUDIO_VISUAL_EQUIPMENT)) {
-            return Equipment.AUDIO_VISUAL;
-        } else if (commandClassIds.removeAll(COMMAND_SET_BATTERY_EQUIPMENT)) {
-            return Equipment.BATTERY;
-        } else if (commandClassIds.removeAll(COMMAND_SET_CONTROL_DEVICE_EQUIPMENT)) {
-            return Equipment.CONTROL_DEVICE;
-        } else if (commandClassIds.removeAll(COMMAND_SET_DISPLAY_EQUIPMENT)) {
-            return Equipment.DISPLAY;
-        } else if (commandClassIds.removeAll(COMMAND_SET_GATE_EQUIPMENT)) {
-            return Equipment.GATE;
-        } else if (commandClassIds.removeAll(COMMAND_SET_HUMIDIFIER_EQUIPMENT)) {
-            return Equipment.HUMIDIFIER;
-        } else if (commandClassIds.removeAll(COMMAND_SET_HVAC_EQUIPMENT)) {
-            return Equipment.HVAC;
-        } else if (commandClassIds.removeAll(COMMAND_SET_IRRIGATION_EQUIPMENT)) {
-            return Equipment.IRRIGATION;
-        } else if (commandClassIds.removeAll(COMMAND_SET_LOCK_EQUIPMENT)) {
-            return Equipment.LOCK;
-        } else if (commandClassIds.removeAll(COMMAND_SET_METER_EQUIPMENT)) {
-            return Equipment.ELECTRIC_METER;
-        } else if (commandClassIds.removeAll(COMMAND_SET_POWER_SUPPLY_EQUIPMENT)) {
-            return Equipment.POWER_SUPPLY;
-        } else if (commandClassIds.removeAll(COMMAND_SET_SENSOR_EQUIPMENT)) {
-            return Equipment.SENSOR;
-        } else if (commandClassIds.removeAll(COMMAND_SET_THERMOSTAT_EQUIPMENT)) {
-            return Equipment.THERMOSTAT;
-        } else if (commandClassIds.removeAll(COMMAND_SET_WINDOW_COVERING_EQUIPMENT)) {
-            return Equipment.WINDOW_COVERING;
-        } else if (commandClassIds.removeAll(COMMAND_SET_ZONE_EQUIPMENT)) {
-            return Equipment.ZONE;
+        // Map of command class sets to their corresponding equipment tags
+        Map<Set<Integer>, SemanticTag> equipmentMap = Map.ofEntries(
+                Map.entry(COMMAND_SET_LIGHT_SOURCE_EQUIPMENT, Equipment.LIGHT_SOURCE),
+                Map.entry(COMMAND_SET_ALARM_DEVICE_EQUIPMENT, Equipment.ALARM_DEVICE),
+                Map.entry(COMMAND_SET_AUDIO_VISUAL_EQUIPMENT, Equipment.AUDIO_VISUAL),
+                Map.entry(COMMAND_SET_BATTERY_EQUIPMENT, Equipment.BATTERY),
+                Map.entry(COMMAND_SET_CONTROL_DEVICE_EQUIPMENT, Equipment.CONTROL_DEVICE),
+                Map.entry(COMMAND_SET_DISPLAY_EQUIPMENT, Equipment.DISPLAY),
+                Map.entry(COMMAND_SET_GATE_EQUIPMENT, Equipment.GATE),
+                Map.entry(COMMAND_SET_HUMIDIFIER_EQUIPMENT, Equipment.HUMIDIFIER),
+                Map.entry(COMMAND_SET_HVAC_EQUIPMENT, Equipment.HVAC),
+                Map.entry(COMMAND_SET_IRRIGATION_EQUIPMENT, Equipment.IRRIGATION),
+                Map.entry(COMMAND_SET_LOCK_EQUIPMENT, Equipment.LOCK),
+                Map.entry(COMMAND_SET_METER_EQUIPMENT, Equipment.ELECTRIC_METER),
+                Map.entry(COMMAND_SET_POWER_SUPPLY_EQUIPMENT, Equipment.POWER_SUPPLY),
+                Map.entry(COMMAND_SET_SENSOR_EQUIPMENT, Equipment.SENSOR),
+                Map.entry(COMMAND_SET_THERMOSTAT_EQUIPMENT, Equipment.THERMOSTAT),
+                Map.entry(COMMAND_SET_WINDOW_COVERING_EQUIPMENT, Equipment.WINDOW_COVERING),
+                Map.entry(COMMAND_SET_ZONE_EQUIPMENT, Equipment.ZONE));
+
+        // Find the first matching equipment tag based on intersection
+        for (Map.Entry<Set<Integer>, SemanticTag> entry : equipmentMap.entrySet()) {
+            Set<Integer> intersection = new java.util.HashSet<>(commandClassIds);
+            intersection.retainAll(entry.getKey());
+            if (!intersection.isEmpty()) {
+                return entry.getValue();
+            }
         }
         return null;
     }
