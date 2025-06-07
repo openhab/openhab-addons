@@ -1,0 +1,1171 @@
+{
+	"type": "result",
+	"success": true,
+	"result": {
+		"state": {
+			"driver": {
+				"logConfig": {
+					"enabled": true,
+					"level": "debug",
+					"logToFile": true,
+					"maxFiles": 7,
+					"filename": "/usr/src/app/store/logs/zwavejs_%DATE%.log",
+					"forceConsole": false
+				},
+				"statisticsEnabled": true
+			},
+			"controller": {
+				"type": 7,
+				"homeId": 3678916240,
+				"ownNodeId": 1,
+				"isUsingHomeIdFromOtherNetwork": false,
+				"isSISPresent": true,
+				"wasRealPrimary": true,
+				"manufacturerId": 634,
+				"productType": 4,
+				"productId": 1552,
+				"supportedFunctionTypes": [
+					2,
+					3,
+					5,
+					6,
+					7,
+					8,
+					9,
+					10,
+					11,
+					16,
+					18,
+					19,
+					20,
+					21,
+					22,
+					28,
+					32,
+					33,
+					34,
+					35,
+					36,
+					39,
+					40,
+					41,
+					42,
+					44,
+					46,
+					55,
+					56,
+					57,
+					58,
+					59,
+					60,
+					61,
+					63,
+					65,
+					66,
+					68,
+					69,
+					70,
+					71,
+					72,
+					73,
+					74,
+					75,
+					77,
+					79,
+					80,
+					81,
+					83,
+					84,
+					85,
+					86,
+					87,
+					88,
+					94,
+					95,
+					96,
+					97,
+					98,
+					99,
+					101,
+					104,
+					128,
+					144,
+					146,
+					147,
+					152,
+					160,
+					162,
+					164,
+					165,
+					166,
+					168,
+					169,
+					171,
+					189,
+					190,
+					191,
+					210,
+					211,
+					212,
+					214,
+					215,
+					216,
+					217,
+					218,
+					219,
+					220,
+					221,
+					222,
+					223,
+					231,
+					232
+				],
+				"sucNodeId": 1,
+				"supportsTimers": false,
+				"statistics": {
+					"messagesTX": 2918,
+					"messagesRX": 3255,
+					"messagesDroppedRX": 0,
+					"NAK": 0,
+					"CAN": 0,
+					"timeoutACK": 0,
+					"timeoutResponse": 0,
+					"timeoutCallback": 0,
+					"messagesDroppedTX": 0,
+					"backgroundRSSI": {
+						"channel0": {
+							"current": -96,
+							"average": -94
+						},
+						"channel1": {
+							"current": -97,
+							"average": -92
+						},
+						"channel2": {
+							"current": -97,
+							"average": -92
+						},
+						"channel3": {
+							"current": 127,
+							"average": 0
+						},
+						"timestamp": 1749204185588
+					}
+				},
+				"inclusionState": 0,
+				"sdkVersion": "7.22.1",
+				"firmwareVersion": "1.50",
+				"isPrimary": true,
+				"isSUC": true,
+				"nodeType": 0,
+				"rfRegion": 0,
+				"status": 0,
+				"isRebuildingRoutes": false,
+				"supportsLongRange": false,
+				"maxLongRangePowerlevel": 14,
+				"longRangeChannel": 0,
+				"supportsLongRangeAutoChannelSelection": true
+			},
+			"nodes": [
+				{
+					"nodeId": 1,
+					"index": 0,
+					"status": 4,
+					"ready": true,
+					"isListening": true,
+					"isRouting": true,
+					"manufacturerId": 634,
+					"productId": 1552,
+					"productType": 4,
+					"firmwareVersion": "1.50",
+					"deviceConfig": {
+						"filename": "/usr/src/app/store/.config-db/devices/0x027a/zst39lr.json",
+						"isEmbedded": true,
+						"manufacturer": "Zooz",
+						"manufacturerId": 634,
+						"label": "ZST39 LR",
+						"description": "800 Series Long Range USB Controller",
+						"devices": [
+							{
+								"productType": 4,
+								"productId": 1552
+							}
+						],
+						"firmwareVersion": {
+							"min": "0.0",
+							"max": "255.255"
+						},
+						"preferred": false,
+						"metadata": {
+							"comments": []
+						}
+					},
+					"label": "ZST39 LR",
+					"interviewAttempts": 0,
+					"endpoints": [
+						{
+							"nodeId": 1,
+							"index": 0,
+							"deviceClass": {
+								"basic": {
+									"key": 2,
+									"label": "Static Controller"
+								},
+								"generic": {
+									"key": 2,
+									"label": "Static Controller"
+								},
+								"specific": {
+									"key": 1,
+									"label": "PC Controller"
+								}
+							},
+							"commandClasses": []
+						}
+					],
+					"values": [],
+					"isFrequentListening": false,
+					"maxDataRate": 100000,
+					"supportedDataRates": [
+						40000,
+						100000
+					],
+					"protocolVersion": 3,
+					"supportsBeaming": true,
+					"supportsSecurity": false,
+					"deviceClass": {
+						"basic": {
+							"key": 2,
+							"label": "Static Controller"
+						},
+						"generic": {
+							"key": 2,
+							"label": "Static Controller"
+						},
+						"specific": {
+							"key": 1,
+							"label": "PC Controller"
+						}
+					},
+					"interviewStage": "Complete",
+					"deviceDatabaseUrl": "https://devices.zwave-js.io/?jumpTo=0x027a:0x0004:0x0610:1.50",
+					"statistics": {
+						"commandsTX": 0,
+						"commandsRX": 0,
+						"commandsDroppedRX": 0,
+						"commandsDroppedTX": 0,
+						"timeoutResponse": 0
+					},
+					"isControllerNode": true,
+					"keepAwake": false,
+					"protocol": 0
+				},
+				{
+					"nodeId": 2,
+					"index": 0,
+					"installerIcon": 1536,
+					"userIcon": 1536,
+					"status": 4,
+					"ready": true,
+					"isListening": true,
+					"isRouting": true,
+					"isSecure": false,
+					"manufacturerId": 305,
+					"productId": 3,
+					"productType": 2,
+					"firmwareVersion": "2.26",
+					"zwavePlusVersion": 1,
+					"name": "Bulb",
+					"location": "Office",
+					"deviceConfig": {
+						"filename": "/usr/src/app/store/.config-db/devices/0x0131/rgbwe2.json",
+						"isEmbedded": true,
+						"manufacturer": "Zipato",
+						"manufacturerId": 305,
+						"label": "RGBWE2",
+						"description": "RGBW Bulb V2",
+						"devices": [
+							{
+								"productType": 2,
+								"productId": 3
+							}
+						],
+						"firmwareVersion": {
+							"min": "0.0",
+							"max": "255.255"
+						},
+						"preferred": false,
+						"paramInformation": {
+							"_map": {
+								
+							}
+						},
+						"compat": {
+							"overrideQueries": {
+								"overrides": {
+									
+								}
+							}
+						}
+					},
+					"label": "RGBWE2",
+					"interviewAttempts": 0,
+					"endpoints": [
+						{
+							"nodeId": 2,
+							"index": 0,
+							"installerIcon": 1536,
+							"userIcon": 1536,
+							"deviceClass": {
+								"basic": {
+									"key": 4,
+									"label": "Routing End Node"
+								},
+								"generic": {
+									"key": 17,
+									"label": "Multilevel Switch"
+								},
+								"specific": {
+									"key": 1,
+									"label": "Multilevel Power Switch"
+								}
+							},
+							"commandClasses": [
+								{
+									"id": 152,
+									"name": "Security",
+									"version": 1,
+									"isSecure": true
+								},
+								{
+									"id": 134,
+									"name": "Version",
+									"version": 2,
+									"isSecure": false
+								},
+								{
+									"id": 94,
+									"name": "Z-Wave Plus Info",
+									"version": 2,
+									"isSecure": false
+								},
+								{
+									"id": 133,
+									"name": "Association",
+									"version": 2,
+									"isSecure": false
+								},
+								{
+									"id": 89,
+									"name": "Association Group Information",
+									"version": 1,
+									"isSecure": false
+								},
+								{
+									"id": 114,
+									"name": "Manufacturer Specific",
+									"version": 2,
+									"isSecure": false
+								},
+								{
+									"id": 90,
+									"name": "Device Reset Locally",
+									"version": 1,
+									"isSecure": false
+								},
+								{
+									"id": 51,
+									"name": "Color Switch",
+									"version": 1,
+									"isSecure": false
+								},
+								{
+									"id": 38,
+									"name": "Multilevel Switch",
+									"version": 2,
+									"isSecure": false
+								},
+								{
+									"id": 112,
+									"name": "Configuration",
+									"version": 1,
+									"isSecure": false
+								},
+								{
+									"id": 115,
+									"name": "Powerlevel",
+									"version": 1,
+									"isSecure": false
+								},
+								{
+									"id": 122,
+									"name": "Firmware Update Meta Data",
+									"version": 2,
+									"isSecure": false
+								}
+							]
+						}
+					],
+					"values": [
+						{
+							"endpoint": 0,
+							"commandClass": 38,
+							"commandClassName": "Multilevel Switch",
+							"property": "currentValue",
+							"propertyName": "currentValue",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Current value",
+								"min": 0,
+								"max": 99,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 77
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 38,
+							"commandClassName": "Multilevel Switch",
+							"property": "targetValue",
+							"propertyName": "targetValue",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"label": "Target value",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"min": 0,
+								"max": 99,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 77
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 38,
+							"commandClassName": "Multilevel Switch",
+							"property": "Up",
+							"propertyName": "Up",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "boolean",
+								"readable": false,
+								"writeable": true,
+								"label": "Perform a level change (Up)",
+								"ccSpecific": {
+									"switchType": 2
+								},
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"states": {
+									"true": "Start",
+									"false": "Stop"
+								},
+								"stateful": true,
+								"secret": false
+							},
+							"value": true
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 38,
+							"commandClassName": "Multilevel Switch",
+							"property": "Down",
+							"propertyName": "Down",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "boolean",
+								"readable": false,
+								"writeable": true,
+								"label": "Perform a level change (Down)",
+								"ccSpecific": {
+									"switchType": 2
+								},
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"states": {
+									"true": "Start",
+									"false": "Stop"
+								},
+								"stateful": true,
+								"secret": false
+							},
+							"value": true
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 38,
+							"commandClassName": "Multilevel Switch",
+							"property": "restorePrevious",
+							"propertyName": "restorePrevious",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "boolean",
+								"readable": false,
+								"writeable": true,
+								"label": "Restore previous value",
+								"states": {
+									"true": "Restore"
+								},
+								"stateful": true,
+								"secret": false
+							},
+							"value": true
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 38,
+							"commandClassName": "Multilevel Switch",
+							"property": "duration",
+							"propertyName": "duration",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "duration",
+								"readable": true,
+								"writeable": false,
+								"label": "Remaining duration",
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "currentColor",
+							"propertyKey": 0,
+							"propertyName": "currentColor",
+							"propertyKeyName": "Warm White",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"description": "The current value of the Warm White channel.",
+								"label": "Current value (Warm White)",
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 0
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "currentColor",
+							"propertyName": "currentColor",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "any",
+								"readable": true,
+								"writeable": false,
+								"label": "Current color",
+								"stateful": true,
+								"secret": false
+							},
+							"value": {
+								"warmWhite": 0,
+								"coldWhite": 0,
+								"red": 53,
+								"green": 3,
+								"blue": 255
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "currentColor",
+							"propertyKey": 1,
+							"propertyName": "currentColor",
+							"propertyKeyName": "Cold White",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"description": "The current value of the Cold White channel.",
+								"label": "Current value (Cold White)",
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 0
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "currentColor",
+							"propertyKey": 2,
+							"propertyName": "currentColor",
+							"propertyKeyName": "Red",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"description": "The current value of the Red channel.",
+								"label": "Current value (Red)",
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 53
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "hexColor",
+							"propertyName": "hexColor",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "color",
+								"readable": true,
+								"writeable": true,
+								"label": "RGB Color",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"minLength": 6,
+								"maxLength": 7,
+								"stateful": true,
+								"secret": false
+							},
+							"value": "3503ff"
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "currentColor",
+							"propertyKey": 3,
+							"propertyName": "currentColor",
+							"propertyKeyName": "Green",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"description": "The current value of the Green channel.",
+								"label": "Current value (Green)",
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 3
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "currentColor",
+							"propertyKey": 4,
+							"propertyName": "currentColor",
+							"propertyKeyName": "Blue",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"description": "The current value of the Blue channel.",
+								"label": "Current value (Blue)",
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 255
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "targetColor",
+							"propertyName": "targetColor",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "any",
+								"readable": true,
+								"writeable": true,
+								"label": "Target color",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"stateful": true,
+								"secret": false
+							},
+							"value": {
+								"red": 53,
+								"green": 3,
+								"blue": 255,
+								"warmWhite": 0,
+								"coldWhite": 0
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "targetColor",
+							"propertyKey": 0,
+							"propertyName": "targetColor",
+							"propertyKeyName": "Warm White",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"description": "The target value of the Warm White channel.",
+								"label": "Target value (Warm White)",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "targetColor",
+							"propertyKey": 1,
+							"propertyName": "targetColor",
+							"propertyKeyName": "Cold White",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"description": "The target value of the Cold White channel.",
+								"label": "Target value (Cold White)",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "targetColor",
+							"propertyKey": 2,
+							"propertyName": "targetColor",
+							"propertyKeyName": "Red",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"description": "The target value of the Red channel.",
+								"label": "Target value (Red)",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "targetColor",
+							"propertyKey": 3,
+							"propertyName": "targetColor",
+							"propertyKeyName": "Green",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"description": "The target value of the Green channel.",
+								"label": "Target value (Green)",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "targetColor",
+							"propertyKey": 4,
+							"propertyName": "targetColor",
+							"propertyKeyName": "Blue",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"description": "The target value of the Blue channel.",
+								"label": "Target value (Blue)",
+								"valueChangeOptions": [
+									"transitionDuration"
+								],
+								"min": 0,
+								"max": 255,
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 51,
+							"commandClassName": "Color Switch",
+							"property": "duration",
+							"propertyName": "duration",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "duration",
+								"readable": true,
+								"writeable": false,
+								"label": "Remaining duration",
+								"stateful": true,
+								"secret": false
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 112,
+							"commandClassName": "Configuration",
+							"property": 2,
+							"propertyName": "Strobe Light Interval",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"label": "Strobe Light Interval",
+								"default": 0,
+								"min": 0,
+								"max": 25,
+								"valueSize": 1,
+								"format": 0,
+								"allowManualEntry": true,
+								"isFromConfig": true
+							},
+							"value": 0
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 112,
+							"commandClassName": "Configuration",
+							"property": 3,
+							"propertyName": "Strobe Light Pulse Count",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"label": "Strobe Light Pulse Count",
+								"default": 0,
+								"min": 0,
+								"max": 127,
+								"states": {
+									"127": "Infinite flashing"
+								},
+								"valueSize": 1,
+								"format": 0,
+								"allowManualEntry": true,
+								"isFromConfig": true
+							},
+							"value": 0
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 112,
+							"commandClassName": "Configuration",
+							"property": 4,
+							"propertyName": "Random Strobe Pulse Colors",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": true,
+								"label": "Random Strobe Pulse Colors",
+								"default": 0,
+								"min": 0,
+								"max": 1,
+								"states": {
+									"0": "Disable",
+									"1": "Enable"
+								},
+								"valueSize": 1,
+								"format": 1,
+								"allowManualEntry": false,
+								"isFromConfig": true
+							},
+							"value": 0
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 112,
+							"commandClassName": "Configuration",
+							"property": 1,
+							"propertyName": "Internal Bulb Temperature",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Internal Bulb Temperature",
+								"default": 0,
+								"min": 0,
+								"max": 0,
+								"valueSize": 1,
+								"format": 0,
+								"allowManualEntry": false,
+								"isFromConfig": true
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 112,
+							"commandClassName": "Configuration",
+							"property": 255,
+							"propertyName": "Reset Bulb to Factory Settings",
+							"ccVersion": 1,
+							"metadata": {
+								"type": "number",
+								"readable": false,
+								"writeable": true,
+								"label": "Reset Bulb to Factory Settings",
+								"default": 1,
+								"min": 1,
+								"max": 255,
+								"states": {
+									"255": "Reset bulb to factory settings"
+								},
+								"valueSize": 4,
+								"format": 0,
+								"allowManualEntry": true,
+								"isFromConfig": true
+							}
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 114,
+							"commandClassName": "Manufacturer Specific",
+							"property": "productId",
+							"propertyName": "productId",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Product ID",
+								"min": 0,
+								"max": 65535,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 3
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 114,
+							"commandClassName": "Manufacturer Specific",
+							"property": "productType",
+							"propertyName": "productType",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Product type",
+								"min": 0,
+								"max": 65535,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 2
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 114,
+							"commandClassName": "Manufacturer Specific",
+							"property": "manufacturerId",
+							"propertyName": "manufacturerId",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Manufacturer ID",
+								"min": 0,
+								"max": 65535,
+								"stateful": true,
+								"secret": false
+							},
+							"value": 305
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 134,
+							"commandClassName": "Version",
+							"property": "hardwareVersion",
+							"propertyName": "hardwareVersion",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Z-Wave chip hardware version",
+								"stateful": true,
+								"secret": false
+							},
+							"value": 255
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 134,
+							"commandClassName": "Version",
+							"property": "firmwareVersions",
+							"propertyName": "firmwareVersions",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "string[]",
+								"readable": true,
+								"writeable": false,
+								"label": "Z-Wave chip firmware versions",
+								"stateful": true,
+								"secret": false
+							},
+							"value": [
+								"2.26"
+							]
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 134,
+							"commandClassName": "Version",
+							"property": "protocolVersion",
+							"propertyName": "protocolVersion",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "string",
+								"readable": true,
+								"writeable": false,
+								"label": "Z-Wave protocol version",
+								"stateful": true,
+								"secret": false
+							},
+							"value": "4.38"
+						},
+						{
+							"endpoint": 0,
+							"commandClass": 134,
+							"commandClassName": "Version",
+							"property": "libraryType",
+							"propertyName": "libraryType",
+							"ccVersion": 2,
+							"metadata": {
+								"type": "number",
+								"readable": true,
+								"writeable": false,
+								"label": "Library type",
+								"states": {
+									"0": "Unknown",
+									"1": "Static Controller",
+									"2": "Controller",
+									"3": "Enhanced Slave",
+									"4": "Slave",
+									"5": "Installer",
+									"6": "Routing Slave",
+									"7": "Bridge Controller",
+									"8": "Device under Test",
+									"9": "N/A",
+									"10": "AV Remote",
+									"11": "AV Device"
+								},
+								"stateful": true,
+								"secret": false
+							},
+							"value": 3
+						}
+					],
+					"isFrequentListening": false,
+					"maxDataRate": 100000,
+					"supportedDataRates": [
+						40000,
+						100000
+					],
+					"protocolVersion": 3,
+					"supportsBeaming": true,
+					"supportsSecurity": false,
+					"nodeType": 1,
+					"zwavePlusNodeType": 0,
+					"zwavePlusRoleType": 5,
+					"deviceClass": {
+						"basic": {
+							"key": 4,
+							"label": "Routing End Node"
+						},
+						"generic": {
+							"key": 17,
+							"label": "Multilevel Switch"
+						},
+						"specific": {
+							"key": 1,
+							"label": "Multilevel Power Switch"
+						}
+					},
+					"interviewStage": "Complete",
+					"deviceDatabaseUrl": "https://devices.zwave-js.io/?jumpTo=0x0131:0x0002:0x0003:2.26",
+					"statistics": {
+						"commandsTX": 168,
+						"commandsRX": 31,
+						"commandsDroppedRX": 0,
+						"commandsDroppedTX": 0,
+						"timeoutResponse": 0,
+						"rtt": 36.7,
+						"lastSeen": "2025-06-05T15:54:59.321Z",
+						"rssi": -63,
+						"lwr": {
+							"protocolDataRate": 3,
+							"repeaters": [],
+							"rssi": -65,
+							"repeaterRSSI": []
+						}
+					},
+					"highestSecurityClass": -1,
+					"isControllerNode": false,
+					"keepAwake": false,
+					"lastSeen": "2025-06-05T15:54:59.321Z",
+					"protocol": 0
+				}
+			]
+		}
+	}
+}
