@@ -46,7 +46,6 @@ import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.internal.data.DataFactory;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
 import org.openhab.binding.ring.internal.data.Profile;
 import org.openhab.binding.ring.internal.data.RingDevices;
