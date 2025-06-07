@@ -83,13 +83,13 @@ export abstract class GenericDeviceType {
         const parent = this;
         return class extends OnOffType {
             override async on() {
-                await parent.sendBridgeEvent("onOff", "onOff", true);
+                parent.sendBridgeEvent("onOff", "onOff", true);
                 if (setLocally) {
                     await super.on();
                 }
             }
             override async off() {
-                await parent.sendBridgeEvent("onOff", "onOff", false);
+                parent.sendBridgeEvent("onOff", "onOff", false);
                 if (setLocally) {
                     await super.off();
                 }
@@ -106,7 +106,7 @@ export abstract class GenericDeviceType {
                 withOnOff: boolean,
                 options: TypeFromPartialBitSchema<typeof LevelControl.Options>,
             ) {
-                await parent.sendBridgeEvent("levelControl", "currentLevel", level);
+                parent.sendBridgeEvent("levelControl", "currentLevel", level);
             }
         };
     }
@@ -121,7 +121,7 @@ export abstract class GenericDeviceType {
 
     #generateAttributes<T extends Record<string, any>, U extends Partial<T>>(defaults: T, overrides: U): T {
         const alwaysAdd = ["fixedLabel"];
-        let entries = this.#mergeWithDefaults(defaults, overrides);
+        const entries = this.#mergeWithDefaults(defaults, overrides);
         // Ensure entries include the values from overrides for the keys in alwaysAdd
         alwaysAdd.forEach(key => {
             if (key in overrides) {

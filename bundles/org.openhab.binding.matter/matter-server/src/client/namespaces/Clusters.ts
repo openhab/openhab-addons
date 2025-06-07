@@ -29,7 +29,7 @@ export class Clusters {
      */
     async command(nodeId: number, endpointId: number, clusterName: string, commandName: string, args: any) {
         logger.debug(`command ${nodeId} ${endpointId} ${clusterName} ${commandName} ${Logger.toJSON(args)}`);
-        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
@@ -84,7 +84,7 @@ export class Clusters {
             }
         }
 
-        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
@@ -135,7 +135,7 @@ export class Clusters {
      * @param attributeName
      */
     async readAttribute(nodeId: number, endpointId: number, clusterName: string, attributeName: string) {
-        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
@@ -171,7 +171,7 @@ export class Clusters {
      * @returns
      */
     async readCluster(nodeId: string | number, endpointId: number, clusterNameOrId: string | number) {
-        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device === undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
