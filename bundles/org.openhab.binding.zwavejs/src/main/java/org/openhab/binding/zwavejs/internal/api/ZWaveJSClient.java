@@ -229,7 +229,7 @@ public class ZWaveJSClient implements WebSocketListener {
             keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     String data = "Ping";
-                    ByteBuffer payload = ByteBuffer.wrap(data.getBytes());
+                    ByteBuffer payload = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
                     session.getRemote().sendPing(payload);
                 } catch (IOException e) {
                     logger.warn("Problem starting periodic Ping. {}", e.getMessage());
