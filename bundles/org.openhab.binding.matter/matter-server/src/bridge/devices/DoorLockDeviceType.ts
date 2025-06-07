@@ -37,11 +37,11 @@ export class DoorLockDeviceType extends GenericDeviceType {
         const parent = this;
         return class extends DoorLockServer {
             override async lockDoor() {
-                await parent.sendBridgeEvent("doorLock", "lockState", LockState.Locked);
+                parent.sendBridgeEvent("doorLock", "lockState", LockState.Locked);
             }
 
             override async unlockDoor() {
-                await parent.sendBridgeEvent("doorLock", "lockState", LockState.Unlocked);
+                parent.sendBridgeEvent("doorLock", "lockState", LockState.Unlocked);
             }
         };
     }
