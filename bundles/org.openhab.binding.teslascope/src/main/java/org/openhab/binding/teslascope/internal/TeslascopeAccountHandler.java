@@ -67,7 +67,6 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     }
 
     public ThingUID getUID() {
-        logger.info("thing.getUID() = {}", thing.getUID());
         return thing.getUID();
     }
 
