@@ -740,7 +740,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 | meter3 |         |      |           | See group meter1 for Shelly 2 |
 | meter4 |         |      |           | See group meter1 for Shelly 2 |
 
-### Shelly Plug-S (thing-type: shellyplugs)
+### Shelly Plug-S (thing-type: shellyplugs, shellyplugus)
 
 | Group | Channel | Type | read-only | Description                   |
 | ----- | ------- | ---- | --------- | ----------------------------- |
