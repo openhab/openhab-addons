@@ -9,6 +9,10 @@
 		<label>Switch</label>
 		<description>Turns the power on or off</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="motionDetection">
@@ -16,6 +20,10 @@
 		<label>Motion Status</label>
 		<description>Indicates whether motion is detected or not</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -77,6 +85,10 @@
 		<label>Current Power</label>
 		<description>The current power consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -129,6 +141,10 @@
 			light on and off.
 		</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="relay">
@@ -136,6 +152,10 @@
 		<label>Relay</label>
 		<description>Switches the integrated relay contact close/open</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Opening</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sensor">
@@ -149,6 +169,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Shows the operation mode of a WeMo Coffee Maker</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Refill">Not Ready: Refill Water and Replace Carafe</option>
@@ -265,6 +289,10 @@
 		<item-type>String</item-type>
 		<label>Cooking Mode</label>
 		<description>Shows the operation mode of a WeMo CrockPot</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Not cooking</option>
@@ -303,6 +331,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Shows the operation mode of a WeMo enabled Holmes Air Purifier</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Not Running</option>
@@ -318,6 +350,10 @@
 		<item-type>String</item-type>
 		<label>Air Quality</label>
 		<description>Shows the air quality measured by a WeMo enabled Holmes Air Purifier</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="POOR"></option>
@@ -331,6 +367,10 @@
 		<item-type>Switch</item-type>
 		<label>Ionizer</label>
 		<description>Switches ionization ON or OFF</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="filterLife">
@@ -357,6 +397,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Shows the operation mode of a WeMo enabled Holmes Humidifier</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Not Running</option>
@@ -404,6 +448,10 @@
 		<item-type>String</item-type>
 		<label>Water Level</label>
 		<description>Shows the water level of a WeMo enabled Holmes Humidifier</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="EMPTY"></option>
@@ -417,6 +465,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Shows the operation mode of a WeMo enabled Heater</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Not Running</option>
@@ -455,6 +507,10 @@
 		<label>Auto OFF Time</label>
 		<description>Time when a WeMo enabled Heater should switch off</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tR" readOnly="false"/>
 	</channel-type>
 

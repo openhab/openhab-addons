@@ -22,6 +22,10 @@
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -29,6 +33,10 @@
 		<item-type unitHint="kVA">Number:Power</item-type>
 		<label>Power Usage</label>
 		<description>Power usage for a period</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -36,6 +44,10 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -238,6 +238,10 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="oid" type="text" required="true">
 				<label>OID</label>

@@ -36,26 +36,46 @@
 	<channel-type id="window-driver-front-channel">
 		<item-type>String</item-type>
 		<label>Driver Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-driver-rear-channel">
 		<item-type>String</item-type>
 		<label>Driver Rear Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-passenger-front-channel">
 		<item-type>String</item-type>
 		<label>Passenger Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-passenger-rear-channel">
 		<item-type>String</item-type>
 		<label>Passenger Rear Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunroof-channel">
 		<item-type>String</item-type>
 		<label>Sunroof</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

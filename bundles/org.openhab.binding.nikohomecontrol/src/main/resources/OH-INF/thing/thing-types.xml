@@ -382,6 +382,10 @@
 		<label>@text/channelRollershutterLabel</label>
 		<description>@text/channelRollershutterDescription</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="measured">
@@ -416,6 +420,10 @@
 		<item-type>String</item-type>
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="Day">@text/channelModeOption0</option>
@@ -475,48 +483,80 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
 		<label>@text/channelEnergyLabel</label>
 		<description>@text/channelEnergyDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyday">
 		<item-type>Number:Energy</item-type>
 		<label>@text/channelEnergyDayLabel</label>
 		<description>@text/channelEnergyDayDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="gas">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelGasLabel</label>
 		<description>@text/channelGasDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="gasday">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelGasDayLabel</label>
 		<description>@text/channelGasDayDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelWaterLabel</label>
 		<description>@text/channelWaterDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="waterday">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelWaterDayLabel</label>
 		<description>@text/channelWaterDayDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="measurementtime">
 		<item-type>DateTime</item-type>
 		<label>@text/channelMeasurementTimeLabel</label>
 		<description>@text/channelMeasurementTimeDescription</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -525,6 +565,10 @@
 		<label>@text/channelBellButtonLabel</label>
 		<description>@text/channelBellButtonDescription</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="ringandcomein">
@@ -532,6 +576,10 @@
 		<label>@text/channelRingAndComeInLabel</label>
 		<description>@text/channelRingAndComeInDescription</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
@@ -546,6 +594,9 @@
 		<label>@text/channelAlarmArmedLabel</label>
 		<description>@text/channelAlarmArmedDescription</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="alarmstate">
@@ -553,6 +604,9 @@
 		<label>@text/channelAlarmStateLabel</label>
 		<description>@text/channelAlarmStateDescription</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="DISARMED">@text/channelOptionAlarmStateDisarmed</option>
