@@ -36,11 +36,10 @@ import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.RingVideoServlet;
 import org.openhab.binding.ring.internal.data.Profile;
-import org.openhab.binding.ring.internal.data.RingDevices;
+import org.openhab.binding.ring.internal.data.RingDevicesTO;
 import org.openhab.binding.ring.internal.data.RingEventTO;
 import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
-import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
@@ -51,11 +50,9 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -63,7 +60,6 @@ import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
@@ -136,7 +132,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.networkAddressService = networkAddressService;
         this.httpService = httpService;
         this.videoExecutorService = Executors.newCachedThreadPool();
-        this.registry = new RingDeviceRegistry(new Gson());
+        this.registry = new RingDeviceRegistry();
     }
 
     @Override
@@ -405,8 +401,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void refreshRegistry() throws JsonParseException, AuthenticationException, DuplicateIdException {
         logger.debug("AccountHandler - refreshRegistry");
-        RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
-        registry.addRingDevices(ringDevices.getRingDevices());
+        RingDevicesTO ringDevices = restClient.getRingDevices(userProfile, this);
+        registry.addOrUpdateRingDevices(ringDevices);
     }
 
     protected void minuteTick() {
@@ -603,16 +599,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public RingDeviceRegistry getDeviceRegistry() {
         return this.registry;
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        String id = getThing().getUID().getId();
-        try {
-            registry.removeRingDevice(id);
-        } catch (final DeviceNotFoundException e) {
-            logger.warn("Tried removing a device from the registry that is not present: {}", id);
-        }
     }
 
     @Override

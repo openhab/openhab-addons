@@ -80,15 +80,12 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         RingDeviceRegistry registry = getDeviceRegistry();
         if (registry != null) {
             device = registry.getRingDevice(id);
-            RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
+            RingDeviceTO deviceTO = device.getDeviceStatus();
             if (deviceClass.equals(device.getClass())) {
                 device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
-                device.setRingDeviceHandler(this);
-                if (deviceTO != null) {
-                    thing.setProperty("Description", deviceTO.description);
-                    thing.setProperty("Kind", deviceTO.kind);
-                    thing.setProperty("Device ID", deviceTO.deviceId);
-                }
+                thing.setProperty("Description", deviceTO.description);
+                thing.setProperty("Kind", deviceTO.kind);
+                thing.setProperty("Device ID", deviceTO.deviceId);
             } else {
                 throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
                         + device.getClass().getName() + "' found.");
@@ -108,10 +105,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                     updateState(channelUID, enabled);
                     break;
                 case CHANNEL_STATUS_BATTERY:
-                    RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-                    if (deviceTO != null) {
-                        updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
-                    }
+                    RingDeviceTO deviceTO = device.getDeviceStatus();
+                    updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
                     break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());

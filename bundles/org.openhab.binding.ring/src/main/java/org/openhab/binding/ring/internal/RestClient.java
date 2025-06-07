@@ -48,7 +48,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
 import org.openhab.binding.ring.internal.data.Profile;
-import org.openhab.binding.ring.internal.data.RingDevices;
+import org.openhab.binding.ring.internal.data.RingDevicesTO;
 import org.openhab.binding.ring.internal.data.RingEventTO;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
@@ -516,12 +516,11 @@ public class RestClient {
      * @throws AuthenticationException when request is invalid.
      * @throws JsonParseException when response is invalid JSON.
      */
-    public RingDevices getRingDevices(Profile profile, RingAccount ringAccount)
+    public RingDevicesTO getRingDevices(Profile profile, RingAccount ringAccount)
             throws JsonParseException, AuthenticationException {
         logger.debug("RestClient - getRingDevices");
         String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);
-        JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
-        return new RingDevices(obj, ringAccount);
+        return Objects.requireNonNull(gson.fromJson(jsonResult, RingDevicesTO.class));
     }
 
     /**

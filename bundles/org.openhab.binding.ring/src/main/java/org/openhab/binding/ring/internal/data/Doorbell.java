@@ -13,9 +13,6 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.internal.RingAccount;
-
-import com.google.gson.JsonObject;
 
 /**
  * @author Wim Vissers - Initial contribution
@@ -24,14 +21,12 @@ import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class Doorbell extends AbstractRingDevice {
-
     /**
      * Create Doorbell instance from JSON object.
      *
-     * @param jsonDoorbell the JSON doorbell (doorbot) retrieved from the Ring API.
-     * @param ringAccount the Ring Account in use
+     * @param deviceTO the JSON doorbell (doorbot) retrieved from the Ring API.
      */
-    public Doorbell(JsonObject jsonDoorbell, RingAccount ringAccount) {
-        super(jsonDoorbell, ringAccount);
+    public Doorbell(RingDeviceTO deviceTO) {
+        super(deviceTO);
     }
 }

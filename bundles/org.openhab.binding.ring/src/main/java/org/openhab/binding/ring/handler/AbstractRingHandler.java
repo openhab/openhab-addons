@@ -17,9 +17,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ring.internal.RingAccount;
+import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,5 +101,22 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopAutomaticRefresh();
+    }
+
+    @Override
+    public void handleRemoval() {
+        String id = getThing().getUID().getId();
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof RingAccount ringAccount) {
+                try {
+                    ringAccount.getDeviceRegistry().removeRingDevice(id);
+                } catch (DeviceNotFoundException ignored) {
+                    logger.warn("Tried to remove a device that was not present in the ring account: {}", id);
+                }
+            }
+        }
+        super.handleRemoval();
     }
 }

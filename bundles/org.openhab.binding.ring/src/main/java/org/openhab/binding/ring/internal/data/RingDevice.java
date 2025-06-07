@@ -13,12 +13,7 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.handler.RingDeviceHandler;
-import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
-
-import com.google.gson.JsonObject;
 
 /**
  * Interface common to all Ring devices.
@@ -42,29 +37,7 @@ public interface RingDevice {
      */
     void setRegistrationStatus(RingDeviceRegistry.Status registrationStatus);
 
-    /**
-     * Get the linked Ring account.
-     *
-     * @return the account.
-     */
-    RingAccount getRingAccount();
+    void setDeviceStatus(RingDeviceTO ringDeviceTO);
 
-    /**
-     * Get the linked Ring Device Handler.
-     *
-     * @return the handler.
-     */
-    @Nullable
-    RingDeviceHandler getRingDeviceHandler();
-
-    /**
-     * Set the linked Ring Device Handler.
-     *
-     * @param ringDeviceHandler the handler.
-     */
-    void setRingDeviceHandler(RingDeviceHandler ringDeviceHandler);
-
-    void setJsonObject(JsonObject jsonObject);
-
-    JsonObject getJsonObject();
+    RingDeviceTO getDeviceStatus();
 }

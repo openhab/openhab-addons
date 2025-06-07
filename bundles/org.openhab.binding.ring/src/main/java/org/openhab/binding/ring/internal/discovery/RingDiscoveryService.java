@@ -15,10 +15,8 @@ package org.openhab.binding.ring.internal.discovery;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.time.Instant;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.AccountHandler;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.data.Chime;
@@ -34,10 +32,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The RingDiscoveryService is responsible for auto detecting a Ring
@@ -46,16 +40,12 @@ import com.google.gson.Gson;
  * @author Wim Vissers - Initial contribution
  * @author Chris Milbert - Stickupcam contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
+ * @author Jan N. Klug - Refactored to ThingHandlerService
  */
 
 @Component(scope = ServiceScope.PROTOTYPE, service = RingDiscoveryService.class)
 @NonNullByDefault
 public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<AccountHandler> {
-    private final Logger logger = LoggerFactory.getLogger(RingDiscoveryService.class);
-    private @Nullable ScheduledFuture<?> discoveryJob;
-
-    private final Gson gson = new Gson();
-
     public RingDiscoveryService() {
         super(AccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, true);
     }
@@ -67,22 +57,20 @@ public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<A
             RingDeviceRegistry registry = accountHandler.getDeviceRegistry();
             ThingUID bridgeUID = accountHandler.getThing().getUID();
             for (RingDevice device : registry.getRingDevices(RingDeviceRegistry.Status.ADDED)) {
-                RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-                if (deviceTO != null) {
-                    ThingTypeUID thingTypeUID = switch (device) {
-                        case Chime chime -> THING_TYPE_CHIME;
-                        case Doorbell doorbell -> THING_TYPE_DOORBELL;
-                        case Stickupcam stickupcam -> THING_TYPE_STICKUPCAM;
-                        default -> THING_TYPE_OTHERDEVICE;
-                    };
+                RingDeviceTO deviceTO = device.getDeviceStatus();
+                ThingTypeUID thingTypeUID = switch (device) {
+                    case Chime chime -> THING_TYPE_CHIME;
+                    case Doorbell doorbell -> THING_TYPE_DOORBELL;
+                    case Stickupcam stickupcam -> THING_TYPE_STICKUPCAM;
+                    default -> THING_TYPE_OTHERDEVICE;
+                };
 
-                    DiscoveryResult result = DiscoveryResultBuilder
-                            .create(new ThingUID(thingTypeUID, bridgeUID, deviceTO.id)).withLabel(deviceTO.description)
-                            .withBridge(bridgeUID).build();
+                DiscoveryResult result = DiscoveryResultBuilder
+                        .create(new ThingUID(thingTypeUID, bridgeUID, deviceTO.id)).withLabel(deviceTO.description)
+                        .withBridge(bridgeUID).build();
 
-                    thingDiscovered(result);
-                    registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
-                }
+                thingDiscovered(result);
+                registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
             }
         }
     }

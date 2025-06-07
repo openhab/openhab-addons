@@ -13,9 +13,6 @@
 package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.internal.RingAccount;
-
-import com.google.gson.JsonObject;
 
 /**
  * @author Ben Rosenblum - Initial contribution
@@ -26,10 +23,9 @@ public class OtherDevice extends AbstractRingDevice {
     /**
      * Create OtherDevice instance from JSON object.
      *
-     * @param jsonOtherDevice the JSON Other retrieved from the Ring API.
-     * @param ringAccount the Ring Account in use
+     * @param deviceTO the JSON Other retrieved from the Ring API.
      */
-    public OtherDevice(JsonObject jsonOtherDevice, RingAccount ringAccount) {
-        super(jsonOtherDevice, ringAccount);
+    public OtherDevice(RingDeviceTO deviceTO) {
+        super(deviceTO);
     }
 }
