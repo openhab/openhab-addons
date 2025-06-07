@@ -191,7 +191,7 @@
 		<label>Vacation Begin Day</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Timestamp</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="vacationEndDay">
@@ -199,7 +199,7 @@
 		<label>Vacation End Day</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Timestamp</tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>
