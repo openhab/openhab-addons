@@ -277,21 +277,18 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
             String alias = (storeAlias != null && !storeAlias.isBlank()) ? storeAlias : itemName;
             String measurementName = victoriaMetadataService.getMeasurementNameOrDefault(alias);
 
-            if (configuration.isReplaceUnderscore()) {
-                measurementName = measurementName.replace('_', '.');
-            }
-
             if (configuration.isCamelToSnakeCase()) {
                 measurementName = VictoriaMetricsCaseConvertUtils.camelToSnake(measurementName);
             }
+
+            measurementName = configuration.getMeasurementPrefix() + measurementName;
 
             State storeState = Objects
                     .requireNonNullElse(state.as(desiredClasses.get(ItemUtil.getMainItemType(itemType))), state);
             Object value = VictoriaMetricsStateConvertUtils.stateToObject(storeState);
 
-            VictoriaMetricsPoint.Builder pointBuilder = VictoriaMetricsPoint
-                    .newBuilder(measurementName, configuration.getSourceName()).withTime(timeStamp).withValue(value)
-                    .withTag(TAG_ITEM_NAME, alias);
+            VictoriaMetricsPoint.Builder pointBuilder = VictoriaMetricsPoint.newBuilder(measurementName)
+                    .withTime(timeStamp).withValue(value).withTag(TAG_ITEM_NAME, alias);
 
             if (configuration.isAddCategoryTag()) {
                 String categoryName = Objects.requireNonNullElse(category, "n/a");

@@ -52,19 +52,18 @@
 				requires it).</description>
 		</parameter>
 
-		<parameter name="source" type="text" required="true" groupName="connection">
-			<label>Source Tag Value</label>
-			<!-- VM supports multi-tenancy via "db" query param; not always needed -->
-			<description>The name of the source tag (change this if you need to manage multiple openhab instances on the same
-				endpoint)</description>
-			<default>openhab</default>
+		<parameter name="measurementPrefix" type="text" required="true" groupName="misc">
+			<label>Name prefix</label>
+			<description>Prefix for measurement names. If set, the prefix will be added to all measurements (e.g., "myPrefix_").
+				If not set, no prefix is added. This is applied after the item name is converted to snake_case (if enabled).</description>
+			<default>openhab_</default>
 		</parameter>
 
-		<parameter name="replaceUnderscore" type="boolean" required="true" groupName="misc">
-			<label>Replace Underscore</label>
-			<description>Whether underscores "_" in item names should be replaced by a dot "." ("test_item" -> "test.item"). Only
+		<parameter name="camelToSnakeCase" type="boolean" required="true" groupName="misc">
+			<label>Camel to Snake Case</label>
+			<description>Whether item names should be converted from CamelCase to snake_case ("TestItem" -> "test_item"). Only
 				for measurement name, not for tags. Also applies to alias names.</description>
-			<default>false</default>
+			<default>true</default>
 		</parameter>
 
 		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
@@ -91,13 +90,5 @@
 				set tag will not be added.</description>
 			<default>false</default>
 		</parameter>
-
-		<parameter name="camelToSnakeCase" type="boolean" required="true" groupName="misc">
-			<label>Camel to Snake Case</label>
-			<description>Whether item names should be converted from CamelCase to snake_case ("TestItem" -> "test_item"). Only
-				for measurement name, not for tags. Also applies to alias names.</description>
-			<default>false</default>
-		</parameter>
-
 	</config-description>
 </config-description:config-descriptions>

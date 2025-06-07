@@ -66,7 +66,7 @@ public class VictoriaMetricsRepositoryHttpTest {
     public void testWritePoint() throws Exception {
         // Arrange: VM expects HTTP 200 on write
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
-        VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("test.metric", "openhab").withTime(Instant.now())
+        VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("test.metric").withTime(Instant.now())
                 .withValue(123.3).withTag("location", "livingroom").build();
         // Act
         repository.write(List.of(point));

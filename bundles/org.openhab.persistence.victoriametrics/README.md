@@ -37,13 +37,12 @@ Configure this service via the openHAB UI under `Settings` → `Other Services` 
 | user              |                                                | No       | Username for HTTP Basic Auth (optional, only if enabled on VictoriaMetrics)                   |
 | password          |                                                | No       | Password for HTTP Basic Auth (optional, only if enabled on VictoriaMetrics)                   |
 | token             |                                                | No       | Authentication token (Bearer token, typically for Enterprise version or reverse proxy setups) |
-| source            | openhab                                        | Yes      | Source tag value to identify data from different openHAB instances                            |
-| replaceUnderscore | false                                          | Yes      | Replace underscores in item names with dots ("\_") → (".") in measurement names               |
+| measurementPrefix | openhab_                                       | Yes      | Prefix for measurement names. If set, the prefix will be added to all measurements            |
+| camelToSnakeCase  | false                                          | Yes      | Convert item names from camelCase to snake_case for measurement names                         |
 | addCategoryTag    | false                                          | Yes      | Include item's category as "category" tag                                                     |
 | addTypeTag        | false                                          | Yes      | Include item's type as "type" tag                                                             |
 | addLabelTag       | false                                          | Yes      | Include item's label as "label" tag (default to "n/a" if unset)                               |
 | addUnitTag        | false                                          | Yes      | Include item's unit as "unit" tag for QuantityType items when available                       |
-| camelToSnakeCase  | false                                          | Yes      | Convert item names from camelCase to snake_case for measurement names                         |
 
 ## Customized Storage Options
 

@@ -32,20 +32,18 @@ public class VictoriaMetricsConfiguration {
     public static final String TOKEN_PARAM = "token";
     public static final String USER_PARAM = "user";
     public static final String PASSWORD_PARAM = "password";
-    public static final String SOURCE_PARAM = "source";
-    public static final String REPLACE_UNDERSCORE_PARAM = "replaceUnderscore";
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
     public static final String ADD_UNIT_TAG_PARAM = "addUnitTag";
     public static final String CAMEL_TO_SNAKE_CASE_PARAM = "camelToSnakeCase";
+    public static final String MEASUREMENT_PREFIX = "measurementPrefix";
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
     private final String url;
     private final String user;
     private final String password;
     private final String token;
-    private final String sourceName;
-    private final boolean replaceUnderscore;
+    private final String measurementPrefix;
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
     private final boolean addLabelTag;
@@ -58,13 +56,12 @@ public class VictoriaMetricsConfiguration {
         user = ConfigParser.valueAsOrElse(config.get(USER_PARAM), String.class, "openhab");
         password = ConfigParser.valueAsOrElse(config.get(PASSWORD_PARAM), String.class, "");
         token = ConfigParser.valueAsOrElse(config.get(TOKEN_PARAM), String.class, "");
-        sourceName = ConfigParser.valueAsOrElse(config.get(SOURCE_PARAM), String.class, "openhab");
-        replaceUnderscore = ConfigParser.valueAsOrElse(config.get(REPLACE_UNDERSCORE_PARAM), Boolean.class, false);
         addCategoryTag = ConfigParser.valueAsOrElse(config.get(ADD_CATEGORY_TAG_PARAM), Boolean.class, false);
         addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
         addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
         addUnitTag = ConfigParser.valueAsOrElse(config.get(ADD_UNIT_TAG_PARAM), Boolean.class, false);
-        camelToSnakeCase = ConfigParser.valueAsOrElse(config.get(CAMEL_TO_SNAKE_CASE_PARAM), Boolean.class, false);
+        camelToSnakeCase = ConfigParser.valueAsOrElse(config.get(CAMEL_TO_SNAKE_CASE_PARAM), Boolean.class, true);
+        measurementPrefix = ConfigParser.valueAsOrElse(config.get(MEASUREMENT_PREFIX), String.class, "openhab_");
     }
 
     public boolean isValid() {
@@ -73,19 +70,13 @@ public class VictoriaMetricsConfiguration {
         boolean hasPassword = !password.isBlank();
         boolean hasToken = !token.isBlank();
         boolean hasValidCredentials = (!hasBasicCredentials || hasPassword) || hasToken;
-        boolean hasDatabase = !sourceName.isBlank();
-        boolean valid = hasValidCredentials && hasDatabase;
-        if (valid) {
+        if (hasValidCredentials) {
             return true;
         } else {
             String msg = "VictoriaMetrics configuration isn't valid. Addon won't work: ";
             StringJoiner reason = new StringJoiner(",");
-            if (hasBasicCredentials && !hasPassword) {
-                reason.add("User defined but no password");
-            }
-            if (!hasDatabase) {
-                reason.add("No database name / tenant defined");
-            }
+            // We have only this reason right now
+            reason.add("User defined but no password");
             logger.warn("{} {}", msg, reason);
             return false;
         }
@@ -107,12 +98,8 @@ public class VictoriaMetricsConfiguration {
         return token;
     }
 
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public boolean isReplaceUnderscore() {
-        return replaceUnderscore;
+    public String getMeasurementPrefix() {
+        return measurementPrefix;
     }
 
     public boolean isAddCategoryTag() {
@@ -138,9 +125,9 @@ public class VictoriaMetricsConfiguration {
     @Override
     public String toString() {
         return "VictoriaMetricsConfiguration{" + "url='" + url + "', " + "user='" + user + "', " + "password='"
-                + password.length() + " chars'" + " , " + "token='" + token.length() + " chars'" + ", " + "sourceName='"
-                + sourceName + ", " + "replaceUnderscore=" + replaceUnderscore + ", " + "addCategoryTag="
-                + addCategoryTag + ", " + "addTypeTag=" + addTypeTag + ", " + "addLabelTag=" + addLabelTag + ", "
-                + "camelToSnakeCase=" + camelToSnakeCase + ", " + "addUnitTag=" + addUnitTag + '}';
+                + password.length() + " chars'" + " , " + "token='" + token.length() + " chars'" + ", "
+                + "measurementPrefix='" + measurementPrefix + ", " + "addCategoryTag=" + addCategoryTag + ", "
+                + "addTypeTag=" + addTypeTag + ", " + "addLabelTag=" + addLabelTag + ", " + "camelToSnakeCase="
+                + camelToSnakeCase + ", " + "addUnitTag=" + addUnitTag + '}';
     }
 }

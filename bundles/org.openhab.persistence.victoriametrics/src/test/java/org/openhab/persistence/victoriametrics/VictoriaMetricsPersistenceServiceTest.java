@@ -42,10 +42,10 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 @NonNullByDefault
 public class VictoriaMetricsPersistenceServiceTest {
     private static final Map<String, Object> VALID_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8428",
-            USER_PARAM, "user", PASSWORD_PARAM, "password", SOURCE_PARAM, "openhab");
+            USER_PARAM, "user", PASSWORD_PARAM, "password", MEASUREMENT_PREFIX, "openhab_");
 
     private static final Map<String, Object> INVALID_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8428",
-            USER_PARAM, "user", SOURCE_PARAM, "openhab");
+            USER_PARAM, "user", MEASUREMENT_PREFIX, "openhab_");
 
     private @Mock @NonNullByDefault({}) VictoriaMetricsRepository repositoryMock;
 

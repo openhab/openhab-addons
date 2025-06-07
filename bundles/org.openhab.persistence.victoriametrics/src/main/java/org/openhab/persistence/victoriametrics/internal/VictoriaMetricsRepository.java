@@ -154,10 +154,7 @@ public class VictoriaMetricsRepository {
                 logger.warn("No item name specified for query");
                 return List.of();
             }
-            String name = metadataService.getMeasurementNameOrDefault(itemName);
-            String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
-            String metricSelector = measurementName + "{" + FIELD_SOURCE_NAME + "=\"" + configuration.getSourceName()
-                    + "\"}";
+            String metricSelector = getMetricSelector(itemName);
             String promql;
             String endpoint;
             String urlString;
@@ -239,8 +236,7 @@ public class VictoriaMetricsRepository {
                 logger.warn("No item name specified for remove");
                 return false;
             }
-            String name = metadataService.getMeasurementNameOrDefault(itemName);
-            String match = name + "{" + FIELD_SOURCE_NAME + "=\"" + configuration.getSourceName() + "\"}";
+            String match = getMetricSelector(itemName);
             StringBuilder urlBuilder = new StringBuilder("/api/v1/admin/tsdb/delete_series?match[]=")
                     .append(encode(match, StandardCharsets.UTF_8));
             ZonedDateTime start = filter.getBeginDate();
@@ -341,6 +337,20 @@ public class VictoriaMetricsRepository {
         }
         logger.trace("Request to VictoriaMetrics: {}", fullUrl);
         return builder;
+    }
+
+    /**
+     * Converts an item name to a VictoriaMetrics metric name, applying any necessary transformations.
+     *
+     * @param itemName the item name to convert
+     * @return the converted metric name
+     */
+    private String getMetricSelector(String itemName) {
+        String name = metadataService.getMeasurementNameOrDefault(itemName);
+        if (configuration.isCamelToSnakeCase()) {
+            name = VictoriaMetricsCaseConvertUtils.camelToSnake(name);
+        }
+        return configuration.getMeasurementPrefix() + name;
     }
 
     // Row object for result mapping

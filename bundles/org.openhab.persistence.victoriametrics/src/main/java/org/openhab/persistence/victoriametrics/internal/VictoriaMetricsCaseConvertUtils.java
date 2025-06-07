@@ -21,22 +21,29 @@ package org.openhab.persistence.victoriametrics.internal;
 public class VictoriaMetricsCaseConvertUtils {
 
     /**
-     * Converts a camelCase string to snake_case.
+     * Converts a camelCase or PascalCase string to snake_case,
+     * preserving acronyms like OpenHAB → open_hab, not open_h_a_b.
      *
      * @param str the camelCase string to convert
      * @return the converted snake_case string
      */
     public static String camelToSnake(String str) {
         StringBuilder result = new StringBuilder();
-        char c = str.charAt(0);
-        result.append(Character.toLowerCase(c));
-        for (int i = 1; i < str.length(); i++) {
-            char ch = str.charAt(i);
-            if (Character.isUpperCase(ch)) {
-                result.append('_');
-                result.append(Character.toLowerCase(ch));
-            } else
-                result.append(ch);
+        char[] chars = str.toCharArray();
+        result.append(Character.toLowerCase(chars[0]));
+        for (int i = 1; i < chars.length; i++) {
+            char current = chars[i];
+            char prev = chars[i - 1];
+            if (Character.isUpperCase(current)) {
+                boolean nextIsLower = i + 1 < chars.length && Character.isLowerCase(chars[i + 1]);
+                boolean prevIsLower = Character.isLowerCase(prev);
+                if (prevIsLower || nextIsLower) {
+                    result.append('_');
+                }
+                result.append(Character.toLowerCase(current));
+            } else {
+                result.append(current);
+            }
         }
         return result.toString();
     }

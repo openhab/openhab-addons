@@ -12,8 +12,6 @@
  */
 package org.openhab.persistence.victoriametrics.internal;
 
-import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.FIELD_SOURCE_NAME;
-
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,16 +40,12 @@ public class VictoriaMetricsPoint {
         tags = builder.tags;
     }
 
-    public static Builder newBuilder(String metricName, String sourceName) {
-        return new Builder(metricName, sourceName);
+    public static Builder newBuilder(String metricName) {
+        return new Builder(metricName);
     }
 
     public String getMetricName() {
         return metricName;
-    }
-
-    public Instant getTime() {
-        return time;
     }
 
     public Object getValue() {
@@ -68,10 +62,8 @@ public class VictoriaMetricsPoint {
         private Object value;
         private final Map<String, String> tags = new HashMap<>();
 
-        private Builder(String metricName, String sourceName) {
+        private Builder(String metricName) {
             this.metricName = metricName;
-            // Default tag to identify the source of the metric, this is a bit like the "bucket" in InfluxDB
-            this.tags.put(FIELD_SOURCE_NAME, sourceName);
         }
 
         public Builder withTime(Instant val) {

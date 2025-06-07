@@ -55,7 +55,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPoint;
 public class ItemToStorePointCreatorTest {
 
     private static final Map<String, Object> BASE_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8428", USER_PARAM,
-            "user", PASSWORD_PARAM, "password", SOURCE_PARAM, "openhab");
+            "user", PASSWORD_PARAM, "password", MEASUREMENT_PREFIX, "oh_");
 
     private @Mock UnitProvider unitProviderMock;
     private @Mock ItemRegistry itemRegistryMock;
@@ -64,7 +64,7 @@ public class ItemToStorePointCreatorTest {
 
     @BeforeEach
     public void setup() {
-        instance = getService(false, false, false, false);
+        instance = getService(false, false, false);
     }
 
     @ParameterizedTest
@@ -78,7 +78,7 @@ public class ItemToStorePointCreatorTest {
             return;
         }
 
-        assertThat(point.getMetricName(), equalTo(item.getName()));
+        assertThat(point.getMetricName(), equalTo("oh_" + item.getName()));
         assertThat("Must Store item name", point.getTags(), hasEntry("item", item.getName()));
         assertThat(point.getValue(), equalTo(new BigDecimal(number.toString())));
     }
@@ -98,7 +98,7 @@ public class ItemToStorePointCreatorTest {
             return;
         }
 
-        assertThat(point.getMetricName(), is("aliasName"));
+        assertThat(point.getMetricName(), is("oh_alias_name"));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ItemToStorePointCreatorTest {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setCategory("categoryValue");
 
-        instance = getService(false, true, false, false);
+        instance = getService(true, false, false);
         VictoriaMetricsPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
@@ -116,7 +116,7 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry(VictoriaMetricsConstants.TAG_CATEGORY_NAME, "categoryValue"));
 
-        instance = getService(false, false, false, false);
+        instance = getService(false, false, false);
         point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
@@ -131,7 +131,7 @@ public class ItemToStorePointCreatorTest {
     public void shouldStoreTypeTagIfProvidedAndConfigured() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
 
-        instance = getService(false, false, false, true);
+        instance = getService(false, false, true);
         VictoriaMetricsPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
@@ -141,7 +141,7 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry(VictoriaMetricsConstants.TAG_TYPE_NAME, "Number"));
 
-        instance = getService(false, false, false, false);
+        instance = getService(false, false, false);
         point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
@@ -157,7 +157,7 @@ public class ItemToStorePointCreatorTest {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setLabel("ItemLabel");
 
-        instance = getService(false, false, true, false);
+        instance = getService(false, true, false);
         VictoriaMetricsPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
@@ -167,7 +167,7 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry(VictoriaMetricsConstants.TAG_LABEL_NAME, "ItemLabel"));
 
-        instance = getService(false, false, false, false);
+        instance = getService(false, false, false);
         point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
@@ -207,14 +207,14 @@ public class ItemToStorePointCreatorTest {
             Assertions.fail();
             return;
         }
-        assertThat(point.getMetricName(), equalTo(item.getName()));
+        assertThat(point.getMetricName(), equalTo("oh_" + item.getName()));
 
         point = instance.convert(item, item.getState(), Instant.now(), null).get();
         if (point == null) {
             Assertions.fail();
             return;
         }
-        assertThat(point.getMetricName(), equalTo(item.getName()));
+        assertThat(point.getMetricName(), equalTo("oh_" + item.getName()));
         assertThat(point.getTags(), hasEntry("item", item.getName()));
 
         when(metadataRegistry.get(metadataKey))
@@ -225,7 +225,7 @@ public class ItemToStorePointCreatorTest {
             Assertions.fail();
             return;
         }
-        assertThat(point.getMetricName(), equalTo("measurementName"));
+        assertThat(point.getMetricName(), equalTo("oh_measurement_name"));
         assertThat(point.getTags(), hasEntry("item", item.getName()));
 
         when(metadataRegistry.get(metadataKey))
@@ -236,21 +236,16 @@ public class ItemToStorePointCreatorTest {
             Assertions.fail();
             return;
         }
-        assertThat(point.getMetricName(), equalTo(item.getName()));
+        assertThat(point.getMetricName(), equalTo("oh_" + item.getName()));
         assertThat(point.getTags(), hasEntry("item", item.getName()));
     }
 
-    private VictoriaMetricsPersistenceService getService(boolean replaceUnderscore, boolean category, boolean label,
-            boolean typeTag) {
+    private VictoriaMetricsPersistenceService getService(boolean category, boolean label, boolean typeTag) {
         VictoriaMetricsMetadataService metadataService = new VictoriaMetricsMetadataService(metadataRegistry);
-
-        Map<String, Object> configuration = new HashMap<>();
-        configuration.putAll(BASE_CONFIGURATION);
-        configuration.put(REPLACE_UNDERSCORE_PARAM, replaceUnderscore);
+        Map<String, Object> configuration = new HashMap<>(BASE_CONFIGURATION);
         configuration.put(ADD_CATEGORY_TAG_PARAM, category);
         configuration.put(ADD_LABEL_TAG_PARAM, label);
         configuration.put(ADD_TYPE_TAG_PARAM, typeTag);
-
         VictoriaMetricsPersistenceService instance = new VictoriaMetricsPersistenceService(itemRegistryMock,
                 metadataService, configuration);
         instance.setItemFactory(new CoreItemFactory(unitProviderMock));
