@@ -727,7 +727,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 | meter3 |         |      |           | See group meter1 for Shelly 2 |
 | meter4 |         |      |           | See group meter1 for Shelly 2 |
 
-### Shelly Plug-S (thing-type: shellyplugs, shellyplugus)
+### Shelly Plug-S (thing-type: shellyplugs)
 
 | Group | Channel | Type | read-only | Description                   |
 | ----- | ------- | ---- | --------- | ----------------------------- |
@@ -1226,7 +1226,7 @@ If the Shelly Add-On is installed:
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
-### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug)
+### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug, shellyplusplugus)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
