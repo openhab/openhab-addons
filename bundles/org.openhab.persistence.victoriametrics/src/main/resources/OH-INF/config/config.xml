@@ -92,5 +92,12 @@
 			<default>false</default>
 		</parameter>
 
+		<parameter name="camelToSnakeCase" type="boolean" required="true" groupName="misc">
+			<label>Camel to Snake Case</label>
+			<description>Whether item names should be converted from CamelCase to snake_case ("TestItem" -> "test_item"). Only
+				for measurement name, not for tags. Also applies to alias names.</description>
+			<default>false</default>
+		</parameter>
+
 	</config-description>
 </config-description:config-descriptions>

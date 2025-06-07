@@ -32,7 +32,7 @@ First, set up and run a [VictoriaMetrics](https://victoriametrics.com/) server. 
 Configure this service via the openHAB UI under `Settings` → `Other Services` → `VictoriaMetrics Persistence Service` or in the file `services/victoriametrics.cfg`. File-based configuration takes precedence over UI configuration.
 
 | Property          | Default                                        | Required | Description                                                                                   |
-| ----------------- | ---------------------------------------------- | -------- |-----------------------------------------------------------------------------------------------|
+|-------------------|------------------------------------------------|----------|-----------------------------------------------------------------------------------------------|
 | url               | [http://127.0.0.1:8428](http://127.0.0.1:8428) | Yes      | VictoriaMetrics server URL (default port: 8428)                                               |
 | user              |                                                | No       | Username for HTTP Basic Auth (optional, only if enabled on VictoriaMetrics)                   |
 | password          |                                                | No       | Password for HTTP Basic Auth (optional, only if enabled on VictoriaMetrics)                   |
@@ -43,6 +43,7 @@ Configure this service via the openHAB UI under `Settings` → `Other Services` 
 | addTypeTag        | false                                          | Yes      | Include item's type as "type" tag                                                             |
 | addLabelTag       | false                                          | Yes      | Include item's label as "label" tag (default to "n/a" if unset)                               |
 | addUnitTag        | false                                          | Yes      | Include item's unit as "unit" tag for QuantityType items when available                       |
+| camelToSnakeCase  | false                                          | Yes      | Convert item names from camelCase to snake_case for measurement names                         |
 
 ## Customized Storage Options
 

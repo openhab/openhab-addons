@@ -49,13 +49,7 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConfiguration;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsHistoricItem;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsMetadataService;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPersistentItemInfo;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPoint;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository;
-import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsStateConvertUtils;
+import org.openhab.persistence.victoriametrics.internal.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -287,6 +281,10 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
                 measurementName = measurementName.replace('_', '.');
             }
 
+            if (configuration.isCamelToSnakeCase()) {
+                measurementName = VictoriaMetricsCaseConvertUtils.camelToSnake(measurementName);
+            }
+
             State storeState = Objects
                     .requireNonNullElse(state.as(desiredClasses.get(ItemUtil.getMainItemType(itemType))), state);
             Object value = VictoriaMetricsStateConvertUtils.stateToObject(storeState);
@@ -306,7 +304,7 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
                 String labelName = Objects.requireNonNullElse(itemLabel, "n/a");
                 pointBuilder.withTag(TAG_LABEL_NAME, labelName);
             }
-            if (configuration.isAddCategoryTag() && state instanceof QuantityType<?> q) {
+            if (configuration.isAddUnitTag() && state instanceof QuantityType<?> q) {
                 String unit = q.getUnit().getSymbol();
                 if (!unit.isBlank()) {
                     pointBuilder.withTag(TAG_UNIT_NAME, unit);

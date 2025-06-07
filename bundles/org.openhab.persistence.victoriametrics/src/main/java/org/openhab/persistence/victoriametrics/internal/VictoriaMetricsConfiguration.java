@@ -38,6 +38,7 @@ public class VictoriaMetricsConfiguration {
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
     public static final String ADD_UNIT_TAG_PARAM = "addUnitTag";
+    public static final String CAMEL_TO_SNAKE_CASE_PARAM = "camelToSnakeCase";
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
     private final String url;
     private final String user;
@@ -49,6 +50,7 @@ public class VictoriaMetricsConfiguration {
     private final boolean addTypeTag;
     private final boolean addLabelTag;
     private final boolean addUnitTag;
+    private final boolean camelToSnakeCase;
 
     public VictoriaMetricsConfiguration(Map<String, Object> config) {
         // Set VictoriaMetrics default port
@@ -62,6 +64,7 @@ public class VictoriaMetricsConfiguration {
         addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
         addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
         addUnitTag = ConfigParser.valueAsOrElse(config.get(ADD_UNIT_TAG_PARAM), Boolean.class, false);
+        camelToSnakeCase = ConfigParser.valueAsOrElse(config.get(CAMEL_TO_SNAKE_CASE_PARAM), Boolean.class, false);
     }
 
     public boolean isValid() {
@@ -128,12 +131,16 @@ public class VictoriaMetricsConfiguration {
         return addUnitTag;
     }
 
+    public boolean isCamelToSnakeCase() {
+        return camelToSnakeCase;
+    }
+
     @Override
     public String toString() {
         return "VictoriaMetricsConfiguration{" + "url='" + url + "', " + "user='" + user + "', " + "password='"
                 + password.length() + " chars'" + " , " + "token='" + token.length() + " chars'" + ", " + "sourceName='"
                 + sourceName + ", " + "replaceUnderscore=" + replaceUnderscore + ", " + "addCategoryTag="
                 + addCategoryTag + ", " + "addTypeTag=" + addTypeTag + ", " + "addLabelTag=" + addLabelTag + ", "
-                + "addUnitTag=" + addUnitTag + '}';
+                + "camelToSnakeCase=" + camelToSnakeCase + ", " + "addUnitTag=" + addUnitTag + '}';
     }
 }
