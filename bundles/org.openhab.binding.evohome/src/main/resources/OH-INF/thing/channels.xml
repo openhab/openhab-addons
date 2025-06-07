@@ -8,6 +8,10 @@
 		<label>System Mode</label>
 		<description>Current system mode</description>
 		<category>heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="Auto">Normal</option>

@@ -8,6 +8,9 @@
 		<item-type>String</item-type>
 		<label>UPS Alarm</label>
 		<description>UPS alarms</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-load" advanced="true">
@@ -26,6 +29,10 @@
 		<item-type>Number:Power</item-type>
 		<label>UPS Realpower</label>
 		<description>Current value of real power (Watts)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-status">
@@ -129,12 +136,20 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge</label>
 		<description>Battery charge (percent)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-runtime">
 		<item-type>Number:Time</item-type>
 		<label>Battery Runtime</label>
 		<description>Battery runtime (seconds)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-voltage" advanced="true">

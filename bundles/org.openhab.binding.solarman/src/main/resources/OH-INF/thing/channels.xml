@@ -15,6 +15,10 @@
 		<item-type>Number</item-type>
 		<label>Number Value</label>
 		<description>Channel used to represent a numeric value</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 
@@ -22,6 +26,10 @@
 		<item-type>DateTime</item-type>
 		<label>Datetime Value</label>
 		<description>Channel used to represent a datetime value</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 

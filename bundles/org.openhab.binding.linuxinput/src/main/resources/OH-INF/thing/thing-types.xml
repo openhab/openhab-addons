@@ -40,6 +40,10 @@
 		<item-type>Switch</item-type>
 		<label>Device Grab</label>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-group-type id="keypresses">

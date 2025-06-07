@@ -15,6 +15,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -57,6 +61,10 @@
 		<item-type>Number</item-type>
 		<label>BT7 HW Top</label>
 		<description>Hot water top temperature, BT7</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -64,6 +72,10 @@
 		<item-type>Number</item-type>
 		<label>BT6 HW Load</label>
 		<description>Hot water load temperature, BT6</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -106,6 +118,10 @@
 		<item-type>Number</item-type>
 		<label>BT20 Exhaust Air Temp. 1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -113,6 +129,10 @@
 		<item-type>Number</item-type>
 		<label>BT21 Vented Air Temp. 1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -141,6 +161,10 @@
 		<item-type>Number</item-type>
 		<label>BT50 Room Temp S1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -162,6 +186,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-BT61 Supply Radiator Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -169,6 +197,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-BT62 Return Radiator Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f°C" readOnly="true">
 		</state>
 	</channel-type>
@@ -176,6 +208,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-BS1 Air Flow</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
@@ -1774,6 +1810,10 @@
 		<label>Degree Minutes (16 Bit)</label>
 		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the
 			closest valid value.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
