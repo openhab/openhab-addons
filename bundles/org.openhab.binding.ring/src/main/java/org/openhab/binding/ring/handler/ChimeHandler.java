@@ -47,9 +47,9 @@ public class ChimeHandler extends RingDeviceHandler {
         logger.debug("Initializing Chime handler");
         super.initialize();
 
-        RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
+        RingDeviceRegistry registry = getDeviceRegistry();
         String id = getThing().getUID().getId();
-        if (registry.isInitialized()) {
+        if (registry != null && registry.isInitialized()) {
             try {
                 linkDevice(id, Chime.class);
                 updateStatus(ThingStatus.ONLINE);
