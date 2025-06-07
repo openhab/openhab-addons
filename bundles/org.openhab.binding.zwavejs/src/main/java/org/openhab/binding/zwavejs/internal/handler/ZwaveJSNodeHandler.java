@@ -621,7 +621,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 .collect(Collectors.toSet());
 
         // Find the first matching equipment tag based on command class IDs
-        for (Map.Entry<Set<Integer>, SemanticTag> entry : EQUIPMENTMAP.entrySet()) {
+        for (Map.Entry<Set<Integer>, SemanticTag> entry : EQUIPMENT_MAP.entrySet()) {
             if (commandClassIds.removeAll(entry.getKey())) {
                 return entry.getValue();
             }

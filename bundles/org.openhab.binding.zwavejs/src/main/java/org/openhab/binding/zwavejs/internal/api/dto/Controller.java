@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -27,7 +27,7 @@ public class Controller {
     public int manufacturerId;
     public int productType;
     public int productId;
-    public ArrayList<Integer> supportedFunctionTypes;
+    public List<Integer> supportedFunctionTypes;
     public int sucNodeId;
     public boolean supportsTimers;
     public Statistics statistics;

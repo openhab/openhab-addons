@@ -224,7 +224,7 @@ public class CommandClassConstants {
     //@formatter:on`
 
     // Map of command class sets to their corresponding equipment tags
-    public static final Map<Set<Integer>, SemanticTag> EQUIPMENTMAP = Map.ofEntries(
+    public static final Map<Set<Integer>, SemanticTag> EQUIPMENT_MAP = Map.ofEntries(
             Map.entry(COMMAND_SET_LIGHT_SOURCE_EQUIPMENT, Equipment.LIGHT_SOURCE),
             Map.entry(COMMAND_SET_ALARM_DEVICE_EQUIPMENT, Equipment.ALARM_DEVICE),
             Map.entry(COMMAND_SET_AUDIO_VISUAL_EQUIPMENT, Equipment.AUDIO_VISUAL),

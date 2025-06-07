@@ -40,6 +40,7 @@ public class ZwaveJSActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSActions.class);
     private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
             .getScheduledPool(BindingConstants.BINDING_ID);
+    private static final int INCLUSION_EXCLUSION_TIMEOUT_SECONDS = 30;
     private @Nullable ZwaveJSBridgeHandler handler;
 
     @RuleAction(label = "start inclusion", description = "Put the controller for 30s in network wide inclusion mode")
@@ -50,7 +51,7 @@ public class ZwaveJSActions implements ThingActions {
             localHandler.startInclusion();
             SCHEDULER.schedule(() -> {
                 localHandler.stopInclusion();
-            }, 30, java.util.concurrent.TimeUnit.SECONDS);
+            }, INCLUSION_EXCLUSION_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
         }
     }
 
@@ -66,7 +67,7 @@ public class ZwaveJSActions implements ThingActions {
             localHandler.startExclusion();
             SCHEDULER.schedule(() -> {
                 localHandler.stopExclusion();
-            }, 30, java.util.concurrent.TimeUnit.SECONDS);
+            }, INCLUSION_EXCLUSION_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
         }
     }
 
