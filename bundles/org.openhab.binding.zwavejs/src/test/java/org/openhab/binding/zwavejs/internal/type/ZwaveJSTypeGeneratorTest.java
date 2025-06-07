@@ -190,7 +190,6 @@ public class ZwaveJSTypeGeneratorTest {
                     .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
             channels.putAll(results.channels);
         }
-        ;
 
         assertEquals(32, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
@@ -205,9 +204,8 @@ public class ZwaveJSTypeGeneratorTest {
                     .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
             channels.putAll(results.channels);
         }
-        ;
 
-        assertEquals(40, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(41, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 
     @Test
