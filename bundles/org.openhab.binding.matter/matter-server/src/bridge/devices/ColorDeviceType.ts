@@ -83,7 +83,7 @@ export class ColorDeviceType extends GenericDeviceType {
         const parent = this;
         return class extends ColorControlServer {
             override async moveToColorTemperatureLogic(targetMireds: number, transitionTime: number) {
-                await parent.sendBridgeEvent("colorControl", "colorTemperatureMireds", targetMireds);
+                parent.sendBridgeEvent("colorControl", "colorTemperatureMireds", targetMireds);
                 return super.moveToColorTemperatureLogic(targetMireds, transitionTime);
             }
 
@@ -92,8 +92,8 @@ export class ColorDeviceType extends GenericDeviceType {
                 targetSaturation: number,
                 transitionTime: number,
             ) {
-                await parent.sendBridgeEvent("colorControl", "currentHue", targetHue);
-                await parent.sendBridgeEvent("colorControl", "currentSaturation", targetSaturation);
+                parent.sendBridgeEvent("colorControl", "currentHue", targetHue);
+                parent.sendBridgeEvent("colorControl", "currentSaturation", targetSaturation);
             }
         };
     }

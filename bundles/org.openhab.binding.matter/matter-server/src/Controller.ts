@@ -18,7 +18,7 @@ export abstract class Controller {
     /**
      * Closes the controller
      */
-    abstract close(): void;
+    abstract close(): Promise<void>;
 
     /**
      * Returns the unique identifier of the controller
