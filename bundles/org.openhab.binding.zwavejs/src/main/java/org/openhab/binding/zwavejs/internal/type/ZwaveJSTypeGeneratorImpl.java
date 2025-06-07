@@ -217,10 +217,11 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         Channel existingChannel = channels.get(channelUID.getId());
         if (existingChannel != null) {
             Configuration existingChannelConfiguration = existingChannel.getConfiguration();
-            if (ChannelMetadata.isSameReadWriteChannel(existingChannelConfiguration, newChannelConfiguration)) {
+            if (ChannelMetadata.isSameReadWriteChannel(existingChannelConfiguration, newChannelConfiguration)
+                    && details.writable) {
                 ChannelTypeUID newChannelTypeUID = generateChannelTypeUID(details);
                 ChannelBuilder builder = ChannelBuilder.create(existingChannel)
-                        .withConfiguration(details.writable ? newChannelConfiguration : existingChannelConfiguration);
+                        .withConfiguration(newChannelConfiguration);
 
                 if (!newChannelTypeUID.equals(existingChannel.getChannelTypeUID())) {
                     ChannelType newChannelType = getOrGenerate(newChannelTypeUID, details);
