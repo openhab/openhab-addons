@@ -8,6 +8,15 @@ This can be used to plan energy consumption, for example to calculate the cheape
 
 All channels are available for thing type `service`.
 
+## Binding Configuration
+
+This advanced configuration option can be used if the transition to the Day-Ahead Prices dataset is postponed.
+For the latest updates, please refer to the [Energi Data Service news](https://energidataservice.dk/news).
+
+| Name                   | Type    | Description                                                            | Default    | Required |
+| ---------------------- | ------- | ---------------------------------------------------------------------- | ---------- | -------- |
+| dayAheadTransitionDate | text    | The date when the addon switches to using the Day-Ahead Prices dataset | 2025-09-30 | no       |
+
 ## Thing Configuration
 
 ### `service` Thing Configuration
