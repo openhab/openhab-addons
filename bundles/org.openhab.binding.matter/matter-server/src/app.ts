@@ -6,8 +6,10 @@ import { hideBin } from "yargs/helpers";
 import { BridgeController } from "./bridge/BridgeController";
 import { ClientController } from "./client/ClientController";
 import { Controller } from "./Controller";
-import { Message, MessageType, Request } from "./MessageTypes";
+import { Message, Request } from "./MessageTypes";
 import { printError } from "./util/error";
+import { toJSON } from "./util/Json";
+
 const argv: any = yargs(hideBin(process.argv)).argv;
 
 const logger = Logger.get("matter");
@@ -72,7 +74,7 @@ const shutdownHandler = async (signal: string) => {
 
 export interface WebSocketSession extends WebSocket {
     controller?: Controller;
-    sendResponse(type: string, id: string, result?: any, error?: string): void;
+    sendResponse(type: string, id: string, result?: any, error?: string, errorId?: string): void;
     sendEvent(type: string, data?: any): void;
 }
 
@@ -80,7 +82,7 @@ const socketPort = argv.port ? parseInt(argv.port) : 8888;
 const wss: Server = new WebSocket.Server({ port: socketPort, host: argv.host });
 
 wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
-    ws.sendResponse = (type: string, id: string, result?: any, error?: string) => {
+    ws.sendResponse = (type: string, id: string, result?: any, error?: string, errorId?: string) => {
         const message: Message = {
             type: "response",
             message: {
@@ -88,10 +90,11 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
                 id,
                 result,
                 error,
+                errorId,
             },
         };
-        logger.debug(`Sending response: ${Logger.toJSON(message)}`);
-        ws.send(Logger.toJSON(message));
+        logger.debug(`Sending response: ${toJSON(message)}`);
+        ws.send(toJSON(message));
     };
 
     ws.sendEvent = (type: string, data?: any) => {
@@ -102,8 +105,8 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
                 data,
             },
         };
-        logger.debug(`Sending event: ${Logger.toJSON(message)}`);
-        ws.send(Logger.toJSON(message));
+        logger.debug(`Sending event: ${toJSON(message)}`);
+        ws.send(toJSON(message));
     };
 
     ws.on("open", () => {
@@ -111,17 +114,9 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
     });
 
     ws.on("message", (message: string) => {
-        try {
-            const request: Request = JSON.parse(message);
-            if (ws.controller) {
-                void ws.controller.handleRequest(request).catch((error: Error) => {
-                    ws.sendResponse(MessageType.ResultError, "", undefined, error.message);
-                });
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                ws.sendResponse(MessageType.ResultError, "", undefined, error.message);
-            }
+        const request: Request = JSON.parse(message);
+        if (ws.controller) {
+            void ws.controller.handleRequest(request);
         }
     });
 
