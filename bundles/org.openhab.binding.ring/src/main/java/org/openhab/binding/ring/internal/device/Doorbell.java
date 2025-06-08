@@ -10,34 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.internal.RingDeviceRegistry;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
 
 /**
- * Interface common to all Ring devices.
- *
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
+
 @NonNullByDefault
-public interface RingDevice {
+public class Doorbell extends AbstractRingDevice {
     /**
-     * Get the registration status.
+     * Create Doorbell instance from JSON object.
      *
-     * @return
+     * @param deviceTO the JSON doorbell (doorbot) retrieved from the Ring API.
      */
-    RingDeviceRegistry.Status getRegistrationStatus();
-
-    /**
-     * Set the registration status.
-     *
-     * @param registrationStatus
-     */
-    void setRegistrationStatus(RingDeviceRegistry.Status registrationStatus);
-
-    void setDeviceStatus(RingDeviceTO ringDeviceTO);
-
-    RingDeviceTO getDeviceStatus();
+    public Doorbell(RingDeviceTO deviceTO) {
+        super(deviceTO);
+    }
 }
