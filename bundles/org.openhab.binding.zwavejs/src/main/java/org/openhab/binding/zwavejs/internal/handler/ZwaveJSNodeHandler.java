@@ -31,9 +31,11 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSBridgeConfiguration;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
@@ -71,7 +73,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.internal.ThingFactoryHelper;
 import org.openhab.core.types.Command;
@@ -105,18 +106,26 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         private boolean supportsWarmWhite;
         private boolean supportsColdWhite;
         private HSBType cachedColor;
+        private int cachedWarmWhite;
+        private int cachedColdWhite;
+        public @Nullable String colorTemperatureChannel;
 
         public ColorCapability() {
             supportsColor = false;
             supportsWarmWhite = false;
             supportsColdWhite = false;
             cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
+            cachedWarmWhite = 0;
+            cachedColdWhite = 0;
+            colorTemperatureChannel = null;
         }
 
         @Override
         public String toString() {
             return "ColorCapability [supportsColor=" + supportsColor + ", supportsWarmWhite=" + supportsWarmWhite
-                    + ", supportsColdWhite=" + supportsColdWhite + ", cachedColor=" + cachedColor + "]";
+                    + ", supportsColdWhite=" + supportsColdWhite + ", cachedColor=" + cachedColor + ", cachedWarmWhite="
+                    + cachedWarmWhite + ", cachedColdWhite=" + cachedColdWhite + ", colorTemperatureChannel="
+                    + colorTemperatureChannel + "]";
         }
     }
 
@@ -214,6 +223,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
         boolean isColorChannelCmd = colorCap != null && colorCap.supportsColor
                 && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
+
+        boolean isColorTemperatureCommand = colorCap != null
+                && channelUID.getId().equals(colorCap.colorTemperatureChannel);
 
         if (command instanceof OnOffType onOffCommand) {
             zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
@@ -462,10 +474,15 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return true;
         }
 
-        // Handle color capability updates
+        // Handle color and color temperature state updates
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-        if (colorCap != null && colorCap.supportsColor) {
-            state = handleColorCapabilityUpdate(channel, channelConfig, state, colorCap);
+        if (colorCap != null) {
+            if (colorCap.supportsColor) {
+                state = handleColorUpdate(channel, channelConfig, state, colorCap);
+            }
+            if (colorCap.supportsColdWhite || colorCap.supportsWarmWhite) {
+                state = handleColorTemperatureUpdate(channel, channelConfig, state, colorCap);
+            }
         }
 
         try {
@@ -478,7 +495,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return true;
     }
 
-    private State handleColorCapabilityUpdate(Channel channel, ZwaveJSChannelConfiguration channelConfig, State state,
+    private State handleColorUpdate(Channel channel, ZwaveJSChannelConfiguration channelConfig, State state,
             ColorCapability colorCap) {
         if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType()) && state instanceof HSBType color) {
             // Update cached color, preserve brightness from previous state
@@ -499,6 +516,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         }
                     });
         }
+        return state;
+    }
+
+    private State handleColorTemperatureUpdate(Channel channel, ZwaveJSChannelConfiguration channelConfig,
+            State state, ColorCapability colorCap) {
+        // TODO convert state to warm/cold, combine with cached counterpart, and synch color temperature channel
         return state;
     }
 
@@ -636,16 +659,38 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         colorCap.supportsColor = supportsColor;
                         colorCap.supportsWarmWhite = supportsWarmWhite;
                         colorCap.supportsColdWhite = supportsColdWhite;
+
+                        if (supportsWarmWhite || supportsColdWhite) {
+                            Value colorTemperatureChannnelValue = new Value();
+                            colorTemperatureChannnelValue.endpoint = value.endpoint;
+                            colorTemperatureChannnelValue.commandClassName = value.commandClassName;
+                            colorTemperatureChannnelValue.propertyName = "colorTemperature";
+
+                            ChannelMetadata colorTemperatureChannnelDetails = new ChannelMetadata(node.nodeId,
+                                    colorTemperatureChannnelValue);
+
+                            logger.trace("Node {} building channel with Id: {}", colorTemperatureChannnelDetails.nodeId,
+                                    colorTemperatureChannnelDetails.id);
+                            logger.trace(" >> {}", colorTemperatureChannnelDetails);
+
+                            colorCap.colorTemperatureChannel = colorTemperatureChannnelDetails.id;
+
+                            ChannelUID cololorTemperatureChannnelUID = new ChannelUID(thing.getUID(),
+                                    colorTemperatureChannnelDetails.id);
+
+                            Configuration colorTemperatureChannnelConfiguration = new Configuration();
+                            colorTemperatureChannnelConfiguration.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT,
+                                    colorTemperatureChannnelDetails.endpoint);
+
+                            Channel colorTemperatureChannel = ThingFactoryHelper
+                                    .createChannelBuilder(cololorTemperatureChannnelUID,
+                                            DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE, null)
+                                    .withConfiguration(colorTemperatureChannnelConfiguration).build();
+
+                            builder.withoutChannel(cololorTemperatureChannnelUID);
+                            builder.withChannel(colorTemperatureChannel);
+                        }
                         colorCapabilities.put(value.endpoint, colorCap);
-                    }
-                    if (supportsWarmWhite || supportsColdWhite) {
-                        // TODO use correct channel id unique endpoint syntax
-                        String channelId = "color-switch-color-temperature-" + value.endpoint;
-                        ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-                        builder.withoutChannel(channelUID);
-                        ChannelBuilder channelBuilder = ThingFactoryHelper.createChannelBuilder(channelUID,
-                                DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE, null);
-                        builder.withChannel(channelBuilder.build());
                     }
                 });
 
