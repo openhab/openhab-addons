@@ -19,8 +19,7 @@ import org.openhab.binding.sedif.internal.dto.Contract;
  * The {@link LinkyListener} interface defines all events pushed by a
  * {@link BridgeLocalBaseHandler}.
  *
- * @author Nicolas SIBERIL - Initial contribution
- * @author Laurent Arnal - Refactor to integrate into Linky Binding
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public interface SedifListener {

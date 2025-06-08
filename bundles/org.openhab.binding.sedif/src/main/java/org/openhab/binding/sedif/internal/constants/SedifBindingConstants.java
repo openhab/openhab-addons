@@ -21,8 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link SedifBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API *
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class SedifBindingConstants {

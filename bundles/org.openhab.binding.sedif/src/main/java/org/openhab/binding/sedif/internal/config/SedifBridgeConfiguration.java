@@ -19,8 +19,7 @@ import org.openhab.core.config.core.Configuration;
  * The {@link SedifBridgeConfiguration} is the class used to match the
  * thing configuration.
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class SedifBridgeConfiguration extends Configuration {
