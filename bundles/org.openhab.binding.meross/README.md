@@ -55,7 +55,7 @@ Only power channel is supported:
 |---------|--------|------------|--------------------------------------------------------------|
 | power   | Switch | N/A        | Power bulb/plug capability to control bulbs and plugs on/off |
 
-NOTICE: Due to **Meross**&reg; security policy please limit communication to no more than 150 messages every one hour at the earliest convenience otherwise, the user is emailed by Meross of the limit exceed and if such a behaviour does not change the user's account will be **BANNED**! 
+NOTICE: Due to **Meross**&reg; security policy please limit communication to no more than 150 messages every one hour at the earliest convenience otherwise, the user is emailed by Meross of the limit exceed and if such a behaviour does not change the user's account will be **BANNED**!
 
 The inappropriate usage is user's responsibility
 
