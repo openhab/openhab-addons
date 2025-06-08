@@ -128,25 +128,39 @@ public class MeterReading extends Value {
             }
 
             LocalDate lastDate = existingConso[this.data.consommation.length - 1].dateIndex.toLocalDate();
+            LocalDate firstDate = existingConso[0].dateIndex.toLocalDate();
 
-            int idx = incomingConso.length - 1;
-            boolean needMerge = false;
-            while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(lastDate)) {
-                idx--;
-                needMerge = true;
-            }
+            Consommation[] newConso = null;
 
-            int totalLength = this.data.consommation.length;
-            if (needMerge) {
-                totalLength = totalLength + incomingConso.length - idx;
-            }
+            // The new block of data is before existing data
 
-            Consommation[] newConso = new Consommation[totalLength];
-            System.arraycopy(this.data.consommation, 0, newConso, 0, this.data.consommation.length);
+            if (incomingConso[incomingConso.length - 1].dateIndex.toLocalDate().isBefore(firstDate)) {
+                int totalLength = incomingConso.length + this.data.consommation.length;
+                newConso = new Consommation[totalLength];
+                System.arraycopy(incomingConso, 0, newConso, 0, incomingConso.length);
+                System.arraycopy(this.data.consommation, 0, newConso, incomingConso.length,
+                        this.data.consommation.length);
 
-            if (needMerge) {
-                System.arraycopy(incomingConso, idx, newConso, this.data.consommation.length,
-                        incomingConso.length - idx);
+            } else {
+                int idx = incomingConso.length - 1;
+                boolean needMerge = false;
+                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(lastDate)) {
+                    idx--;
+                    needMerge = true;
+                }
+
+                int totalLength = this.data.consommation.length;
+                if (needMerge) {
+                    totalLength = totalLength + incomingConso.length - idx;
+                }
+
+                newConso = new Consommation[totalLength];
+                System.arraycopy(this.data.consommation, 0, newConso, 0, this.data.consommation.length);
+
+                if (needMerge) {
+                    System.arraycopy(incomingConso, idx, newConso, this.data.consommation.length,
+                            incomingConso.length - idx);
+                }
             }
 
             this.data.consommation = newConso;
@@ -250,33 +264,35 @@ public class MeterReading extends Value {
 
             }
 
-            for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
-                LocalDate startOfYear = realStartDate.with(TemporalAdjusters.firstDayOfYear()).plusYears(idxYear);
-                LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
-
-                int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfYear) - 1;
-                int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfYear);
-
-                Consommation yearConso = data.new Consommation();
-                data.yearConso[idxYear] = yearConso;
-
-                logger.debug("");
-
-                if (idxConsoFin >= data.consommation.length && endOfYear.isAfter(LocalDate.now())) {
-                    idxConsoFin = data.consommation.length - 1;
-                }
-
-                if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
-                    float indexDeb = lcConso[idxConsoDeb].valeurIndex;
-                    float indexFin = lcConso[idxConsoFin].valeurIndex;
-
-                    float indexDiff = indexFin - indexDeb;
-
-                    yearConso.consommation = indexDiff;
-                    yearConso.dateIndex = LocalDateTime.of(startOfYear.getYear(), 1, 1, 0, 0, 0);
-                }
-
-            }
+            /*
+             * for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
+             * LocalDate startOfYear = realStartDate.with(TemporalAdjusters.firstDayOfYear()).plusYears(idxYear);
+             * LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
+             * 
+             * int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfYear) - 1;
+             * int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfYear);
+             * 
+             * Consommation yearConso = data.new Consommation();
+             * data.yearConso[idxYear] = yearConso;
+             * 
+             * logger.debug("");
+             * 
+             * if (idxConsoFin >= data.consommation.length && endOfYear.isAfter(LocalDate.now())) {
+             * idxConsoFin = data.consommation.length - 1;
+             * }
+             * 
+             * if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
+             * float indexDeb = lcConso[idxConsoDeb].valeurIndex;
+             * float indexFin = lcConso[idxConsoFin].valeurIndex;
+             * 
+             * float indexDiff = indexFin - indexDeb;
+             * 
+             * yearConso.consommation = indexDiff;
+             * yearConso.dateIndex = LocalDateTime.of(startOfYear.getYear(), 1, 1, 0, 0, 0);
+             * }
+             * 
+             * }
+             */
 
         }
     }

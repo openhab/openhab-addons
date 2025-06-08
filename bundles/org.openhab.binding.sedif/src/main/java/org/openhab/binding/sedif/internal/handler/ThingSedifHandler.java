@@ -69,8 +69,7 @@ import com.google.gson.Gson;
  * The {@link ThingSedifHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
 @NonNullByDefault
@@ -128,7 +127,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                     LocalDate today = LocalDate.now();
 
                     try {
-                        MeterReading meterReading = updateConsumptionData(today.minusDays(89), today);
+                        MeterReading meterReading = updateConsumptionData(today.minusDays(89), today, false);
                         meterReading.calcAgregat();
                         return meterReading;
                     } catch (SedifException ex) {
@@ -277,7 +276,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
 
             try {
-                MeterReading meterReading = updateConsumptionData(startDate, currentDate);
+                MeterReading meterReading = updateConsumptionData(startDate, currentDate, true);
                 if (meterReading != null) {
                     newLastUpdateDate = meterReading.data.consommation[meterReading.data.consommation.length
                             - 1].dateIndex.toLocalDate();
@@ -308,11 +307,14 @@ public class ThingSedifHandler extends BaseThingHandler {
         saveSedifState();
     }
 
-    public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate)
-            throws SedifException {
+    public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate,
+            boolean returnNullIfNoData) throws SedifException {
         logger.info("startDate: {}, currentDate: {}", startDate, currentDate);
 
         MeterReading meterReading = getConsumptionData(startDate, currentDate);
+        if (returnNullIfNoData && meterReading == null) {
+            return null;
+        }
         meterReading = sedifState.updateMeterReading(meterReading);
         return meterReading;
     }
