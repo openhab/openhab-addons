@@ -261,6 +261,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         logger.info("updateEnergyData() called");
         updateConsumptionData();
+        saveSedifState();
     }
 
     private synchronized void updateHistoricalConsumptionData() {
