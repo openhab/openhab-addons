@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SedifDiscoveryService} class is the service to discover a skeleton for controller handlers.
  *
- * @author Nicolas SIBERIL - Initial contribution
- * @author Laurent Arnal - Refactor to integrate into Linky Binding
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = SedifDiscoveryService.class)
 @NonNullByDefault

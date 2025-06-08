@@ -42,7 +42,7 @@ public class SedifState {
 
     public MeterReading updateMeterReading(MeterReading incomingMeterReading) throws SedifException {
         if (incomingMeterReading == null) {
-            return null;
+            return this.meterReading;
         }
 
         incomingMeterReading.check();
