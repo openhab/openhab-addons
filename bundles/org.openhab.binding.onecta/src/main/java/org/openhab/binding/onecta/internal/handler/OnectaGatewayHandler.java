@@ -21,14 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
-import org.openhab.core.library.types.*;
+import org.openhab.binding.onecta.internal.type.TypeHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +50,7 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
     public OnectaGatewayHandler(Thing thing) {
         super(thing);
-        dataTransService = new DataTransportService(thing.getConfiguration().get("unitID").toString(),
-                Enums.ManagementPoint.GATEWAY);
+        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.GATEWAY);
     }
 
     @Override
@@ -89,6 +87,9 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_GW_TIME_ZONE, getTimeZone());
             updateState(CHANNEL_GW_WIFICONNENTION_SSID, getWifiConnectionSsid());
             updateState(CHANNEL_GW_WIFICONNENTION_STRENGTH, getWifiConnectionStrength());
+            updateState(CHANNEL_GW_IP_ADDRESS, getIpAddress());
+            updateState(CHANNEL_GW_MODEL_INFO, getModelInfo());
+            updateState(CHANNEL_GW_MAC_ADDRESS, getMacAddress());
 
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -99,90 +100,58 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
     }
 
     private State getDaylightSavingTimeEnabled() {
-        try {
-            return OnOffType.from(this.dataTransService.getDaylightSavingTimeEnabled());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getDaylightSavingTimeEnabled());
     }
 
     private State getFirmwareVerion() {
-        try {
-            return new StringType(this.dataTransService.getFirmwareVerion());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getFirmwareVerion());
     }
 
     private State getIsFirmwareUpdateSupported() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsFirmwareUpdateSupported());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsFirmwareUpdateSupported());
     }
 
     private State getIsInErrorState() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsInErrorState());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsInErrorState());
     }
 
     private State getIsLedEnabled() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsLedEnabled());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsLedEnabled());
     }
 
     private State getRegionCode() {
-        try {
-            return new StringType(this.dataTransService.getRegionCode());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getRegionCode());
     }
 
     private State getSerialNumber() {
-        try {
-            return new StringType(this.dataTransService.getSerialNumber());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getSerialNumber());
     }
 
     private State getSsid() {
-        try {
-            return new StringType(this.dataTransService.getSsid());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getSsid());
     }
 
     private State getTimeZone() {
-        try {
-            return new StringType(this.dataTransService.getTimeZone());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getTimeZone());
     }
 
     private State getWifiConnectionSsid() {
-        try {
-            return new StringType(this.dataTransService.getWifiConectionSSid());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getWifiConectionSSid());
     }
 
     private State getWifiConnectionStrength() {
-        try {
-            return new DecimalType(this.dataTransService.getWifiConectionStrength());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(this.dataTransService.getWifiConectionStrength());
+    }
+
+    private State getModelInfo() {
+        return TypeHandler.stringType(this.dataTransService.getModelInfo());
+    }
+
+    private State getIpAddress() {
+        return TypeHandler.stringType(this.dataTransService.getIpAddress());
+    }
+
+    private State getMacAddress() {
+        return TypeHandler.stringType(this.dataTransService.getMacAddress());
     }
 }

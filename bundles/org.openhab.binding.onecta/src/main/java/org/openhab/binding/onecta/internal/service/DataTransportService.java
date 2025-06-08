@@ -634,6 +634,16 @@ public class DataTransportService {
                 .map(GatwaySubValueString::getValue).orElse(null);
     }
 
+    public String getIpAddress() {
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getIpAddress)
+                .map(GatwaySubValueString::getValue).orElse(null);
+    }
+
+    public String getMacAddress() {
+        return Optional.ofNullable(getManagementPoint(this.managementPointType)).map(ManagementPoint::getMacAddress)
+                .map(GatwaySubValueString::getValue).orElse(null);
+    }
+
     public String getSoftwareVersion() {
         return Optional.ofNullable(getManagementPoint(this.managementPointType))
                 .map(ManagementPoint::getSoftwareVersion).map(GatwaySubValueString::getValue).orElse(null);

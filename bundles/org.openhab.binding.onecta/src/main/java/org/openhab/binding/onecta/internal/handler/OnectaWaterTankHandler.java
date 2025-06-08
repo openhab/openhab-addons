@@ -22,17 +22,15 @@ import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.service.ChannelsRefreshDelay;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.binding.onecta.internal.type.TypeHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +54,7 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
     public OnectaWaterTankHandler(Thing thing) {
         super(thing);
-        dataTransService = new DataTransportService(thing.getConfiguration().get("unitID").toString(),
-                Enums.ManagementPoint.WATERTANK);
+        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.WATERTANK);
     }
 
     @Override
@@ -153,134 +150,66 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
     }
 
     private State getCurrentOnOff() {
-        try {
-            if (dataTransService.getPowerOnOff() != null) {
-                return OnOffType.from(dataTransService.getPowerOnOff());
-            } else {
-                return UnDefType.UNDEF;
-            }
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getPowerOnOff());
     }
 
     private State getCurrentOperationMode() {
-        try {
-            return new StringType(dataTransService.getCurrentOperationMode().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getCurrentOperationMode());
     }
 
     private State getSetpointMode() {
-        try {
-            return new StringType(dataTransService.getSetpointMode().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getSetpointMode());
     }
 
     private State getIsHolidayModeActive() {
-        try {
-            return OnOffType.from(dataTransService.getIsHolidayModeActive());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getIsHolidayModeActive());
     }
 
     private State getTankTemperatur() {
-        try {
-            return new DecimalType(dataTransService.getTankTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getTankTemperature());
     }
 
     private State getHeatupMode() {
-        try {
-            return new StringType(this.dataTransService.getHeatupMode().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getHeatupMode().toString());
     }
 
     private State getIsInErrorState() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsInErrorState());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsInErrorState());
     }
 
     private State getErrorState() {
-        try {
-            return new StringType(this.dataTransService.getErrorCode());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getErrorCode());
     }
 
     private State getIsInEmergencyState() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsInEmergencyState());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsInEmergencyState());
     }
 
     private State getIsInInstallerState() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsInInstallerState());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsInInstallerState());
     }
 
     private State getIsInWarningState() {
-        try {
-            return OnOffType.from(this.dataTransService.getIsInWarningState());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getIsInWarningState());
     }
 
     private State getPowerfulMode() {
-        try {
-            return OnOffType.from(this.dataTransService.getPowerfulModeOnOff());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(this.dataTransService.getPowerfulModeOnOff());
     }
 
     private State getCurrentTankTemperatureSet() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTankTemperatureSet());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTankTemperatureSet());
     }
 
     private State getCurrentTankTemperatureSetMin() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTankTemperatureSetMin());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTankTemperatureSetMin());
     }
 
     private State getCurrentTankTemperatureSetMax() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTankTemperatureSetMax());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTankTemperatureSetMax());
     }
 
     private State getCurrentTankTemperatureSetStep() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTankTemperatureSetStep());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTankTemperatureSetStep());
     }
 }

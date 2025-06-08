@@ -9,8 +9,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Diakin Onecta gateway</label>
-		<description>Diakin Onecta gateway</description>
+		<label>Diakin Onecta Gateway</label>
+		<description>Diakin Onecta Gateway</description>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group-gateway"/>
@@ -45,6 +45,9 @@
 			<channel id="timezone" typeId="gw-time-zone"/>
 			<channel id="wifi-connection-ssid" typeId="gw-wifi-connection-ssid"/>
 			<channel id="wifi-connection-power" typeId="gw-wifi-connection-strength"/>
+			<channel id="model-info" typeId="gw-model-info"/>
+			<channel id="ip-address" typeId="gw-ip-address"/>
+			<channel id="mac-address" typeId="gw-mac-address"/>
 		</channels>
 	</channel-group-type>
 
@@ -127,6 +130,29 @@
 		<description>Wifi connection strength</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%.0fdB"/>
+	</channel-type>
+
+	<channel-type id="gw-model-info">
+		<item-type>String</item-type>
+		<label>Model info</label>
+		<description>Model info</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-ip-address">
+		<item-type>String</item-type>
+		<label>IP address</label>
+		<description>IP address</description>
+		<category>network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-mac-address">
+		<item-type>String</item-type>
+		<label>MAC address</label>
+		<description>MAC address</description>
+		<category>network</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

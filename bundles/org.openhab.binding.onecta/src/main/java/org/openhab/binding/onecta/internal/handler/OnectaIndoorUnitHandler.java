@@ -21,16 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.binding.onecta.internal.type.TypeHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +50,7 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
 
     public OnectaIndoorUnitHandler(Thing thing) {
         super(thing);
-        dataTransService = new DataTransportService(thing.getConfiguration().get("unitID").toString(),
-                Enums.ManagementPoint.INDOORUNIT);
+        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.INDOORUNIT);
     }
 
     @Override
@@ -95,66 +91,34 @@ public class OnectaIndoorUnitHandler extends AbstractOnectaHandler {
     }
 
     private State getModelInfo() {
-        try {
-            return new StringType(this.dataTransService.getModelInfo());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(this.dataTransService.getModelInfo());
     }
 
     private State getSoftwareVerion() {
-        try {
-            return new StringType(dataTransService.getSoftwareVersion());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getSoftwareVersion());
     }
 
     private State getEepromVerion() {
-        try {
-            return new StringType(dataTransService.getEepromVerion());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getEepromVerion());
     }
 
     private State getDryKeepSetting() {
-        try {
-            return OnOffType.from(dataTransService.getDryKeepSetting());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getDryKeepSetting());
     }
 
     private State getFanMotorRotationSpeed() {
-        try {
-            return new DecimalType(dataTransService.getFanMotorRotationSpeed());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getFanMotorRotationSpeed());
     }
 
     private State getDeltaD() {
-        try {
-            return new DecimalType(dataTransService.getDeltaD());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getDeltaD());
     }
 
     private State getHeatExchangerTemperature() {
-        try {
-            return new DecimalType(dataTransService.getHeatExchangerTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getHeatExchangerTemperature());
     }
 
     private State getSuctionTemperature() {
-        try {
-            return new DecimalType(dataTransService.getSuctionTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getSuctionTemperature());
     }
 }

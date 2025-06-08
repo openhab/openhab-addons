@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
+import java.util.Optional;
+
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 
@@ -27,4 +29,8 @@ public abstract class AbstractOnectaHandler extends BaseThingHandler {
     }
 
     public abstract void refreshDevice();
+
+    public String getUnitID() {
+        return Optional.ofNullable(thing.getConfiguration().get("unitID")).orElse("").toString();
+    }
 }

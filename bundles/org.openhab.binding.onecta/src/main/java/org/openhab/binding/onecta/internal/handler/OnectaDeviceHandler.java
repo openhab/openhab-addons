@@ -24,6 +24,7 @@ import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.service.ChannelsRefreshDelay;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
+import org.openhab.binding.onecta.internal.type.TypeHandler;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,8 +56,7 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
 
     public OnectaDeviceHandler(Thing thing) {
         super(thing);
-        this.dataTransService = new DataTransportService(thing.getConfiguration().get("unitID").toString(),
-                Enums.ManagementPoint.CLIMATECONTROL);
+        this.dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.CLIMATECONTROL);
     }
 
     @Override
@@ -328,251 +328,127 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
     }
 
     private State getRawData() {
-        try {
-            return new StringType(dataTransService.getRawData().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getRawData());
     }
 
     private State getPowerOnOff() {
-        try {
-            return OnOffType.from(dataTransService.getPowerOnOff());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getPowerOnOff());
     }
 
     private State getPowerfulMode() {
-        try {
-            return OnOffType.from(dataTransService.getPowerfulModeOnOff());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getPowerfulModeOnOff());
     }
 
     private State getCurrentOperationMode() {
-        try {
-            return new StringType(dataTransService.getCurrentOperationMode().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getCurrentOperationMode().toString());
     }
 
     private State getCurrentFanspeed() {
-        try {
-            return new StringType(dataTransService.getCurrentFanspeed().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getCurrentFanspeed().toString());
     }
 
     private State getCurrentTemperatureSet() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTemperatureSet());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTemperatureSet());
     }
 
     private State getSetpointLeavingWaterTemperature() {
-        try {
-            return new DecimalType(dataTransService.getSetpointLeavingWaterTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getSetpointLeavingWaterTemperature());
     }
 
     private State getSetpointLeavingWaterOffset() {
-        try {
-            return new DecimalType(dataTransService.getSetpointLeavingWaterOffset());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getSetpointLeavingWaterOffset());
     }
 
     private State getCurrentTemperatureSetMin() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTemperatureSetMin());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTemperatureSetMin());
     }
 
     private State getCurrentTemperatureSetMax() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTemperatureSetMax());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTemperatureSetMax());
     }
 
     private State getCurrentTemperatureSetStep() {
-        try {
-            return new DecimalType(dataTransService.getCurrentTemperatureSetStep());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getCurrentTemperatureSetStep());
     }
 
     private State getOutdoorTemperature() {
-        try {
-            return new DecimalType(dataTransService.getOutdoorTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getOutdoorTemperature());
     }
 
     private State getIndoorTemperature() {
-        try {
-            return new DecimalType(dataTransService.getIndoorTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getIndoorTemperature());
     }
 
     private State getLeavingWaterTemperature() {
-        try {
-            return new DecimalType(dataTransService.getLeavingWaterTemperature());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getLeavingWaterTemperature());
     }
 
     private State getTargetTemperatur() {
-        try {
-            return new DecimalType(dataTransService.getTargetTemperatur());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getTargetTemperatur());
     }
 
     private State getTargetTemperaturMax() {
-        try {
-            return new DecimalType(dataTransService.getTargetTemperaturMax());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getTargetTemperaturMax());
     }
 
     private State getTargetTemperaturMin() {
-        try {
-            return new DecimalType(dataTransService.getTargetTemperaturMin());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getTargetTemperaturMin());
     }
 
     private State getTargetTemperaturStep() {
-        try {
-            return new DecimalType(dataTransService.getTargetTemperaturStep());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getTargetTemperaturStep());
     }
 
     private State getDemandControlFixedValue() {
-        try {
-            return new DecimalType(dataTransService.getDemandControlFixedValue());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getDemandControlFixedValue());
     }
 
     private State getDemandControlFixedStepValue() {
-        try {
-            return new DecimalType(dataTransService.getDemandControlFixedStepValue());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getDemandControlFixedStepValue());
     }
 
     private State getDemandControlFixedMinValue() {
-        try {
-            return new DecimalType(dataTransService.getDemandControlFixedMinValue());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getDemandControlFixedMinValue());
     }
 
     private State getDemandControlFixedMaxValue() {
-        try {
-            return new DecimalType(dataTransService.getDemandControlFixedMaxValue());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getDemandControlFixedMaxValue());
     }
 
     private State getIndoorHumidity() {
-        try {
-            return new DecimalType(dataTransService.getIndoorHumidity());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.decimalType(dataTransService.getIndoorHumidity());
     }
 
     private State getTimeStamp() {
-        try {
-            return new DateTimeType(dataTransService.getTimeStamp());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.dateTimeType(dataTransService.getTimeStamp());
     }
 
     private State getEconoMode() {
-        try {
-            return OnOffType.from(dataTransService.getEconoMode());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getEconoMode());
     }
 
     private State getStreamerMode() {
-        try {
-            return OnOffType.from(dataTransService.getStreamerMode());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getStreamerMode());
     }
 
     private State getCurrentFanDirectionHor() {
-        try {
-            return new StringType(dataTransService.getCurrentFanDirectionHor().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getCurrentFanDirectionHor());
     }
 
     private State getCurrentFanDirectionVer() {
-        try {
-            return new StringType(dataTransService.getCurrentFanDirectionVer().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getCurrentFanDirectionVer());
     }
 
     private State getCurrentFanDirection() {
-        try {
-            return new StringType(dataTransService.getCurrentFanDirection().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getCurrentFanDirection());
     }
 
     private State getHolidayMode() {
-        try {
-            return OnOffType.from(dataTransService.getHolidayMode());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.onOffType(dataTransService.getHolidayMode());
     }
 
     private State getDemandControl() {
-        try {
-            return new StringType(dataTransService.getDemandControl().toString());
-        } catch (RuntimeException e) {
-            return UnDefType.UNDEF;
-        }
+        return TypeHandler.stringType(dataTransService.getDemandControl());
     }
 
     private int getCurrentDayOfWeek() {
@@ -582,16 +458,16 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
 
     private State getEnergyHeatingCurrentDay() {
         try {
-            return new DecimalType(dataTransService.getConsumptionHeatingWeek()[7 + getCurrentDayOfWeek()]);
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            return TypeHandler.decimalType(dataTransService.getConsumptionHeatingWeek()[7 + getCurrentDayOfWeek()]);
+        } catch (IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
     }
 
     private State getEnergyCoolingCurrentDay() {
         try {
-            return new DecimalType(dataTransService.getConsumptionCoolingWeek()[7 + getCurrentDayOfWeek()]);
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            return TypeHandler.decimalType(dataTransService.getConsumptionCoolingWeek()[7 + getCurrentDayOfWeek()]);
+        } catch (IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -627,7 +503,7 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
                     }
                 }
             }
-            return new DecimalType(Math.round(total * 10) / 10D);
+            return TypeHandler.decimalType(Math.round(total * 10) / 10D);
         } catch (NullPointerException | IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
