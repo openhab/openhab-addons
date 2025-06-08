@@ -108,7 +108,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
      * Retrieves a Thing by its UID.
      *
      * @param thingUID the UID of the Thing
-     * 
+     *
      * @return the Thing, or null if not found
      */
     public @Nullable Thing getThing(ThingUID thingUID) {
@@ -119,11 +119,11 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
      * Generates a ZwaveJSTypeGeneratorResult for the given ThingUID and Node.
      *
      * @param thingUID the ThingUID of the device
-     * 
+     *
      * @param node the Node containing the values to be processed
-     * 
+     *
      * @param configurationAsChannels flag indicating whether to treat configuration as channels
-     * 
+     *
      * @return a ZwaveJSTypeGeneratorResult containing the generated channels and configuration descriptions
      */
     @Override

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ChannelMetadata} class represents channel metadata information for a Z-Wave node.
  * It contains various properties and methods to handle metadata and state information.
- * 
+ *
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
@@ -40,11 +40,14 @@ public class ChannelMetadata extends BaseMetadata {
 
     private Logger logger = LoggerFactory.getLogger(ChannelMetadata.class);
     private static final List<String> IGNORED_COMMANDCLASSES = List.of("Manufacturer Specific", "Version");
-    private static final List<String> ADVANCED_CHANNELS = List.of("32-restorePrevious", "32-duration", //
+    private static final List<String> ADVANCED_CHANNELS = List.of( //
+            "32-restorePrevious", //
+            "32-duration", //
             "38-On", //
             "38-Off", //
             "38-duration", //
             "38-restorePrevious", //
+            "51-duration", //
             "113-alarmType", //
             "113-alarmLevel", //
             "113-System"); //
@@ -83,9 +86,10 @@ public class ChannelMetadata extends BaseMetadata {
     }
 
     @Override
-    protected boolean isAdvanced(int commandClassId, String propertyName) {
-        return super.isAdvanced(commandClassId, propertyName)
-                || ADVANCED_CHANNELS.contains(commandClassId + "-" + propertyName);
+    protected boolean isAdvanced(int commandClassId, String propertyName, @Nullable Object propertyKey) {
+        return super.isAdvanced(commandClassId, propertyName, propertyKey)
+                || ADVANCED_CHANNELS.contains(commandClassId + "-" + propertyName)
+                || (commandClassId == 51 && propertyKey != null);
     }
 
     private static boolean compare(@Nullable Object str1, @Nullable Object str2) {
@@ -114,11 +118,11 @@ public class ChannelMetadata extends BaseMetadata {
      * Sets the state based on the provided event, item type, and unit symbol.
      *
      * @param event The event containing the new value to set the state to.
-     * 
+     *
      * @param itemType The type of the item for which the state is being set.
-     * 
+     *
      * @param unitSymbol The unit symbol to be used for the state, can be null.
-     * 
+     *
      * @return The new state after setting it based on the event's new value.
      */
     public @Nullable State setState(Object value, String itemType, @Nullable String unitSymbol, boolean inverted) {

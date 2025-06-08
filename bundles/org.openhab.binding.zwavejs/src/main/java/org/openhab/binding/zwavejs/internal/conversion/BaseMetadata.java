@@ -123,7 +123,7 @@ public abstract class BaseMetadata {
         }
         this.optionList = value.metadata.states;
         this.value = value.value;
-        this.isAdvanced = isAdvanced(value.commandClass, value.propertyName);
+        this.isAdvanced = isAdvanced(value.commandClass, value.propertyName, value.propertyKey);
 
         if (writable) {
             this.writeProperty = value.property;
@@ -180,7 +180,7 @@ public abstract class BaseMetadata {
         }
     }
 
-    protected boolean isAdvanced(int commandClassId, String propertyName) {
+    protected boolean isAdvanced(int commandClassId, String propertyName, @Nullable Object propertyKey) {
         return COMMAND_CLASSES_ADVANCED.contains(commandClassId);
     }
 
@@ -188,9 +188,9 @@ public abstract class BaseMetadata {
      * Normalizes the label based on the provided parameters.
      *
      * @param label the label
-     * 
+     *
      * @param endpoint the endpoint
-     * 
+     *
      * @param propertyName the property name
      *
      * @return the normalized label
@@ -273,13 +273,13 @@ public abstract class BaseMetadata {
      * Converts the given value to a State object based on the item type and unit.
      *
      * @param value the value to convert
-     * 
+     *
      * @param itemType the item type
-     * 
+     *
      * @param unit the unit of the value
-     * 
+     *
      * @param inverted whether the value should be inverted
-     * 
+     *
      * @param factor the factor to apply to the value
      *
      * @return the converted State object, or UnDefType.NULL if the value is null
@@ -402,11 +402,11 @@ public abstract class BaseMetadata {
      * Corrects the metadata type based on the provided value, command class name, and optional list of options.
      *
      * @param type The original metadata type.
-     * 
+     *
      * @param value The value to determine the type from if the original type is ANY.
-     * 
+     *
      * @param commandClassName The name of the command class.
-     * 
+     *
      * @param optionList An optional list of options that may influence the type correction.
      *
      * @return The corrected metadata type.
@@ -431,7 +431,6 @@ public abstract class BaseMetadata {
      * Determines the metadata type based on the provided value and command class.
      *
      * @param value The value to determine the metadata type from. Can be null.
-     * 
      * @param commandClass The Z-Wave command class identifier used for additional type determination in specific cases.
      * 
      * @return The determined metadata type.

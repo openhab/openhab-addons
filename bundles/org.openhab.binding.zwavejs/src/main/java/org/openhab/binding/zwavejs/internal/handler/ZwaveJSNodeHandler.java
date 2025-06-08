@@ -65,12 +65,15 @@ import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.internal.ThingFactoryHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -541,13 +544,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         // Update channels
         builder = updateChannels(builder, result);
 
+        // Detect color capabilities
+        builder = detectColorCapabilities(builder, node);
+
         updateThing(builder.build());
 
         // Initialize state for channels and configuration
         initializeChannelAndConfigState(node, result);
-
-        // Detect color capabilities
-        detectColorCapabilities(node);
 
         return true;
     }
@@ -620,7 +623,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
     }
 
-    private void detectColorCapabilities(Node node) {
+    private ThingBuilder detectColorCapabilities(ThingBuilder builder, Node node) {
         node.values.stream().filter(value -> value.commandClass == COMMAND_CLASS_SWITCH_COLOR)
                 .filter(value -> value.value instanceof Map).forEach(value -> {
                     Map<?, ?> map = (Map<?, ?>) value.value;
@@ -635,10 +638,21 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         colorCap.supportsColdWhite = supportsColdWhite;
                         colorCapabilities.put(value.endpoint, colorCap);
                     }
+                    if (supportsWarmWhite || supportsColdWhite) {
+                        // TODO use correct channel id unique endpoint syntax
+                        String channelId = "color-switch-color-temperature-" + value.endpoint;
+                        ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+                        builder.withoutChannel(channelUID);
+                        ChannelBuilder channelBuilder = ThingFactoryHelper.createChannelBuilder(channelUID,
+                                DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE, null);
+                        builder.withChannel(channelBuilder.build());
+                    }
                 });
+
         if (logger.isDebugEnabled()) {
             colorCapabilities.forEach((ep, cap) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, ep, cap));
         }
+        return builder;
     }
 
     @Override
