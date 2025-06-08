@@ -27,8 +27,8 @@ public class BaseTariff extends Tariff {
     public BaseTariff(String line) {
         super(line, 7);
         try {
-            this.variableHT = Double.parseDouble(values[5]);
-            this.variableTTC = Double.parseDouble(values[6]);
+            this.variableHT = parseDouble(values[5]);
+            this.variableTTC = parseDouble(values[6]);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }

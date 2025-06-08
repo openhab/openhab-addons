@@ -34,7 +34,12 @@
 # Finland
 - country: "FI"
   vatPeriod:
-    - percentage: 24
+    - start: null
+      end: 2024-08-31T22:00:00Z
+      percentage: 24
+    - start: 2024-08-31T22:00:00Z
+      end: null
+      percentage: 25.5
 # France
 - country: "FR"
   vatPeriod:
@@ -94,7 +99,12 @@
 # Slovakia
 - country: "SK"
   vatPeriod:
-    - percentage: 20
+    - start: null
+      end: 2024-12-31T22:00:00Z
+      percentage: 20
+    - start: 2024-12-31T22:00:00Z
+      end: null
+      percentage: 23
 # Slovenia
 - country: "SI"
   vatPeriod:
