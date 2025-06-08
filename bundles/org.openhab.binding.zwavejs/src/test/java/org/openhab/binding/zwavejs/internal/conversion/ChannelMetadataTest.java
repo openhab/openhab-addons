@@ -167,7 +167,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testDetailsNode14Channel0() throws IOException {
+    public void testDetailsNode13Channel1() throws IOException {
         Node node = getNodeFromStore("store_4.json", 13);
 
         ChannelMetadata details = new ChannelMetadata(13, node.values.get(1));
@@ -213,33 +213,10 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testDetailsNode10Channel80() throws IOException {
-        Node node = getNodeFromStore("store_4.json", 10);
+    public void testDetailsNode7Channel97() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 7);
 
-        ChannelMetadata details = new ChannelMetadata(10, node.values.get(84));
-
-        assertEquals("multilevel-switch-value-1", details.id);
-        assertEquals("Dimmer", details.itemType);
-        assertEquals("EP1 Target Value", details.label);
-        assertNull(details.description);
-        assertEquals(new DecimalType(50), details.state);
-        assertEquals(true, details.writable);
-
-        StateDescriptionFragment statePattern = details.statePattern;
-        assertNotNull(statePattern);
-        assertEquals(BigDecimal.valueOf(0), statePattern.getMinimum());
-        assertEquals(BigDecimal.valueOf(100), statePattern.getMaximum());
-        assertNull(statePattern.getStep());
-        assertEquals("%1d %%", statePattern.getPattern());
-
-        assertNull(details.unitSymbol);
-    }
-
-    @Test
-    public void testDetailsNode10Channel97() throws IOException {
-        Node node = getNodeFromStore("store_4.json", 10);
-
-        ChannelMetadata details = new ChannelMetadata(10, node.values.get(97));
+        ChannelMetadata details = new ChannelMetadata(7, node.values.get(97));
 
         assertEquals("basic-restore-previous-2", details.id);
         assertEquals("Switch", details.itemType);
@@ -294,21 +271,6 @@ public class ChannelMetadataTest {
         assertEquals(false, details.writable);
         assertNull(details.statePattern);
         assertNull(details.unitSymbol);
-    }
-
-    @Test
-    public void testDetailsNode76Channel97() throws IOException {
-        Node node = getNodeFromStore("store_4.json", 76);
-
-        ChannelMetadata details = new ChannelMetadata(76, node.values.get(98));
-
-        assertEquals("multilevel-switch-value-2", details.id);
-        assertEquals("Number", details.itemType);
-        assertEquals("EP2 Current Value", details.label);
-        assertNull(details.description);
-        assertEquals(new DecimalType(50), details.state);
-        assertEquals(false, details.writable);
-        assertFalse(details.isAdvanced);
     }
 
     @Test

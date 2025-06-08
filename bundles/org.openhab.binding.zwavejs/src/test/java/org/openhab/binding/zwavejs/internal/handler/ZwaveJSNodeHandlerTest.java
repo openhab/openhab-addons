@@ -68,6 +68,23 @@ public class ZwaveJSNodeHandlerTest {
     public void testNode7ChannelsCreation() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback, times(12)).stateUpdated(any(), any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNode7ChannelsCreationInclConfig() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final ZwaveJSNodeHandler handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing, "store_4.json",
                 true);
 
@@ -99,6 +116,32 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testNode7EP2ChannelsCreation() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        ChannelUID channelid = new ChannelUID("zwavejs:test-bridge:test-thing:multilevel-switch-value-2");
+
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback).stateUpdated(eq(channelid), eq(new PercentType(94)));
+        } finally {
+            handler.dispose();
+        }
+
+        Channel channel = handler.getThing().getChannels().stream()
+                .filter(f -> "multilevel-switch-value-2".equals(f.getUID().getId())).findFirst().orElse(null);
+
+        assertNotNull(channel);
+        assertEquals("Dimmer", channel.getAcceptedItemType());
+        assertEquals("EP2 Current Value", channel.getLabel());
+    }
+
+    @Test
     public void testNode7PowerEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -113,23 +156,6 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
             verify(callback, times(1)).stateUpdated(eq(channelid), eq(new QuantityType<Power>(2.16, Units.WATT)));
-        } finally {
-            handler.dispose();
-        }
-    }
-
-    @Test
-    public void testNode10ChannelsCreation() {
-        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(10);
-        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
-                "store_4.json");
-
-        try {
-            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(12)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -153,32 +179,6 @@ public class ZwaveJSNodeHandlerTest {
         } finally {
             handler.dispose();
         }
-    }
-
-    @Test
-    public void testNode40ChannelsCreation() {
-        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(40);
-        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
-                "store_4.json");
-
-        ChannelUID channelid = new ChannelUID("zwavejs:test-bridge:test-thing:multilevel-switch-value-2");
-
-        try {
-            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback).stateUpdated(eq(channelid), eq(new PercentType(94)));
-        } finally {
-            handler.dispose();
-        }
-
-        Channel channel = handler.getThing().getChannels().stream()
-                .filter(f -> "multilevel-switch-value-2".equals(f.getUID().getId())).findFirst().orElse(null);
-
-        assertNotNull(channel);
-        assertEquals("Dimmer", channel.getAcceptedItemType());
-        assertEquals("EP2 Current Value", channel.getLabel());
     }
 
     @Test

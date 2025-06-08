@@ -181,7 +181,7 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenCTNode14MultilevelSwitchType() throws IOException {
+    public void testGenCTNode13MultilevelSwitchType() throws IOException {
         Channel channel = getChannel("store_4.json", 13, "multilevel-switch-value");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
                 null);
