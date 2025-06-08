@@ -108,7 +108,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
                 .registerTypeAdapter(LocalDateTime.class,
                         (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> LocalDateTime
                                 .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_LOCALDATETIME_FORMATTER))
-                .create();
+                .setPrettyPrinting().create();
     }
 
     @Override
