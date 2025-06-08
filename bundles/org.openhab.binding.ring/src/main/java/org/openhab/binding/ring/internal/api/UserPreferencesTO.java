@@ -10,22 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * @author Ben Rosenblum - Initial contribution
+ * The {@link UserPreferencesTO} class is part of the profile description
+ *
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class Chime extends AbstractRingDevice {
+@SuppressWarnings("unused")
+public class UserPreferencesTO {
 
-    /**
-     * Create Chime instance from JSON object.
-     *
-     * @param deviceTO the JSON Chime retrieved from the Ring API.
-     */
-    public Chime(RingDeviceTO deviceTO) {
-        super(deviceTO);
-    }
+    @SerializedName("settings")
+    public SettingsTO settings = new SettingsTO();
+
+    @SerializedName("preferences")
+    public Object preferences = new Object();
 }

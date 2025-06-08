@@ -10,24 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.handler;
+package org.openhab.binding.ring.internal.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,15 +36,17 @@ import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.RingVideoServlet;
-import org.openhab.binding.ring.internal.data.Profile;
-import org.openhab.binding.ring.internal.data.RingDevicesTO;
-import org.openhab.binding.ring.internal.data.RingEventTO;
+import org.openhab.binding.ring.internal.api.ProfileTO;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
+import org.openhab.binding.ring.internal.api.RingDevicesTO;
+import org.openhab.binding.ring.internal.api.RingEventTO;
+import org.openhab.binding.ring.internal.config.AccountConfiguration;
+import org.openhab.binding.ring.internal.data.TokenProfile;
 import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -73,7 +76,6 @@ import com.google.gson.JsonParseException;
 
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements RingAccount {
-
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
     private @Nullable Runnable runnableVideo = null;
@@ -91,7 +93,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The user profile retrieved when authenticating.
      */
-    private Profile userProfile = new Profile();
+    private TokenProfile userProfile = new TokenProfile("", "");
     /**
      * The registry.
      */
@@ -124,6 +126,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private final NetworkAddressService networkAddressService;
 
     private final int httpPort;
+
+    private AccountConfiguration config = new AccountConfiguration();
+    private long ownerId = 0;
 
     public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, HttpService httpService,
             int httpPort) {
@@ -188,11 +193,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         enabled = xcommand;
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
-                            Configuration config = getThing().getConfiguration();
-                            int refreshInterval = ConfigParser.valueAsOrElse(config.get("refreshInterval"),
-                                    BigDecimal.class, BigDecimal.valueOf(500)).intValue();
-
-                            startAutomaticRefresh(refreshInterval);
+                            startAutomaticRefresh(config.refreshInterval);
                         } else {
                             stopAutomaticRefresh();
                         }
@@ -274,7 +275,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
-            saveRefreshTokenToFile(userProfile.getRefreshToken());
+            saveRefreshTokenToFile(userProfile.refreshToken());
         } catch (AuthenticationException ex) {
             logger.debug("AuthenticationException when initializing Ring Account handler{}", ex.getMessage());
             String message = ex.getMessage();
@@ -307,14 +308,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     public String getHardwareId() {
-        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
         String hardwareId = config.hardwareId;
         logger.debug("getHardwareId H:{}", hardwareId);
         Configuration updatedConfiguration = getThing().getConfiguration();
         try {
-            if (hardwareId.isEmpty()) {
+            if (hardwareId.isBlank()) {
                 hardwareId = getLocalMAC();
-                if (("".equals(hardwareId)) || hardwareId.isEmpty()) {
+                if (hardwareId.isBlank()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Hardware ID missing, check thing config");
                     return hardwareId;
@@ -337,10 +337,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     public void initialize() {
         logger.debug("Initializing Ring Account handler");
 
-        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
+        config = getConfigAs(AccountConfiguration.class);
         int refreshInterval = config.refreshInterval;
-        String username = config.username;
-        String password = config.password;
         String hardwareId = getHardwareId();
         String refreshToken = getRefreshTokenFromFile();
 
@@ -354,29 +352,33 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         restClient = new RestClient();
 
-        if ((!refreshToken.isEmpty()) || !(username.isEmpty() && password.isEmpty())) {
+        if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
             try {
                 Configuration updatedConfiguration = getThing().getConfiguration();
 
                 logger.debug("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
-                userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
-                        hardwareId);
-                saveRefreshTokenToFile(userProfile.getRefreshToken());
+                userProfile = restClient.getAuthenticatedProfile(config.username, config.password, refreshToken,
+                        twofactorCode, hardwareId);
+                saveRefreshTokenToFile(userProfile.refreshToken());
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
                 config.twofactorCode = "";
                 updatedConfiguration.put("twofactorCode", config.twofactorCode);
                 updateConfiguration(updatedConfiguration);
 
+                Map<String, String> properties = editProperties();
+                String ownerIdString = properties.get(THING_PROPERTY_OWNER_ID);
+                if (ownerIdString != null && !ownerIdString.isEmpty()) {
+                    ownerId = Long.parseLong(ownerIdString);
+                } else {
+                    ProfileTO profile = restClient.getProfile(hardwareId, userProfile);
+                    ownerId = profile.id;
+                    properties.put(THING_PROPERTY_OWNER_ID, Long.toString(ownerId));
+                    updateProperties(properties);
+                }
+
                 if (this.ringVideoServlet == null) {
                     this.ringVideoServlet = new RingVideoServlet(httpService, videoStoragePath);
                 }
-
-                // Note: When initialization can NOT be done set the status with more details for further
-                // analysis. See also class ThingStatusDetail for all available status details.
-                // Add a description to give user information to understand why thing does not work
-                // as expected. E.g.
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                // "Can not access device as username and/or password are invalid");
                 startAutomaticRefresh(refreshInterval);
                 startSessionRefresh(refreshInterval);
             } catch (AuthenticationException ex) {
@@ -414,14 +416,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug(
                     "AuthenticationException in AccountHandler.minuteTick() when trying refreshRegistry, attempting to reconnect {}",
                     e.getMessage());
-            AccountConfiguration config = getConfigAs(AccountConfiguration.class);
-            String username = config.username;
-            String password = config.password;
             String hardwareId = getHardwareId();
             String refreshToken = getRefreshTokenFromFile();
-            if ((!refreshToken.isEmpty()) || !(username.isEmpty() && password.isEmpty())) {
+            if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
                 try {
-                    userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, "", hardwareId);
+                    userProfile = restClient.getAuthenticatedProfile(config.username, config.password, refreshToken, "",
+                            hardwareId);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
                 } catch (AuthenticationException ex) {
                     logger.debug("RestClient reported AuthenticationException trying getAuthenticatedProfile: {}",
@@ -514,7 +514,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             refreshRegistry();
             Configuration config = getThing().getConfiguration();
             String hardwareId = (String) config.get("hardwareId");
-            userProfile = restClient.getAuthenticatedProfile("", "", userProfile.getRefreshToken(), "", hardwareId);
+            userProfile = restClient.getAuthenticatedProfile("", "", userProfile.refreshToken(), "", hardwareId);
         } catch (AuthenticationException | DuplicateIdException e) {
             logger.debug(
                     "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
@@ -604,5 +604,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(RingDiscoveryService.class);
+    }
+
+    public Predicate<RingDeviceTO> getDeviceFilter() {
+        return device -> !config.limitToOwner || device.owner.id == ownerId;
     }
 }

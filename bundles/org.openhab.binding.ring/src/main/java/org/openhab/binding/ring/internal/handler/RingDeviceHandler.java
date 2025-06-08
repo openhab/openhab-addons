@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.handler;
+package org.openhab.binding.ring.internal.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
@@ -18,8 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
-import org.openhab.binding.ring.internal.data.RingDevice;
-import org.openhab.binding.ring.internal.data.RingDeviceTO;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
+import org.openhab.binding.ring.internal.config.RingThingConfig;
+import org.openhab.binding.ring.internal.device.RingDevice;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
@@ -30,11 +31,11 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link RingDeviceHandler} is responsible for handling commands, which are
@@ -46,14 +47,44 @@ import com.google.gson.Gson;
 
 @NonNullByDefault
 public abstract class RingDeviceHandler extends AbstractRingHandler {
-
     /**
      * The RingDevice instance linked to this thing.
      */
     protected @Nullable RingDevice device;
 
-    public RingDeviceHandler(Thing thing, Gson gson) {
-        super(thing, gson);
+    protected RingDeviceHandler(Thing thing) {
+        super(thing);
+    }
+
+    public void initialize(Class<? extends RingDevice> deviceClass) {
+        RingThingConfig config = getConfigAs(RingThingConfig.class);
+
+        if (config.id.isBlank()) {
+            // try updating config from legacy thing
+            Configuration cfg = getConfig();
+            cfg.put("id", getThing().getUID().getId());
+            updateConfiguration(cfg);
+        }
+        RingDeviceRegistry registry = getDeviceRegistry();
+        if (registry != null && registry.isInitialized()) {
+            try {
+                linkDevice(config.id, deviceClass);
+                updateStatus(ThingStatus.ONLINE);
+            } catch (DeviceNotFoundException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Device with id '" + config.id + "' not found");
+            } catch (IllegalDeviceClassException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Device with id '" + config.id + "' of wrong type");
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Waiting for RingAccount to initialize");
+        }
+
+        if (this.refreshJob == null) {
+            startAutomaticRefresh(config.refreshInterval);
+        }
     }
 
     protected @Nullable RingDeviceRegistry getDeviceRegistry() {
@@ -75,17 +106,16 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
      * @throws DeviceNotFoundException when device is not found in the RingDeviceRegistry.
      * @throws IllegalDeviceClassException when the registered device is of the wrong type.
      */
-    protected void linkDevice(String id, Class<?> deviceClass)
+    protected void linkDevice(String id, Class<? extends RingDevice> deviceClass)
             throws DeviceNotFoundException, IllegalDeviceClassException {
         RingDeviceRegistry registry = getDeviceRegistry();
         if (registry != null) {
             device = registry.getRingDevice(id);
             RingDeviceTO deviceTO = device.getDeviceStatus();
             if (deviceClass.equals(device.getClass())) {
-                device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
-                thing.setProperty("Description", deviceTO.description);
-                thing.setProperty("Kind", deviceTO.kind);
-                thing.setProperty("Device ID", deviceTO.deviceId);
+                thing.setProperty(THING_PROPERTY_DESCRIPTION, deviceTO.description);
+                thing.setProperty(THING_PROPERTY_KIND, deviceTO.kind);
+                thing.setProperty(THING_PROPERTY_DEVICE_ID, deviceTO.deviceId);
             } else {
                 throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
                         + device.getClass().getName() + "' found.");

@@ -16,11 +16,11 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.handler.AccountHandler;
-import org.openhab.binding.ring.handler.ChimeHandler;
-import org.openhab.binding.ring.handler.DoorbellHandler;
-import org.openhab.binding.ring.handler.OtherDeviceHandler;
-import org.openhab.binding.ring.handler.StickupcamHandler;
+import org.openhab.binding.ring.internal.handler.AccountHandler;
+import org.openhab.binding.ring.internal.handler.ChimeHandler;
+import org.openhab.binding.ring.internal.handler.DoorbellHandler;
+import org.openhab.binding.ring.internal.handler.OtherDeviceHandler;
+import org.openhab.binding.ring.internal.handler.StickupcamHandler;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -93,13 +93,13 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
                 return null;
             }
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
-            return new DoorbellHandler(thing, gson);
+            return new DoorbellHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CHIME)) {
-            return new ChimeHandler(thing, gson);
+            return new ChimeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
-            return new StickupcamHandler(thing, gson);
+            return new StickupcamHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OTHERDEVICE)) {
-            return new OtherDeviceHandler(thing, gson);
+            return new OtherDeviceHandler(thing);
         }
         return null;
     }

@@ -15,15 +15,17 @@ package org.openhab.binding.ring.internal.discovery;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.time.Instant;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.handler.AccountHandler;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
-import org.openhab.binding.ring.internal.data.Chime;
-import org.openhab.binding.ring.internal.data.Doorbell;
-import org.openhab.binding.ring.internal.data.RingDevice;
-import org.openhab.binding.ring.internal.data.RingDeviceTO;
-import org.openhab.binding.ring.internal.data.Stickupcam;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
+import org.openhab.binding.ring.internal.device.Chime;
+import org.openhab.binding.ring.internal.device.Doorbell;
+import org.openhab.binding.ring.internal.device.RingDevice;
+import org.openhab.binding.ring.internal.device.Stickupcam;
+import org.openhab.binding.ring.internal.handler.AccountHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -54,10 +56,14 @@ public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<A
     protected void startScan() {
         ThingHandler thingHandler = getThingHandler();
         if (thingHandler instanceof AccountHandler accountHandler) {
+            Predicate<RingDeviceTO> deviceFilter = accountHandler.getDeviceFilter();
             RingDeviceRegistry registry = accountHandler.getDeviceRegistry();
             ThingUID bridgeUID = accountHandler.getThing().getUID();
-            for (RingDevice device : registry.getRingDevices(RingDeviceRegistry.Status.ADDED)) {
+            for (RingDevice device : registry.getRingDevices()) {
                 RingDeviceTO deviceTO = device.getDeviceStatus();
+                if (!deviceFilter.test(deviceTO)) {
+                    continue;
+                }
                 ThingTypeUID thingTypeUID = switch (device) {
                     case Chime chime -> THING_TYPE_CHIME;
                     case Doorbell doorbell -> THING_TYPE_DOORBELL;
@@ -65,12 +71,19 @@ public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<A
                     default -> THING_TYPE_OTHERDEVICE;
                 };
 
+                Configuration configuration = new Configuration();
+                configuration.put(THING_CONFIG_ID, deviceTO.id);
+                configuration.put(THING_PROPERTY_KIND, deviceTO.kind);
+                configuration.put(THING_PROPERTY_DESCRIPTION, deviceTO.description);
+                configuration.put(THING_PROPERTY_DEVICE_ID, deviceTO.deviceId);
+                configuration.put(THING_PROPERTY_OWNER_ID, deviceTO.owner.id);
+
                 DiscoveryResult result = DiscoveryResultBuilder
-                        .create(new ThingUID(thingTypeUID, bridgeUID, deviceTO.id)).withLabel(deviceTO.description)
-                        .withBridge(bridgeUID).build();
+                        .create(new ThingUID(thingTypeUID, bridgeUID, deviceTO.id))
+                        .withProperties(configuration.getProperties()).withLabel(deviceTO.description)
+                        .withRepresentationProperty(THING_CONFIG_ID).withBridge(bridgeUID).build();
 
                 thingDiscovered(result);
-                registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
             }
         }
     }

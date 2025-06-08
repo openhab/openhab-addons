@@ -53,9 +53,6 @@ public class RingVideoServlet extends HttpServlet {
 
     private String videoStoragePath = "";
 
-    public RingVideoServlet() {
-    }
-
     public RingVideoServlet(HttpService httpService, String videoStoragePath) {
         Path path = Paths.get(videoStoragePath);
         FileSystem fs = path.getFileSystem();
@@ -108,7 +105,7 @@ public class RingVideoServlet extends HttpServlet {
             out.flush();
         } catch (IOException e) {
             // handle exception
-            logger.error("RingVideo: Unable to process request: {}", e.getMessage());
+            logger.warn("RingVideo: Unable to process request: {}", e.getMessage());
         }
     }
 }

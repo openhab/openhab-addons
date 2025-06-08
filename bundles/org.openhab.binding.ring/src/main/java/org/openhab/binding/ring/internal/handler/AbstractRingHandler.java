@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.handler;
+package org.openhab.binding.ring.internal.handler;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,8 +27,6 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link AbstractRingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -40,8 +38,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public abstract class AbstractRingHandler extends BaseThingHandler {
 
-    public Gson gson;
-
     // Current status
     protected OnOffType status = OnOffType.OFF;
     protected OnOffType enabled = OnOffType.ON;
@@ -50,9 +46,8 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     // Scheduler
     protected @Nullable ScheduledFuture<?> refreshJob;
 
-    protected AbstractRingHandler(Thing thing, Gson gson) {
+    protected AbstractRingHandler(Thing thing) {
         super(thing);
-        this.gson = gson;
     }
 
     @Override

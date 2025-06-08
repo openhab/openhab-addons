@@ -15,7 +15,7 @@ package org.openhab.binding.ring.internal.console;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.handler.AccountHandler;
+import org.openhab.binding.ring.internal.handler.AccountHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
