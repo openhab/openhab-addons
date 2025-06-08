@@ -63,7 +63,6 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
 
     private void discover() {
         String responseVehicleList = getVehicleList();
-        logger.info("Vehicle List = {}", responseVehicleList);
         HashMap<String, Object> properties = new HashMap<>();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
         VehicleList vehicleList = new VehicleList();
