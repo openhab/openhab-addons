@@ -21,7 +21,7 @@ If a refresh of devices is needed, e.g. to fetch new devices please disable and 
 
 ## Binding Configuration
 
-To utilize the binding you should first create an account via the Meross Android or iOs app. 
+To utilize the binding you should first create an account via the Meross Android or iOs app.
 Moreover, the devices should be in an online status
 
 ## Bridge Configuration
