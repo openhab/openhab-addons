@@ -51,7 +51,7 @@ import org.openhab.binding.ring.internal.api.RingDevicesTO;
 import org.openhab.binding.ring.internal.api.RingEventTO;
 import org.openhab.binding.ring.internal.api.SessionTO;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
-import org.openhab.binding.ring.internal.data.TokenProfile;
+import org.openhab.binding.ring.internal.data.Tokens;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.slf4j.Logger;
@@ -94,15 +94,15 @@ public class RestClient {
      *
      * @param resourceUrl
      * @param data
-     * @param profile the tokens for this session
+     * @param tokens the tokens for this session
      * @return the servers response
      * @throws AuthenticationException
      *
      */
 
-    private String postRequest(String resourceUrl, String data, TokenProfile profile) throws AuthenticationException {
+    private String postRequest(String resourceUrl, String data, Tokens tokens) throws AuthenticationException {
         String result = "";
-        logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, profile);
+        logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, tokens);
         try {
             byte[] postData = data.getBytes(StandardCharsets.UTF_8);
             StringBuilder output = new StringBuilder();
@@ -111,7 +111,7 @@ public class RestClient {
             conn.setDoInput(true);
             conn.setUseCaches(false);
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setRequestProperty("Authorization", "Bearer " + profile.accessToken());
+            conn.setRequestProperty("Authorization", "Bearer " + tokens.accessToken());
             conn.setHostnameVerifier((hostname, session) -> true);
             // SSL setting
             SSLContext context = SSLContext.getInstance("TLS");
@@ -173,11 +173,11 @@ public class RestClient {
      * Get data from given url
      *
      * @param resourceUrl
-     * @param profile
+     * @param tokens
      * @return the servers response
      * @throws AuthenticationException
      */
-    private String getRequest(String resourceUrl, TokenProfile profile) throws AuthenticationException {
+    private String getRequest(String resourceUrl, Tokens tokens) throws AuthenticationException {
         String result = "";
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
@@ -211,7 +211,7 @@ public class RestClient {
 
             conn.setRequestProperty("cache-control", "no-cache");
             conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("authorization", "Bearer " + profile.accessToken());
+            conn.setRequestProperty("authorization", "Bearer " + tokens.accessToken());
 
             conn.setDoOutput(true);
             conn.setConnectTimeout(12000);
@@ -251,17 +251,17 @@ public class RestClient {
     }
 
     /**
-     * Get a (new) authenticated profile.
+     * Get the required authentication tokens.
      *
      * @param username the username of the Ring account.
      * @param password the password for the Ring account.
      * @param hardwareId a hardware ID (must be unique for every piece of hardware used).
-     * @return a Profile instance with available data stored in it.
+     * @return the tokens
      * @throws AuthenticationException
      * @throws JsonParseException
      */
-    public TokenProfile getAuthenticatedProfile(String username, String password, String refreshToken,
-            String twofactorCode, String hardwareId) throws AuthenticationException, JsonParseException {
+    public Tokens getTokens(String username, String password, String refreshToken, String twofactorCode,
+            String hardwareId) throws AuthenticationException, JsonParseException {
         String refToken = refreshToken;
 
         logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
@@ -276,13 +276,11 @@ public class RestClient {
 
         JsonObject oauthToken = getOauthToken(username, password, refToken);
 
-        return new TokenProfile(oauthToken.get("refresh_token").getAsString(),
-                oauthToken.get("access_token").getAsString());
+        return new Tokens(oauthToken.get("refresh_token").getAsString(), oauthToken.get("access_token").getAsString());
     }
 
-    public ProfileTO getProfile(String hardwareId, TokenProfile tokenProfile)
-            throws AuthenticationException, JsonParseException {
-        String jsonResult = postRequest(ApiConstants.URL_SESSION, getSessionParams(hardwareId), tokenProfile);
+    public ProfileTO getProfile(String hardwareId, Tokens tokens) throws AuthenticationException, JsonParseException {
+        String jsonResult = postRequest(ApiConstants.URL_SESSION, getSessionParams(hardwareId), tokens);
         SessionTO session = Objects.requireNonNull(gson.fromJson(jsonResult, SessionTO.class));
         return session.profile;
     }
@@ -518,32 +516,31 @@ public class RestClient {
     }
 
     /**
-     * Get the RingDevices instance, given the authenticated Profile.
+     * Get get the Ring devices
      *
-     * @param profile the Profile previously retrieved when authenticating.
+     * @param tokens the tokens previously retrieved when authenticating.
      * @return the RingDevices instance filled with all available data.
      * @throws AuthenticationException when request is invalid.
      * @throws JsonParseException when response is invalid JSON.
      */
-    public RingDevicesTO getRingDevices(TokenProfile profile, RingAccount ringAccount)
-            throws JsonParseException, AuthenticationException {
+    public RingDevicesTO getRingDevices(Tokens tokens) throws JsonParseException, AuthenticationException {
         logger.debug("RestClient - getRingDevices");
-        String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);
+        String jsonResult = getRequest(ApiConstants.URL_DEVICES, tokens);
         return Objects.requireNonNull(gson.fromJson(jsonResult, RingDevicesTO.class));
     }
 
     /**
      * Get a List with the last recorded events, newest on top.
      *
-     * @param profile the Profile previously retrieved when authenticating.
+     * @param tokens the tokens previously retrieved when authenticating.
      * @param limit the maximum number of events.
      * @return
      * @throws AuthenticationException
      * @throws JsonParseException
      */
-    public synchronized List<RingEventTO> getHistory(TokenProfile profile, int limit)
+    public synchronized List<RingEventTO> getHistory(Tokens tokens, int limit)
             throws AuthenticationException, JsonParseException {
-        String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
+        String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, tokens);
         if (!jsonResult.isBlank()) {
             return Objects.requireNonNull(gson.fromJson(jsonResult, RING_EVENT_LIST_TYPE));
         } else {
@@ -551,7 +548,7 @@ public class RestClient {
         }
     }
 
-    public String downloadEventVideo(RingEventTO event, TokenProfile profile, String filePath, int retentionCount) {
+    public String downloadEventVideo(RingEventTO event, Tokens tokens, String filePath, int retentionCount) {
         try {
             Path path = Paths.get(filePath);
 
@@ -578,7 +575,7 @@ public class RestClient {
                             .append(ApiConstants.URL_RECORDING_END);
                     for (int i = 0; i < 10; i++) {
                         try {
-                            String jsonResult = getRequest(vidUrl.toString(), profile);
+                            String jsonResult = getRequest(vidUrl.toString(), tokens);
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
                             if (obj.get("url").getAsString().startsWith("http")) {
                                 URL url = new URI(obj.get("url").getAsString()).toURL();

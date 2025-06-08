@@ -58,7 +58,6 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpService httpService;
     private int httpPort;
-    private @Nullable ComponentContext componentContext;
 
     public final Gson gson = new Gson();
 

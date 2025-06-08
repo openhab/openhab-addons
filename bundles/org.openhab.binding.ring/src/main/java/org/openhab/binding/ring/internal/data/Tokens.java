@@ -15,7 +15,7 @@ package org.openhab.binding.ring.internal.data;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TokenProfile} encapsulates the tokens needed for accessing the API
+ * The {@link Tokens} encapsulates the tokens needed for accessing the API
  *
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public record TokenProfile(String refreshToken, String accessToken) {
+public record Tokens(String refreshToken, String accessToken) {
 }

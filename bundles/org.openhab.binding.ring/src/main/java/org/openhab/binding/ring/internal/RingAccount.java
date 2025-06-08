@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.ring.internal;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ring.internal.device.RingDevice;
 
 /**
  * The AccountHandler implements this interface to facilitate the
@@ -23,10 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface RingAccount {
-    /**
-     * Get the Device Registry
-     *
-     * @return the ring device registry
-     */
-    RingDeviceRegistry getDeviceRegistry();
+    Collection<RingDevice> getAllDevices();
+
+    @Nullable
+    RingDevice getDevice(String id);
 }

@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.api.RingDevicesTO;
 import org.openhab.binding.ring.internal.device.Chime;
@@ -24,7 +25,6 @@ import org.openhab.binding.ring.internal.device.Doorbell;
 import org.openhab.binding.ring.internal.device.OtherDevice;
 import org.openhab.binding.ring.internal.device.RingDevice;
 import org.openhab.binding.ring.internal.device.Stickupcam;
-import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +38,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RingDeviceRegistry {
     private final Logger logger = LoggerFactory.getLogger(RingDeviceRegistry.class);
-    /**
-     * Will be set after initialization.
-     */
-    private boolean initialized;
 
     /**
      * Key: device id. Value: the RingDevice implementation object.
@@ -70,17 +66,6 @@ public class RingDeviceRegistry {
         ringDevices.chimes.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, Chime::new));
         ringDevices.stickupCams.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, Stickupcam::new));
         ringDevices.other.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, OtherDevice::new));
-
-        initialized = true;
-    }
-
-    /**
-     * Return true after the registry is filled with devices.
-     *
-     * @return
-     */
-    public boolean isInitialized() {
-        return initialized;
     }
 
     /**
@@ -88,19 +73,13 @@ public class RingDeviceRegistry {
      *
      * @param id the device id.
      * @return the RingDevice instance from the registry.
-     * @throws DeviceNotFoundException
      */
-    public RingDevice getRingDevice(String id) throws DeviceNotFoundException {
-        RingDevice device = devices.get(id);
-        if (device != null) {
-            return device;
-        } else {
-            throw new DeviceNotFoundException("Device with id '" + id + "' not found");
-        }
+    public @Nullable RingDevice getRingDevice(String id) {
+        return devices.get(id);
     }
 
     /**
-     * Get a collection with RingDevices with the given status.
+     * Get a collection of all {@link RingDevice}s
      *
      * @return the (possibly empty) collection.
      */

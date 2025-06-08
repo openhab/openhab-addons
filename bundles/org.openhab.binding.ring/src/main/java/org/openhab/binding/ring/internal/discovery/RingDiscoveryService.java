@@ -15,10 +15,11 @@ package org.openhab.binding.ring.internal.discovery;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.time.Instant;
-import java.util.function.Predicate;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.internal.RingDeviceRegistry;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Chime;
 import org.openhab.binding.ring.internal.device.Doorbell;
@@ -48,22 +49,19 @@ import org.osgi.service.component.annotations.ServiceScope;
 @Component(scope = ServiceScope.PROTOTYPE, service = RingDiscoveryService.class)
 @NonNullByDefault
 public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<AccountHandler> {
+    private @Nullable ScheduledFuture<?> discoveryJob;
+
     public RingDiscoveryService() {
-        super(AccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, true);
+        super(AccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5);
     }
 
     @Override
     protected void startScan() {
         ThingHandler thingHandler = getThingHandler();
         if (thingHandler instanceof AccountHandler accountHandler) {
-            Predicate<RingDeviceTO> deviceFilter = accountHandler.getDeviceFilter();
-            RingDeviceRegistry registry = accountHandler.getDeviceRegistry();
             ThingUID bridgeUID = accountHandler.getThing().getUID();
-            for (RingDevice device : registry.getRingDevices()) {
+            for (RingDevice device : accountHandler.getAllDevices()) {
                 RingDeviceTO deviceTO = device.getDeviceStatus();
-                if (!deviceFilter.test(deviceTO)) {
-                    continue;
-                }
                 ThingTypeUID thingTypeUID = switch (device) {
                     case Chime chime -> THING_TYPE_CHIME;
                     case Doorbell doorbell -> THING_TYPE_DOORBELL;
@@ -98,5 +96,22 @@ public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<A
     public void dispose() {
         super.dispose();
         removeOlderResults(Instant.now().toEpochMilli());
+    }
+
+    @Override
+    public void startBackgroundDiscovery() {
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job == null || job.isCancelled()) {
+            this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 1, 5, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    public void stopBackgroundDiscovery() {
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job != null) {
+            job.cancel(true);
+            this.discoveryJob = null;
+        }
     }
 }

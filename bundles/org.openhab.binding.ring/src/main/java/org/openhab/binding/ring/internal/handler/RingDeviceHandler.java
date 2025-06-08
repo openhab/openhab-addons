@@ -17,11 +17,9 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.internal.RingAccount;
-import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.config.RingThingConfig;
 import org.openhab.binding.ring.internal.device.RingDevice;
-import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -68,11 +66,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         }
 
         try {
-            linkDevice(config.id, deviceClass);
+            linkDevice(deviceClass);
             updateStatus(ThingStatus.ONLINE);
-        } catch (DeviceNotFoundException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device with id '" + config.id + "' not found");
         } catch (IllegalDeviceClassException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Device with id '" + config.id + "' of wrong type");
@@ -83,12 +78,12 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         }
     }
 
-    protected @Nullable RingDeviceRegistry getDeviceRegistry() {
+    protected @Nullable RingDevice getDevice() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof RingAccount ringAccount) {
-                return ringAccount.getDeviceRegistry();
+                return ringAccount.getDevice(config.id);
             }
         }
         return null;
@@ -97,16 +92,12 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     /**
      * Link the device, and update the device with the status CONFIGURED.
      *
-     * @param id the device id
      * @param deviceClass the expected class
-     * @throws DeviceNotFoundException when device is not found in the RingDeviceRegistry.
-     * @throws IllegalDeviceClassException when the registered device is of the wrong type.
      */
-    protected void linkDevice(String id, Class<? extends RingDevice> deviceClass)
-            throws DeviceNotFoundException, IllegalDeviceClassException {
-        RingDeviceRegistry registry = getDeviceRegistry();
-        if (registry != null && registry.isInitialized()) {
-            device = registry.getRingDevice(id);
+    protected void linkDevice(Class<? extends RingDevice> deviceClass) throws IllegalDeviceClassException {
+        device = getDevice();
+
+        if (device != null) {
             RingDeviceTO deviceTO = device.getDeviceStatus();
             if (deviceClass.equals(device.getClass())) {
                 thing.setProperty(THING_PROPERTY_DESCRIPTION, deviceTO.description);
@@ -116,8 +107,6 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                 throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
                         + device.getClass().getName() + "' found.");
             }
-        } else {
-            throw new DeviceNotFoundException("Device with id '" + id + "' not found or registry not initialized.");
         }
     }
 
