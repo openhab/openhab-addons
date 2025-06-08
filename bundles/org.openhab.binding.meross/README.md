@@ -65,7 +65,6 @@ NOTICE: Due to the above mentioned security policy  currently is not possible to
 
 ### meross.things
 
-
 ```java
 Bridge meross:gateway:mybridge "Meross bridge" [ hostName="https://iotx-eu.meross.com", userEmail="abcde" userPassword="fghij" ] {
     light SC_plug                 "Desk"       [lightName="Desk"]
