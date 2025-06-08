@@ -63,7 +63,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     private String apiKey = "";
     private String nmi = "";
     private String siteID = "";
-    private boolean estimate = false;
+    private boolean isEstimate = false;
 
     private @NonNullByDefault({}) AmberElectricConfiguration config;
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
@@ -200,7 +200,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                                     OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
                             updateState(AmberElectricBindingConstants.CHANNEL_ESTIMATE,
                                     OnOffType.from(currentPrices.estimate));
-                            estimate = currentPrices.estimate;
+                            isEstimate = currentPrices.estimate;
                             updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
                                     convertPriceToState(currentPrices.perKwh));
                             elecTimeSeries.add(instantStart, convertPriceToState(currentPrices.perKwh));
@@ -232,11 +232,11 @@ public class AmberElectricHandler extends BaseThingHandler {
                 }
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, feedInTimeSeries);
-                if (estimate == false) {
-                    logger.debug("Price not estimated, break out of loop.");
+                if (isEstimate == false) {
+                    logger.debug("Retrieved price is not an estimate, break out of loop.");
                     break;
                 } else {
-                    logger.debug("Price estimated, sleep 10 seconds and try again.");
+                    logger.debug("Retrieved price is an estimate, sleep for 10 seconds and try again.");
                     Thread.sleep(10000);
                 }
             }
