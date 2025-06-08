@@ -88,15 +88,6 @@ public class MeterReading extends Value {
         @SerializedName("NUMERO_COMPTEUR")
         public String numeroCompteur;
 
-        /*
-         * private Map<String, Data.Consommation> entries = new HashMap<String, Data.Consommation>();
-         *
-         * public void putEntries(String key, Consommation conso) {
-         * entries.put(key, conso);
-         * hasModifications = true;
-         * }
-         */
-
         public boolean hasModifications;
 
         public boolean hasModifications() {
