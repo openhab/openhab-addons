@@ -257,7 +257,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         updateContractDetail();
 
         logger.info("updateHistoricalConsumptionData() called");
-        // updateHistoricalConsumptionData();
+        updateHistoricalConsumptionData();
 
         logger.info("updateEnergyData() called");
         updateConsumptionData();
