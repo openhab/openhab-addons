@@ -4,6 +4,17 @@ The `zwavejs` binding integrates Z-Wave JS with openHAB, allowing you to control
 This binding supports a wide range of Z-Wave devices, including sensors, switches, dimmers, and more.
 For documentation about Z-Wave JS UI please visit <https://zwave-js.github.io/zwave-js-ui/>
 
+## Prerequisites
+
+Before using the `zwavejs` binding, ensure the following prerequisites are met:
+
+- You have a running instance of the [Z-Wave JS](https://zwave-js.github.io/zwave-js-ui/).
+- Your Z-Wave controller is properly connected and recognized the Z-Wave JS.
+- The Z-wave JS instance has the Webservice enabled (Settings -> HomeAssistent -> WS Server).
+- Network connectivity exists between openHAB and the Z-Wave JS Webservice (the hostname and port must be reachable from openHAB).
+
+**Note**: If you are transitioning from the native Z-Wave binding to the `zwavejs` binding, you can safely test this binding without permanently affecting your setup. All node information will remain on your controller as usual. However, please avoid performing a manual reset unless absolutely necessary, as it may complicate reverting back to the native binding.
+
 ## Supported Things
 
 This binding supports the following types of things:
