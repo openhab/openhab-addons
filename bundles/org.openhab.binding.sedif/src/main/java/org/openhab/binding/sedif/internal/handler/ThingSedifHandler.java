@@ -19,16 +19,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
@@ -131,9 +127,13 @@ public class ThingSedifHandler extends BaseThingHandler {
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
 
-                    MeterReading meterReading = getConsumptionData(today.minusDays(89), today);
-                    meterReading = getMeterReadingAfterChecks(meterReading);
-                    return meterReading;
+                    try {
+                        MeterReading meterReading = updateConsumptionData(today.minusDays(89), today);
+                        meterReading.calcAgregat();
+                        return meterReading;
+                    } catch (SedifException ex) {
+                        return null;
+                    }
                 });
 
         config = getConfigAs(SedifConfiguration.class);
@@ -147,8 +147,8 @@ public class ThingSedifHandler extends BaseThingHandler {
         }
 
         loadSedifState();
-        if (sedifState.lastUpdateData == null) {
-            sedifState.lastUpdateData = LocalDate.of(1980, 1, 1);
+        if (sedifState.getLastIndexDate() == null) {
+            sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
         }
 
         // force reread data if we pause / start the thing
@@ -201,6 +201,10 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private void saveSedifState() {
         File file = null;
+
+        if (!sedifState.hasModifications()) {
+            return;
+        }
 
         try {
             file = new File(JSON_DIR + File.separator + "sedif.json");
@@ -264,7 +268,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         LocalDate currentDate = LocalDate.now();
         currentDate = currentDate.minusDays(periodLength);
 
-        LocalDate lastUpdateDate = sedifState.lastUpdateData;
+        LocalDate lastUpdateDate = sedifState.getLastIndexDate();
         LocalDate newLastUpdateDate = lastUpdateDate;
         boolean hasData = true;
         boolean hasAlreadyRetrieveData = false;
@@ -272,34 +276,23 @@ public class ThingSedifHandler extends BaseThingHandler {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
 
             try {
-                logger.info("startDate: {}, currentDate: {}", startDate, currentDate);
-                MeterReading meterReading = getConsumptionData(startDate, currentDate);
-                meterReading = getMeterReadingAfterChecks(meterReading);
+                if (updateConsumptionData(startDate, currentDate) != null) {
+                    hasData = true;
+                } else {
+                    hasData = false;
+                }
 
-                if (meterReading == null || meterReading.data == null) {
+                if (hasData) {
+                    hasAlreadyRetrieveData = true;
+                } else {
                     currentDate = startDate;
-                    if (hasAlreadyRetrieveData) {
-                        hasData = false;
+                }
+
+                if (hasAlreadyRetrieveData) {
+                    if (!hasData) {
+                        continue;
                     }
-                    continue;
                 }
-
-                LocalDate endDataDate = meterReading.data.consommation[meterReading.data.consommation.length
-                        - 1].dateIndex.toLocalDate();
-                if (endDataDate.isAfter(newLastUpdateDate)) {
-                    newLastUpdateDate = endDataDate;
-                }
-
-                hasAlreadyRetrieveData = true;
-
-                updateConsumptionTimeSeries(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                        meterReading.data.consommation);
-                updateConsumptionTimeSeries(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                        meterReading.data.weekConso);
-                updateConsumptionTimeSeries(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                        meterReading.data.monthConso);
-                updateConsumptionTimeSeries(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-                        meterReading.data.yearConso);
             } catch (Exception ex) {
                 logger.debug("aa:", ex);
             }
@@ -307,8 +300,17 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         }
 
-        sedifState.lastUpdateData = newLastUpdateDate;
+        sedifState.setLastIndexDate(newLastUpdateDate);
         saveSedifState();
+    }
+
+    public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate)
+            throws SedifException {
+        logger.info("startDate: {}, currentDate: {}", startDate, currentDate);
+
+        MeterReading meterReading = getConsumptionData(startDate, currentDate);
+        meterReading = sedifState.updateMeterReading(meterReading);
+        return meterReading;
     }
 
     /**
@@ -434,14 +436,21 @@ public class ThingSedifHandler extends BaseThingHandler {
             double weekConsoMinus2 = 0;
 
             if (values.data.weekConso.length - 1 >= 0) {
-                thisWeekConso = values.data.weekConso[values.data.weekConso.length - 1].consommation;
+                if (values.data.weekConso[values.data.weekConso.length - 1] != null) {
+                    thisWeekConso = values.data.weekConso[values.data.weekConso.length - 1].consommation;
+                }
             }
             if (values.data.weekConso.length - 2 >= 0) {
-                lastWeekConso = values.data.weekConso[values.data.weekConso.length - 2].consommation;
+                if (values.data.weekConso[values.data.weekConso.length - 2] != null) {
+                    lastWeekConso = values.data.weekConso[values.data.weekConso.length - 2].consommation;
+                }
             }
             if (values.data.weekConso.length - 3 >= 0) {
-                weekConsoMinus2 = values.data.weekConso[values.data.weekConso.length - 3].consommation;
+                if (values.data.weekConso[values.data.weekConso.length - 3] != null) {
+                    weekConsoMinus2 = values.data.weekConso[values.data.weekConso.length - 3].consommation;
+                }
             }
+
             // updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
             // new QuantityType<>(thisWeekConso, Units.LITRE));
             updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
@@ -459,13 +468,19 @@ public class ThingSedifHandler extends BaseThingHandler {
             double monthConsoMinus2 = 0;
 
             if (values.data.monthConso.length - 1 >= 0) {
-                thisMonthConso = values.data.monthConso[values.data.monthConso.length - 1].consommation;
+                if (values.data.monthConso[values.data.monthConso.length - 1] != null) {
+                    thisMonthConso = values.data.monthConso[values.data.monthConso.length - 1].consommation;
+                }
             }
             if (values.data.monthConso.length - 2 >= 0) {
-                lastMonthConso = values.data.monthConso[values.data.monthConso.length - 2].consommation;
+                if (values.data.monthConso[values.data.monthConso.length - 2] != null) {
+                    lastMonthConso = values.data.monthConso[values.data.monthConso.length - 2].consommation;
+                }
             }
             if (values.data.monthConso.length - 3 >= 0) {
-                monthConsoMinus2 = values.data.monthConso[values.data.monthConso.length - 3].consommation;
+                if (values.data.monthConso[values.data.monthConso.length - 3] != null) {
+                    monthConsoMinus2 = values.data.monthConso[values.data.monthConso.length - 3].consommation;
+                }
             }
 
             // updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
@@ -485,13 +500,19 @@ public class ThingSedifHandler extends BaseThingHandler {
             double yearConsoMinus2 = 0;
 
             if (values.data.yearConso.length - 1 >= 0) {
-                thisYearConso = values.data.yearConso[values.data.yearConso.length - 1].consommation;
+                if (values.data.yearConso[values.data.yearConso.length - 1] != null) {
+                    thisYearConso = values.data.yearConso[values.data.yearConso.length - 1].consommation;
+                }
             }
             if (values.data.yearConso.length - 2 >= 0) {
-                lastYearConso = values.data.yearConso[values.data.yearConso.length - 2].consommation;
+                if (values.data.yearConso[values.data.yearConso.length - 2] != null) {
+                    lastYearConso = values.data.yearConso[values.data.yearConso.length - 2].consommation;
+                }
             }
             if (values.data.yearConso.length - 3 >= 0) {
-                yearConsoMinus2 = values.data.yearConso[values.data.yearConso.length - 3].consommation;
+                if (values.data.yearConso[values.data.yearConso.length - 3] != null) {
+                    yearConsoMinus2 = values.data.yearConso[values.data.yearConso.length - 3].consommation;
+                }
             }
 
             // updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
@@ -639,6 +660,10 @@ public class ThingSedifHandler extends BaseThingHandler {
         for (int i = 0; i < consoTab.length; i++) {
 
             Consommation conso = consoTab[i];
+            if (conso == null) {
+                continue;
+            }
+
             LocalDateTime dt = conso.dateIndex;
             float consommation = conso.consommation;
 
@@ -656,157 +681,6 @@ public class ThingSedifHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-    }
-
-    private @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
-        try {
-            checkData(meterReading);
-        } catch (SedifException e) {
-            logger.debug("Consumption data: {}", e.getMessage());
-            return null;
-        }
-
-        if (meterReading != null) {
-            if (meterReading.data.weekConso == null) {
-
-                for (int idx = 0; idx < meterReading.data.consommation.length; idx++) {
-                    meterReading.data.consommation[idx].dateIndex = meterReading.data.consommation[idx].dateIndex
-                            .withHour(0).withMinute(0).withSecond(0);
-                }
-
-                LocalDate startDate = meterReading.data.consommation[0].dateIndex.toLocalDate();
-                LocalDate endDate = meterReading.data.consommation[meterReading.data.consommation.length - 1].dateIndex
-                        .toLocalDate();
-
-                LocalDate realStartDate = startDate.atStartOfDay().with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
-                        .toLocalDate();
-                LocalDate realEndDate = endDate.atStartOfDay().with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
-                        .toLocalDate();
-
-                int startWeek = realStartDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
-                int endWeek = realEndDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
-
-                int yearsNum = realEndDate.getYear() - realStartDate.getYear() + 1;
-                int monthsNum = (realEndDate.getYear() - realStartDate.getYear()) * 12 + realEndDate.getMonthValue()
-                        - realStartDate.getMonthValue() + 1;
-
-                int weeksNum = (realEndDate.getYear() - realStartDate.getYear()) * 52 + endWeek - startWeek + 1;
-
-                int startIdxConso = realStartDate.compareTo(startDate);
-
-                meterReading.data.weekConso = new Consommation[weeksNum];
-                meterReading.data.monthConso = new Consommation[monthsNum];
-                meterReading.data.yearConso = new Consommation[yearsNum];
-
-                for (int idx = 0; idx < weeksNum; idx++) {
-                    meterReading.data.weekConso[idx] = meterReading.data.new Consommation();
-                }
-                for (int idx = 0; idx < monthsNum; idx++) {
-                    meterReading.data.monthConso[idx] = meterReading.data.new Consommation();
-                }
-                for (int idx = 0; idx < yearsNum; idx++) {
-                    meterReading.data.yearConso[idx] = meterReading.data.new Consommation();
-                }
-
-                int size = meterReading.data.consommation.length;
-
-                logger.debug("");
-
-                for (int idxWeek = 0; idxWeek < weeksNum; idxWeek++) {
-                    LocalDate startOfWeek = realStartDate.plusWeeks(idxWeek);
-                    LocalDate endOfWeek = startOfWeek.plusDays(6);
-
-                    int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfWeek) - 1;
-                    int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfWeek);
-
-                    logger.debug("");
-
-                    if (idxConsoFin >= meterReading.data.consommation.length && endOfWeek.isAfter(LocalDate.now())) {
-                        idxConsoFin = meterReading.data.consommation.length - 1;
-                    }
-
-                    if (idxConsoDeb >= 0 && idxConsoFin < meterReading.data.consommation.length) {
-                        float indexDeb = meterReading.data.consommation[idxConsoDeb].valeurIndex;
-                        float indexFin = meterReading.data.consommation[idxConsoFin].valeurIndex;
-
-                        float indexDiff = indexFin - indexDeb;
-
-                        meterReading.data.weekConso[idxWeek].consommation = indexDiff;
-
-                        LocalDate dt = realStartDate.plusDays(idxWeek * 7);
-                        meterReading.data.weekConso[idxWeek].dateIndex = LocalDateTime.of(dt.getYear(), dt.getMonth(),
-                                dt.getDayOfMonth(), 0, 0, 0);
-                    }
-                }
-
-                for (int idxMonth = 0; idxMonth < monthsNum; idxMonth++) {
-                    LocalDate startOfMonth = realStartDate.with(TemporalAdjusters.firstDayOfMonth())
-                            .plusMonths(idxMonth);
-                    LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
-
-                    int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfMonth) - 1;
-                    int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfMonth);
-
-                    if (idxConsoFin >= meterReading.data.consommation.length && endOfMonth.isAfter(LocalDate.now())) {
-                        idxConsoFin = meterReading.data.consommation.length - 1;
-                    }
-
-                    if (idxConsoDeb >= 0 && idxConsoFin < meterReading.data.consommation.length) {
-                        float indexDeb = meterReading.data.consommation[idxConsoDeb].valeurIndex;
-                        float indexFin = meterReading.data.consommation[idxConsoFin].valeurIndex;
-
-                        float indexDiff = indexFin - indexDeb;
-
-                        meterReading.data.monthConso[idxMonth].consommation = indexDiff;
-
-                        meterReading.data.monthConso[idxMonth].dateIndex = LocalDateTime.of(startOfMonth.getYear(),
-                                startOfMonth.getMonth(), startOfMonth.getDayOfMonth(), 0, 0, 0);
-
-                    }
-
-                    logger.debug("");
-                }
-
-                for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
-                    LocalDate startOfYear = realStartDate.with(TemporalAdjusters.firstDayOfYear()).plusYears(idxYear);
-                    LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
-
-                    int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfYear) - 1;
-                    int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfYear);
-
-                    logger.debug("");
-
-                    if (idxConsoFin >= meterReading.data.consommation.length && endOfYear.isAfter(LocalDate.now())) {
-                        idxConsoFin = meterReading.data.consommation.length - 1;
-                    }
-
-                    if (idxConsoDeb >= 0 && idxConsoFin < meterReading.data.consommation.length) {
-                        float indexDeb = meterReading.data.consommation[idxConsoDeb].valeurIndex;
-                        float indexFin = meterReading.data.consommation[idxConsoFin].valeurIndex;
-
-                        float indexDiff = indexFin - indexDeb;
-
-                        meterReading.data.yearConso[idxYear].consommation = indexDiff;
-
-                        meterReading.data.yearConso[idxYear].dateIndex = LocalDateTime.of(startOfYear.getYear(),
-                                startOfYear.getMonth(), startOfYear.getDayOfMonth(), 0, 0, 0);
-                    }
-
-                }
-            }
-        }
-
-        return meterReading;
-    }
-
-    private void checkData(@Nullable MeterReading meterReading) throws SedifException {
-        if (meterReading != null) {
-            if (meterReading.data.consommation.length == 0) {
-                throw new SedifException("Invalid meterReading data: no day period");
-            }
-        } else {
-            throw new SedifException("Invalid meterReading == null");
-        }
     }
 
     public String getContractId() {
