@@ -83,6 +83,12 @@
                 </excludes>
               </artifactSet>
               <createDependencyReducedPom>false</createDependencyReducedPom>
+              <relocations>
+                <relocation>
+                  <pattern>com.oracle.truffle.polyglot.LanguageCache</pattern>
+                  <shadedPattern>com.oracle.truffle.polyglot.js.LanguageCache</shadedPattern>
+                </relocation>
+              </relocations>
               <transformers>
                 <!-- Transformer to merge module-info.class files, if needed -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>

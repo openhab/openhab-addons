@@ -135,6 +135,12 @@
                 </excludes>
               </artifactSet>
               <createDependencyReducedPom>false</createDependencyReducedPom>
+              <relocations>
+                <relocation>
+                  <pattern>com.oracle.truffle.polyglot.LanguageCache</pattern>
+                  <shadedPattern>com.oracle.truffle.polyglot.py.LanguageCache</shadedPattern>
+                </relocation>
+              </relocations>
               <transformers>
                 <!-- Transformer to merge module-info.class
                   files, if needed -->
