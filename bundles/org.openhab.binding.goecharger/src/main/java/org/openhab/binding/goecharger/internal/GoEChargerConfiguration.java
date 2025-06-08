@@ -25,6 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public class GoEChargerConfiguration {
 
     public @Nullable String ip;
+    public @Nullable String serial;
+    public @Nullable CharSequence token;
     public Integer refreshInterval = 5;
     public Integer apiVersion = 1;
 }

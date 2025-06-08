@@ -306,7 +306,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     @Override
     public void initialize() {
         // only read needed parameters
-        filter = "?filter=";
+        filter = "filter=";
         var declaredFields = GoEStatusResponseV2DTO.class.getDeclaredFields();
         var declaredFieldsBase = GoEStatusResponseV2DTO.class.getSuperclass().getDeclaredFields();
 
@@ -322,12 +322,26 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     }
 
     private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + filter;
+        if (config.ip != null) {
+            return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + "?" + filter;
+        } else if (config.serial != null && config.token != null) {
+            return GoEChargerBindingConstants.API_URL_CLOUD_V2.replace("%SERIAL%", config.serial.toString())
+                    .replace("%TOKEN%", config.token.toString()) + "&" + filter;
+        } else {
+            throw new IllegalArgumentException("either ip or token+serial must be configured");
+        }
     }
 
     private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
-                .replace("%VALUE%", value);
+        if (config.ip != null) {
+            return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
+                    .replace("%VALUE%", value);
+        } else if (config.serial != null && config.token != null) {
+            return GoEChargerBindingConstants.SET_URL_CLOUD_V2.replace("%SERIAL%", config.serial.toString())
+                    .replace("%TOKEN%", config.token.toString()).replace("%KEY%", key).replace("%VALUE%", value);
+        } else {
+            throw new IllegalArgumentException("either ip or token+serial must be configured");
+        }
     }
 
     private void sendData(String key, String value) {
@@ -343,7 +357,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
             logger.trace("{} Response: {}", httpMethod.toString(), response);
 
             var statusCode = contentResponse.getStatus();
-            if (!(statusCode == 200 || statusCode == 204)) {
+            if (!(statusCode == 200 || statusCode == 202 || statusCode == 204)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/unsuccessful.communication-error");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
