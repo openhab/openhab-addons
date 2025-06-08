@@ -14,12 +14,44 @@ package org.openhab.binding.sedif.internal.dto;
 
 import java.time.LocalDate;
 
+import org.openhab.binding.sedif.internal.types.SedifException;
+
 /**
  * The {@link SedifState} a base class for Value
  *
  * @author Laurent Arnal - Initial contribution
  */
 public class SedifState {
-    public LocalDate lastUpdateData;
+    public boolean hasModifications() {
+        return hasModifications;
+    }
+
+    private boolean hasModifications;
+
+    private MeterReading meterReading;
+    private LocalDate lastIndexDate;
+
+    public LocalDate getLastIndexDate() {
+        return lastIndexDate;
+    }
+
+    public void setLastIndexDate(LocalDate lastIndexDate) {
+        this.lastIndexDate = lastIndexDate;
+        hasModifications = true;
+    }
+
+    public MeterReading updateMeterReading(MeterReading incomingMeterReading) throws SedifException {
+        if (incomingMeterReading == null) {
+            throw new SedifException("Invalid meterReading == null");
+        }
+
+        incomingMeterReading.check();
+
+        if (this.meterReading == null) {
+            this.meterReading = new MeterReading();
+        }
+
+        return this.meterReading.merge(incomingMeterReading);
+    }
 
 }
