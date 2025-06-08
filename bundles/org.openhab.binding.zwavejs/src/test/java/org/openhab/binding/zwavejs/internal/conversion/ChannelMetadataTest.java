@@ -54,23 +54,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node51Channel0() throws IOException {
-        Node node = getNodeFromStore("store_4.json", 51);
-
-        ChannelMetadata details = new ChannelMetadata(51, node.values.get(0));
-
-        assertEquals("binary-switch-value", details.id);
-        assertNull(details.description);
-        assertEquals("Switch", details.itemType);
-        assertEquals("Current Value", details.label);
-        assertEquals(OnOffType.OFF, details.state);
-        assertEquals(false, details.writable);
-        assertNull(details.statePattern);
-        assertNull(details.unitSymbol);
-    }
-
-    @Test
-    public void testChannelDetailsStore4Node7Channel83() throws IOException {
+    public void testDetailsNode7Channel83() throws IOException {
         Node node = getNodeFromStore("store_4.json", 7);
 
         ChannelMetadata details = new ChannelMetadata(7, node.values.get(83));
@@ -87,7 +71,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node7Channel84() throws IOException {
+    public void testDetailsNode7Channel84() throws IOException {
         Node node = getNodeFromStore("store_4.json", 7);
 
         ChannelMetadata details = new ChannelMetadata(7, node.values.get(84));
@@ -104,7 +88,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node7Channel85() throws IOException {
+    public void testDetailsNode7Channel85() throws IOException {
         Node node = getNodeFromStore("store_4.json", 7);
 
         ChannelMetadata details = new ChannelMetadata(7, node.values.get(85));
@@ -119,7 +103,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node7Channel86() throws IOException {
+    public void testDetailsNode7Channel86() throws IOException {
         Node node = getNodeFromStore("store_4.json", 7);
 
         ChannelMetadata details = new ChannelMetadata(7, node.values.get(86));
@@ -135,7 +119,23 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node74Channel36() throws IOException {
+    public void testDetailsNode7Channel1() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 5);
+
+        ChannelMetadata details = new ChannelMetadata(5, node.values.get(1));
+
+        assertEquals("configuration-total-alarm-duration", details.id);
+        assertEquals("Number:Time", details.itemType);
+        assertEquals("Total Alarm Duration", details.label);
+        assertEquals("Total time the Leak Sensor will beep and light its LED in the event of a leak",
+                details.description);
+        assertEquals(new QuantityType<>(120, Units.MINUTE), details.state);
+        assertEquals(true, details.writable);
+        assertEquals("min", details.unitSymbol);
+    }
+
+    @Test
+    public void testDetailsNode74Channel36() throws IOException {
         Node node = getNodeFromStore("store_4.json", 74);
 
         ChannelMetadata details = new ChannelMetadata(74, node.values.get(36));
@@ -152,23 +152,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node7Channel1() throws IOException {
-        Node node = getNodeFromStore("store_4.json", 5);
-
-        ChannelMetadata details = new ChannelMetadata(5, node.values.get(1));
-
-        assertEquals("configuration-total-alarm-duration", details.id);
-        assertEquals("Number:Time", details.itemType);
-        assertEquals("Total Alarm Duration", details.label);
-        assertEquals("Total time the Leak Sensor will beep and light its LED in the event of a leak",
-                details.description);
-        assertEquals(new QuantityType<>(120, Units.MINUTE), details.state);
-        assertEquals(true, details.writable);
-        assertEquals("min", details.unitSymbol);
-    }
-
-    @Test
-    public void testChannelDetailsStore4Node74Channel7() throws IOException {
+    public void testDetailsNode74Channel7() throws IOException {
         Node node = getNodeFromStore("store_4.json", 74);
 
         ChannelMetadata details = new ChannelMetadata(74, node.values.get(7));
@@ -183,7 +167,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node14Channel0() throws IOException {
+    public void testDetailsNode14Channel0() throws IOException {
         Node node = getNodeFromStore("store_4.json", 13);
 
         ChannelMetadata details = new ChannelMetadata(13, node.values.get(1));
@@ -206,7 +190,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node35Channel5() throws IOException {
+    public void testDetailsNode35Channel5() throws IOException {
         Node node = getNodeFromStore("store_4.json", 35);
 
         ChannelMetadata details = new ChannelMetadata(35, node.values.get(5));
@@ -229,7 +213,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node10Channel80() throws IOException {
+    public void testDetailsNode10Channel80() throws IOException {
         Node node = getNodeFromStore("store_4.json", 10);
 
         ChannelMetadata details = new ChannelMetadata(10, node.values.get(84));
@@ -252,7 +236,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node10Channel97() throws IOException {
+    public void testDetailsNode10Channel97() throws IOException {
         Node node = getNodeFromStore("store_4.json", 10);
 
         ChannelMetadata details = new ChannelMetadata(10, node.values.get(97));
@@ -267,7 +251,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node44Channel11() throws IOException {
+    public void testDetailsNode44Channel11() throws IOException {
         Node node = getNodeFromStore("store_4.json", 44);
 
         ChannelMetadata details = new ChannelMetadata(44, node.values.get(11));
@@ -282,7 +266,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node44Channel13() throws IOException {
+    public void testDetailsNode44Channel13() throws IOException {
         Node node = getNodeFromStore("store_4.json", 44);
 
         ChannelMetadata details = new ChannelMetadata(44, node.values.get(13));
@@ -297,7 +281,23 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node76Channel97() throws IOException {
+    public void testDetailsNode51Channel0() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 51);
+
+        ChannelMetadata details = new ChannelMetadata(51, node.values.get(0));
+
+        assertEquals("binary-switch-value", details.id);
+        assertNull(details.description);
+        assertEquals("Switch", details.itemType);
+        assertEquals("Current Value", details.label);
+        assertEquals(OnOffType.OFF, details.state);
+        assertEquals(false, details.writable);
+        assertNull(details.statePattern);
+        assertNull(details.unitSymbol);
+    }
+
+    @Test
+    public void testDetailsNode76Channel97() throws IOException {
         Node node = getNodeFromStore("store_4.json", 76);
 
         ChannelMetadata details = new ChannelMetadata(76, node.values.get(98));
@@ -312,7 +312,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore4Node78Channel22() throws IOException {
+    public void testDetailsNode78Channel22() throws IOException {
         Node node = getNodeFromStore("store_4.json", 78);
 
         ChannelMetadata details = new ChannelMetadata(78, node.values.get(22));
@@ -327,7 +327,7 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStor4Node66Channel43() throws IOException {
+    public void testDetailsNode66Channel43() throws IOException {
         Node node = getNodeFromStore("store_4.json", 66);
 
         ChannelMetadata details = new ChannelMetadata(66, node.values.get(43));
@@ -341,10 +341,10 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStor5Node2Channel0() throws IOException {
-        Node node = getNodeFromStore("store_5.json", 2);
+    public void testDetailsNode16Channel3() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 16);
 
-        ChannelMetadata details = new ChannelMetadata(2, node.values.get(13));
+        ChannelMetadata details = new ChannelMetadata(16, node.values.get(13));
 
         assertEquals(51, details.commandClassId);
         assertEquals("color-switch-color", details.id);

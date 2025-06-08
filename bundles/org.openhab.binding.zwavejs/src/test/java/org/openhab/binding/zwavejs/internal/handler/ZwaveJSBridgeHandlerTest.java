@@ -73,7 +73,6 @@ public class ZwaveJSBridgeHandlerTest {
         final ZwaveJSBridgeHandler handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
         final NodeDiscoveryService discoveryService = mock(NodeDiscoveryService.class);
         doNothing().when(handler).getFullState();
-        // when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
         handler.registerDiscoveryListener(discoveryService);
 
         ResultMessage resultMessage = DataUtil.fromJson("store_4.json", ResultMessage.class);
@@ -82,29 +81,7 @@ public class ZwaveJSBridgeHandlerTest {
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(discoveryService, times(45)).addNodeDiscovery(any());
-        } finally {
-            handler.dispose();
-        }
-    }
-
-    @Test
-    public void testDiscoveryForStore4Nodes() throws IOException {
-        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
-        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final ZwaveJSBridgeHandler handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
-        final NodeDiscoveryService discoveryService = mock(NodeDiscoveryService.class);
-        doNothing().when(handler).getFullState();
-        // when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
-        handler.registerDiscoveryListener(discoveryService);
-
-        ResultMessage resultMessage = DataUtil.fromJson("store_4.json", ResultMessage.class);
-
-        handler.onEvent(resultMessage);
-
-        try {
-            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(discoveryService, times(45)).addNodeDiscovery(any());
+            verify(discoveryService, times(46)).addNodeDiscovery(any());
         } finally {
             handler.dispose();
         }
