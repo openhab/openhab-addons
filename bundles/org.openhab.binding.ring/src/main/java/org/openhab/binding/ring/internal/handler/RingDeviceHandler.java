@@ -51,13 +51,14 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
      * The RingDevice instance linked to this thing.
      */
     protected @Nullable RingDevice device;
+    protected RingThingConfig config = new RingThingConfig();
 
     protected RingDeviceHandler(Thing thing) {
         super(thing);
     }
 
     public void initialize(Class<? extends RingDevice> deviceClass) {
-        RingThingConfig config = getConfigAs(RingThingConfig.class);
+        config = getConfigAs(RingThingConfig.class);
 
         if (config.id.isBlank()) {
             // try updating config from legacy thing
@@ -65,21 +66,16 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
             cfg.put("id", getThing().getUID().getId());
             updateConfiguration(cfg);
         }
-        RingDeviceRegistry registry = getDeviceRegistry();
-        if (registry != null && registry.isInitialized()) {
-            try {
-                linkDevice(config.id, deviceClass);
-                updateStatus(ThingStatus.ONLINE);
-            } catch (DeviceNotFoundException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Device with id '" + config.id + "' not found");
-            } catch (IllegalDeviceClassException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Device with id '" + config.id + "' of wrong type");
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting for RingAccount to initialize");
+
+        try {
+            linkDevice(config.id, deviceClass);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (DeviceNotFoundException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Device with id '" + config.id + "' not found");
+        } catch (IllegalDeviceClassException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Device with id '" + config.id + "' of wrong type");
         }
 
         if (this.refreshJob == null) {
@@ -109,7 +105,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     protected void linkDevice(String id, Class<? extends RingDevice> deviceClass)
             throws DeviceNotFoundException, IllegalDeviceClassException {
         RingDeviceRegistry registry = getDeviceRegistry();
-        if (registry != null) {
+        if (registry != null && registry.isInitialized()) {
             device = registry.getRingDevice(id);
             RingDeviceTO deviceTO = device.getDeviceStatus();
             if (deviceClass.equals(device.getClass())) {
@@ -120,6 +116,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                 throw new IllegalDeviceClassException("Class '" + deviceClass.getName() + "' expected but '"
                         + device.getClass().getName() + "' found.");
             }
+        } else {
+            throw new DeviceNotFoundException("Device with id '" + id + "' not found or registry not initialized.");
         }
     }
 
@@ -150,9 +148,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                         enabled = xcommand;
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
-                            Configuration config = getThing().getConfiguration();
-                            int refreshInterval = (int) config.get("refreshInterval");
-                            startAutomaticRefresh(refreshInterval);
+                            startAutomaticRefresh(config.refreshInterval);
                         } else {
                             stopAutomaticRefresh();
                         }

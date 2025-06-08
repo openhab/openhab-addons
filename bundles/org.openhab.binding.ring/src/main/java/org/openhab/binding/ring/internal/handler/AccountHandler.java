@@ -365,13 +365,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 updatedConfiguration.put("twofactorCode", config.twofactorCode);
                 updateConfiguration(updatedConfiguration);
 
-                Map<String, String> properties = editProperties();
-                String ownerIdString = properties.get(THING_PROPERTY_OWNER_ID);
+                String ownerIdString = thing.getProperties().get(THING_PROPERTY_OWNER_ID);
                 if (ownerIdString != null && !ownerIdString.isEmpty()) {
                     ownerId = Long.parseLong(ownerIdString);
                 } else {
                     ProfileTO profile = restClient.getProfile(hardwareId, userProfile);
                     ownerId = profile.id;
+                    Map<String, String> properties = editProperties();
                     properties.put(THING_PROPERTY_OWNER_ID, Long.toString(ownerId));
                     updateProperties(properties);
                 }
