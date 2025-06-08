@@ -53,5 +53,4 @@ public class SedifState {
 
         return this.meterReading.merge(incomingMeterReading);
     }
-
 }
