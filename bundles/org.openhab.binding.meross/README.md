@@ -14,7 +14,6 @@ Supported thing types
 | Smart ambient light | msl430 | Smart ambient light | yes       | yes    |
 | Smart plug          | mss210 | Smart plug          | yes       | yes    |
 
-
 ## Discovery
 
 The Discovery service is supported.
