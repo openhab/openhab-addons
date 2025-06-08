@@ -130,13 +130,24 @@ public class MeterReading extends Value {
             LocalDate lastDate = existingConso[this.data.consommation.length - 1].dateIndex.toLocalDate();
 
             int idx = incomingConso.length - 1;
+            boolean needMerge = false;
             while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(lastDate)) {
                 idx--;
+                needMerge = true;
             }
 
-            Consommation[] newConso = new Consommation[this.data.consommation.length + incomingConso.length - idx];
+            int totalLength = this.data.consommation.length;
+            if (needMerge) {
+                totalLength = totalLength + incomingConso.length - idx;
+            }
+
+            Consommation[] newConso = new Consommation[totalLength];
             System.arraycopy(this.data.consommation, 0, newConso, 0, this.data.consommation.length);
-            System.arraycopy(incomingConso, idx, newConso, this.data.consommation.length, incomingConso.length - idx);
+
+            if (needMerge) {
+                System.arraycopy(incomingConso, idx, newConso, this.data.consommation.length,
+                        incomingConso.length - idx);
+            }
 
             this.data.consommation = newConso;
         }

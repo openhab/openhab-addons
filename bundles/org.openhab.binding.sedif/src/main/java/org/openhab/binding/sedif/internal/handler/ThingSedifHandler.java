@@ -277,7 +277,10 @@ public class ThingSedifHandler extends BaseThingHandler {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
 
             try {
-                if (updateConsumptionData(startDate, currentDate) != null) {
+                MeterReading meterReading = updateConsumptionData(startDate, currentDate);
+                if (meterReading != null) {
+                    newLastUpdateDate = meterReading.data.consommation[meterReading.data.consommation.length
+                            - 1].dateIndex.toLocalDate();
                     hasData = true;
                 } else {
                     hasData = false;
