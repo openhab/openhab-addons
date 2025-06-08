@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meross"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Meross Light</label>
+		<description>Meross Light</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+		</channels>
+
+		<config-description>
+			<parameter name="lightName" type="text" required="true">
+				<label>Light name</label>
+				<description>The name of the light as registered to Meross account</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch the power ON and OFF</description>
+		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>
