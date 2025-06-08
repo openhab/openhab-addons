@@ -78,23 +78,23 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenerateChannelTypeForNode3() throws IOException {
-        Node node = DataUtil.getNodeFromStore("store_1.json", 3);
+    public void testGenerateChannelTypeForNode7() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
 
         ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
                 .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
 
-        assertEquals(7, results.channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(14, results.channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 
     @Test
-    public void testGenerateChannelTypeForNode3AsChannels() throws IOException {
-        Node node = DataUtil.getNodeFromStore("store_1.json", 3);
+    public void testGenerateChannelTypeForNode7AsChannels() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
 
         ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
                 .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), true);
 
-        assertEquals(13, results.channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(47, results.channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 
     @Test
@@ -106,13 +106,13 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenerateChannelTypeNode6() throws IOException {
-        Node node = DataUtil.getNodeFromStore("store_1.json", 6);
+    public void testGenerateChannelTypeNode7() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
 
         ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
                 .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
 
-        assertEquals(3, results.channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(14, results.channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 
     @Test
@@ -126,23 +126,23 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenerateChannelTypeStore1Node6Label() throws IOException {
-        Channel channel = getChannel("store_1.json", 6, "meter-reset");
+    public void testGenerateChannelTypeStore4Node7Label() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "meter-reset-1");
 
-        assertEquals("Reset Accumulated Values", channel.getLabel());
+        assertEquals("EP1 Reset Accumulated Values", channel.getLabel());
         assertNull(channel.getDescription());
     }
 
     @Test
-    public void testGenerateChannelTypeStore1Node6WriteProperty() throws IOException {
-        Channel channel = getChannel("store_1.json", 6, "binary-switch-value");
+    public void testGenerateChannelTypeStore4Node25WriteProperty() throws IOException {
+        Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
 
         assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
     }
 
     @Test
-    public void testGenerateChannelTypeStore1Node6ChannelType() throws IOException {
-        Channel channel = getChannel("store_1.json", 6, "meter-value-65537");
+    public void testGenerateChannelTypeStore4Node7ChannelType() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "meter-value-65537-1");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
                 null);
 
@@ -150,8 +150,8 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenerateChannelTypeStore1Node3NotificationType() throws IOException {
-        Channel channel = getChannel("store_1.json", 3, "notification-power-management-over-load-status");
+    public void testGenerateChannelTypeStore4Node7NotificationType() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "notification-power-management-over-load-status-1");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
                 null);
 

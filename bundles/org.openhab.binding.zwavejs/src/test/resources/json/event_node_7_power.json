@@ -3,13 +3,13 @@
     "event": {
         "source": "node",
         "event": "value updated",
-        "nodeId": 2,
+        "nodeId": 7,
         "args": {
             "commandClassName": "Meter",
             "commandClass": 50,
             "property": "value",
             "propertyKey": 66049,
-            "endpoint": 2,
+            "endpoint": 1,
             "newValue": 2.16,
             "prevValue": 204.96,
             "propertyName": "value",

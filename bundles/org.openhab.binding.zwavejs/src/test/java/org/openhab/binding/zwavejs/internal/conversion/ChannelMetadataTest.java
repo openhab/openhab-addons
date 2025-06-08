@@ -54,65 +54,49 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore1Node3Channel1() throws IOException {
-        Node node = getNodeFromStore("store_1.json", 3);
+    public void testChannelDetailsStore4Node51Channel0() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 51);
 
-        ChannelMetadata details = new ChannelMetadata(3, node.values.get(0));
+        ChannelMetadata details = new ChannelMetadata(51, node.values.get(0));
 
         assertEquals("binary-switch-value", details.id);
         assertNull(details.description);
         assertEquals("Switch", details.itemType);
         assertEquals("Current Value", details.label);
-        assertEquals(OnOffType.ON, details.state);
+        assertEquals(OnOffType.OFF, details.state);
         assertEquals(false, details.writable);
         assertNull(details.statePattern);
         assertNull(details.unitSymbol);
     }
 
     @Test
-    public void testChannelDetailsStore1Node6Channel0() throws IOException {
-        Node node = getNodeFromStore("store_1.json", 6);
+    public void testChannelDetailsStore4Node7Channel83() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 7);
 
-        ChannelMetadata details = new ChannelMetadata(6, node.values.get(0));
+        ChannelMetadata details = new ChannelMetadata(7, node.values.get(83));
 
-        assertEquals("binary-switch-value", details.id);
-        assertEquals("Switch", details.itemType);
-        assertEquals("Current Value", details.label);
-        assertNull(details.description);
-        assertEquals(OnOffType.ON, details.state);
-        assertEquals(false, details.writable);
-        assertNull(details.statePattern);
-        assertNull(details.unitSymbol);
-    }
-
-    @Test
-    public void testChannelDetailsStore1Node6Channel2() throws IOException {
-        Node node = getNodeFromStore("store_1.json", 6);
-
-        ChannelMetadata details = new ChannelMetadata(6, node.values.get(2));
-
-        assertEquals("multilevel-sensor-power", details.id);
+        assertEquals("multilevel-sensor-power-1", details.id);
         assertEquals("Number:Power", details.itemType);
-        assertEquals("Power", details.label);
+        assertEquals("EP1 Power", details.label);
         assertNull(details.description);
-        assertEquals(new QuantityType<>(0, Units.WATT), details.state);
+        assertEquals(new QuantityType<>(4.8, Units.WATT), details.state);
         assertEquals(false, details.writable);
-        assertEquals(StateDescriptionFragmentBuilder.create().withPattern("%1d %unit%").withReadOnly(true).build(),
+        assertEquals(StateDescriptionFragmentBuilder.create().withPattern("%.2f %unit%").withReadOnly(true).build(),
                 details.statePattern);
         assertEquals("W", details.unitSymbol);
     }
 
     @Test
-    public void testChannelDetailsStore1Node6Channel3() throws IOException {
-        Node node = getNodeFromStore("store_1.json", 6);
+    public void testChannelDetailsStore4Node7Channel84() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 7);
 
-        ChannelMetadata details = new ChannelMetadata(6, node.values.get(3));
+        ChannelMetadata details = new ChannelMetadata(7, node.values.get(84));
 
-        assertEquals("meter-value-65537", details.id);
+        assertEquals("meter-value-65537-1", details.id);
         assertEquals("Number:Energy", details.itemType);
-        assertEquals("Electric Consumption", details.label);
+        assertEquals("EP1 Electric Consumption", details.label);
         assertNull(details.description);
-        assertEquals(new QuantityType<>(881.95, Units.KILOWATT_HOUR), details.state);
+        assertEquals(new QuantityType<>(169.48, Units.KILOWATT_HOUR), details.state);
         assertEquals(false, details.writable);
         assertEquals(StateDescriptionFragmentBuilder.create().withPattern("%.2f %unit%").withReadOnly(true).build(),
                 details.statePattern);
@@ -120,34 +104,34 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore1Node6Channel5() throws IOException {
-        Node node = getNodeFromStore("store_1.json", 6);
+    public void testChannelDetailsStore4Node7Channel85() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 7);
 
-        ChannelMetadata details = new ChannelMetadata(6, node.values.get(5));
+        ChannelMetadata details = new ChannelMetadata(7, node.values.get(85));
 
-        assertEquals("meter-reset", details.id);
+        assertEquals("meter-value-66049-1", details.id);
+        assertEquals("Number:Power", details.itemType);
+        assertEquals("EP1 Electric Consumption", details.label);
+        assertNull(details.description);
+        assertEquals(new QuantityType<>(4.8, Units.WATT), details.state);
+        assertEquals(false, details.writable);
+        assertEquals("W", details.unitSymbol);
+    }
+    
+    @Test
+    public void testChannelDetailsStore4Node7Channel86() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 7);
+
+        ChannelMetadata details = new ChannelMetadata(7, node.values.get(86));
+
+        assertEquals("meter-reset-1", details.id);
         assertEquals("Switch", details.itemType);
-        assertEquals("Reset Accumulated Values", details.label);
+        assertEquals("EP1 Reset Accumulated Values", details.label);
         assertNull(details.description);
         assertEquals(UnDefType.NULL, details.state);
         assertEquals(true, details.writable);
         assertNull(details.statePattern);
         assertNull(details.unitSymbol);
-    }
-
-    @Test
-    public void testChannelDetailsStore1Node6Channel6() throws IOException {
-        Node node = getNodeFromStore("store_1.json", 6);
-
-        ChannelMetadata details = new ChannelMetadata(6, node.values.get(4));
-
-        assertEquals("meter-value-66049", details.id);
-        assertEquals("Number:Power", details.itemType);
-        assertEquals("Electric Consumption", details.label);
-        assertNull(details.description);
-        assertEquals(new QuantityType<>(0, Units.WATT), details.state);
-        assertEquals(false, details.writable);
-        assertEquals("W", details.unitSymbol);
     }
 
     @Test
