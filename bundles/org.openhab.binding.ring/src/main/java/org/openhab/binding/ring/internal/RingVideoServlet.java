@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
  * @author Peter Mietlowski (zolakk) - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
-@Component(service = HttpServlet.class)
 @NonNullByDefault
 public class RingVideoServlet extends HttpServlet {
 
