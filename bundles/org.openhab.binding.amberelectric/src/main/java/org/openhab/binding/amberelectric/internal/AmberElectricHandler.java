@@ -177,7 +177,7 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
 
-            for (int k = 0; k < 5; k++) {
+            for (int k = 0; k < Math.floor(refreshInterval / 10); k++) {
                 String response = webTargets.getCurrentPrices(siteID, apiKey);
                 JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
                 CurrentPrices currentPrices;
