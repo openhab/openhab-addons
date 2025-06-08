@@ -39,7 +39,6 @@ Moreover, the devices should be in an online status
 | Asia-Pacific | https://iotx-ap.meross.com |
 | US           | https://iotx-us.meross.com |
 
-
 NOTICE: Due to  **Meross**&reg; security policy please minimize host connections in order to avoid TOO MANY TOKENS (code 1301) error occurs which leads to a  8-10 hours suspension of your account.
 
 
