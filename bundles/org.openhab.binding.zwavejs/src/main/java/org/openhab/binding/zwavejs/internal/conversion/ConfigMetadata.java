@@ -82,6 +82,7 @@ public class ConfigMetadata extends BaseMetadata {
         sb.append(", value=" + value);
         sb.append(", itemType=" + itemType);
         sb.append(", writable=" + writable);
+        sb.append(", readProperty=" + readProperty);
         sb.append(", writeProperty=" + writeProperty);
         sb.append(", state=" + state);
         sb.append(", configType=" + configType);

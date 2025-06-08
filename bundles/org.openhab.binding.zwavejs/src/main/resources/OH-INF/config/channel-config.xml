@@ -39,8 +39,12 @@
 			<label>Property Key Int</label>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="readProperty" type="text">
+			<label>Read Property</label>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="writeProperty" type="text">
-			<label>Writeproperty</label>
+			<label>Write Property</label>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -80,8 +84,12 @@
 			<label>Property Key Int</label>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="readProperty" type="text">
+			<label>Read Property</label>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="writeProperty" type="text">
-			<label>Writeproperty</label>
+			<label>Write Property</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="inverted" type="boolean">

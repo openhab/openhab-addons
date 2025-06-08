@@ -222,6 +222,20 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode7ReadProperty() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
+
+        assertEquals("currentValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY));
+    }
+
+    @Test
+    public void testGenCTNode7WriteProperty() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
+
+        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+    }
+
+    @Test
     public void testGenCTNode25WriteProperty() throws IOException {
         Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
 

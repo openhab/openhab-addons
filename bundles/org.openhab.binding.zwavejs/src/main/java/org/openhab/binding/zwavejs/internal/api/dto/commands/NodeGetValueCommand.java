@@ -30,6 +30,6 @@ public class NodeGetValueCommand extends BaseCommand {
         this.valueId.commandClass = config.commandClassId;
         this.valueId.endpoint = config.endpoint;
         this.valueId.propertyKey = config.propertyKeyInt != null ? config.propertyKeyInt : config.propertyKeyStr;
-        // TODO this.valueId.property = config.writeProperty; (should be the read property, not write)
+        this.valueId.property = config.readProperty;
     }
 }

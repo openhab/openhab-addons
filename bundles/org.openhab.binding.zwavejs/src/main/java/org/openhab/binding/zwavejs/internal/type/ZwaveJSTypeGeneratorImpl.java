@@ -193,35 +193,17 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         logger.trace(" >> {}", details);
 
         ChannelUID channelUID = new ChannelUID(thingUID, details.id);
+        Configuration newChannelConfiguration = buildChannelConfiguration(details);
 
-        Configuration newChannelConfiguration = new Configuration();
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_INCOMING_UNIT, details.unitSymbol);
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE, details.itemType);
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_ID, details.commandClassId);
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_NAME, details.commandClassName);
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, details.endpoint);
-        if (details.propertyKey instanceof Number propertyInteger) {
-            newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_PROPERTY_KEY_INT, propertyInteger);
-        } else if (details.propertyKey instanceof String propertyString) {
-            newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_PROPERTY_KEY_STR, propertyString);
-        }
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_FACTOR, details.factor);
-        newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_INVERTED, false);
-
-        if (details.writable) {
-            newChannelConfiguration.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY,
-                    String.valueOf(details.writeProperty));
-        }
-
-        @Nullable
+        // Check for existing channel
         Channel existingChannel = channels.get(channelUID.getId());
         if (existingChannel != null) {
-            Configuration existingChannelConfiguration = existingChannel.getConfiguration();
-            if (ChannelMetadata.isSameReadWriteChannel(existingChannelConfiguration, newChannelConfiguration)
-                    && details.writable) {
+            Configuration existingConfig = existingChannel.getConfiguration();
+            if (ChannelMetadata.isSameReadWriteChannel(existingConfig, newChannelConfiguration)) {
+                updateReadWriteProperties(existingConfig, details);
+
                 ChannelTypeUID newChannelTypeUID = generateChannelTypeUID(details);
-                ChannelBuilder builder = ChannelBuilder.create(existingChannel)
-                        .withConfiguration(newChannelConfiguration);
+                ChannelBuilder builder = ChannelBuilder.create(existingChannel).withConfiguration(existingConfig);
 
                 if (!newChannelTypeUID.equals(existingChannel.getChannelTypeUID())) {
                     ChannelType newChannelType = getOrGenerate(newChannelTypeUID, details);
@@ -231,7 +213,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 }
 
                 channels.put(details.id, builder.build());
-
                 logger.debug("Node {}. Channel {} existing channel updated", details.nodeId, details.id);
                 return channels;
             } else {
@@ -240,6 +221,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
 
+        // Create new channel
         ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
         ChannelType channelType = getOrGenerate(channelTypeUID, details);
         if (channelType == null) {
@@ -251,6 +233,45 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
         channels.put(details.id, builder.build());
         return channels;
+    }
+
+    /**
+     * Builds the Configuration object for a channel based on ChannelMetadata.
+     */
+    private Configuration buildChannelConfiguration(ChannelMetadata details) {
+        Configuration config = new Configuration();
+        config.put(BindingConstants.CONFIG_CHANNEL_INCOMING_UNIT, details.unitSymbol);
+        config.put(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE, details.itemType);
+        config.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_ID, details.commandClassId);
+        config.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_NAME, details.commandClassName);
+        config.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, details.endpoint);
+        if (details.propertyKey instanceof Number propertyInteger) {
+            config.put(BindingConstants.CONFIG_CHANNEL_PROPERTY_KEY_INT, propertyInteger);
+        } else if (details.propertyKey instanceof String propertyString) {
+            config.put(BindingConstants.CONFIG_CHANNEL_PROPERTY_KEY_STR, propertyString);
+        }
+        config.put(BindingConstants.CONFIG_CHANNEL_FACTOR, details.factor);
+        config.put(BindingConstants.CONFIG_CHANNEL_INVERTED, false);
+
+        if (details.writeProperty != null) {
+            config.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY, String.valueOf(details.writeProperty));
+        }
+        if (details.readProperty != null) {
+            config.put(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY, String.valueOf(details.readProperty));
+        }
+        return config;
+    }
+
+    /**
+     * Updates the read/write properties of an existing channel configuration.
+     */
+    private void updateReadWriteProperties(Configuration config, ChannelMetadata details) {
+        if (details.writeProperty != null) {
+            config.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY, String.valueOf(details.writeProperty));
+        }
+        if (details.readProperty != null) {
+            config.put(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY, String.valueOf(details.readProperty));
+        }
     }
 
     private @Nullable ChannelType getOrGenerate(ChannelTypeUID channelTypeUID, ChannelMetadata details) {

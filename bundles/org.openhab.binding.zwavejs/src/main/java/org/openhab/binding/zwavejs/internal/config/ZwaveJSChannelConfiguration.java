@@ -29,6 +29,7 @@ public class ZwaveJSChannelConfiguration {
     public int endpoint = 0;
     public @Nullable Integer propertyKeyInt;
     public @Nullable String propertyKeyStr;
+    public @Nullable String readProperty;
     public @Nullable String writeProperty;
     public boolean inverted = false;
     public double factor = 1.0;

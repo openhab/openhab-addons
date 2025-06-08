@@ -88,6 +88,7 @@ public abstract class BaseMetadata {
     public @Nullable String description;
     public @Nullable String unitSymbol;
     public @Nullable Unit<?> unit;
+    public @Nullable Object readProperty;
     public @Nullable Object writeProperty;
     public @Nullable Map<String, String> optionList;
     public @Nullable String commandClassName;
@@ -124,6 +125,8 @@ public abstract class BaseMetadata {
 
         if (writable) {
             this.writeProperty = value.property;
+        } else {
+            this.readProperty = value.property;
         }
     }
 
@@ -583,6 +586,7 @@ public abstract class BaseMetadata {
         sb.append(", itemType=" + itemType);
         sb.append(", writable=" + writable);
         sb.append(", propertyKey=" + propertyKey);
+        sb.append(", readProperty=" + readProperty);
         sb.append(", writeProperty=" + writeProperty);
         sb.append(", itemType=" + itemType);
         sb.append("]");
