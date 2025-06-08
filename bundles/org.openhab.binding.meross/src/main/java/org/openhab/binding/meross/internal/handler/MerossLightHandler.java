@@ -127,6 +127,7 @@ public class MerossLightHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
+        merossBridgeHandler = this.merossBridgeHandler;
         if (merossBridgeHandler == null) {
             return;
         }
