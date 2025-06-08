@@ -41,7 +41,6 @@ Moreover, the devices should be in an online status
 
 NOTICE: Due to  **Meross**&reg; security policy please minimize host connections in order to avoid TOO MANY TOKENS (code 1301) error occurs which leads to a  8-10 hours suspension of your account.
 
-
 ## Thing Configuration
 
 | Parameter | Type | Description                                             | Default | Required | Thing type id | Advanced |
