@@ -60,6 +60,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatu
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.ShellyDeviceConfigCB;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
@@ -749,6 +750,28 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             ls.autoOff = dc.rgbw0.autoOffDelay;
             ls.name = dc.rgbw0.name;
             lights.set(0, ls);
+        }
+    }
+
+    protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
+        if (!profile.isDimmer || dc.light0 == null) {
+            return;
+        }
+
+        fillDimmerSettings(profile.settings.dimmers, dc.light0);
+        fillDimmerSettings(profile.settings.dimmers, dc.light1);
+    }
+
+    protected void fillDimmerSettings(@Nullable List<ShellySettingsDimmer> dimmers,
+            @Nullable Shelly2GetConfigLight lc) {
+        if (dimmers != null && lc != null) {
+            ShellySettingsDimmer ds = dimmers.get(lc.id);
+            if (ds != null) {
+                ds.autoOn = lc.autoOnDelay;
+                ds.autoOff = lc.autoOffDelay;
+                ds.name = lc.name;
+                dimmers.set(lc.id, ds);
+            }
         }
     }
 
