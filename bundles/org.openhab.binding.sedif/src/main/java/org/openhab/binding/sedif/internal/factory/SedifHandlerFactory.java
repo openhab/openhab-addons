@@ -16,7 +16,6 @@ import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -96,18 +95,22 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
         adapter.registerSubtype(MeterReading.class, "data", "Datas");
 
         gson = new GsonBuilder().registerTypeAdapterFactory(adapter).setDateFormat("yyyy-MM-dd")
+                // LocalDate
                 .registerTypeAdapter(LocalDate.class,
                         (JsonSerializer<LocalDate>) (src, typeOfSrc,
                                 context) -> new JsonPrimitive(src.format(SEDIF_LOCALDATE_FORMATTER)))
-                .registerTypeAdapter(ZonedDateTime.class,
-                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                                .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_FORMATTER))
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> LocalDate
                                 .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_LOCALDATE_FORMATTER))
+
+                // LocalDateTime
                 .registerTypeAdapter(LocalDateTime.class,
                         (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> LocalDateTime
                                 .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_LOCALDATETIME_FORMATTER))
+                .registerTypeAdapter(LocalDateTime.class,
+                        (JsonSerializer<LocalDateTime>) (src, typeOfSrc,
+                                context) -> new JsonPrimitive(src.format(SEDIF_LOCALDATETIME_FORMATTER)))
+
                 .setPrettyPrinting().create();
     }
 
