@@ -35,12 +35,12 @@
 			<limitToOptions>false</limitToOptions>
 		</parameter>
 
-		<parameter name="email" type="text" required="true">
+		<parameter name="email" type="text">
 			<label>Email Address</label>
 			<description>Email address for the portal</description>
 		</parameter>
 
-		<parameter name="password" type="text" required="true">
+		<parameter name="password" type="text">
 			<context>password</context>
 			<label>Password</label>
 			<description>Password for the portal</description>
