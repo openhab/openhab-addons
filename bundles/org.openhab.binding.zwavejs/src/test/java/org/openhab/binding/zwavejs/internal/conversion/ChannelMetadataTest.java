@@ -117,7 +117,7 @@ public class ChannelMetadataTest {
         assertEquals(false, details.writable);
         assertEquals("W", details.unitSymbol);
     }
-    
+
     @Test
     public void testChannelDetailsStore4Node7Channel86() throws IOException {
         Node node = getNodeFromStore("store_4.json", 7);
@@ -135,27 +135,27 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore2Node2Channel66() throws IOException {
-        Node node = getNodeFromStore("store_2.json", 2);
+    public void testChannelDetailsStore4Node74Channel36() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 74);
 
-        ChannelMetadata details = new ChannelMetadata(2, node.values.get(66));
+        ChannelMetadata details = new ChannelMetadata(74, node.values.get(36));
 
         assertEquals("multilevel-sensor-humidity-2", details.id);
         assertEquals("Number:Dimensionless", details.itemType);
         assertEquals("EP2 Humidity", details.label);
         assertNull(details.description);
-        assertEquals(new QuantityType<>(17.04, Units.PERCENT), details.state);
+        assertEquals(new QuantityType<>(36, Units.PERCENT), details.state);
         assertEquals(false, details.writable);
-        assertEquals(StateDescriptionFragmentBuilder.create().withPattern("%.2f %unit%").withReadOnly(true).build(),
+        assertEquals(StateDescriptionFragmentBuilder.create().withPattern("%1d %unit%").withReadOnly(true).build(),
                 details.statePattern);
         assertEquals("%", details.unitSymbol);
     }
 
     @Test
-    public void testChannelDetailsStore2Node6Channel1() throws IOException {
-        Node node = getNodeFromStore("store_2.json", 4);
+    public void testChannelDetailsStore4Node7Channel1() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 5);
 
-        ChannelMetadata details = new ChannelMetadata(4, node.values.get(1));
+        ChannelMetadata details = new ChannelMetadata(5, node.values.get(1));
 
         assertEquals("configuration-total-alarm-duration", details.id);
         assertEquals("Number:Time", details.itemType);
@@ -168,10 +168,10 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore2Node62Channel7() throws IOException {
-        Node node = getNodeFromStore("store_2.json", 62);
+    public void testChannelDetailsStore4Node74Channel7() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 74);
 
-        ChannelMetadata details = new ChannelMetadata(62, node.values.get(7));
+        ChannelMetadata details = new ChannelMetadata(74, node.values.get(7));
 
         assertEquals("thermostat-setpoint-setpoint-types-interpretation", details.id);
         assertEquals("String", details.itemType);
@@ -183,10 +183,10 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore2Node14Channel0() throws IOException {
-        Node node = getNodeFromStore("store_2.json", 14);
+    public void testChannelDetailsStore4Node14Channel0() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 13);
 
-        ChannelMetadata details = new ChannelMetadata(14, node.values.get(1));
+        ChannelMetadata details = new ChannelMetadata(13, node.values.get(1));
 
         assertEquals("multilevel-switch-value", details.id);
         assertEquals("Dimmer", details.itemType);
@@ -206,8 +206,8 @@ public class ChannelMetadataTest {
     }
 
     @Test
-    public void testChannelDetailsStore3Node35Channel5() throws IOException {
-        Node node = getNodeFromStore("store_3.json", 35);
+    public void testChannelDetailsStore4Node35Channel5() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 35);
 
         ChannelMetadata details = new ChannelMetadata(35, node.values.get(5));
 

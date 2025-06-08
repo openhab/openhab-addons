@@ -116,13 +116,13 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenerateChannelStore2Node2() throws IOException {
-        Node node = DataUtil.getNodeFromStore("store_2.json", 2);
+    public void testGenerateChannelStore4Node2() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 2);
 
         ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
                 .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
 
-        assertEquals(15, results.channels.size());
+        assertEquals(8, results.channels.size());
     }
 
     @Test
@@ -160,8 +160,8 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenerateChannelTypeStore2Node14MultilevelSwitchType() throws IOException {
-        Channel channel = getChannel("store_2.json", 14, "multilevel-switch-value");
+    public void testGenerateChannelTypeStore4Node14MultilevelSwitchType() throws IOException {
+        Channel channel = getChannel("store_4.json", 13, "multilevel-switch-value");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
                 null);
         Configuration configuration = channel.getConfiguration();
@@ -178,34 +178,6 @@ public class ZwaveJSTypeGeneratorTest {
         assertEquals(BigDecimal.valueOf(100), statePattern.getMaximum());
         assertNull(statePattern.getStep());
         assertEquals("%1d %%", statePattern.getPattern());
-    }
-
-    @Test
-    public void testGenerateChannelTypeStore2AllNodes() throws IOException {
-        ResultMessage resultMessage = DataUtil.fromJson("store_2.json", ResultMessage.class);
-        Map<String, Channel> channels = new HashMap<>();
-
-        for (Node node : resultMessage.result.state.nodes) {
-            ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
-                    .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
-            channels.putAll(results.channels);
-        }
-
-        assertEquals(32, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
-    }
-
-    @Test
-    public void testGenerateChannelTypeStore3AllNodes() throws IOException {
-        ResultMessage resultMessage = DataUtil.fromJson("store_3.json", ResultMessage.class);
-        Map<String, Channel> channels = new HashMap<>();
-
-        for (Node node : resultMessage.result.state.nodes) {
-            ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
-                    .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
-            channels.putAll(results.channels);
-        }
-
-        assertEquals(41, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 
     @Test
@@ -276,8 +248,7 @@ public class ZwaveJSTypeGeneratorTest {
                     .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), false);
             channels.putAll(results.channels);
         }
-        ;
 
-        assertEquals(27, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(37, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 }
