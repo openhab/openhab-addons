@@ -38,6 +38,8 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMod
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -402,5 +404,10 @@ public class ForecastSolarObject implements SolarForecast {
                 wattMap.put(timestamp, value * factor);
             }
         });
+    }
+
+    @Override
+    public Instant getCreationInstant() {
+        return creationDateTime;
     }
 }
