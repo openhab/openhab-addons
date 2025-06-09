@@ -300,22 +300,22 @@ public class ThingSedifHandler extends BaseThingHandler {
                 logger.debug("aa:", ex);
             }
             currentDate = startDate;
-
         }
 
         sedifState.setLastIndexDate(newLastUpdateDate);
         saveSedifState();
+
     }
 
     public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate,
-            boolean returnNullIfNoData) throws SedifException {
+            boolean updateHistorical) throws SedifException {
         logger.info("startDate: {}, currentDate: {}", startDate, currentDate);
 
         MeterReading meterReading = getConsumptionData(startDate, currentDate);
-        if (returnNullIfNoData && meterReading == null) {
+        if (updateHistorical && meterReading == null) {
             return null;
         }
-        meterReading = sedifState.updateMeterReading(meterReading);
+        meterReading = sedifState.updateMeterReading(meterReading, updateHistorical);
         return meterReading;
     }
 
