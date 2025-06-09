@@ -49,7 +49,8 @@ public class BindingConstants {
     public static final String CONFIG_CHANNEL_PROPERTY_KEY_STR = "propertyKeyStr";
     public static final String CONFIG_CHANNEL_PROPERTY_KEY_INT = "propertyKeyInt";
     public static final String CONFIG_CHANNEL_READ_PROPERTY = "readProperty";
-    public static final String CONFIG_CHANNEL_WRITE_PROPERTY = "writeProperty";
+    public static final String CONFIG_CHANNEL_WRITE_PROPERTY_STR = "writePropertyStr";
+    public static final String CONFIG_CHANNEL_WRITE_PROPERTY_INT = "writePropertyInt";
     public static final String CONFIG_CHANNEL_INVERTED = "inverted";
     public static final String CONFIG_CHANNEL_FACTOR = "factor";
 
