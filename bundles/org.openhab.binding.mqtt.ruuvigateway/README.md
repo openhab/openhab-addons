@@ -1,4 +1,4 @@
-# Ruuvi Gateway MQTT Binding
+# Ruuvi Gateway Binding
 
 This binding allows integration of Ruuvi Tags via MQTT data, as collected by [Ruuvi Gateway](https://ruuvi.com/gateway/).
 Ruuvi gateway is listening for Bluetooth advertisements and publishing that data over MQTT.

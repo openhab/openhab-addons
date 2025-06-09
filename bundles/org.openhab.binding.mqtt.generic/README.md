@@ -1,4 +1,4 @@
-# MQTT Things and Channels Binding
+# Generic MQTT Binding
 
 MQTT is one of the most commonly used protocols in IoT (Internet of Things) projects. It stands for Message Queuing Telemetry Transport.
 
@@ -14,7 +14,7 @@ MQTT servers are called brokers and the clients are simply the connected devices
 ![Publish and Subscribe](doc/subpub.png)
 
 openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.
-Therefore you must have configured a _Broker Thing_ first via the **MQTT Broker Binding**!
+Therefore you must have configured a _Broker Thing_ first!
 
 ## MQTT Topics
 
