@@ -15,7 +15,6 @@ package org.openhab.binding.zwavejs.internal.handler;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.EQUIPMENT_MAP;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -160,10 +159,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command commandValue) {
+        Command command = commandValue;
         logger.debug("Node {}. Processing command {} type {} for channel {}", config.id, command,
                 command.getClass().getSimpleName(), channelUID);
-
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -176,8 +175,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
-        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
-
         // Handle RefreshType
         if (command instanceof RefreshType) {
             // TODO: Uncomment when issue is fixed: https://github.com/zwave-js/zwave-js-server/issues/1428
@@ -186,13 +183,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
+        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
-        ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-        boolean isColorChannelCmd = colorCap != null && colorCap.supportsColor
-                && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
 
-        boolean isColorTempChannelCommand = colorCapability != null
-                && channelUID.equals(colorCapability.colorTempChannel);
+        ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+
+        boolean isColorChannelCmd = colorCap != null && colorCap.colorChannels.contains(channelUID);
+        boolean isColorTempChannelCmd = colorCap != null && channelUID.equals(colorCap.colorTempChannel);
 
         if (command instanceof OnOffType onOffCommand) {
             zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
@@ -205,7 +202,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         } else if (PercentType.class.equals(command.getClass())
                 && (command instanceof PercentType percentTypeCommand)) {
             zwaveCommand.value = handlePercentTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
-                    percentTypeCommand);
+                    isColorTempChannelCmd, percentTypeCommand);
         } else if (command instanceof DecimalType decimalCommand) {
             zwaveCommand.value = decimalCommand.doubleValue();
         } else if (command instanceof DateTimeType dateTimeCommand) {
@@ -242,8 +239,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         // If this is a color channel, delegate to percent type logic (0% or 100%)
         if (isColorChannelCommand) {
             PercentType percent = (OnOffType.OFF == onOffCommand) ? PercentType.ZERO : PercentType.HUNDRED;
-            return handlePercentTypeCommand(channelConfig, channel, colorCap, true, percent);
+            return handlePercentTypeCommand(channelConfig, channel, colorCap, true, false, percent);
         }
+
         // For dimmer channels, ON is mapped to 255, as that means restore to last brightness
         if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
             return (OnOffType.ON == onOffCommand) ? 255 : 0;
@@ -254,11 +252,24 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     private @Nullable Object handlePercentTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
-            @Nullable ColorCapability colorCap, boolean isColorChannelCommand, PercentType percentTypeCommand) {
-        if (isColorChannelCommand && colorCap != null) {
+            @Nullable ColorCapability colorCap, boolean isColorChannelCmd, boolean isColorTempChannelCmd,
+            PercentType percentTypeCommand) {
+        if (isColorChannelCmd && colorCap != null) {
             HSBType hsb = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
                     percentTypeCommand);
             return handleHSBTypeCommand(channelConfig, channel, colorCap, true, hsb);
+        }
+
+        if (isColorTempChannelCmd && colorCap != null) {
+            if (colorCap.warmWhiteChannel instanceof ChannelUID warmWhiteChannel) {
+                DecimalType decimal = new DecimalType(percentTypeCommand.intValue() * 255 / 100);
+                scheduler.submit(() -> handleCommand(warmWhiteChannel, decimal));
+            }
+            if (colorCap.coldWhiteChannel instanceof ChannelUID coldWhiteChannel) {
+                DecimalType decimal = new DecimalType((100 - percentTypeCommand.intValue()) * 255 / 100);
+                scheduler.submit(() -> handleCommand(coldWhiteChannel, decimal));
+            }
+            return null;
         }
 
         // For non-color channels, handle inversion and dimmer 100% edge case
@@ -266,6 +277,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (channelConfig.inverted) {
             value = 100 - value;
         }
+
         // For dimmers, 100% is often represented as 99
         if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && value == 100) {
             value = 99;
@@ -275,57 +287,52 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     private @Nullable Object handleHSBTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
             @Nullable ColorCapability colorCap, boolean isColorChannelCommand, HSBType hsbTypeCommand) {
-        Object retValue = null;
         if (isColorChannelCommand && colorCap != null) {
             colorCap.cachedColor = hsbTypeCommand;
         }
+
         HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
         int[] rgb = ColorUtil.hsbToRgb(hsbFull);
 
         if (channel.getUID().getId().contains(HEX)) {
-            retValue = "%02X%02X%02X".formatted(rgb[0], rgb[1], rgb[2]);
+            return "%02X%02X%02X".formatted(rgb[0], rgb[1], rgb[2]);
         } else {
             Map<String, Integer> colorMap = new HashMap<>();
             colorMap.put(RED, rgb[0]);
             colorMap.put(GREEN, rgb[1]);
             colorMap.put(BLUE, rgb[2]);
-            if (colorCap != null && colorCap.supportsColdWhite) {
-                colorMap.put(COLD_WHITE, 0);
-            }
-            if (colorCap != null && colorCap.supportsWarmWhite) {
-                colorMap.put(WARM_WHITE, 0);
-            }
-            retValue = colorMap;
-        }
-        if (isColorChannelCommand) {
-            // schedule brightness command(s) for dimmer channel(s)
-            PercentType brightness = hsbTypeCommand.getBrightness();
-            thing.getChannels().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType()))
-                    .forEach(c -> {
-                        if (c.getConfiguration()
-                                .as(ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
-                                && cf.endpoint == channelConfig.endpoint) {
-                            scheduler.submit(() -> handleCommand(c.getUID(), brightness));
-                        }
-                    });
-        }
 
-        return retValue;
+            if (colorCap != null) {
+                if (colorCap.coldWhiteChannel != null) {
+                    colorMap.put(COLD_WHITE, 0);
+                }
+                if (colorCap.warmWhiteChannel != null) {
+                    colorMap.put(WARM_WHITE, 0);
+                }
+            }
+
+            if (isColorChannelCommand && colorCap != null) {
+                // schedule brightness command(s) for dimmer channel(s)
+                PercentType brightness = hsbTypeCommand.getBrightness();
+                colorCap.dimmerChannels.forEach(c -> scheduler.submit(() -> handleCommand(c, brightness)));
+            }
+            return colorMap;
+        }
     }
 
     private @Nullable Object handleQuantityTypeCommand(ZwaveJSChannelConfiguration channelConfig,
             QuantityType<?> quantityCommand) {
         Unit<?> unit = UnitUtils.parseUnit(channelConfig.incomingUnit);
-        Object retValue = null;
         if (unit == null) {
             logger.warn("Could not parse '{}' as a unit, this is a bug.", channelConfig.incomingUnit);
-            return retValue;
+            return null;
         }
-        QuantityType<?> resultValue = Objects.requireNonNull(quantityCommand.toUnit(unit));
+
+        Double value = Objects.requireNonNull(quantityCommand.toUnit(unit)).doubleValue();
         if (channelConfig.factor != 1.0) {
-            retValue = resultValue.divide(new BigDecimal(channelConfig.factor));
+            value = value / channelConfig.factor;
         }
-        return retValue;
+        return value;
     }
 
     @Override
@@ -479,18 +486,21 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (colorCapability == null || colorCapability.colorChannels.isEmpty()) {
             return newState;
         }
+
         if (colorCapability.colorChannels.contains(targetChannel.getUID()) && newState instanceof HSBType color) {
             colorCapability.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
                     colorCapability.cachedColor.getBrightness());
             return colorCapability.cachedColor;
         }
-        if (CoreItemFactory.DIMMER.equals(targetChannel.getAcceptedItemType())
+
+        if (colorCapability.dimmerChannels.contains(targetChannel.getUID())
                 && newState instanceof PercentType brightness) {
             colorCapability.cachedColor = new HSBType(colorCapability.cachedColor.getHue(),
                     colorCapability.cachedColor.getSaturation(), brightness);
             colorCapability.colorChannels
                     .forEach(c -> scheduler.submit(() -> updateState(c, colorCapability.cachedColor)));
         }
+
         return newState;
     }
 
@@ -512,16 +522,19 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (colorCapability == null || colorCapability.colorTempChannel == null) {
             return newState;
         }
-        if (newState instanceof Number number) {
+
+        if (newState instanceof DecimalType decimal) {
             if (targetChannel.getUID().equals(colorCapability.warmWhiteChannel)) {
-                colorCapability.cachedWarmWhite = number;
+                colorCapability.cachedWarmWhite = decimal;
             }
             if (targetChannel.getUID().equals(colorCapability.coldWhiteChannel)) {
-                colorCapability.cachedColdWhite = number;
+                colorCapability.cachedColdWhite = decimal;
             }
+
             State colorTemp = UnDefType.UNDEF;
             int warm = colorCapability.cachedWarmWhite.intValue();
             int cold = colorCapability.cachedColdWhite.intValue();
+
             if (warm > 0 && cold > 0) {
                 colorTemp = new PercentType(warm * 100 / (warm + cold));
             } else if (warm >= 0) {
@@ -529,8 +542,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             } else if (cold >= 0) {
                 colorTemp = new PercentType((255 - cold) * 100 / 255);
             }
+
             updateState(Objects.requireNonNull(colorCapability.colorTempChannel), colorTemp);
         }
+
         return newState;
     }
 

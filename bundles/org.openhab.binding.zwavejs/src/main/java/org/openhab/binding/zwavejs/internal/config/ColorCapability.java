@@ -23,15 +23,15 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * A class encapsulating the color capability of a given light end point
+ * A class encapsulating the color capability of a light end point
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class ColorCapability {
     public HSBType cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
-    public Number cachedWarmWhite = -1;
-    public Number cachedColdWhite = -1;
+    public DecimalType cachedWarmWhite = new DecimalType(-1);
+    public DecimalType cachedColdWhite = new DecimalType(-1);
     public Set<ChannelUID> colorChannels = new HashSet<>();
     public Set<ChannelUID> dimmerChannels = new HashSet<>();
     public @Nullable ChannelUID colorTempChannel = null;

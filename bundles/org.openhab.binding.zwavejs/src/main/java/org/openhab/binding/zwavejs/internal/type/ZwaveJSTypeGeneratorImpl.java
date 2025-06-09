@@ -207,7 +207,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         Configuration newChannelConfiguration = buildChannelConfiguration(details);
 
         // Check for existing channel
-        Channel existingChannel = channels.get(channelUID.getId());
+        Channel existingChannel = result.channels.get(channelUID.getId());
         if (existingChannel != null) {
             Configuration existingConfig = existingChannel.getConfiguration();
             if (ChannelMetadata.isSameReadWriteChannel(existingConfig, newChannelConfiguration)) {
@@ -223,7 +223,8 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     }
                 }
 
-                channels.put(details.id, builder.build());
+                result.channels.put(details.id, builder.build());
+
                 logger.debug("Node {}. Channel {} existing channel updated", details.nodeId, details.id);
                 return result.channels;
             } else {
@@ -232,7 +233,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
 
-        // Create new channel
+        // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
+        updateColorCapabilities(thingUID, details, result);
+
         ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
         ChannelType channelType = getOrGenerate(channelTypeUID, details);
         if (channelType == null) {
