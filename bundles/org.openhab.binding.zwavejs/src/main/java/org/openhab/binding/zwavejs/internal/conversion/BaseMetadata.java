@@ -71,7 +71,8 @@ public abstract class BaseMetadata {
             "°(C/F)", "", // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             "°F/C", ""); // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
     private static final Map<String, String> CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS = Map.of("currentValue", "value", //
-            "targetValue", "value", "currentColor", "color", "targetColor", "color"); //
+            "targetValue", "value", "currentColor", "color", "targetColor", "color", //
+            "targetMode", "mode", "currentMode", "mode"); //
     private static final List<Integer> COMMAND_CLASSES_ADVANCED = List.of(44, 117);
     private static final List<Integer> SWITCH_STATES_OFF_CLOSED = List.of(-1, 0, 23);
 
