@@ -252,7 +252,8 @@ public class ZwaveJSTypeGeneratorTest {
         Configuration configuration = channel.getConfiguration();
 
         assertNotNull(type);
-        assertEquals("zwavejs:test-bridge:test-thing:door-lock-inside-handles-can-open-door", channel.getUID().getAsString());
+        assertEquals("zwavejs:test-bridge:test-thing:door-lock-inside-handles-can-open-door",
+                channel.getUID().getAsString());
         assertEquals("String", type.getItemType());
         assertEquals("Which Inside Handles Can Open The Door (Actual Status)", channel.getLabel());
         assertNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
