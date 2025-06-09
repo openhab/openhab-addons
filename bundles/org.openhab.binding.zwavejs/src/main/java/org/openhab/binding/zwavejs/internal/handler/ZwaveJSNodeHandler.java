@@ -13,7 +13,7 @@
 package org.openhab.binding.zwavejs.internal.handler;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
-import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.EQUIPMENT_MAP;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,12 +31,11 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
-import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
+import org.openhab.binding.zwavejs.internal.config.ColorCapability;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSBridgeConfiguration;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSNodeConfiguration;
@@ -67,17 +66,16 @@ import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.internal.ThingFactoryHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
@@ -98,39 +96,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private boolean configurationAsChannels = false;
     protected ScheduledExecutorService executorService = scheduler;
 
-    /**
-     * A class encapsulating the color capability of a given light end point
-     */
-    private static class ColorCapability {
-        private boolean supportsColor;
-        private boolean supportsWarmWhite;
-        private boolean supportsColdWhite;
-        private HSBType cachedColor;
-        private int cachedWarmWhite;
-        private int cachedColdWhite;
-        public @Nullable String colorTemperatureChannel;
-
-        public ColorCapability() {
-            supportsColor = false;
-            supportsWarmWhite = false;
-            supportsColdWhite = false;
-            cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
-            cachedWarmWhite = 0;
-            cachedColdWhite = 0;
-            colorTemperatureChannel = null;
-        }
-
-        @Override
-        public String toString() {
-            return "ColorCapability [supportsColor=" + supportsColor + ", supportsWarmWhite=" + supportsWarmWhite
-                    + ", supportsColdWhite=" + supportsColdWhite + ", cachedColor=" + cachedColor + ", cachedWarmWhite="
-                    + cachedWarmWhite + ", cachedColdWhite=" + cachedColdWhite + ", colorTemperatureChannel="
-                    + colorTemperatureChannel + "]";
-        }
-    }
-
     // nodes may contain multiple lighting end points; this map has each one's ColorCapability
-    private final Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
+    private Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
 
     public ZwaveJSNodeHandler(final Thing thing, final ZwaveJSTypeGenerator typeGenerator) {
         super(thing);
@@ -224,8 +191,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         boolean isColorChannelCmd = colorCap != null && colorCap.supportsColor
                 && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
 
-        boolean isColorTemperatureCommand = colorCap != null
-                && channelUID.getId().equals(colorCap.colorTemperatureChannel);
+        boolean isColorTempChannelCommand = colorCapability != null
+                && channelUID.equals(colorCapability.colorTempChannel);
 
         if (command instanceof OnOffType onOffCommand) {
             zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
@@ -476,14 +443,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Handle color and color temperature state updates
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-        if (colorCap != null) {
-            if (colorCap.supportsColor) {
-                state = handleColorUpdate(channel, channelConfig, state, colorCap);
-            }
-            if (colorCap.supportsColdWhite || colorCap.supportsWarmWhite) {
-                state = handleColorTemperatureUpdate(channel, channelConfig, state, colorCap);
-            }
-        }
+        state = handleColorUpdate(colorCap, state, channel, channelConfig);
+        state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
 
         try {
             updateState(metadata.id, state);
@@ -495,34 +456,82 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         return true;
     }
 
-    private State handleColorUpdate(Channel channel, ZwaveJSChannelConfiguration channelConfig, State state,
-            ColorCapability colorCap) {
-        if (CoreItemFactory.COLOR.equals(channel.getAcceptedItemType()) && state instanceof HSBType color) {
-            // Update cached color, preserve brightness from previous state
-            colorCap.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
-                    colorCap.cachedColor.getBrightness());
-            return colorCap.cachedColor;
+    /**
+     * If the channel has a matching {@link ColorCapability} that supports color channel then either:
+     *
+     * <li>If the new {@link State} is an {@link HSBType} and the target channel is in the {@link ColorCapability}'s set
+     * of color channels then return a new {@link HSBType} derived from the new HS parts plus the cached B part, or</li>
+     *
+     * <li>If the new {@link State} is a {@link PercentType} and the channel's accepted item type is 'Dimmer' then
+     * update the {@link ColorCapability}'s cached B part, and notify all other channel's whose accepted item type is
+     * 'Color' with the new HSB value.</li>
+     * <p>
+     *
+     * @param colorCapability the colorCapability for this endpoint, which may be null
+     * @param newState the incoming state from the web socket
+     * @param targetChannel the target channel
+     * @param channelConfig the target channelconfiguration
+     *
+     * @return either the incoming state or the newly updated one
+     */
+    private State handleColorUpdate(@Nullable ColorCapability colorCapability, State newState, Channel targetChannel,
+            ZwaveJSChannelConfiguration channelConfig) {
+        if (colorCapability == null || colorCapability.colorChannels.isEmpty()) {
+            return newState;
         }
-        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType()) && state instanceof PercentType brightness) {
-            // Update cached color's brightness and synchronize color channels
-            colorCap.cachedColor = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
-                    brightness);
-            thing.getChannels().stream().filter(c -> CoreItemFactory.COLOR.equals(c.getAcceptedItemType()))
-                    .forEach(c -> {
-                        if (c.getConfiguration()
-                                .as(ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
-                                && cf.endpoint == channelConfig.endpoint) {
-                            updateState(c.getUID(), colorCap.cachedColor);
-                        }
-                    });
+        if (colorCapability.colorChannels.contains(targetChannel.getUID()) && newState instanceof HSBType color) {
+            colorCapability.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
+                    colorCapability.cachedColor.getBrightness());
+            return colorCapability.cachedColor;
         }
-        return state;
+        if (CoreItemFactory.DIMMER.equals(targetChannel.getAcceptedItemType())
+                && newState instanceof PercentType brightness) {
+            colorCapability.cachedColor = new HSBType(colorCapability.cachedColor.getHue(),
+                    colorCapability.cachedColor.getSaturation(), brightness);
+            colorCapability.colorChannels
+                    .forEach(c -> scheduler.submit(() -> updateState(c, colorCapability.cachedColor)));
+        }
+        return newState;
     }
 
-    private State handleColorTemperatureUpdate(Channel channel, ZwaveJSChannelConfiguration channelConfig,
-            State state, ColorCapability colorCap) {
-        // TODO convert state to warm/cold, combine with cached counterpart, and synch color temperature channel
-        return state;
+    /**
+     * If the channel has a matching {@link ColorCapability} that supports color temperature commands, the target
+     * channel UID matches the ColorCapability's warm or cold white UID, and new {@link State} is a {@link Number}
+     * then update the color temperature cache with the appropriate new value, and update the color temperature channel
+     * respectively.
+     *
+     * @param colorCapability the colorCapability for this endpoint, which may be null
+     * @param newState the incoming state from the web socket
+     * @param targetChannel the target channel
+     * @param channelConfig the target channelconfiguration
+     *
+     * @return the incoming state
+     */
+    private State handleColorTemperatureUpdate(@Nullable ColorCapability colorCapability, State newState,
+            Channel targetChannel, ZwaveJSChannelConfiguration channelConfig) {
+        if (colorCapability == null || colorCapability.colorTempChannel == null) {
+            return newState;
+        }
+        if (newState instanceof Number number) {
+            if (targetChannel.getUID().equals(colorCapability.warmWhiteChannel)) {
+                colorCapability.cachedWarmWhite = number;
+            }
+            if (targetChannel.getUID().equals(colorCapability.coldWhiteChannel)) {
+                colorCapability.cachedColdWhite = number;
+            }
+            State colorTemp = UnDefType.UNDEF;
+            int warm = colorCapability.cachedWarmWhite.intValue();
+            int cold = colorCapability.cachedColdWhite.intValue();
+            if (warm > 0 && cold > 0) {
+                colorTemp = new PercentType(warm * 100 / (warm + cold));
+            } else if (warm >= 0) {
+                colorTemp = new PercentType(warm * 100 / 255);
+            } else if (cold >= 0) {
+                colorTemp = new PercentType((255 - cold) * 100 / 255);
+            }
+            updateState(Objects.requireNonNull(colorCapability.colorTempChannel), colorTemp);
+        }
+        return newState;
     }
 
     @Override
@@ -567,8 +576,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         // Update channels
         builder = updateChannels(builder, result);
 
-        // Detect color capabilities
-        builder = detectColorCapabilities(builder, node);
+        colorCapabilities = result.colorCapabilities;
+        if (logger.isDebugEnabled()) {
+            colorCapabilities.forEach((e, c) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, e, c));
+        }
 
         updateThing(builder.build());
 
@@ -644,60 +655,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             updateConfiguration(configuration);
             logger.debug("Node {}. Done values to configuration items", node.nodeId);
         }
-    }
-
-    private ThingBuilder detectColorCapabilities(ThingBuilder builder, Node node) {
-        node.values.stream().filter(value -> value.commandClass == COMMAND_CLASS_SWITCH_COLOR)
-                .filter(value -> value.value instanceof Map).forEach(value -> {
-                    Map<?, ?> map = (Map<?, ?>) value.value;
-                    boolean supportsColor = map.containsKey(GREEN);
-                    boolean supportsWarmWhite = map.containsKey(WARM_WHITE);
-                    boolean supportsColdWhite = map.containsKey(COLD_WHITE);
-                    if (supportsColor || supportsWarmWhite || supportsColdWhite) {
-                        ColorCapability colorCap = colorCapabilities.getOrDefault(value.endpoint,
-                                new ColorCapability());
-                        colorCap.supportsColor = supportsColor;
-                        colorCap.supportsWarmWhite = supportsWarmWhite;
-                        colorCap.supportsColdWhite = supportsColdWhite;
-
-                        if (supportsWarmWhite || supportsColdWhite) {
-                            Value colorTemperatureChannnelValue = new Value();
-                            colorTemperatureChannnelValue.endpoint = value.endpoint;
-                            colorTemperatureChannnelValue.commandClassName = value.commandClassName;
-                            colorTemperatureChannnelValue.propertyName = "colorTemperature";
-
-                            ChannelMetadata colorTemperatureChannnelDetails = new ChannelMetadata(node.nodeId,
-                                    colorTemperatureChannnelValue);
-
-                            logger.trace("Node {} building channel with Id: {}", colorTemperatureChannnelDetails.nodeId,
-                                    colorTemperatureChannnelDetails.id);
-                            logger.trace(" >> {}", colorTemperatureChannnelDetails);
-
-                            colorCap.colorTemperatureChannel = colorTemperatureChannnelDetails.id;
-
-                            ChannelUID cololorTemperatureChannnelUID = new ChannelUID(thing.getUID(),
-                                    colorTemperatureChannnelDetails.id);
-
-                            Configuration colorTemperatureChannnelConfiguration = new Configuration();
-                            colorTemperatureChannnelConfiguration.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT,
-                                    colorTemperatureChannnelDetails.endpoint);
-
-                            Channel colorTemperatureChannel = ThingFactoryHelper
-                                    .createChannelBuilder(cololorTemperatureChannnelUID,
-                                            DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE, null)
-                                    .withConfiguration(colorTemperatureChannnelConfiguration).build();
-
-                            builder.withoutChannel(cololorTemperatureChannnelUID);
-                            builder.withChannel(colorTemperatureChannel);
-                        }
-                        colorCapabilities.put(value.endpoint, colorCap);
-                    }
-                });
-
-        if (logger.isDebugEnabled()) {
-            colorCapabilities.forEach((ep, cap) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, ep, cap));
-        }
-        return builder;
     }
 
     @Override

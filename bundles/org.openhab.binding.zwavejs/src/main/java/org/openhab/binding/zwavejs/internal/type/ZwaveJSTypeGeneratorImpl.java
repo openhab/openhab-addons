@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.type;
 
-import static org.openhab.binding.zwavejs.internal.BindingConstants.CONFIGURATION_COMMAND_CLASSES;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SWITCH_COLOR;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,6 +30,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
+import org.openhab.binding.zwavejs.internal.config.ColorCapability;
+import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
 import org.openhab.binding.zwavejs.internal.conversion.ChannelMetadata;
 import org.openhab.binding.zwavejs.internal.conversion.ConfigMetadata;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
@@ -42,10 +45,12 @@ import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.internal.ThingFactoryHelper;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -104,7 +109,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         this.thingRegistry = thingRegistry;
     }
 
-    /*
+    /**
      * Retrieves a Thing by its UID.
      *
      * @param thingUID the UID of the Thing
@@ -115,13 +120,11 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         return thingRegistry.get(thingUID);
     }
 
-    /*
+    /**
      * Generates a ZwaveJSTypeGeneratorResult for the given ThingUID and Node.
      *
      * @param thingUID the ThingUID of the device
-     *
      * @param node the Node containing the values to be processed
-     *
      * @param configurationAsChannels flag indicating whether to treat configuration as channels
      *
      * @return a ZwaveJSTypeGeneratorResult containing the generated channels and configuration descriptions
@@ -131,6 +134,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         ZwaveJSTypeGeneratorResult result = new ZwaveJSTypeGeneratorResult();
         List<ConfigDescriptionParameter> configDescriptions = new ArrayList<>();
         URI uri = Objects.requireNonNull(getConfigDescriptionURI(thingUID, node));
+
         for (Value value : node.values) {
             if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(value.commandClass)) {
                 ConfigMetadata metadata = new ConfigMetadata(node.nodeId, value);
@@ -141,13 +145,20 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
             ChannelMetadata metadata = new ChannelMetadata(node.nodeId, value);
             if (configurationAsChannels || !CONFIGURATION_COMMAND_CLASSES.contains(value.commandClass)) {
-                result.channels = createChannel(thingUID, result.channels, metadata, configDescriptionProvider);
+                result.channels = createChannel(thingUID, result, metadata, configDescriptionProvider);
                 if (!metadata.isIgnoredCommandClass(value.commandClassName) && !result.values.containsKey(metadata.id)
                         && value.value != null) {
                     result.values.put(metadata.id, value.value);
                 }
             }
         }
+
+        // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same end point
+        mapDimmerChannelsToColorCapabilities(result);
+
+        // add a color temperature channel if necessary
+        addColorTemperatureChannel(thingUID, node, result);
+
         logger.debug("Node {}. Generated {} channels and {} configDescriptions with URI {}", node.nodeId,
                 result.channels.size(), configDescriptions.size(), uri);
 
@@ -184,10 +195,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         return parameterBuilder.build();
     }
 
-    private Map<String, Channel> createChannel(ThingUID thingUID, Map<String, Channel> channels,
+    private Map<String, Channel> createChannel(ThingUID thingUID, ZwaveJSTypeGeneratorResult result,
             ChannelMetadata details, ZwaveJSConfigDescriptionProvider configDescriptionProvider) {
         if (details.isIgnoredCommandClass(details.commandClassName)) {
-            return channels;
+            return result.channels;
         }
         logger.trace("Node {} building channel with Id: {}", details.nodeId, details.id);
         logger.trace(" >> {}", details);
@@ -214,10 +225,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
                 channels.put(details.id, builder.build());
                 logger.debug("Node {}. Channel {} existing channel updated", details.nodeId, details.id);
-                return channels;
+                return result.channels;
             } else {
                 logger.debug("Node {}. Channel {} exists: ignored", details.nodeId, details.id);
-                return channels;
+                return result.channels;
             }
         }
 
@@ -225,14 +236,14 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
         ChannelType channelType = getOrGenerate(channelTypeUID, details);
         if (channelType == null) {
-            return channels;
+            return result.channels;
         }
 
         ChannelBuilder builder = ChannelBuilder.create(channelUID, details.itemType).withLabel(details.label)
                 .withConfiguration(newChannelConfiguration).withType(channelType.getUID());
 
-        channels.put(details.id, builder.build());
-        return channels;
+        result.channels.put(details.id, builder.build());
+        return result.channels;
     }
 
     /**
@@ -363,6 +374,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         }
     }
 
+    /**
+     * Helper method for setSemanticTags(). Matches information in the {@link ChannelMetadata} against the given
+     * keywords.
+     */
     private static boolean match(List<String> keyWords, ChannelMetadata details) {
         List<String> sourceTexts = details.description instanceof String description
                 ? List.of(details.label, description)
@@ -385,6 +400,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         return false;
     }
 
+    /**
+     * Set the channel's Point and Property tags
+     */
     private StateChannelTypeBuilder setSemanticTags(StateChannelTypeBuilder builder, ChannelMetadata details) {
         SemanticTag point = null;
         SemanticTag property = null;
@@ -581,5 +599,95 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
         return builder;
+    }
+
+    /**
+     * Iterate over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link ColorCapability} to find end points which
+     * support color temperature, and if found then add a respective color temperature channel to the
+     * {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel}
+     *
+     * @param thingUID
+     * @param node
+     * @param result the ZwaveJSTypeGeneratorResult that provides the inputs and receives the results
+     */
+    private void addColorTemperatureChannel(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result) {
+        result.colorCapabilities.forEach((endPoint, colorCapability) -> {
+            if (colorCapability.colorTempChannel != null
+                    || (colorCapability.coldWhiteChannel == null && colorCapability.warmWhiteChannel == null)) {
+                return;
+            }
+
+            Value value = new Value();
+            value.endpoint = endPoint;
+            value.commandClassName = COLOR_TEMP_CHANNEL_COMMAND_CLASS_NAME;
+            value.propertyName = COLOR_TEMP_CHANNEL_PROPERTY_NAME;
+
+            ChannelMetadata metaData = new ChannelMetadata(node.nodeId, value);
+            logger.trace("Node {} building channel with Id: {}", metaData.nodeId, metaData.id);
+
+            ChannelBuilder builder = ThingFactoryHelper.createChannelBuilder(new ChannelUID(thingUID, metaData.id),
+                    DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE, null);
+
+            Configuration config = new Configuration();
+            config.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, metaData.endpoint);
+            builder.withConfiguration(config);
+
+            result.channels.put(metaData.id, builder.build());
+            colorCapability.colorTempChannel = new ChannelUID(thingUID, metaData.id);
+        });
+    }
+
+    /**
+     * Iterate over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel} to find ones with the accepted Item
+     * type 'Dimmer' and such channel's endpoint has an entry in the {@link ZwaveJSTypeGeneratorResult}'s map of
+     * {@link ColorCapability} then add that channel to the respective ColorCapability's set of dimmer channels.
+     *
+     * @param result ZwaveJSTypeGeneratorResult that provides the inputs and receives the results
+     */
+    private void mapDimmerChannelsToColorCapabilities(ZwaveJSTypeGeneratorResult result) {
+        if (!result.colorCapabilities.isEmpty()) {
+            result.channels.values().stream() //
+                    .filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType())) //
+                    .forEach(c -> {
+                        ZwaveJSChannelConfiguration config = c.getConfiguration().as(ZwaveJSChannelConfiguration.class);
+                        if (result.colorCapabilities.get(config.endpoint) instanceof ColorCapability colorCapability) {
+                            colorCapability.dimmerChannels.add(c.getUID());
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Parse the {@link ChannelMetadata} to determine the {@link ColorCapability} if any, and update the given
+     * {@link ZwaveJSTypeGeneratorResult}'s colorCapabilities map accordingly.
+     *
+     * @param thingUID
+     * @param details the channel creation meta data
+     * @param result the ZwaveJSTypeGeneratorResult that receives the results
+     */
+    private void updateColorCapabilities(ThingUID thingUID, ChannelMetadata details,
+            ZwaveJSTypeGeneratorResult result) {
+        if (details.commandClassId != COMMAND_CLASS_SWITCH_COLOR) {
+            return;
+        }
+
+        boolean isColor = details.value instanceof Map map && map.containsKey(GREEN);
+        boolean isColdWhite = COLD_WHITE_PROPERTY_KEY_NAME.equals(details.propertyKeyName);
+        boolean isWarmWhite = WARM_WHITE_PROPERTY_KEY_NAME.equals(details.propertyKeyName);
+
+        if (isColor || isColdWhite || isWarmWhite) {
+            ColorCapability colorCapability = result.colorCapabilities.getOrDefault(details.endpoint,
+                    new ColorCapability());
+            if (isColor) {
+                colorCapability.colorChannels.add(new ChannelUID(thingUID, details.id));
+            }
+            if (isColdWhite) {
+                colorCapability.coldWhiteChannel = new ChannelUID(thingUID, details.id);
+            }
+            if (isWarmWhite) {
+                colorCapability.warmWhiteChannel = new ChannelUID(thingUID, details.id);
+            }
+            result.colorCapabilities.put(details.endpoint, colorCapability);
+        }
     }
 }

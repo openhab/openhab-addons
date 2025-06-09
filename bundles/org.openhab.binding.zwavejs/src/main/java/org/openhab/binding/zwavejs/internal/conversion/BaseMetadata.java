@@ -94,9 +94,10 @@ public abstract class BaseMetadata {
     public @Nullable Object writeProperty;
     public @Nullable Map<String, String> optionList;
     public @Nullable String commandClassName;
+    public @Nullable String propertyKeyName;
     public @Nullable Object propertyKey;
 
-    protected final Object value;
+    public final Object value;
     protected final @Nullable Integer min;
     protected @Nullable Long max;
 
@@ -106,6 +107,7 @@ public abstract class BaseMetadata {
         this.commandClassId = value.commandClass;
         this.endpoint = value.endpoint;
         this.propertyKey = value.propertyKey;
+        this.propertyKeyName = value.propertyKeyName;
         this.writable = value.metadata.writeable;
         this.min = value.metadata.min;
         this.max = value.metadata.max;
