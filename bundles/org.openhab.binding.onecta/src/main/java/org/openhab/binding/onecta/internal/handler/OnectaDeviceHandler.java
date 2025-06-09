@@ -458,19 +458,28 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
     }
 
     private State getEnergyHeatingCurrentDay() {
-        return Optional.ofNullable(dataTransService.getConsumptionHeatingWeek())
+
+        State state = Optional.ofNullable(dataTransService.getConsumptionHeatingWeek())
                 .filter(consumptionArray -> consumptionArray.length > 7 + getCurrentDayOfWeek()) //
                 .map(consumptionArray -> consumptionArray[7 + getCurrentDayOfWeek()]) //
                 .map(TypeHandler::decimalType) //
                 .orElse(UnDefType.UNDEF); //
+        if (state == null) {
+            state = UnDefType.UNDEF;
+        }
+        return state;
     }
 
     private State getEnergyCoolingCurrentDay() {
-        return Optional.ofNullable(dataTransService.getConsumptionCoolingWeek())
+        State state = Optional.ofNullable(dataTransService.getConsumptionCoolingWeek())
                 .filter(consumptionArray -> consumptionArray.length > 7 + getCurrentDayOfWeek()) //
                 .map(consumptionArray -> consumptionArray[7 + getCurrentDayOfWeek()]) //
                 .map(TypeHandler::decimalType) //
                 .orElse(UnDefType.UNDEF); //
+        if (state == null) {
+            state = UnDefType.UNDEF;
+        }
+        return state;
     }
 
     private Boolean isFirst2HourOfYear() {
