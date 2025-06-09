@@ -33,7 +33,7 @@ public class ColorCapability {
     public DecimalType cachedWarmWhite = new DecimalType(-1);
     public DecimalType cachedColdWhite = new DecimalType(-1);
     public Set<ChannelUID> colorChannels = new HashSet<>();
-    public Set<ChannelUID> dimmerChannels = new HashSet<>();
+    public @Nullable ChannelUID dimmerChannel = null;
     public @Nullable ChannelUID colorTempChannel = null;
     public @Nullable ChannelUID warmWhiteChannel = null;
     public @Nullable ChannelUID coldWhiteChannel = null;
@@ -41,8 +41,8 @@ public class ColorCapability {
     @Override
     public String toString() {
         return "ColorCapability [cachedColor=" + cachedColor + ", cachedWarmWhite=" + cachedWarmWhite
-                + ", cachedColdWhite=" + cachedColdWhite + ", colorChannels=" + colorChannels + ", dimmerChannels="
-                + dimmerChannels + ", colorTempChannel=" + colorTempChannel + ", warmWhiteChannel=" + warmWhiteChannel
+                + ", cachedColdWhite=" + cachedColdWhite + ", colorChannels=" + colorChannels + ", dimmerChannel="
+                + dimmerChannel + ", colorTempChannel=" + colorTempChannel + ", warmWhiteChannel=" + warmWhiteChannel
                 + ", coldWhiteChannel=" + coldWhiteChannel + "]";
     }
 }

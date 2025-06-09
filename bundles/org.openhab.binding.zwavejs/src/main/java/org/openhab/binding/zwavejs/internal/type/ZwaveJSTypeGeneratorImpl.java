@@ -660,7 +660,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .forEach(c -> {
                         ZwaveJSChannelConfiguration config = c.getConfiguration().as(ZwaveJSChannelConfiguration.class);
                         if (result.colorCapabilities.get(config.endpoint) instanceof ColorCapability colorCapability) {
-                            colorCapability.dimmerChannels.add(c.getUID());
+                            colorCapability.dimmerChannel = c.getUID();
                         }
                     });
         }

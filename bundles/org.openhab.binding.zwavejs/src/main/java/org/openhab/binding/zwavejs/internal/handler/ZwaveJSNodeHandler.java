@@ -310,10 +310,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 }
             }
 
-            if (isColorChannelCommand && colorCap != null) {
+            if (isColorChannelCommand && colorCap != null
+                    && colorCap.dimmerChannel instanceof ChannelUID dimmerChannel) {
                 // schedule brightness command(s) for dimmer channel(s)
-                PercentType brightness = hsbTypeCommand.getBrightness();
-                colorCap.dimmerChannels.forEach(c -> scheduler.submit(() -> handleCommand(c, brightness)));
+                scheduler.submit(() -> handleCommand(dimmerChannel, hsbTypeCommand.getBrightness()));
             }
             return colorMap;
         }
@@ -492,7 +492,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return colorCapability.cachedColor;
         }
 
-        if (colorCapability.dimmerChannels.contains(targetChannel.getUID())
+        if (targetChannel.getUID().equals(colorCapability.dimmerChannel)
                 && newState instanceof PercentType brightness) {
             colorCapability.cachedColor = new HSBType(colorCapability.cachedColor.getHue(),
                     colorCapability.cachedColor.getSaturation(), brightness);
