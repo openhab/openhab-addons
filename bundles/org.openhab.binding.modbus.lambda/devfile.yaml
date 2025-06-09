@@ -1,0 +1,14 @@
+schemaVersion: 2.0.0
+components:
+  - name: dev
+    container:
+      image: public.ecr.aws/aws-mde/universal-image:latest
+commands:
+  - id: install
+    exec:
+      component: dev
+      commandLine: "mvn clean install -DskipTests"
+  - id: build-and-test
+    exec:
+      component: dev
+      commandLine: "mvn verify"
