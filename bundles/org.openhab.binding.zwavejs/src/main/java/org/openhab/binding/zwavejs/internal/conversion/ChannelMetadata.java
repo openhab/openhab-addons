@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.conversion;
 
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SWITCH_COLOR;
+
 import java.util.List;
 import java.util.Map;
 
