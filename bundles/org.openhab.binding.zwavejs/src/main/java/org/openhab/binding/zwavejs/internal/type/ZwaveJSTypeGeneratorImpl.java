@@ -52,7 +52,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.internal.ThingFactoryHelper;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -634,15 +633,22 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             ChannelMetadata metaData = new ChannelMetadata(node.nodeId, value);
             logger.trace("Node {} building channel with Id: {}", metaData.nodeId, metaData.id);
 
-            ChannelBuilder builder = ThingFactoryHelper.createChannelBuilder(new ChannelUID(thingUID, metaData.id),
-                    DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE, null);
-
+            ChannelType type = DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE;
             Configuration config = new Configuration();
             config.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, metaData.endpoint);
-            builder.withConfiguration(config);
 
-            result.channels.put(metaData.id, builder.build());
-            colorCapability.colorTempChannel = new ChannelUID(thingUID, metaData.id);
+            Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, metaData.id), type.getItemType())
+                    .withType(type.getUID()) //
+                    .withDefaultTags(type.getTags()) //
+                    .withKind(type.getKind()) //
+                    .withLabel(type.getLabel()) //
+                    .withDescription(Objects.requireNonNull(type.getDescription())) //
+                    .withAutoUpdatePolicy(type.getAutoUpdatePolicy()) //
+                    .withConfiguration(config) //
+                    .build();
+
+            result.channels.put(metaData.id, channel);
+            colorCapability.colorTempChannel = channel.getUID();
         });
     }
 
