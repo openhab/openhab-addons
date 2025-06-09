@@ -30,7 +30,8 @@ public class ZwaveJSChannelConfiguration {
     public @Nullable Integer propertyKeyInt;
     public @Nullable String propertyKeyStr;
     public @Nullable String readProperty;
-    public @Nullable String writeProperty;
+    public @Nullable Integer writePropertyInt;
+    public @Nullable String writePropertyStr;
     public boolean inverted = false;
     public double factor = 1.0;
 }

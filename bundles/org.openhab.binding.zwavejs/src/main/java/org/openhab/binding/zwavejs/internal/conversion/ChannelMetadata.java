@@ -96,11 +96,14 @@ public class ChannelMetadata extends BaseMetadata {
         ZwaveJSChannelConfiguration cA = configA.as(ZwaveJSChannelConfiguration.class);
         ZwaveJSChannelConfiguration cB = configB.as(ZwaveJSChannelConfiguration.class);
 
+        Object writePropertyA = cA.writePropertyInt != null ? cA.writePropertyInt : cA.writePropertyStr;
+        Object writePropertyB = cB.writePropertyInt != null ? cB.writePropertyInt : cB.writePropertyStr;
+
         return cA.endpoint == cB.endpoint //
                 && cA.commandClassId == cB.commandClassId //
                 && compare(cA.propertyKeyInt, cB.propertyKeyInt) //
                 && compare(cA.propertyKeyStr, cB.propertyKeyStr) //
-                && !compare(cA.writeProperty, cB.writeProperty); //
+                && !compare(writePropertyA, writePropertyB); //
     }
 
     public boolean isIgnoredCommandClass(@Nullable String commandClassName) {

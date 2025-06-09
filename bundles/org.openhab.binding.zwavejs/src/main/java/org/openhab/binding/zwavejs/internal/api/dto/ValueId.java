@@ -18,6 +18,6 @@ package org.openhab.binding.zwavejs.internal.api.dto;
 public class ValueId {
     public Object commandClass;
     public Integer endpoint;
-    public String property;
+    public Object property;
     public Object propertyKey;
 }

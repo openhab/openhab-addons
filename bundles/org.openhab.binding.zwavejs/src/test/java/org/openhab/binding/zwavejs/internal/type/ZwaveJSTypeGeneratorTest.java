@@ -145,7 +145,9 @@ public class ZwaveJSTypeGeneratorTest {
         Channel channel = getChannel("store_4.json", 7,
                 "configuration-key-s-1-associations-send-on-with-single-click-1", true);
 
-        assertEquals("24", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+        assertNull(channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+        assertEquals(BigDecimal.valueOf(24),
+                channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_INT));
     }
 
     @Test
@@ -167,7 +169,7 @@ public class ZwaveJSTypeGeneratorTest {
         assertEquals("zwavejs:test-bridge:test-thing:multilevel-switch-value-1", channel.getUID().getAsString());
         assertEquals("Dimmer", Objects.requireNonNull(type).getItemType());
         assertEquals("EP1 Current Value", channel.getLabel());
-        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
 
         StateDescription statePattern = type.getState();
         assertNotNull(statePattern);
@@ -191,7 +193,7 @@ public class ZwaveJSTypeGeneratorTest {
         assertEquals("zwavejs:test-bridge:test-thing:multilevel-switch-value", channel.getUID().getAsString());
         assertEquals("Dimmer", Objects.requireNonNull(type).getItemType());
         assertEquals("Current Value", channel.getLabel());
-        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
 
         StateDescription statePattern = type.getState();
         assertNotNull(statePattern);
@@ -212,7 +214,7 @@ public class ZwaveJSTypeGeneratorTest {
         assertEquals("zwavejs:test-bridge:test-thing:color-switch-hex-color", channel.getUID().getAsString());
         assertEquals("Color", Objects.requireNonNull(type).getItemType());
         assertEquals("RGB Color", channel.getLabel());
-        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
 
         StateDescription statePattern = type.getState();
         assertNotNull(statePattern);
@@ -232,14 +234,14 @@ public class ZwaveJSTypeGeneratorTest {
     public void testGenCTNode7WriteProperty() throws IOException {
         Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
 
-        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
     }
 
     @Test
     public void testGenCTNode25WriteProperty() throws IOException {
         Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
 
-        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY));
+        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
     }
 
     @Test

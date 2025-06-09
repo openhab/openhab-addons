@@ -253,12 +253,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         config.put(BindingConstants.CONFIG_CHANNEL_FACTOR, details.factor);
         config.put(BindingConstants.CONFIG_CHANNEL_INVERTED, false);
 
-        if (details.writeProperty != null) {
-            config.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY, String.valueOf(details.writeProperty));
-        }
-        if (details.readProperty != null) {
-            config.put(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY, String.valueOf(details.readProperty));
-        }
+        updateReadWriteProperties(config, details);
         return config;
     }
 
@@ -266,8 +261,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
      * Updates the read/write properties of an existing channel configuration.
      */
     private void updateReadWriteProperties(Configuration config, ChannelMetadata details) {
-        if (details.writeProperty != null) {
-            config.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY, String.valueOf(details.writeProperty));
+        if (details.writeProperty instanceof Number writePropertyInteger) {
+            config.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_INT, writePropertyInteger);
+        } else if (details.writeProperty instanceof String writePropertyString) {
+            config.put(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR, writePropertyString);
         }
         if (details.readProperty != null) {
             config.put(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY, String.valueOf(details.readProperty));
