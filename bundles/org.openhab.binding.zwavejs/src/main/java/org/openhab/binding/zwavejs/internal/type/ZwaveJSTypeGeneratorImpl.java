@@ -28,6 +28,8 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
+import org.openhab.binding.zwavejs.internal.api.dto.Metadata;
+import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.config.ColorCapability;
@@ -621,9 +623,12 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
 
             Value value = new Value();
+            // populate minimum required fields; the system channel type provides the rest
             value.endpoint = endPoint;
             value.commandClassName = COLOR_TEMP_CHANNEL_COMMAND_CLASS_NAME;
             value.propertyName = COLOR_TEMP_CHANNEL_PROPERTY_NAME;
+            value.metadata = new Metadata();
+            value.metadata.type = MetadataType.NUMBER;
 
             ChannelMetadata metaData = new ChannelMetadata(node.nodeId, value);
             logger.trace("Node {} building channel with Id: {}", metaData.nodeId, metaData.id);
