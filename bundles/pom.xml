@@ -258,6 +258,7 @@
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
+    <module>org.openhab.binding.meross</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
@@ -362,6 +363,7 @@
     <module>org.openhab.binding.renault</module>
     <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.ring</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.roku</module>
