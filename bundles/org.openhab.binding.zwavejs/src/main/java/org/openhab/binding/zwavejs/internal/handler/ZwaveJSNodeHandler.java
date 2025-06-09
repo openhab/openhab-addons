@@ -257,31 +257,38 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     private @Nullable Object handleOnOffTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
             @Nullable ColorCapability colorCap, boolean isColorChannelCommand, OnOffType onOffCommand) {
+        // If this is a color channel, delegate to percent type logic (0% or 100%)
         if (isColorChannelCommand) {
-            return handlePercentTypeCommand(channelConfig, channel, colorCap, isColorChannelCommand,
-                    OnOffType.OFF == onOffCommand ? PercentType.ZERO : PercentType.HUNDRED);
-        } else if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
-            return OnOffType.ON == onOffCommand ? 255 : 0;
-        } else {
-            return onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON);
+            PercentType percent = (OnOffType.OFF == onOffCommand) ? PercentType.ZERO : PercentType.HUNDRED;
+            return handlePercentTypeCommand(channelConfig, channel, colorCap, true, percent);
         }
+        // For dimmer channels, ON is mapped to 255, as that means restore to last brightness
+        if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
+            return (OnOffType.ON == onOffCommand) ? 255 : 0;
+        }
+
+        // For other types, handle inversion if needed
+        return (onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON));
     }
 
     private @Nullable Object handlePercentTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
             @Nullable ColorCapability colorCap, boolean isColorChannelCommand, PercentType percentTypeCommand) {
         if (isColorChannelCommand && colorCap != null) {
-            return handleHSBTypeCommand(channelConfig, channel, colorCap, isColorChannelCommand, new HSBType(
-                    colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(), percentTypeCommand));
-        } else {
-            int newValue = percentTypeCommand.intValue();
-            if (channelConfig.inverted) {
-                newValue = 100 - newValue;
-            }
-            if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && newValue == 100) {
-                newValue = 99;
-            }
-            return newValue;
+            HSBType hsb = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
+                    percentTypeCommand);
+            return handleHSBTypeCommand(channelConfig, channel, colorCap, true, hsb);
         }
+
+        // For non-color channels, handle inversion and dimmer 100% edge case
+        int value = percentTypeCommand.intValue();
+        if (channelConfig.inverted) {
+            value = 100 - value;
+        }
+        // For dimmers, 100% is often represented as 99
+        if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && value == 100) {
+            value = 99;
+        }
+        return value;
     }
 
     private @Nullable Object handleHSBTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
@@ -292,6 +299,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
         int[] rgb = ColorUtil.hsbToRgb(hsbFull);
+
         if (channel.getUID().getId().contains(HEX)) {
             retValue = "%02X%02X%02X".formatted(rgb[0], rgb[1], rgb[2]);
         } else {
