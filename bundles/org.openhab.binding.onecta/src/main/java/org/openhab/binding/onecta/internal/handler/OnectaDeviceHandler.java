@@ -16,6 +16,7 @@ import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -340,11 +341,11 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
     }
 
     private State getCurrentOperationMode() {
-        return TypeHandler.stringType(dataTransService.getCurrentOperationMode().toString());
+        return TypeHandler.stringType(dataTransService.getCurrentOperationMode());
     }
 
     private State getCurrentFanspeed() {
-        return TypeHandler.stringType(dataTransService.getCurrentFanspeed().toString());
+        return TypeHandler.stringType(dataTransService.getCurrentFanspeed());
     }
 
     private State getCurrentTemperatureSet() {
@@ -457,19 +458,19 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
     }
 
     private State getEnergyHeatingCurrentDay() {
-        try {
-            return TypeHandler.decimalType(dataTransService.getConsumptionHeatingWeek()[7 + getCurrentDayOfWeek()]);
-        } catch (IndexOutOfBoundsException e) {
-            return UnDefType.UNDEF;
-        }
+        return Optional.ofNullable(dataTransService.getConsumptionHeatingWeek())
+                .filter(consumptionArray -> consumptionArray.length > 7 + getCurrentDayOfWeek()) //
+                .map(consumptionArray -> consumptionArray[7 + getCurrentDayOfWeek()]) //
+                .map(TypeHandler::decimalType) //
+                .orElse(UnDefType.UNDEF); //
     }
 
     private State getEnergyCoolingCurrentDay() {
-        try {
-            return TypeHandler.decimalType(dataTransService.getConsumptionCoolingWeek()[7 + getCurrentDayOfWeek()]);
-        } catch (IndexOutOfBoundsException e) {
-            return UnDefType.UNDEF;
-        }
+        return Optional.ofNullable(dataTransService.getConsumptionCoolingWeek())
+                .filter(consumptionArray -> consumptionArray.length > 7 + getCurrentDayOfWeek()) //
+                .map(consumptionArray -> consumptionArray[7 + getCurrentDayOfWeek()]) //
+                .map(TypeHandler::decimalType) //
+                .orElse(UnDefType.UNDEF); //
     }
 
     private Boolean isFirst2HourOfYear() {

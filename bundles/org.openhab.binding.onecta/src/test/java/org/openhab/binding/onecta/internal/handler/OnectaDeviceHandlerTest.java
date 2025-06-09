@@ -368,53 +368,45 @@ public class OnectaDeviceHandlerTest {
 
         when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
 
-        when(dataTransServiceMock.getPowerOnOff()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getPowerfulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentOperationMode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTemperatureSet()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTemperatureSetMin())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTemperatureSetMax())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTemperatureSetStep())
-                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getPowerOnOff()).thenReturn(null);
+        when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentOperationMode()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTemperatureSet()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTemperatureSetMin()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTemperatureSetMax()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTemperatureSetStep()).thenReturn(null);
 
-        when(dataTransServiceMock.getTargetTemperatur()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getTargetTemperaturMin()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getTargetTemperaturMax()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getTargetTemperaturStep()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getTargetTemperatur()).thenReturn(null);
+        when(dataTransServiceMock.getTargetTemperaturMin()).thenReturn(null);
+        when(dataTransServiceMock.getTargetTemperaturMax()).thenReturn(null);
+        when(dataTransServiceMock.getTargetTemperaturStep()).thenReturn(null);
 
-        when(dataTransServiceMock.getSetpointLeavingWaterTemperature())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getSetpointLeavingWaterOffset())
-                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getSetpointLeavingWaterTemperature()).thenReturn(null);
+        when(dataTransServiceMock.getSetpointLeavingWaterOffset()).thenReturn(null);
 
-        when(dataTransServiceMock.getCurrentFanDirection()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentFanspeed()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getEconoMode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getStreamerMode()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getCurrentFanDirection()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentFanspeed()).thenReturn(null);
+        when(dataTransServiceMock.getEconoMode()).thenReturn(null);
+        when(dataTransServiceMock.getStreamerMode()).thenReturn(null);
 
-        when(dataTransServiceMock.getCurrentFanDirectionHor()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentFanDirectionVer()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getCurrentFanDirectionHor()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentFanDirectionVer()).thenReturn(null);
 
-        when(dataTransServiceMock.getHolidayMode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getDemandControl()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getDemandControlFixedValue()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getHolidayMode()).thenReturn(null);
+        when(dataTransServiceMock.getDemandControl()).thenReturn(null);
+        when(dataTransServiceMock.getDemandControlFixedValue()).thenReturn(null);
 
         // Test updatestate where no DelayPassed is required.
-        when(dataTransServiceMock.getIndoorTemperature()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getOutdoorTemperature()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getLeavingWaterTemperature()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIndoorHumidity()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getIndoorTemperature()).thenReturn(null);
+        when(dataTransServiceMock.getOutdoorTemperature()).thenReturn(null);
+        when(dataTransServiceMock.getLeavingWaterTemperature()).thenReturn(null);
+        when(dataTransServiceMock.getIndoorHumidity()).thenReturn(null);
 
-        when(dataTransServiceMock.getTimeStamp()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getTimeStamp()).thenReturn(null);
 
-        when(dataTransServiceMock.getDemandControlFixedStepValue())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getDemandControlFixedMinValue())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getDemandControlFixedMaxValue())
-                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getDemandControlFixedStepValue()).thenReturn(null);
+        when(dataTransServiceMock.getDemandControlFixedMinValue()).thenReturn(null);
+        when(dataTransServiceMock.getDemandControlFixedMaxValue()).thenReturn(null);
 
         handler.refreshDevice();
 

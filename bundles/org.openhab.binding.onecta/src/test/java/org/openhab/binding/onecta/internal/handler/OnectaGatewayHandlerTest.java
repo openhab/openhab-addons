@@ -143,19 +143,17 @@ public class OnectaGatewayHandlerTest {
     public void refreshDeviceUndefTest() {
         when(dataTransServiceMock.isAvailable()).thenReturn(true);
 
-        when(dataTransServiceMock.getDaylightSavingTimeEnabled())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getFirmwareVerion()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsFirmwareUpdateSupported())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsInErrorState()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsLedEnabled()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getRegionCode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getSerialNumber()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getSsid()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getTimeZone()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getWifiConectionSSid()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getWifiConectionStrength()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getDaylightSavingTimeEnabled()).thenReturn(null);
+        when(dataTransServiceMock.getFirmwareVerion()).thenReturn(null);
+        when(dataTransServiceMock.getIsFirmwareUpdateSupported()).thenReturn(null);
+        when(dataTransServiceMock.getIsInErrorState()).thenReturn(null);
+        when(dataTransServiceMock.getIsLedEnabled()).thenReturn(null);
+        when(dataTransServiceMock.getRegionCode()).thenReturn(null);
+        when(dataTransServiceMock.getSerialNumber()).thenReturn(null);
+        when(dataTransServiceMock.getSsid()).thenReturn(null);
+        when(dataTransServiceMock.getTimeZone()).thenReturn(null);
+        when(dataTransServiceMock.getWifiConectionSSid()).thenReturn(null);
+        when(dataTransServiceMock.getWifiConectionStrength()).thenReturn(null);
 
         handler.refreshDevice();
 

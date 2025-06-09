@@ -128,15 +128,14 @@ public class OnectaIndoorUnitHandlerTest {
     public void refreshDeviceUndefTest() {
         when(dataTransServiceMock.isAvailable()).thenReturn(true);
 
-        when(dataTransServiceMock.getModelInfo()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getSoftwareVersion()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getEepromVerion()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getDryKeepSetting()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getFanMotorRotationSpeed()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getDeltaD()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getHeatExchangerTemperature())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getSuctionTemperature()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getModelInfo()).thenReturn(null);
+        when(dataTransServiceMock.getSoftwareVersion()).thenReturn(null);
+        when(dataTransServiceMock.getEepromVerion()).thenReturn(null);
+        when(dataTransServiceMock.getDryKeepSetting()).thenReturn(null);
+        when(dataTransServiceMock.getFanMotorRotationSpeed()).thenReturn(null);
+        when(dataTransServiceMock.getDeltaD()).thenReturn(null);
+        when(dataTransServiceMock.getHeatExchangerTemperature()).thenReturn(null);
+        when(dataTransServiceMock.getSuctionTemperature()).thenReturn(null);
 
         handler.refreshDevice();
 

@@ -167,25 +167,21 @@ public class OnectaWaterTankHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_HWT_SETTEMP_MAX)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_HWT_SETTEMP_STEP)).thenReturn(true);
 
-        when(dataTransServiceMock.getPowerOnOff()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentOperationMode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getErrorCode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsInEmergencyState()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsInErrorState()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsInInstallerState()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsInWarningState()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getIsHolidayModeActive()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getPowerfulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getHeatupMode()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getTankTemperature()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSet())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSetMin())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSetMax())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSetStep())
-                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getPowerOnOff()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentOperationMode()).thenReturn(null);
+        when(dataTransServiceMock.getErrorCode()).thenReturn(null);
+        when(dataTransServiceMock.getIsInEmergencyState()).thenReturn(null);
+        when(dataTransServiceMock.getIsInErrorState()).thenReturn(null);
+        when(dataTransServiceMock.getIsInInstallerState()).thenReturn(null);
+        when(dataTransServiceMock.getIsInWarningState()).thenReturn(null);
+        when(dataTransServiceMock.getIsHolidayModeActive()).thenReturn(null);
+        when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn(null);
+        when(dataTransServiceMock.getHeatupMode()).thenReturn(null);
+        when(dataTransServiceMock.getTankTemperature()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTankTemperatureSet()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTankTemperatureSetMin()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTankTemperatureSetMax()).thenReturn(null);
+        when(dataTransServiceMock.getCurrentTankTemperatureSetStep()).thenReturn(null);
 
         handler.refreshDevice();
 

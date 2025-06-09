@@ -170,7 +170,7 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
     }
 
     private State getHeatupMode() {
-        return TypeHandler.stringType(this.dataTransService.getHeatupMode().toString());
+        return TypeHandler.stringType(this.dataTransService.getHeatupMode());
     }
 
     private State getIsInErrorState() {

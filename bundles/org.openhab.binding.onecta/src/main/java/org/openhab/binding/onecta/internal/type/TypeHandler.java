@@ -71,6 +71,20 @@ public class TypeHandler {
         return new StringType(value.toString());
     }
 
+    public static State stringType(Enums.FanSpeed value) {
+        if (value == null) {
+            return UnDefType.UNDEF;
+        }
+        return new StringType(value.toString());
+    }
+
+    public static State stringType(Enums.HeatupMode value) {
+        if (value == null) {
+            return UnDefType.UNDEF;
+        }
+        return new StringType(value.toString());
+    }
+
     public static State decimalType(@Nullable Number value) {
         if (value == null) {
             return UnDefType.UNDEF;
