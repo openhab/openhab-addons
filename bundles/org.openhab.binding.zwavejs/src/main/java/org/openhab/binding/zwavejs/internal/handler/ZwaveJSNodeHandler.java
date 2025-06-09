@@ -143,9 +143,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         .getConfiguration().as(ZwaveJSChannelConfiguration.class);
                 NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
                 zwaveCommand.value = newValue;
-                if (zwaveCommand.value != null) {
-                    handler.sendCommand(zwaveCommand);
-                }
+                handler.sendCommand(zwaveCommand);
             } else {
                 logger.debug("Node {}. Configuration key '{}' not found in generated channels, skipping.", config.id,
                         key);

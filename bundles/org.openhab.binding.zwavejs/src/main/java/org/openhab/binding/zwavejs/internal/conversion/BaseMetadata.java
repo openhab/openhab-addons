@@ -433,6 +433,7 @@ public abstract class BaseMetadata {
      * Determines the metadata type based on the provided value and command class.
      *
      * @param value The value to determine the metadata type from. Can be null.
+     * 
      * @param commandClass The Z-Wave command class identifier used for additional type determination in specific cases.
      * 
      * @return The determined metadata type.
