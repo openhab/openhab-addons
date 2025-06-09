@@ -89,7 +89,6 @@ public class CommandClassConstants {
     public static final Integer COMMAND_CLASS_NO_OPERATION = 0x00;
     public static final Integer COMMAND_CLASS_NODE_NAMING = 0x77;
     public static final Integer COMMAND_CLASS_NODE_PROVISIONING = 0x78;
-    public static final Integer COMMAND_CLASS_NOTIFICATION = 0x71;
     public static final Integer COMMAND_CLASS_POWERLEVEL = 0x73;
     public static final Integer COMMAND_CLASS_PREPAYMENT = 0x3F;
     public static final Integer COMMAND_CLASS_PREPAYMENT_ENCAPSULATION = 0x41;
