@@ -27,7 +27,7 @@ A Modbus Bridge has to be installed before installing the above mentioned things
 The binding supports installations with more than one Heat Pump, Boiler, Buffer, Heating Circuit.
 For each of these parts you have to provide the Subindex of your thing in the configurations section, usually using the User Interface. 
 So if you have two Heating Circuits use 0 for the first and 1 for the second Heating Circuit.
-Handling of General System Settings (Base Adress 200) and Solar (Base Adress 4000) are not supported (yet).
+Handling of General System Settings (Base Adress 200) is not supported (yet). Solar functions (Base Address 4000) are now supported.
 Some of the registers noted RW in the manual are read only in the binding.
 
 ## Discovery
@@ -142,6 +142,21 @@ This group contains general operational information about the heating circuit.
 | heating-circuit-room-heating-temperature       | Number:Temperature | false     | Setting for heating mode room setpoint temperature         |
 | heating-circuit-room-cooling-temperature       | Number:Temperature | false     | Setting for cooling mode room setpoint temperature         |
 
+### Solar Group
+
+This group contains information about the solar thermic component.
+
+| Channel ID                     | Item Type          | Read only | Description                                                         |
+| ------------------------------ | ------------------ | --------- | ------------------------------------------------------------------- |
+| solar-error-number            | Number             | true      | Solar Error Number (0 = No error)                                  |
+| solar-operating-state         | Number             | true      | Solar Operating State: See Modbus description manual, link above   |
+| solar-collector-temperature   | Number:Temperature | true      | Temperature of the solar collector                                |
+| solar-storage-temperature     | Number:Temperature | true      | Temperature of the solar storage                                  |
+| solar-pump-speed             | Number             | true      | Speed of the solar pump                                          |
+| solar-heat-quantity          | Number:Energy      | true      | Heat quantity produced by solar                                  |
+| solar-power-output           | Number:Power       | true      | Current power output of solar                                    |
+| solar-operating-hours        | Number             | true      | Operating hours of solar component                               |
+
 ### Heat Pump Group
 
 This group contains general operational information about the heat pump itself.
@@ -181,7 +196,7 @@ Bridge modbus:tcp:Bridge "Lambda Modbus TCP Bridge" [ host="192.168.223.83", por
     Thing heat-pump lambdaheat-pump "Lambda Heatpump" (modbus:tcp:Bridge) [ refresh=60, subindex=0 ]
     Thing boiler lambdaboiler "Lambda Boiler" (modbus:tcp:Bridge) [ refresh=60, subindex=0 ]
     Thing buffer lambdabuffer "Lambda Buffer" (modbus:tcp:Bridge) [ refresh=60, subindex=0 ]
-    Thing heatingcircuit lambdaheatingcircuit "Lambda Heating Circuit" (modbus:tcp:Bridge) [ refresh=60, subindex=0 ]
+    Thing solar lambdasolar "Lambda Solar" (modbus:tcp:Bridge) [ refresh=60, subindex=0 ]
 }
 ```
 
@@ -203,7 +218,7 @@ Number              lambdabuffer_operatingstate                 "Buffer Operatin
 Number:Temperature  lambdabuffer_actualhightemperature          "Buffer Actual High Temperature"            (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-actual-high-temperature" }
 Number:Temperature  lambdabuffer_actuallowtemperature           "Buffer Actual Low Temperature"             (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-actual-low-temperature" }
 Number:Temperature  lambdabuffer_actualmodbustemperature       "Actual Modbus Temperature"                  (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-actual-modbus-temperature" }
-Number				lambdabuffer_requesttype                   "Request Type"                               (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-type" }
+Number                          lambdabuffer_requesttype                   "Request Type"                               (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-type" }
 Number:Temperature  lambdabuffer_requestflowlinetemperature    "Request Flow Line Temperature"              (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-flow-line-temperature" }
 Number:Temperature  lambdabuffer_requestreturnlinetemperature  "Request Return Line Temperature"            (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-return-line-temperature" }
 Number:Temperature  lambdabuffer_requestheatsinktemperature    "Requested Heat Sink Temperature Difference" (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-heat-sink-temperature" }
@@ -240,6 +255,19 @@ Number                     lambdaheatingcircuit_operatingmode                "He
 Number:Temperature         lambdaheatingcircuit_offsetflowlinetemperature        "Heating Circuit Offset Flow Line Temperature"(lambdaheatingcircuit)       { channel="modbus:heating-circuit:Lambda_Bridge:lambdaheatingcircuit:heating-circuit-group#heating-circuit-offset-flow-line-temperature" }
 Number:Temperature         lambdaheatingcircuit_roomheatingtemperature        "Heating Circuit Room Heating Temperature"       (lambdaheatingcircuit)       { channel="modbus:heating-circuit:Lambda_Bridge:lambdaheatingcircuit:heating-circuit-group#heating-circuit-room-heating-temperature" } 
 Number:Temperature         lambdaheatingcircuit_roomcoolingtemperature        "Heating Circuit Room Cooling Temperature"       (lambdaheatingcircuit)       { channel="modbus:heating-circuit:Lambda_Bridge:lambdaheatingcircuit:heating-circuit-group#heating-circuit-room-cooling-temperature" }
+```
+
+### Items Lambda Solar
+
+```java
+Number              lambdasolar_errornumber               "Solar Error Number"               (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-error-number" }
+Number              lambdasolar_operatingstate            "Solar Operating State"            (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-operating-state" }
+Number:Temperature  lambdasolar_collectortemperature      "Solar Collector Temperature"      (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-collector-temperature" }
+Number:Temperature  lambdasolar_storagetemperature        "Solar Storage Temperature"        (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-storage-temperature" }
+Number              lambdasolar_pumpspeed                 "Solar Pump Speed"                 (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-pump-speed" }
+Number:Energy       lambdasolar_heatquantity             "Solar Heat Quantity"              (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-heat-quantity" }
+Number:Power        lambdasolar_poweroutput              "Solar Power Output"               (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-power-output" }
+Number              lambdasolar_operatinghours           "Solar Operating Hours"            (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-operating-hours" }
 ```
 
 ### Items Lambda Heatpump
