@@ -32,6 +32,7 @@ public class LambdaBindingConstants {
     private static final String BUFFER = "buffer";
     private static final String HEAT_PUMP = "heat-pump";
     private static final String HEATING_CIRCUIT = "heating-circuit";
+    private static final String SOLAR = "solar";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GENERAL = new ThingTypeUID(BINDING_ID, GENERAL);
@@ -39,6 +40,7 @@ public class LambdaBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUFFER = new ThingTypeUID(BINDING_ID, BUFFER);
     public static final ThingTypeUID THING_TYPE_HEAT_PUMP = new ThingTypeUID(BINDING_ID, HEAT_PUMP);
     public static final ThingTypeUID THING_TYPE_HEATING_CIRCUIT = new ThingTypeUID(BINDING_ID, HEATING_CIRCUIT);
+    public static final ThingTypeUID THING_TYPE_SOLAR = new ThingTypeUID(BINDING_ID, SOLAR);
 
     // Channel group ids
     public static final String GROUP_GENERAL_AMBIENT = "ambient-group";
@@ -50,6 +52,7 @@ public class LambdaBindingConstants {
     public static final String GROUP_BUFFER_REG50 = "buffer-reg50-group";
     public static final String GROUP_HEATING_CIRCUIT = "heating-circuit-group";
     public static final String GROUP_HEATING_CIRCUIT_REG50 = "heating-circuit-reg50-group";
+    public static final String GROUP_SOLAR = "solar-group";
 
     // List of all Channel ids in device information group
     // General Ambient
@@ -122,4 +125,14 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_HEATING_CIRCUIT_OFFSET_FLOW_LINE_TEMPERATURE = "heating-circuit-offset-flow-line-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_HEATING_TEMPERATURE = "heating-circuit-room-heating-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_COOLING_TEMPERATURE = "heating-circuit-room-cooling-temperature";
+
+    // Solar
+    public static final String CHANNEL_SOLAR_ERROR_NUMBER = "solar-error-number";
+    public static final String CHANNEL_SOLAR_OPERATING_STATE = "solar-operating-state";
+    public static final String CHANNEL_SOLAR_COLLECTOR_TEMPERATURE = "solar-collector-temperature";
+    public static final String CHANNEL_SOLAR_STORAGE_TEMPERATURE = "solar-storage-temperature";
+    public static final String CHANNEL_SOLAR_PUMP_SPEED = "solar-pump-speed";
+    public static final String CHANNEL_SOLAR_HEAT_QUANTITY = "solar-heat-quantity";
+    public static final String CHANNEL_SOLAR_POWER_OUTPUT = "solar-power-output";
+    public static final String CHANNEL_SOLAR_OPERATING_HOURS = "solar-operating-hours";
 }
