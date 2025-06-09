@@ -181,10 +181,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command commandValue) {
-        Command command = commandValue;
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Node {}. Processing command {} type {} for channel {}", config.id, command,
                 command.getClass().getSimpleName(), channelUID);
+
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -199,8 +199,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
 
+        // Handle RefreshType
         if (command instanceof RefreshType) {
-            // TODO uncomment when issue is fixed: https://github.com/zwave-js/zwave-js-server/issues/1428
+            // TODO: Uncomment when issue is fixed: https://github.com/zwave-js/zwave-js-server/issues/1428
             // NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
             // handler.sendCommand(zwaveCommand);
             return;
@@ -208,79 +209,21 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-        boolean isColorChannelCommand = colorCap != null && colorCap.supportsColor
+        boolean isColorChannelCmd = colorCap != null && colorCap.supportsColor
                 && CoreItemFactory.COLOR.equals(channel.getAcceptedItemType());
 
         if (command instanceof OnOffType onOffCommand) {
-            if (isColorChannelCommand) {
-                command = OnOffType.OFF == onOffCommand ? PercentType.ZERO : PercentType.HUNDRED;
-            } else if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
-                zwaveCommand.value = OnOffType.ON == onOffCommand ? 255 : 0;
-            } else {
-                zwaveCommand.value = onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON);
-            }
-        }
-        // note: HSBType is a child of PercentType so we must explicitly NOT execute this block in such case
-        if (PercentType.class.equals(command.getClass()) && (command instanceof PercentType percentTypeCommand)) {
-            if (isColorChannelCommand && colorCap != null) {
-                command = new HSBType(colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(),
-                        percentTypeCommand);
-            } else {
-                int newValue = percentTypeCommand.intValue();
-                if (channelConfig.inverted) {
-                    newValue = 100 - newValue;
-                }
-                if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && newValue == 100) {
-                    newValue = 99;
-                }
-                zwaveCommand.value = newValue;
-            }
-        }
-        if (command instanceof HSBType hsbTypeCommand) {
-            if (isColorChannelCommand && colorCap != null) {
-                colorCap.cachedColor = hsbTypeCommand;
-            }
-            HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
-            int[] rgb = ColorUtil.hsbToRgb(hsbFull);
-            if (channelUID.getId().contains(HEX)) { // TODO it is not obvious if there is a better way to do this
-                zwaveCommand.value = "%02X%02X%02X".formatted(rgb[0], rgb[1], rgb[2]);
-            } else {
-                Map<String, Integer> colorMap = new HashMap<>();
-                colorMap.put(RED, rgb[0]);
-                colorMap.put(GREEN, rgb[1]);
-                colorMap.put(BLUE, rgb[2]);
-                if (colorCap != null && colorCap.supportsColdWhite) {
-                    colorMap.put(COLD_WHITE, 0);
-                }
-                if (colorCap != null && colorCap.supportsWarmWhite) {
-                    colorMap.put(WARM_WHITE, 0);
-                }
-
-                zwaveCommand.value = colorMap;
-            }
-            if (isColorChannelCommand) {
-                // schedule brightness command(s) for dimmer channel(s)
-                PercentType brightness = hsbTypeCommand.getBrightness();
-                thing.getChannels().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType()))
-                        .forEach(c -> {
-                            if (c.getConfiguration()
-                                    .as(ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
-                                    && cf.endpoint == channelConfig.endpoint) {
-                                scheduler.submit(() -> handleCommand(c.getUID(), brightness));
-                            }
-                        });
-            }
+            zwaveCommand.value = handleOnOffTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
+                    onOffCommand);
+        } else if (command instanceof HSBType hsbTypeCommand) {
+            zwaveCommand.value = handleHSBTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
+                    hsbTypeCommand);
         } else if (command instanceof QuantityType<?> quantityCommand) {
-            Unit<?> unit = UnitUtils.parseUnit(channelConfig.incomingUnit);
-            if (unit == null) {
-                logger.warn("Could not parse '{}' as a unit, this is a bug.", channelConfig.incomingUnit);
-                return;
-            }
-            QuantityType<?> resultValue = Objects.requireNonNull(quantityCommand.toUnit(unit));
-            if (channelConfig.factor != 1.0) {
-                resultValue = resultValue.divide(new BigDecimal(channelConfig.factor));
-            }
-            zwaveCommand.value = resultValue;
+            zwaveCommand.value = handleQuantityTypeCommand(channelConfig, quantityCommand);
+        } else if (PercentType.class.equals(command.getClass())
+                && (command instanceof PercentType percentTypeCommand)) {
+            zwaveCommand.value = handlePercentTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
+                    percentTypeCommand);
         } else if (command instanceof DecimalType decimalCommand) {
             zwaveCommand.value = decimalCommand.doubleValue();
         } else if (command instanceof DateTimeType dateTimeCommand) {
@@ -310,6 +253,89 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (zwaveCommand.value != null) {
             handler.sendCommand(zwaveCommand);
         }
+    }
+
+    private @Nullable Object handleOnOffTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
+            @Nullable ColorCapability colorCap, boolean isColorChannelCommand, OnOffType onOffCommand) {
+        if (isColorChannelCommand) {
+            return handlePercentTypeCommand(channelConfig, channel, colorCap, isColorChannelCommand,
+                    OnOffType.OFF == onOffCommand ? PercentType.ZERO : PercentType.HUNDRED);
+        } else if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
+            return OnOffType.ON == onOffCommand ? 255 : 0;
+        } else {
+            return onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON);
+        }
+    }
+
+    private @Nullable Object handlePercentTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
+            @Nullable ColorCapability colorCap, boolean isColorChannelCommand, PercentType percentTypeCommand) {
+        if (isColorChannelCommand && colorCap != null) {
+            return handleHSBTypeCommand(channelConfig, channel, colorCap, isColorChannelCommand, new HSBType(
+                    colorCap.cachedColor.getHue(), colorCap.cachedColor.getSaturation(), percentTypeCommand));
+        } else {
+            int newValue = percentTypeCommand.intValue();
+            if (channelConfig.inverted) {
+                newValue = 100 - newValue;
+            }
+            if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && newValue == 100) {
+                newValue = 99;
+            }
+            return newValue;
+        }
+    }
+
+    private @Nullable Object handleHSBTypeCommand(ZwaveJSChannelConfiguration channelConfig, Channel channel,
+            @Nullable ColorCapability colorCap, boolean isColorChannelCommand, HSBType hsbTypeCommand) {
+        Object retValue = null;
+        if (isColorChannelCommand && colorCap != null) {
+            colorCap.cachedColor = hsbTypeCommand;
+        }
+        HSBType hsbFull = new HSBType(hsbTypeCommand.getHue(), hsbTypeCommand.getSaturation(), PercentType.HUNDRED);
+        int[] rgb = ColorUtil.hsbToRgb(hsbFull);
+        if (channel.getUID().getId().contains(HEX)) {
+            retValue = "%02X%02X%02X".formatted(rgb[0], rgb[1], rgb[2]);
+        } else {
+            Map<String, Integer> colorMap = new HashMap<>();
+            colorMap.put(RED, rgb[0]);
+            colorMap.put(GREEN, rgb[1]);
+            colorMap.put(BLUE, rgb[2]);
+            if (colorCap != null && colorCap.supportsColdWhite) {
+                colorMap.put(COLD_WHITE, 0);
+            }
+            if (colorCap != null && colorCap.supportsWarmWhite) {
+                colorMap.put(WARM_WHITE, 0);
+            }
+            retValue = colorMap;
+        }
+        if (isColorChannelCommand) {
+            // schedule brightness command(s) for dimmer channel(s)
+            PercentType brightness = hsbTypeCommand.getBrightness();
+            thing.getChannels().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType()))
+                    .forEach(c -> {
+                        if (c.getConfiguration()
+                                .as(ZwaveJSChannelConfiguration.class) instanceof ZwaveJSChannelConfiguration cf
+                                && cf.endpoint == channelConfig.endpoint) {
+                            scheduler.submit(() -> handleCommand(c.getUID(), brightness));
+                        }
+                    });
+        }
+
+        return retValue;
+    }
+
+    private @Nullable Object handleQuantityTypeCommand(ZwaveJSChannelConfiguration channelConfig,
+            QuantityType<?> quantityCommand) {
+        Unit<?> unit = UnitUtils.parseUnit(channelConfig.incomingUnit);
+        Object retValue = null;
+        if (unit == null) {
+            logger.warn("Could not parse '{}' as a unit, this is a bug.", channelConfig.incomingUnit);
+            return retValue;
+        }
+        QuantityType<?> resultValue = Objects.requireNonNull(quantityCommand.toUnit(unit));
+        if (channelConfig.factor != 1.0) {
+            retValue = resultValue.divide(new BigDecimal(channelConfig.factor));
+        }
+        return retValue;
     }
 
     @Override
