@@ -106,7 +106,7 @@ public class MeterReading extends Value {
         data = new Data();
     }
 
-    public MeterReading merge(MeterReading incomingMeterReading) throws SedifException {
+    public MeterReading merge(MeterReading incomingMeterReading, boolean updateHistorical) throws SedifException {
         Data.Consommation[] incomingConso = incomingMeterReading.data.consommation;
         if (incomingConso == null) {
             throw new SedifException("Invalid meterReading data: no day period");
@@ -134,7 +134,7 @@ public class MeterReading extends Value {
 
             // The new block of data is before existing data
 
-            if (incomingConso[incomingConso.length - 1].dateIndex.toLocalDate().isBefore(firstDate)) {
+            if (updateHistorical) {
                 int totalLength = incomingConso.length + this.data.consommation.length;
                 newConso = new Consommation[totalLength];
                 System.arraycopy(incomingConso, 0, newConso, 0, incomingConso.length);
@@ -268,29 +268,29 @@ public class MeterReading extends Value {
              * for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
              * LocalDate startOfYear = realStartDate.with(TemporalAdjusters.firstDayOfYear()).plusYears(idxYear);
              * LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
-             * 
+             *
              * int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfYear) - 1;
              * int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfYear);
-             * 
+             *
              * Consommation yearConso = data.new Consommation();
              * data.yearConso[idxYear] = yearConso;
-             * 
+             *
              * logger.debug("");
-             * 
+             *
              * if (idxConsoFin >= data.consommation.length && endOfYear.isAfter(LocalDate.now())) {
              * idxConsoFin = data.consommation.length - 1;
              * }
-             * 
+             *
              * if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
              * float indexDeb = lcConso[idxConsoDeb].valeurIndex;
              * float indexFin = lcConso[idxConsoFin].valeurIndex;
-             * 
+             *
              * float indexDiff = indexFin - indexDeb;
-             * 
+             *
              * yearConso.consommation = indexDiff;
              * yearConso.dateIndex = LocalDateTime.of(startOfYear.getYear(), 1, 1, 0, 0, 0);
              * }
-             * 
+             *
              * }
              */
 
