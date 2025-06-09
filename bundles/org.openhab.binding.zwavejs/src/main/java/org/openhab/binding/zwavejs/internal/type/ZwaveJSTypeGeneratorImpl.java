@@ -132,7 +132,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         List<ConfigDescriptionParameter> configDescriptions = new ArrayList<>();
         URI uri = Objects.requireNonNull(getConfigDescriptionURI(thingUID, node));
         for (Value value : node.values) {
-            if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(value.commandClassName)) {
+            if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(value.commandClass)) {
                 ConfigMetadata metadata = new ConfigMetadata(node.nodeId, value);
                 configDescriptions.add(createConfigDescription(metadata));
                 if (!result.values.containsKey(metadata.id) && value.value != null) {
@@ -140,7 +140,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 }
             }
             ChannelMetadata metadata = new ChannelMetadata(node.nodeId, value);
-            if (configurationAsChannels || !CONFIGURATION_COMMAND_CLASSES.contains(value.commandClassName)) {
+            if (configurationAsChannels || !CONFIGURATION_COMMAND_CLASSES.contains(value.commandClass)) {
                 result.channels = createChannel(thingUID, result.channels, metadata, configDescriptionProvider);
                 if (!metadata.isIgnoredCommandClass(value.commandClassName) && !result.values.containsKey(metadata.id)
                         && value.value != null) {

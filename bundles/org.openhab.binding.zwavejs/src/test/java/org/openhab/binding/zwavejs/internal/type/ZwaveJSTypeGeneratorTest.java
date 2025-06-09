@@ -245,6 +245,23 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode186WeirdType() throws IOException {
+        Channel channel = getChannel("store_4.json", 186, "door-lock-inside-handles-can-open-door");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:door-lock-inside-handles-can-open-door", channel.getUID().getAsString());
+        assertEquals("String", type.getItemType());
+        assertEquals("Which Inside Handles Can Open The Door (Actual Status)", channel.getLabel());
+        assertNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNull(statePattern);
+    }
+
+    @Test
     public void testGenCTAllNodes() throws IOException {
         ResultMessage resultMessage = DataUtil.fromJson("store_4.json", ResultMessage.class);
         Map<String, Channel> channels = new HashMap<>();
@@ -255,6 +272,6 @@ public class ZwaveJSTypeGeneratorTest {
             channels.putAll(results.channels);
         }
 
-        assertEquals(37, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(42, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
     }
 }

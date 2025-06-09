@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.zwavejs.internal;
 
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_CONFIGURATION;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_WAKE_UP;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,11 +69,8 @@ public class BindingConstants {
     public static final String PROPERTY_NODE_LASTSEEN = "lastSeen";
     public static final String PROPERTY_NODE_FREQ_LISTENING = "isFrequentListening";
 
-    public static final String CC_CONFIGURATION = "Configuration";
-    public static final String CC_WAKE_UP = "Wake Up";
-    public static final String CC_NOTIFICATION = "Notification";
-
-    public static final List<String> CONFIGURATION_COMMAND_CLASSES = List.of(CC_CONFIGURATION, CC_WAKE_UP);
+    public static final List<Integer> CONFIGURATION_COMMAND_CLASSES = List.of(COMMAND_CLASS_CONFIGURATION,
+            COMMAND_CLASS_WAKE_UP);
 
     // color related keys
     public static final String RED = "red";

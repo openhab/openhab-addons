@@ -41,15 +41,15 @@ public class ConfigMetadata extends BaseMetadata {
     public ConfigMetadata(int nodeId, Value data) {
         super(nodeId, data);
 
-        this.configType = configTypeFromMetadata(data.metadata.type, data.value, data.commandClassName);
+        this.configType = configTypeFromMetadata(data.metadata.type, data.value, data.commandClass);
     }
 
     public ConfigMetadata(int nodeId, Event data) {
         super(nodeId, data);
     }
 
-    private Type configTypeFromMetadata(MetadataType type, Object value, String commandClassName) {
-        type = correctedType(type, value, commandClassName, null);
+    private Type configTypeFromMetadata(MetadataType type, Object value, int commandClass) {
+        type = correctedType(type, value, commandClass, null);
         switch (type) {
             case NUMBER:
                 return Type.INTEGER;

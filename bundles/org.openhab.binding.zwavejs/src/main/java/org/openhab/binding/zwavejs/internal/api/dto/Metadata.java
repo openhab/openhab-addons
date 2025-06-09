@@ -35,7 +35,7 @@ public class Metadata {
     @SerializedName("default")
     public Object defaultValue;
     public Integer min;
-    public Integer max;
+    public Long max;
     public Integer steps;
     public int valueSize;
     public int format;

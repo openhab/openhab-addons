@@ -65,12 +65,12 @@ public class ChannelMetadata extends BaseMetadata {
         super(nodeId, data);
     }
 
-    protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, String commandClassName,
+    protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, int commandClass,
             @Nullable Map<String, String> optionList) {
-        String baseItemType = super.itemTypeFromMetadata(type, value, commandClassName, optionList);
+        String baseItemType = super.itemTypeFromMetadata(type, value, commandClass, optionList);
         if (CoreItemFactory.NUMBER.equals(baseItemType) && writable && min != null && max != null) {
             if (min == 0 && max == 99) {
-                this.max = 100; // ZUI uses 0-99, but openHAB uses 0-100
+                this.max = 100L; // ZUI uses 0-99, but openHAB uses 0-100
                 return CoreItemFactory.DIMMER;
             }
         }

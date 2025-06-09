@@ -13,6 +13,8 @@
 package org.openhab.binding.zwavejs.internal.conversion;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_ALARM;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_DOOR_LOCK;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,7 +30,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
@@ -97,7 +98,7 @@ public abstract class BaseMetadata {
 
     protected final Object value;
     protected final @Nullable Integer min;
-    protected @Nullable Integer max;
+    protected @Nullable Long max;
 
     protected BaseMetadata(int nodeId, Value value) {
         this.nodeId = nodeId;
@@ -115,7 +116,7 @@ public abstract class BaseMetadata {
         this.unitSymbol = normalizeUnit(value.metadata.unit, value.value);
         this.factor = determineFactor(value.metadata.unit);
         this.unit = UnitUtils.parseUnit(this.unitSymbol);
-        this.itemType = itemTypeFromMetadata(value.metadata.type, value.value, value.commandClassName,
+        this.itemType = itemTypeFromMetadata(value.metadata.type, value.value, value.commandClass,
                 value.metadata.states);
         if (unitSymbol != null && unit == null) {
             logger.warn("Node {}, unable to parse unitSymbol '{}', please file a bug report", nodeId, unitSymbol);
@@ -410,16 +411,15 @@ public abstract class BaseMetadata {
      *
      * @return The corrected metadata type.
      */
-    protected MetadataType correctedType(MetadataType type, @Nullable Object value, String commandClassName,
+    protected MetadataType correctedType(MetadataType type, @Nullable Object value, int commandClass,
             @Nullable Map<String, String> optionList) {
         switch (type) {
             case ANY:
-                return determineTypeFromValue(value, commandClassName);
+                return determineTypeFromValue(value, commandClass);
             case DURATION:
                 return MetadataType.NUMBER;
             case NUMBER:
-                if (BindingConstants.CC_NOTIFICATION.equals(commandClassName) && optionList != null
-                        && optionList.size() == 2) {
+                if (COMMAND_CLASS_ALARM == commandClass && optionList != null && optionList.size() == 2) {
                     return MetadataType.BOOLEAN;
                 }
             default:
@@ -428,15 +428,15 @@ public abstract class BaseMetadata {
     }
 
     /*
-     * Determines the metadata type from the given value.
+     * Determines the metadata type based on the provided value and command class.
      *
-     * @param value The value to determine the metadata type from.
+     * @param value The value to determine the metadata type from. Can be null.
      * 
-     * @param commandClassName The name of the command class associated with the value.
-     *
+     * @param commandClass The Z-Wave command class identifier used for additional type determination in specific cases.
+     * 
      * @return The determined metadata type.
      */
-    private MetadataType determineTypeFromValue(@Nullable Object value, String commandClassName) {
+    private MetadataType determineTypeFromValue(@Nullable Object value, int commandClass) {
         if (value instanceof Number) {
             return MetadataType.NUMBER;
         } else if (value instanceof Boolean) {
@@ -445,10 +445,17 @@ public abstract class BaseMetadata {
             if (isColorMap(treeMap)) {
                 return MetadataType.COLOR;
             } else if (treeMap.containsKey("value")) {
-                return determineTypeFromValue(treeMap.get("value"), commandClassName);
+                return determineTypeFromValue(treeMap.get("value"), commandClass);
             }
         } else if (value instanceof String) {
             return MetadataType.STRING;
+        }
+
+        if (commandClass == COMMAND_CLASS_DOOR_LOCK) {
+            if (value instanceof ArrayList) {
+                return MetadataType.STRING;
+            }
+            return MetadataType.BOOLEAN; // Notification CC can be boolean or string, but we default to boolean
         }
 
         logger.warn("Node {}, unexpected value type: {}, please file a bug report", nodeId,
@@ -470,9 +477,9 @@ public abstract class BaseMetadata {
                 || map.containsKey("warmWhite") || map.containsKey("coldWhite");
     }
 
-    protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, String commandClassName,
+    protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, int commandClass,
             @Nullable Map<String, String> optionList) {
-        type = correctedType(type, value, commandClassName, optionList);
+        type = correctedType(type, value, commandClass, optionList);
 
         switch (type) {
             case NUMBER:
@@ -505,7 +512,7 @@ public abstract class BaseMetadata {
     }
 
     protected @Nullable StateDescriptionFragment createStatePattern(boolean writeable, @Nullable Integer min,
-            @Nullable Integer max, @Nullable Integer step, @Nullable Object value) {
+            @Nullable Long max, @Nullable Integer step, @Nullable Object value) {
         String pattern = "";
         String itemTypeSplitted[] = itemType.split(":");
         switch (itemTypeSplitted[0]) {

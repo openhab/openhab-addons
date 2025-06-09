@@ -425,7 +425,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         logger.trace("Node {}. State changed event", config.id);
 
         // Handle configuration value updates
-        if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(event.args.commandClassName)) {
+        if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(event.args.commandClass)) {
             if (event.args.newValue == null) {
                 logger.debug("Node {}. Configuration value not set, because it is null.", config.id);
                 return false;

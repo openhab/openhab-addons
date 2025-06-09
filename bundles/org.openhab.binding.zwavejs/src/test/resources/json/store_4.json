@@ -23078,6 +23078,1744 @@
                     "keepAwake": false,
                     "lastSeen": "2025-01-09T17:45:46.162Z",
                     "protocol": 0
+                },
+                {
+                    "nodeId": 186,
+                    "index": 0,
+                    "installerIcon": 768,
+                    "userIcon": 768,
+                    "status": 4,
+                    "ready": true,
+                    "isListening": false,
+                    "isRouting": true,
+                    "isSecure": true,
+                    "manufacturerId": 144,
+                    "productId": 1094,
+                    "productType": 3,
+                    "firmwareVersion": "4.45",
+                    "zwavePlusVersion": 1,
+                    "name": "Man Door Lock",
+                    "location": "Garage",
+                    "deviceConfig": {
+                        "filename": "/usr/src/app/store/.config-db/devices/0x0090/914c.json",
+                        "isEmbedded": true,
+                        "manufacturer": "Kwikset",
+                        "manufacturerId": 144,
+                        "label": "914C",
+                        "description": "Convert Smart Lock",
+                        "devices": [
+                            {
+                                "productType": 3,
+                                "productId": 1094
+                            },
+                            {
+                                "productType": 3,
+                                "productId": 66
+                            }
+                        ],
+                        "firmwareVersion": {
+                            "min": "0.0",
+                            "max": "255.255"
+                        },
+                        "preferred": false,
+                        "associations": {},
+                        "paramInformation": {
+                            "_map": {}
+                        }
+                    },
+                    "label": "914C",
+                    "interviewAttempts": 0,
+                    "endpoints": [
+                        {
+                            "nodeId": 186,
+                            "index": 0,
+                            "installerIcon": 768,
+                            "userIcon": 768,
+                            "deviceClass": {
+                                "basic": {
+                                    "key": 4,
+                                    "label": "Routing End Node"
+                                },
+                                "generic": {
+                                    "key": 64,
+                                    "label": "Entry Control"
+                                },
+                                "specific": {
+                                    "key": 3,
+                                    "label": "Secure Keypad Door Lock"
+                                }
+                            },
+                            "commandClasses": [
+                                {
+                                    "id": 94,
+                                    "name": "Z-Wave Plus Info",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 114,
+                                    "name": "Manufacturer Specific",
+                                    "version": 2,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 90,
+                                    "name": "Device Reset Locally",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 152,
+                                    "name": "Security",
+                                    "version": 1,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 115,
+                                    "name": "Powerlevel",
+                                    "version": 1,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 122,
+                                    "name": "Firmware Update Meta Data",
+                                    "version": 3,
+                                    "isSecure": false
+                                },
+                                {
+                                    "id": 134,
+                                    "name": "Version",
+                                    "version": 2,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 128,
+                                    "name": "Battery",
+                                    "version": 1,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 98,
+                                    "name": "Door Lock",
+                                    "version": 2,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 99,
+                                    "name": "User Code",
+                                    "version": 1,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 133,
+                                    "name": "Association",
+                                    "version": 2,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 89,
+                                    "name": "Association Group Information",
+                                    "version": 1,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 113,
+                                    "name": "Notification",
+                                    "version": 4,
+                                    "isSecure": true
+                                },
+                                {
+                                    "id": 112,
+                                    "name": "Configuration",
+                                    "version": 1,
+                                    "isSecure": true
+                                }
+                            ]
+                        }
+                    ],
+                    "values": [
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "insideHandlesCanOpenDoorConfiguration",
+                            "propertyName": "insideHandlesCanOpenDoorConfiguration",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Which inside handles can open the door (configuration)",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                true,
+                                true,
+                                true,
+                                true
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "outsideHandlesCanOpenDoorConfiguration",
+                            "propertyName": "outsideHandlesCanOpenDoorConfiguration",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Which outside handles can open the door (configuration)",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                true,
+                                true,
+                                true,
+                                true
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "operationType",
+                            "propertyName": "operationType",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Lock operation type",
+                                "min": 0,
+                                "max": 255,
+                                "states": {
+                                    "1": "Constant",
+                                    "2": "Timed"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "insideHandlesCanOpenDoor",
+                            "propertyName": "insideHandlesCanOpenDoor",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Which inside handles can open the door (actual status)",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "outsideHandlesCanOpenDoor",
+                            "propertyName": "outsideHandlesCanOpenDoor",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Which outside handles can open the door (actual status)",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                false,
+                                false,
+                                false,
+                                false
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "currentMode",
+                            "propertyName": "currentMode",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current lock mode",
+                                "min": 0,
+                                "max": 255,
+                                "states": {
+                                    "0": "Unsecured",
+                                    "1": "UnsecuredWithTimeout",
+                                    "16": "InsideUnsecured",
+                                    "17": "InsideUnsecuredWithTimeout",
+                                    "32": "OutsideUnsecured",
+                                    "33": "OutsideUnsecuredWithTimeout",
+                                    "254": "Unknown",
+                                    "255": "Secured"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 255
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "doorStatus",
+                            "propertyName": "doorStatus",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current status of the door",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "open"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "boltStatus",
+                            "propertyName": "boltStatus",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current status of the bolt",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "locked"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "latchStatus",
+                            "propertyName": "latchStatus",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "any",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current status of the latch",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "open"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "targetMode",
+                            "propertyName": "targetMode",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Target lock mode",
+                                "min": 0,
+                                "max": 255,
+                                "states": {
+                                    "0": "Unsecured",
+                                    "1": "UnsecuredWithTimeout",
+                                    "16": "InsideUnsecured",
+                                    "17": "InsideUnsecuredWithTimeout",
+                                    "32": "OutsideUnsecured",
+                                    "33": "OutsideUnsecuredWithTimeout",
+                                    "254": "Unknown",
+                                    "255": "Secured"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 255
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "lockTimeoutConfiguration",
+                            "propertyName": "lockTimeoutConfiguration",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "label": "Duration of timed mode in seconds",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 98,
+                            "commandClassName": "Door Lock",
+                            "property": "lockTimeout",
+                            "propertyName": "lockTimeout",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Seconds until lock mode times out",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 31,
+                            "propertyKey": 1,
+                            "propertyName": "Dipswitch setting: Lock Status LED",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "description": "State of the Lock Status LED dipswitch on the rear panel of the door lock.",
+                                "label": "Dipswitch setting: Lock Status LED",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disabled",
+                                    "1": "Enabled"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 31,
+                            "propertyKey": 2,
+                            "propertyName": "Dipswitch setting: Autolock",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "description": "State of the Autolock dipswitch on the rear panel of the door lock.",
+                                "label": "Dipswitch setting: Autolock",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disabled",
+                                    "1": "Enabled"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 31,
+                            "propertyKey": 4,
+                            "propertyName": "Dipswitch setting: Buzzer",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "description": "State of the Buzzer dipswitch on the rear panel of the door lock.",
+                                "label": "Dipswitch setting: Buzzer",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disabled",
+                                    "1": "Enabled"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 31,
+                            "propertyKey": 8,
+                            "propertyName": "Dipswitch setting: Secure Screen",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "description": "State of the Secure Screen dipswitch on the rear panel of the door lock.",
+                                "label": "Dipswitch setting: Secure Screen",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Disabled",
+                                    "1": "Enabled"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 33,
+                            "propertyName": "SKU Number (First 4 Bytes)",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "SKU Number (First 4 Bytes)",
+                                "default": 0,
+                                "min": 0,
+                                "max": 4294967295,
+                                "valueSize": 4,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 538976288
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 34,
+                            "propertyName": "SKU Number (Last 4 Bytes)",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "SKU Number (Last 4 Bytes)",
+                                "default": 0,
+                                "min": 0,
+                                "max": 4294967295,
+                                "valueSize": 4,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            },
+                            "value": 538976288
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 1,
+                            "propertyName": "User Code 1 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 1 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 2,
+                            "propertyName": "User Code 2 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 2 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 3,
+                            "propertyName": "User Code 3 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 3 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 4,
+                            "propertyName": "User Code 4 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 4 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 5,
+                            "propertyName": "User Code 5 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 5 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 6,
+                            "propertyName": "User Code 6 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 6 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 7,
+                            "propertyName": "User Code 7 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 7 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 8,
+                            "propertyName": "User Code 8 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 8 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 9,
+                            "propertyName": "User Code 9 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 9 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 10,
+                            "propertyName": "User Code 10 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 10 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 11,
+                            "propertyName": "User Code 11 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 11 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 12,
+                            "propertyName": "User Code 12 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 12 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 13,
+                            "propertyName": "User Code 13 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 13 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 14,
+                            "propertyName": "User Code 14 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 14 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 15,
+                            "propertyName": "User Code 15 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 15 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 16,
+                            "propertyName": "User Code 16 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 16 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 17,
+                            "propertyName": "User Code 17 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 17 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 18,
+                            "propertyName": "User Code 18 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 18 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 19,
+                            "propertyName": "User Code 19 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 19 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 20,
+                            "propertyName": "User Code 20 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 20 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 21,
+                            "propertyName": "User Code 21 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 21 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 22,
+                            "propertyName": "User Code 22 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 22 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 23,
+                            "propertyName": "User Code 23 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 23 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 24,
+                            "propertyName": "User Code 24 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 24 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 25,
+                            "propertyName": "User Code 25 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 25 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 26,
+                            "propertyName": "User Code 26 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 26 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 27,
+                            "propertyName": "User Code 27 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 27 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 28,
+                            "propertyName": "User Code 28 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 28 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 29,
+                            "propertyName": "User Code 29 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 29 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 30,
+                            "propertyName": "User Code 30 Type",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": true,
+                                "description": "Guests and Workers will require schedules attached to them in order for those types to be assigned",
+                                "label": "User Code 30 Type",
+                                "default": 1,
+                                "min": 1,
+                                "max": 4,
+                                "states": {
+                                    "1": "Owner",
+                                    "3": "Guest",
+                                    "4": "Worker"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 112,
+                            "commandClassName": "Configuration",
+                            "property": 40,
+                            "propertyName": "Reset to Default",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": false,
+                                "writeable": true,
+                                "description": "Force Factory Reset",
+                                "label": "Reset to Default",
+                                "default": 0,
+                                "min": 0,
+                                "max": 1,
+                                "states": {
+                                    "0": "Normal Operation",
+                                    "1": "Factory Reset"
+                                },
+                                "valueSize": 1,
+                                "format": 1,
+                                "allowManualEntry": false,
+                                "isFromConfig": true
+                            }
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "Access Control",
+                            "propertyKey": "Lock state",
+                            "propertyName": "Access Control",
+                            "propertyKeyName": "Lock state",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Lock state",
+                                "ccSpecific": {
+                                    "notificationType": 6
+                                },
+                                "min": 0,
+                                "max": 255,
+                                "states": {
+                                    "0": "idle",
+                                    "11": "Lock jammed"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "Power Management",
+                            "propertyKey": "Battery maintenance status",
+                            "propertyName": "Power Management",
+                            "propertyKeyName": "Battery maintenance status",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Battery maintenance status",
+                                "ccSpecific": {
+                                    "notificationType": 8
+                                },
+                                "min": 0,
+                                "max": 255,
+                                "states": {
+                                    "0": "idle",
+                                    "10": "Replace battery soon",
+                                    "11": "Replace battery now"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 11
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "alarmType",
+                            "propertyName": "alarmType",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Alarm Type",
+                                "min": 0,
+                                "max": 255,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 24
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 113,
+                            "commandClassName": "Notification",
+                            "property": "alarmLevel",
+                            "propertyName": "alarmLevel",
+                            "ccVersion": 4,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Alarm Level",
+                                "min": 0,
+                                "max": 255,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 1
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "productId",
+                            "propertyName": "productId",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Product ID",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 1094
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "productType",
+                            "propertyName": "productType",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Product type",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 3
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 114,
+                            "commandClassName": "Manufacturer Specific",
+                            "property": "manufacturerId",
+                            "propertyName": "manufacturerId",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Manufacturer ID",
+                                "min": 0,
+                                "max": 65535,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 144
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 128,
+                            "commandClassName": "Battery",
+                            "property": "isLow",
+                            "propertyName": "isLow",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "boolean",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Low battery level",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": false
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 128,
+                            "commandClassName": "Battery",
+                            "property": "level",
+                            "propertyName": "level",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Battery level",
+                                "min": 0,
+                                "max": 100,
+                                "unit": "%",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 90
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "hardwareVersion",
+                            "propertyName": "hardwareVersion",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave chip hardware version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 4
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "firmwareVersions",
+                            "propertyName": "firmwareVersions",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "string[]",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave chip firmware versions",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": [
+                                "4.45",
+                                "70.7"
+                            ]
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "protocolVersion",
+                            "propertyName": "protocolVersion",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "string",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Z-Wave protocol version",
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": "4.34"
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 134,
+                            "commandClassName": "Version",
+                            "property": "libraryType",
+                            "propertyName": "libraryType",
+                            "ccVersion": 2,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Library type",
+                                "states": {
+                                    "0": "Unknown",
+                                    "1": "Static Controller",
+                                    "2": "Controller",
+                                    "3": "Enhanced Slave",
+                                    "4": "Slave",
+                                    "5": "Installer",
+                                    "6": "Routing Slave",
+                                    "7": "Bridge Controller",
+                                    "8": "Device under Test",
+                                    "9": "N/A",
+                                    "10": "AV Remote",
+                                    "11": "AV Device"
+                                },
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 3
+                        }
+                    ],
+                    "isFrequentListening": "1000ms",
+                    "maxDataRate": 100000,
+                    "supportedDataRates": [
+                        40000,
+                        100000
+                    ],
+                    "protocolVersion": 3,
+                    "supportsBeaming": true,
+                    "supportsSecurity": false,
+                    "nodeType": 1,
+                    "zwavePlusNodeType": 0,
+                    "zwavePlusRoleType": 7,
+                    "deviceClass": {
+                        "basic": {
+                            "key": 4,
+                            "label": "Routing End Node"
+                        },
+                        "generic": {
+                            "key": 64,
+                            "label": "Entry Control"
+                        },
+                        "specific": {
+                            "key": 3,
+                            "label": "Secure Keypad Door Lock"
+                        }
+                    },
+                    "interviewStage": "Complete",
+                    "deviceDatabaseUrl": "https://devices.zwave-js.io/?jumpTo=0x0090:0x0003:0x0446:4.45",
+                    "statistics": {
+                        "commandsTX": 611,
+                        "commandsRX": 760,
+                        "commandsDroppedRX": 116,
+                        "commandsDroppedTX": 0,
+                        "timeoutResponse": 11,
+                        "rtt": 345.9,
+                        "lastSeen": "2025-06-07T08:25:13.287Z",
+                        "rssi": -82,
+                        "lwr": {
+                            "protocolDataRate": 2,
+                            "repeaters": [],
+                            "rssi": -82,
+                            "repeaterRSSI": []
+                        },
+                        "nlwr": {
+                            "protocolDataRate": 2,
+                            "repeaters": [
+                                3
+                            ],
+                            "rssi": -69,
+                            "repeaterRSSI": [
+                                0
+                            ]
+                        }
+                    },
+                    "highestSecurityClass": 7,
+                    "isControllerNode": false,
+                    "keepAwake": false,
+                    "lastSeen": "2025-06-07T08:25:13.287Z",
+                    "protocol": 0
                 }
             ]
         }
