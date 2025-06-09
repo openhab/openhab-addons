@@ -89,7 +89,7 @@ public class ChannelMetadata extends BaseMetadata {
     protected boolean isAdvanced(int commandClassId, String propertyName, @Nullable Object propertyKey) {
         return super.isAdvanced(commandClassId, propertyName, propertyKey)
                 || ADVANCED_CHANNELS.contains(commandClassId + "-" + propertyName)
-                || (commandClassId == 51 && propertyKey != null);
+                || (commandClassId == COMMAND_CLASS_SWITCH_COLOR && propertyKey != null);
     }
 
     private static boolean compare(@Nullable Object str1, @Nullable Object str2) {
