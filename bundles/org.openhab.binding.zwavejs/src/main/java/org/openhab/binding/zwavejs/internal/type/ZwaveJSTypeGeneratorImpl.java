@@ -235,14 +235,15 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
 
-        // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
-        updateColorCapabilities(thingUID, details, result);
-
+        // Create new channel
         ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
         ChannelType channelType = getOrGenerate(channelTypeUID, details);
         if (channelType == null) {
             return result.channels;
         }
+
+        // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
+        updateColorCapabilities(thingUID, details, result);
 
         ChannelBuilder builder = ChannelBuilder.create(channelUID, details.itemType).withLabel(details.label)
                 .withConfiguration(newChannelConfiguration).withType(channelType.getUID());
