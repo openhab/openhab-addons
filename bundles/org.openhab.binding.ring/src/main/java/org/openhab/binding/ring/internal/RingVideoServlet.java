@@ -44,12 +44,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RingVideoServlet extends HttpServlet {
-
     private static final long serialVersionUID = -5592161948589682812L;
 
     private final Logger logger = LoggerFactory.getLogger(RingVideoServlet.class);
 
-    private String videoStoragePath = "";
+    private final String videoStoragePath;
 
     public RingVideoServlet(HttpService httpService, String videoStoragePath) {
         Path path = Paths.get(videoStoragePath);

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -43,7 +44,6 @@ import org.openhab.binding.ring.internal.data.Tokens;
 import org.openhab.binding.ring.internal.device.RingDevice;
 import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
-import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.Configuration;
@@ -77,7 +77,6 @@ import com.google.gson.JsonParseException;
 public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
-    private @Nullable Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private final HttpService httpService;
 
@@ -100,7 +99,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The RestClient is used to connect to the Ring Account.
      */
-    private RestClient restClient = new RestClient();
+    private final RestClient restClient;
     /**
      * The list with events.
      */
@@ -130,13 +129,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private long ownerId = 0;
 
     public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, HttpService httpService,
-            int httpPort) {
+            int httpPort, HttpClient httpClient) {
         super(bridge);
         this.httpPort = httpPort;
         this.networkAddressService = networkAddressService;
         this.httpService = httpService;
         this.videoExecutorService = Executors.newCachedThreadPool();
         this.registry = new RingDeviceRegistry();
+        this.restClient = new RestClient(httpClient);
     }
 
     @Override
@@ -291,9 +291,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             refreshRegistry();
             updateStatus(ThingStatus.ONLINE);
-        } catch (DuplicateIdException dup) {
-            logger.debug("Ring device with duplicate id detected, ignoring device");
-            updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
@@ -348,8 +345,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         logger.debug("AccountHandler - initialize - VSP: {} OH: {}", config.videoStoragePath,
                 OpenHAB.getConfigFolder());
 
-        restClient = new RestClient();
-
         if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
             try {
                 Configuration updatedConfiguration = getThing().getConfiguration();
@@ -377,6 +372,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 if (this.ringVideoServlet == null) {
                     this.ringVideoServlet = new RingVideoServlet(httpService, videoStoragePath);
                 }
+                refreshRegistry();
+
                 startAutomaticRefresh(refreshInterval);
                 startSessionRefresh(refreshInterval);
             } catch (AuthenticationException ex) {
@@ -399,7 +396,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    private void refreshRegistry() throws JsonParseException, AuthenticationException, DuplicateIdException {
+    private void refreshRegistry() throws JsonParseException, AuthenticationException {
         logger.debug("AccountHandler - refreshRegistry");
         RingDevicesTO ringDevices = restClient.getRingDevices(tokens);
         registry.addOrUpdateRingDevices(ringDevices);
@@ -407,47 +404,24 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     protected void minuteTick() {
         try {
-            // Init the devices
             refreshRegistry();
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException | JsonParseException e) {
-            logger.debug(
-                    "AuthenticationException in AccountHandler.minuteTick() when trying refreshRegistry, attempting to reconnect {}",
-                    e.getMessage());
-            String hardwareId = getHardwareId();
             String refreshToken = getRefreshTokenFromFile();
             if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
                 try {
-                    tokens = restClient.getTokens(config.username, config.password, refreshToken, "", hardwareId);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
+                    tokens = restClient.getTokens(config.username, config.password, refreshToken, "",
+                            config.hardwareId);
+                    refreshRegistry();
+                    updateStatus(ThingStatus.ONLINE);
                 } catch (AuthenticationException ex) {
-                    logger.debug("RestClient reported AuthenticationException trying to get tokens: {}",
-                            ex.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid credentials");
                 } catch (JsonParseException e1) {
                     logger.debug("RestClient reported JsonParseException trying to get tokens: {}", e1.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Invalid response from api.ring.com");
-                } finally {
-                    try {
-                        refreshRegistry();
-                        updateStatus(ThingStatus.ONLINE);
-                    } catch (DuplicateIdException ignored) {
-                        updateStatus(ThingStatus.ONLINE);
-                    } catch (AuthenticationException ae) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "AuthenticationException response from ring.com");
-                        logger.debug("RestClient reported AuthenticationException in finally block: {}",
-                                ae.getMessage());
-                    } catch (JsonParseException pe1) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "JsonParseException response from ring.com");
-                        logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
-                    }
                 }
             }
-        } catch (DuplicateIdException ignored) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -467,25 +441,21 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     protected void eventTick() {
         try {
-            long id = lastEvents.isEmpty() ? 0 : lastEvents.get(0).id;
+            long id = lastEvents.isEmpty() ? 0 : lastEvents.getFirst().id;
             lastEvents = restClient.getHistory(tokens, 1);
             if (!lastEvents.isEmpty()) {
                 logger.debug("AccountHandler - eventTick - Event id: {} lastEvents: {}", id,
-                        lastEvents.get(0).id == id);
-                if (lastEvents.get(0).id != id) {
+                        lastEvents.getFirst().id == id);
+                if (lastEvents.getFirst().id != id) {
                     logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.get(0).id);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT),
-                            lastEvents.get(0).getCreatedAt());
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND),
-                            new StringType(lastEvents.get(0).kind));
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID),
-                            new StringType(lastEvents.get(0).doorbot.id));
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
-                            new StringType(lastEvents.get(0).doorbot.description));
-                    runnableVideo = () -> getVideo(lastEvents.get(0));
+                    updateState(CHANNEL_EVENT_CREATED_AT, lastEvents.getFirst().getCreatedAt());
+                    updateState(CHANNEL_EVENT_KIND, new StringType(lastEvents.getFirst().kind));
+                    updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
+                    updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
+                            new StringType(lastEvents.getFirst().doorbot.description));
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
-                        service.submit(runnableVideo);
+                        service.submit(() -> getVideo(lastEvents.getFirst()));
                     }
                 }
             } else {
@@ -508,10 +478,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private void refreshToken() {
         try {
             refreshRegistry();
-            Configuration config = getThing().getConfiguration();
-            String hardwareId = (String) config.get("hardwareId");
-            tokens = restClient.getTokens("", "", tokens.refreshToken(), "", hardwareId);
-        } catch (AuthenticationException | DuplicateIdException e) {
+            tokens = restClient.getTokens("", "", tokens.refreshToken(), "", config.hardwareId);
+        } catch (AuthenticationException e) {
             logger.debug(
                     "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
                     e.getMessage(), e);
@@ -552,7 +520,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         eventRefresh = null;
     }
 
-    String getLocalMAC() throws IOException {
+    private String getLocalMAC() throws IOException {
         // get local ip from OH system settings
         String localIP = networkAddressService.getPrimaryIpv4HostAddress();
         if ((localIP == null) || (localIP.isBlank())) {

@@ -16,11 +16,14 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.ring.internal.handler.AccountHandler;
 import org.openhab.binding.ring.internal.handler.ChimeHandler;
 import org.openhab.binding.ring.internal.handler.DoorbellHandler;
 import org.openhab.binding.ring.internal.handler.OtherDeviceHandler;
 import org.openhab.binding.ring.internal.handler.StickupcamHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -32,6 +35,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
@@ -57,13 +61,15 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
     private final NetworkAddressService networkAddressService;
 
     private final HttpService httpService;
+    private final HttpClient httpClient;
     private int httpPort;
 
     public final Gson gson = new Gson();
 
     @Activate
     public RingHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference HttpService httpService, ComponentContext componentContext) {
+            @Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext) throws Exception {
         super.activate(componentContext);
         httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         if (httpPort == -1) {
@@ -73,6 +79,14 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = networkAddressService;
 
         logger.debug("Using OH HTTP port {}", httpPort);
+
+        httpClient = httpClientFactory.createHttpClient("ring", new SslContextFactory.Client());
+        httpClient.start();
+    }
+
+    @Deactivate
+    public void deactivate() throws Exception {
+        httpClient.stop();
     }
 
     @Override
@@ -86,7 +100,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             if (thing instanceof Bridge bridge) {
-                return new AccountHandler(bridge, networkAddressService, httpService, httpPort);
+                return new AccountHandler(bridge, networkAddressService, httpService, httpPort, httpClient);
             } else {
                 logger.warn("Account Bridge configured as legacy Thing");
                 return null;
