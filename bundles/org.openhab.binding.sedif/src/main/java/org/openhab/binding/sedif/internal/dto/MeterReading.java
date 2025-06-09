@@ -135,10 +135,29 @@ public class MeterReading extends Value {
             // The new block of data is before existing data
 
             if (updateHistorical) {
+                if (incomingConso[incomingConso.length - 1].dateIndex.toLocalDate()
+                        .isAfter(existingConso[0].dateIndex.toLocalDate())) {
+                    return this;
+                }
+
+                int idx = incomingConso.length - 1;
+                int numElementToRemove = 0;
+                boolean needMerge = false;
+                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().compareTo(firstDate) >= 0) {
+                    idx--;
+                    needMerge = true;
+                }
                 int totalLength = incomingConso.length + this.data.consommation.length;
+                totalLength += 0;
+                if (needMerge) {
+                    numElementToRemove = incomingConso.length - idx - 1;
+                    totalLength = totalLength - numElementToRemove;
+                }
                 newConso = new Consommation[totalLength];
-                System.arraycopy(incomingConso, 0, newConso, 0, incomingConso.length);
-                System.arraycopy(this.data.consommation, 0, newConso, incomingConso.length,
+                if (needMerge) {
+                    System.arraycopy(incomingConso, 0, newConso, 0, incomingConso.length - numElementToRemove);
+                }
+                System.arraycopy(this.data.consommation, 0, newConso, incomingConso.length - numElementToRemove,
                         this.data.consommation.length);
 
             } else {
@@ -180,120 +199,119 @@ public class MeterReading extends Value {
     }
 
     public void calcAgregat() throws SedifException {
-        if (data.weekConso == null) {
-            Data.Consommation[] lcConso = data.consommation;
-            if (lcConso == null) {
-                throw new SedifException("Invalid meterReading data: no day period");
+        // if (data.weekConso == null) {
+        Data.Consommation[] lcConso = data.consommation;
+        if (lcConso == null) {
+            throw new SedifException("Invalid meterReading data: no day period");
+        }
+
+        LocalDate startDate = lcConso[0].dateIndex.toLocalDate();
+        LocalDate endDate = lcConso[data.consommation.length - 1].dateIndex.toLocalDate();
+
+        LocalDate realStartDate = startDate.atStartOfDay().with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
+                .toLocalDate();
+        LocalDate realEndDate = endDate.atStartOfDay().with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).toLocalDate();
+
+        int startWeek = realStartDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+        int endWeek = realEndDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+
+        int yearsNum = realEndDate.getYear() - realStartDate.getYear() + 1;
+        int monthsNum = (realEndDate.getYear() - realStartDate.getYear()) * 12 + realEndDate.getMonthValue()
+                - realStartDate.getMonthValue() + 1;
+
+        int weeksNum = (realEndDate.getYear() - realStartDate.getYear()) * 52 + endWeek - startWeek + 1;
+
+        // int startIdxConso = realStartDate.compareTo(startDate);
+
+        data.weekConso = new Consommation[weeksNum];
+        data.monthConso = new Consommation[monthsNum];
+        data.yearConso = new Consommation[yearsNum];
+
+        for (int idxWeek = 0; idxWeek < weeksNum; idxWeek++) {
+            LocalDate startOfWeek = realStartDate.plusWeeks(idxWeek);
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+            int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfWeek) - 1;
+            int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfWeek);
+
+            Consommation weekConso = data.new Consommation();
+            data.weekConso[idxWeek] = weekConso;
+
+            logger.debug("");
+
+            if (idxConsoFin >= data.consommation.length && endOfWeek.isAfter(LocalDate.now().minusDays(1))) {
+                idxConsoFin = data.consommation.length - 1;
             }
 
-            LocalDate startDate = lcConso[0].dateIndex.toLocalDate();
-            LocalDate endDate = lcConso[data.consommation.length - 1].dateIndex.toLocalDate();
+            if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
+                float indexDeb = lcConso[idxConsoDeb].valeurIndex;
+                float indexFin = lcConso[idxConsoFin].valeurIndex;
+                float indexDiff = indexFin - indexDeb;
 
-            LocalDate realStartDate = startDate.atStartOfDay().with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
-                    .toLocalDate();
-            LocalDate realEndDate = endDate.atStartOfDay().with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).toLocalDate();
+                weekConso.consommation = indexDiff;
+                weekConso.dateIndex = LocalDateTime.of(startOfWeek.getYear(), startOfWeek.getMonth(),
+                        startOfWeek.getDayOfMonth(), 0, 0, 0);
+            }
+        }
 
-            int startWeek = realStartDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
-            int endWeek = realEndDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+        for (int idxMonth = 0; idxMonth < monthsNum; idxMonth++) {
+            LocalDate startOfMonth = realStartDate.with(TemporalAdjusters.firstDayOfMonth()).plusMonths(idxMonth);
+            LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
 
-            int yearsNum = realEndDate.getYear() - realStartDate.getYear() + 1;
-            int monthsNum = (realEndDate.getYear() - realStartDate.getYear()) * 12 + realEndDate.getMonthValue()
-                    - realStartDate.getMonthValue() + 1;
+            int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfMonth) - 1;
+            int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfMonth);
 
-            int weeksNum = (realEndDate.getYear() - realStartDate.getYear()) * 52 + endWeek - startWeek + 1;
+            Consommation monthConso = data.new Consommation();
+            data.monthConso[idxMonth] = monthConso;
 
-            // int startIdxConso = realStartDate.compareTo(startDate);
+            logger.debug("");
 
-            data.weekConso = new Consommation[weeksNum];
-            data.monthConso = new Consommation[monthsNum];
-            data.yearConso = new Consommation[yearsNum];
-
-            for (int idxWeek = 0; idxWeek < weeksNum; idxWeek++) {
-                LocalDate startOfWeek = realStartDate.plusWeeks(idxWeek);
-                LocalDate endOfWeek = startOfWeek.plusDays(6);
-
-                int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfWeek) - 1;
-                int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfWeek);
-
-                Consommation weekConso = data.new Consommation();
-                data.weekConso[idxWeek] = weekConso;
-
-                logger.debug("");
-
-                if (idxConsoFin >= data.consommation.length && endOfWeek.isAfter(LocalDate.now().minusDays(1))) {
-                    idxConsoFin = data.consommation.length - 1;
-                }
-
-                if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
-                    float indexDeb = lcConso[idxConsoDeb].valeurIndex;
-                    float indexFin = lcConso[idxConsoFin].valeurIndex;
-                    float indexDiff = indexFin - indexDeb;
-
-                    weekConso.consommation = indexDiff;
-                    weekConso.dateIndex = LocalDateTime.of(startOfWeek.getYear(), startOfWeek.getMonth(),
-                            startOfWeek.getDayOfMonth(), 0, 0, 0);
-                }
+            if (idxConsoFin >= data.consommation.length && endOfMonth.isAfter(LocalDate.now())) {
+                idxConsoFin = data.consommation.length - 1;
             }
 
-            for (int idxMonth = 0; idxMonth < monthsNum; idxMonth++) {
-                LocalDate startOfMonth = realStartDate.with(TemporalAdjusters.firstDayOfMonth()).plusMonths(idxMonth);
-                LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+            if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
+                float indexDeb = lcConso[idxConsoDeb].valeurIndex;
+                float indexFin = lcConso[idxConsoFin].valeurIndex;
 
-                int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfMonth) - 1;
-                int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfMonth);
+                float indexDiff = indexFin - indexDeb;
 
-                Consommation monthConso = data.new Consommation();
-                data.monthConso[idxMonth] = monthConso;
-
-                logger.debug("");
-
-                if (idxConsoFin >= data.consommation.length && endOfMonth.isAfter(LocalDate.now())) {
-                    idxConsoFin = data.consommation.length - 1;
-                }
-
-                if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
-                    float indexDeb = lcConso[idxConsoDeb].valeurIndex;
-                    float indexFin = lcConso[idxConsoFin].valeurIndex;
-
-                    float indexDiff = indexFin - indexDeb;
-
-                    monthConso.consommation = indexDiff;
-                    monthConso.dateIndex = LocalDateTime.of(startOfMonth.getYear(), startOfMonth.getMonth(), 1, 0, 0,
-                            0);
-                }
-
+                monthConso.consommation = indexDiff;
+                monthConso.dateIndex = LocalDateTime.of(startOfMonth.getYear(), startOfMonth.getMonth(), 1, 0, 0, 0);
             }
-
-            /*
-             * for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
-             * LocalDate startOfYear = realStartDate.with(TemporalAdjusters.firstDayOfYear()).plusYears(idxYear);
-             * LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
-             *
-             * int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfYear) - 1;
-             * int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfYear);
-             *
-             * Consommation yearConso = data.new Consommation();
-             * data.yearConso[idxYear] = yearConso;
-             *
-             * logger.debug("");
-             *
-             * if (idxConsoFin >= data.consommation.length && endOfYear.isAfter(LocalDate.now())) {
-             * idxConsoFin = data.consommation.length - 1;
-             * }
-             *
-             * if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
-             * float indexDeb = lcConso[idxConsoDeb].valeurIndex;
-             * float indexFin = lcConso[idxConsoFin].valeurIndex;
-             *
-             * float indexDiff = indexFin - indexDeb;
-             *
-             * yearConso.consommation = indexDiff;
-             * yearConso.dateIndex = LocalDateTime.of(startOfYear.getYear(), 1, 1, 0, 0, 0);
-             * }
-             *
-             * }
-             */
 
         }
+
+        for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
+            LocalDate startOfYear = realStartDate.with(TemporalAdjusters.firstDayOfYear()).plusYears(idxYear);
+            LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
+
+            int idxConsoDeb = (int) ChronoUnit.DAYS.between(startDate, startOfYear) - 1;
+            int idxConsoFin = (int) ChronoUnit.DAYS.between(startDate, endOfYear);
+
+            Consommation yearConso = data.new Consommation();
+            data.yearConso[idxYear] = yearConso;
+
+            logger.debug("");
+
+            if (idxConsoFin >= data.consommation.length && endOfYear.isAfter(LocalDate.now())) {
+                idxConsoFin = data.consommation.length - 1;
+            }
+
+            if (idxConsoDeb >= 0 && idxConsoFin < data.consommation.length) {
+                if (idxConsoDeb < lcConso.length && idxConsoFin < lcConso.length) {
+                    float indexDeb = lcConso[idxConsoDeb].valeurIndex;
+                    float indexFin = lcConso[idxConsoFin].valeurIndex;
+
+                    float indexDiff = indexFin - indexDeb;
+
+                    yearConso.consommation = indexDiff;
+                    yearConso.dateIndex = LocalDateTime.of(startOfYear.getYear(), 1, 1, 0, 0, 0);
+                }
+            }
+
+        }
+        //
+        // }
     }
 }

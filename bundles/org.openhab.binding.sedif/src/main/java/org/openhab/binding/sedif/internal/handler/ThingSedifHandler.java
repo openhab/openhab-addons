@@ -272,7 +272,8 @@ public class ThingSedifHandler extends BaseThingHandler {
         LocalDate newLastUpdateDate = lastUpdateDate;
         boolean hasData = true;
         boolean hasAlreadyRetrieveData = false;
-        while (hasData && currentDate.isAfter(lastUpdateDate)) {
+        int idx = 0;
+        while (hasData && currentDate.isAfter(lastUpdateDate) /* && idx < 2 */) {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
 
             try {
@@ -300,6 +301,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                 logger.debug("aa:", ex);
             }
             currentDate = startDate;
+            idx++;
         }
 
         sedifState.setLastIndexDate(newLastUpdateDate);
