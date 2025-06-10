@@ -243,7 +243,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
     }
 
     /**
@@ -421,8 +420,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (values.data.consommation.length - 3 >= 0) {
                 dayConsoMinus3 = values.data.consommation[values.data.consommation.length - 3].consommation;
             }
-            // updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-            // new QuantityType<>(yesterdayConso, Units.LITRE));
+
             updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
                     new QuantityType<>(yesterdayConso, Units.LITRE));
             updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION,
@@ -453,8 +451,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            // updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-            // new QuantityType<>(thisWeekConso, Units.LITRE));
             updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
                     new QuantityType<>(thisWeekConso, Units.LITRE));
             updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
@@ -485,8 +481,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            // updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-            // new QuantityType<>(thisMonthConso, Units.LITRE));
             updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
                     new QuantityType<>(thisMonthConso, Units.LITRE));
             updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
@@ -517,8 +511,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            // updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
-            // new QuantityType<>(thisYearConso, Units.LITRE));
             updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
                     new QuantityType<>(thisYearConso, Units.LITRE));
             updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
