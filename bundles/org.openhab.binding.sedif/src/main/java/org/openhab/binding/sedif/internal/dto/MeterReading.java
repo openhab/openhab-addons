@@ -24,8 +24,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
 import org.openhab.binding.sedif.internal.types.SedifException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -35,8 +33,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Laurent Arnal - Initial contribution
  */
 public class MeterReading extends Value {
-    private transient final Logger logger = LoggerFactory.getLogger(MeterReading.class);
-
     public class Data {
         public Data() {
             hasModifications = false;
@@ -150,7 +146,6 @@ public class MeterReading extends Value {
 
             // The new block of data is before existing data
             if (firstDateIncomingCoso.isBefore(firstDateExistingCoso)) {
-
                 // We browse the incoming data backward from the end to find first mergeable index
                 int idx = incomingConso.length - 1;
 
@@ -166,7 +161,6 @@ public class MeterReading extends Value {
             }
             // The new block of data is after existing Data
             else if (lastDateIncomingConso.isAfter(lastDateExistingConso)) {
-
                 // We browse the incoming data forward from the start to find first mergeable index
                 int idx = 0;
 

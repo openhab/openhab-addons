@@ -160,7 +160,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
     }
 
     public String getBaseUrl() {
@@ -251,7 +250,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         Contracts contracts = sedifApi.getContracts();
         if (contracts != null && contracts.contrats != null) {
             for (Contract contract : contracts.contrats) {
-                String contractName = contract.Name;
+                String contractName = contract.name;
                 if (contractName != null) {
                     contractDict.put(contractName, contract);
                     fireOnContractReceivedEvent(contract);
