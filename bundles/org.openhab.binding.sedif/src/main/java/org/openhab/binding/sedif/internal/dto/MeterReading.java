@@ -230,8 +230,6 @@ public class MeterReading extends Value {
         data.monthConso = new Consommation[monthsNum];
         data.yearConso = new Consommation[yearsNum];
 
-        logger.debug("");
-
         for (int idxWeek = 0; idxWeek < weeksNum; idxWeek++) {
             LocalDate startOfWeek = realStartDate.plusWeeks(idxWeek);
             LocalDate endOfWeek = startOfWeek.plusDays(6);
