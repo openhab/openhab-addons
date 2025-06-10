@@ -304,7 +304,6 @@ public class ThingSedifHandler extends BaseThingHandler {
         sedifState.setLastIndexDate(newLastUpdateDate);
 
         saveSedifState();
-
     }
 
     public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate,
