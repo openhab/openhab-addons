@@ -70,8 +70,6 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     public static final DateTimeFormatter SEDIF_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     public static final DateTimeFormatter SEDIF_LOCALDATETIME_FORMATTER = DateTimeFormatter
             .ofPattern("uuuu-MM-dd' 'HH:mm:ss");
-    // new DateTimeFormatterBuilder()
-    // .appendPattern("\"uuuu-MM-dd[' ']HH:mm:ss\"").toFormatter();
 
     private final Gson gson;
 

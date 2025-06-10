@@ -106,8 +106,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     private void detectNewWaterMeterFromContract(final Contract contract) {
-
-        logger.debug("New water meter detection from contract {}", contract);
+        logger.trace("New water meter detection from contract {}", contract);
 
         BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) getThingHandler();
         if (bridgeHandler == null) {
