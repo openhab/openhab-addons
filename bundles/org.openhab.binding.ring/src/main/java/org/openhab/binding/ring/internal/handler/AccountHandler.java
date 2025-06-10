@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +57,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,10 +73,9 @@ import com.google.gson.JsonParseException;
 
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements RingAccount {
+    private final RingVideoServlet servlet;
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
-    private @Nullable RingVideoServlet ringVideoServlet;
-    private final HttpService httpService;
 
     // Current status
     protected OnOffType status = OnOffType.OFF;
@@ -128,15 +125,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private AccountConfiguration config = new AccountConfiguration();
     private long ownerId = 0;
 
-    public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, HttpService httpService,
+    public AccountHandler(Bridge bridge, NetworkAddressService networkAddressService, RingVideoServlet ringVideoServlet,
             int httpPort, HttpClient httpClient) {
         super(bridge);
         this.httpPort = httpPort;
         this.networkAddressService = networkAddressService;
-        this.httpService = httpService;
-        this.videoExecutorService = Executors.newCachedThreadPool();
         this.registry = new RingDeviceRegistry();
         this.restClient = new RestClient(httpClient);
+        this.servlet = ringVideoServlet;
     }
 
     @Override
@@ -341,6 +337,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         videoRetentionCount = config.videoRetentionCount;
         videoStoragePath = !config.videoStoragePath.isEmpty() ? config.videoStoragePath
                 : OpenHAB.getConfigFolder() + "/html/ring/video";
+        servlet.addVideoStoragePath(thing.getUID(), videoStoragePath);
 
         logger.debug("AccountHandler - initialize - VSP: {} OH: {}", config.videoStoragePath,
                 OpenHAB.getConfigFolder());
@@ -369,9 +366,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateProperties(properties);
                 }
 
-                if (this.ringVideoServlet == null) {
-                    this.ringVideoServlet = new RingVideoServlet(httpService, videoStoragePath);
-                }
                 refreshRegistry();
 
                 startAutomaticRefresh(refreshInterval);
@@ -426,16 +420,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     protected void getVideo(RingEventTO event) {
-        logger.debug("AccountHandler - getVideo - Event id: {}", event.id);
-        logger.debug("AccountHandler - getVideo - VSP: {}", videoStoragePath);
         String videoFile = restClient.downloadEventVideo(event, tokens, videoStoragePath, videoRetentionCount);
         String localIP = networkAddressService.getPrimaryIpv4HostAddress();
 
         if (videoFile.endsWith(".mp4")) {
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL),
+            updateState(CHANNEL_EVENT_URL,
                     new StringType("http://" + localIP + ":" + httpPort + "/ring/video/" + videoFile));
         } else {
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(videoFile));
+            updateState(CHANNEL_EVENT_URL, new StringType(videoFile));
         }
     }
 
@@ -550,6 +542,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     @Override
     public void dispose() {
+        servlet.removeVideoStoragePath(thing.getUID());
+
         stopSessionRefresh();
         stopAutomaticRefresh();
         ExecutorService service = this.videoExecutorService;
