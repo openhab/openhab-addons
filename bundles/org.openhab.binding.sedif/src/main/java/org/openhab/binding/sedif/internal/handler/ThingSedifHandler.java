@@ -272,8 +272,8 @@ public class ThingSedifHandler extends BaseThingHandler {
         LocalDate newLastUpdateDate = lastUpdateDate;
         boolean hasData = true;
         boolean hasAlreadyRetrieveData = false;
-        int idx = 0;
-        while (hasData && currentDate.isAfter(lastUpdateDate) /* && idx < 2 */) {
+
+        while (hasData && currentDate.isAfter(lastUpdateDate)) {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
 
             try {
@@ -298,10 +298,9 @@ public class ThingSedifHandler extends BaseThingHandler {
                     }
                 }
             } catch (SedifException ex) {
-                logger.warn(String.format("Unable to retrieve data from {} to {}:", startDate, currentDate), ex);
+                logger.warn("Unable to retrieve data from {} to {}:", startDate, currentDate, ex);
             }
             currentDate = startDate;
-            idx++;
         }
 
         sedifState.setLastIndexDate(newLastUpdateDate);
@@ -328,10 +327,10 @@ public class ThingSedifHandler extends BaseThingHandler {
         contractDetail.getValue().ifPresentOrElse(values -> {
 
             for (CompteInfo compteInfo : values.compteInfo) {
-                if (compteInfo.NUM_COMPTEUR.equals(numCompteur)) {
-                    meterIdA = compteInfo.ELEMA;
-                    meterIdB = compteInfo.ELEMB;
-                    idPds = compteInfo.ID_PDS;
+                if (compteInfo.numCompteur.equals(numCompteur)) {
+                    meterIdA = compteInfo.eLma;
+                    meterIdB = compteInfo.eLmb;
+                    idPds = compteInfo.idPds;
                 }
             }
 
@@ -344,49 +343,49 @@ public class ThingSedifHandler extends BaseThingHandler {
             Map<String, String> props = this.editProperties();
 
             addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_ORGANIZING_AUTHORITY,
-                    values.contrat.AutoriteOrganisatrice);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DATE_SORTIE_EPT, values.contrat.DateSortieEPT);
+                    values.contrat.autoriteOrganisatrice);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DATE_SORTIE_EPT, values.contrat.dateSortieEPT);
             addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_EINVOICE, "" + values.contrat.eFacture);
             addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_ICL_ACTIVE, "" + values.contrat.iclActive);
             addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DIRECT_DEBIT, "" + values.contrat.prelevAuto);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_NAME, values.contrat.Name);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STREET, values.contrat.SITE_Rue);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_POST_CODE, values.contrat.SITE_CP);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_TOWN, values.contrat.SITE_Commune);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STATE, values.contrat.Statut);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_NAME, values.contrat.name);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STREET, values.contrat.siteRue);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_POST_CODE, values.contrat.siteCp);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_TOWN, values.contrat.siteCommune);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STATE, values.contrat.statut);
             addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_BALANCE, "" + values.solde);
 
             CompteInfo comptInfo = values.compteInfo.get(0);
-            addProps(props, THING_WATER_METER_PROPERTY_ELMA, comptInfo.ELEMA);
-            addProps(props, THING_WATER_METER_PROPERTY_ELMB, comptInfo.ELEMB);
-            addProps(props, THING_WATER_METER_PROPERTY_ID_PDS, comptInfo.ID_PDS);
-            addProps(props, THING_WATER_METER_PROPERTY_NUM_METER, comptInfo.NUM_COMPTEUR);
+            addProps(props, THING_WATER_METER_PROPERTY_ELMA, comptInfo.eLma);
+            addProps(props, THING_WATER_METER_PROPERTY_ELMB, comptInfo.eLmb);
+            addProps(props, THING_WATER_METER_PROPERTY_ID_PDS, comptInfo.idPds);
+            addProps(props, THING_WATER_METER_PROPERTY_NUM_METER, comptInfo.numCompteur);
 
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_TOWN, values.contratClient.BillingCity);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_TOWN, values.contratClient.billingCity);
             addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_POST_CODE,
-                    values.contratClient.BillingPostalCode);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_STREET, values.contratClient.BillingStreet);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_FIRST_NAME, values.contratClient.FirstName);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LAST_NAME, values.contratClient.LastName);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_NAME_SUP, values.contratClient.Name);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_EMAIL, values.contratClient.Email);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_GC, "" + values.contratClient.GC);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_MOBILE_PHONE, values.contratClient.MobilePhone);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_TITLE, values.contratClient.Salutation);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LOCK, "" + values.contratClient.VerrouillageFiche);
+                    values.contratClient.billingPostalCode);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_STREET, values.contratClient.billingStreet);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_FIRST_NAME, values.contratClient.firstName);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LAST_NAME, values.contratClient.lastName);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_NAME_SUP, values.contratClient.name);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_EMAIL, values.contratClient.email);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_GC, "" + values.contratClient.gC);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_MOBILE_PHONE, values.contratClient.mobilePhone);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_TITLE, values.contratClient.salutation);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LOCK, "" + values.contratClient.verrouillageFiche);
 
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_CITY, values.payeurClient.BillingCity);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_CITY, values.payeurClient.billingCity);
             addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_POSTAL_CODE,
-                    values.payeurClient.BillingPostalCode);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_STREET, values.payeurClient.BillingStreet);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_FIRST_NAME, values.payeurClient.FirstName);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LAST_NAME, values.payeurClient.LastName);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_NAME_SUP, values.payeurClient.Name);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_EMAIL, values.payeurClient.Email);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_GC, "" + values.payeurClient.GC);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_MOBILE_PHONE, values.payeurClient.MobilePhone);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_TITLE, values.payeurClient.Salutation);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LOCK, "" + values.payeurClient.VerrouillageFiche);
+                    values.payeurClient.billingPostalCode);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_STREET, values.payeurClient.billingStreet);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_FIRST_NAME, values.payeurClient.firstName);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LAST_NAME, values.payeurClient.lastName);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_NAME_SUP, values.payeurClient.name);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_EMAIL, values.payeurClient.email);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_GC, "" + values.payeurClient.gC);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_MOBILE_PHONE, values.payeurClient.mobilePhone);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_TITLE, values.payeurClient.salutation);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LOCK, "" + values.payeurClient.verrouillageFiche);
 
             updateProperties(props);
         }, () -> {
@@ -592,7 +591,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException ex) {
-
                 }
             }
 
@@ -606,7 +604,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             Contract contract = bridgeHandler.getContract(contractName);
             if (contract != null) {
-                contractId = Objects.requireNonNull(contract.Id);
+                contractId = Objects.requireNonNull(contract.id);
             }
             sedifApi = bridgeHandler.getSedifApi();
 

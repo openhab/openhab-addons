@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ELEMA * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link ContractDetail} holds Contract information
  *
@@ -24,27 +26,32 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class ContractDetail extends Value {
     public class CompteInfo {
-        public String ELEMA;
-        public String ELEMB;
-        public String ID_PDS;
-        public String NUM_COMPTEUR;
+        @SerializedName("ELMA")
+        public String eLma;
+        @SerializedName("ELEMB")
+        public String eLmb;
+        @SerializedName("ID_PDS")
+        public String idPds;
+        @SerializedName("NUM_COMPTEUR")
+        public String numCompteur;
     }
 
     public class Client {
-        public String BillingCity;
-        public String BillingPostalCode;
-        public String BillingStreet;
-        public String ComplementNom;
-        public String Email;
-        public String FirstName;
-        public boolean GC;
-        public String Id;
-        public String LastName;
-        public String MobilePhone;
-        public String Name;
-        public String Salutation;
-        public String VCRM_ID;
-        public boolean VerrouillageFiche;
+        public String billingCity;
+        public String billingPostalCode;
+        public String billingStreet;
+        public String complementNom;
+        public String email;
+        public String firstName;
+        public boolean gC;
+        public String id;
+        public String lastName;
+        public String mobilePhone;
+        public String name;
+        public String salutation;
+        @SerializedName("VCRM_ID")
+        public String vCrmId;
+        public boolean verrouillageFiche;
     }
 
     public List<CompteInfo> compteInfo = new ArrayList<CompteInfo>();
