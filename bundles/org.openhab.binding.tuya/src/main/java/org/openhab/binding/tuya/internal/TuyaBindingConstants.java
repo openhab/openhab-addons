@@ -12,23 +12,9 @@
  */
 package org.openhab.binding.tuya.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link TuyaBindingConstants} class defines common constants, which are
@@ -38,7 +24,6 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class TuyaBindingConstants {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TuyaBindingConstants.class);
     private static final String BINDING_ID = "tuya";
 
     // List of all Thing Type UIDs
@@ -62,25 +47,4 @@ public class TuyaBindingConstants {
     public static final int TCP_CONNECTION_HEARTBEAT_INTERVAL = 10; // in s
     public static final int TCP_CONNECTION_TIMEOUT = 60; // in s;
     public static final int TCP_CONNECTION_MAXIMUM_MISSED_HEARTBEATS = 3;
-
-    public static final Map<String, Map<String, SchemaDp>> SCHEMAS = getSchemas();
-
-    private static Map<String, Map<String, SchemaDp>> getSchemas() {
-        InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema.json");
-        if (resource == null) {
-            LOGGER.warn("Could not read resource file 'schema.json', discovery might fail");
-            return Map.of();
-        }
-
-        try (InputStreamReader reader = new InputStreamReader(resource)) {
-            Gson gson = new Gson();
-            Type schemaListType = TypeToken.getParameterized(LinkedHashMap.class, String.class, SchemaDp.class)
-                    .getType();
-            Type schemaType = TypeToken.getParameterized(Map.class, String.class, schemaListType).getType();
-            return Objects.requireNonNull(gson.fromJson(reader, schemaType));
-        } catch (IOException e) {
-            LOGGER.warn("Failed to read 'schema.json', discovery might fail");
-            return Map.of();
-        }
-    }
 }
