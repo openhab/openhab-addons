@@ -106,7 +106,7 @@ public class MeterReading extends Value {
         data = new Data();
     }
 
-    public MeterReading merge(MeterReading incomingMeterReading, boolean updateHistorical) throws SedifException {
+    public MeterReading merge(MeterReading incomingMeterReading) throws SedifException {
         Data.Consommation[] incomingConso = incomingMeterReading.data.consommation;
         if (incomingConso == null) {
             throw new SedifException("Invalid meterReading data: no day period");
@@ -127,62 +127,50 @@ public class MeterReading extends Value {
                 throw new SedifException("Invalid meterReading data: no day period");
             }
 
-            LocalDate lastDate = existingConso[this.data.consommation.length - 1].dateIndex.toLocalDate();
-            LocalDate firstDate = existingConso[0].dateIndex.toLocalDate();
+            LocalDate firstDateExistingCoso = existingConso[0].dateIndex.toLocalDate();
+            LocalDate lastDateExistingConso = existingConso[existingConso.length - 1].dateIndex.toLocalDate();
+
+            LocalDate firstDateIncomingCoso = incomingConso[0].dateIndex.toLocalDate();
+            LocalDate lastDateIncomingConso = incomingConso[incomingConso.length - 1].dateIndex.toLocalDate();
 
             Consommation[] newConso = null;
 
             // The new block of data is before existing data
+            if (firstDateIncomingCoso.isBefore(firstDateExistingCoso)) {
 
-            if (updateHistorical) {
-                if (incomingConso[incomingConso.length - 1].dateIndex.toLocalDate()
-                        .isAfter(existingConso[0].dateIndex.toLocalDate())) {
-                    return this;
-                }
-
+                // We browse the incoming data backward from the end to find first mergeable index
                 int idx = incomingConso.length - 1;
-                int numElementToRemove = 0;
-                boolean needMerge = false;
-                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().compareTo(firstDate) >= 0) {
+
+                // While go backward until we find a date in incomingConso before the firstDate of existing Conso
+                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(firstDateExistingCoso)) {
                     idx--;
-                    needMerge = true;
-                }
-                int totalLength = incomingConso.length + this.data.consommation.length;
-                totalLength += 0;
-                if (needMerge) {
-                    numElementToRemove = incomingConso.length - idx - 1;
-                    totalLength = totalLength - numElementToRemove;
-                }
-                newConso = new Consommation[totalLength];
-                if (needMerge) {
-                    System.arraycopy(incomingConso, 0, newConso, 0, incomingConso.length - numElementToRemove);
-                }
-                System.arraycopy(this.data.consommation, 0, newConso, incomingConso.length - numElementToRemove,
-                        this.data.consommation.length);
-
-            } else {
-                int idx = incomingConso.length - 1;
-                boolean needMerge = false;
-                while (idx > 0 && incomingConso[idx].dateIndex.toLocalDate().isAfter(lastDate)) {
-                    idx--;
-                    needMerge = true;
                 }
 
-                int totalLength = this.data.consommation.length;
-                if (needMerge) {
-                    totalLength = totalLength + incomingConso.length - idx;
+                // We need idx element from incomingConso, and full existingConso in new tab
+                newConso = new Consommation[idx + existingConso.length];
+                System.arraycopy(incomingConso, 0, newConso, 0, idx);
+                System.arraycopy(existingConso, 0, newConso, idx, existingConso.length);
+            }
+            // The new block of data is after existing Data
+            else if (lastDateIncomingConso.isAfter(lastDateExistingConso)) {
+
+                // We browse the incoming data forward from the start to find first mergeable index
+                int idx = 0;
+
+                while (idx < incomingConso.length
+                        && incomingConso[idx].dateIndex.toLocalDate().isBefore(lastDateExistingConso)) {
+                    idx++;
                 }
 
-                newConso = new Consommation[totalLength];
-                System.arraycopy(this.data.consommation, 0, newConso, 0, this.data.consommation.length);
-
-                if (needMerge) {
-                    System.arraycopy(incomingConso, idx, newConso, this.data.consommation.length,
-                            incomingConso.length - idx);
-                }
+                // We need full existingConso and incomingConsol.length - idx element from incomingConso in the new tab
+                newConso = new Consommation[existingConso.length + incomingConso.length - idx];
+                System.arraycopy(existingConso, 0, newConso, 0, existingConso.length);
+                System.arraycopy(incomingConso, idx, newConso, existingConso.length, incomingConso.length - idx);
             }
 
-            this.data.consommation = newConso;
+            if (newConso != null) {
+                this.data.consommation = newConso;
+            }
         }
 
         return this;

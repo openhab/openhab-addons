@@ -40,8 +40,7 @@ public class SedifState {
         hasModifications = true;
     }
 
-    public MeterReading updateMeterReading(MeterReading incomingMeterReading, boolean updateHistorical)
-            throws SedifException {
+    public MeterReading updateMeterReading(MeterReading incomingMeterReading) throws SedifException {
         if (incomingMeterReading == null) {
             return this.meterReading;
         }
@@ -52,6 +51,6 @@ public class SedifState {
             this.meterReading = new MeterReading();
         }
 
-        return this.meterReading.merge(incomingMeterReading, updateHistorical);
+        return this.meterReading.merge(incomingMeterReading);
     }
 }

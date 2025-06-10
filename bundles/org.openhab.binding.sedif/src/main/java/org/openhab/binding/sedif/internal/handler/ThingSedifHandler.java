@@ -317,7 +317,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         if (updateHistorical && meterReading == null) {
             return null;
         }
-        meterReading = sedifState.updateMeterReading(meterReading, updateHistorical);
+        meterReading = sedifState.updateMeterReading(meterReading);
         return meterReading;
     }
 
