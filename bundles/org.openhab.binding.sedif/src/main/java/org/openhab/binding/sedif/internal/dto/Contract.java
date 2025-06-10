@@ -22,12 +22,17 @@ import com.google.gson.annotations.SerializedName;
  * @author Laurent Arnal - Initial contribution
  */
 public class Contract {
+    @SerializedName("AutoriteOrganisatrice")
     public String autoriteOrganisatrice;
+    @SerializedName("DateSortieEPT")
     public String dateSortieEPT;
     public boolean eFacture;
     public boolean iclActive;
+    @SerializedName("Id")
     public @Nullable String id;
+    @SerializedName("Name")
     public @Nullable String name;
+    @SerializedName("PrelevAuto")
     public boolean prelevAuto;
     @SerializedName("SITE_Commune")
     public @Nullable String siteCommune;
@@ -35,5 +40,6 @@ public class Contract {
     public @Nullable String siteCp;
     @SerializedName("SITE_Rue")
     public @Nullable String siteRue;
+    @SerializedName("Statut")
     public @Nullable String statut;
 }
