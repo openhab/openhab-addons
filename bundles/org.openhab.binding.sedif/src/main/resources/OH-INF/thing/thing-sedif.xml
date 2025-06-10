@@ -37,7 +37,7 @@
 				<label>ContractId</label>
 				<description>Your Contract Id</description>
 			</parameter>
-			<parameter name="meterId" type="text" required="true">
+			<parameter name="meterId" type="text" required="false">
 				<label>MeterId</label>
 				<description>Your Meter Id</description>
 			</parameter>
