@@ -625,19 +625,23 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             Value value = new Value();
             // populate minimum required fields; the system channel type provides the rest
             value.endpoint = endPoint;
+            value.commandClass = COMMAND_CLASS_SWITCH_COLOR;
             value.commandClassName = COLOR_TEMP_CHANNEL_COMMAND_CLASS_NAME;
             value.propertyName = COLOR_TEMP_CHANNEL_PROPERTY_NAME;
             value.metadata = new Metadata();
             value.metadata.type = MetadataType.NUMBER;
+            value.metadata.writeable = true;
+            value.metadata.readable = true;
+            value.value = 0;
 
-            ChannelMetadata metaData = new ChannelMetadata(node.nodeId, value);
-            logger.trace("Node {} building channel with Id: {}", metaData.nodeId, metaData.id);
+            ChannelMetadata details = new ChannelMetadata(node.nodeId, value);
+            logger.trace("Node {} building channel with Id: {}", details.nodeId, details.id);
+            logger.trace(" >> {}", details);
 
             ChannelType type = DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE;
-            Configuration config = new Configuration();
-            config.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, metaData.endpoint);
+            Configuration config = buildChannelConfiguration(details);
 
-            Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, metaData.id), type.getItemType())
+            Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, details.id), type.getItemType())
                     .withType(type.getUID()) //
                     .withDefaultTags(type.getTags()) //
                     .withKind(type.getKind()) //
@@ -647,7 +651,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .withConfiguration(config) //
                     .build();
 
-            result.channels.put(metaData.id, channel);
+            result.channels.put(details.id, channel);
             colorCapability.colorTempChannel = channel.getUID();
         });
     }
@@ -686,10 +690,12 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             return;
         }
 
+        boolean isColor = (details.value instanceof Map map && map.containsKey(GREEN)) //
+                || details.id.contains(HEX);
+
         int propertyKey = details.propertyKey instanceof Number n ? n.intValue()
                 : details.propertyKey instanceof String s ? Integer.valueOf(s) : -1;
 
-        boolean isColor = propertyKey >= RED_PROPERTY_KEY;
         boolean isColdWhite = propertyKey == COLD_PROPERTY_KEY;
         boolean isWarmWhite = propertyKey == WARM_PROPERTY_KEY;
 

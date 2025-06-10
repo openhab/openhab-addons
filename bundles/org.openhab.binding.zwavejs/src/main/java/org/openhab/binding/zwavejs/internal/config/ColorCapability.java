@@ -30,8 +30,8 @@ import org.openhab.core.thing.ChannelUID;
 @NonNullByDefault
 public class ColorCapability {
     public HSBType cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
-    public DecimalType cachedWarmWhite = new DecimalType(-1);
-    public DecimalType cachedColdWhite = new DecimalType(-1);
+    public Number cachedWarmWhite = DecimalType.ZERO;
+    public Number cachedColdWhite = DecimalType.ZERO;
     public Set<ChannelUID> colorChannels = new HashSet<>();
     public @Nullable ChannelUID dimmerChannel = null;
     public @Nullable ChannelUID colorTempChannel = null;

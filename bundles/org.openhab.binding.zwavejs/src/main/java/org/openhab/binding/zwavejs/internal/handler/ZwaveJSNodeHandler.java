@@ -454,8 +454,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         try {
             updateState(metadata.id, state);
         } catch (IllegalArgumentException e) {
-            logger.warn("Node {}. Error updating state for channel {} with value {}. {}", event.nodeId, metadata.id,
-                    state.toFullString(), e.getMessage());
+            logger.warn("Node {}. Error updating state for channel {} with value {}:{}. {}", event.nodeId, metadata.id,
+                    state.getClass().getSimpleName(), state.toFullString(), e.getMessage());
         }
 
         return true;
@@ -485,18 +485,18 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return newState;
         }
 
-        if (colorCapability.colorChannels.contains(targetChannel.getUID()) && newState instanceof HSBType color) {
+        ChannelUID targetUID = targetChannel.getUID();
+
+        if (colorCapability.colorChannels.contains(targetUID) && newState instanceof HSBType color) {
             colorCapability.cachedColor = new HSBType(color.getHue(), color.getSaturation(),
                     colorCapability.cachedColor.getBrightness());
             return colorCapability.cachedColor;
         }
 
-        if (targetChannel.getUID().equals(colorCapability.dimmerChannel)
-                && newState instanceof PercentType brightness) {
+        if (targetUID.equals(colorCapability.dimmerChannel) && newState instanceof Number brightness) {
             colorCapability.cachedColor = new HSBType(colorCapability.cachedColor.getHue(),
-                    colorCapability.cachedColor.getSaturation(), brightness);
-            colorCapability.colorChannels
-                    .forEach(c -> scheduler.submit(() -> updateState(c, colorCapability.cachedColor)));
+                    colorCapability.cachedColor.getSaturation(), new PercentType(brightness.intValue()));
+            colorCapability.colorChannels.forEach(c -> updateState(c, colorCapability.cachedColor));
         }
 
         return newState;
@@ -521,29 +521,32 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return newState;
         }
 
-        if (newState instanceof DecimalType decimal) {
-            if (targetChannel.getUID().equals(colorCapability.warmWhiteChannel)) {
-                colorCapability.cachedWarmWhite = decimal;
+        boolean isWarmTarget = targetChannel.getUID().equals(colorCapability.warmWhiteChannel);
+        boolean isColdTarget = targetChannel.getUID().equals(colorCapability.coldWhiteChannel);
+
+        if ((isWarmTarget || isColdTarget) && newState instanceof Number number) {
+            if (isWarmTarget) {
+                colorCapability.cachedWarmWhite = number;
             }
-            if (targetChannel.getUID().equals(colorCapability.coldWhiteChannel)) {
-                colorCapability.cachedColdWhite = decimal;
+            if (isColdTarget) {
+                colorCapability.cachedColdWhite = number;
             }
 
             State colorTemp = UnDefType.UNDEF;
             int warm = colorCapability.cachedWarmWhite.intValue();
             int cold = colorCapability.cachedColdWhite.intValue();
 
-            int percent = -1;
+            int colorTempPercent = -1;
             if (warm > 0 && cold > 0) {
-                percent = warm * 100 / (warm + cold);
+                colorTempPercent = warm * 100 / (warm + cold);
             } else if (warm >= 0) {
-                percent = warm * 100 / 255;
+                colorTempPercent = warm * 100 / 255;
             } else if (cold >= 0) {
-                percent = (255 - cold) * 100 / 255;
+                colorTempPercent = (255 - cold) * 100 / 255;
             }
 
-            if (percent >= 0) {
-                colorTemp = new PercentType(Math.max(0, Math.min(100, percent)));
+            if (colorTempPercent >= 0) {
+                colorTemp = new PercentType(Math.max(0, Math.min(100, colorTempPercent)));
                 updateState(Objects.requireNonNull(colorCapability.colorTempChannel), colorTemp);
             } else {
                 updateState(Objects.requireNonNull(colorCapability.colorTempChannel), UnDefType.UNDEF);
@@ -649,7 +652,17 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 State state = dummy.setState(Objects.requireNonNull(result.values.get(channel.getUID().getId())),
                         channelConfig.itemType, channelConfig.incomingUnit, channelConfig.inverted);
                 if (state != null) {
-                    updateState(channel.getUID(), state);
+                    // Initialize color and color temperature channels
+                    ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+                    state = handleColorUpdate(colorCap, state, channel, channelConfig);
+                    state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
+                    try {
+                        updateState(channel.getUID(), state);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Node {}. Error initializing state for channel {} with value {}:{}. {}",
+                                node.nodeId, channel.getUID().getId(), state.getClass().getSimpleName(),
+                                state.toFullString(), e.getMessage());
+                    }
                 }
             }
         }
@@ -664,7 +677,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     logger.trace("Node {}. Setting configuration item {} to {}", node.nodeId, entry.getKey(),
                             entry.getValue());
                     try {
-                        configuration.put(entry.getKey(), entry.getValue());
+                        Object entryValue = entry.getValue();
+                        if (entryValue instanceof Map map) {
+                            entryValue = map.toString();
+                        }
+                        configuration.put(entry.getKey(), entryValue);
                     } catch (IllegalArgumentException e) {
                         logger.warn("Node {}. Error setting configuration item {} to {}: {}", node.nodeId,
                                 entry.getKey(), entry.getValue(), e.getMessage());
