@@ -162,7 +162,6 @@ public class SedifHttpApi {
             }
 
             String content = result.getContentAsString();
-            // logger.trace("getContent returned {}", content);
             return content;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new SedifException(e, "Error getting url: '%s'", url);
