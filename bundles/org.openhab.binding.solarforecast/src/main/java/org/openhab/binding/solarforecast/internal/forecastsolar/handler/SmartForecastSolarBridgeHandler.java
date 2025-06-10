@@ -47,7 +47,6 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
     @Override
     public synchronized void forecastUpdate() {
         super.forecastUpdate();
-        logger.info("forecastUpdate");
         double energyProductionSum = 0;
         double forecastProductionSum = 0;
         for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
@@ -65,7 +64,7 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
         if (forecastProductionSum > 0) {
             factor = energyProductionSum / forecastProductionSum;
         }
-        logger.info("forecastUpdate E3DC {}, Forecast {} factor {}", energyProductionSum, forecastProductionSum,
+        logger.trace("forecastUpdate Inverter {}, Forecast {} factor {}", energyProductionSum, forecastProductionSum,
                 factor);
 
         // calculate new correction factor out of each plane and their production values

@@ -221,7 +221,7 @@ public class Utils {
             if (lastTimeStamp.isBefore(stateTimestamp.toInstant()) && lastPowerValue >= 0) {
                 total += calcuateKwh(lastTimeStamp, stateTimestamp.toInstant(), lastPowerValue);
             } else {
-                LOGGER.info("Skip timestamp {}", stateTimestamp);
+                LOGGER.debug("Skip timestamp {}", stateTimestamp);
             }
             lastTimeStamp = stateTimestamp.toInstant();
         }

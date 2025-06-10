@@ -380,6 +380,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
+        fsbh.initialize();
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
@@ -411,7 +412,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
-
+        fsbh.initialize();
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
                 Instant.now().plus(1, ChronoUnit.DAYS));
@@ -456,6 +457,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
+        fsbh.initialize();
 
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
@@ -491,6 +493,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
+        fsbh.initialize();
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
@@ -522,6 +525,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
+        fsbh.initialize();
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));

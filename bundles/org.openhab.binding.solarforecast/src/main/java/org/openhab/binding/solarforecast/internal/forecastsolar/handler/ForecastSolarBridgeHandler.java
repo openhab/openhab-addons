@@ -59,9 +59,9 @@ import org.openhab.core.types.TimeSeries.Policy;
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
     private static final int CALM_DOWN_TIME_MINUTES = 61;
 
-    private Optional<PointType> homeLocation;
-    private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
+    private ForecastSolarBridgeConfiguration configuration = new ForecastSolarBridgeConfiguration();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<PointType> homeLocation;
     private Instant calmDownEnd = Instant.MIN;
 
     protected List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
@@ -78,11 +78,11 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public void initialize() {
-        ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
+        configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
         PointType locationConfigured;
 
         // handle location error cases
-        if (config.location.isBlank()) {
+        if (configuration.location.isBlank()) {
             if (homeLocation.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/solarforecast.site.status.location-missing");
@@ -93,7 +93,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             }
         } else {
             try {
-                locationConfigured = new PointType(config.location);
+                locationConfigured = new PointType(configuration.location);
                 // continue with location from configuration
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -103,8 +103,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         Configuration editConfig = editConfiguration();
         editConfig.put("location", locationConfigured.toString());
         updateConfiguration(editConfig);
-        config = getConfigAs(ForecastSolarBridgeConfiguration.class);
-        configuration = Optional.of(config);
+        configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         refreshJob = Optional
                 .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
@@ -225,11 +224,9 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     public synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
         planes.add(sfph);
         // update passive PV plane with necessary data
-        if (configuration.isPresent()) {
-            sfph.setLocation(new PointType(configuration.get().location));
-            if (!configuration.get().apiKey.isBlank()) {
-                sfph.setApiKey(configuration.get().apiKey);
-            }
+        sfph.setLocation(new PointType(configuration.location));
+        if (!configuration.apiKey.isBlank()) {
+            sfph.setApiKey(configuration.apiKey);
         }
         getData();
     }

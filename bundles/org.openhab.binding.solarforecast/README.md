@@ -202,7 +202,8 @@ This is mandatory for `adjustable-fs-plane` and `smart-fs-plane`.
 | holdingTime           | integer | Time to wait in minutes from first prediction to adjust forecast    | 120     |
 
 The name `powerItemName` shall be the power item directly corresponding to this plane.
-You can select this in the UI.
+**Strict requirement:** the item type is `Number:Power`.
+
 
 The `powerItemPersistence` shall point to the persitence service storing the power item values.
 In UI all installed persistence services are given as options.

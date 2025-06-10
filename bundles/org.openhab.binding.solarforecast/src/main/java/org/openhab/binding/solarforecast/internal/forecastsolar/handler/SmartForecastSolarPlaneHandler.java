@@ -20,8 +20,8 @@ import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
@@ -46,6 +46,15 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
         super(thing, hc, psr);
     }
 
+    @Override
+    protected String queryParameters() {
+        if (!SolarForecastBindingConstants.EMPTY.equals(configuration.horizon)) {
+            return "&horizon=" + configuration.horizon;
+        } else {
+            return EMPTY;
+        }
+    }
+
     /**
      * Hook into the forecast update process to adjust the forecast based on current energy production.
      * It calculates the correction factor based on the current energy production and the forecasted energy production.
@@ -55,7 +64,6 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
      */
     @Override
     protected synchronized void setForecast(ForecastSolarObject f) {
-        logger.debug("SmartForecastSolarPlaneHandler setForecast called with {}", f.getRaw());
         forecast = f;
         energyProduction = Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get());
         forecastProduction = forecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
@@ -78,12 +86,8 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
         }
 
         // factor is applied to the forecast so new adapted values are available
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
         updateState(CHANNEL_CORRECTION_FACTOR, new DecimalType(factor));
-        bridgeHandler.ifPresent(h -> {
-            h.forecastUpdate();
-        });
+        super.setForecast(forecast);
     }
 
     public double getEnergyProduction() {
