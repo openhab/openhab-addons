@@ -6,7 +6,7 @@
 
 	<thing-type id="sedif">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="sedif"/>
+			<bridge-type-ref id="sedif-web"/>
 		</supported-bridge-type-refs>
 
 		<label>Sedif</label>

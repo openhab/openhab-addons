@@ -116,26 +116,26 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         SedifHttpApi api = bridgeHandler.getSedifApi();
 
         try {
-            String contractId = contract.Id;
+            String contractId = contract.id;
             if (contractId != null) {
                 ContractDetail contractDetail = api.getContractDetails(contractId);
 
                 if (contractDetail != null) {
                     for (CompteInfo compteInfo : contractDetail.compteInfo) {
                         ThingTypeUID tpUid = THING_TYPE_SEDIF;
-                        ThingUID thingUID = new ThingUID(tpUid, compteInfo.NUM_COMPTEUR,
+                        ThingUID thingUID = new ThingUID(tpUid, compteInfo.numCompteur,
                                 thingHandler.getThing().getUID().getId());
 
                         Map<String, Object> properties = new HashMap<>();
-                        properties.put(THING_WATER_METER_PROPERTY_ELMA, compteInfo.ELEMA);
-                        properties.put(THING_WATER_METER_PROPERTY_ELMB, compteInfo.ELEMB);
-                        properties.put(THING_WATER_METER_PROPERTY_NUM_METER, compteInfo.NUM_COMPTEUR);
-                        properties.put(THING_WATER_METER_PROPERTY_ID_PDS, compteInfo.ID_PDS);
+                        properties.put(THING_WATER_METER_PROPERTY_ELMA, compteInfo.eLma);
+                        properties.put(THING_WATER_METER_PROPERTY_ELMB, compteInfo.eLmb);
+                        properties.put(THING_WATER_METER_PROPERTY_NUM_METER, compteInfo.numCompteur);
+                        properties.put(THING_WATER_METER_PROPERTY_ID_PDS, compteInfo.idPds);
 
                         final String representationProperty = THING_WATER_METER_PROPERTY_NUM_METER;
 
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                .withProperties(properties).withLabel("WaterMeter " + compteInfo.NUM_COMPTEUR)
+                                .withProperties(properties).withLabel("WaterMeter " + compteInfo.numCompteur)
                                 .withThingType(tpUid).withBridge(thingHandler.getThing().getUID())
                                 .withRepresentationProperty(representationProperty).build();
 
