@@ -476,7 +476,7 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
         const replacer = (key, value) =>
             value instanceof Object && !(value instanceof Array) ?
                 Object.keys(value)
-                    .sort()
+                    .sort((a, b) => a - b)
                     .reduce((sorted, key) => {
                         sorted[key] = value[key];
                         return sorted;
