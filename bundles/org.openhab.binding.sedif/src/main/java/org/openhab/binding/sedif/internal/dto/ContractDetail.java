@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ContractDetail extends Value {
     public class CompteInfo {
-        @SerializedName("ELMA")
+        @SerializedName("ELEMA")
         public String eLma;
         @SerializedName("ELEMB")
         public String eLmb;
@@ -37,20 +37,33 @@ public class ContractDetail extends Value {
     }
 
     public class Client {
+        @SerializedName("BillingCity")
         public String billingCity;
+        @SerializedName("BillingPostalCode")
         public String billingPostalCode;
+        @SerializedName("BillingStreet")
         public String billingStreet;
+        @SerializedName("ComplementNom")
         public String complementNom;
+        @SerializedName("Email")
         public String email;
+        @SerializedName("FirstName")
         public String firstName;
+        @SerializedName("GC")
         public boolean gC;
+        @SerializedName("Id")
         public String id;
+        @SerializedName("LastName")
         public String lastName;
+        @SerializedName("MobilePhone")
         public String mobilePhone;
+        @SerializedName("Name")
         public String name;
+        @SerializedName("Salutation")
         public String salutation;
         @SerializedName("VCRM_ID")
         public String vCrmId;
+        @SerializedName("VerrouillageFiche")
         public boolean verrouillageFiche;
     }
 
