@@ -299,5 +299,4 @@ public class MeterReading extends Value {
         }
         return 0;
     }
-
 }
