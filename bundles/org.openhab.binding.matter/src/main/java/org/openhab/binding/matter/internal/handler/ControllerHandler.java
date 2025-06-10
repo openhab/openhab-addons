@@ -270,8 +270,8 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         linkedNodes.keySet().forEach(nodeId -> updateNode(nodeId));
     }
 
-    public String getTranslation(String key) {
-        return translationService.getTranslation(key);
+    public String getTranslation(String key, Object... args) {
+        return translationService.getTranslation(key, args);
     }
 
     public MatterControllerClient getClient() {

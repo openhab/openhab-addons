@@ -2,7 +2,7 @@ import { Logger } from "@matter/general";
 import { ClusterId, ValidationError } from "@matter/main/types";
 import { ClusterModel, MatterModel } from "@matter/model";
 import { SupportedAttributeClient } from "@matter/protocol";
-import { convertJsonDataWithModel } from "../../util/Json";
+import { convertJsonDataWithModel, toJSON } from "../../util/Json";
 import { capitalize } from "../../util/String";
 import { ControllerNode } from "../ControllerNode";
 
@@ -28,7 +28,7 @@ export class Clusters {
      * @throws Error if the cluster or command is not found on the device.
      */
     async command(nodeId: number, endpointId: number, clusterName: string, commandName: string, args: any) {
-        logger.debug(`command ${nodeId} ${endpointId} ${clusterName} ${commandName} ${Logger.toJSON(args)}`);
+        logger.debug(`command ${nodeId} ${endpointId} ${clusterName} ${commandName} ${toJSON(args)}`);
         const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
@@ -114,15 +114,15 @@ export class Clusters {
             parsedValue = convertJsonDataWithModel(attribute, parsedValue);
             await attributeClient.set(parsedValue);
             console.log(
-                `Attribute ${attributeName} ${nodeId}/${endpointId}/${clusterName}/${attributeName} set to ${Logger.toJSON(value)}`,
+                `Attribute ${attributeName} ${nodeId}/${endpointId}/${clusterName}/${attributeName} set to ${toJSON(value)}`,
             );
         } catch (error) {
             if (error instanceof ValidationError) {
                 throw new Error(
-                    `Could not validate data for attribute ${attributeName} to ${Logger.toJSON(parsedValue)}: ${error}${error.fieldName !== undefined ? ` in field ${error.fieldName}` : ""}`,
+                    `Could not validate data for attribute ${attributeName} to ${toJSON(parsedValue)}: ${error}${error.fieldName !== undefined ? ` in field ${error.fieldName}` : ""}`,
                 );
             } else {
-                throw new Error(`Could not set attribute ${attributeName} to ${Logger.toJSON(parsedValue)}: ${error}`);
+                throw new Error(`Could not set attribute ${attributeName} to ${toJSON(parsedValue)}: ${error}`);
             }
         }
     }

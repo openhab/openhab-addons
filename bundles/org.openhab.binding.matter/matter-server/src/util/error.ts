@@ -11,6 +11,9 @@ export function printError(logger: Logger, error: Error, functionName: string) {
     if ("name" in error) {
         logger.error(`Error name: ${(error as any).name}`);
     }
+    if ("id" in error) {
+        logger.error(`Error id: ${(error as any).id}`);
+    }
 
     // Fallback: log the entire error object in case there are other useful details
     logger.error(`Full error object: ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`);
