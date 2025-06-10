@@ -8,10 +8,10 @@
 		<label>Yearly Consumption</label>
 		<channels>
 			<channel id="thisYear" typeId="consumption">
-				<label>this Year Consumption</label>
+				<label>This Year Consumption</label>
 			</channel>
 			<channel id="lastYear" typeId="consumption">
-				<label>last Year Consumption</label>
+				<label>Last Year Consumption</label>
 			</channel>
 			<channel id="year-2" typeId="consumption">
 				<label>Year -2 Consumption</label>
