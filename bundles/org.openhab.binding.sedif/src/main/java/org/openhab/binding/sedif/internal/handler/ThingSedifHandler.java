@@ -17,6 +17,7 @@ import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
@@ -188,8 +189,10 @@ public class ThingSedifHandler extends BaseThingHandler {
                 String content = new String(bytes, StandardCharsets.UTF_8);
                 sedifState = gson.fromJson(content, SedifState.class);
             }
+        } catch (InterruptedIOException ioe) {
+            logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
         } catch (IOException ioe) {
-            logger.warn("Couldn't read Siemens MetaData information from file '{}'.", file.getAbsolutePath());
+            logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
         }
 
         if (sedifState == null) {
