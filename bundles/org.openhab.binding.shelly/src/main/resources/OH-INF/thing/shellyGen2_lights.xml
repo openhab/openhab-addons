@@ -31,7 +31,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyprodimmer2pm">
@@ -47,7 +47,21 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyprodimmer10v">
+		<label>Shelly Pro Dimmer 0/1-10V PM</label>
+		<description>@text/thing-type.shelly.shellyprodimmer10v.description</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
 	<channel-group-type id="rgbwpmColorControl">
