@@ -8,10 +8,10 @@
 		<label>Weekly Consumption</label>
 		<channels>
 			<channel id="thisWeek" typeId="consumption">
-				<label>this Week Consumption</label>
+				<label>This Week Consumption</label>
 			</channel>
 			<channel id="lastWeek" typeId="consumption">
-				<label>last Week Consumption</label>
+				<label>Last Week Consumption</label>
 			</channel>
 			<channel id="week-2" typeId="consumption">
 				<label>Week -2 Consumption</label>

@@ -8,10 +8,10 @@
 		<label>Monthly Consumption</label>
 		<channels>
 			<channel id="thisMonth" typeId="consumption">
-				<label>this Month Consumption</label>
+				<label>This Month Consumption</label>
 			</channel>
 			<channel id="lastMonth" typeId="consumption">
-				<label>last Month Consumption</label>
+				<label>Last Month Consumption</label>
 			</channel>
 			<channel id="month-2" typeId="consumption">
 				<label>Month -2 Consumption</label>
