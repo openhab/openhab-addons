@@ -386,6 +386,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             addProps(props, THING_WATER_METER_PROPERTY_PAYER_TITLE, values.payeurClient.Salutation);
             addProps(props, THING_WATER_METER_PROPERTY_PAYER_LOCK, "" + values.payeurClient.VerrouillageFiche);
 
+            updateProperties(props);
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
