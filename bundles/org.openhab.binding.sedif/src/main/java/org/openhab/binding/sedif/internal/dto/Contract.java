@@ -14,21 +14,26 @@ package org.openhab.binding.sedif.internal.dto;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Contract} holds Contract information
  *
  * @author Laurent Arnal - Initial contribution
  */
 public class Contract {
-    public String AutoriteOrganisatrice;
-    public String DateSortieEPT;
+    public String autoriteOrganisatrice;
+    public String dateSortieEPT;
     public boolean eFacture;
     public boolean iclActive;
-    public @Nullable String Id;
-    public @Nullable String Name;
+    public @Nullable String id;
+    public @Nullable String name;
     public boolean prelevAuto;
-    public @Nullable String SITE_Commune;
-    public @Nullable String SITE_CP;
-    public @Nullable String SITE_Rue;
-    public @Nullable String Statut;
+    @SerializedName("SITE_Commune")
+    public @Nullable String siteCommune;
+    @SerializedName("SITE_CP")
+    public @Nullable String siteCp;
+    @SerializedName("SITE_Rue")
+    public @Nullable String siteRue;
+    public @Nullable String statut;
 }
