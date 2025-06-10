@@ -41,6 +41,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tuya.internal.TuyaSchemaDB;
 import org.openhab.binding.tuya.internal.config.ChannelConfiguration;
 import org.openhab.binding.tuya.internal.config.DeviceConfiguration;
 import org.openhab.binding.tuya.internal.local.DeviceInfoSubscriber;
@@ -122,11 +123,13 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             Duration.ofSeconds(10));
     private final Map<String, State> channelStateCache = new HashMap<>();
 
-    public TuyaDeviceHandler(Thing thing, Map<String, SchemaDp> schemaDps, Gson gson,
+    public TuyaDeviceHandler(Thing thing, Gson gson,
             BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider, EventLoopGroup eventLoopGroup,
             UdpDiscoveryListener udpDiscoveryListener) {
         super(thing);
-        this.schemaDps = schemaDps;
+        this.schemaDps = Objects.requireNonNullElse(
+                TuyaSchemaDB.getOrConvert((String) thing.getConfiguration().get("productId"), thing.getUID().getId()),
+                Map.of());
         this.gson = gson;
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;
