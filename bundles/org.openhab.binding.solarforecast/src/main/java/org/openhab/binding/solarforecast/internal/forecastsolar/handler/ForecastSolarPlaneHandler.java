@@ -36,7 +36,6 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.config.ForecastS
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.PointType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -130,8 +129,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
             } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
                 sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
-            } else if (CHANNEL_JSON.equals(channelUID.getIdWithoutGroup())) {
-                updateState(CHANNEL_JSON, StringType.valueOf(forecast.getRaw()));
             } else {
                 fetchData();
             }
@@ -158,7 +155,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                                     cr.getContentAsString(), Instant.now(Utils.getClock())
                                             .plus(configuration.refreshInterval, ChronoUnit.MINUTES));
                             updateStatus(ThingStatus.ONLINE);
-                            updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);
                         } catch (SolarForecastException fse) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,

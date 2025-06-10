@@ -56,7 +56,6 @@ public class SolarForecastBindingConstants {
     public static final String GROUP_OPTIMISTIC = "optimistic";
     public static final String GROUP_PESSIMISTIC = "pessimistic";
     public static final String GROUP_UPDATE = "update";
-    public static final String GROUP_RAW = "raw";
 
     // Channels
     public static final String CHANNEL_POWER_ESTIMATE = "power-estimate";
@@ -66,7 +65,6 @@ public class SolarForecastBindingConstants {
     public static final String CHANNEL_ENERGY_REMAIN = "energy-remain";
     public static final String CHANNEL_ENERGY_TODAY = "energy-today";
     public static final String CHANNEL_CORRECTION_FACTOR = "correction-factor";
-    public static final String CHANNEL_JSON = "json";
     public static final String CHANNEL_API_COUNT = "api-count";
     public static final String CHANNEL_LATEST_UPDATE = "latest-update";
 

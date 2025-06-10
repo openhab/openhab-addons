@@ -47,7 +47,7 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
     }
 
     /**
-     * This method is called when the forecast is received from the API.
+     * Hook into the forecast update process to adjust the forecast based on current energy production.
      * It calculates the correction factor based on the current energy production and the forecasted energy production.
      * The factor is applied to the forecast, and the adjusted power and energy time series are sent to the channel.
      *
@@ -57,6 +57,8 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
     protected synchronized void setForecast(ForecastSolarObject f) {
         logger.debug("SmartForecastSolarPlaneHandler setForecast called with {}", f.getRaw());
         forecast = f;
+        energyProduction = Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get());
+        forecastProduction = forecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
 
         double factor = 1;
         Instant firstMeasure = forecast.getFirstPowerTimestamp();
@@ -65,10 +67,6 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
         } else {
             Instant startCorrectionTime = firstMeasure.plus(configuration.holdingTime, ChronoUnit.MINUTES);
             if (Instant.now(Utils.getClock()).isAfter(startCorrectionTime)) {
-                double energyProduction = Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get());
-                this.energyProduction = energyProduction;
-                double forecastProduction = forecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
-                this.forecastProduction = forecastProduction;
                 if (forecastProduction > 0) {
                     factor = energyProduction / forecastProduction;
                 }

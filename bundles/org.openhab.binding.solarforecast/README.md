@@ -98,14 +98,17 @@ Scenarios are clustered in groups:
 - `pessimistic` scenario: 10th percentile
 - `optimistic` scenario: 90th percentile
 
-| Channel                 | Type          | Unit | Description                                     |
-|-------------------------|---------------|------|-------------------------------------------------|
-| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              |
-| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             |
-| power-actual            | Number:Power  | W    | Power prediction for this moment                |
-| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       |
-| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          |
-| energy-today            | Number:Energy | kWh  | Today's forecast in total                       |
+| Channel                 | Type          | Unit | Description                                     | TimeSeries     |
+|-------------------------|---------------|------|-------------------------------------------------|----------------|
+| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | X              |
+| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | X              |
+| power-actual            | Number:Power  | W    | Power prediction for this moment                |                |
+| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       |                |
+| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          |                |
+| energy-today            | Number:Energy | kWh  | Today's forecast in total                       |                |
+
+For `TimeSeries` channels default `RR4Dj` item persistence doesn't work.
+You need to to configure persistence service capable of storing future values like  `In Memory`, `InfluxDB` or similar.
 
 Technical channels observing the update behavior are reported in `update` group.
 
@@ -127,12 +130,6 @@ The `api-count` channel delivers a JSON object with 3 different counters:
 <img src="doc/APICountTransformation.png" alt="API Count Transformation Example" width="320" height="300"/>
 
 You can connect a Number item to this channel using a [JSONPATH transformation](https://www.openhab.org/addons/transformations/jsonpath/) referring the wanted JSON key e.g. `$.200`.
-
-JSON channel holding raw data is reported in `raw` group.
-
-| Channel                 | Type          | Unit | Description                                     | Advanced |
-|-------------------------|---------------|------|-------------------------------------------------|----------|
-| json                    | String        | -    | Plain JSON response without conversions         | yes      |
 
 ## ForecastSolar Configuration
 
@@ -224,14 +221,17 @@ The `fs-site` bridge sums up all attached `fs-plane` values and provides the tot
 Channels are covering today's actual data with current, remaining and total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
 
-| Channel                 | Type          | Unit | Description                                     |
-|-------------------------|---------------|------|-------------------------------------------------|
-| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              |
-| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             |
-| power-actual            | Number:Power  | W    | Power prediction for this moment                |
-| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       |
-| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          |
-| energy-today            | Number:Energy | kWh  | Today's forecast in total                       |
+| Channel                 | Type          | Unit | Description                                     | TimeSeries     |
+|-------------------------|---------------|------|-------------------------------------------------|----------------|
+| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | X              |
+| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | X              |
+| power-actual            | Number:Power  | W    | Power prediction for this moment                |                |
+| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       |                |
+| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          |                |
+| energy-today            | Number:Energy | kWh  | Today's forecast in total                       |                |
+
+For `TimeSeries` channels default `RR4Dj` item persistence doesn't work.
+You need to to configure persistence service capable of storing future values like  `In Memory`, `InfluxDB` or similar.
 
 ### Correction Channel
 

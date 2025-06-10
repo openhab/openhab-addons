@@ -41,6 +41,9 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
         logger.info("constructor SmartForecastSolarBridgeHandler called with location {}", location);
     }
 
+    /**
+     * Hook into the forecast update process with update of correction factor.
+     */
     @Override
     public synchronized void forecastUpdate() {
         super.forecastUpdate();
@@ -55,6 +58,7 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
             } catch (SolarForecastException sfe) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
+                return;
             }
         }
         double factor = 1;
