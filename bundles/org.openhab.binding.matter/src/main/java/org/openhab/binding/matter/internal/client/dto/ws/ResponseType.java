@@ -12,17 +12,33 @@
  */
 package org.openhab.binding.matter.internal.client.dto.ws;
 
-import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Response
- *
+ * Websocket message response types.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
-public class Response {
-    public ResponseType type;
-    public String id;
-    public JsonElement result;
-    public String error;
-    public String errorId;
+public enum ResponseType {
+
+    @SerializedName("resultError")
+    RESULT_ERROR("resultError"),
+
+    @SerializedName("resultSuccess")
+    RESULT_SUCCESS("resultSuccess");
+
+    private final String value;
+
+    ResponseType(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }
