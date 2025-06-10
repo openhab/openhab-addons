@@ -32,7 +32,7 @@ After this, add your bridge, and fill your username and password.
     Bridge sedif:sedif-web:local "SedifWebBridge" [username="testuser@test.fr", password="mypassword"]
     ```
 
-### Water meter Discovery
+### Water Meter Discovery
 
 After creating the bridge, the binding will populate the Inbox with meter registered on your sedif account.
 
@@ -61,7 +61,7 @@ Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
     }
 ```
 
-### Sedif thing Channels
+### Sedif Thing Channels
 
 
 | Channel                                     | Type         | Read/Write | Description                              |
@@ -141,7 +141,7 @@ Number	ConsoLastYear    "Conso Last Year [%.0f %unit%]"  <energy> { channel="sed
 Number	ConsoYearMinus2  "Conso Year - 2 [%.0f %unit%]"   <energy> { channel="sedif:sedif:sedifmeter1:yearly-consumption#year-2"     }
 ```
 
-### Timeseries and graphs
+### Timeseries and Graphs
 
 Thanks to timeseries channel, you will be able to exposer your water consumption has historical graph.
 For exemple, a weekly graph will show like this.
@@ -203,7 +203,7 @@ slots:
         gridIndex: 0
 ```
 
-### Historical data retrieve
+### Historical Data Retrieve
 
 The first time you launch this binding, it will make multiple query to the sedif web site to get historical data.
 This request is done 3 month by 3 month, from the end of contract, to the begin of contract.
@@ -215,7 +215,7 @@ And it will refresh every day to get new data.
 
 If something go wrong, you can delete the sedif.json file to start from a fresh state.
 
-### Multiple contract
+### Multiple Contract
 
 Sometimes, you can have multiple contract on your sedif account.
 
