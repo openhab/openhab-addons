@@ -146,7 +146,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.submit(() -> {
