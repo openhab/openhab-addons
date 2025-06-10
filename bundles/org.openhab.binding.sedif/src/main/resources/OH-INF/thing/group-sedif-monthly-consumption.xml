@@ -7,16 +7,16 @@
 	<channel-group-type id="monthly-consumption">
 		<label>Monthly Consumption</label>
 		<channels>
-			<channel id="thisMonth" typeId="consumption-type">
+			<channel id="thisMonth" typeId="consumption">
 				<label>this Month Consumption</label>
 			</channel>
-			<channel id="lastMonth" typeId="consumption-type">
+			<channel id="lastMonth" typeId="consumption">
 				<label>last Month Consumption</label>
 			</channel>
-			<channel id="month-2" typeId="consumption-type">
+			<channel id="month-2" typeId="consumption">
 				<label>Month -2 Consumption</label>
 			</channel>
-			<channel id="consumption" typeId="consumption-type">
+			<channel id="consumption" typeId="consumption">
 				<label>Consumption</label>
 			</channel>
 		</channels>
