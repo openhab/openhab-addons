@@ -7,16 +7,16 @@
 	<channel-group-type id="daily-consumption">
 		<label>Daily Consumption</label>
 		<channels>
-			<channel id="yesterday" typeId="consumption-type">
+			<channel id="yesterday" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
-			<channel id="day-2" typeId="consumption-type">
+			<channel id="day-2" typeId="consumption">
 				<label>Day -2 Consumption</label>
 			</channel>
-			<channel id="day-3" typeId="consumption-type">
+			<channel id="day-3" typeId="consumption">
 				<label>Day -3 Consumption</label>
 			</channel>
-			<channel id="consumption" typeId="consumption-type">
+			<channel id="consumption" typeId="consumption">
 				<label>Consumption</label>
 			</channel>
 		</channels>
