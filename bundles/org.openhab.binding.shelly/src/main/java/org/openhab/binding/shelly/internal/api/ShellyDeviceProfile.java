@@ -197,6 +197,7 @@ public class ShellyDeviceProfile {
         isBlu = isBluSeries(thingTypeUID); // e.g. SBBT for BLU Button
         isGen2 = isGeneration2(thingTypeUID);
 
+        isDimmer = GROUP_DIMMER_THING_TYPES.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);

@@ -723,21 +723,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         throw new IllegalArgumentException("Update for invalid roller index");
     }
 
-    protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!profile.isDimmer || dc.light0 == null) {
-            return;
-        }
-
-        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-        if (dimmers != null) {
-            ShellySettingsDimmer ds = dimmers.get(0);
-            ds.autoOn = dc.light0.autoOnDelay;
-            ds.autoOff = dc.light0.autoOffDelay;
-            ds.name = dc.light0.name;
-            dimmers.set(0, ds);
-        }
-    }
-
     protected void fillRgbwSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
         if (!profile.isRGBW2 || dc.rgbw0 == null) {
             return;
