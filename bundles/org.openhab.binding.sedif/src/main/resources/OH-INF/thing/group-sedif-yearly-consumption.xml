@@ -7,16 +7,16 @@
 	<channel-group-type id="yearly-consumption">
 		<label>Yearly Consumption</label>
 		<channels>
-			<channel id="thisYear" typeId="consumption-type">
+			<channel id="thisYear" typeId="consumption">
 				<label>this Year Consumption</label>
 			</channel>
-			<channel id="lastYear" typeId="consumption-type">
+			<channel id="lastYear" typeId="consumption">
 				<label>last Year Consumption</label>
 			</channel>
-			<channel id="year-2" typeId="consumption-type">
+			<channel id="year-2" typeId="consumption">
 				<label>Year -2 Consumption</label>
 			</channel>
-			<channel id="consumption" typeId="consumption-type">
+			<channel id="consumption" typeId="consumption">
 				<label>Consumption</label>
 			</channel>
 		</channels>

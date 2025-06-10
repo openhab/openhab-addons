@@ -23,13 +23,6 @@
 			<channel-group typeId="weekly-consumption" id="weekly-consumption"/>
 			<channel-group typeId="monthly-consumption" id="monthly-consumption"/>
 			<channel-group typeId="yearly-consumption" id="yearly-consumption"/>
-
-			<channel-group typeId="contract" id="contract"/>
-			<channel-group typeId="contract-customer" id="contract-customer"/>
-			<channel-group typeId="contract-payer" id="contract-payer"/>
-			<channel-group typeId="contract-meter" id="contract-meter"/>
-
-
 		</channel-groups>
 
 		<config-description>

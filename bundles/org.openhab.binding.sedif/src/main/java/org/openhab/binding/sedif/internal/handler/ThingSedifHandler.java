@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
@@ -46,9 +47,7 @@ import org.openhab.core.OpenHAB;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -340,68 +339,64 @@ public class ThingSedifHandler extends BaseThingHandler {
                 return;
             }
 
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ORGANIZING_AUTHORITY,
-                    new StringType(values.contrat.AutoriteOrganisatrice));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_DATE_SORTIE_EPT, new StringType(values.contrat.DateSortieEPT));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_EINVOICE, OnOffType.from(values.contrat.eFacture));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ICL_ACTIVE, OnOffType.from(values.contrat.iclActive));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_DIRECT_DEBIT, OnOffType.from(values.contrat.prelevAuto));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_NAME, new StringType(values.contrat.Name));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STREET, new StringType(values.contrat.SITE_Rue));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_POST_CODE, new StringType(values.contrat.SITE_CP));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_TOWN, new StringType(values.contrat.SITE_Commune));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STATE, new StringType(values.contrat.Statut));
-            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_BALANCE, new DecimalType(values.solde));
+            Map<String, String> props = this.editProperties();
+
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_ORGANIZING_AUTHORITY,
+                    values.contrat.AutoriteOrganisatrice);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DATE_SORTIE_EPT, values.contrat.DateSortieEPT);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_EINVOICE, "" + values.contrat.eFacture);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_ICL_ACTIVE, "" + values.contrat.iclActive);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DIRECT_DEBIT, "" + values.contrat.prelevAuto);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_NAME, values.contrat.Name);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STREET, values.contrat.SITE_Rue);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_POST_CODE, values.contrat.SITE_CP);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_TOWN, values.contrat.SITE_Commune);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STATE, values.contrat.Statut);
+            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_BALANCE, "" + values.solde);
 
             CompteInfo comptInfo = values.compteInfo.get(0);
-            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ELMA, new StringType(comptInfo.ELEMA));
-            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ELMB, new StringType(comptInfo.ELEMB));
-            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ID_PDS, new StringType(comptInfo.ID_PDS));
-            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_NUM_METER, new StringType(comptInfo.NUM_COMPTEUR));
+            addProps(props, THING_WATER_METER_PROPERTY_ELMA, comptInfo.ELEMA);
+            addProps(props, THING_WATER_METER_PROPERTY_ELMB, comptInfo.ELEMB);
+            addProps(props, THING_WATER_METER_PROPERTY_ID_PDS, comptInfo.ID_PDS);
+            addProps(props, THING_WATER_METER_PROPERTY_NUM_METER, comptInfo.NUM_COMPTEUR);
 
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_BILLING_TOWN,
-                    new StringType(values.contratClient.BillingCity));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_BILLING_POST_CODE,
-                    new StringType(values.contratClient.BillingPostalCode));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_BILLING_STREET,
-                    new StringType(values.contratClient.BillingStreet));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_FIRST_NAME,
-                    new StringType(values.contratClient.FirstName));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_LAST_NAME,
-                    new StringType(values.contratClient.LastName));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_NAME_SUP,
-                    new StringType(values.contratClient.Name));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_EMAIL, new StringType(values.contratClient.Email));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_GC, OnOffType.from(values.contratClient.GC));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_MOBILE_PHONE,
-                    new StringType(values.contratClient.MobilePhone));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_TITLE,
-                    new StringType(values.contratClient.Salutation));
-            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CUSTOMER_LOCK,
-                    OnOffType.from(values.contratClient.VerrouillageFiche));
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_TOWN, values.contratClient.BillingCity);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_POST_CODE,
+                    values.contratClient.BillingPostalCode);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_STREET, values.contratClient.BillingStreet);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_FIRST_NAME, values.contratClient.FirstName);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LAST_NAME, values.contratClient.LastName);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_NAME_SUP, values.contratClient.Name);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_EMAIL, values.contratClient.Email);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_GC, "" + values.contratClient.GC);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_MOBILE_PHONE, values.contratClient.MobilePhone);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_TITLE, values.contratClient.Salutation);
+            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LOCK, "" + values.contratClient.VerrouillageFiche);
 
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_CITY,
-                    new StringType(values.payeurClient.BillingCity));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_POSTAL_CODE,
-                    new StringType(values.payeurClient.BillingPostalCode));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_STREET,
-                    new StringType(values.payeurClient.BillingStreet));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_FIRST_NAME,
-                    new StringType(values.payeurClient.FirstName));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_LAST_NAME,
-                    new StringType(values.payeurClient.LastName));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_NAME_SUP, new StringType(values.payeurClient.Name));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_EMAIL, new StringType(values.payeurClient.Email));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_GC, OnOffType.from(values.payeurClient.GC));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_MOBILE_PHONE,
-                    new StringType(values.payeurClient.MobilePhone));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_TITLE, new StringType(values.payeurClient.Salutation));
-            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_LOCK,
-                    OnOffType.from(values.payeurClient.VerrouillageFiche));
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_CITY, values.payeurClient.BillingCity);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_POSTAL_CODE,
+                    values.payeurClient.BillingPostalCode);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_STREET, values.payeurClient.BillingStreet);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_FIRST_NAME, values.payeurClient.FirstName);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LAST_NAME, values.payeurClient.LastName);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_NAME_SUP, values.payeurClient.Name);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_EMAIL, values.payeurClient.Email);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_GC, "" + values.payeurClient.GC);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_MOBILE_PHONE, values.payeurClient.MobilePhone);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_TITLE, values.payeurClient.Salutation);
+            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LOCK, "" + values.payeurClient.VerrouillageFiche);
 
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
+    }
+
+    private void addProps(Map<String, String> props, String key, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+
+        props.put(key, value);
     }
 
     /**
