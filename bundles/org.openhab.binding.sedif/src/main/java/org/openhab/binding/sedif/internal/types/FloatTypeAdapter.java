@@ -24,7 +24,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * {@link DoubleTypeAdapter} A type adapter for gson / double.
+ * {@link FloatTypeAdapter} A type adapter for gson / double.
  *
  * Will prevent Null exception error when api return incomplete value.
  * We can have this scenario when we ask to today consumption after midnight, but before enedis update the value.
