@@ -22,6 +22,10 @@
 			<channel id="energy-today" typeId="energy-today"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:solarforecast:fs-plane"/>
 	</thing-type>
 </thing:thing-descriptions>

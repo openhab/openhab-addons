@@ -177,6 +177,7 @@ public class Utils {
         fc.setBeginDate(ZonedDateTime.now().minusDays(1));
         fc.setEndDate(ZonedDateTime.now());
         fc.setItemName(item);
+        fc.setOrdering(FilterCriteria.Ordering.ASCENDING);// workaround for rrd4j bug
         Iterable<HistoricItem> historicItems = service.query(fc);
         return historicItems.iterator().hasNext();
     }
@@ -197,6 +198,7 @@ public class Utils {
         fc.setBeginDate(beginPeriodDT);
         fc.setEndDate(endPeriodDT);
         fc.setItemName(powerItemName);
+        fc.setOrdering(FilterCriteria.Ordering.ASCENDING);// workaround for rrd4j bug
         Iterable<HistoricItem> historicItems = service.query(fc);
         double total = 0;
         double lastPowerValue = -1;

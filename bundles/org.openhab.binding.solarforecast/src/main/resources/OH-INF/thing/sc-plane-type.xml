@@ -20,7 +20,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:solarforecast:sc-plane"/>
