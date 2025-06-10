@@ -686,9 +686,12 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             return;
         }
 
-        boolean isColor = details.value instanceof Map map && map.containsKey(GREEN);
-        boolean isColdWhite = COLD_WHITE_PROPERTY_KEY_NAME.equals(details.propertyKeyName);
-        boolean isWarmWhite = WARM_WHITE_PROPERTY_KEY_NAME.equals(details.propertyKeyName);
+        int propertyKey = details.propertyKey instanceof Number n ? n.intValue()
+                : details.propertyKey instanceof String s ? Integer.valueOf(s) : -1;
+
+        boolean isColor = propertyKey >= RED_PROPERTY_KEY;
+        boolean isColdWhite = propertyKey == COLD_PROPERTY_KEY;
+        boolean isWarmWhite = propertyKey == WARM_PROPERTY_KEY;
 
         if (isColor || isColdWhite || isWarmWhite) {
             ColorCapability colorCapability = result.colorCapabilities.getOrDefault(details.endpoint,

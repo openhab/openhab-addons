@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal;
 
-import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_CONFIGURATION;
-import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_WAKE_UP;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
 
 import java.util.List;
 
@@ -72,14 +71,19 @@ public class BindingConstants {
     public static final List<Integer> CONFIGURATION_COMMAND_CLASSES = List.of(COMMAND_CLASS_CONFIGURATION,
             COMMAND_CLASS_WAKE_UP);
 
-    // color related keys
+    // color related property keys
+    public static final int WARM_PROPERTY_KEY = 0;
+    public static final int COLD_PROPERTY_KEY = 1;
+    public static final int RED_PROPERTY_KEY = 2;
+    public static final int GREEN_PROPERTY_KEY = 3;
+    public static final int BLUE_PROPERTY_KEY = 4;
+
+    // color related strings
     public static final String RED = "red";
     public static final String GREEN = "green";
     public static final String BLUE = "blue";
     public static final String WARM_WHITE = "warmWhite";
     public static final String COLD_WHITE = "coldWhite";
-    public static final String WARM_WHITE_PROPERTY_KEY_NAME = "Warm White";
-    public static final String COLD_WHITE_PROPERTY_KEY_NAME = "Cold White";
     public static final String HEX = "hex";
     public static final String COLOR_TEMP_CHANNEL_COMMAND_CLASS_NAME = "Color Switch";
     public static final String COLOR_TEMP_CHANNEL_PROPERTY_NAME = "colorTemperature";

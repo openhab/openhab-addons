@@ -13,8 +13,7 @@
 package org.openhab.binding.zwavejs.internal.conversion;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
-import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_ALARM;
-import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_DOOR_LOCK;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -107,7 +106,6 @@ public abstract class BaseMetadata {
         this.commandClassId = value.commandClass;
         this.endpoint = value.endpoint;
         this.propertyKey = value.propertyKey;
-        this.propertyKeyName = value.propertyKeyName;
         this.writable = value.metadata.writeable;
         this.min = value.metadata.min;
         this.max = value.metadata.max;
@@ -433,9 +431,9 @@ public abstract class BaseMetadata {
      * Determines the metadata type based on the provided value and command class.
      *
      * @param value The value to determine the metadata type from. Can be null.
-     * 
+     *
      * @param commandClass The Z-Wave command class identifier used for additional type determination in specific cases.
-     * 
+     *
      * @return The determined metadata type.
      */
     private MetadataType determineTypeFromValue(@Nullable Object value, int commandClass) {

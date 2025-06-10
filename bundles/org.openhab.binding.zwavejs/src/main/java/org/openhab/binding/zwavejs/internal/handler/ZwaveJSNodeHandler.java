@@ -258,13 +258,14 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         if (isColorTempChannelCmd && colorCap != null) {
+            int byteValue = Math.max(0, Math.min(255, percentTypeCommand.intValue() * 255 / 100));
             if (colorCap.warmWhiteChannel instanceof ChannelUID warmWhiteChannel) {
-                DecimalType decimal = new DecimalType(percentTypeCommand.intValue() * 255 / 100);
-                scheduler.submit(() -> handleCommand(warmWhiteChannel, decimal));
+                DecimalType warm = new DecimalType(byteValue);
+                scheduler.submit(() -> handleCommand(warmWhiteChannel, warm));
             }
             if (colorCap.coldWhiteChannel instanceof ChannelUID coldWhiteChannel) {
-                DecimalType decimal = new DecimalType((100 - percentTypeCommand.intValue()) * 255 / 100);
-                scheduler.submit(() -> handleCommand(coldWhiteChannel, decimal));
+                DecimalType cold = new DecimalType(255 - byteValue);
+                scheduler.submit(() -> handleCommand(coldWhiteChannel, cold));
             }
             return null;
         }
@@ -532,15 +533,21 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             int warm = colorCapability.cachedWarmWhite.intValue();
             int cold = colorCapability.cachedColdWhite.intValue();
 
+            int percent = -1;
             if (warm > 0 && cold > 0) {
-                colorTemp = new PercentType(warm * 100 / (warm + cold));
+                percent = warm * 100 / (warm + cold);
             } else if (warm >= 0) {
-                colorTemp = new PercentType(warm * 100 / 255);
+                percent = warm * 100 / 255;
             } else if (cold >= 0) {
-                colorTemp = new PercentType((255 - cold) * 100 / 255);
+                percent = (255 - cold) * 100 / 255;
             }
 
-            updateState(Objects.requireNonNull(colorCapability.colorTempChannel), colorTemp);
+            if (percent >= 0) {
+                colorTemp = new PercentType(Math.max(0, Math.min(100, percent)));
+                updateState(Objects.requireNonNull(colorCapability.colorTempChannel), colorTemp);
+            } else {
+                updateState(Objects.requireNonNull(colorCapability.colorTempChannel), UnDefType.UNDEF);
+            }
         }
 
         return newState;
