@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.persistence.FilterCriteria;
@@ -203,6 +204,7 @@ public class Utils {
         double total = 0;
         double lastPowerValue = -1;
         Instant lastTimeStamp = Instant.MAX;
+        boolean warningPrinted = false;
         for (HistoricItem historicItem : historicItems) {
             State powerState = historicItem.getState();
             if (powerState instanceof QuantityType<?> qs) {
@@ -210,12 +212,15 @@ public class Utils {
                 if (powerKWState != null) {
                     lastPowerValue = powerKWState.doubleValue();
                 } else {
-                    LOGGER.trace("Cannot convert Unit {} to {}", qs.getUnit(), KILOWATT_UNIT);
+                    LOGGER.warn("Cannot convert Unit {} to {}", qs.getUnit(), KILOWATT_UNIT);
                     return 0;
                 }
-            } else {
-                LOGGER.info("Power item {} has no unit. Skip Energy calculation!", powerItemName);
-                return 0;
+            } else if (powerState instanceof DecimalType decimal) {
+                if (!warningPrinted) {
+                    LOGGER.warn("Power item {} has no unit assigned. Assuming watts!", powerItemName);
+                    warningPrinted = true;
+                }
+                lastPowerValue = decimal.doubleValue() / 1000; // convert watts to kW
             }
             ZonedDateTime stateTimestamp = historicItem.getTimestamp();
             if (lastTimeStamp.isBefore(stateTimestamp.toInstant()) && lastPowerValue >= 0) {
