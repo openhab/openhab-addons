@@ -248,7 +248,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     /**
      * Request new data and updates channels
      */
-    private synchronized void updateData() {
+    private void updateData() {
         logger.trace("updateContractDetail() called");
         updateContractDetail();
 
@@ -260,7 +260,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         saveSedifState();
     }
 
-    private synchronized void updateHistoricalConsumptionData() {
+    private void updateHistoricalConsumptionData() {
         int periodLength = 90;
         LocalDate currentDate = LocalDate.now();
         currentDate = currentDate.minusDays(periodLength);
@@ -322,7 +322,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     /**
      * Request new daily/weekly data and updates channels
      */
-    private synchronized void updateContractDetail() {
+    private void updateContractDetail() {
         contractDetail.getValue().ifPresentOrElse(values -> {
 
             for (CompteInfo compteInfo : values.compteInfo) {
@@ -403,7 +403,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     /**
      * Request new daily/weekly data and updates channels
      */
-    private synchronized void updateConsumptionData() {
+    private void updateConsumptionData() {
         consumption.getValue().ifPresentOrElse(values -> {
 
             // ===========================
@@ -650,7 +650,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
     }
 
-    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab) {
+    private void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < consoTab.length; i++) {
