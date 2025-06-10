@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.matter.internal.util;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -51,10 +53,10 @@ public class TranslationService {
      * @param key the key to get the translation for (with or without the @text/ prefix)
      * @return the translation
      */
-    public String getTranslation(String key) {
+    public String getTranslation(String key, Object... args) {
         String lookupKey = key.replace("@text/", "");
-        String result = translationProvider.getText(bundle, lookupKey, lookupKey, localeProvider.getLocale());
-        return result == null ? lookupKey : result;
+        String result = translationProvider.getText(bundle, lookupKey, lookupKey, localeProvider.getLocale(), args);
+        return result == null ? lookupKey + " " + Arrays.toString(args) : result;
     }
 
     public LocaleProvider getLocaleProvider() {

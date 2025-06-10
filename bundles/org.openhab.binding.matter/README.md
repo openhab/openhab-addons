@@ -2,6 +2,8 @@
 
 The Matter Binding for openHAB allows seamless integration with Matter-compatible devices.
 
+It currently supports version 1.4.1 of the Matter specification and earlier.
+
 ## Supported functionality
 
 This binding supports two different types of Matter functionality which operate independently of each other.
@@ -17,7 +19,7 @@ For more information on the Matter specification, see the [Matter Ecosystem Over
 
 ## Matter.JS Runtime
 
-This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the the Matter 1.4 protocol.
+This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the the Matter 1.4.1 protocol.
 
 As such, this binding requires NodesJS 18+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system.
 Alpine Linux users (typically docker) and those on older Linux distributions will need to install this manually as the official NodeJS versions are not compatible.
@@ -38,7 +40,7 @@ This describes the Matter controller functionality for discovering and controlli
 The Matter Binding supports the following types of things:
 
 - `controller`: The main controller that interfaces with Matter devices.
-It requires the configuration parameter  `nodeId` which sets the local Matter node ID for this controller (must be unique in the fabric).
+It requires the configuration parameter `nodeId` which sets the local Matter node ID for this controller (must be unique in the fabric).
 **This must be added manually.**
 - `node`: Represents an individual Node within the Matter network.
 The only configuration parameter is `nodeId`.

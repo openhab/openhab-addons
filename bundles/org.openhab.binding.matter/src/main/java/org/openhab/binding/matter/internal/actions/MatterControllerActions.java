@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
+import org.openhab.binding.matter.internal.client.MatterErrorCode;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.handler.ControllerHandler;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -72,9 +74,21 @@ public class MatterControllerActions implements ThingActions {
             try {
                 handler.startScan(code).get();
                 return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED);
-            } catch (InterruptedException | ExecutionException e) {
-                return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED)
-                        + e.getLocalizedMessage();
+            } catch (InterruptedException e) {
+                return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED,
+                        e.getLocalizedMessage());
+            } catch (ExecutionException e) {
+                if (e.getCause() instanceof MatterRequestException matterRequestException) {
+                    MatterErrorCode errorCode = matterRequestException.getErrorCode();
+                    if (errorCode != null) {
+                        return handler.getTranslation(errorCode.getTranslationKey());
+                    } else {
+                        return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED,
+                                matterRequestException.getErrorMessage());
+                    }
+                }
+                return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED,
+                        e.getLocalizedMessage());
             }
         }
         return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
