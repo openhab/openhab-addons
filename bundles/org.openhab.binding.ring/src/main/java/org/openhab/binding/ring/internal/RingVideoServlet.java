@@ -103,7 +103,7 @@ public class RingVideoServlet extends HttpServlet {
                 }
             }).map(file -> "<a href=\"" + SERVLET_VIDEO_PATH + "/"
                     + URLEncoder.encode(file.getFileName().toString(), StandardCharsets.UTF_8) + "\">"
-                    + file.getFileName() + "><br>").collect(Collectors.joining());
+                    + file.getFileName() + "</a><br>").collect(Collectors.joining());
 
             responseString += """
                     </body>
