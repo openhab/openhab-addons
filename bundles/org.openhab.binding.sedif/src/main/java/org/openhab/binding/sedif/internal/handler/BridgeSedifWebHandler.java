@@ -138,7 +138,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         this.sedifApi = new SedifHttpApi(this, gson, this.httpClient);
@@ -172,98 +172,94 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
         SedifBridgeConfiguration lcConfig = config;
 
-        try {
-            if (connected) {
-                return;
-            }
-
-            sedifApi.removeAllCookie();
-
-            String resultSt;
-
-            // =====================================================================
-            logger.debug("Step 1: getting salesforces context from login page");
-
-            resultSt = sedifApi.getContent(URL_SEDIF_AUTHENTICATE);
-            appCtx = sedifApi.extractAuraContext(resultSt);
-
-            if (appCtx == null) {
-                throw new SedifException("Unable to find app context in login process");
-            }
-
-            // =====================================================================
-            logger.debug("Step 2: Authenticate");
-
-            AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
-
-            String urlRedir = "";
-            if (resp != null) {
-                Event event = resp.events.getFirst();
-                Event.Attributes attr = event.attributes;
-                if (attr != null) {
-                    urlRedir = (String) attr.values.get("url");
-                }
-
-                if (urlRedir.isBlank()) {
-                    throw new SedifException("Unable to find redir url in login process");
-                }
-
-                sid = "";
-                String[] parts = urlRedir.split("&");
-                for (String part : parts) {
-                    if (part.indexOf("sid") >= 0) {
-                        sid = part;
-                    }
-                }
-                sid = sid.replace("sid=", "");
-            }
-
-            // =====================================================================
-            logger.debug("Step 3: Confirm login");
-
-            resultSt = sedifApi.getContent(urlRedir);
-
-            // =====================================================================
-            logger.debug("Step 4: Get contract page");
-
-            resultSt = sedifApi.getContent(URL_SEDIF_CONTRAT);
-            appCtx = sedifApi.extractAuraContext(resultSt);
-
-            if (appCtx == null) {
-                throw new SedifException("Unable to find app context in login process");
-            }
-            // =====================================================================
-
-            logger.debug("Step 5: Get cookie auth");
-            List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
-            token = "";
-            for (HttpCookie cookie : lCookie) {
-                if (cookie.getName().indexOf("__Host-ERIC_") >= 0) {
-                    token = cookie.getValue();
-                }
-            }
-
-            if (token == null) {
-                throw new SedifException("Unable to find token in login process");
-            }
-
-            // =====================================================================
-            logger.debug("Step 6a: Get contract");
-            Contracts contracts = sedifApi.getContracts();
-            if (contracts != null && contracts.contrats != null) {
-                for (Contract contract : contracts.contrats) {
-                    String contractName = contract.Name;
-                    if (contractName != null) {
-                        contractDict.put(contractName, contract);
-                        fireOnContractReceivedEvent(contract);
-                    }
-                }
-            }
-
-            connected = true;
-        } catch (Exception ex) {
-            logger.debug("error durring connect : {}", ex.getMessage());
+        if (connected) {
+            return;
         }
+
+        sedifApi.removeAllCookie();
+
+        String resultSt;
+
+        // =====================================================================
+        logger.debug("Step 1: getting salesforces context from login page");
+
+        resultSt = sedifApi.getContent(URL_SEDIF_AUTHENTICATE);
+        appCtx = sedifApi.extractAuraContext(resultSt);
+
+        if (appCtx == null) {
+            throw new SedifException("Unable to find app context in login process");
+        }
+
+        // =====================================================================
+        logger.debug("Step 2: Authenticate");
+
+        AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
+
+        String urlRedir = "";
+        if (resp != null) {
+            Event event = resp.events.getFirst();
+            Event.Attributes attr = event.attributes;
+            if (attr != null) {
+                urlRedir = (String) attr.values.get("url");
+            }
+
+            if (urlRedir.isBlank()) {
+                throw new SedifException("Unable to find redir url in login process");
+            }
+
+            sid = "";
+            String[] parts = urlRedir.split("&");
+            for (String part : parts) {
+                if (part.indexOf("sid") >= 0) {
+                    sid = part;
+                }
+            }
+            sid = sid.replace("sid=", "");
+        }
+
+        // =====================================================================
+        logger.debug("Step 3: Confirm login");
+
+        resultSt = sedifApi.getContent(urlRedir);
+
+        // =====================================================================
+        logger.debug("Step 4: Get contract page");
+
+        resultSt = sedifApi.getContent(URL_SEDIF_CONTRAT);
+        appCtx = sedifApi.extractAuraContext(resultSt);
+
+        if (appCtx == null) {
+            throw new SedifException("Unable to find app context in login process");
+        }
+        // =====================================================================
+
+        logger.debug("Step 5: Get cookie auth");
+        List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+        token = "";
+        for (HttpCookie cookie : lCookie) {
+            if (cookie.getName().indexOf("__Host-ERIC_") >= 0) {
+                token = cookie.getValue();
+            }
+        }
+
+        if (token == null) {
+            throw new SedifException("Unable to find token in login process");
+        }
+
+        // =====================================================================
+        logger.debug("Step 6a: Get contract");
+        Contracts contracts = sedifApi.getContracts();
+        if (contracts != null && contracts.contrats != null) {
+            for (Contract contract : contracts.contrats) {
+                String contractName = contract.Name;
+                if (contractName != null) {
+                    contractDict.put(contractName, contract);
+                    fireOnContractReceivedEvent(contract);
+                }
+            }
+        }
+
+        connected = true;
     }
 
     public boolean isConnected() {

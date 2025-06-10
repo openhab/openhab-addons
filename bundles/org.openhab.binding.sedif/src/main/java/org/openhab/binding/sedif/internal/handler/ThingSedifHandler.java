@@ -294,15 +294,17 @@ public class ThingSedifHandler extends BaseThingHandler {
                         continue;
                     }
                 }
-            } catch (Exception ex) {
-                logger.debug("aa:", ex);
+            } catch (SedifException ex) {
+                logger.warn(String.format("Unable to retrieve data from {} to {}:", startDate, currentDate), ex);
             }
             currentDate = startDate;
             idx++;
         }
 
         sedifState.setLastIndexDate(newLastUpdateDate);
+
         saveSedifState();
+
     }
 
     public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate,
