@@ -12,14 +12,9 @@
  */
 package org.openhab.binding.zwavejs.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
@@ -193,8 +188,9 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(15)).stateUpdated(any(), any());
-            verify(callback).stateUpdated(eq(channelid), eq(HSBType.fromRGB(0, 0, 0)));
+            // 18 = 15 direct updates + 2 handled color updates + 1 handled color temperature update
+            verify(callback, times(18)).stateUpdated(any(), any());
+            verify(callback).stateUpdated(eq(channelid), eq(new HSBType("0,0,100")));
         } finally {
             handler.dispose();
         }

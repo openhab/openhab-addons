@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.zwavejs.internal.type;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.BINDING_ID;
 
 import java.io.IOException;
@@ -273,6 +270,7 @@ public class ZwaveJSTypeGeneratorTest {
             channels.putAll(results.channels);
         }
 
-        assertEquals(42, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(43, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertTrue(channels.containsKey("color-switch-color-temperature"));
     }
 }
