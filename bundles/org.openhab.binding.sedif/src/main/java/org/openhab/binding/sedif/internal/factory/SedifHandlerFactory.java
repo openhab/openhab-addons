@@ -27,6 +27,7 @@ import org.openhab.binding.sedif.internal.dto.RuntimeTypeAdapterFactory;
 import org.openhab.binding.sedif.internal.dto.Value;
 import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
 import org.openhab.binding.sedif.internal.handler.ThingSedifHandler;
+import org.openhab.binding.sedif.internal.types.FloatTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -111,7 +112,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
                         (JsonSerializer<LocalDateTime>) (src, typeOfSrc,
                                 context) -> new JsonPrimitive(src.format(SEDIF_LOCALDATETIME_FORMATTER)))
 
-                .setPrettyPrinting().create();
+                .registerTypeAdapter(float.class, new FloatTypeAdapter()).setPrettyPrinting().create();
     }
 
     @Override
