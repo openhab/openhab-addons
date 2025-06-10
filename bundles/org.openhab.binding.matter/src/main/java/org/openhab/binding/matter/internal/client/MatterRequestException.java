@@ -16,9 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Dan Cunningham - Initial contribution
+ * Exception thrown when a request to the Matter server fails.
  * 
- *         Exception thrown when a request to the Matter server fails.
+ * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
 public class MatterRequestException extends Exception {

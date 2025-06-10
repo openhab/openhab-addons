@@ -15,8 +15,9 @@ package org.openhab.binding.matter.internal.client.dto.ws;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * Websocket message response types.
+ * 
  * @author Dan Cunningham - Initial contribution
- *         Websocket message response types.
  */
 public enum ResponseType {
 
