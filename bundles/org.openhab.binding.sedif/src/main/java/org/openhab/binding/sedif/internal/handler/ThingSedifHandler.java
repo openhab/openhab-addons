@@ -250,14 +250,13 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new data and updates channels
      */
     private synchronized void updateData() {
-
-        logger.info("updateContractDetail() called");
+        logger.trace("updateContractDetail() called");
         updateContractDetail();
 
-        logger.info("updateHistoricalConsumptionData() called");
+        logger.trace("updateHistoricalConsumptionData() called");
         updateHistoricalConsumptionData();
 
-        logger.info("updateEnergyData() called");
+        logger.trace("updateEnergyData() called");
         updateConsumptionData();
         saveSedifState();
     }
@@ -309,7 +308,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate,
             boolean updateHistorical) throws SedifException {
-        logger.info("startDate: {}, currentDate: {}", startDate, currentDate);
+        logger.trace("startDate: {}, currentDate: {}", startDate, currentDate);
 
         MeterReading meterReading = getConsumptionData(startDate, currentDate);
         if (updateHistorical && meterReading == null) {
