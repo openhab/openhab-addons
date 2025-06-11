@@ -152,11 +152,27 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             return channelType;
         }
 
-        // Build with a channelTypeUID of just the DP identifier and set defaults for all text.
-        channelType = channelTypeFromSchema(channelTypeUID);
+        String channelTypeId = channelTypeUID.getId();
+
+        int i = channelTypeId.indexOf("_");
+        if (i <= 0 || i >= channelTypeId.length()) {
+            // Old format channel types are not our concern.
+            return null;
+        }
+
+        String productId = channelTypeId.substring(0, i);
+        channelTypeId = channelTypeId.substring(i + 1);
+
+        // Build with a channelTypeId of just the lower-cased DP identifier and set defaults for all text.
+        channelType = channelTypeFromSchema(channelTypeUID, productId, channelTypeId.toLowerCase());
         if (channelType != null) {
             // Localize that (e.g. using channel-type.tuya.cur_voltage.label = ...)
             channelType = localizationService.createLocalizedChannelType(bundle, channelType, locale);
+
+            // Now use a ChannelTypeBuilder to clone channelType using the requested case
+            // for the ID and localize it again.
+            channelType = localizationService.createLocalizedChannelType(bundle,
+                    clone(new ChannelTypeUID(BINDING_ID, channelTypeId), channelType), locale);
 
             // Now use a ChannelTypeBuilder to clone channelType using the requested
             // ChannelTypeUID of <product ID>_<DP identifier> and localize it (e.g. possibly
@@ -208,18 +224,8 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         return builder.build();
     }
 
-    private @Nullable ChannelType channelTypeFromSchema(ChannelTypeUID channelTypeUID) {
-        String channelTypeId = channelTypeUID.getId();
-
-        int i = channelTypeId.indexOf("_");
-        if (i <= 0 || i >= channelTypeId.length()) {
-            // Old format channel types are not our concern.
-            return null;
-        }
-
-        String productId = channelTypeId.substring(0, i);
-        channelTypeId = channelTypeId.substring(i + 1);
-
+    private @Nullable ChannelType channelTypeFromSchema(ChannelTypeUID channelTypeUID, String productId,
+            String channelTypeId) {
         SchemaDp schemaDp = TuyaSchemaDB.get(productId, channelTypeId);
 
         if (schemaDp == null) {
@@ -338,7 +344,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         }
 
         StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder //
-                .state(new ChannelTypeUID(BINDING_ID, channelTypeId), label, acceptedItemType) //
+                .state(new ChannelTypeUID(BINDING_ID, channelTypeId.toLowerCase()), label, acceptedItemType) //
                 .withCategory(category) //
                 .withTags(tags) //
                 .isAdvanced(advanced);
