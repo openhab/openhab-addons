@@ -173,6 +173,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
+        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
         // Handle RefreshType
         if (command instanceof RefreshType) {
             NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
@@ -180,11 +181,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return;
         }
 
-        ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
 
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
-
         boolean isColorChannelCmd = colorCap != null && colorCap.colorChannels.contains(channelUID);
         boolean isColorTempChannelCmd = colorCap != null && channelUID.equals(colorCap.colorTempChannel);
 
