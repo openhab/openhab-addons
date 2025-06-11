@@ -41,13 +41,13 @@ import org.openhab.core.library.types.StringType;
  * @author Anton Kharuzhy - Initial contribution
  */
 @NonNullByDefault
-public class DefaultSchemaLightTests extends AbstractComponentTests {
+public class BasicSchemaLightTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "light/0x0000000000000000_light_zigbee2mqtt";
 
     @Test
     public void testRgb() throws InterruptedException {
         // @formatter:off
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 """
                 { \
                   "availability": [ \
@@ -83,7 +83,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
+        assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "light", ColorValue.class);
 
         @Nullable
         ComponentChannel onOffChannel = component.onOffChannel;
@@ -124,7 +124,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     @Test
     public void testRgbWithoutBrightness() throws InterruptedException {
         // @formatter:off
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 """
                 { \
                   "name": "light", \
@@ -157,7 +157,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     @Test
     public void testHsb() throws InterruptedException {
         // @formatter:off
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 """
                 { \
                   "name": "light", \
@@ -179,7 +179,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
+        assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "light", ColorValue.class);
 
         linkAllChannels(component);
 
@@ -219,7 +219,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     @Test
     public void testBrightnessAndOnOff() throws InterruptedException {
         // @formatter:off
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 """
                 { \
                   "name": "light", \
@@ -238,7 +238,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.getName(), is("light"));
 
         assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "zigbee2mqtt/light/brightness",
-                "zigbee2mqtt/light/set/brightness", "Brightness", PercentageValue.class);
+                "zigbee2mqtt/light/set/brightness", "light", PercentageValue.class);
         @Nullable
         ComponentChannel onOffChannel = component.onOffChannel;
         assertThat(onOffChannel, is(notNullValue()));
@@ -266,7 +266,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     @Test
     public void testOnOffOnly() throws InterruptedException {
         // @formatter:off
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 """
                 { \
                   "name": "light", \
@@ -283,7 +283,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.getName(), is("light"));
 
         assertChannel(component, Light.SWITCH_CHANNEL_ID, "zigbee2mqtt/light/state", "zigbee2mqtt/light/set/state",
-                "On/Off State", OnOffValue.class);
+                "light", OnOffValue.class);
         assertThat(component.brightnessChannel, is(nullValue()));
 
         linkAllChannels(component);
@@ -300,7 +300,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     @Test
     public void testOnOffWithEffect() throws InterruptedException {
         // @formatter:off
-        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+        var component = (Light<?>) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 "{ " +
                         "  \"name\": \"light\", " +
                         "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
