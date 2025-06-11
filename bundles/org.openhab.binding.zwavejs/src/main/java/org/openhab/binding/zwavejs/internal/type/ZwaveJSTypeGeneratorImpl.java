@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
-    private static final Object CHANNEL_TYPE_VERSION = "4"; // when static configuration is changed, the version must be
+    private static final Object CHANNEL_TYPE_VERSION = "5"; // when static configuration is changed, the version must be
                                                             // changed as well to force a new channel type generation
     private static final Map<String, SemanticTag> ITEM_TYPES_TO_PROPERTY_TAGS = new HashMap<>();
     static {
