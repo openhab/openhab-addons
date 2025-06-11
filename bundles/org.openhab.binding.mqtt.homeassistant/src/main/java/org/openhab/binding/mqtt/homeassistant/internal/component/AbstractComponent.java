@@ -38,7 +38,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
-import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
@@ -63,6 +62,7 @@ import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
@@ -155,8 +155,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
                 String availabilityTemplate = availability.getValueTemplate();
                 ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    transformation = new HomeAssistantChannelTransformation(getPython(), this, availabilityTemplate,
-                            false);
+                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
                         availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), transformation);
@@ -167,8 +166,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
                 String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
                 ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    transformation = new HomeAssistantChannelTransformation(getPython(), this, availabilityTemplate,
-                            false);
+                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                         this.channelConfiguration.getPayloadAvailable(),
@@ -408,8 +406,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         return componentConfiguration.getGson();
     }
 
-    public HomeAssistantPythonBridge getPython() {
-        return componentConfiguration.getPython();
+    public Jinjava getJinjava() {
+        return componentConfiguration.getJinjava();
     }
 
     public C getChannelConfiguration() {

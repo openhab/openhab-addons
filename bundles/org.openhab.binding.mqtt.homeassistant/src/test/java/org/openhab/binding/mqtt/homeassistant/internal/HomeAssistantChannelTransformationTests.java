@@ -24,10 +24,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttThingHandlerFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.test.storage.VolatileStorageService;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ThingTypeRegistry;
+import org.openhab.core.util.BundleResolver;
 
 /**
  * @author Jochen Klein - Initial contribution
@@ -35,62 +44,72 @@ import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractCompone
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
-public class HomeAssistantChannelTransformationTests extends AbstractHomeAssistantTests {
+public class HomeAssistantChannelTransformationTests {
+    protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
+    protected @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
-    private @Mock @NonNullByDefault({}) AbstractComponent component;
+    protected @NonNullByDefault({}) HomeAssistantChannelTransformation transformation;
+    private @Mock @NonNullByDefault({}) BundleResolver bundleResolver;
+    private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
 
     @BeforeEach
     public void beforeEachChannelTransformationTest() {
+        MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry,
+                new VolatileStorageService());
+        HomeAssistantStateDescriptionProvider stateDescriptionProvider = new HomeAssistantStateDescriptionProvider(
+                translationProvider, bundleResolver);
+        ChannelTypeRegistry channelTypeRegistry = new ChannelTypeRegistry();
+        MqttThingHandlerFactory thingHandlerFactory = new MqttThingHandlerFactory(channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, unitProvider);
+
+        AbstractComponent component = Mockito.mock(AbstractComponent.class);
         HaID haID = new HaID("homeassistant/light/pool/light/config");
         when(component.getHaID()).thenReturn(haID);
-    }
-
-    @Test
-    public void testInvalidTemplate() {
-        assertThat(transform("{{}}", ""), is(nullValue()));
+        transformation = new HomeAssistantChannelTransformation(thingHandlerFactory.getJinjava(), component, "");
     }
 
     @Test
     public void testIif() {
-        assertThat(transform("{{ iif(true) }}", ""), is("True"));
-        assertThat(transform("{{ iif(false) }}", ""), is("False"));
-        assertThat(transform("{{ iif(none) }}", ""), is("False"));
-        assertThat(transform("{{ iif(true, 'Yes') }}", ""), is("Yes"));
-        assertThat(transform("{{ iif(false, 'Yes') }}", ""), is("False"));
-        assertThat(transform("{{ iif(none, 'Yes') }}", ""), is("False"));
-        assertThat(transform("{{ iif(true, 'Yes', 'No') }}", ""), is("Yes"));
-        assertThat(transform("{{ iif(false, 'Yes', 'No') }}", ""), is("No"));
-        assertThat(transform("{{ iif(none, 'Yes', 'No') }}", ""), is("No"));
-        assertThat(transform("{{ iif(true, 'Yes', 'No', none) }}", ""), is("Yes"));
-        assertThat(transform("{{ iif(false, 'Yes', 'No', none) }}", ""), is("No"));
-        assertThat(transform("{{ iif(none, 'Yes', 'No', 'NULL') }}", ""), is("NULL"));
-        assertThat(transform("{{ iif(none, 'Yes', 'No', none) }}", ""), is("None"));
+        assertThat(transform("{{ iif(True) }}", ""), is("true"));
+        assertThat(transform("{{ iif(False) }}", ""), is("false"));
+        assertThat(transform("{{ iif(Null) }}", ""), is("false"));
+        assertThat(transform("{{ iif(True, 'Yes') }}", ""), is("Yes"));
+        assertThat(transform("{{ iif(False, 'Yes') }}", ""), is("false"));
+        assertThat(transform("{{ iif(Null, 'Yes') }}", ""), is("false"));
+        assertThat(transform("{{ iif(True, 'Yes', 'No') }}", ""), is("Yes"));
+        assertThat(transform("{{ iif(False, 'Yes', 'No') }}", ""), is("No"));
+        assertThat(transform("{{ iif(Null, 'Yes', 'No') }}", ""), is("No"));
+        assertThat(transform("{{ iif(True, 'Yes', 'No', null) }}", ""), is("Yes"));
+        assertThat(transform("{{ iif(False, 'Yes', 'No', null) }}", ""), is("No"));
+        assertThat(transform("{{ iif(Null, 'Yes', 'No', 'NULL') }}", ""), is("NULL"));
+        assertThat(transform("{{ iif(Null, 'Yes', 'No', null) }}", ""), is(""));
+        assertThat(transform("{{ iif(True, 'Yes', 'No', null, null) }}", ""), is(nullValue()));
 
-        assertThat(transform("{{ true | iif('Yes') }}", ""), is("Yes"));
-        assertThat(transform("{{ false | iif('Yes') }}", ""), is("False"));
-        assertThat(transform("{{ none | iif('Yes') }}", ""), is("False"));
-        assertThat(transform("{{ true | iif('Yes', 'No') }}", ""), is("Yes"));
-        assertThat(transform("{{ false | iif('Yes', 'No') }}", ""), is("No"));
-        assertThat(transform("{{ none | iif('Yes', 'No') }}", ""), is("No"));
-        assertThat(transform("{{ true | iif('Yes', 'No', none) }}", ""), is("Yes"));
-        assertThat(transform("{{ false | iif('Yes', 'No', none) }}", ""), is("No"));
-        assertThat(transform("{{ none | iif('Yes', 'No', 'NULL') }}", ""), is("NULL"));
-        assertThat(transform("{{ none | iif('Yes', 'No', none) }}", ""), is("None"));
+        assertThat(transform("{{ True | iif('Yes') }}", ""), is("Yes"));
+        assertThat(transform("{{ False | iif('Yes') }}", ""), is("false"));
+        assertThat(transform("{{ Null | iif('Yes') }}", ""), is("false"));
+        assertThat(transform("{{ True | iif('Yes', 'No') }}", ""), is("Yes"));
+        assertThat(transform("{{ False | iif('Yes', 'No') }}", ""), is("No"));
+        assertThat(transform("{{ Null | iif('Yes', 'No') }}", ""), is("No"));
+        assertThat(transform("{{ True | iif('Yes', 'No', null) }}", ""), is("Yes"));
+        assertThat(transform("{{ False | iif('Yes', 'No', null) }}", ""), is("No"));
+        assertThat(transform("{{ Null | iif('Yes', 'No', 'NULL') }}", ""), is("NULL"));
+        assertThat(transform("{{ Null | iif('Yes', 'No', null) }}", ""), is(""));
+        assertThat(transform("{{ True | iif('Yes', 'No', null, null) }}", ""), is(nullValue()));
     }
 
     @Test
     public void testIsDefined() {
-        assertThat(transform("{{ value_json.val }}", "{ \"val\": \"abc\" }", "default"), is("abc"));
-        assertThat(transform("{{ value_json.val }}", "{ \"val\": null }", "default"), is("None"));
-        assertThat(transform("{{ value_json.something | is_defined }}", "{ \"val\": null }", "default"), is("default"));
+        assertThat(transform("{{ value_json.val | is_defined }}", "{}"), is(nullValue()));
+        assertThat(transform("{{ 'hi' | is_defined }}", "{}"), is("hi"));
     }
 
     @Test
     public void testRegexFindall() {
-        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall('([A-Z]{3})') }}", ""), is("['JFK', 'LHR']"));
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall('([A-Z]{3})') }}", ""), is("[JFK, LHR]"));
         assertThat(transform(
                 "{{ 'button_up_press' | regex_findall('^(?P<button>(?:button_)?[a-z0-9]+)_(?P<action>(?:press|hold)(?:_release)?)$') }}",
-                ""), is("[('button_up', 'press')]"));
+                ""), is("[[button_up, press]]"));
     }
 
     @Test
@@ -100,24 +119,10 @@ public class HomeAssistantChannelTransformationTests extends AbstractHomeAssista
         assertThat(transform("{{ ['JFK', 'LHR'] | regex_findall_index('([A-Z]{3})', 1) }}", ""), is("LHR"));
         assertThat(transform(
                 "{{ 'button_up_press' | regex_findall_index('^(?P<button>(?:button_)?[a-z0-9]+)_(?P<action>(?:press|hold)(?:_release)?)$') }}",
-                ""), is("('button_up', 'press')"));
+                ""), is("[button_up, press]"));
     }
 
-    @Test
-    public void testIntegerDictLookup() {
-        assertThat(transform("{{ {0:'off', 1:'low', 2:'medium', 3:'high'}[value] | default('') }}", 0, true),
-                is("off"));
-    }
-
-    protected @Nullable Object transform(String template, Object value) {
-        return new HomeAssistantChannelTransformation(python, component, template, false).transform(value);
-    }
-
-    protected @Nullable Object transform(String template, Object value, boolean command) {
-        return new HomeAssistantChannelTransformation(python, component, template, command).transform(value);
-    }
-
-    protected @Nullable Object transform(String template, Object value, String defaultValue) {
-        return new HomeAssistantChannelTransformation(python, component, template, defaultValue).transform(value);
+    protected @Nullable String transform(String template, String value) {
+        return transformation.apply(template, value).orElse(null);
     }
 }
