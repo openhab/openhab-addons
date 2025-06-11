@@ -637,7 +637,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="meterFrequency">
+	<channel-type id="meterFrequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>@text/channel-type.shelly.meterFrequency.label</label>
 		<description>@text/channel-type.shelly.meterFrequency.description</description>
