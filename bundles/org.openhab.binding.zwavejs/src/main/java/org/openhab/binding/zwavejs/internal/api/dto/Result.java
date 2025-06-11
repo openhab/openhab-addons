@@ -19,4 +19,5 @@ public class Result {
     public State state;
     public int status;
     public String message;
+    public Object value;
 }

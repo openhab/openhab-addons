@@ -34,6 +34,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
+import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSBridgeConfiguration;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
@@ -201,9 +202,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Handle RefreshType
         if (command instanceof RefreshType) {
-            // TODO: Uncomment when issue is fixed: https://github.com/zwave-js/zwave-js-server/issues/1428
-            // NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
-            // handler.sendCommand(zwaveCommand);
+            NodeGetValueCommand zwaveCommand = new NodeGetValueCommand(config.id, channelConfig);
+            handler.sendCommand(zwaveCommand);
             return;
         }
 

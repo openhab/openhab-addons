@@ -312,22 +312,19 @@ public class ZWaveJSClient implements WebSocketListener {
         if (baseEvent instanceof ResultMessage resultMessage) {
             if (resultMessage.success && (resultMessage.result != null && resultMessage.result.status != 5)) {
                 logger.debug("Received ResultMessage type: {}, success: {}", baseEvent.type, resultMessage.success);
-                logger.debug("RECV | {}", message);
             } else {
                 logger.warn("Received ResultMessage type: {}, success: {}, status: {}, error_code: {}, message: {}",
                         baseEvent.type, resultMessage.success,
                         resultMessage.result != null ? resultMessage.result.status : "null", resultMessage.errorCode,
                         resultMessage.message != null ? resultMessage.message : resultMessage.zwaveErrorMessage);
             }
-            logger.trace("RECV | {}", message);
         } else if (baseEvent instanceof EventMessage eventMessage) {
             logger.trace("Received EventMessage, type: {}", eventMessage.event.event);
-            logger.trace("RECV | {}", message);
         } else {
             logger.trace("Received message class type: {}, event type: {}", baseEvent.getClass().getSimpleName(),
                     baseEvent.type);
-            logger.trace("RECV | {}", message);
         }
+        logger.trace("RECV | {}", message);
     }
 
     private void notifyListenersOnError(String errorMsg) {

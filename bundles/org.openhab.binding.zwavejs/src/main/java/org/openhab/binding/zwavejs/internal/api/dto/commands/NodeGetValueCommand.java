@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto.commands;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.openhab.binding.zwavejs.internal.api.dto.ValueId;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
 
@@ -25,6 +27,9 @@ public class NodeGetValueCommand extends BaseCommand {
     public NodeGetValueCommand(int nodeId, ZwaveJSChannelConfiguration config) {
         command = "node.get_value";
         this.nodeId = nodeId;
+        this.messageId = String.format("getvalue|%s|%s|%s|%s|%s|%s|%s", config.endpoint, config.commandClassId,
+                config.commandClassName, config.propertyKeyInt != null ? config.propertyKeyInt : config.propertyKeyStr,
+                config.readProperty, nodeId, ThreadLocalRandom.current().nextInt(1, 5001));
 
         this.valueId = new ValueId();
         this.valueId.commandClass = config.commandClassId;

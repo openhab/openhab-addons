@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.action.ZwaveJSActions;
 import org.openhab.binding.zwavejs.internal.api.ZWaveJSClient;
+import org.openhab.binding.zwavejs.internal.api.dto.Args;
+import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.State;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
@@ -131,35 +133,81 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             properties.put(BindingConstants.PROPERTY_SCHEMA_MAX, String.valueOf(event.maxSchemaVersion));
             properties.put(BindingConstants.PROPERTY_HOME_ID, String.valueOf(event.homeId));
             this.getThing().setProperties(properties);
-        } else if (message instanceof ResultMessage result) {
+            return;
+        }
+
+        if (message instanceof ResultMessage result) {
+            if (result.messageId != null && result.messageId.startsWith("getvalue|")) {
+                Event event = createEventFromMessageId(result.messageId,
+                        result.result != null ? result.result.value : null);
+                if (event == null) {
+                    return;
+                }
+
+                ZwaveNodeListener nodeListener = nodeListeners.get(event.nodeId);
+                if (nodeListener != null) {
+                    nodeListener.onNodeStateChanged(event);
+                }
+                return;
+            }
             if (result.result == null || result.result.state == null) {
+                logger.debug("ResultMessage missing result or state, ignoring.");
                 return;
             }
             procesStateUpdate(result.result.state);
             updateStatus(ThingStatus.ONLINE);
-        } else if (message instanceof EventMessage result) {
-            if ("value updated".equals(result.event.event)) {
-                final ZwaveNodeListener nodeListener = nodeListeners.get(result.event.nodeId);
-                if (nodeListener != null) {
-                    nodeListener.onNodeStateChanged(result.event);
-                }
-            } else if ("value notification".equals(result.event.event)) {
-                final ZwaveNodeListener nodeListener = nodeListeners.get(result.event.nodeId);
-                if (nodeListener != null) {
-                    nodeListener.onNodeStateChanged(result.event);
-                }
-            } else if ("alive".equals(result.event.event)) {
-                final ZwaveNodeListener nodeListener = nodeListeners.get(result.event.nodeId);
-                if (nodeListener != null) {
-                    nodeListener.onNodeAlive(result.event);
-                }
-            } else if ("dead".equals(result.event.event)) {
-                final ZwaveNodeListener nodeListener = nodeListeners.get(result.event.nodeId);
-                if (nodeListener != null) {
-                    nodeListener.onNodeDead(result.event);
-                }
-            }
+            return;
         }
+
+        if (message instanceof EventMessage eventMsg && eventMsg.event != null) {
+            String eventType = eventMsg.event.event;
+            ZwaveNodeListener nodeListener = nodeListeners.get(eventMsg.event.nodeId);
+            switch (eventType) {
+                case "value updated":
+                case "value notification":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeStateChanged(eventMsg.event);
+                    }
+                    break;
+                case "alive":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeAlive(eventMsg.event);
+                    }
+                    break;
+                case "dead":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeDead(eventMsg.event);
+                    }
+                    break;
+                default:
+                    logger.trace("Unhandled event type: {}", eventType);
+            }
+            return;
+        }
+    }
+
+    public @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
+        // Example messageId: getvalue|0|51|Color Switch|2|currentColor|44|2466
+        String[] parts = messageId.split("\\|");
+        if (parts.length < 6) {
+            logger.warn("Invalid messageId format: {}", messageId);
+            return null;
+        }
+        Event event = new Event();
+        event.args = new Args();
+        event.args.newValue = value;
+        try {
+            event.args.endpoint = Integer.parseInt(parts[1]);
+            event.args.commandClass = Integer.parseInt(parts[2]);
+            event.args.commandClassName = parts[3];
+            event.args.propertyKey = parts[4];
+            event.args.propertyName = parts[5];
+            event.nodeId = Integer.parseInt(parts[6]);
+        } catch (Exception e) {
+            logger.warn("Error parsing messageId '{}': {}", messageId, e.getMessage());
+            return null;
+        }
+        return event;
     }
 
     private void procesStateUpdate(State state) {
