@@ -286,7 +286,7 @@ public class ShellyComponents {
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
                                     toQuantityType(getDouble(emeter.current), DIGITS_AMPERE, Units.AMPERE));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_FREQUENCY,
-                                    toQuantityType(getDouble(emeter.current), DIGITS_FREQUENCY, Units.HERTZ));
+                                    toQuantityType(getDouble(emeter.frequency), DIGITS_FREQUENCY, Units.HERTZ));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                                     toQuantityType(computePF(emeter), Units.PERCENT));
 
