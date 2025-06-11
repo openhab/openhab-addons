@@ -33,6 +33,8 @@ public enum CleanMode {
     CUSTOM_AREA,
     @SerializedName("singleRoom")
     SINGLE_ROOM,
+    @SerializedName("sceneClean")
+    SCENE,
     @SerializedName("pause")
     PAUSE,
     @SerializedName("stop")
@@ -41,7 +43,7 @@ public enum CleanMode {
     RETURNING,
     @SerializedName("washing")
     WASHING,
-    @SerializedName("drying")
+    @SerializedName(value = "drying", alternate = { "spin-dry" })
     DRYING,
     @SerializedName("idle")
     IDLE;
