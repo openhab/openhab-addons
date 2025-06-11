@@ -14,8 +14,8 @@ const logger = Logger.get("matter");
 Logger.level = LogLevel.DEBUG;
 Logger.format = LogFormat.PLAIN;
 
-process.on("SIGINT", () => shutdownHandler("SIGINT"));
-process.on("SIGTERM", () => shutdownHandler("SIGTERM"));
+process.on("SIGINT", () => void shutdownHandler("SIGINT"));
+process.on("SIGTERM", () => void shutdownHandler("SIGTERM"));
 process.on("uncaughtException", function (err) {
     logger.error(`Caught exception: ${err} ${err.stack}`);
 });
@@ -79,7 +79,7 @@ export interface WebSocketSession extends WebSocket {
 const socketPort = argv.port ? parseInt(argv.port) : 8888;
 const wss: Server = new WebSocket.Server({ port: socketPort, host: argv.host });
 
-wss.on("connection", async (ws: WebSocketSession, req: IncomingMessage) => {
+wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
     ws.sendResponse = (type: string, id: string, result?: any, error?: string) => {
         const message: Message = {
             type: "response",
@@ -113,7 +113,11 @@ wss.on("connection", async (ws: WebSocketSession, req: IncomingMessage) => {
     ws.on("message", (message: string) => {
         try {
             const request: Request = JSON.parse(message);
-            ws.controller?.handleRequest(request);
+            if (ws.controller) {
+                void ws.controller.handleRequest(request).catch((error: Error) => {
+                    ws.sendResponse(MessageType.ResultError, "", undefined, error.message);
+                });
+            }
         } catch (error) {
             if (error instanceof Error) {
                 ws.sendResponse(MessageType.ResultError, "", undefined, error.message);
@@ -121,10 +125,12 @@ wss.on("connection", async (ws: WebSocketSession, req: IncomingMessage) => {
         }
     });
 
-    ws.on("close", async () => {
+    ws.on("close", () => {
         logger.info("WebSocket closed");
         if (ws.controller) {
-            await ws.controller.close();
+            void ws.controller.close().catch((error: Error) => {
+                logger.error(`Error closing controller: ${error}`);
+            });
         }
     });
 
@@ -142,7 +148,7 @@ wss.on("connection", async (ws: WebSocketSession, req: IncomingMessage) => {
     const service = params.get("service") === "bridge" ? "bridge" : "client";
 
     if (service === "client") {
-        let controllerName = params.get("controllerName");
+        const controllerName = params.get("controllerName");
         try {
             if (controllerName == null) {
                 throw new Error("No controllerName parameter in the request");
@@ -154,7 +160,11 @@ wss.on("connection", async (ws: WebSocketSession, req: IncomingMessage) => {
                 }
             });
             ws.controller = new ClientController(ws, params);
-            await ws.controller.init();
+            void ws.controller.init().catch(error => {
+                printError(logger, error, "ClientController.init()");
+                logger.error("returning error", error.message);
+                ws.close(1002, error.message);
+            });
         } catch (error: any) {
             printError(logger, error, "ClientController.init()");
             logger.error("returning error", error.message);
@@ -172,7 +182,11 @@ wss.on("connection", async (ws: WebSocketSession, req: IncomingMessage) => {
                 }
             });
             ws.controller = new BridgeController(ws, params);
-            await ws.controller.init();
+            void ws.controller.init().catch(error => {
+                printError(logger, error, "BridgeController.init()");
+                logger.error("returning error", error.message);
+                ws.close(1002, error.message);
+            });
         } catch (error: any) {
             printError(logger, error, "BridgeController.init()");
             logger.error("returning error", error.message);
