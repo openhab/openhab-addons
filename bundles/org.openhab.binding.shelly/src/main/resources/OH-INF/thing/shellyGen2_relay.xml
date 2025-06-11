@@ -34,8 +34,8 @@
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-relay">
-		<label>ShellyPlus 2 Relay</label>
-		<description>@text/thing-type.shelly.shellyplus2-relay.description</description>
+		<label>ShellyPlus 2PM Relay</label>
+		<description>@text/thing-type.shelly.shellyplus2pm-relay.description</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">

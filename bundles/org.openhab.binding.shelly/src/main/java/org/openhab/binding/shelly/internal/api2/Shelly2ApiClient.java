@@ -148,8 +148,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             SHELLY2_RSTATE_CALIB, SHELLY2_RSTATE_CALIB); // Gen2-only
 
     protected static final Map<String, String> MAP_PROFILE = Map.of(//
-            SHELLY_CLASS_RELAY, SHELLY2_PROFILE_RELAY, //
-            SHELLY_CLASS_ROLLER, SHELLY2_PROFILE_COVER);
+            SHELLY2_PROFILE_RELAY, SHELLY_CLASS_RELAY, //
+            SHELLY2_PROFILE_COVER, SHELLY_CLASS_ROLLER, //
+            SHELLY2_PROFILE_LIGHT, SHELLY_MODE_WHITE, //
+            SHELLY2_PROFILE_RGB, SHELLY_MODE_COLOR, //
+            SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR);
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRelay> fillRelaySettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {
@@ -627,7 +630,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs.moveStartedAt != null) {
             rs.duration = (int) (now() - cs.moveStartedAt.longValue());
         }
-        if (cs.temperature != null && cs.temperature.tC > getDouble(status.temperature)) {
+        if (cs.temperature != null && getDouble(cs.temperature.tC) > getDouble(status.temperature)) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
@@ -936,10 +939,14 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected String mapValue(Map<String, String> map, @Nullable String key) {
-        String value;
-        boolean known = key != null && !key.isEmpty() && map.containsKey(key);
-        value = known ? getString(map.get(key)) : "";
-        logger.trace("{}: API value {} was mapped to {}", thingName, key, known ? value : "UNKNOWN");
+        String safeKey = getString(key);
+        if (safeKey.isEmpty() || !map.containsKey(safeKey)) {
+            logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName,
+                    safeKey, map);
+            return "";
+        }
+        String value = getString(map.get(safeKey));
+        logger.trace("{}: API value '{}' was mapped to '{}'", thingName, safeKey, value);
         return value;
     }
 
