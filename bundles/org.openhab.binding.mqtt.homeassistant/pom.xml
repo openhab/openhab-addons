@@ -14,12 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: MQTT HomeAssistant Convention</name>
 
-  <properties>
-    <graalpy.version>24.2.0</graalpy.version>
-    <!-- define a property to overwrite it on Windows, as venv has a different structure -->
-    <graalpy.executable>bin/python3</graalpy.executable>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
@@ -33,182 +27,42 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>33.3.1-jre</version>
+      <scope>test</scope>
+    </dependency>
 
-    <!-- Graal Polyglot Framework -->
     <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>polyglot</artifactId>
-      <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal TRegex engine (internally used by Graal Python engine) -->
-    <dependency>
-      <groupId>org.graalvm.regex</groupId>
-      <artifactId>regex</artifactId>
-      <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
-    <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>python-community</artifactId>
-      <version>${graalpy.version}</version>
-      <type>pom</type>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.hubspot.jinjava.jinjava</artifactId>
+      <version>2.7.4</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.graalvm.python</groupId>
-      <artifactId>python-embedding</artifactId>
-      <version>${graalpy.version}</version>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.google.re2j.re2j</artifactId>
+      <version>1.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.obermuhlner</groupId>
+      <artifactId>big-math</artifactId>
+      <version>2.3.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.hubspot.immutables.immutables-exceptions</artifactId>
+      <version>1.9</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>embed-dependencies</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
-        <configuration>
-          <argLine>-noverify</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.3.1</version>
-        <executions>
-          <execution>
-            <id>copy-homeassistant-python</id>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <outputDirectory>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/src</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/python</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.graalvm.python</groupId>
-        <artifactId>graalpy-maven-plugin</artifactId>
-        <version>${graalpy.version}</version>
-        <executions>
-          <execution>
-            <id>install-python-packages</id>
-            <goals>
-              <goal>process-graalpy-resources</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <resourceDirectory>GRAALPY-VFS/${project.groupId}/${project.artifactId}</resourceDirectory>
-              <packages>
-                <package>awesomeversion==24.6.0</package>
-                <package>Jinja2==3.1.6</package>
-                <package>python-slugify==8.0.4</package>
-              </packages>
-            </configuration>
-          </execution>
-          <!-- yes, this is the same as above, but it needs run again to regenerate the filelist with our .pyc files -->
-          <execution>
-            <id>generate-python-filelist</id>
-            <goals>
-              <goal>process-graalpy-resources</goal>
-            </goals>
-            <phase>process-resources</phase>
-            <configuration>
-              <resourceDirectory>GRAALPY-VFS/${project.groupId}/${project.artifactId}</resourceDirectory>
-              <packages>
-                <package>awesomeversion==24.6.0</package>
-                <package>Jinja2==3.1.6</package>
-                <package>python-slugify==8.0.4</package>
-              </packages>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>compile-python</id>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <executable>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/venv/${graalpy.executable}</executable>
-              <arguments>
-                <argument>-m</argument>
-                <argument>compileall</argument>
-                <argument>${project.build.directory}/classes/GRAALPY-VFS/${project.groupId}/${project.artifactId}/src</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.graalvm.llvm:llvm-api</include>
-                  <include>org.graalvm.polyglot:polyglot</include>
-                  <include>org.graalvm.python:python-language</include>
-                  <include>org.graalvm.python:python-resources</include>
-                  <include>org.graalvm.regex:regex</include>
-                  <include>org.graalvm.tools:profiler-tool</include>
-                  <include>org.graalvm.truffle:truffle-api</include>
-                  <include>org.graalvm.truffle:truffle-nfi</include>
-                  <include>org.graalvm.truffle:truffle-nfi-libffi</include>
-                </includes>
-              </artifactSet>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <!-- Transformer to merge module-info.class
-                  files, if needed -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-  <profiles>
-    <profile>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <graalpy.executable>Scripts/python</graalpy.executable>
-      </properties>
-    </profile>
-  </profiles>
 </project>

@@ -57,7 +57,7 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
     public Event(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        transformation = new HomeAssistantChannelTransformation(getPython(), this, EVENT_TYPE_TRANFORMATION, false);
+        transformation = new HomeAssistantChannelTransformation(getJinjava(), this, "");
 
         buildChannel(EVENT_TYPE_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), getName(), this)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate()).trigger(true)
@@ -87,7 +87,7 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
 
     @Override
     public void triggerChannel(ChannelUID channel, String event) {
-        String eventType = transformation.apply(event).orElse(null);
+        String eventType = transformation.apply(EVENT_TYPE_TRANFORMATION, event).orElse(null);
         if (eventType == null) {
             // Warning logged from inside the transformation
             return;

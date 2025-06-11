@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * Responsible for subscribing to the HomeAssistant MQTT components wildcard topic, either
@@ -56,7 +57,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
     private final Gson gson;
-    private final HomeAssistantPythonBridge python;
+    private final Jinjava jinjava;
     private final UnitProvider unitProvider;
 
     private @Nullable ScheduledFuture<?> stopDiscoveryFuture;
@@ -83,13 +84,13 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
             ChannelStateUpdateListener channelStateUpdateListener, HomeAssistantChannelLinkageChecker linkageChecker,
-            AvailabilityTracker tracker, Gson gson, HomeAssistantPythonBridge python, UnitProvider unitProvider) {
+            AvailabilityTracker tracker, Gson gson, Jinjava jinjava, UnitProvider unitProvider) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
         this.linkageChecker = linkageChecker;
         this.gson = gson;
-        this.python = python;
+        this.jinjava = jinjava;
         this.unitProvider = unitProvider;
         this.tracker = tracker;
     }
@@ -107,7 +108,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         if (config.length() > 0) {
             try {
                 component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, linkageChecker,
-                        tracker, scheduler, gson, python, unitProvider);
+                        tracker, scheduler, gson, jinjava, unitProvider);
                 component.setConfigSeen();
 
                 logger.trace("Found HomeAssistant component {}", haID);
