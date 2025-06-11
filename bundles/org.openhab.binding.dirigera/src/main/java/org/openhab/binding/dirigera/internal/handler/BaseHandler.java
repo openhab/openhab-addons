@@ -16,7 +16,6 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.GatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
@@ -50,7 +48,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -702,13 +699,8 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     }
 
     /**
-     * Add dump action Actions
+     * Debug commands for console access
      */
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(DebugActions.class);
-    }
 
     @Override
     public String getJSON() {
@@ -731,6 +723,11 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         } else {
             customDebug = debug;
         }
+    }
+
+    @Override
+    public String getDeviceId() {
+        return config.id;
     }
 
     /**

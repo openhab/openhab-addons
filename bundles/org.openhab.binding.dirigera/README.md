@@ -599,55 +599,21 @@ Channel will stay in this binding hoping a DIRIGERA software update will resolve
 
 Debugging is essential for such a binding which supports many available products and needs to support future products.
 General debug messages will overflow traces and it's hard to find relevant information.
-To deal with these challenges Thing Actions are provided to support that.
+To deal with these challenges commands for [openHAB console](https://www.openhab.org/docs/administration/console.html) are provided.
 
-You can call these actions via rules or get the results via openHAB Developer Tools - API Explorer
-
-```java
-[
-  {
-    "actionUid": "dirigera.getToken",
-    "label": "Get Gateway Token",
-    "description": "Gets the current token to get access towards DIRIGERA gateway",
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "actionUid": "dirigera.getJSON",
-    "label": "Get Device JSON Data",
-    "description": "Gets the current JSON data connected to this device",
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "actionUid": "dirigera.setDebug",
-    "label": "Device Debug Flag",
-    "description": "Enables / disables debug message on info level for this specific device",
-    "inputs": [
-      {
-        "name": "p0",
-        "type": "boolean",
-        "label": "",
-        "description": "",
-        "required": false,
-        "tags": [],
-        "reference": "",
-        "defaultValue": ""
-      }
-    ],
-    "outputs": []
-  }
-]
+```
+Usage: openhab:dirigera token - Get token from DIRIGERA hub
+Usage: openhab:dirigera json [<deviceId> | all] - Print JSON data
+Usage: openhab:dirigera debug [<deviceId> | all] [true | false]  - Enable / disable detailed debugging for specific / all devices
 ```
 
-### `getToken`
+### `token`
 
-The token can be obtained from any thing connected to DIRIGERA gateway.
+Prints the access token to communicate with DIRIGERA gateway as console output.
 
-```java
-    val dishwasherDebugActions = getActions("dirigera","dirigera:smart-plug:myhome:dishwasher")  
-    val token = dishwasherDebugActions.getToken
-    logInfo("DIRIGERA","Token {}",token)
+```
+console> openhab:dirigera token
+DIRIGERA Hub token: abcdef12345.......
 ```
 
 With token available you can test your devices e.g. via curl commands.
@@ -662,36 +628,26 @@ Replace content in curl command with following variables:
 - $DEVICE - bulb id you want to control, take it from configuration
 - $TOKEN - shortly stop / start DIRIGERA bridge and search for obtained token
 
-### `getJSON`
+### `json`
 
-Gets current JSON with attributes and capabilities of one device.
-If thing UID from gateway is given returned String contains all devices connected to gateway.
+Get capabilities and current status for one `deviceId` or all devices.
+Output is shown on console as JSON String.
 
-```java
-    val gatewayActions = getActions("dirigera","dirigera:gateway:myhome")  
-    // get JSON representation of all connected devices
-    val json = gatewayActions.getJSON
-    logInfo("DIRIGERA","JSON {}",json)
+```
+console> openhab:dirigera json 3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1
+{"deviceType":"light","isReachable":true,"capabilities":{"canReceive":["customName","isOn","lightLevel","colorTemperature", ...}
 ```
 
-### `setDebug`
+### `debug`
 
-Enables logging for one specific device or all devices.
-First boolean parameter: Enable debugging? 
-Second boolean parameter: debug flag valid for all devices?
-Setting to true you'll see
-
-- openhAB commands send to device handler
-- API calls towards gateway
-- responses from gateway
-- state updates
-
-```java
-    val dishwasherDebugActions = getActions("dirigera","dirigera:gateway:myhome")  
-    // enables debugging for dishwasher plug
-    dishwasherDebugActions.setDebug(true,false)
-    // after debugging one or several devices disable debugging for all devices
-    dishwasherDebugActions.setDebug(false,true)
+Enables or disables detailed logging for one `deviceId` or all devices.
+Answer is `Done` if command is successfully executed.
+If you operate with the device you can see requests and responses in openHAB Log Viewer.
+If device cannot be found answer is `Device Id xyz not found `.
+ 
+```
+console> openhab:dirigera debug all true
+Done
 ```
 
 ## Full Example

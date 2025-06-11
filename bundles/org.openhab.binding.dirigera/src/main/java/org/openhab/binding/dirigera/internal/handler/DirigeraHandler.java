@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,8 +23,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -47,7 +45,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
-import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
@@ -59,7 +56,6 @@ import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.DirigeraModel;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -74,16 +70,14 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.StringUtils;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.scene.web.HTMLEditorSkin.Command;
 
 /**
  * The {@link DirigeraHandler} is responsible for handling commands, which are
@@ -1025,12 +1019,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     /**
-     * Add dump action Actions
+     * Debug commands for console access
      */
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(DebugActions.class);
-    }
 
     @Override
     public String getJSON() {
@@ -1051,5 +1041,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 handler.setDebug(debug, false);
             });
         }
+    }
+
+    @Override
+    public String getDeviceId() {
+        return config.id;
     }
 }

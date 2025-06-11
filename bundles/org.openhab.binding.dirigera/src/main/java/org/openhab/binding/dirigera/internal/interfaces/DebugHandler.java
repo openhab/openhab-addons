@@ -50,4 +50,11 @@ public interface DebugHandler extends ThingHandler {
      * @param debug boolean flag enabling or disabling debug messages
      */
     void setDebug(boolean debug, boolean all);
+
+    /**
+     * Returns the device ID of the device this handler is associated with.
+     *
+     * @return device ID as String
+     */
+    String getDeviceId();
 }
