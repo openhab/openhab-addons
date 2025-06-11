@@ -148,6 +148,9 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 }
                 return new DecimalType(goeResponse.awattarMaxPrice);
             case ALLOW_CHARGING:
+                if (goeResponse.allowCharging == null) {
+                    return UnDefType.UNDEF;
+                }
                 return OnOffType.from(goeResponse.allowCharging);
             case TEMPERATURE_TYPE2_PORT:
                 // It was reported that the temperature is invalid when only one value is returned
