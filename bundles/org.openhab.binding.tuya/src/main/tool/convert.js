@@ -463,6 +463,8 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
                             }
                         }
                     }
+                    convertedEntry['readOnly'] = (entry.mode === 'ro' ? true : false);
+
                     convertedSchema[entry.code] = convertedEntry;
                 }
                 if (Object.keys(convertedSchema).length > 0) {
