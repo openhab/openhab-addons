@@ -165,7 +165,7 @@ public class MeterReading extends Value {
                 int idx = 0;
 
                 while (idx < incomingConso.length
-                        && incomingConso[idx].dateIndex.toLocalDate().isBefore(lastDateExistingConso)) {
+                        && incomingConso[idx].dateIndex.toLocalDate().compareTo(lastDateExistingConso) <= 0) {
                     idx++;
                 }
 
