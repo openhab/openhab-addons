@@ -89,6 +89,9 @@ public class Shelly2ApiJsonDTO {
     // Component types
     public static final String SHELLY2_PROFILE_RELAY = "switch";
     public static final String SHELLY2_PROFILE_COVER = "cover";
+    public static final String SHELLY2_PROFILE_LIGHT = "light";
+    public static final String SHELLY2_PROFILE_RGB = "rgb";
+    public static final String SHELLY2_PROFILE_RGBW = "rgbw";
 
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
