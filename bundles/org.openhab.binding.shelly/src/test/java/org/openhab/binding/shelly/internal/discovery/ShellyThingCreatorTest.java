@@ -202,14 +202,9 @@ public class ShellyThingCreatorTest {
     @Test
     void getThingUIDReturnsThingTypeMatchingServiceName() {
         Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
-                THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY,
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUSHTG3_STR),
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUS2PM_RELAY_STR),
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUS2PM_ROLLER_STR),
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO2_RELAY_STR),
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO2PM_ROLLER_STR),
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO2PM_RELAY_STR),
-                new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYRGBW2_COLOR_STR));
+                THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLYPLUSHTG3,
+                THING_TYPE_SHELLYPLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2_RELAY,
+                THING_TYPE_SHELLYPRO2PM_ROLLER, THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYRGBW2_COLOR);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES_UIDS.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {
