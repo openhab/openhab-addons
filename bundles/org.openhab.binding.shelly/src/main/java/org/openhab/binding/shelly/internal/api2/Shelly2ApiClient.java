@@ -630,7 +630,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs.moveStartedAt != null) {
             rs.duration = (int) (now() - cs.moveStartedAt.longValue());
         }
-        if (cs.temperature != null && cs.temperature.tC > getDouble(status.temperature)) {
+        if (cs.temperature != null && getDouble(cs.temperature.tC) > getDouble(status.temperature)) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
@@ -939,14 +939,14 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected String mapValue(Map<String, String> map, @Nullable String key) {
-        String value;
-        boolean known = key != null && !key.isEmpty() && map.containsKey(key);
-        value = known ? getString(map.get(key)) : "";
-        if (!known && !getString(key).isEmpty()) {
-            logger.warn("{}:  Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
-                    map);
+        String safeKey = getString(key);
+        if (safeKey.isEmpty() || !map.containsKey(safeKey)) {
+            logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName,
+                    safeKey, map);
+            return "";
         }
-        logger.trace("{}: API value {} was mapped to {}", thingName, key, known ? value : "UNKNOWN");
+        String value = getString(map.get(safeKey));
+        logger.trace("{}: API value '{}' was mapped to '{}'", thingName, safeKey, value);
         return value;
     }
 
