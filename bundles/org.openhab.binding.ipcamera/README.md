@@ -13,7 +13,6 @@ To see what features each brand has implemented from their APIs, please see this
 - Check this readme for any setup steps for your brand.
 - Check if the camera is offline, if so there will be a reason listed.
 - Always look at the log files with TRACE enabled, as any FFmpeg and camera errors may not reach the INFO logs.
-To enable TRACE logging, enter this in the openHAB console `log:set TRACE org.openhab.binding.ipcamera`.
 - Search the forum using any log messages to find how others have already solved it.
 - Only after doing the above ask for help in the forum and create a new thread.
 
@@ -139,7 +138,7 @@ The discovery feature of openHAB can be used to find and setup ONVIF cameras.
 This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
 The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
-The binding will only search using openHAB's currently selected primary network address, see <https://www.openhab.org/docs/settings/>.
+The binding will only search using openHAB's currently selected primary network address.
 If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
 Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
 
