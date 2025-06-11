@@ -212,6 +212,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         List<ShellySettingsRoller> rollers = profile.settings.rollers;
         profile.numRollers = rollers != null ? rollers.size() : 0;
+
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
