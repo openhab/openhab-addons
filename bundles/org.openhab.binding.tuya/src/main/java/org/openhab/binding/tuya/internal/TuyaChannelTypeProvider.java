@@ -66,6 +66,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(immediate = true, service = { ChannelTypeProvider.class, TuyaChannelTypeProvider.class })
 public class TuyaChannelTypeProvider implements ChannelTypeProvider {
+    private static final String DEFAULT_CONTROL_CATEGORY = "settings";
+    private static final String DEFAULT_STATUS_CATEGORY = "line";
+
     private static final Map<String, String> dimensionToCategory = Collections
             .unmodifiableMap(new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
@@ -255,18 +258,18 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             acceptedItemType = DIMMER;
             category = "slider";
             configurationRef = "channel-type:tuya:dimmer";
-            tags.add("Point");
+            tags.add(schemaDp.readOnly ? "Point" : "Control");
             tags.add("Illuminance");
         } else if ("bool".equals(schemaDp.type)) {
             acceptedItemType = SWITCH;
             category = "switch";
             configurationRef = "channel-type:tuya:switch";
-            tags.add("Status");
+            tags.add(schemaDp.readOnly ? "Status" : "Control");
             tags.add("Switch");
         } else if ("enum".equals(schemaDp.type)) {
             acceptedItemType = STRING;
             configurationRef = "channel-type:tuya:string";
-            tags.add("Status");
+            tags.add(schemaDp.readOnly ? "Status" : "Control");
 
             List<String> options = schemaDp.range;
             if (options != null) {
@@ -280,12 +283,12 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                 acceptedItemType = COLOR;
                 category = "colorlight";
                 configurationRef = "channel-type:tuya:color";
-                tags.add("Point");
+                tags.add(schemaDp.readOnly ? "Point" : "Control");
                 tags.add("Color");
             } else {
                 acceptedItemType = STRING;
                 configurationRef = "channel-type:tuya:string";
-                tags.add("Status");
+                tags.add(schemaDp.readOnly ? "Status" : "Control");
             }
         } else if ("value".equals(schemaDp.type)) {
             acceptedItemType = NUMBER;
@@ -303,8 +306,10 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                     String dimension = UnitUtils.getDimensionName(unit);
                     if (dimension != null) {
                         acceptedItemType = NUMBER + ":" + dimension;
-                        category = dimensionToCategory.getOrDefault(dimension, "line");
-                        tags.add("Time".equals(dimension) ? "Control" : "Setpoint");
+                        category = dimensionToCategory.getOrDefault(dimension,
+                                (schemaDp.readOnly ? DEFAULT_STATUS_CATEGORY : DEFAULT_CONTROL_CATEGORY));
+                        tags.add(schemaDp.readOnly ? "Measurement"
+                                : ("Time".equals(dimension) ? "Control" : "Setpoint"));
                         String tag = dimensionToSemanticProperty.get(dimension);
                         if (tag != null) {
                             tags.add(tag);
@@ -313,14 +318,15 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                         logger.warn("Channel {} has unit \"{}\" but openHAB doesn't know the dimension", channelTypeId,
                                 schemaDp.unit);
 
-                        tags.add("Point");
+                        tags.add(schemaDp.readOnly ? "Point" : "Setpoint");
                     }
                 }
             } else {
-                tags.add("Point");
+                tags.add(schemaDp.readOnly ? "Point" : "Setpoint");
             }
 
             stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
+                    .withReadOnly(schemaDp.readOnly) //
                     .withStep(schemaDp.step) //
                     .withPattern("%." + schemaDp.scale + "f " + ("%".equals(schemaDp.unit) ? "%%" : "%unit%"));
 
@@ -339,7 +345,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
 
             acceptedItemType = STRING;
             configurationRef = "channel-type:tuya:string";
-            tags.add("Status");
+            tags.add(schemaDp.readOnly ? "Status" : "Control");
             advanced = true;
         }
 

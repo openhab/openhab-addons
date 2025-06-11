@@ -112,8 +112,8 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             api.getDeviceSchema(device.id).thenAccept(schema -> {
                 if (!TuyaSchemaDB.contains(device.productId)) {
                     List<SchemaDp> schemaDps = new ArrayList<>();
-                    schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps));
-                    schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps));
+                    schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.FALSE));
+                    schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.TRUE));
                     TuyaSchemaDB.put(device.productId, schemaDps);
                 }
             });
@@ -122,7 +122,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         });
     }
 
-    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps) {
+    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps, Boolean readOnly) {
         if (description.dp_id == 0 || schemaDps.stream().anyMatch(schemaDp -> schemaDp.id == description.dp_id)) {
             // dp is missing or already present, skip it
             return;
@@ -135,7 +135,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             description.code = originalCode + "_" + index;
         }
 
-        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description));
+        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description, readOnly));
     }
 
     @Override
