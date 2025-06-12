@@ -91,6 +91,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUS2PM_RELAY_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS2PM_ROLLER_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGS_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSPLUGUS_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLY1MINI_STR, true, false), //
