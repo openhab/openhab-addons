@@ -66,7 +66,7 @@ public interface Device {
      *
      * @param delay scheduling delay (in milliseconds)
      */
-    public void doPoll(long delay);
+    public void poll(long delay);
 
     /**
      * Handles an incoming message for this device
