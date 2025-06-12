@@ -231,9 +231,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             logger.debug("Node {}. Channel {}: existing channel updated", details.nodeId, details.id);
         }
 
-        // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
-        updateColorCapabilities(thingUID, details, result);
-
         String itemType = (String) channelConfiguration.get(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE);
         if (label == null || label.isBlank()) {
             label = "Unknown Channel";
@@ -254,6 +251,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         }
 
         result.channels.put(details.id, builder.build());
+
+        // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
+        updateColorCapabilities(thingUID, details, result);
+
         return result.channels;
     }
 
