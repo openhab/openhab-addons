@@ -23,22 +23,13 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jeff James - Initial contribution
  */
-public class FlumeApiQueryWaterUsage {
-    @SerializedName("request_id")
-    public String requestId;
-    @SerializedName("since_datetime")
-    public LocalDateTime sinceDateTime;
-    @SerializedName("until_datetime")
-    public LocalDateTime untilDateTime;
-    @SerializedName("tz")
-    public String timeZone;
-    public FlumeApi.BucketType bucket;
-    @SerializedName("device_id")
-    public String[] deviceId;
-    @SerializedName("group_multiplier")
-    public Integer groupMultiplier;
-    public FlumeApi.OperationType operation;
-    public FlumeApi.UnitType units;
-    @SerializedName("sort_direction")
-    public FlumeApi.SortDirectionType sortDirection;
+public record FlumeApiQueryWaterUsage( //
+        @SerializedName("request_id") String requestId, //
+        @SerializedName("since_datetime") LocalDateTime sinceDateTime, //
+        @SerializedName("until_datetime") LocalDateTime untilDateTime, //
+        FlumeApi.BucketType bucket, //
+        @SerializedName("group_multiplier") Integer groupMultiplier, //
+        FlumeApi.OperationType operation, //
+        FlumeApi.UnitType units, //
+        @SerializedName("sort_direction") FlumeApi.SortDirectionType sortDirection) {
 }

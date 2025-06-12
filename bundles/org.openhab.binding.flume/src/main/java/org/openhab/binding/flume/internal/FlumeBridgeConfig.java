@@ -28,6 +28,6 @@ public class FlumeBridgeConfig {
     public String username = "";
     public String password = "";
 
-    public int refreshIntervalInstantaneous = DEFAULT_POLLING_INTERVAL_INSTANTANEOUS;
-    public int refreshIntervalCumulative = DEFAULT_POLLING_INTERVAL_CUMULATIVE;
+    public int refreshIntervalInstantaneous = DEFAULT_POLLING_INTERVAL_INSTANTANEOUS_MIN;
+    public int refreshIntervalCumulative = DEFAULT_POLLING_INTERVAL_CUMULATIVE_MIN;
 }
