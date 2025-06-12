@@ -7685,25 +7685,6 @@
                             "endpoint": 0,
                             "commandClass": 38,
                             "commandClassName": "Multilevel Switch",
-                            "property": "currentValue",
-                            "propertyName": "currentValue",
-                            "ccVersion": 1,
-                            "metadata": {
-                                "type": "number",
-                                "readable": true,
-                                "writeable": false,
-                                "label": "Current value",
-                                "min": 0,
-                                "max": 99,
-                                "stateful": true,
-                                "secret": false
-                            },
-                            "value": 0
-                        },
-                        {
-                            "endpoint": 0,
-                            "commandClass": 38,
-                            "commandClassName": "Multilevel Switch",
                             "property": "targetValue",
                             "propertyName": "targetValue",
                             "ccVersion": 1,
@@ -7715,6 +7696,25 @@
                                 "valueChangeOptions": [
                                     "transitionDuration"
                                 ],
+                                "min": 0,
+                                "max": 99,
+                                "stateful": true,
+                                "secret": false
+                            },
+                            "value": 0
+                        },
+                        {
+                            "endpoint": 0,
+                            "commandClass": 38,
+                            "commandClassName": "Multilevel Switch",
+                            "property": "currentValue",
+                            "propertyName": "currentValue",
+                            "ccVersion": 1,
+                            "metadata": {
+                                "type": "number",
+                                "readable": true,
+                                "writeable": false,
+                                "label": "Current value",
                                 "min": 0,
                                 "max": 99,
                                 "stateful": true,
