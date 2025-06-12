@@ -48,18 +48,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>embed-dependencies</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.graalvm.python</groupId>
         <artifactId>graalpy-maven-plugin</artifactId>
         <version>${graalpy.version}</version>
@@ -69,7 +57,6 @@
               <goal>process-graalpy-resources</goal>
             </goals>
             <configuration>
-              <resourceDirectory>GRAALPY-VFS/${project.groupId}/${project.artifactId}</resourceDirectory>
               <packages>
                 <package>Jinja2==3.1.6</package>
               </packages>
@@ -84,40 +71,6 @@
         <configuration>
           <argLine>-noverify</argLine>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.graalvm.llvm:llvm-api</include>
-                  <include>org.graalvm.polyglot:polyglot</include>
-                  <include>org.graalvm.python:python-language</include>
-                  <include>org.graalvm.python:python-resources</include>
-                  <include>org.graalvm.regex:regex</include>
-                  <include>org.graalvm.tools:profiler-tool</include>
-                  <include>org.graalvm.truffle:truffle-api</include>
-                  <include>org.graalvm.truffle:truffle-nfi</include>
-                  <include>org.graalvm.truffle:truffle-nfi-libffi</include>
-                </includes>
-              </artifactSet>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <!-- Transformer to merge module-info.class
-                  files, if needed -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

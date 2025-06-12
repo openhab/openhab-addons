@@ -47,8 +47,8 @@ public class JinjaTransformationService implements TransformationService {
 
     @Activate
     public JinjaTransformationService() {
-        VirtualFileSystem vfs = VirtualFileSystem.newBuilder()
-                .resourceDirectory("GRAALPY-VFS/org.openhab.addons.bundles/org.openhab.transform.jinja").build();
+        VirtualFileSystem vfs = VirtualFileSystem.newBuilder().resourceLoadingClass(JinjaTransformationService.class)
+                .build();
         context = GraalPyResources.contextBuilder(vfs).build();
         bindings = context.getBindings(PYTHON);
 
@@ -80,7 +80,6 @@ public class JinjaTransformationService implements TransformationService {
     @Override
     public @Nullable String transform(String template, String value) throws TransformationException {
         String transformationResult;
-        boolean hasJson = false;
 
         logger.debug("About to transform '{}' with template '{}'", value, template);
 
