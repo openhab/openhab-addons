@@ -199,53 +199,59 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     private Map<String, Channel> createChannel(ThingUID thingUID, ZwaveJSTypeGeneratorResult result,
             ChannelMetadata details, ZwaveJSConfigDescriptionProvider configDescriptionProvider) {
         if (details.isIgnoredCommandClass(details.commandClassName)) {
+            logger.trace("Node {}. Ignoring channel with Id: {} (ignored command class)", details.nodeId, details.id);
             return result.channels;
         }
-        logger.trace("Node {} building channel with Id: {}", details.nodeId, details.id);
+        logger.trace("Node {}. building channel with Id: {}", details.nodeId, details.id);
         logger.trace(" >> {}", details);
 
         ChannelUID channelUID = new ChannelUID(thingUID, details.id);
-        Configuration newChannelConfiguration = buildChannelConfiguration(details);
+        Configuration channelConfiguration = buildChannelConfiguration(details);
 
-        // Check for existing channel
+        // Try to reuse or update an existing channel
         Channel existingChannel = result.channels.get(channelUID.getId());
-        if (existingChannel != null) {
-            Configuration existingConfig = existingChannel.getConfiguration();
-            if (ChannelMetadata.isSameReadWriteChannel(existingConfig, newChannelConfiguration)) {
-                updateReadWriteProperties(existingConfig, details);
-
-                ChannelTypeUID newChannelTypeUID = generateChannelTypeUID(details);
-                ChannelBuilder builder = ChannelBuilder.create(existingChannel).withConfiguration(existingConfig);
-
-                if (!newChannelTypeUID.equals(existingChannel.getChannelTypeUID())) {
-                    ChannelType newChannelType = getOrGenerate(newChannelTypeUID, details);
-                    if (newChannelType != null) {
-                        builder.withAcceptedItemType(newChannelType.getItemType()).withType(newChannelType.getUID());
-                    }
-                }
-
-                result.channels.put(details.id, builder.build());
-
-                logger.debug("Node {}. Channel {} existing channel updated", details.nodeId, details.id);
-                return result.channels;
-            } else {
-                logger.debug("Node {}. Channel {} exists: ignored", details.nodeId, details.id);
-                return result.channels;
-            }
-        }
-
-        // Create new channel
         ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
         ChannelType channelType = getOrGenerate(channelTypeUID, details);
-        if (channelType == null) {
-            return result.channels;
+
+        String label = details.label;
+        if (existingChannel != null) {
+            // Update configuration and label if needed
+            Configuration existingConfig = existingChannel.getConfiguration();
+            updateReadWriteProperties(existingConfig, details);
+
+            if (details.writable) {
+                existingConfig.put(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE, details.itemType);
+                label = existingChannel.getLabel() != null ? existingChannel.getLabel() : label;
+            }
+            // If the channel type UID has changed and the channel is not writable, keep the old type UID
+            if (!channelTypeUID.equals(existingChannel.getChannelTypeUID()) && !details.writable) {
+                channelTypeUID = existingChannel.getChannelTypeUID();
+            }
+            channelConfiguration = existingConfig;
+            logger.debug("Node {}. Channel {}: existing channel updated", details.nodeId, details.id);
         }
 
         // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
         updateColorCapabilities(thingUID, details, result);
 
-        ChannelBuilder builder = ChannelBuilder.create(channelUID, details.itemType).withLabel(details.label)
-                .withConfiguration(newChannelConfiguration).withType(channelType.getUID());
+        String itemType = (String) channelConfiguration.get(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE);
+        if (label == null || label.isBlank()) {
+            label = "Unknown Channel";
+        }
+
+        if (channelType == null) {
+            logger.warn("Node {} Channel {}, ChannelType could not be found or generated, please report, this is a bug",
+                    details.nodeId, details.id);
+            return result.channels;
+        }
+
+        // Build the new or updated channel
+        ChannelBuilder builder = ChannelBuilder.create(channelUID, itemType).withLabel(label)
+                .withConfiguration(channelConfiguration).withType(channelTypeUID);
+
+        if (details.writable) {
+            builder.withAcceptedItemType(channelType.getItemType());
+        }
 
         result.channels.put(details.id, builder.build());
         return result.channels;

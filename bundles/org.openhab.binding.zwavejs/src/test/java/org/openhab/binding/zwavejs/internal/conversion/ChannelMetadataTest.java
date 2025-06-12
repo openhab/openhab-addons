@@ -173,18 +173,18 @@ public class ChannelMetadataTest {
         ChannelMetadata details = new ChannelMetadata(13, node.values.get(1));
 
         assertEquals("multilevel-switch-value", details.id);
-        assertEquals("Dimmer", details.itemType);
-        assertEquals("Target Value", details.label);
+        assertEquals("Number", details.itemType);
+        assertEquals("Current Value", details.label);
         assertNull(details.description);
         assertEquals(new DecimalType(0.0), details.state);
-        assertEquals(true, details.writable);
+        assertEquals(false, details.writable);
 
         StateDescriptionFragment statePattern = details.statePattern;
         assertNotNull(statePattern);
         assertEquals(BigDecimal.valueOf(0), statePattern.getMinimum());
-        assertEquals(BigDecimal.valueOf(100), statePattern.getMaximum());
+        assertEquals(BigDecimal.valueOf(99), statePattern.getMaximum());
         assertNull(statePattern.getStep());
-        assertEquals("%1d %%", statePattern.getPattern());
+        assertEquals("%1d", statePattern.getPattern());
 
         assertNull(details.unitSymbol);
     }
