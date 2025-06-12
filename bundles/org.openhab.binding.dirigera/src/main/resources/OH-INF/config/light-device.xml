@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:dirigera:light-device">
+		<parameter name="id" type="text">
+			<label>Device Id</label>
+			<description>Unique id of this device</description>
+		</parameter>
+		<parameter name="fadeTime" type="integer" unit="ms">
+			<label>Fade Time</label>
+			<description>Required time for fade sequnce to color or brightness</description>
+			<default>750</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

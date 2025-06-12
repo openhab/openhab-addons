@@ -1,0 +1,8 @@
+{
+	"attributes": {
+		"coordinates": {
+			"latitude": %s,
+			"longitude": %s,
+		}
+	}
+}

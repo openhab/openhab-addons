@@ -1,0 +1,22 @@
+{
+	"id": "%s",
+	"type": "customScene",
+	"info": {
+		"name": "%s",
+		"icon": "scenes_home_filled"
+	},
+	"triggers": [
+		{
+			"type": "controller",
+			"trigger": {
+				"controllerType": "shortcutController",
+				"clickPattern": "%s",
+				"buttonIndex": %s,
+				"deviceId": "%s"
+			}
+		}
+	],
+	"actions": [],
+	"commands": []
+}
+    
