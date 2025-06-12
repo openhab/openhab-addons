@@ -231,12 +231,11 @@
 		<item-type>Number:Time</item-type>
 		<label>Track Progress</label>
 		<description>The progress of the currently played track</description>
-		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 		<tags>
 			<tag>Status</tag>
 			<tag>Progress</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDuration" advanced="true">
 		<item-type>String</item-type>
