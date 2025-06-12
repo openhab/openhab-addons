@@ -1,0 +1,59 @@
+{
+	"deviceType": "outlet",
+	"remoteLinks": [],
+	"createdAt": "2024-10-08T20:43:31.000Z",
+	"isReachable": false,
+	"lastSeen": "2024-10-10T10:47:13.000Z",
+	"capabilities": {
+		"canReceive": [
+			"customName",
+			"isOn",
+			"lightLevel",
+			"energyConsumedAtLastReset",
+			"childLock",
+			"statusLight"
+		],
+		"canSend": []
+	},
+	"attributes": {
+		"identifyPeriod": 0,
+		"permittingJoin": false,
+		"currentAmps": 0.003000000026077032,
+		"currentVoltage": 75.5999984741211,
+		"otaScheduleEnd": "00:00",
+		"currentActivePower": 0,
+		"otaStatus": "upToDate",
+		"totalEnergyConsumedLastUpdated": "2024-10-08T20:46:36.000Z",
+		"manufacturer": "IKEA of Sweden",
+		"statusLight": false,
+		"otaState": "readyToCheck",
+		"isOn": false,
+		"totalEnergyConsumed": 0,
+		"model": "INSPELNING Smart plug",
+		"hardwareVersion": "1",
+		"firmwareVersion": "2.4.45",
+		"serialNumber": "ECF64CFFFEF28EC3",
+		"otaScheduleStart": "00:00",
+		"otaProgress": 0,
+		"startUpCurrentLevel": -1,
+		"customName": "Smart-Home-Steckdose 1",
+		"identifyStarted": "2000-01-01T00:00:00.000Z",
+		"otaPolicy": "autoUpdate",
+		"energyConsumedAtLastReset": 0,
+		"timeOfLastEnergyReset": "2024-10-08T20:10:31.000Z",
+		"lightLevel": 100,
+		"productCode": "E2206",
+		"childLock": false,
+		"startupOnOff": "startPrevious"
+	},
+	"id": "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1",
+	"type": "outlet",
+	"deviceSet": [],
+	"room": {
+		"color": "ikea_green_no_65",
+		"name": "Loft",
+		"icon": "rooms_sofa",
+		"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d"
+	},
+	"isHidden": false
+}

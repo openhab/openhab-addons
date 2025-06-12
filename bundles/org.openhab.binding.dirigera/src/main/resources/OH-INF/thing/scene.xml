@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="scene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Scene</label>
+		<description>Scene from IKEA home smart App which can be triggered</description>
+
+		<channels>
+			<channel id="trigger" typeId="scene-trigger">
+				<label>Scene Trigger</label>
+				<description>Perform / undo scene execution </description>
+			</channel>
+			<channel id="last-trigger" typeId="datetime">
+				<label>Last Trigger</label>
+				<description>Date and time when last trigger occurred</description>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>
