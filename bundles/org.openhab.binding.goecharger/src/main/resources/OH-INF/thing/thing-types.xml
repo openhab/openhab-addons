@@ -43,10 +43,18 @@
 		</properties>
 
 		<config-description>
-			<parameter name="ip" type="text" required="true">
+			<parameter name="ip" type="text" required="false">
 				<label>IP Address</label>
 				<description>The IP address of the Go-eCharger</description>
 				<context>network-address</context>
+			</parameter>
+			<parameter name="serial" type="text" required="false">
+				<label>Serial Number</label>
+				<description>The serial number of the Go-eCharger</description>
+			</parameter>
+			<parameter name="token" type="text" required="false">
+				<label>Cloud Access Token</label>
+				<description>The access token for the Go-eCharger Cloud API</description>
 			</parameter>
 			<parameter name="apiVersion" type="integer" required="false" min="1" max="2">
 				<label>API version</label>
