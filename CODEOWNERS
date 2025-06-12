@@ -332,6 +332,7 @@
 /bundles/org.openhab.binding.ring/ @morph166955
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
+/bundles/org.openhab.binding.roborock/ @psmedley
 /bundles/org.openhab.binding.roku/ @mlobstein
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers
