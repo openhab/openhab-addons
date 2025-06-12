@@ -10,22 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.roborock.internal;
+package org.openhab.binding.roborock.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/**
- * The {@link roborockConfiguration} class contains fields mapping thing configuration parameters.
- *
- * @author paul@smedley.id.au - Initial contribution
- */
-@NonNullByDefault
-public class roborockConfiguration {
+import com.google.gson.annotations.SerializedName;
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+/**
+ * Class for holding the set of parameters used to read the controller variables.
+ *
+ * @author Paul Smedley - Initial Contribution
+ *
+ */
+
+@NonNullByDefault
+public class VacuumList {
+    @SerializedName("public_id")
+    public String publicId = "";
+    public String vin = "";
+    public String name = "";
+
+    public VacuumList() {
+    }
 }

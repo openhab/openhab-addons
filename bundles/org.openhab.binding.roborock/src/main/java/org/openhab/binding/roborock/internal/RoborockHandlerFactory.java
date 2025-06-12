@@ -12,30 +12,40 @@
  */
 package org.openhab.binding.roborock.internal;
 
-import static org.openhab.binding.roborock.internal.roborockBindingConstants.*;
-
-import java.util.Set;
+import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link roborockHandlerFactory} is responsible for creating things and thing
+ * The {@link RoborockHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.roborock", service = ThingHandlerFactory.class)
-public class roborockHandlerFactory extends BaseThingHandlerFactory {
+public class RoborockHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private final HttpClient httpClient;
+
+    @Activate
+    public RoborockHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,10 +56,10 @@ public class roborockHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new roborockHandler(thing);
+        if (ROBOROCK_ACCOUNT.equals(thingTypeUID)) {
+            return new RoborockAccountHandler((Bridge) thing, httpClient);
+        } else {
+            return new RoborockVacuumHandler(thing, httpClient);
         }
-
-        return null;
     }
 }
