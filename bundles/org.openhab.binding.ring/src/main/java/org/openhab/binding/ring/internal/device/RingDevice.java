@@ -10,25 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal;
-
-import java.util.Collection;
+package org.openhab.binding.ring.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.internal.device.RingDevice;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
 
 /**
- * The AccountHandler implements this interface to facilitate the
- * use of the common services.
+ * Interface common to all Ring devices.
  *
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 @NonNullByDefault
-public interface RingAccount {
-    Collection<RingDevice> getAllDevices();
+public interface RingDevice {
+    void setDeviceStatus(RingDeviceTO ringDeviceTO);
 
-    @Nullable
-    RingDevice getDevice(String id);
+    RingDeviceTO getDeviceStatus();
 }

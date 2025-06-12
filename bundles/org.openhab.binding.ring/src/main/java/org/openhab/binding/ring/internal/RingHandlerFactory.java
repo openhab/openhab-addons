@@ -16,11 +16,14 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.handler.AccountHandler;
-import org.openhab.binding.ring.handler.ChimeHandler;
-import org.openhab.binding.ring.handler.DoorbellHandler;
-import org.openhab.binding.ring.handler.OtherDeviceHandler;
-import org.openhab.binding.ring.handler.StickupcamHandler;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.ring.internal.handler.AccountHandler;
+import org.openhab.binding.ring.internal.handler.ChimeHandler;
+import org.openhab.binding.ring.internal.handler.DoorbellHandler;
+import org.openhab.binding.ring.internal.handler.OtherDeviceHandler;
+import org.openhab.binding.ring.internal.handler.StickupcamHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -32,8 +35,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,24 +59,33 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
     private final NetworkAddressService networkAddressService;
 
-    private final HttpService httpService;
+    private final HttpClient httpClient;
+    private final RingVideoServlet servlet;
     private int httpPort;
-    private @Nullable ComponentContext componentContext;
 
     public final Gson gson = new Gson();
 
     @Activate
     public RingHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference HttpService httpService, ComponentContext componentContext) {
+            @Reference RingVideoServlet servlet, @Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext) throws Exception {
         super.activate(componentContext);
         httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         if (httpPort == -1) {
             httpPort = 8080;
         }
-        this.httpService = httpService;
+        this.servlet = servlet;
         this.networkAddressService = networkAddressService;
 
         logger.debug("Using OH HTTP port {}", httpPort);
+
+        httpClient = httpClientFactory.createHttpClient("ring", new SslContextFactory.Client());
+        httpClient.start();
+    }
+
+    @Deactivate
+    public void deactivate() throws Exception {
+        httpClient.stop();
     }
 
     @Override
@@ -87,19 +99,19 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             if (thing instanceof Bridge bridge) {
-                return new AccountHandler(bridge, networkAddressService, httpService, httpPort);
+                return new AccountHandler(bridge, networkAddressService, servlet, httpPort, httpClient);
             } else {
                 logger.warn("Account Bridge configured as legacy Thing");
                 return null;
             }
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
-            return new DoorbellHandler(thing, gson);
+            return new DoorbellHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CHIME)) {
-            return new ChimeHandler(thing, gson);
+            return new ChimeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
-            return new StickupcamHandler(thing, gson);
+            return new StickupcamHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OTHERDEVICE)) {
-            return new OtherDeviceHandler(thing, gson);
+            return new OtherDeviceHandler(thing);
         }
         return null;
     }

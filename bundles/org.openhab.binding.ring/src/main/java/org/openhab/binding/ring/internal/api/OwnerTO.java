@@ -10,16 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Wim Vissers - Initial contribution
  */
-
 @NonNullByDefault
-public class DoorbotTO {
-    public String id = "";
-    public String description = "";
+public class OwnerTO {
+    public long id;
+    @SerializedName("first_name")
+    public String firstName = "";
+    @SerializedName("last_name")
+    public String lastName = "";
+    public String email = "";
 }
