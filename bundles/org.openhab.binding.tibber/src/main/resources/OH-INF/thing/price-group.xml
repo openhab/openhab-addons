@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="price">
+		<label>Price</label>
+		<description>Price Informations</description>
+		<channels>
+			<channel id="spot-price" typeId="price">
+				<label>Spot Price</label>
+				<description>Spot prices for today and tomorrow</description>
+			</channel>
+			<channel id="level" typeId="price-level">
+				<label>Price Level</label>
+				<description>Price levels for today and tomorrow</description>
+			</channel>
+			<channel id="average" typeId="price">
+				<label>Average 24h</label>
+				<description>Average price from last 24 hours</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
