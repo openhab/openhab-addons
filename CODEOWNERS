@@ -84,6 +84,7 @@
 /bundles/org.openhab.binding.deutschebahn/ @soenkekueper
 /bundles/org.openhab.binding.digiplex/ @rmichalak
 /bundles/org.openhab.binding.digitalstrom/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.dirigera/ @weymann
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.dolbycp/ @Cybso

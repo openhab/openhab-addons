@@ -1,0 +1,49 @@
+{
+	"id": "eb9a4367-9e23-4d37-9566-401a7ae7caf0_1",
+	"type": "light",
+	"deviceType": "light",
+	"createdAt": "2022-11-01T08:33:27.000Z",
+	"isReachable": true,
+	"lastSeen": "2022-11-12T10:31:23.000Z",
+	"customIcon": "lighting_spot_chandelier",
+	"attributes": {
+		"customName": "Vasken",
+		"model": "TRADFRI Driver 30W",
+		"manufacturer": "IKEA of Sweden",
+		"firmwareVersion": "2.3.086",
+		"hardwareVersion": "1",
+		"serialNumber": "B4E3F9FFFE128FF2",
+		"productCode": "ICPSHC2430EUIL1",
+		"isOn": false,
+		"startupOnOff": "startOn",
+		"lightLevel": 100,
+		"identifyStarted": "2022-11-01T08:34:45.000Z",
+		"identifyPeriod": 15,
+		"permittingJoin": false,
+		"otaStatus": "upToDate",
+		"otaState": "readyToCheck",
+		"otaProgress": 0,
+		"otaPolicy": "autoUpdate",
+		"otaScheduleStart": "00:00",
+		"otaScheduleEnd": "00:00"
+	},
+	"capabilities": {
+		"canSend": [],
+		"canReceive": [
+			"customName",
+			"isOn",
+			"lightLevel"
+		]
+	},
+	"room": {
+		"id": "45e3cc5e-8c64-478b-ac32-25762b431db4",
+		"name": "Kjøkken",
+		"color": "ikea_green_no_65",
+		"icon": "rooms_arm_chair"
+	},
+	"deviceSet": [],
+	"remoteLinks": [
+		"d0aa3515-cef7-465f-8bcf-19caf59f1a98_1"
+	],
+	"isHidden": false
+}
