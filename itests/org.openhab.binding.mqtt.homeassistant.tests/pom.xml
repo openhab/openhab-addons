@@ -16,59 +16,9 @@
 
   <properties>
     <mqttbroker.port>1883</mqttbroker.port>
-    <graalpy.version>24.2.0</graalpy.version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.sdk.collections</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.sdk.jniutils</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.sdk.nativeimage</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.sdk.word</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.shadowed.icu4j</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.shadowed.xz</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.truffle.truffle-compiler</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.graalvm.truffle.truffle-runtime</artifactId>
-      <version>${graalpy.version}</version>
-      <scope>compile</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt</artifactId>

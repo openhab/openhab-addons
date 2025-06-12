@@ -1,0 +1,51 @@
+{
+	"data": {
+		"deviceType": "outlet",
+		"remoteLinks": [],
+		"createdAt": "2024-10-17T21:17:45.000Z",
+		"isReachable": true,
+		"lastSeen": "2024-10-17T21:17:48.000Z",
+		"capabilities": {
+			"canReceive": [
+				"customName",
+				"isOn",
+				"lightLevel",
+				"childLock",
+				"statusLight"
+			],
+			"canSend": []
+		},
+		"attributes": {
+			"identifyPeriod": 0,
+			"permittingJoin": false,
+			"serialNumber": "D44867FFFE140EDE",
+			"otaScheduleStart": "00:00",
+			"otaProgress": 0,
+			"startUpCurrentLevel": -1,
+			"otaScheduleEnd": "00:00",
+			"customName": "",
+			"identifyStarted": "2000-01-01T00:00:00.000Z",
+			"otaPolicy": "autoUpdate",
+			"otaStatus": "upToDate",
+			"manufacturer": "IKEA of Sweden",
+			"lightLevel": 100,
+			"productCode": "E2204",
+			"statusLight": true,
+			"otaState": "readyToCheck",
+			"childLock": false,
+			"isOn": false,
+			"hardwareVersion": "1",
+			"model": "TRETAKT Smart plug",
+			"startupOnOff": "startPrevious",
+			"firmwareVersion": "2.4.4"
+		},
+		"id": "339a37ea-791d-4b5d-8a1d-21d068578421_1",
+		"type": "outlet",
+		"deviceSet": []
+	},
+	"specversion": "3.163.0",
+	"id": "382f5a61-0b3a-4c55-b601-d89c003ac27c",
+	"time": "2024-10-17T21:17:48.000Z",
+	"source": "urn:com:ikea:homesmart:iotc:zigbee",
+	"type": "deviceAdded"
+}
