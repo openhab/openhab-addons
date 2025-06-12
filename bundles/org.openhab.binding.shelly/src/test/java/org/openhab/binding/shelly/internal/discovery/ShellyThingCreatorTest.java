@@ -69,7 +69,7 @@ public class ShellyThingCreatorTest {
 
         assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType + "; mode: " + mode, actual,
                 is(equalTo(expected)));
-        assertThat(SUPPORTED_THING_TYPES_UIDS, hasItem(expectedThingTypeUid));
+        assertThat(SUPPORTED_THING_TYPES, hasItem(expectedThingTypeUid));
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
@@ -109,7 +109,7 @@ public class ShellyThingCreatorTest {
         ThingTypeUID expectedThingTypeUid = new ThingTypeUID(BINDING_ID, expectedThingTypeId);
 
         assertThat("deviceType: " + deviceType + "; mode: " + mode, actual, is(equalTo(expected)));
-        assertThat(SUPPORTED_THING_TYPES_UIDS, hasItem(expectedThingTypeUid));
+        assertThat(SUPPORTED_THING_TYPES, hasItem(expectedThingTypeUid));
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidByDeviceType() {
@@ -213,7 +213,7 @@ public class ShellyThingCreatorTest {
                 THING_TYPE_SHELLYPLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2_RELAY,
                 THING_TYPE_SHELLYPRO2PM_ROLLER, THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYRGBW2_COLOR);
 
-        for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES_UIDS.stream()
+        for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {
             String thingTypeId = supportedThingTypeUid.getId();
             ThingUID actualThingUid = ShellyThingCreator.getThingUID(thingTypeId + "-" + DEVICE_ID);
