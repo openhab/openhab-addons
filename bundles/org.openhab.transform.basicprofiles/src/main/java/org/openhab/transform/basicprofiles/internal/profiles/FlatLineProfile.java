@@ -129,7 +129,7 @@ public class FlatLineProfile implements StateProfile, AutoCloseable {
         closed = true;
     }
 
-    private void cancelTimeoutTask() {
+    private synchronized void cancelTimeoutTask() {
         ScheduledFuture<?> priorTask = timeoutTask;
         if (priorTask != null) {
             priorTask.cancel(false);
