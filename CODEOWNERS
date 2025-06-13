@@ -123,6 +123,7 @@
 /bundles/org.openhab.binding.feed/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.fenecon/ @nixoso
+/bundles/org.openhab.binding.ferroamp/ @basse04
 /bundles/org.openhab.binding.fineoffsetweatherstation/ @Andy2003
 /bundles/org.openhab.binding.flicbutton/ @pfink
 /bundles/org.openhab.binding.flume/ @jsjames
