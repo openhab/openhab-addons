@@ -14,22 +14,22 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.CHANNEL_CORRECTION_FACTOR;
 
-import java.net.http.HttpClient;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jcp.xml.dsig.internal.dom.Utils;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
 import org.openhab.core.thing.Thing;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SmartForecastSolarPlaneHandler} is a subclass of {@link AdjustableForecastSolarPlaneHandler} that adjust
- * forecast
- * data according to current production values.
+ * forecast data according to current production values.
  *
  * @author Bernd Weymann - Initial contribution
  */
