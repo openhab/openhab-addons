@@ -144,7 +144,7 @@
 		<label>End Time</label>
 		<description>Program End Time</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Forecast</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
