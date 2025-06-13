@@ -37,6 +37,10 @@
 			legacy devices, newer devices mostly use MIOT. Check your log, share
 			your results.</description>
 		<category>settings</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="testmiot">
@@ -45,6 +49,10 @@
 		<description>Create experimental support for MIOT protocol devices based on the online specification. Check your log,
 			share your results.</description>
 		<category>settings</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

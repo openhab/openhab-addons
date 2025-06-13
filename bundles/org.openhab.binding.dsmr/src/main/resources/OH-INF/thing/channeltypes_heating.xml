@@ -8,6 +8,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Heating Delivery</label>
 		<description>The total amount of heating used in the past period.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

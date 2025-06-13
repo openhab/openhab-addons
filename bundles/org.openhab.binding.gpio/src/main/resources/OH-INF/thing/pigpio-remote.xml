@@ -225,6 +225,10 @@
 		<item-type>Switch</item-type>
 		<label>GPIO Digital Output</label>
 		<description>Set digital state of a GPIO Pin</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="gpioId" type="integer" required="true">
 				<label>GPIO Pin</label>

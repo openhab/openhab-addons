@@ -58,6 +58,10 @@
 		<item-type>Number</item-type>
 		<label>Alert Level</label>
 		<description>The alert level for the location.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 

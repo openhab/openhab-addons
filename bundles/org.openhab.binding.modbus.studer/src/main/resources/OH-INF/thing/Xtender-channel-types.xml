@@ -7,54 +7,90 @@
 	<channel-type id="Uin">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Input Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Input current Channel Type -->
 	<channel-type id="Iin">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Input Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Input active power Channel Type -->
 	<channel-type id="Pina">
 		<item-type>Number:Power</item-type>
 		<label>Input Active Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Input frequency Channel Type -->
 	<channel-type id="Fin">
 		<item-type>Number:Frequency</item-type>
 		<label>Input Frequency</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Output voltage Channel Type -->
 	<channel-type id="Uout">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Output Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Output current Channel Type -->
 	<channel-type id="Iout">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Output Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Output active power Channel Type -->
 	<channel-type id="Pouta">
 		<item-type>Number:Power</item-type>
 		<label>Output Active Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Output frequency Channel Type -->
 	<channel-type id="Fout">
 		<item-type>Number:Frequency</item-type>
 		<label>Output Frequency</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Operating state Channel Type -->
 	<channel-type id="Mode">
 		<item-type>String</item-type>
 		<label>Operating State</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="INVALID">Invalid value</option>

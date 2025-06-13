@@ -7,18 +7,30 @@
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Fan Workhours</label>
 		<description>Work hours of the fan</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="workhours-storage-loading-pump-channel">
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>StorageLoadingPump Workhours</label>
 		<description>Work hours of the storage loading pump</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="workhours-compressor-channel">
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Compressor Workhours</label>
 		<description>Work hours of the compressor</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

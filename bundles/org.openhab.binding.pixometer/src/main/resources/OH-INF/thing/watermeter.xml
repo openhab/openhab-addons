@@ -28,6 +28,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state pattern="%.3f  %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
