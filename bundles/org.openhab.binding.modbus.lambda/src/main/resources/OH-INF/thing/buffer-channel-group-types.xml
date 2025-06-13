@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="buffer">
+		<label>Buffer</label>
+		<channels>
+			<channel id="buffer-error-number" typeId="buffer-error-number-channel"/>
+			<channel id="buffer-operating-state" typeId="buffer-operating-state-channel"/>
+			<channel id="buffer-actual-high-temperature" typeId="buffer-actual-high-temperature-channel"/>
+			<channel id="buffer-actual-low-temperature" typeId="buffer-actual-low-temperature-channel"/>
+			<channel id="buffer-actual-modbus-temperature" typeId="buffer-actual-modbus-temperature-channel"/>
+			<channel id="buffer-request-type" typeId="buffer-request-type-channel"/>
+			<channel id="buffer-request-flow-line-temperature" typeId="buffer-request-flow-line-temperature-channel"/>
+			<channel id="buffer-request-return-line-temperature" typeId="buffer-request-return-line-temperature-channel"/>
+			<channel id="buffer-request-heat-sink-temperature" typeId="buffer-request-heat-sink-temperature-channel"/>
+			<channel id="buffer-request-heating-capacity" typeId="buffer-request-heating-capacity-channel"/>
+			<channel id="maximum-buffer-temperature" typeId="maximum-buffer-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
