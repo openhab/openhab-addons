@@ -343,10 +343,10 @@ The purpose is to indicate an alarm condition if the binding is no longer provid
 
 ### Flat Line Profile Configuration
 
-| Configuration Parameter | Type | Description                                                                                                                                                              |
-| ----------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `timeout`               | text | The time out after which the profile will set the state of the item if the binding provides no updates. The value is in `QuantityType` format e.g. `1 h`, `60 s`, `2 d`  |
-| `inverted`              | text | Optional string indicating if item shall be set to `ON` or `OFF` after the timeout expires. Where `false` => `ON` resp. `true` => `OFF`. The default value is `false`.   |
+| Configuration Parameter | Type    | Description                                                                                                                                                             |
+| ----------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `timeout`               | text    | The time out after which the profile will set the state of the item if the binding provides no updates. The value is in `QuantityType` format e.g. `1 h`, `60 s`, `2 d` |
+| `inverted`              | boolean | Optional value indicating if item shall be set to `ON` or `OFF` after the timeout expires. Where `false` => `ON` resp. `true` => `OFF`. The default value is `false`.   |
 
 ### Flat Line Profile Example
 
