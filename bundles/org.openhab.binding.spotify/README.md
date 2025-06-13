@@ -89,26 +89,26 @@ The channels on the bridge are the ones used to both control the active device a
 
 **Common Channels:**
 
-| Channel Type ID | Item Type | Read/Write | Description                                                                                       |
-| --------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| deviceName      | String    | Read-write | Name of the currently active Connect Device,                                                      |
-| devices         | Selection | Read-write | List of currently active Connect Devices, Set the device ID to transfer play to that device.      |
-| deviceVolume    | Dimmer    | Read-write | Get or set the active Connect Device volume.                                                      |
-| deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play on the active device.                                                    |
-| trackPlay       | String    | Read-write | Set which music  to play on the active device. This channel accepts Spotify URIs and URLs.        |
-| trackPlayer     | Player    | Read-write | The Player Control of the active device. Accepts PLAY/PAUSE/NEXT/PREVIOUS commands.               |
-| trackRepeat     | String    | Read-only  | `track` repeats the current track. `context` repeats the current context. `off` turns repeat off. |
-| trackName       | String    | Read-only  | The name of the currently playing track.                                                          |
-| trackDuration   | String    | Read-only  | The duration (m:ss) of the currently playing track. This is updated every second.                 |
-| trackDurationMs | Number    | Read-only  | The duration of the currently playing track in milliseconds.                                      |
-| trackProgress   | String    | Read-only  | The progress (m:ss) of the currently playing track. This is updated every second.                 |
-| trackProgressMs | Number    | Read-only  | The progress of the currently playing track in milliseconds.                                      |
-| playlists       | Selection | Read-write | This channel will be populated with the users playlists. Set the playlist ID to start.            |
-| playlistName    | String    | Read-write | The currently playing playlist. Or empty if no playing list is playing.                           |
-| albumName       | String    | Read-only  | Album Name of the currently playing track.                                                        |
-| albumImage      | RawType   | Read-only  | Album Image of the currently playing track.                                                       |
-| albumImageUrl   | String    | Read-only  | Url to the album Image of the currently playing track.                                            |
-| artistName      | String    | Read-only  | Artist Name of the currently playing track.                                                       |
+| Channel Type ID | Item Type   | Read/Write | Description                                                                                       |
+| --------------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| deviceName      | String      | Read-write | Name of the currently active Connect Device,                                                      |
+| devices         | Selection   | Read-write | List of currently active Connect Devices, Set the device ID to transfer play to that device.      |
+| deviceVolume    | Dimmer      | Read-write | Get or set the active Connect Device volume.                                                      |
+| deviceShuffle   | Switch      | Read-write | Turn on/off shuffle play on the active device.                                                    |
+| trackPlay       | String      | Read-write | Set which music  to play on the active device. This channel accepts Spotify URIs and URLs.        |
+| trackPlayer     | Player      | Read-write | The Player Control of the active device. Accepts PLAY/PAUSE/NEXT/PREVIOUS commands.               |
+| trackRepeat     | String      | Read-only  | `track` repeats the current track. `context` repeats the current context. `off` turns repeat off. |
+| trackName       | String      | Read-only  | The name of the currently playing track.                                                          |
+| trackDuration   | String      | Read-only  | The duration (m:ss) of the currently playing track. This is updated every second.                 |
+| trackDurationMs | Number:Time | Read-only  | The duration of the currently playing track.                                                      |
+| trackProgress   | String      | Read-only  | The progress (m:ss) of the currently playing track. This is updated every second.                 |
+| trackProgressMs | Number:Time | Read-only  | The progress of the currently playing track.                                                      |
+| playlists       | Selection   | Read-write | This channel will be populated with the users playlists. Set the playlist ID to start.            |
+| playlistName    | String      | Read-write | The currently playing playlist. Or empty if no playing list is playing.                           |
+| albumName       | String      | Read-only  | Album Name of the currently playing track.                                                        |
+| albumImage      | RawType     | Read-only  | Album Image of the currently playing track.                                                       |
+| albumImageUrl   | String      | Read-only  | Url to the album Image of the currently playing track.                                            |
+| artistName      | String      | Read-only  | Artist Name of the currently playing track.                                                       |
 
 The `playlists` channel has 2 parameters:
 

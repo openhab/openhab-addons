@@ -20,6 +20,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,24 +46,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
     public SbusRgbwHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
         super(thing, translationProvider, localeProvider);
-    }
-
-    /**
-     * Checks if any RGBW value is greater than 0.
-     *
-     * @param rgbw an int array [R, G, B, W] each in [0..255]
-     * @return true if any value is greater than 0, false otherwise
-     */
-    private boolean isAnyRgbwValueActive(int[] rgbw) {
-        if (rgbw.length < 4) {
-            return false;
-        }
-        for (int value : rgbw) {
-            if (value > 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -129,13 +112,26 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
                 if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
+                    // Read status channels for switch states
+                    int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
+                    boolean isActive = isAnyRgbwValueActive(statuses);
                     // Read RGBW values for this channel
-                    int[] rgbwValues = adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
-                    if (rgbwValues.length >= 4) {
-                        // Convert RGBW to HSB using our custom conversion
-                        HSBType hsbType = ColorUtil.rgbToHsb(rgbwValues);
-                        updateState(channel.getUID(), hsbType);
+                    int[] rgbwValues = isActive ? statuses
+                            : adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
+                    fixRgbwValues(rgbwValues);
+                    // Check if white channel should be disabled
+                    boolean enableWhite = true; // Default to true if not specified
+                    if (channel.getConfiguration().containsKey("enableWhite")) {
+                        enableWhite = (boolean) channel.getConfiguration().get("enableWhite");
                     }
+                    if (!enableWhite) {
+                        rgbwValues = new int[] { rgbwValues[0], rgbwValues[1], rgbwValues[2] };
+                    }
+                    // Convert RGBW to HSB using our custom conversion
+                    HSBType color = ColorUtil.rgbToHsb(rgbwValues);
+                    color = new HSBType(color.getHue(), color.getSaturation(),
+                            isActive ? PercentType.HUNDRED : PercentType.ZERO);
+                    updateState(channel.getUID(), color);
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
                     // Read status channels for switch states
                     int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
@@ -180,9 +176,28 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
                 if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)
                         && command instanceof HSBType hsbCommand) {
-                    // Handle color command
-                    int[] rgbw = ColorUtil.hsbToRgbw(hsbCommand);
-                    adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw);
+                    if (hsbCommand.getBrightness().intValue() == 0) {
+                        adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 0, -1);
+                        hsbCommand = new HSBType(hsbCommand.getHue(), hsbCommand.getSaturation(), PercentType.ZERO);
+                    } else {
+                        // Check if white channel should be disabled
+                        boolean enableWhite = true; // Default to true if not specified
+                        if (channel.getConfiguration().containsKey("enableWhite")) {
+                            enableWhite = (boolean) channel.getConfiguration().get("enableWhite");
+                        }
+                        // Handle color command
+                        // If white is disabled, set the white component (index 3) to 0
+                        int[] rgbw = null;
+                        if (enableWhite) {
+                            rgbw = ColorUtil.hsbToRgbw(hsbCommand);
+                        } else {
+                            var converted = ColorUtil.hsbToRgb(hsbCommand);
+                            rgbw = new int[] { converted[0], converted[1], converted[2], 0 };
+                        }
+                        adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw);
+                        adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 100, -1);
+                        hsbCommand = new HSBType(hsbCommand.getHue(), hsbCommand.getSaturation(), PercentType.HUNDRED);
+                    }
                     updateState(channelUID, hsbCommand);
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)
                         && command instanceof OnOffType onOffCommand) {
@@ -197,6 +212,34 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     translationProvider.getText(bundle, "error.device.send-command", null, localeProvider.getLocale()));
+        }
+    }
+
+    /**
+     * Checks if any RGBW value is greater than 0.
+     *
+     * @param rgbw an int array [R, G, B, W] each in [0..255]
+     * @return true if any value is greater than 0, false otherwise
+     */
+    private boolean isAnyRgbwValueActive(int[] rgbw) {
+        for (int value : rgbw) {
+            if (value > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if any RGBW value is smaller than 0.
+     *
+     * @param rgbw an int array [R, G, B, W] each in [0..255]
+     */
+    private void fixRgbwValues(int[] rgbw) {
+        for (int i = 0; i < rgbw.length; i++) {
+            if (rgbw[i] < 0) {
+                rgbw[i] = 0;
+            }
         }
     }
 }

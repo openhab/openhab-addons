@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="frenchgovtenergydata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+
+
+	<channel-type id="price-ht" advanced="true">
+		<item-type>Number:Currency</item-type>
+		<label>Price HT</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="price-ttc">
+		<item-type>Number:Currency</item-type>
+		<label>Price TTC</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="timestamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Tariff Start</label>
+		<description>Beginning date for this tariff</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
+	</channel-type>
+
+	<channel-type id="energy-price-ht" advanced="true">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Variable Price HT</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.4f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="energy-price-ttc">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Variable Price TTC</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.4f %unit%"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
