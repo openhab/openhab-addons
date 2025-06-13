@@ -29,7 +29,7 @@
 		<description>Wind event alert level</description>
 		<category>oh:meteofrance:vent</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true">
@@ -48,7 +48,7 @@
 		<description>Storm alert level</description>
 		<category>oh:meteofrance:orage</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
@@ -67,7 +67,7 @@
 		<description>Flood alert level</description>
 		<category>oh:meteofrance:inondation</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Water</tag>
 		</tags>
 		<state readOnly="true">
@@ -86,7 +86,7 @@
 		<description>Snow event alert level</description>
 		<category>oh:meteofrance:neige</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
@@ -120,7 +120,7 @@
 		<description>Negative temperature alert level</description>
 		<category>oh:meteofrance:grand-froid</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true">
@@ -139,7 +139,7 @@
 		<description>Avalanche alert level</description>
 		<category>oh:meteofrance:avalanches</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
@@ -158,7 +158,7 @@
 		<description>Submersion wave alert level</description>
 		<category>oh:meteofrance:vague-submersion</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
@@ -177,7 +177,7 @@
 		<description>Flood caused by rainfall alert level</description>
 		<category>oh:meteofrance:pluie-inondation</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true">
