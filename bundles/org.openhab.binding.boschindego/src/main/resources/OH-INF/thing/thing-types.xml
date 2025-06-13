@@ -150,6 +150,10 @@
 		<label>Last Cutting</label>
 		<description>Last cutting time</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextCutting">
@@ -157,6 +161,10 @@
 		<label>Next Cutting</label>
 		<description>Next scheduled cutting time</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryVoltage" advanced="true">

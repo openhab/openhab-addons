@@ -46,12 +46,20 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mutes the sound</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="nowPlayingAlbum" advanced="true">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Current playing album name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -59,6 +67,10 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Current playing artist name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -73,6 +85,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description to current playing song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -80,6 +96,10 @@
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Genre of current playing song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -87,6 +107,10 @@
 		<item-type>String</item-type>
 		<label>Now Playing</label>
 		<description>Visible description shown in display</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -94,6 +118,10 @@
 		<item-type>String</item-type>
 		<label>Station Location</label>
 		<description>Location of current playing radio station</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -101,6 +129,10 @@
 		<item-type>String</item-type>
 		<label>Station Name</label>
 		<description>Name of current playing radio station</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -108,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>Track currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -115,6 +151,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Current Operation Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="STANDBY">Standby</option>
@@ -141,18 +181,30 @@
 		<label>Player Control</label>
 		<description>Control the Player</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>SoundTouch power state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="preset">
 		<item-type>Number</item-type>
 		<label>Preset</label>
 		<description>1-6 Preset of Soundtouch, >7 Binding Presets</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rateEnabled" advanced="true">
@@ -187,6 +239,10 @@
 		<label>Volume</label>
 		<description>Set or get the volume</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Channels common for BOSE SOUNDTOUCH 10/20/30 devices -->
@@ -201,6 +257,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Current Operation Mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="STANDBY">Standby</option>
@@ -222,6 +282,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Current Operation Mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="STANDBY">Standby</option>
@@ -244,6 +308,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Current Operation Mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="STANDBY">Standby</option>
@@ -265,6 +333,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Bose SoundTouch current Operation Mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="STANDBY">Standby</option>

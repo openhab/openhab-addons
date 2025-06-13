@@ -58,6 +58,10 @@
 		<label>Observation Time</label>
 		<description>Observation date and time</description>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

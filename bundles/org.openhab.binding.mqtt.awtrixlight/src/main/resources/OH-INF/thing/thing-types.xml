@@ -166,6 +166,10 @@
 		<label>WiFi Signal</label>
 		<description>RSSI value of WiFi signal</description>
 		<category>qualityofservice</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -204,6 +208,10 @@
 		<label>Main Color</label>
 		<description>Color to display text and charts on the screen</description>
 		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="reset" advanced="true">
@@ -218,6 +226,10 @@
 		<label>Background Color</label>
 		<description>Color for display background</description>
 		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="gradient-color">
@@ -225,6 +237,10 @@
 		<label>Gradient Color</label>
 		<description>Color text as gradient from Main Color to Gradient Color</description>
 		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="duration">
@@ -232,6 +248,10 @@
 		<label>Duration</label>
 		<description>How long the app should be displayed</description>
 		<category>time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -270,6 +290,10 @@
 		<label>Effect Color Palette</label>
 		<description>Changes the color scheme of the effect settings</description>
 		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="None">None</option>
@@ -365,6 +389,10 @@
 		<label>Rainbow Color</label>
 		<description>Fades the text color in rainbow colors</description>
 		<category>text</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="center" advanced="true">
@@ -418,6 +446,10 @@
 		<label>App Lifetime Mode</label>
 		<description>Delete the app or mark as stale after lifetime</description>
 		<category>screen</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="DELETE">Delete</option>
@@ -445,6 +477,10 @@
 		<label>App Overlay</label>
 		<description>Overlay effect (overriden by global clock overlay)</description>
 		<category>screen</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="clear">Clear</option>
@@ -471,6 +507,10 @@
 		<label>Progress Bar Color</label>
 		<description>Color of progress bar</description>
 		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="progress-background">
@@ -478,12 +518,20 @@
 		<label>Progress Bar Background</label>
 		<description>Color of progress bar background</description>
 		<category>colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="scroll-speed">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Scroll Speed</label>
 		<description>Speed of text scrolling as percentage of default speed</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
 

@@ -77,6 +77,10 @@
 		<label>Timestamp</label>
 		<description>Timestamp of the future event.</description>
 		<category>time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
