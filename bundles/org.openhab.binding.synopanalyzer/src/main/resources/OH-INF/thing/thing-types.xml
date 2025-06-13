@@ -42,7 +42,7 @@
 		<description>Wind speed in Beaufort Scale</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state readOnly="true" pattern="%d" min="0" max="12"/>
