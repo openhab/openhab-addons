@@ -51,7 +51,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private final Gson gson = new Gson();
 
-    private String apiKey = "";
+    private String token = "";
     private String email = "";
 
     public RoborockVacuumHandler(Thing thing, HttpClient httpClient) {
@@ -59,13 +59,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         webTargets = new RoborockWebTargets(httpClient);
     }
 
-    protected String getApiKey() {
+    protected String getToken() {
         RoborockAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             return "";
         }
         try {
-            return localBridge.getApiKey();
+            return localBridge.getToken();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return "";
@@ -86,7 +86,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = (RoborockAccountHandler) bridge.getHandler();
         updateStatus(ThingStatus.UNKNOWN);
-        apiKey = getApiKey();
+        token = getToken();
         schedulePoll();
     }
 
@@ -111,17 +111,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void pollStatus() {
         String response = "";
 
-        try {
-            response = webTargets.getDetailedInformation(email, apiKey);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (RoborockAuthenticationException e) {
-            logger.debug("Unexpected authentication error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return;
-        } catch (RoborockCommunicationException e) {
-            logger.debug("Unexpected error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return;
-        }
+        // response = webTargets.getDetailedInformation(email, token);
+        updateStatus(ThingStatus.ONLINE);
     }
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,6 +23,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.roborock.internal.api.Login;
 import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -51,8 +53,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     protected ScheduledExecutorService executorService = this.scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) RoborockWebTargets webTargets;
-    private String apiKey = "";
-    private String email = "";
+    private String token = "";
 
     private final Gson gson = new Gson();
 
@@ -62,17 +63,36 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         webTargets = new RoborockWebTargets(httpClient);
     }
 
-    public String getApiKey() {
-        return apiKey;
+    public String getToken() {
+        return token;
     }
 
     public ThingUID getUID() {
         return thing.getUID();
     }
 
+    @Nullable
+    public Login getToken(String email, String password) {
+        try {
+            return webTargets.getToken(email, password);
+        } catch (RoborockAuthenticationException e) {
+            logger.debug("Unexpected authentication error connecting to Roborock API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return new Login();
+        } catch (NoSuchAlgorithmException e) {
+            logger.debug("Unexpected NoSuchAlgorithmException error connecting to Roborock API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return new Login();
+        } catch (RoborockCommunicationException e) {
+            logger.debug("Unexpected error connecting to Roborock API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return new Login();
+        }
+    }
+
     public String getVacuumList() {
         try {
-            return webTargets.getVacuumList(apiKey);
+            return webTargets.getVacuumList(token);
         } catch (RoborockAuthenticationException e) {
             logger.debug("Unexpected authentication error connecting to Roborock API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -97,9 +117,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                     "Missing email address configuration");
             return;
         }
-        email = config.email;
+        Login loginResponse;
+        loginResponse = getToken(config.email, config.password);
+        if (loginResponse != null) {
+            token = loginResponse.data.token;
+            logger.trace("token = {}", token);
+        }
         updateStatus(ThingStatus.UNKNOWN);
-
+        String list = getVacuumList();
         /*
          * String responseVehicleList = getVehicleList();
          * JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
