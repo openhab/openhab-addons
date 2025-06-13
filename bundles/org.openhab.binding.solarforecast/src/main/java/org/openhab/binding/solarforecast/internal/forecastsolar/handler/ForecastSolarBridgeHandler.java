@@ -51,7 +51,8 @@ import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 
 /**
- * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
+ * The {@link ForecastSolarBridgeHandler} is responsible for handling the attached planes and give an accumulated
+ * update.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -100,10 +101,21 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                 return;
             }
         }
+
+        // update configuration with location
         Configuration editConfig = editConfiguration();
         editConfig.put("location", locationConfigured.toString());
         updateConfiguration(editConfig);
         configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
+
+        // update attached planes with changed parameters
+        planes.forEach(plane -> {
+            plane.setLocation(new PointType(configuration.location));
+            if (!configuration.apiKey.isBlank()) {
+                plane.setApiKey(configuration.apiKey);
+            }
+        });
+
         updateStatus(ThingStatus.UNKNOWN);
         refreshJob = Optional
                 .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));

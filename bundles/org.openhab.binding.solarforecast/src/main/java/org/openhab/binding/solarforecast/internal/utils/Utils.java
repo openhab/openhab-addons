@@ -192,7 +192,6 @@ public class Utils {
      */
     @SuppressWarnings("unchecked")
     public static double getEnergyTillNow(String powerItemName, QueryablePersistenceService service) {
-        long startCalculation = System.currentTimeMillis();
         ZonedDateTime beginPeriodDT = ZonedDateTime.now(Utils.getClock()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endPeriodDT = ZonedDateTime.now(Utils.getClock());
         FilterCriteria fc = new FilterCriteria();
@@ -203,7 +202,7 @@ public class Utils {
         Iterable<HistoricItem> historicItems = service.query(fc);
         double total = 0;
         double lastPowerValue = -1;
-        Instant lastTimeStamp = Instant.MAX;
+        Instant lastTimeStamp = Instant.MIN;
         boolean warningPrinted = false;
         for (HistoricItem historicItem : historicItems) {
             State powerState = historicItem.getState();
@@ -233,8 +232,6 @@ public class Utils {
         if (lastTimeStamp.isBefore(endPeriodDT.toInstant()) && lastPowerValue >= 0) {
             total += calcuateKwh(lastTimeStamp, endPeriodDT.toInstant(), lastPowerValue);
         }
-        long calculationDuration = System.currentTimeMillis() - startCalculation;
-        LOGGER.trace("Total power till now in kWh {} took {} ms", total, calculationDuration);
         return total;
     }
 

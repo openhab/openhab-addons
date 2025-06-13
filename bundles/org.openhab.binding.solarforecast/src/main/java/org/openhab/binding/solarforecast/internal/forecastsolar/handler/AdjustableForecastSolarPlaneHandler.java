@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,62 +62,66 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
                                 handler.addPlane(this);
                             }, () -> {
                                 // bridge handler is not available, so we cannot add the plane
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "@text/solarforecast.plane.status.bridge-handler-not-found");
+                                configErrorStatus("@text/solarforecast.plane.status.bridge-handler-not-found");
                             });
                         } else {
                             // item not found in persistence
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "@text/solarforecast.plane.status.item-not-in-persistence" + " [\""
-                                            + configuration.powerItemName + "\", \""
-                                            + configuration.powerItemPersistence + "\"]");
+                            configErrorStatus("@text/solarforecast.plane.status.item-not-in-persistence" + " [\""
+                                    + configuration.powerItemName + "\", \"" + configuration.powerItemPersistence
+                                    + "\"]");
                         }
                     } else {
                         // persistence service not queryable
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/solarforecast.plane.status.persistence-not-queryable" + " [\""
-                                        + configuration.powerItemPersistence + "\"]");
+                        configErrorStatus("@text/solarforecast.plane.status.persistence-not-queryable" + " [\""
+                                + configuration.powerItemPersistence + "\"]");
                     }
                 } else {
                     // persistence service not found
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/solarforecast.plane.status.persistence-not-found" + " [\""
-                                    + configuration.powerItemPersistence + "\"]");
+                    configErrorStatus("@text/solarforecast.plane.status.persistence-not-found" + " [\""
+                            + configuration.powerItemPersistence + "\"]");
                 }
             } else {
                 // power item not configured
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/solarforecast.plane.status.item-not-found" + " [\"" + configuration.powerItemName
-                                + "\"]");
+                configErrorStatus("@text/solarforecast.plane.status.item-not-found" + " [\""
+                        + configuration.powerItemName + "\"]");
             }
         }
         // else initialization failed already in super.doInitialize()
     }
 
     @Override
-    protected String queryParameters() {
-        String parameters = super.queryParameters();
+    /**
+     * Adds actual energy production to the query parameters if holding time has passed.
+     */
+    protected Map<String, String> queryParameters() {
+        Map<String, String> parameters = super.queryParameters();
 
-        Instant firstMeasure = forecast.getFirstPowerTimestamp();
-        if (Instant.MAX.equals(firstMeasure)) {
-            logger.debug("Unable to determine first measure of forecast");
-        } else {
-            Instant startCorrectionTime = firstMeasure.plus(configuration.holdingTime, ChronoUnit.MINUTES);
-            if (Instant.now(Utils.getClock()).isAfter(startCorrectionTime)) {
-                if (!configuration.powerItemName.isBlank() && persistenceService.isPresent() && apiKey.isPresent()) {
-                    logger.debug("Add real parameters");
-                    // https://doc.forecast.solar/actual
-                    parameters += "&actual="
-                            + Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get());
-                } else {
-                    logger.debug("Add reset parameters - config missing powerItem, persistence or API key");
-                    parameters += "&actual=0"; // no power item configured or persistence service not available
-                }
+        if (isHoldingTimeElapsed()) {
+            if (!configuration.powerItemName.isBlank() && persistenceService.isPresent() && apiKey.isPresent()) {
+                // https://doc.forecast.solar/actual
+                parameters.put("actual",
+                        String.valueOf(Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get())));
             } else {
-                logger.debug("Holding time, first correction starts {}", startCorrectionTime);
+                logger.debug("Add reset parameters - config missing powerItem, persistence or API key");
+                parameters.put("actual", "0");
             }
+        } else {
+            logger.debug("Holding time not elapsed, no adjustment of forecast");
         }
-        logger.debug("Parameters for query {}", parameters);
         return parameters;
+    }
+
+    public boolean isHoldingTimeElapsed() {
+        Optional<Instant> firstMeasure = forecast.getFirstPowerTimestamp();
+        if (firstMeasure.isPresent()) {
+            return Instant.now(Utils.getClock())
+                    .isAfter(firstMeasure.get().plus(configuration.holdingTime, ChronoUnit.MINUTES));
+        }
+        if (!forecast.isEmpty()) {
+            logger.warn("No adjustment possible: Unable to find first measure in forecast {}", forecast.getRaw());
+        } else {
+            logger.debug("Forecast is empty, no first measure available");
+        }
+        return false;
     }
 }

@@ -64,7 +64,7 @@ class SmartForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
                 queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
         assertEquals(Instant.parse("2022-07-17T03:31:00Z"), fo.getForecastBegin(), "First entry");
-        assertEquals(Instant.parse("2022-07-17T04:00:00Z"), fo.getFirstPowerTimestamp(),
+        assertEquals(Instant.parse("2022-07-17T04:00:00Z"), fo.getFirstPowerTimestamp().get(),
                 "First entry with positive power value");
     }
 

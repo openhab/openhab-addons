@@ -38,7 +38,6 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
 
     public SmartForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
         super(bridge, location);
-        logger.info("constructor SmartForecastSolarBridgeHandler called with location {}", location);
     }
 
     /**
@@ -49,11 +48,13 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
         super.forecastUpdate();
         double energyProductionSum = 0;
         double forecastProductionSum = 0;
+        boolean holdingTimeElapsed = true;
         for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
             try {
                 SmartForecastSolarPlaneHandler sfph = (SmartForecastSolarPlaneHandler) iterator.next();
                 energyProductionSum += sfph.getEnergyProduction();
                 forecastProductionSum += sfph.getForecastProduction();
+                holdingTimeElapsed = holdingTimeElapsed && sfph.isHoldingTimeElapsed();
             } catch (SolarForecastException sfe) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
@@ -61,8 +62,10 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
             }
         }
         double factor = 1;
-        if (forecastProductionSum > 0) {
-            factor = energyProductionSum / forecastProductionSum;
+        if (holdingTimeElapsed) {
+            if (forecastProductionSum > 0) {
+                factor = energyProductionSum / forecastProductionSum;
+            }
         }
         logger.trace("forecastUpdate Inverter {}, Forecast {} factor {}", energyProductionSum, forecastProductionSum,
                 factor);

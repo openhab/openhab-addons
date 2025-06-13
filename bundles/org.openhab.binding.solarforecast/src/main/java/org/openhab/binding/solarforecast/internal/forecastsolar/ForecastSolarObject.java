@@ -219,13 +219,9 @@ public class ForecastSolarObject implements SolarForecast {
      *
      * @return Instant representing the first power timestamp or Instant.MAX if none found
      */
-    public Instant getFirstPowerTimestamp() {
-        for (Entry<ZonedDateTime, Double> entry : wattMap.entrySet()) {
-            if (entry.getValue() > 0) {
-                return entry.getKey().toInstant();
-            }
-        }
-        return Instant.MAX;
+    public Optional<Instant> getFirstPowerTimestamp() {
+        return wattMap.entrySet().stream().filter(entry -> entry.getValue() > 0)
+                .map(entry -> entry.getKey().toInstant()).findFirst();
     }
 
     @Override
@@ -350,6 +346,10 @@ public class ForecastSolarObject implements SolarForecast {
         }
         ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
         return zdt.toInstant();
+    }
+
+    public boolean isEmpty() {
+        return wattHourMap.isEmpty();
     }
 
     @Override

@@ -18,7 +18,10 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -53,7 +56,8 @@ import org.slf4j.LoggerFactory;
  * The {@link ForecastSolarPlaneHandler} is triggered by bridge to fetch solar forecast data if expired.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Bernd Weymann - Calculate produced energy to adjust forecast
+ * @author Bernd Weymann - Used as base class for {@link AdjustableForecastSolarPlaneHandler} and
+ *         {@link SmartForecastSolarPlaneHandler}
  */
 @NonNullByDefault
 public class ForecastSolarPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
@@ -100,18 +104,19 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                             "@text/solarforecast.plane.status.await-feedback");
                     return true;
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
+                    configErrorStatus("@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/solarforecast.plane.status.bridge-handler-not-found");
+                configErrorStatus("@text/solarforecast.plane.status.bridge-handler-not-found");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/solarforecast.plane.status.bridge-missing");
+            configErrorStatus("@text/solarforecast.plane.status.bridge-missing");
         }
         return false;
+    }
+
+    protected void configErrorStatus(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     @Override
@@ -141,11 +146,16 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     protected ForecastSolarObject fetchData() {
         if (location.isPresent()) {
             if (forecast.isExpired()) {
+                // create URL with mandatory parameters
                 String url = getBaseUrl() + "estimate/" + location.get().getLatitude() + SLASH
                         + location.get().getLongitude() + SLASH + configuration.declination + SLASH
                         + configuration.azimuth + SLASH + configuration.kwp + "?damping=" + configuration.dampAM + ","
-                        + configuration.dampPM + queryParameters();
-                logger.debug("Call {}", url);
+                        + configuration.dampPM;
+                // add parameters calculated by queryParameters() including subclasses
+                for (Entry<String, String> entry : queryParameters().entrySet()) {
+                    url += "&" + entry.getKey() + "=" + entry.getValue();
+                }
+                logger.trace("Call {}", url);
                 try {
                     ContentResponse cr = httpClient.GET(url);
                     int responseStatus = cr.getStatus();
@@ -190,12 +200,19 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         return forecast;
     }
 
-    protected String queryParameters() {
+    /**
+     * Query parameters for the forecast request. Base forecast solar parameter is "full=1" mandatory for all requests
+     * and horizon if configured.
+     *
+     * @return Map with parameter key
+     */
+    protected Map<String, String> queryParameters() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("full", "1"); // full forecast data including hours without sun
         if (!SolarForecastBindingConstants.EMPTY.equals(configuration.horizon)) {
-            return "&horizon=" + configuration.horizon;
-        } else {
-            return EMPTY;
+            parameters.put("horizon", configuration.horizon); // horizon if configured
         }
+        return parameters;
     }
 
     protected void updateChannels(ForecastSolarObject f) {
@@ -230,7 +247,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     protected synchronized void setForecast(ForecastSolarObject f) {
-        logger.trace("ForecastSolarPlaneHandler setForecast called with {}", f.getRaw());
         forecast = f;
         sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
