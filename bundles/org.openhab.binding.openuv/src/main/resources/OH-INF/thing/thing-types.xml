@@ -79,7 +79,7 @@
 		<category>oh:openuv:uv-index</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Opening</tag>
+			<tag>Ultraviolet</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f/16" min="0" max="16"/>
 	</channel-type>
@@ -99,7 +99,7 @@
 		<category>oh:openuv:ozone</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>OpenLevel</tag>
+			<tag>Ozone</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>UV Alert</label>
 		<category>oh:openuv:uv-alarm</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Opening</tag>
+			<tag>Alarm</tag>
+			<tag>Ultraviolet</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
