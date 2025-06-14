@@ -83,8 +83,6 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
             HashMap<String, Object> properties = new HashMap<>();
             if (homeData != null) {
                 for (int i = 0; i < homeData.result.devices.length; i++) {
-                    logger.info("duid = {}, name = {}", homeData.result.devices[i].duid,
-                            homeData.result.devices[i].name);
                     properties.put("sn", homeData.result.devices[i].sn);
                     ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUid, homeData.result.devices[i].duid);
                     thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)

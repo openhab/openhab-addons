@@ -70,27 +70,27 @@ public class HomeData {
 
     public class DeviceStatus {
         @SerializedName("120")
-        public int onetwenty;
+        public int errorCode;
         @SerializedName("121")
-        public int onetwentyone;
+        public int vacuumState;
         @SerializedName("122")
-        public int onetwentytwo;
+        public int battery;
         @SerializedName("123")
-        public int onetwentythree;
+        public int fanPower;
         @SerializedName("124")
-        public int onetwentyfour;
+        public int waterBoxMode;
         @SerializedName("125")
-        public int onetwentyfive;
+        public int mainBrushWorkTime;
         @SerializedName("126")
-        public int onetwentysix;
+        public int sideBrushWorkTime;
         @SerializedName("127")
-        public int onetwentyseven;
+        public int filterWorkTime;
         @SerializedName("128")
-        public int onetwentyeight;
+        public int additionProps;
         @SerializedName("133")
-        public int onethirtythree;
+        public int chargeStatus;
         @SerializedName("134")
-        public int onethirtyfour;
+        public int dryingStatus;
     }
 
     public class Rooms {

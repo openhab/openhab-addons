@@ -59,7 +59,7 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
         if (ROBOROCK_ACCOUNT.equals(thingTypeUID)) {
             return new RoborockAccountHandler((Bridge) thing, httpClient);
         } else {
-            return new RoborockVacuumHandler(thing, httpClient);
+            return new RoborockVacuumHandler(thing);
         }
     }
 }

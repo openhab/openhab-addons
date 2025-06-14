@@ -20,7 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.roborock.internal.api.Home;
+import org.openhab.binding.roborock.internal.api.HomeData;
+import org.openhab.binding.roborock.internal.api.Login.Rriot;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -46,17 +49,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Nullable
     RoborockAccountHandler bridgeHandler;
-    private RoborockWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
     private final Gson gson = new Gson();
 
     private String token = "";
     private String email = "";
+    private @Nullable Rriot rriot;
+    private String rrHomeId = "";
 
-    public RoborockVacuumHandler(Thing thing, HttpClient httpClient) {
+    public RoborockVacuumHandler(Thing thing) {
         super(thing);
-        webTargets = new RoborockWebTargets(httpClient);
     }
 
     protected String getToken() {
@@ -87,7 +90,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         bridgeHandler = (RoborockAccountHandler) bridge.getHandler();
         updateStatus(ThingStatus.UNKNOWN);
         token = getToken();
-        schedulePoll();
+        if (!token.isEmpty()) {
+            rriot = bridgeHandler.getRriot();
+            Home home;
+            home = bridgeHandler.getHomeDetail();
+            if (home != null) {
+                rrHomeId = Integer.toString(home.data.rrHomeId);
+            }
+            updateStatus(ThingStatus.ONLINE);
+            schedulePoll();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Can't login");
+        }
     }
 
     @Override
@@ -97,7 +111,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void schedulePoll() {
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 60, TimeUnit.SECONDS);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
     }
 
     private void stopPoll() {
@@ -109,9 +123,30 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollStatus() {
-        String response = "";
+        HomeData homeData;
+        homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
+        if (homeData != null) {
+            for (int i = 0; i < homeData.result.devices.length; i++) {
+                if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
+                    logger.info("Update channels");
+                    updateState(RoborockBindingConstants.CHANNEL_ERROR_ID,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
+                    updateState(RoborockBindingConstants.CHANNEL_STATE,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
+                    updateState(RoborockBindingConstants.CHANNEL_BATTERY,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.battery));
+                    updateState(RoborockBindingConstants.CHANNEL_FAN_POWER,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
+                    updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_MAIN_PERC,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
+                    updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_SIDE_PERC,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
+                    updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_FILTER_PERC,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
+                }
+            }
+        }
 
-        // response = webTargets.getDetailedInformation(email, token);
         updateStatus(ThingStatus.ONLINE);
     }
 }

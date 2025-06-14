@@ -146,28 +146,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         Login loginResponse;
         loginResponse = doLogin(config.email, config.password);
-        if (loginResponse != null) {
+        if (loginResponse.code.equals("200")) {
             token = loginResponse.data.token;
             rriot = loginResponse.data.rriot;
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error code " + loginResponse.code + " reported");
         }
-        /*
-         * Home home;
-         * home = getHomeDetail();
-         * if (home != null) {
-         * HomeData homeData;
-         * homeData = getHomeData(Integer.toString(home.data.rrHomeId), loginResponse.data.rriot);
-         * }
-         */
-        /*
-         * String responseVehicleList = getVehicleList();
-         * JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-         * VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
-         * if (vehicleList == null) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to retrieve Vehicle List");
-         * return;
-         * }
-         */
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
