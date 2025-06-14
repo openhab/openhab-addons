@@ -44,18 +44,6 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>embed-dependencies</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-plugin</artifactId>
         <version>2.1.0</version>
         <configuration>
@@ -104,42 +92,6 @@
                   <filtering>true</filtering>
                 </resource>
               </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.lastnpe.eea:eea-all</exclude>
-                  <exclude>org.apache.karaf.features:framework</exclude>
-                  <!-- we use OSGI-ified version, so we don't need the following -->
-                  <exclude>org.graalvm.sdk:collections</exclude>
-                  <exclude>org.graalvm.sdk:jniutils</exclude>
-                  <exclude>org.graalvm.sdk:nativeimage</exclude>
-                  <exclude>org.graalvm.sdk:word</exclude>
-                  <exclude>org.graalvm.shadowed:icu4j</exclude>
-                  <exclude>org.graalvm.shadowed:xz</exclude>
-                  <exclude>org.graalvm.truffle:truffle-compiler</exclude>
-                  <exclude>org.graalvm.truffle:truffle-runtime</exclude>
-                </excludes>
-              </artifactSet>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <!-- Transformer to merge module-info.class
-                  files, if needed -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
             </configuration>
           </execution>
         </executions>
