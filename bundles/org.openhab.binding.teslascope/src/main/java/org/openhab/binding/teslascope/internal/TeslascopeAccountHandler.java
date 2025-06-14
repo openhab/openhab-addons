@@ -14,8 +14,9 @@ package org.openhab.binding.teslascope.internal;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,8 +50,8 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(TeslascopeAccountHandler.class);
 
     private @Nullable TeslascopeAccountConfiguration config;
-    protected ScheduledExecutorService executorService = this.scheduler;
-    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollFuture;
+
     private final TeslascopeWebTargets webTargets;
 
     private final Gson gson = new Gson();
@@ -131,16 +132,33 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
 
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        stopPoll();
+    }
+
+    private void pollStatus() {
         String responseVehicleList = getVehicleList();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
         VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
         if (vehicleList == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.no-vehicles");
-            return;
         }
+    }
 
-        updateStatus(ThingStatus.ONLINE);
+    private void stopPoll() {
+        final Future<?> future = pollFuture;
+        if (future != null) {
+            future.cancel(true);
+            pollFuture = null;
+        }
     }
 
     @Override
