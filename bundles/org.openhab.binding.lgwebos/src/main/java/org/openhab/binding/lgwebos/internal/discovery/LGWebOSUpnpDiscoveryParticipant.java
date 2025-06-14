@@ -23,9 +23,12 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,12 @@ import org.slf4j.LoggerFactory;
 public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(LGWebOSUpnpDiscoveryParticipant.class);
+    private final ThingRegistry thingRegistry;
+
+    @Activate
+    public LGWebOSUpnpDiscoveryParticipant(final @Reference ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -58,6 +67,15 @@ public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant
         String modelName = device.getDetails().getModelDetails().getModelName();
         if (device.getDetails().getModelDetails().getModelNumber() != null) {
             modelName += " " + device.getDetails().getModelDetails().getModelNumber();
+        }
+
+        for (Thing thing : thingRegistry.stream().filter(f -> f.getProperties().get(PROPERTY_DEVICE_ID) != null)
+                .toList()) {
+            if (device.getIdentity().getUdn().getIdentifierString()
+                    .equals(thing.getProperties().get(PROPERTY_DEVICE_ID))) {
+                logger.debug("Device already in the registry: {}", thing.getUID());
+                return null;
+            }
         }
 
         return DiscoveryResultBuilder.create(thingUID).withLabel(device.getDetails().getFriendlyName())
