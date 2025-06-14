@@ -82,12 +82,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
+        if (!(getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Roborock Bridge selected");
             return;
         }
-        bridgeHandler = (RoborockAccountHandler) bridge.getHandler();
+        bridgeHandler = accountHandler;
         updateStatus(ThingStatus.UNKNOWN);
         token = getToken();
         if (!token.isEmpty()) {

@@ -14,6 +14,10 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -56,15 +60,17 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private @Nullable RoborockAccountConfiguration config;
     protected ScheduledExecutorService executorService = this.scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
-    private @NonNullByDefault({}) RoborockWebTargets webTargets;
+    private final RoborockWebTargets webTargets;
     private String token = "";
     private @Nullable Rriot rriot;
+
+    /** The file we store definitions in */
+    private final File loginFile = new File(RoborockBindingConstants.FILENAME_LOGINDATA);
 
     private final Gson gson = new Gson();
 
     public RoborockAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        config = getConfigAs(RoborockAccountConfiguration.class);
         webTargets = new RoborockWebTargets(httpClient);
     }
 
@@ -82,20 +88,20 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public Login doLogin(String email, String password) {
+    public Login doLogin() {
         try {
-            return webTargets.doLogin(email, password);
+            return webTargets.doLogin(config.email, config.password);
         } catch (RoborockAuthenticationException e) {
-            logger.debug("Unexpected authentication error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication error " + e.getMessage());
             return new Login();
         } catch (NoSuchAlgorithmException e) {
-            logger.debug("Unexpected NoSuchAlgorithmException error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "NoSuchAlgorithmException error " + e.getMessage());
             return new Login();
         } catch (RoborockCommunicationException e) {
-            logger.debug("Unexpected error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error " + e.getMessage());
             return new Login();
         }
     }
@@ -105,12 +111,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         try {
             return webTargets.getHomeDetail(token);
         } catch (RoborockAuthenticationException e) {
-            logger.debug("Unexpected authentication error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication error " + e.getMessage());
             return new Home();
         } catch (RoborockCommunicationException e) {
-            logger.debug("Unexpected error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error " + e.getMessage());
             return new Home();
         }
     }
@@ -120,12 +126,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         try {
             return webTargets.getHomeData(rrHomeID, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
-            logger.debug("Unexpected authentication error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication error " + e.getMessage());
             return new HomeData();
         } catch (RoborockCommunicationException e) {
-            logger.debug("Unexpected error connecting to Roborock API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error " + e.getMessage());
             return new HomeData();
         }
     }
@@ -145,14 +151,32 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
         Login loginResponse;
-        loginResponse = doLogin(config.email, config.password);
-        if (loginResponse.code.equals("200")) {
-            token = loginResponse.data.token;
-            rriot = loginResponse.data.rriot;
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error code " + loginResponse.code + " reported");
+        try {
+            if (loginFile.exists()) {
+                // read date from loginFile
+                final byte[] contents = Files.readAllBytes(loginFile.toPath());
+                final String json = new String(contents, StandardCharsets.UTF_8);
+                loginResponse = gson.fromJson(json, Login.class);
+            } else {
+                loginResponse = doLogin();
+                if (loginResponse.code.equals("200")) {
+                    // save data to loginFile if call is successful
+                    loginFile.getParentFile().mkdirs();
+                    final String json = gson.toJson(loginResponse);
+                    final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
+                    Files.write(loginFile.toPath(), contents);
+                }
+            }
+            if (loginResponse.code.equals("200")) {
+                token = loginResponse.data.token;
+                rriot = loginResponse.data.rriot;
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error code " + loginResponse.code + " reported");
+            }
+        } catch (IOException e) {
+            logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
         }
     }
 

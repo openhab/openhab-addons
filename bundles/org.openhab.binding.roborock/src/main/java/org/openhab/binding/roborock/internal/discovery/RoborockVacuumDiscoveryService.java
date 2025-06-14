@@ -44,7 +44,6 @@ import com.google.gson.Gson;
 public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscoveryService<RoborockAccountHandler> {
 
     private Logger logger = LoggerFactory.getLogger(RoborockVacuumDiscoveryService.class);
-    private @NonNullByDefault({}) ThingUID bridgeUid;
 
     private final Gson gson = new Gson();
 
@@ -69,11 +68,11 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
 
     @Override
     public void initialize() {
-        bridgeUid = thingHandler.getThing().getUID();
         super.initialize();
     }
 
     private void discover() {
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         Home home;
         home = getHomeDetail();
         if (home != null) {
@@ -84,8 +83,8 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
             if (homeData != null) {
                 for (int i = 0; i < homeData.result.devices.length; i++) {
                     properties.put("sn", homeData.result.devices[i].sn);
-                    ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUid, homeData.result.devices[i].duid);
-                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
+                    ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUID, homeData.result.devices[i].duid);
+                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                             .withLabel(homeData.result.devices[i].name).build());
                 }
             }

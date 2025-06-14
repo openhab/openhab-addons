@@ -142,19 +142,6 @@ public class RoborockWebTargets {
         return invoke(getHomeDetailUri, HttpMethod.GET, "Authorization", token, null);
     }
 
-    /*
-     * public String getDetailedInformation(String publicID, String apiKey)
-     * throws RoborockCommunicationException, RoborockAuthenticationException {
-     * return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey);
-     * }
-     * 
-     * public void sendCommand(String publicID, String apiKey, String command)
-     * throws RoborockCommunicationException, RoborockAuthenticationException {
-     * invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
-     * return;
-     * }
-     */
-
     private String invoke(String uri, HttpMethod method, @Nullable String headerKey, @Nullable String headerValue,
             @Nullable String params) throws RoborockCommunicationException, RoborockAuthenticationException {
         logger.debug("Calling url: {}", uri);
