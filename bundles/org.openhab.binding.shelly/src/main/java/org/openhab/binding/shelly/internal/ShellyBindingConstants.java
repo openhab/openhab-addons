@@ -181,6 +181,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_REACTWATTS = "reactiveWatts";
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
+    public static final String CHANNEL_EMETER_FREQUENCY = "frequency";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
     public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
     public static final String CHANNEL_GROUP_NMETER = "nmeter";
@@ -338,6 +339,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 1;
     public static final int DIGITS_AMPERE = 3;
+    public static final int DIGITS_FREQUENCY = 1;
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
