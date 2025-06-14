@@ -22,6 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -44,6 +45,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.energidataservice.internal.ApiController;
 import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.binding.energidataservice.internal.provider.listener.ElectricityPriceListener;
@@ -144,9 +146,17 @@ public class ElectricityPriceProviderTest {
         when(apiController.getSpotPrices(any(String.class), any(Currency.class), any(DateQueryParameter.class),
                 any(DateQueryParameter.class), ArgumentMatchers.<Map<String, String>> any()))
                 .thenReturn(new ElspotpriceRecord[] {});
+        when(apiController.getDayAheadPrices(any(String.class), any(Currency.class), any(DateQueryParameter.class),
+                any(DateQueryParameter.class), ArgumentMatchers.<Map<String, String>> any()))
+                .thenReturn(new DayAheadPriceRecord[] {});
         provider.getPrices(SpotPriceSubscription.of("DK1", Currency.getInstance("DKK")));
-        verify(apiController).getSpotPrices(eq("DK1"), eq(Currency.getInstance("DKK")), any(DateQueryParameter.class),
-                any(DateQueryParameter.class), anyMap());
+        if (Instant.now().isAfter(DAY_AHEAD_TRANSITION_DATE.atStartOfDay(NORD_POOL_TIMEZONE).toInstant())) {
+            verify(apiController).getDayAheadPrices(eq("DK1"), eq(Currency.getInstance("DKK")),
+                    any(DateQueryParameter.class), any(DateQueryParameter.class), anyMap());
+        } else {
+            verify(apiController).getSpotPrices(eq("DK1"), eq(Currency.getInstance("DKK")),
+                    any(DateQueryParameter.class), any(DateQueryParameter.class), anyMap());
+        }
     }
 
     @Test
@@ -159,6 +169,8 @@ public class ElectricityPriceProviderTest {
         provider.subscribe(listener1, subscription);
         provider.getPrices(SpotPriceSubscription.of("DK1", Currency.getInstance("DKK")));
         verify(apiController, never()).getSpotPrices(eq("DK1"), eq(Currency.getInstance("DKK")),
+                any(DateQueryParameter.class), any(DateQueryParameter.class), anyMap());
+        verify(apiController, never()).getDayAheadPrices(eq("DK1"), eq(Currency.getInstance("DKK")),
                 any(DateQueryParameter.class), any(DateQueryParameter.class), anyMap());
     }
 
