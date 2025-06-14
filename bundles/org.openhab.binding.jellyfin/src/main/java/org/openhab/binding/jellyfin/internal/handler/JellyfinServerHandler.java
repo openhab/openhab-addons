@@ -53,6 +53,8 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Miguel Álvarez - Initial contribution
+ * @author Patrik Gfeller - Refactoring to avoid the use of the Android SDK
+ * 
  */
 @NonNullByDefault
 public class JellyfinServerHandler extends BaseBridgeHandler {
