@@ -279,11 +279,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (rs.output != null) {
             sr.ison = rstatus.ison = getBool(rs.output);
         }
-        if (getDouble(rs.timerStartetAt) > 0) {
-            int duration = (int) (now() - rs.timerStartetAt);
-            sr.timerRemaining = duration;
+        if (rs.timerStartetAt != null && getDouble(rs.timerStartetAt) > 0) {
+            sr.timerRemaining = (int) (now() - getDouble(rs.timerStartetAt));
+            ;
         }
-        if (rs.temperature != null) {
+        if (rs.temperature != null && rs.temperature.tC != null) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
@@ -291,8 +291,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.tmp.tC = rs.temperature.tC;
             status.tmp.tF = rs.temperature.tF;
             status.tmp.units = "C";
-            sr.temperature = getDouble(rs.temperature.tC);
-            if (status.temperature == null || getDouble(rs.temperature.tC) > status.temperature) {
+            sr.temperature = rs.temperature.tC;
+            if (status.temperature == null || rs.temperature.tC > status.temperature) {
                 status.temperature = sr.temperature;
             }
         }
@@ -372,7 +372,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (bs.output != null) {
             sr.ison = rstatus.ison = getBool(bs.output);
         }
-        if (bs.temperature != null) {
+        if (bs.temperature != null && bs.temperature.tC != null) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
@@ -728,7 +728,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             value.id = id;
         }
 
-        ShellyShortLightStatus ds = status.dimmers.get(0);
+        ShellyShortLightStatus ds = status.dimmers.get(value.id);
         if (value.brightness != null) {
             ds.brightness = value.brightness.intValue();
         }
@@ -806,9 +806,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     private @Nullable ShellyShortTemp updateExtTempSensor(@Nullable Shelly2DeviceStatusTempId value) {
         if (value != null) {
             ShellyShortTemp temp = new ShellyShortTemp();
-            temp.hwID = value.id.toString();
-            temp.tC = value.tC;
-            temp.tF = value.tF;
+            temp.hwID = value.id != null ? value.id.toString() : "999";
+            temp.tC = getDouble(value.tC);
+            temp.tF = getDouble(value.tF);
             return temp;
         }
         return null;
@@ -833,8 +833,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         sdata.tmp.isValid = true;
         sdata.tmp.units = SHELLY_TEMP_CELSIUS;
-        sdata.tmp.tC = value.tC;
-        sdata.tmp.tF = value.tF;
+        sdata.tmp.tC = getDouble(value.tC);
+        sdata.tmp.tF = getDouble(value.tF);
     }
 
     protected void updateIlluminanceStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusIlluminance value) {
@@ -845,8 +845,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sdata.lux = new ShellySensorLux();
         }
         sdata.lux.isValid = value.lux != null;
-        sdata.lux.value = value.lux;
-        sdata.lux.illumination = value.illumination;
+        sdata.lux.value = getDouble(value.lux);
+        sdata.lux.illumination = getString(value.illumination);
     }
 
     protected void updateSmokeStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusSmoke value) {
@@ -866,10 +866,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         if (value.battery != null) {
-            sdata.bat.voltage = value.battery.volt;
-            sdata.bat.value = value.battery.percent;
+            sdata.bat.voltage = getDouble(value.battery.volt);
+            sdata.bat.value = getDouble(value.battery.percent);
         }
-        if (value.external != null) {
+        if (value.external != null && value.external.present != null) {
             sdata.charger = value.external.present;
         }
     }
@@ -966,14 +966,16 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected String mapValue(Map<String, String> map, @Nullable String key) {
-        String safeKey = getString(key);
-        if (safeKey.isEmpty() || !map.containsKey(safeKey)) {
-            logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName,
-                    safeKey, map);
+        if (key == null || key.isEmpty()) {
             return "";
         }
-        String value = getString(map.get(safeKey));
-        logger.trace("{}: API value '{}' was mapped to '{}'", thingName, safeKey, value);
+        if (!map.containsKey(key)) {
+            logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
+                    map);
+            return "";
+        }
+        String value = getString(map.get(key));
+        logger.trace("{}: API value '{}' was mapped to '{}'", thingName, key, value);
         return value;
     }
 
