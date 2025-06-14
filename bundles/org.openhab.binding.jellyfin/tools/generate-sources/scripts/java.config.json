@@ -14,5 +14,5 @@
   "hideGenerationTimestamp": true,
   "ignoreAnyOfInEnum": true,
   "openApiNullable": false,
-  "templateDir": "src/main/java/org/openhab/binding/jellyfin/internal/api/scripts/templates"
+  "templateDir": "tools/generate-sources/scripts/templates"
 }
