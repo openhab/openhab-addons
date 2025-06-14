@@ -170,13 +170,11 @@ public class RoborockWebTargets {
                 }
                 ContentResponse response = request.send();
                 status = response.getStatus();
-                logger.trace("status = {}", status);
                 jsonResponse = response.getContentAsString();
                 if (!jsonResponse.isEmpty()) {
                     logger.trace("JSON response: '{}'", jsonResponse);
                 }
                 if (status == HttpStatus.UNAUTHORIZED_401) {
-                    logger.trace("unauthorised");
                     throw new RoborockAuthenticationException("Unauthorized");
                 }
                 if (!HttpStatus.isSuccess(status)) {

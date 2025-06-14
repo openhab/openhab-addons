@@ -100,7 +100,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             schedulePoll();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Can't login");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
         }
     }
 
