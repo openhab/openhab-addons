@@ -20,7 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
 import org.openhab.binding.roborock.internal.api.Home;
+import org.openhab.binding.roborock.internal.api.HomeData;
+import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -54,6 +57,16 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         return thingHandler.getHomeDetail();
     }
 
+    @Nullable
+    protected HomeData getHomeData(String rrHomeID, @Nullable Rriot rriot) {
+        return thingHandler.getHomeData(rrHomeID, rriot);
+    }
+
+    @Nullable
+    protected Rriot getRriot() {
+        return thingHandler.getRriot();
+    }
+
     @Override
     public void initialize() {
         bridgeUid = thingHandler.getThing().getUID();
@@ -61,22 +74,24 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     private void discover() {
-        // Home homeDetail = getHomeDetail();
-        HashMap<String, Object> properties = new HashMap<>();
-        /*
-         * JsonArray jsonArrayVacuumList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-         * VehicleList vehicleList = new VehicleList();
-         * for (int i = 0; i < jsonArrayVehicleList.size(); i++) {
-         * vehicleList = gson.fromJson(jsonArrayVehicleList.get(i), VehicleList.class);
-         * if (vehicleList == null) {
-         * return;
-         * }
-         * properties.put("publicID", vehicleList.publicId);
-         * ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUid, vehicleList.publicId);
-         * thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
-         * .withRepresentationProperty("publicID").withLabel("Teslascope - " + vehicleList.name).build());
-         * }
-         */
+        Home home;
+        home = getHomeDetail();
+        if (home != null) {
+            HomeData homeData;
+            homeData = getHomeData(Integer.toString(home.data.rrHomeId), getRriot());
+
+            HashMap<String, Object> properties = new HashMap<>();
+            if (homeData != null) {
+                for (int i = 0; i < homeData.result.devices.length; i++) {
+                    logger.info("duid = {}, name = {}", homeData.result.devices[i].duid,
+                            homeData.result.devices[i].name);
+                    properties.put("sn", homeData.result.devices[i].sn);
+                    ThingUID uid = new ThingUID(ROBOROCK_VACUUM, bridgeUid, homeData.result.devices[i].duid);
+                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
+                            .withLabel(homeData.result.devices[i].name).build());
+                }
+            }
+        }
     }
 
     @Override

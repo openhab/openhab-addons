@@ -58,6 +58,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) RoborockWebTargets webTargets;
     private String token = "";
+    private @Nullable Rriot rriot;
 
     private final Gson gson = new Gson();
 
@@ -73,6 +74,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     public ThingUID getUID() {
         return thing.getUID();
+    }
+
+    @Nullable
+    public Rriot getRriot() {
+        return rriot;
     }
 
     @Nullable
@@ -110,7 +116,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public HomeData getHomeData(String rrHomeID, Rriot rriot) {
+    public HomeData getHomeData(String rrHomeID, @Nullable Rriot rriot) {
         try {
             return webTargets.getHomeData(rrHomeID, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
@@ -137,18 +143,21 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                     "Missing email address configuration");
             return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
         Login loginResponse;
         loginResponse = doLogin(config.email, config.password);
         if (loginResponse != null) {
             token = loginResponse.data.token;
+            rriot = loginResponse.data.rriot;
         }
-        updateStatus(ThingStatus.UNKNOWN);
-        Home home;
-        home = getHomeDetail();
-        if (home != null) {
-            HomeData homeData;
-            homeData = getHomeData(Integer.toString(home.data.rrHomeId), loginResponse.data.rriot);
-        }
+        /*
+         * Home home;
+         * home = getHomeDetail();
+         * if (home != null) {
+         * HomeData homeData;
+         * homeData = getHomeData(Integer.toString(home.data.rrHomeId), loginResponse.data.rriot);
+         * }
+         */
         /*
          * String responseVehicleList = getVehicleList();
          * JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
