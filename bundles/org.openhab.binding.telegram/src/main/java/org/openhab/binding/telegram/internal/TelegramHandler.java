@@ -233,6 +233,12 @@ public class TelegramHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
                         return;
+                    case 429:
+                        cancelThingOnlineStatusJob();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Too Many Requests; temporarily delaying reconnection.");
+                        delayThingOnlineStatus();
+                        return;
                     case 502:
                         cancelThingOnlineStatusJob();
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -391,26 +397,26 @@ public class TelegramHandler extends BaseThingHandler {
                         lastMessageUsername = message.from().username();
                     }
                 }
-            } else if (callbackQuery != null && callbackQuery.message() != null
-                    && callbackQuery.message().text() != null) {
+            } else if (callbackQuery != null && callbackQuery.maybeInaccessibleMessage() instanceof Message cbMessage
+                    && cbMessage.text() != null) {
                 String[] callbackData = callbackQuery.data().split(" ", 2);
 
                 if (callbackData.length == 2) {
                     replyId = callbackData[0];
                     lastMessageText = callbackData[1];
-                    lastMessageDate = callbackQuery.message().date();
+                    lastMessageDate = cbMessage.date();
                     lastMessageFirstName = callbackQuery.from().firstName();
                     lastMessageLastName = callbackQuery.from().lastName();
                     lastMessageUsername = callbackQuery.from().username();
-                    chatId = callbackQuery.message().chat().id();
+                    chatId = cbMessage.chat().id();
                     replyIdToCallbackId.put(new ReplyKey(chatId, replyId), callbackQuery.id());
 
                     // build and publish callbackEvent trigger channel payload
                     JsonObject callbackRaw = JsonParser.parseString(gson.toJson(callbackQuery)).getAsJsonObject();
                     JsonObject callbackPayload = new JsonObject();
-                    callbackPayload.addProperty("message_id", callbackQuery.message().messageId());
+                    callbackPayload.addProperty("message_id", cbMessage.messageId());
                     callbackPayload.addProperty("from", lastMessageFirstName + " " + lastMessageLastName);
-                    callbackPayload.addProperty("chat_id", callbackQuery.message().chat().id());
+                    callbackPayload.addProperty("chat_id", cbMessage.chat().id());
                     callbackPayload.addProperty("callback_id", callbackQuery.id());
                     callbackPayload.addProperty("reply_id", callbackData[0]);
                     callbackPayload.addProperty("text", callbackData[1]);
