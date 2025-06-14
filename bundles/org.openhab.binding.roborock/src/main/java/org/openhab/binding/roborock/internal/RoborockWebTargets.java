@@ -20,6 +20,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -35,6 +36,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.roborock.internal.api.Home;
+import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.slf4j.Logger;
@@ -99,7 +101,7 @@ public class RoborockWebTargets {
             throws NoSuchAlgorithmException, InvalidKeyException {
 
         int timestamp = (int) Instant.now().getEpochSecond();
-        String nonce = "gqaVb-JX";
+        String nonce = UUID.randomUUID().toString().substring(0, 8);
         String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + md5Hex(path) + "::";
 
         Mac mac = Mac.getInstance("HmacSHA256");
@@ -127,12 +129,13 @@ public class RoborockWebTargets {
         return gson.fromJson(response, Home.class);
     }
 
-    public String getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
+    @Nullable
+    public HomeData getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
         String path = "/user/homes/" + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
-        logger.info("token = {}", token);
-        return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
+        String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
+        return gson.fromJson(response, HomeData.class);
     }
 
     public String getVacuumList(String token) throws RoborockCommunicationException, RoborockAuthenticationException {

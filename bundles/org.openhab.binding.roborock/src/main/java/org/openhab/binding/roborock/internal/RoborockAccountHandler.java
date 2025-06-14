@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.roborock.internal.api.Home;
+import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoveryService;
@@ -109,17 +110,17 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public String getHomeData(String rrHomeID, Rriot rriot) {
+    public HomeData getHomeData(String rrHomeID, Rriot rriot) {
         try {
             return webTargets.getHomeData(rrHomeID, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
             logger.debug("Unexpected authentication error connecting to Roborock API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return "";
+            return new HomeData();
         } catch (RoborockCommunicationException e) {
             logger.debug("Unexpected error connecting to Roborock API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return "";
+            return new HomeData();
         }
     }
 
@@ -145,7 +146,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         Home home;
         home = getHomeDetail();
         if (home != null) {
-            String response = getHomeData(Integer.toString(home.data.rrHomeId), loginResponse.data.rriot);
+            HomeData homeData;
+            homeData = getHomeData(Integer.toString(home.data.rrHomeId), loginResponse.data.rriot);
         }
         /*
          * String responseVehicleList = getVehicleList();
