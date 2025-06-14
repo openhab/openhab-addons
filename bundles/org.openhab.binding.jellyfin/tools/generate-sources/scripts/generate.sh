@@ -69,7 +69,7 @@ OUTPUT=.
 INDEX=0
 for i in "${VERSIONS[@]}"; do
     ALIAS=${VERSION_ALIAS[INDEX++]}
-    PACKAGE=org.openhab.binding.jellyfin.generated-sources.api.${ALIAS}
+    PACKAGE=org.openhab.binding.jellyfin.internal.api.generated_sources.${ALIAS}
     PACKAGE_API=$PACKAGE
     PACKAGE_MODEL=$PACKAGE.model
 
@@ -110,8 +110,6 @@ for i in "${VERSIONS[@]}"; do
 done
 
 cd ${ROOT}
-
-# export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 
 MVN_OPT="--quiet"
 echo ""

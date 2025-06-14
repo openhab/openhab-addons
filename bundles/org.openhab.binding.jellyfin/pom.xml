@@ -16,19 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.openhab.tools.sat</groupId>
-        <artifactId>sat-plugin</artifactId>
-        <configuration>
-          <checkstyleFilter>tools/static-code-analysis/checkstyle/suppressions.xml</checkstyleFilter>
-          <spotbugsFilter>tools/static-code-analysis/spotbugs/suppression.xml</spotbugsFilter>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

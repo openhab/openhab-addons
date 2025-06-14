@@ -14,5 +14,6 @@
   "hideGenerationTimestamp": true,
   "ignoreAnyOfInEnum": true,
   "openApiNullable": false,
-  "templateDir": "tools/generate-sources/scripts/templates"
+  "templateDir": "tools/generate-sources/scripts/templates",
+  "outputEncoding": "UTF-8"
 }
