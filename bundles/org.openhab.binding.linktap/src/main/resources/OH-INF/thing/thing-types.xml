@@ -53,6 +53,13 @@
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="gatewayResponseTimeout" type="integer" required="true" min="3" max="30">
+				<label>Gateway Response Timeout</label>
+				<description>For slow or heavily loaded systems this may need increasing, if communication errors are seen (seconds
+					allowed for responses from the gateway)</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

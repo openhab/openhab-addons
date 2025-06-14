@@ -2,6 +2,7 @@
 <features name="org.openhab.binding.mqtt.homeassistant-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
+	<!-- ATTENTION: When modifying this feature, you must also update features/openhab-addons/src/main/resources/footer.xml -->
 	<feature name="openhab-binding-mqtt-homeassistant" description="MQTT Binding Homeassistant" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mqtt</feature>

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +28,6 @@ import org.openhab.binding.teslapowerwall.internal.api.SystemStatus;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -124,50 +124,74 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             return;
         }
 
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_MODE, new StringType(operations.mode));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_RESERVE,
-                new QuantityType<>(((operations.reserve / 0.95) - (5 / 0.95)), Units.PERCENT));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_SOE,
-                new QuantityType<>(((batterySOE.soe / 0.95) - (5 / 0.95)), Units.PERCENT));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_STATUS,
-                new StringType(gridStatus.gridStatus));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_SERVICES,
-                (gridStatus.gridServices ? OnOffType.ON : OnOffType.OFF));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY,
-                new QuantityType<>(systemStatus.fullPackEnergy, Units.WATT_HOUR));
-        if (systemStatus.fullPackEnergy < TeslaPowerwallBindingConstants.TESLA_POWERWALL_CAPACITY) {
-            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
-                    new QuantityType<>(
-                            (TeslaPowerwallBindingConstants.TESLA_POWERWALL_CAPACITY - systemStatus.fullPackEnergy)
-                                    / TeslaPowerwallBindingConstants.TESLA_POWERWALL_CAPACITY * 100,
-                            Units.PERCENT));
-        } else {
-            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
-                    new QuantityType<>(0, Units.PERCENT));
+        if (operations != null) {
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_MODE,
+                    new StringType(operations.realMode));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_RESERVE,
+                    new QuantityType<>(((operations.backupReservePercent / 0.95) - (5 / 0.95)), Units.PERCENT));
         }
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_INST_POWER,
-                new QuantityType<>(meterAggregates.gridInstpower, MetricPrefix.KILO(Units.WATT)));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_ENERGY_EXPORTED,
-                new QuantityType<>(meterAggregates.gridEnergyexported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_ENERGY_IMPORTED,
-                new QuantityType<>(meterAggregates.gridEnergyimported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_INST_POWER,
-                new QuantityType<>(meterAggregates.batteryInstpower, MetricPrefix.KILO(Units.WATT)));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_EXPORTED,
-                new QuantityType<>(meterAggregates.batteryEnergyexported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_IMPORTED,
-                new QuantityType<>(meterAggregates.batteryEnergyimported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_INST_POWER,
-                new QuantityType<>(meterAggregates.homeInstpower, MetricPrefix.KILO(Units.WATT)));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_ENERGY_EXPORTED,
-                new QuantityType<>(meterAggregates.homeEnergyexported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_ENERGY_IMPORTED,
-                new QuantityType<>(meterAggregates.homeEnergyimported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_INST_POWER,
-                new QuantityType<>(meterAggregates.solarInstpower, MetricPrefix.KILO(Units.WATT)));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_EXPORTED,
-                new QuantityType<>(meterAggregates.solarEnergyexported, Units.KILOWATT_HOUR));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_IMPORTED,
-                new QuantityType<>(meterAggregates.solarEnergyimported, Units.KILOWATT_HOUR));
+        if (batterySOE != null) {
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_SOE,
+                    new QuantityType<>(((batterySOE.soe / 0.95) - (5 / 0.95)), Units.PERCENT));
+        }
+        if (gridStatus != null) {
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_STATUS,
+                    new StringType(gridStatus.gridStatus));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_SERVICES,
+                    (gridStatus.gridServicesActive ? OnOffType.ON : OnOffType.OFF));
+        }
+        if (systemStatus != null) {
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY,
+                    new QuantityType<>(systemStatus.nominalFullPackEnergy, Units.WATT_HOUR));
+            if (systemStatus.nominalFullPackEnergy < systemStatus.availableBlocks
+                    * TeslaPowerwallBindingConstants.TESLA_POWERWALL_CAPACITY) {
+                updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION, new QuantityType<>(
+                        (systemStatus.availableBlocks * (float) TeslaPowerwallBindingConstants.TESLA_POWERWALL_CAPACITY
+                                - systemStatus.nominalFullPackEnergy)
+                                / (systemStatus.availableBlocks
+                                        * TeslaPowerwallBindingConstants.TESLA_POWERWALL_CAPACITY)
+                                * 100,
+                        Units.PERCENT));
+            } else {
+                updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
+                        new QuantityType<>(0, Units.PERCENT));
+            }
+            if (systemStatus.batteryBlocks != null && systemStatus.batteryBlocks.length > 0) {
+                Map<String, String> properties = editProperties();
+                for (int i = 0; i < systemStatus.availableBlocks; i++) {
+                    properties.put("Battery" + (i + 1) + "-partno", systemStatus.batteryBlocks[i].packagePartNumber);
+                    properties.put("Battery" + (i + 1) + "-serial", systemStatus.batteryBlocks[i].packageSerialNumber);
+                    properties.put("Battery" + (i + 1) + "-fullPackEnergy",
+                            String.valueOf(systemStatus.batteryBlocks[i].nominalFullPackEnergy) + "kWh");
+                    updateProperties(properties);
+                }
+            }
+        }
+        if (meterAggregates != null) {
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_INST_POWER,
+                    new QuantityType<>(meterAggregates.siteMeterDetails.instantPower, Units.WATT));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_ENERGY_EXPORTED,
+                    new QuantityType<>(meterAggregates.siteMeterDetails.energyExported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_ENERGY_IMPORTED,
+                    new QuantityType<>(meterAggregates.siteMeterDetails.energyImported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_INST_POWER,
+                    new QuantityType<>(meterAggregates.batteryMeterDetails.instantPower, Units.WATT));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_EXPORTED,
+                    new QuantityType<>(meterAggregates.batteryMeterDetails.energyExported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_IMPORTED,
+                    new QuantityType<>(meterAggregates.batteryMeterDetails.energyImported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_INST_POWER,
+                    new QuantityType<>(meterAggregates.loadMeterDetails.instantPower, Units.WATT));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_ENERGY_EXPORTED,
+                    new QuantityType<>(meterAggregates.loadMeterDetails.energyExported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_HOME_ENERGY_IMPORTED,
+                    new QuantityType<>(meterAggregates.loadMeterDetails.energyImported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_INST_POWER,
+                    new QuantityType<>(meterAggregates.solarMeterDetails.instantPower, Units.WATT));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_EXPORTED,
+                    new QuantityType<>(meterAggregates.solarMeterDetails.energyExported, Units.KILOWATT_HOUR));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_IMPORTED,
+                    new QuantityType<>(meterAggregates.solarMeterDetails.energyImported, Units.KILOWATT_HOUR));
+        }
     }
 }

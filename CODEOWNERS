@@ -84,6 +84,7 @@
 /bundles/org.openhab.binding.deutschebahn/ @soenkekueper
 /bundles/org.openhab.binding.digiplex/ @rmichalak
 /bundles/org.openhab.binding.digitalstrom/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.dirigera/ @weymann
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.dolbycp/ @Cybso
@@ -217,6 +218,7 @@
 /bundles/org.openhab.binding.luxtronikheatpump/ @sgiehl
 /bundles/org.openhab.binding.magentatv/ @markus7017
 /bundles/org.openhab.binding.mail/ @J-N-K
+/bundles/org.openhab.binding.matter/ @digitaldan
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcd/ @simon-dengler
 /bundles/org.openhab.binding.mcp23017/ @aogorek
@@ -224,6 +226,7 @@
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
 /bundles/org.openhab.binding.mercedesme/ @weymann
+/bundles/org.openhab.binding.meross/ @Giovanni_Fabiani
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteofrance/ @clinique
 /bundles/org.openhab.binding.meteostick/ @cdjackson
@@ -328,6 +331,7 @@
 /bundles/org.openhab.binding.resol/ @ramack
 /bundles/org.openhab.binding.revogi/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/bundles/org.openhab.binding.ring/ @morph166955
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
 /bundles/org.openhab.binding.roku/ @mlobstein
