@@ -10,14 +10,25 @@ Each vehicle is represented by its own `vehicle` Thing.
 
 ## Discovery
 
-Auto-discovery is not currently supported.
+After (manually) adding a Teslascope Account bridge, registered vehicles will be auto discovered.
 
-## Thing Configuration
+## `account` Bridge Configuration
 
-As a minimum, the apiKey and publicID are needed:
+Account configuration is necessary. 
+The easiest way to do this is from the UI. 
+Just add a new thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
+
+As a minimum, the apiKey is needed:
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | apiKey          | N/A           | Yes      | No       | apiKey provided by Teslascope                                                        |
+| refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
+
+## `vehicle` Thing Configuration
+
+As a minimum, the publicID is needed:
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
+|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | publicID        | N/A           | Yes      | No       | Vehicle Public ID listed in Teslascope                                               |
 | refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
@@ -124,7 +135,9 @@ Additionally, these advanced channels are available (not all are available on al
 ### `demo.things` Example
 
 ```java
-teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+Bridge teslascope:account:account [ apiKey="xxxx" ] {
+    teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+}
 ```
 
 ### `example.items` Example
