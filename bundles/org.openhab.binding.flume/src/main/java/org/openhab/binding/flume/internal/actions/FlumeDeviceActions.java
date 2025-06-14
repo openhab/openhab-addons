@@ -76,8 +76,6 @@ public class FlumeDeviceActions implements ThingActions {
             @ActionInput(name = "operation", label = "Operation", required = true, description = "The aggregate/accumulate operation to perform (SUM, AVG, MIN, MAX, CNT).") @Nullable String operation) {
         logger.info("queryWaterUsage called");
 
-        FlumeApiQueryWaterUsage query = new FlumeApiQueryWaterUsage();
-
         FlumeDeviceHandler localDeviceHandler = deviceHandler;
         if (localDeviceHandler == null) {
             logger.debug("querying device usage, but device is undefined.");
@@ -90,31 +88,26 @@ public class FlumeDeviceActions implements ThingActions {
             logger.warn("queryWaterUsage called with null inputs");
             return null;
         }
-
-        if (!FlumeApi.OperationType.contains(operation)) {
-            logger.warn("Invalid aggregation operation in call to queryWaterUsage");
-            return null;
-        } else {
-            query.operation = FlumeApi.OperationType.valueOf(operation);
-        }
-
-        if (!FlumeApi.BucketType.contains(bucket)) {
-            logger.warn("Invalid bucket type in call to queryWaterUsage");
-            return null;
-        } else {
-            query.bucket = FlumeApi.BucketType.valueOf(bucket);
-        }
-
-        if (untilDateTime.isBefore(sinceDateTime)) {
+        if (!untilDateTime.isAfter(sinceDateTime)) {
             logger.warn("sinceDateTime must be earlier than untilDateTime");
             return null;
         }
+        if (!FlumeApi.OperationType.contains(operation)) {
+            logger.warn("Invalid aggregation operation in call to queryWaterUsage");
+            return null;
+        }
+        if (!FlumeApi.BucketType.contains(bucket)) {
+            logger.warn("Invalid bucket type in call to queryWaterUsage");
+            return null;
+        }
 
-        query.requestId = QUERYID;
-        query.sinceDateTime = sinceDateTime;
-        query.untilDateTime = untilDateTime;
-        query.bucket = FlumeApi.BucketType.valueOf(bucket);
-        query.units = imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS;
+        FlumeApiQueryWaterUsage query = new FlumeApiQueryWaterUsage(QUERYID, //
+                sinceDateTime, //
+                untilDateTime, //
+                FlumeApi.BucketType.valueOf(bucket), //
+                100, //
+                FlumeApi.OperationType.valueOf(operation), //
+                imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS, FlumeApi.SortDirectionType.ASC);
 
         Float usage;
         try {
