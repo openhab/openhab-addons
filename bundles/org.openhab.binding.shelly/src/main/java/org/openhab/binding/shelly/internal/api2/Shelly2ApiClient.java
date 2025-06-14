@@ -893,7 +893,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sdata.bat.value = getDouble(value.battery.percent);
         }
         if (value.external != null && value.external.present != null) {
-            sdata.charger = getBool(value.external.present);
+            sdata.charger = value.external.present;
         }
     }
 
