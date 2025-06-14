@@ -17,7 +17,9 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
+import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -47,8 +49,9 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         super(RoborockAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, false);
     }
 
-    protected String getVacuumList() {
-        return thingHandler.getVacuumList();
+    @Nullable
+    protected Home getHomeDetail() {
+        return thingHandler.getHomeDetail();
     }
 
     @Override
@@ -58,7 +61,7 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     private void discover() {
-        String responseVacuumList = getVacuumList();
+        // Home homeDetail = getHomeDetail();
         HashMap<String, Object> properties = new HashMap<>();
         /*
          * JsonArray jsonArrayVacuumList = JsonParser.parseString(responseVehicleList).getAsJsonArray();

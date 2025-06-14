@@ -28,10 +28,10 @@ public class Home {
     public @NonNullByDefault({}) HomeData data;
 
     public class HomeData {
-        public int id = "";
+        public int id;
         public String name = "";
-        public int tuyaHomeId = "";
-        public int rrHomeId = "";
+        public int tuyaHomeId;
+        public int rrHomeId;
         public String deviceListOrder = "";
     }
 

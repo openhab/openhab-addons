@@ -12,14 +12,20 @@
  */
 package org.openhab.binding.roborock.internal;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +34,9 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.Login;
+import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +53,8 @@ public class RoborockWebTargets {
     private static final int TIMEOUT_MS = 30000;
     private static final String BASE_URI = "https://usiot.roborock.com";
     private static final String getTokenUri = BASE_URI + "/api/v1/login";
-    private static final String getVacuumUri = BASE_URI + "/api/v1/getHomeDetail";
+    private static final String getHomeDetailUri = BASE_URI + "/api/v1/getHomeDetail";
+    private static final String getHomeDatapath = "/v2/user/homes/";
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(RoborockWebTargets.class);
     private HttpClient httpClient;
@@ -70,8 +79,41 @@ public class RoborockWebTargets {
         return new String(encoded);
     }
 
+    private static String md5Hex(String data) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            // should never occur
+            throw new RuntimeException(e);
+        }
+        byte[] array = md.digest(data.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : array) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    private String getHawkAuthentication(String id, String secret, String key, String path)
+            throws NoSuchAlgorithmException, InvalidKeyException {
+
+        int timestamp = (int) Instant.now().getEpochSecond();
+        String nonce = "3XA-tJz1";
+        String prestr = id + secret + nonce + timestamp + md5Hex(path) + "::";
+
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        mac.init(secretKey);
+        byte[] macBytes = mac.doFinal(prestr.getBytes(StandardCharsets.UTF_8));
+        byte[] encoded = Base64.getEncoder().encode(macBytes);
+        String macString = new String(encoded);
+        return "Hawk id=\"" + id + "\",s=\"" + secret + "\",ts=\"" + timestamp + "\",nonce=\"" + nonce + "\",mac=\""
+                + macString + "\"";
+    }
+
     @Nullable
-    public Login getToken(String email, String password)
+    public Login doLogin(String email, String password)
             throws RoborockCommunicationException, RoborockAuthenticationException, NoSuchAlgorithmException {
         String payload = "?username=" + email + "&password=" + password + "&needtwostepauth=false";
         safeToken = generateSafeToken(email);
@@ -79,8 +121,22 @@ public class RoborockWebTargets {
         return gson.fromJson(response, Login.class);
     }
 
+    @Nullable
+    public Home getHomeDetail(String token) throws RoborockCommunicationException, RoborockAuthenticationException {
+        String response = invoke(getHomeDetailUri, HttpMethod.GET, "Authorization", token, null);
+        return gson.fromJson(response, Home.class);
+    }
+
+    public String getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
+            RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
+        String path = "/v2/user/homes/" + rrHomeID;
+        String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
+        logger.info("token = {}", token);
+        return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
+    }
+
     public String getVacuumList(String token) throws RoborockCommunicationException, RoborockAuthenticationException {
-        return invoke(getVacuumUri, HttpMethod.GET, "Authorization", token, null);
+        return invoke(getHomeDetailUri, HttpMethod.GET, "Authorization", token, null);
     }
 
     /*
@@ -111,18 +167,25 @@ public class RoborockWebTargets {
                 }
                 ContentResponse response = request.send();
                 status = response.getStatus();
+                logger.trace("status = {}", status);
                 jsonResponse = response.getContentAsString();
                 if (!jsonResponse.isEmpty()) {
                     logger.trace("JSON response: '{}'", jsonResponse);
                 }
                 if (status == HttpStatus.UNAUTHORIZED_401) {
+                    logger.trace("unauthorised");
                     throw new RoborockAuthenticationException("Unauthorized");
                 }
                 if (!HttpStatus.isSuccess(status)) {
                     throw new RoborockCommunicationException(
                             String.format("Roborock returned error <%d> while invoking %s", status, uri));
                 }
-            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
+            } catch (TimeoutException ex) {
+                throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+            } catch (ExecutionException ex) {
+                logger.info("cause = {}", ex.getCause(), ex);
+                throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+            } catch (InterruptedException ex) {
                 throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
             }
         }

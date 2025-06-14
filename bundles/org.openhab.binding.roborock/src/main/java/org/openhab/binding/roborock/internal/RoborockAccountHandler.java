@@ -14,6 +14,7 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Set;
@@ -23,7 +24,9 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.Login;
+import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -72,9 +75,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public Login getToken(String email, String password) {
+    public Login doLogin(String email, String password) {
         try {
-            return webTargets.getToken(email, password);
+            return webTargets.doLogin(email, password);
         } catch (RoborockAuthenticationException e) {
             logger.debug("Unexpected authentication error connecting to Roborock API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -90,10 +93,26 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public String getVacuumList() {
+    @Nullable
+    public Home getHomeDetail() {
         try {
-            return webTargets.getVacuumList(token);
+            return webTargets.getHomeDetail(token);
         } catch (RoborockAuthenticationException e) {
+            logger.debug("Unexpected authentication error connecting to Roborock API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return new Home();
+        } catch (RoborockCommunicationException e) {
+            logger.debug("Unexpected error connecting to Roborock API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return new Home();
+        }
+    }
+
+    @Nullable
+    public String getHomeData(String rrHomeID, Rriot rriot) {
+        try {
+            return webTargets.getHomeData(rrHomeID, rriot);
+        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
             logger.debug("Unexpected authentication error connecting to Roborock API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return "";
@@ -118,13 +137,16 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             return;
         }
         Login loginResponse;
-        loginResponse = getToken(config.email, config.password);
+        loginResponse = doLogin(config.email, config.password);
         if (loginResponse != null) {
             token = loginResponse.data.token;
-            logger.trace("token = {}", token);
         }
         updateStatus(ThingStatus.UNKNOWN);
-        String list = getVacuumList();
+        Home home;
+        home = getHomeDetail();
+        if (home != null) {
+            String response = getHomeData(Integer.toString(home.data.rrHomeId), loginResponse.data.rriot);
+        }
         /*
          * String responseVehicleList = getVehicleList();
          * JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
