@@ -45,6 +45,7 @@ public class NamingStrategy {
         if (!ItemUtil.isValidItemName(itemName)) {
             throw new IllegalArgumentException(itemName + " is not a valid item name");
         }
+
         if (configuration.getTableUseRealItemNames()) {
             return formatTableName(itemName, itemId);
         } else {
