@@ -99,11 +99,11 @@ public class RoborockWebTargets {
             throws NoSuchAlgorithmException, InvalidKeyException {
 
         int timestamp = (int) Instant.now().getEpochSecond();
-        String nonce = "3XA-tJz1";
-        String prestr = id + secret + nonce + timestamp + md5Hex(path) + "::";
+        String nonce = "gqaVb-JX";
+        String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + md5Hex(path) + "::";
 
         Mac mac = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         mac.init(secretKey);
         byte[] macBytes = mac.doFinal(prestr.getBytes(StandardCharsets.UTF_8));
         byte[] encoded = Base64.getEncoder().encode(macBytes);
@@ -129,7 +129,7 @@ public class RoborockWebTargets {
 
     public String getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
-        String path = "/v2/user/homes/" + rrHomeID;
+        String path = "/user/homes/" + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         logger.info("token = {}", token);
         return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
