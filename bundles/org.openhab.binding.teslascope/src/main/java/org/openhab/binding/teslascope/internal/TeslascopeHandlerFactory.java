@@ -59,7 +59,7 @@ public class TeslascopeHandlerFactory extends BaseThingHandlerFactory {
         if (TESLASCOPE_ACCOUNT.equals(thingTypeUID)) {
             return new TeslascopeAccountHandler((Bridge) thing, httpClient);
         } else {
-            return new TeslascopeVehicleHandler(thing, httpClient);
+            return new TeslascopeVehicleHandler(thing);
         }
     }
 }

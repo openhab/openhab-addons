@@ -10,10 +10,9 @@ Each vehicle is represented by its own `vehicle` Thing.
 
 ## Discovery
 
-Auto-discovery is supported by this binding. 
 After (manually) adding a Teslascope Account bridge, registered vehicles will be auto discovered.
 
-## Account Configuration
+## `account` Bridge Configuration
 
 Account configuration is necessary. 
 The easiest way to do this is from the UI. 
@@ -25,7 +24,7 @@ As a minimum, the apiKey is needed:
 | apiKey          | N/A           | Yes      | No       | apiKey provided by Teslascope                                                        |
 | refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
-## Thing Configuration
+## `vehicle` Thing Configuration
 
 As a minimum, the publicID is needed:
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |

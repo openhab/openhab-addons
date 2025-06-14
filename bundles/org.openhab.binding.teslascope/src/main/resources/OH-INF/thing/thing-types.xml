@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
-		<label>Teslascope Account Handler</label>
+		<label>Teslascope Account</label>
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
@@ -26,7 +26,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
-		<label>Teslascope Vehicle</label>
+		<label>Vehicle</label>
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>

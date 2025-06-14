@@ -32,6 +32,8 @@ public class TeslascopeBindingConstants {
     public static final ThingTypeUID TESLASCOPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID TESLASCOPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
+    // List of Config ids
+    public static final String CONFIG_PUBLICID = "publicID";
     // List of all Channel ids
     public static final String CHANNEL_VIN = "vin";
     public static final String CHANNEL_VEHICLE_NAME = "vehicle-name";

@@ -43,7 +43,6 @@ import com.google.gson.JsonParser;
 public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDiscoveryService<TeslascopeAccountHandler> {
 
     private Logger logger = LoggerFactory.getLogger(TeslascopeVehicleDiscoveryService.class);
-    private @NonNullByDefault({}) ThingUID bridgeUid;
 
     private final Gson gson = new Gson();
 
@@ -57,11 +56,11 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
 
     @Override
     public void initialize() {
-        bridgeUid = thingHandler.getThing().getUID();
         super.initialize();
     }
 
     private void discover() {
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         String responseVehicleList = getVehicleList();
         HashMap<String, Object> properties = new HashMap<>();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
@@ -71,10 +70,10 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
             if (vehicleList == null) {
                 return;
             }
-            properties.put("publicID", vehicleList.publicId);
-            ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUid, vehicleList.publicId);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
-                    .withRepresentationProperty("publicID").withLabel("Teslascope - " + vehicleList.name).build());
+            properties.put(CONFIG_PUBLICID, vehicleList.publicId);
+            ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUID, vehicleList.publicId);
+            thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
+                    .withRepresentationProperty(CONFIG_PUBLICID).withLabel("Teslascope - " + vehicleList.name).build());
         }
     }
 

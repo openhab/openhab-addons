@@ -51,19 +51,13 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     private @Nullable TeslascopeAccountConfiguration config;
     protected ScheduledExecutorService executorService = this.scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
-    private @NonNullByDefault({}) TeslascopeWebTargets webTargets;
-    private String apiKey = "";
+    private final TeslascopeWebTargets webTargets;
 
     private final Gson gson = new Gson();
 
     public TeslascopeAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        config = getConfigAs(TeslascopeAccountConfiguration.class);
         webTargets = new TeslascopeWebTargets(httpClient);
-    }
-
-    public String getApiKey() {
-        return apiKey;
     }
 
     public ThingUID getUID() {
@@ -72,15 +66,53 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     public String getVehicleList() {
         try {
-            return webTargets.getVehicleList(apiKey);
+            return webTargets.getVehicleList(config.apiKey);
         } catch (TeslascopeAuthenticationException e) {
-            logger.debug("Unexpected authentication error connecting to Teslascope API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication problem: " + e.getMessage());
             return "";
         } catch (TeslascopeCommunicationException e) {
-            logger.debug("Unexpected error connecting to Teslascope API", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication problem: " + e.getMessage());
             return "";
+        }
+    }
+
+    public String getDetailedInformation(String publicID) {
+        try {
+            return webTargets.getDetailedInformation(publicID, config.apiKey);
+        } catch (TeslascopeAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication problem: " + e.getMessage());
+            return "";
+        } catch (TeslascopeCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication problem: " + e.getMessage());
+            return "";
+        }
+    }
+
+    public void sendCommand(String publicID, String command) {
+        try {
+            webTargets.sendCommand(publicID, config.apiKey, command);
+        } catch (TeslascopeAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication problem: " + e.getMessage());
+        } catch (TeslascopeCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication problem: " + e.getMessage());
+        }
+    }
+
+    public void sendCommand(String publicID, String command, String params) {
+        try {
+            webTargets.sendCommand(publicID, config.apiKey, command, params);
+        } catch (TeslascopeAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication problem: " + e.getMessage());
+        } catch (TeslascopeCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication problem: " + e.getMessage());
         }
     }
 
@@ -93,17 +125,18 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getConfigAs(TeslascopeAccountConfiguration.class);
         if (config.apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing apiKey configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-api-key");
             return;
         }
-        apiKey = config.apiKey;
         updateStatus(ThingStatus.UNKNOWN);
 
         String responseVehicleList = getVehicleList();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
         VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
         if (vehicleList == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to retrieve Vehicle List");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-vehicles");
             return;
         }
 
