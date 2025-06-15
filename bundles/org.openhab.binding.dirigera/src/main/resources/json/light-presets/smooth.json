@@ -1,0 +1,32 @@
+[
+	{
+		"startTime": "06:00",
+		"lightLevel": 50,
+		"colorTemperature": 2400
+	},
+	{
+		"startTime": "10:00",
+		"lightLevel": 100,
+		"colorTemperature": 4000
+	},
+	{
+		"startTime": "16:00",
+		"lightLevel": 100,
+		"colorTemperature": 3500
+	},
+	{
+		"startTime": "20:00",
+		"lightLevel": 50,
+		"colorTemperature": 3000
+	},
+	{
+		"startTime": "22:00",
+		"lightLevel": 20,
+		"colorTemperature": 2300
+	},
+	{
+		"startTime": "23:00",
+		"lightLevel": 1,
+		"colorTemperature": 2300
+	}
+]

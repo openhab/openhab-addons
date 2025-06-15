@@ -10,7 +10,7 @@
 		<description>The watering mode</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
@@ -144,7 +144,7 @@
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>

@@ -109,6 +109,9 @@
 		<label>Security Command</label>
 		<description>Sends a 4 digit user code to activate the area command.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="omni_activate_keypad_emergency">

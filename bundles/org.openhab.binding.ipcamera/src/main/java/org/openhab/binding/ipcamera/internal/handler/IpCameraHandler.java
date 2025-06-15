@@ -1652,6 +1652,7 @@ public class IpCameraHandler extends BaseThingHandler {
         localFfmpeg = ffmpegMjpeg;
         if (localFfmpeg != null && !localFfmpeg.isAlive()) {
             logger.debug("MJPEG was not being produced by FFmpeg when it should have been, restarting FFmpeg.");
+            localFfmpeg.stopConverting();
             setupFfmpegFormat(FFmpegFormat.MJPEG);
         }
         if (openChannels.size() > 10) {

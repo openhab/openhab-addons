@@ -201,6 +201,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPLUSSMOKE_STR = "shellyplussmoke";
     public static final String THING_TYPE_SHELLYPLUSUNI_STR = "shellyplusuni";
     public static final String THING_TYPE_SHELLYPLUSPLUGS_STR = "shellyplusplug";
+    public static final String SVC_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplugus";
     public static final String THING_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplusplugus";
     public static final String THING_TYPE_SHELLYPLUSDIMMERUS_STR = "shellypluswdus";
     public static final String THING_TYPE_SHELLYPLUSDIMMER10V_STR = "shellyplus10v";
@@ -515,6 +516,7 @@ public class ShellyThingCreator {
             Map.entry(THING_TYPE_SHELLYPLUS1PMG4_STR, THING_TYPE_SHELLYPLUS1PM_STR),
             Map.entry(THING_TYPE_SHELLYPLUS2PM_RELAY_STR, THING_TYPE_SHELLYPLUS2PM_RELAY_STR),
             Map.entry(THING_TYPE_SHELLYPLUS2PM_ROLLER_STR, THING_TYPE_SHELLYPLUS2PM_ROLLER_STR),
+            Map.entry(SVC_TYPE_SHELLYPLUSPLUGUS_STR, THING_TYPE_SHELLYPLUSPLUGUS_STR),
             Map.entry(THING_TYPE_SHELLYPLUSPLUGS_STR, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(THING_TYPE_SHELLYPLUSPLUGUS_STR, THING_TYPE_SHELLYPLUSPLUGUS_STR),
             Map.entry(THING_TYPE_SHELLYPLUSI4_STR, THING_TYPE_SHELLYPLUSI4_STR),
@@ -604,7 +606,7 @@ public class ShellyThingCreator {
         if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
             return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY_STR, THING_TYPE_SHELLY2_ROLLER_STR, mode);
         }
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR) && !serviceNameLowerCase.contains("plugus")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
             if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGS_STR) || serviceNameLowerCase.contains("-s")) {

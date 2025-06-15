@@ -510,12 +510,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             FetchData result = request.fetchData();
 
             List<HistoricItem> items = new ArrayList<>();
-            long ts = result.getFirstTimestamp();
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
 
             double prevValue = Double.NaN;
             State prevState = null;
             double[] values = result.getValues(DATASOURCE_STATE);
+            // Descending order shall start with the last timestamp and go backward
+            long ts = (ordering == Ordering.DESCENDING) ? result.getLastTimestamp() : result.getFirstTimestamp();
             step = (ordering == Ordering.DESCENDING) ? -1 * step : step;
             int startIndex = (ordering == Ordering.DESCENDING) ? values.length - 1 : 0;
             int endIndex = (ordering == Ordering.DESCENDING) ? -1 : values.length;
