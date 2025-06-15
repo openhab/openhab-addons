@@ -87,7 +87,6 @@
 		<category>oh:meteofrance:neige</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -104,6 +103,10 @@
 		<label>Heat Wave</label>
 		<description>High temperature alert level</description>
 		<category>oh:meteofrance:canicule</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
