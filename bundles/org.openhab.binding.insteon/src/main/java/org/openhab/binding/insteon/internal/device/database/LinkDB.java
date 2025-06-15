@@ -348,7 +348,7 @@ public class LinkDB {
             // move last record if overwritten by a different record
             if (prevRecord != null && prevRecord.isLast() && !prevRecord.equals(record)) {
                 int location = prevRecord.getLocation() - LinkDBRecord.SIZE;
-                records.put(location, LinkDBRecord.withNewLocation(location, prevRecord));
+                records.put(location, prevRecord.withNewLocation(location));
                 if (logger.isTraceEnabled()) {
                     logger.trace("moved last record for {} to location {}", device.getAddress(),
                             HexUtils.getHexString(location));
