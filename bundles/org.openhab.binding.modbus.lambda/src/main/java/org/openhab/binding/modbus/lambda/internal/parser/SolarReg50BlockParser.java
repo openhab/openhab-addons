@@ -10,38 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.lambda.internal;
+package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.modbus.lambda.internal.dto.SolarReg50Block;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * The {@link LambdaConfiguration} class contains fields mapping
- * thing configuration parameters.
+ * Parses lambda modbus data into a SolarReg50 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
+ *
  */
 @NonNullByDefault
-public class LambdaConfiguration {
-    /**
-     * Refresh interval in seconds
-     */
-    private int refresh = 30;
+public class SolarReg50BlockParser extends AbstractBaseParser {
 
-    private int maxTries = 3;// backwards compatibility and tests
+    public SolarReg50Block parse(ModbusRegisterArray raw) {
+        SolarReg50Block block = new SolarReg50Block();
+        block.solarMaximumBufferTemperature = extractInt16(raw, 0, (short) 0);
+        block.solarBufferChangeoverTemperature = extractInt16(raw, 1, (short) 0);
 
-    /**
-     * Gets refresh period in milliseconds
-     */
-    public long getRefreshMillis() {
-        return refresh * 1000;
-    }
-
-    public int getMaxTries() {
-        return maxTries;
-    }
-
-    public void setMaxTries(int maxTries) {
-        this.maxTries = maxTries;
+        return block;
     }
 }
