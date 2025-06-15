@@ -219,10 +219,10 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     /**
-     * Returns the timestamp of the first power value greater than zero.
-     * If no such value exists, returns Instant.MAX.
+     * Returns the first timestamp with power greater than zero.
      *
-     * @return Instant representing the first power timestamp or Instant.MAX if none found
+     * @return Optional containing the first timestamp with power greater than zero, or empty if no such timestamp
+     *         exists.
      */
     public Optional<Instant> getFirstPowerTimestamp() {
         return wattMap.entrySet().stream().filter(entry -> entry.getValue() > 0)
