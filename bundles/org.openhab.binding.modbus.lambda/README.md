@@ -102,6 +102,7 @@ This group contains information about the buffer for the heating circuit.
 
 
 ### General: 
+
 ### Ambient Group
 
 | Channel ID                       | Item Type          | Read only | Description                                                              |
@@ -298,6 +299,7 @@ Number:Energy              lambdaheatpump_vdaq                "Heatpump Accumula
 ```
 
 ### Example: (DSL) Send Power value the E-Manager of the Lambda Heat Pump
+
 '''
 // Sending Value to Heatpump
 // Script has to send a value about every 30 seconds, for example with cron settings.

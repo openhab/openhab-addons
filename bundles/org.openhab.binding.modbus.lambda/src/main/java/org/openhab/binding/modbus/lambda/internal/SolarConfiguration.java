@@ -18,8 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link SolarConfiguration} class contains fields mapping
  * thing configuration parameters for the solar handler.
  *
- * @author Christian Koch - christian@koch-bensheim.de - Initial contribution
+ * @author Paul Frank - Initial contribution
+ * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  */
+
 @NonNullByDefault
 public class SolarConfiguration extends GeneralConfiguration {
     /**

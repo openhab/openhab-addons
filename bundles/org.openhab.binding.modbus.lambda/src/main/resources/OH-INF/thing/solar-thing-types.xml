@@ -7,7 +7,6 @@
 	<thing-type id="solar">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
-			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 
 		<label>Solar</label>
@@ -32,71 +31,63 @@
 		</config-description>
 
 		<channels>
-			<channel id="solar-error-number" typeId="solar-error-number"/>
-			<channel id="solar-operating-state" typeId="solar-operating-state"/>
-			<channel id="solar-collector-temperature" typeId="solar-collector-temperature"/>
-			<channel id="solar-storage-temperature" typeId="solar-storage-temperature"/>
-			<channel id="solar-pump-speed" typeId="solar-pump-speed"/>
-			<channel id="solar-heat-quantity" typeId="solar-heat-quantity"/>
-			<channel id="solar-power-output" typeId="solar-power-output"/>
-			<channel id="solar-operating-hours" typeId="solar-operating-hours"/>
+			<channel id="solar-error-number" typeId="solar-error-number-channel"/>
+			<channel id="solar-operating-state" typeId="solar-operating-state-channel"/>
+			<channel id="solar-collector-temperature" typeId="solar-collector-temperature-channel"/>
+			<channel id="solar-buffer1-temperature" typeId="solar-buffer1-temperature-channel"/>
+			<channel id="solar-buffer2-temperature" typeId="solar-buffer2-temperature-channel"/>
+			<channel id="solar-maximum-buffer-temperature" typeId="solar-maximum-buffer-temperature-channel"/>
+			<channel id="solar-buffer-changeover-temperature" typeId="solar-buffer-changeover-temperature-channel"/>
 		</channels>
 	</thing-type>
 
-	<channel-type id="solar-error-number">
+	<channel-type id="solar-error-number-channel">
 		<item-type>Number</item-type>
 		<label>Solar Error Number</label>
 		<description>Error number (0 = No error)</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="solar-operating-state">
+	<channel-type id="solar-operating-state-channel">
 		<item-type>Number</item-type>
 		<label>Solar Operating State</label>
 		<description>Operating state of the solar component</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="solar-collector-temperature">
+	<channel-type id="solar-collector-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Solar Collector Temperature</label>
 		<description>Temperature of the solar collector</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="solar-storage-temperature">
+	<channel-type id="solar-buffer1-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Solar Storage Temperature</label>
-		<description>Temperature of the solar storage</description>
+		<label>Solar Buffer1 Temperature</label>
+		<description>Temperature of the solar Buffer 1</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="solar-pump-speed">
-		<item-type>Number</item-type>
-		<label>Solar Pump Speed</label>
-		<description>Speed of the solar pump</description>
-		<state readOnly="true" pattern="%d %%"/>
-	</channel-type>
-
-	<channel-type id="solar-heat-quantity">
-		<item-type>Number:Energy</item-type>
-		<label>Solar Heat Quantity</label>
-		<description>Heat quantity produced by solar</description>
+	<channel-type id="solar-buffer2-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Buffer2 Temperature</label>
+		<description>Temperature of the solar Buffer 2</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="solar-power-output">
-		<item-type>Number:Power</item-type>
-		<label>Solar Power Output</label>
-		<description>Current power output of solar</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+	<channel-type id="solar-maximum-buffer-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Maximum Buffer Temperature</label>
+		<description>Maximum Buffer Temperature</description>
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="solar-operating-hours">
-		<item-type>Number</item-type>
-		<label>Solar Operating Hours</label>
-		<description>Operating hours of solar component</description>
-		<state readOnly="true" pattern="%d h"/>
+	<channel-type id="solar-buffer-changeover-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Buffer Changeover Temperature</label>
+		<description>Solar Buffer Changeover Temperature</description>
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
