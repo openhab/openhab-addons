@@ -598,7 +598,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     @Override
     public RingDeviceRegistry getDeviceRegistry() {
-        return this.registry;
+        return registry;
     }
 
     @Override
