@@ -22,8 +22,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,8 +59,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(RoborockAccountHandler.class);
 
     private @Nullable RoborockAccountConfiguration config;
-    protected ScheduledExecutorService executorService = this.scheduler;
-    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollFuture;
     private final RoborockWebTargets webTargets;
     private String token = "";
     private @Nullable Rriot rriot;
@@ -150,6 +150,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void pollStatus() {
         Login loginResponse;
         try {
             if (loginFile.exists()) {
@@ -177,6 +183,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             }
         } catch (IOException e) {
             logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
+        }
+    }
+
+    private void stopPoll() {
+        final Future<?> future = pollFuture;
+        if (future != null) {
+            future.cancel(true);
+            pollFuture = null;
         }
     }
 
