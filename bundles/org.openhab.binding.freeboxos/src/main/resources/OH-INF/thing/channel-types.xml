@@ -182,10 +182,6 @@
 		<item-type>String</item-type>
 		<label>Line Media</label>
 		<description>Media of network line connection</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="FTTH">FTTH</option>
@@ -224,8 +220,8 @@
 		<description>Indicates whether the wifi network is enabled</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
@@ -579,8 +575,8 @@
 		<label>Détection</label>
 		<category>oh:freeboxos:mouvement</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Status</tag>
+			<tag>Motion</tag>
 		</tags>
 	</channel-type>
 

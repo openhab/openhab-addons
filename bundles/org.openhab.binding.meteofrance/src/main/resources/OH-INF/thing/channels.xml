@@ -49,7 +49,7 @@
 		<category>oh:meteofrance:orage</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -140,7 +140,6 @@
 		<category>oh:meteofrance:avalanches</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Level</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -159,7 +158,7 @@
 		<category>oh:meteofrance:vague-submersion</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
