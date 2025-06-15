@@ -117,7 +117,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(OrbitBhyveConfiguration.class);
-        httpClient.setFollowRedirects(false);
 
         scheduler.execute(() -> {
             login();
