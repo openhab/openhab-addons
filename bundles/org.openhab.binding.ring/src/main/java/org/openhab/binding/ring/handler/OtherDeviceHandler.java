@@ -53,9 +53,9 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         logger.debug("Initializing Other Device handler");
         super.initialize();
 
-        RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
+        RingDeviceRegistry registry = getDeviceRegistry();
         String id = getThing().getUID().getId();
-        if (registry.isInitialized()) {
+        if (registry != null && registry.isInitialized()) {
             try {
                 linkDevice(id, OtherDevice.class);
                 updateStatus(ThingStatus.ONLINE);
@@ -102,13 +102,13 @@ public class OtherDeviceHandler extends RingDeviceHandler {
             initialize();
         }
 
-        RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-        if ((deviceTO != null) && (deviceTO.health.batteryPercentage != lastBattery)) {
+        RingDeviceTO deviceTO = device.getDeviceStatus();
+        if (deviceTO.health.batteryPercentage != lastBattery) {
             logger.debug("Battery Level: {}", deviceTO.health.batteryPercentage);
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
             updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
             lastBattery = deviceTO.health.batteryPercentage;
-        } else if (deviceTO != null) {
+        } else {
             logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
                     deviceTO.health.batteryPercentage, lastBattery);
 

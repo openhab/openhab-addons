@@ -21,7 +21,9 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -34,8 +36,9 @@ import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
 import org.openhab.binding.ring.internal.RingVideoServlet;
 import org.openhab.binding.ring.internal.data.Profile;
-import org.openhab.binding.ring.internal.data.RingDevices;
+import org.openhab.binding.ring.internal.data.RingDevicesTO;
 import org.openhab.binding.ring.internal.data.RingEventTO;
+import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
@@ -50,6 +53,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
@@ -75,7 +79,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private final HttpService httpService;
-    private final String thingId;
 
     // Current status
     protected OnOffType status = OnOffType.OFF;
@@ -92,7 +95,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The registry.
      */
-    private final RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
+    private final RingDeviceRegistry registry;
     /**
      * The RestClient is used to connect to the Ring Account.
      */
@@ -129,7 +132,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.networkAddressService = networkAddressService;
         this.httpService = httpService;
         this.videoExecutorService = Executors.newCachedThreadPool();
-        this.thingId = this.getThing().getUID().getId();
+        this.registry = new RingDeviceRegistry();
     }
 
     @Override
@@ -227,7 +230,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void saveRefreshTokenToFile(String refreshToken) {
         String folderName = OpenHAB.getUserDataFolder() + "/ring";
-        String thingId = this.thingId;
+        String thingId = getThing().getUID().getId();
         File folder = new File(folderName);
         String fileName = folderName + "/ring." + thingId + ".refreshToken";
 
@@ -246,7 +249,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private String getRefreshTokenFromFile() {
         String refreshToken = "";
         String folderName = OpenHAB.getUserDataFolder() + "/ring";
-        String thingId = this.thingId;
+        String thingId = getThing().getUID().getId();
         String fileName = folderName + "/ring." + thingId + ".refreshToken";
         File file = new File(fileName);
         if (!file.exists()) {
@@ -398,8 +401,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void refreshRegistry() throws JsonParseException, AuthenticationException, DuplicateIdException {
         logger.debug("AccountHandler - refreshRegistry");
-        RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
-        registry.addRingDevices(ringDevices.getRingDevices());
+        RingDevicesTO ringDevices = restClient.getRingDevices(userProfile, this);
+        registry.addOrUpdateRingDevices(ringDevices);
     }
 
     protected void minuteTick() {
@@ -578,21 +581,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return "";
     }
 
-    @Override
-    public @Nullable RestClient getRestClient() {
-        return restClient;
-    }
-
-    @Override
-    public @Nullable Profile getProfile() {
-        return userProfile;
-    }
-
-    @Override
-    public String getThingId() {
-        return thingId;
-    }
-
     /**
      * Dispose of the refreshJob nicely.
      */
@@ -606,5 +594,15 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
         this.videoExecutorService = null;
         super.dispose();
+    }
+
+    @Override
+    public RingDeviceRegistry getDeviceRegistry() {
+        return registry;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(RingDiscoveryService.class);
     }
 }
