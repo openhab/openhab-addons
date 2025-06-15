@@ -23,7 +23,6 @@
 		<label>Digital DataPoint</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
 		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
@@ -46,6 +45,9 @@
 	<channel-type id="switch-r">
 		<item-type>Switch</item-type>
 		<label>Digital Readonly DataPoint</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -69,6 +71,9 @@
 	<channel-type id="percentage-r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -89,6 +94,9 @@
 	<channel-type id="percentage-rw">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage DataPoint</label>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -107,6 +115,9 @@
 	<channel-type id="number-r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Numeric Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -154,7 +165,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -225,6 +236,9 @@
 	<channel-type id="flowrate-r">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flowrate Readonly DataPoint</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -271,6 +285,10 @@
 	<channel-type id="mode-r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mode Readonly DataPoint</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
@@ -293,6 +311,10 @@
 	<channel-type id="mode-rw">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mode DataPoint</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
