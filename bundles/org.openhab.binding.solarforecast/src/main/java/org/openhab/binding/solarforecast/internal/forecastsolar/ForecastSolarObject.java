@@ -101,6 +101,11 @@ public class ForecastSolarObject implements SolarForecast {
                                 "Error parsing time " + dateStr + " Reason: " + dtpe.getMessage());
                     }
                 }
+
+                // log ratelimit if available
+                JSONObject messageJson = contentJson.getJSONObject("message");
+                JSONObject rateLimitJson = messageJson.getJSONObject("ratelimit");
+                logger.debug("Rate limit: {}/{}", rateLimitJson.getInt("remaining"), rateLimitJson.getInt("limit"));
             } catch (JSONException je) {
                 throw new SolarForecastException(this,
                         "Error parsing JSON response " + content + " Reason: " + je.getMessage());

@@ -81,7 +81,7 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
                             + configuration.calculationItemPersistence + "\"]");
                 }
             } else {
-                // power item not configured
+                // calculation item not configured
                 configErrorStatus("@text/solarforecast.plane.status.item-not-found" + " [\""
                         + configuration.calculationItemName + "\"]");
             }

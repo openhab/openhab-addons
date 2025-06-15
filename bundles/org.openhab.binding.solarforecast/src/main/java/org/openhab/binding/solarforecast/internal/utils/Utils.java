@@ -178,7 +178,7 @@ public class Utils {
     }
 
     /**
-     * Get the energy produced by the power item since the beginning of the current day
+     * Get the energy produced by the calculation item since the beginning of the current day
      *
      * @param calculationItem the name of the power / energy item
      * @param service the persistence service to query
@@ -200,11 +200,11 @@ public class Utils {
             QuantityType<Power> powerStateConverted = (QuantityType<Power>) qs.toInvertibleUnit(KILOWATT_UNIT);
             QuantityType<Energy> energyState = (QuantityType<Energy>) qs.toInvertibleUnit(Units.KILOWATT_HOUR);
             if (powerStateConverted != null) {
-                LOGGER.debug("Item {} unit {} matches power", calculationItemName, powerStateConverted.getUnit());
+                LOGGER.debug("Item {} unit {} matches power", calculationItemName, qs.getUnit());
                 return Optional.of(powerCalculationTillNow(historicItems));
             }
             if (energyState != null) {
-                LOGGER.debug("Item {} unit {} matches energy", calculationItemName, energyState.getUnit());
+                LOGGER.debug("Item {} unit {} matches energy", calculationItemName, qs.getUnit());
                 return Optional.of(energyCalculationTillNow(historicItems));
             }
         }
