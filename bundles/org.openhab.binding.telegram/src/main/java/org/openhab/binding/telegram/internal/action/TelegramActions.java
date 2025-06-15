@@ -364,7 +364,7 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
+    @RuleAction(label = "@text/action.send-telegram-to.label", description = "@text/action.send-telegram-to.description")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") boolean sendTelegramTo(
             @ActionInput(name = "chatIds") @Nullable Long @Nullable [] chatIds,
             @ActionInput(name = "message") @Nullable String message,
@@ -387,7 +387,7 @@ public class TelegramActions implements ThingActions {
         boolean successful = true;
         for (Long chatId : chatIdentifiers) {
             // supports both with and without args
-            successful = successful == sendTelegramGeneral(chatId, String.format(message, args), (String) null,
+            successful = successful &= sendTelegramGeneral(chatId, String.format(message, args), (String) null,
                     replyMessageId, silent, messageThreadId);
         }
 
