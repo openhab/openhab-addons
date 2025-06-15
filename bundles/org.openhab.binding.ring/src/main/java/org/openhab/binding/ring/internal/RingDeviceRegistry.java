@@ -46,7 +46,7 @@ public class RingDeviceRegistry {
     /**
      * Key: device id. Value: the RingDevice implementation object.
      */
-    private final ConcurrentHashMap<String, RingDevice> devices = new ConcurrentHashMap<>();
+    private final Map<String, RingDevice> devices = new ConcurrentHashMap<>();
 
     private void addOrUpdateRingDevice(RingDeviceTO deviceTO, Function<RingDeviceTO, RingDevice> creator) {
         devices.compute(deviceTO.id, (id, existing) -> {
