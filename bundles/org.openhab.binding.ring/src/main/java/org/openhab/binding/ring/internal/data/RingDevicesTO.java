@@ -12,22 +12,23 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * @author Chris Milbert - Initial contribution
- * @author Ben Rosenblum - Updated for OH4 / New Maintainer
+ * The {@link RingDevicesTO} class is a TO containing all devices for an account
+ *
+ * @author Jan N. Klug - Initial contribution
  */
-
 @NonNullByDefault
-public class Stickupcam extends AbstractRingDevice {
-
-    /**
-     * Create Stickup Cam instance from JSON object.
-     *
-     * @param deviceTO the JSON Stickup Cam retrieved from the Ring API.
-     */
-    public Stickupcam(RingDeviceTO deviceTO) {
-        super(deviceTO);
-    }
+public class RingDevicesTO {
+    @SerializedName("doorbots")
+    public List<RingDeviceTO> doorbells = List.of();
+    public List<RingDeviceTO> chimes = List.of();
+    @SerializedName("stickup_cams")
+    public List<RingDeviceTO> stickupCams = List.of();
+    public List<RingDeviceTO> other = List.of();
 }
