@@ -47,7 +47,7 @@ public class ZwaveJSActions implements ThingActions {
     private static final int INCLUSION_EXCLUSION_TIMEOUT_SECONDS = 30;
     private @Nullable ZwaveJSBridgeHandler handler;
 
-    @RuleAction(label = "start inclusion", description = "Puts the controller for 30s in network wide inclusion mode")
+    @RuleAction(label = "@text/action.start-inclusion.label", description = "@text/action.start-inclusion.description")
     public void startInclusion() {
         ZwaveJSBridgeHandler localHandler = handler;
         if (localHandler != null) {
@@ -63,7 +63,7 @@ public class ZwaveJSActions implements ThingActions {
         ((ZwaveJSActions) actions).startInclusion();
     }
 
-    @RuleAction(label = "start exclusion", description = "Put the controller for 30s in network wide exclusion mode")
+    @RuleAction(label = "@text/action.start-exclusion.label", description = "@text/action.start-exclusion.description")
     public void startExclusion() {
         ZwaveJSBridgeHandler localHandler = handler;
         if (localHandler != null) {
@@ -79,7 +79,7 @@ public class ZwaveJSActions implements ThingActions {
         ((ZwaveJSActions) actions).startExclusion();
     }
 
-    @RuleAction(label = "send multicast command", description = "Send command to multiple nodes")
+    @RuleAction(label = "@text/action.send-multicast-command.label", description = "@text/action.send-multicast-command.description")
     public void sendMulticastCommand(
             @ActionInput(name = "nodeIDs", label = "node IDs", description = "Comma separated list of Z-Wave node IDs") String nodeIDs,
             @ActionInput(name = "commandClass", label = "command class", description = "Z-Wave command class") Integer commandClass,
