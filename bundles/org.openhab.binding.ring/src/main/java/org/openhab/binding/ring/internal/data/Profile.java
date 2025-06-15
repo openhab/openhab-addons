@@ -14,8 +14,6 @@ package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-
 /**
  * {"profile":{
  * "id":4445516,
@@ -83,23 +81,18 @@ import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class Profile {
-    private JsonObject jsonProfile = new JsonObject();
-    private JsonObject jsonFeatures = new JsonObject();
     private String refreshToken = "";
     private String accessToken = "";
 
     /**
      * Create Profile instance from JSON String.
      *
-     * @param jsonProfile the JSON profile retrieved from the Ring API.
      * @param refreshToken needed for the refresh token so we aren't logging in every time.
      *            Needed as a separate parameter because it's not part of the jsonProfile object.
      * @param accessToken needed for the access token so we aren't logging in every time.
      *            Needed as a separate parameter because it's not part of the jsonProfile object.
      */
-    public Profile(JsonObject jsonProfile, String refreshToken, String accessToken) {
-        this.jsonProfile = jsonProfile;
-        this.jsonFeatures = (JsonObject) jsonProfile.get("features");
+    public Profile(String refreshToken, String accessToken) {
         this.refreshToken = refreshToken;
         this.accessToken = accessToken;
     }
