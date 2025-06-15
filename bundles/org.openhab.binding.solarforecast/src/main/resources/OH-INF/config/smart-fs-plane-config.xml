@@ -18,12 +18,12 @@
 			<label>Plane Azimuth</label>
 			<description>-180 = north, -90 = east, 0 = south, 90 = west, 180 = north</description>
 		</parameter>
-		<parameter name="powerItemName" type="text" required="true">
+		<parameter name="calculationItemName" type="text" required="true">
 			<context>item</context>
 			<label>Power Item</label>
 			<description>Power item from your solar inverter for this plane</description>
 		</parameter>
-		<parameter name="powerItemPersistence" type="text" required="true">
+		<parameter name="calculationItemPersistence" type="text" required="true">
 			<label>Item Persistence</label>
 			<description>Persistence service to query power item values</description>
 		</parameter>

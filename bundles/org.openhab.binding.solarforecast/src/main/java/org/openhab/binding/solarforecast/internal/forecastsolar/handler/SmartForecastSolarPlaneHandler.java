@@ -61,7 +61,7 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
     @Override
     protected synchronized void setForecast(ForecastSolarObject f) {
         forecast = f;
-        energyProduction = Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get());
+        energyProduction = Utils.getEnergyTillNow(configuration.calculationItemName, persistenceService.get());
         forecastProduction = forecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
 
         double factor = 1;

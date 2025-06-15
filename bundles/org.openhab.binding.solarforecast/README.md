@@ -87,7 +87,7 @@ If set to `false` the 2 API calls are placed as in the previous versions.
 
 ## Solcast Channels
 
-Each `sc-plane` reports its own values including a `json` channel holding JSON content.
+Each `sc-plane` reports its own values.
 The `sc-site` bridge sums up all attached `sc-plane` values and provides total forecast for your home location.
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
@@ -195,17 +195,19 @@ So you need to know what you're doing.
 You can provide feedback of your power production in order to correct the forecast of the current day.
 This is mandatory for `adjustable-fs-plane` and `smart-fs-plane`.
 
-| Name                  | Type    | Description                                                         | Default |
-|-----------------------|---------|---------------------------------------------------------------------|---------|
-| powerItemName         | text    | Power item from your solar inverter for this plane                  | N/A     |
-| powerItemPersistence  | text    | Persistence service to query power item values                      | N/A     |
-| holdingTime           | integer | Time to wait in minutes from first prediction to adjust forecast    | 120     |
+| Name                          | Type    | Description                                                         | Default |
+|-------------------------------|---------|---------------------------------------------------------------------|---------|
+| calculationItemName           | text    | Power item from your solar inverter for this plane                  | N/A     |
+| calculationItemPersistence    | text    | Persistence service to query power item values                      | N/A     |
+| holdingTime                   | integer | Time to wait in minutes from first prediction to adjust forecast    | 120     |
 
-The name `powerItemName` shall be the power item directly corresponding to this plane.
-**Strict requirement:** the item type is `Number:Power`.
+The name `calculationItemName` shall be the calculation item directly corresponding to this plane.
+
+**Strict requirement** for item type is `Number:Power`_or_ `Number:Energy`. 
+Values without unit will be rejected.  
 
 
-The `powerItemPersistence` shall point to the persitence service storing the power item values.
+The `calculationItemPersistence` shall point to the persitence service storing the power item values.
 In UI all installed persistence services are given as options.
 
 Parameter `holdingTime` defines the time between the first forecast prediciton and when corrections shall start.
@@ -238,9 +240,9 @@ You need to to configure persistence service capable of storing future values li
 
 In case of `smart-fs-site` and `smart-fs-plane` the correction factor is shown.
 
-| Channel           | Type      | Description                                                                           |
-|-------------------|-----------|---------------------------------------------------------------------------------------|
-| correction-factor | Number    | Factor of forecast correction. Less than one down correction, otherwise up correction.|
+| Channel           | Type      | Description                                                                               |
+|-------------------|-----------|-------------------------------------------------------------------------------------------|
+| correction-factor | Number    | Factor of forecast correction. Less than one - down correction, otherwise up correction.  |
 
 ## Thing Actions
 

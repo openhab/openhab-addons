@@ -54,7 +54,7 @@ public class ForecastSolarConfigProvider implements ConfigOptionProvider {
             @Nullable Locale locale) {
         if ("thing-type:solarforecast:adjustable-fs-plane".equals(uri.toString())
                 || "thing-type:solarforecast:smart-fs-plane".equals(uri.toString())) {
-            if ("powerItemPersistence".equals(param)) {
+            if ("calculationItemPersistence".equals(param)) {
                 Collection<ParameterOption> options = new ArrayList<>();
                 Collection<PersistenceService> services = persistenceServiceRegistry.getAll();
                 services.forEach(service -> {
