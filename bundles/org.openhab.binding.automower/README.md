@@ -196,7 +196,7 @@ The following actions are available for `automower` things:
 
 ```java
 Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", appSecret="<your_private_application_secret>", pollingInterval=300 ] {
-    Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>" ] {
+    Thing automower "<your_id_received_from_discovery>" [ mowerId="<your_id_received_from_discovery>" ] {
     }
 }
 ```
