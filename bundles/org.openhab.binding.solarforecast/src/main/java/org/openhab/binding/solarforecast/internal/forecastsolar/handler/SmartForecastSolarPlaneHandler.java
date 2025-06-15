@@ -16,6 +16,7 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -61,7 +62,9 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
     @Override
     protected synchronized void setForecast(ForecastSolarObject f) {
         forecast = f;
-        energyProduction = Utils.getEnergyTillNow(configuration.calculationItemName, persistenceService.get());
+        Optional<Double> energyCalculation = Utils.getEnergyTillNow(configuration.calculationItemName,
+                persistenceService.get());
+        energyProduction = energyCalculation.orElse(0.0);
         forecastProduction = forecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
 
         double factor = 1;

@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link SmartForecastSolarTest} tests responses from forecast solar object
@@ -92,16 +91,5 @@ class SmartForecastSolarTest {
         assertEquals(63.067, fo.getActualEnergyValue(queryDateTime), TOLERANCE, "Actual production");
         // "2022-07-18 21:31:00": 65554
         assertEquals(65.554, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
-    }
-
-    @Test
-    void testUnits() {
-        QuantityType<Power> powerState = QuantityType.valueOf(1000, Units.WATT);
-        System.out.println("PowerState " + powerState.toString());
-        if (powerState instanceof Power powerType) {
-            System.out.println("Full " + powerType + " Value " + powerType.getValue() + " Unit " + powerType.getUnit());
-        } else {
-            System.out.println("PowerState is not a Power type, but " + powerState.getClass().getSimpleName());
-        }
     }
 }

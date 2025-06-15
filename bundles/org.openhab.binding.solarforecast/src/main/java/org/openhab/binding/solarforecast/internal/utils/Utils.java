@@ -23,6 +23,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.measure.MetricPrefix;
@@ -173,13 +174,7 @@ public class Utils {
      * @return true if there is historic data for the item, false otherwise
      */
     public static boolean checkPersistence(String item, QueryablePersistenceService service) {
-        FilterCriteria fc = new FilterCriteria();
-        fc.setBeginDate(ZonedDateTime.now().minusDays(1));
-        fc.setEndDate(ZonedDateTime.now());
-        fc.setItemName(item);
-        fc.setOrdering(FilterCriteria.Ordering.ASCENDING);// workaround for rrd4j bug
-        Iterable<HistoricItem> historicItems = service.query(fc);
-        return historicItems.iterator().hasNext();
+        return getEnergyTillNow(item, service).isPresent();
     }
 
     /**
@@ -187,10 +182,10 @@ public class Utils {
      *
      * @param calculationItem the name of the power / energy item
      * @param service the persistence service to query
-     * @return the total energy produced in kWh, 0 if unit doesn't match
+     * @return the total energy produced in kWh, empty if the item unit is not power or energy
      */
     @SuppressWarnings("unchecked")
-    public static double getEnergyTillNow(String calculationItemName, QueryablePersistenceService service) {
+    public static Optional<Double> getEnergyTillNow(String calculationItemName, QueryablePersistenceService service) {
         ZonedDateTime beginPeriodDT = ZonedDateTime.now(Utils.getClock()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endPeriodDT = ZonedDateTime.now(Utils.getClock());
         FilterCriteria fc = new FilterCriteria();
@@ -200,20 +195,22 @@ public class Utils {
         fc.setOrdering(FilterCriteria.Ordering.ASCENDING);// workaround for rrd4j bug
         Iterable<HistoricItem> historicItems = service.query(fc);
 
-        State powerState = historicItems.iterator().next().getState();
-        if (powerState instanceof QuantityType<?> qs) {
+        State calculationState = historicItems.iterator().next().getState();
+        if (calculationState instanceof QuantityType<?> qs) {
             QuantityType<Power> powerStateConverted = (QuantityType<Power>) qs.toInvertibleUnit(KILOWATT_UNIT);
+            QuantityType<Energy> energyState = (QuantityType<Energy>) qs.toInvertibleUnit(Units.KILOWATT_HOUR);
             if (powerStateConverted != null) {
-                return powerCalculationTillNow(historicItems);
-            } else {
-                QuantityType<Energy> energyState = (QuantityType<Energy>) qs.toInvertibleUnit(Units.KILOWATT_HOUR);
-                if (energyState != null) {
-                    return energyCalculationTillNow(historicItems);
-                }
+                LOGGER.debug("Item {} unit {} matches power", calculationItemName, powerStateConverted.getUnit());
+                return Optional.of(powerCalculationTillNow(historicItems));
+            }
+            if (energyState != null) {
+                LOGGER.debug("Item {} unit {} matches energy", calculationItemName, energyState.getUnit());
+                return Optional.of(energyCalculationTillNow(historicItems));
             }
         }
-        LOGGER.warn("Item {} unit doesn't match power or energy", calculationItemName);
-        return 0;
+        LOGGER.warn("Item {} unit {} doesn't match power or energy", calculationItemName,
+                calculationState.getClass().getSimpleName());
+        return Optional.empty();
     }
 
     /**
@@ -225,18 +222,21 @@ public class Utils {
     @SuppressWarnings("unchecked")
     private static double energyCalculationTillNow(Iterable<HistoricItem> historicItems) {
         double total = 0;
+        Instant lastTimeStamp = Instant.MIN;
         for (HistoricItem historicItem : historicItems) {
             State energyState = historicItem.getState();
             if (energyState instanceof QuantityType<?> qs) {
                 QuantityType<Energy> energyStateConverted = (QuantityType<Energy>) qs.toInvertibleUnit(KILOWATT_UNIT);
                 if (energyStateConverted != null) {
                     total = energyStateConverted.doubleValue();
+                    lastTimeStamp = historicItem.getTimestamp().toInstant();
                 } else {
                     LOGGER.warn("Cannot convert Unit {} to {}", qs.getUnit(), KILOWATT_UNIT);
                     return 0;
                 }
             }
         }
+        LOGGER.debug("Latest available energy value {} kWh at {}", total, lastTimeStamp);
         return total;
     }
 
@@ -270,6 +270,7 @@ public class Utils {
             }
             lastTimeStamp = stateTimestamp.toInstant();
         }
+        LOGGER.debug("Latest available power value {} kW at {}", lastPowerValue, lastTimeStamp);
         return total;
     }
 

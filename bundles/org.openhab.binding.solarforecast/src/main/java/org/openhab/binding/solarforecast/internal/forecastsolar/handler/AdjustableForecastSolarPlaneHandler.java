@@ -99,8 +99,9 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
         if (isHoldingTimeElapsed()) {
             if (!configuration.calculationItemName.isBlank() && persistenceService.isPresent() && apiKey.isPresent()) {
                 // https://doc.forecast.solar/actual
-                parameters.put("actual", String
-                        .valueOf(Utils.getEnergyTillNow(configuration.calculationItemName, persistenceService.get())));
+                Optional<Double> energyCalculation = Utils.getEnergyTillNow(configuration.calculationItemName,
+                        persistenceService.get());
+                parameters.put("actual", String.valueOf(energyCalculation.orElse(0.0)));
             } else {
                 logger.debug("Add reset parameters - config missing calculationItem, persistence or API key");
                 parameters.put("actual", "0");
