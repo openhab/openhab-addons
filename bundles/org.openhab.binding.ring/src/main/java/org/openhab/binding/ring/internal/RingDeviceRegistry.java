@@ -13,18 +13,21 @@
 package org.openhab.binding.ring.internal;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ring.internal.data.Chime;
+import org.openhab.binding.ring.internal.data.Doorbell;
+import org.openhab.binding.ring.internal.data.OtherDevice;
 import org.openhab.binding.ring.internal.data.RingDevice;
 import org.openhab.binding.ring.internal.data.RingDeviceTO;
+import org.openhab.binding.ring.internal.data.RingDevicesTO;
+import org.openhab.binding.ring.internal.data.Stickupcam;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
-import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * Singleton registry of found devices.
@@ -35,15 +38,6 @@ import com.google.gson.Gson;
 
 @NonNullByDefault
 public class RingDeviceRegistry {
-    private final Gson gson = new Gson();
-
-    /**
-     * static Singleton instance.
-     */
-    private static final RingDeviceRegistry INSTANCE = new RingDeviceRegistry();
-    /**
-     * The logger.
-     */
     private final Logger logger = LoggerFactory.getLogger(RingDeviceRegistry.class);
     /**
      * Will be set after initialization.
@@ -51,51 +45,35 @@ public class RingDeviceRegistry {
     private boolean initialized;
 
     /**
-     * Key: device id.
-     * Value: the RingDevice implementation object.
+     * Key: device id. Value: the RingDevice implementation object.
      */
-    private ConcurrentHashMap<String, RingDevice> devices = new ConcurrentHashMap<>();
+    private final Map<String, RingDevice> devices = new ConcurrentHashMap<>();
 
-    /**
-     * Return a singleton instance of RingDeviceRegistry.
-     */
-    public static RingDeviceRegistry getInstance() {
-        return INSTANCE;
-    }
-
-    /**
-     * Add a new ring device.
-     */
-    public void addRingDevice(RingDevice ringDevice) throws DuplicateIdException {
-        RingDeviceTO deviceTO = gson.fromJson(ringDevice.getJsonObject(), RingDeviceTO.class);
-        if (deviceTO != null) {
-            if (devices.containsKey(deviceTO.id)) {
-                throw new DuplicateIdException("Ring device with duplicate id " + deviceTO.id + " ignored");
+    private void addOrUpdateRingDevice(RingDeviceTO deviceTO, Function<RingDeviceTO, RingDevice> creator) {
+        devices.compute(deviceTO.id, (id, existing) -> {
+            if (existing == null) {
+                RingDevice device = creator.apply(deviceTO);
+                device.setRegistrationStatus(Status.ADDED);
+                return device;
             } else {
-                ringDevice.setRegistrationStatus(Status.ADDED);
-                devices.put(deviceTO.id, ringDevice);
+                logger.debug(
+                        "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating Json.",
+                        deviceTO.id);
+                existing.setDeviceStatus(deviceTO);
+                return existing;
             }
-        }
+        });
     }
 
     /**
      * Add a new ring device collection.
      */
-    public synchronized void addRingDevices(Collection<RingDevice> ringDevices) {
-        for (RingDevice device : ringDevices) {
-            RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-            if (deviceTO != null) {
-                logger.debug("RingDeviceRegistry - addRingDevices - Trying: {}", deviceTO.id);
-                try {
-                    addRingDevice(device);
-                } catch (DuplicateIdException e) {
-                    logger.debug(
-                            "RingDeviceRegistry - addRingDevices - Ring device with duplicate id {} ignored.  Updating Json.",
-                            deviceTO.id);
-                    devices.get(deviceTO.id).setJsonObject(device.getJsonObject());
-                }
-            }
-        }
+    public synchronized void addOrUpdateRingDevices(RingDevicesTO ringDevices) {
+        ringDevices.doorbells.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, Doorbell::new));
+        ringDevices.chimes.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, Chime::new));
+        ringDevices.stickupCams.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, Stickupcam::new));
+        ringDevices.other.forEach(deviceTO -> addOrUpdateRingDevice(deviceTO, OtherDevice::new));
+
         initialized = true;
     }
 
@@ -115,9 +93,10 @@ public class RingDeviceRegistry {
      * @return the RingDevice instance from the registry.
      * @throws DeviceNotFoundException
      */
-    public @Nullable RingDevice getRingDevice(String id) throws DeviceNotFoundException {
-        if (devices.containsKey(id)) {
-            return devices.get(id);
+    public RingDevice getRingDevice(String id) throws DeviceNotFoundException {
+        RingDevice device = devices.get(id);
+        if (device != null) {
+            return device;
         } else {
             throw new DeviceNotFoundException("Device with id '" + id + "' not found");
         }
@@ -130,8 +109,9 @@ public class RingDeviceRegistry {
      * @throws DeviceNotFoundException
      */
     public void removeRingDevice(String id) throws DeviceNotFoundException {
-        if (devices.containsKey(id)) {
-            devices.remove(id);
+        RingDevice device = devices.get(id);
+        if (device != null) {
+            device.setRegistrationStatus(Status.ADDED);
         } else {
             throw new DeviceNotFoundException("Device with id '" + id + "' not found");
         }
@@ -164,7 +144,6 @@ public class RingDeviceRegistry {
      * The registry status of the device.
      *
      * @author Wim Vissers
-     *
      */
     public enum Status {
         /**
@@ -172,8 +151,7 @@ public class RingDeviceRegistry {
          */
         ADDED,
         /**
-         * When reported to the system as discovered device. It will show up
-         * in the inbox.
+         * When reported to the system as discovered device. It will show up in the inbox.
          */
         DISCOVERED,
         /**
