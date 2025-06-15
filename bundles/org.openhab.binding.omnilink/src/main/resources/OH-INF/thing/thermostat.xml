@@ -44,6 +44,10 @@
 		<label>Thermostat Freeze Alarm</label>
 		<description>Closed when freeze alarm is triggered by this thermostat.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -52,6 +56,10 @@
 		<label>Thermostat Communications Failure</label>
 		<description>Closed during a communications failure with this thermostat.</description>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -88,6 +96,10 @@
 		<label>Heat SetPoint</label>
 		<description>The current low/heating setpoint of this thermostat.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -96,6 +108,10 @@
 		<label>Cool SetPoint</label>
 		<description>The current high/cooling setpoint of this thermostat.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -116,6 +132,10 @@
 		<label>Humidify SetPoint</label>
 		<description>The current low/humidify setpoint for this thermostat.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -124,6 +144,10 @@
 		<label>Dehumidify SetPoint</label>
 		<description>The current high/dehumidify setpoint for this thermostat.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -148,6 +172,10 @@
 		<label>Fan Mode</label>
 		<description>The current fan mode of this thermostat.</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Auto</option>

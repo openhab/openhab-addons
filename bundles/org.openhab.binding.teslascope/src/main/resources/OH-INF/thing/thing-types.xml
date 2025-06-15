@@ -143,6 +143,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Vehicle Battery Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="charging-state">
@@ -173,6 +177,10 @@
 		<item-type>Switch</item-type>
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="battery-range" advanced="true">
 		<item-type>Number:Length</item-type>
@@ -237,11 +245,19 @@
 		<item-type>Switch</item-type>
 		<label>Charge Port</label>
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="charge-port-latch">
 		<item-type>Switch</item-type>
 		<label>Charge Port Latch</label>
 		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="charge-rate" advanced="true">
 		<item-type>Number:Speed</item-type>
@@ -307,6 +323,10 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">
 		<item-type>Contact</item-type>
@@ -368,6 +388,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="left-temp-direction" advanced="true">
@@ -540,6 +564,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Vehicle speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="steering-wheel-heater" advanced="true">

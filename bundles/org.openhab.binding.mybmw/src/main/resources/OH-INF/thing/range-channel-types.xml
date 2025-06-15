@@ -26,6 +26,10 @@
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">

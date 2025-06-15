@@ -6,13 +6,25 @@
 	<channel-type id="checkcontrol-name-channel">
 		<item-type>String</item-type>
 		<label>CheckControl Description</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="checkcontrol-details-channel">
 		<item-type>String</item-type>
 		<label>CheckControl Details</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="checkcontrol-severity-channel">
 		<item-type>String</item-type>
 		<label>Severity Level</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>
