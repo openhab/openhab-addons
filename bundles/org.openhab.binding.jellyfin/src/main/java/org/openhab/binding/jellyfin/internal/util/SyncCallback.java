@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jellyfin.sdk.compatibility.JavaContinuation;
 
 /**
  * The {@link SyncCallback} util to consume kotlin suspend functions.

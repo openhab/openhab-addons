@@ -308,9 +308,13 @@ Import-Package: \\
               <arg>CLASSPATH</arg>
               <arg>-classpath</arg>
               <arg>${project.build.directory}/dependency</arg>
+              <!-- 
               <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion</arg>
               <arg>-warn:+null,+inheritNullAnnot,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
-              <arg>-nowarn:[${project.build.directory}/generated-sources]</arg>
+              <arg>-nowarn:[${project.build.directory}/generated_sources/]</arg>
+              <arg>-nowarn:[${project.build.directory}\\generated_sources\\]</arg>
+              <arg>-noerr:[${project.build.directory}/generated_sources/]</arg>
+              <arg>-noerr:[${project.build.directory}\\generated_sources\\]</arg> -->
             </compilerArgs>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>

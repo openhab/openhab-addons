@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jellyfin.sdk.api.client.exception.ApiClientException;
 import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.jellyfin.internal.handler.JellyfinServerHandler;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
