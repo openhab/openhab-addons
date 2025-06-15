@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
