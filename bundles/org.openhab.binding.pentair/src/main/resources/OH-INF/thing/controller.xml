@@ -329,7 +329,7 @@
 		<description>The start time for this schedule.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Duration</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state min="0" max="1440"/>
 	</channel-type>
@@ -340,7 +340,7 @@
 		<description>The end time (or duration for Egg Timer) of this schedule.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Duration</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state min="0" max="1440"/>
 	</channel-type>

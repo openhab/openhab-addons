@@ -48,7 +48,7 @@
 		<description>Current salt content reading of the water (PPM).</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
