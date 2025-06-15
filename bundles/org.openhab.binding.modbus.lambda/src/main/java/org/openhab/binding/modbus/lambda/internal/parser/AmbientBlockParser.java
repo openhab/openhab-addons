@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.lambda.internal.dto.AmbientBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses labmda modbus data into an Ambient Block
+ * Parses lambda modbus data into an Ambient Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus

@@ -8,8 +8,13 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
-		<label>Lambda Boiler</label>
+
+		<label>Boiler</label>
 		<description>Lambda Boiler connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="boiler-group" typeId="boiler"/>
+		</channel-groups>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="1" max="3600">
@@ -29,6 +34,10 @@
 			</parameter>
 		</config-description>
 
+	</thing-type>
+
+	<channel-group-type id="boiler">
+		<label>Boiler</label>
 		<channels>
 			<channel id="boiler-error-number" typeId="boiler-error-number-channel"/>
 			<channel id="boiler-operating-state" typeId="boiler-operating-state-channel"/>
@@ -36,7 +45,7 @@
 			<channel id="boiler-actual-low-temperature" typeId="boiler-actual-low-temperature-channel"/>
 			<channel id="maximum-boiler-temperature" typeId="maximum-boiler-temperature-channel"/>
 		</channels>
-	</thing-type>
+	</channel-group-type>
 
 	<channel-type id="boiler-error-number-channel">
 		<item-type>Number</item-type>
@@ -72,14 +81,31 @@
 
 	<channel-type id="boiler-actual-high-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Actual High Temperature</label>
+		<label>Boiler Actual High Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="boiler-actual-low-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Actual Low Temperature</label>
+		<label>Boiler Actual Low Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-actual-circulation-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Actual Circulation Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-actual-circulation-pump-state-channel">
+		<item-type>Number</item-type>
+		<label>Boiler Actuial Circulation Pump State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">ON</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="maximum-boiler-temperature-channel">

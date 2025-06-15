@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
   */
 /**
-* Parses lambda modbus data into a Boiler Block
+* Parses lambda modbus data into a Solar Block
 *
 * @author Paul Frank - Initial contribution
 * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus

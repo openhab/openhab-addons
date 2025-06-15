@@ -11,6 +11,11 @@
 		<label>Lambda General</label>
 		<description> Ambient and E-Manager sections connected through modbus</description>
 
+		<channel-groups>
+			<channel-group id="ambient-group" typeId="ambient"/>
+			<channel-group id="emanager-group" typeId="emanager"/>
+		</channel-groups>
+
 		<config-description>
 			<parameter name="refresh" type="integer" min="1" max="3600">
 				<label>Refresh Interval</label>
@@ -24,30 +29,31 @@
 			</parameter>
 		</config-description>
 
-		<channel-group-type id="ambient">
-			<label>General Ambient</label>
-			<channels>
-				<channel id="ambient-error-number" typeId="ambient-error-number-channel"/>
-				<channel id="ambient-operating-state" typeId="ambient-operating-state-channel"/>
-				<channel id="actual-ambient-temperature" typeId="actual-ambient-temperature-channel"/>
-				<channel id="average-ambient-temperature" typeId="average-ambient-temperature-channel"/>
-				<channel id="calculated-ambient-temperature" typeId="calculated-ambient-temperature-channel"/>
-			</channels>
-		</channel-group-type>
-
-		<channel-group-type id="emanager">
-			<label>General E-Manager</label>
-			<channels>
-				<channel id="emanager-error-number" typeId="emanager-error-number-channel"/>
-				<channel id="emanager-operating-state" typeId="emanager-operating-state-channel"/>
-				<channel id="emanager-actual-power" typeId="emanager-actual-power-channel"/>
-				<channel id="emanager-actual-power-signed" typeId="emanager-actual-power-signed-channel"/>
-				<channel id="emanager-actual-power-consumption" typeId="emanager-actual-power-consumption-channel"/>
-				<channel id="power-consumption-setpoint" typeId="emanager-power-consumption-setpoint-channel"/>
-			</channels>
-		</channel-group-type>
-
 	</thing-type>
+
+	<channel-group-type id="ambient">
+		<label>General Ambient</label>
+		<channels>
+			<channel id="ambient-error-number" typeId="ambient-error-number-channel"/>
+			<channel id="ambient-operating-state" typeId="ambient-operating-state-channel"/>
+			<channel id="actual-ambient-temperature" typeId="actual-ambient-temperature-channel"/>
+			<channel id="average-ambient-temperature" typeId="average-ambient-temperature-channel"/>
+			<channel id="calculated-ambient-temperature" typeId="calculated-ambient-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="emanager">
+		<label>General E-Manager</label>
+		<channels>
+			<channel id="emanager-error-number" typeId="emanager-error-number-channel"/>
+			<channel id="emanager-operating-state" typeId="emanager-operating-state-channel"/>
+			<channel id="emanager-actual-power" typeId="emanager-actual-power-channel"/>
+			<channel id="emanager-actual-power-signed" typeId="emanager-actual-power-signed-channel"/>
+			<channel id="emanager-actual-power-consumption" typeId="emanager-actual-power-consumption-channel"/>
+			<channel id="power-consumption-setpoint" typeId="emanager-power-consumption-setpoint-channel"/>
+		</channels>
+	</channel-group-type>
+
 
 	<channel-type id="ambient-error-number-channel">
 		<item-type>Number</item-type>
