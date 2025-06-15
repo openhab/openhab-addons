@@ -142,7 +142,7 @@ You can try it without any registration or other preconditions.
 |------------------------|---------|---------------------------------------|--------------|----------|
 | location               | text    | Location of Photovoltaic system.      | empty        | no       |
 | inverterKwp            | decimal | Inverter Kilowatt Peak                | N/A          | no       |
-| apiKey                 | text    | API Key                               | N/A          | no / yes |
+| apiKey                 | text    | API Key                               | N/A          | yes / no |
 
 `location` defines latitude, longitude values of your PV system.
 In case of empty the location configured in openHAB is obtained.
@@ -150,9 +150,8 @@ In case of empty the location configured in openHAB is obtained.
 `inverterKwp` defines the maximum possible kilo watt capability of your inverter.
 Used if your installed plane kWp is greater than inverter kWp.
 
-`apiKey` can be given in case you subscribed to a paid plan.
-Not needed for `fs-site` and `smart-fs-site`. 
-Required for `adjustable-fs-site`.
+`apiKey` is mandatory for `adjustable-fs-site` commercial plan to calculate [forecast adjustment by forecast.solar](https://doc.forecast.solar/actual).
+It's optional for `fs-site` and `smart-fs-site` but can be used for comparison of forecasts.
 
 ### ForecastSolar Plane Configuration
 
