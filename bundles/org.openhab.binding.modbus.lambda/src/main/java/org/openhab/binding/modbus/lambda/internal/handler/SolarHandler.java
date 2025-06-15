@@ -22,11 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
-import org.openhab.binding.modbus.lambda.internal.BufferConfiguration;
-import org.openhab.binding.modbus.lambda.internal.dto.BufferBlock;
-import org.openhab.binding.modbus.lambda.internal.dto.BufferReg50Block;
-import org.openhab.binding.modbus.lambda.internal.parser.BufferBlockParser;
-import org.openhab.binding.modbus.lambda.internal.parser.BufferReg50BlockParser;
+import org.openhab.binding.modbus.lambda.internal.SolarConfiguration;
+import org.openhab.binding.modbus.lambda.internal.dto.SolarBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.SolarReg50Block;
+import org.openhab.binding.modbus.lambda.internal.parser.SolarBlockParser;
+import org.openhab.binding.modbus.lambda.internal.parser.SolarReg50BlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
@@ -52,18 +52,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BufferHandler} is responsible for handling commands,
- * which are sent to one of the channels and for polling the modbus.
+ * The {@link SolarHandler} is responsible for handling commands,
+ * which are sent to one of the channels and for polling the modbus
+ * for solar thermic component data.
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  */
 @NonNullByDefault
-public class BufferHandler extends BaseThingHandler {
+public class SolarHandler extends BaseThingHandler {
 
     public abstract class AbstractBasePoller {
 
-        private final Logger logger = LoggerFactory.getLogger(BufferHandler.class);
+        private final Logger logger = LoggerFactory.getLogger(SolarHandler.class);
 
         private volatile @Nullable PollTask pollTask;
 
@@ -73,21 +74,19 @@ public class BufferHandler extends BaseThingHandler {
                 return;
             }
 
-            ModbusCommunicationInterface mycomms = BufferHandler.this.comms;
+            ModbusCommunicationInterface mycomms = SolarHandler.this.comms;
             if (mycomms != null) {
                 mycomms.unregisterRegularPoll(task);
             }
             pollTask = null;
         }
 
-        /**
-         * Register poll task This is where we set up our regular poller
-         */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-            ModbusCommunicationInterface mycomms = BufferHandler.this.comms;
-            BufferConfiguration myconfig = BufferHandler.this.config;
+            ModbusCommunicationInterface mycomms = SolarHandler.this.comms;
+            SolarConfiguration myconfig = SolarHandler.this.config;
+
             if (myconfig == null || mycomms == null) {
-                throw new IllegalStateException("registerPollTask called without proper configuration");
+                throw new IllegalStateException("Solar: registerPollTask called without proper configuration");
             }
 
             ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), readFunctionCode, address,
@@ -100,12 +99,12 @@ public class BufferHandler extends BaseThingHandler {
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            }, BufferHandler.this::handleReadError);
+            }, SolarHandler.this::handleReadError);
         }
 
         public synchronized void poll() {
             PollTask task = pollTask;
-            ModbusCommunicationInterface mycomms = BufferHandler.this.comms;
+            ModbusCommunicationInterface mycomms = SolarHandler.this.comms;
             if (task != null && mycomms != null) {
                 mycomms.submitOneTimePoll(task.getRequest(), task.getResultCallback(), task.getFailureCallback());
             }
@@ -114,48 +113,29 @@ public class BufferHandler extends BaseThingHandler {
         protected abstract void handlePolledData(ModbusRegisterArray registers);
     }
 
-    /**
-     * Logger instance
-     */
-    private final Logger logger = LoggerFactory.getLogger(BufferHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SolarHandler.class);
 
-    /**
-     * Configuration instance
-     */
-    protected @Nullable BufferConfiguration config = null;
-    /**
-     * Parser used to convert incoming raw messages into system blocks
-     * private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
-     */
-    /**
-     * Parsers used to convert incoming raw messages into state blocks
-     */
+    protected @Nullable SolarConfiguration config = null;
 
-    private final BufferBlockParser bufferBlockParser = new BufferBlockParser();
-    private final BufferReg50BlockParser bufferReg50BlockParser = new BufferReg50BlockParser();
+    private final SolarBlockParser solarBlockParser = new SolarBlockParser();
+    private final SolarReg50BlockParser solarReg50BlockParser = new SolarReg50BlockParser();
 
-    /**
-     * These are the tasks used to poll the device
-     */
-    private volatile @Nullable AbstractBasePoller bufferPoller = null;
-    private volatile @Nullable AbstractBasePoller bufferReg50Poller = null;
-    /**
-     * Communication interface to the slave endpoint we're connecting to
-     */
+    private volatile @Nullable AbstractBasePoller solarPoller = null;
+    private volatile @Nullable AbstractBasePoller solarReg50Poller = null;
+
     protected volatile @Nullable ModbusCommunicationInterface comms = null;
-    /**
-     * This is the slave id, we store this once initialization is complete
-     */
+
     private volatile int slaveId;
 
-    /**
-     * Instances of this handler should get a reference to the modbus manager
-     *
-     * @param thing the thing to handle
-     */
-    public BufferHandler(Thing thing) {
+    public SolarHandler(Thing thing) {
         super(thing);
     }
+
+    /**
+     * @param command get the value of this command.
+     * 
+     * @return short the value of the command as short
+     */
 
     /**
      * @param address address of the value to be written on the modbus
@@ -163,8 +143,8 @@ public class BufferHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        BufferConfiguration myconfig = BufferHandler.this.config;
-        ModbusCommunicationInterface mycomms = BufferHandler.this.comms;
+        SolarConfiguration myconfig = SolarHandler.this.config;
+        ModbusCommunicationInterface mycomms = SolarHandler.this.comms;
 
         if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
@@ -181,17 +161,12 @@ public class BufferHandler extends BaseThingHandler {
             if (hasConfigurationError()) {
                 return;
             }
-            BufferHandler.this.updateStatus(ThingStatus.ONLINE);
+            SolarHandler.this.updateStatus(ThingStatus.ONLINE);
         }, failure -> {
-            BufferHandler.this.handleWriteError(failure);
+            SolarHandler.this.handleWriteError(failure);
         });
     }
 
-    /**
-     * @param command get the value of this command.
-     * 
-     * @return short the value of the command as short
-     */
     private short getInt16Value(Command command) throws LambdaException {
         if (command instanceof QuantityType quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(WATT);
@@ -222,9 +197,6 @@ public class BufferHandler extends BaseThingHandler {
         throw new LambdaException("Unsupported command type");
     }
 
-    /**
-     * Handle incoming commands.
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -232,55 +204,34 @@ public class BufferHandler extends BaseThingHandler {
             if (groupId != null) {
                 AbstractBasePoller poller;
                 switch (groupId) {
-                    case GROUP_BUFFER:
-                        poller = bufferPoller;
+                    case GROUP_SOLAR:
+                        poller = solarPoller;
                         break;
-                    case GROUP_BUFFER_REG50:
-                        poller = bufferReg50Poller;
+                    case GROUP_SOLAR_REG50:
+                        poller = solarReg50Poller;
                         break;
                     default:
                         poller = null;
                         break;
                 }
                 if (poller != null) {
+                    logger.trace("Solar: Es wird gepollt }");
                     poller.poll();
                 }
             }
         } else {
             try {
-                if (GROUP_BUFFER.equals(channelUID.getGroupId())) {
+                if (GROUP_SOLAR_REG50.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
-                        case CHANNEL_BUFFER_ACTUAL_MODBUS_TEMPERATURE:
-                            writeInt16(baseadress + 4, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_BUFFER_REQUEST_TYPE:
-                            writeInt16(baseadress + 5, getInt16Value(command));
-                            break;
-                        case CHANNEL_BUFFER_REQUEST_FLOW_LINE_TEMPERATURE:
-                            writeInt16(baseadress + 6, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_BUFFER_REQUEST_RETURN_LINE_TEMPERATURE:
-                            writeInt16(baseadress + 7, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_BUFFER_REQUEST_HEAT_SINK_TEMPERATURE:
-                            writeInt16(baseadress + 8, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_BUFFER_REQUEST_HEATING_CAPACITY:
-                            writeInt16(baseadress + 9, getScaledInt16Value(command));
-                            break;
-                    }
-                }
-
-                if (GROUP_BUFFER_REG50.equals(channelUID.getGroupId())) {
-                    switch (channelUID.getIdWithoutGroup()) {
-                        case CHANNEL_BUFFER_MAXIMUM_BUFFER_TEMPERATURE:
+                        case CHANNEL_SOLAR_MAXIMUM_BUFFER_TEMPERATURE:
                             writeInt16(reg50baseadress, getScaledInt16Value(command));
                             break;
+                        case CHANNEL_SOLAR_BUFFER_CHANGEOVER_TEMPERATURE:
+                            writeInt16(reg50baseadress + 1, getScaledInt16Value(command));
+                            break;
                     }
                 }
-            }
-
-            catch (LambdaException error) {
+            } catch (LambdaException error) {
                 if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
                     return;
                 }
@@ -290,30 +241,22 @@ public class BufferHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("Error with: %s: %s", cls, msg));
             }
+
         }
     }
 
-    /**
-     * Initialization: Load the config object of the block Connect to the slave
-     * bridge Start the periodic polling
-     */
     @Override
     public void initialize() {
-        config = getConfigAs(BufferConfiguration.class);
+        config = getConfigAs(SolarConfiguration.class);
+
+        logger.debug("Initializing solar thing with properties: {}", thing.getProperties());
 
         startUp();
     }
 
-    /**
-     * Adresses for the polling registers, used for reading and writing
-     */
     private int baseadress;
     private int reg50baseadress;
 
-    /**
-     * This method starts the operation of this handler Connect to the slave bridge
-     * Start the periodic polling1
-     */
     private void startUp() {
         if (comms != null) {
             return;
@@ -329,107 +272,83 @@ public class BufferHandler extends BaseThingHandler {
             slaveId = slaveEndpointThingHandler.getSlaveId();
             comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
-            logger.debug("Buffer: Error setting up SlaveId");
+            // this will be handled below as endpoint remains null
         }
-
-        // if (comms == null) {
-        // @SuppressWarnings("null")
-        // String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-        // String.format("Bridge '%s' not completely initialized", label));
-        // return;
-        // }
 
         if (comms == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            logger.debug("CommunicationInterface of buffer is null, Thing & Bridge are offline");
+            logger.debug("CommunicationInterface of Solar is null, Thing & Bridge are offline");
             return;
         }
 
         if (config == null) {
-            logger.debug("Invalid comms/config/manager ref for Buffer handler");
+            logger.debug("Invalid comms/config/manager ref for lambda solar handler");
             return;
         }
 
-        BufferConfiguration myconfig = BufferHandler.this.config;
+        SolarConfiguration myconfig = SolarHandler.this.config;
 
-        baseadress = 3000 + 100 * myconfig.getSubindex();
+        // Base address for solar is 4000 as mentioned in README.md
+        baseadress = 4000 + 100 * myconfig.getSubindex();
         reg50baseadress = baseadress + 50;
 
-        if (bufferPoller == null) {
+        if (solarPoller == null) {
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledBufferData(registers);
+                    handlePolledSolarData(registers);
                 }
             };
 
-            poller.registerPollTask(baseadress, 10, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            bufferPoller = poller;
+            poller.registerPollTask(baseadress, 5, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            solarPoller = poller;
         }
-        if (bufferReg50Poller == null) {
+        if (solarReg50Poller == null) {
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledBufferReg50Data(registers);
+                    handlePolledSolarReg50Data(registers);
                 }
             };
 
-            poller.registerPollTask(reg50baseadress, 1, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            bufferReg50Poller = poller;
+            poller.registerPollTask(reg50baseadress, 2, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            solarReg50Poller = poller;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
     }
 
-    /**
-     * Dispose the binding correctly
-     */
     @Override
     public void dispose() {
         tearDown();
     }
 
-    /**
-     * Unregister the poll tasks and release the endpoint reference
-     */
     private void tearDown() {
-        AbstractBasePoller poller = bufferPoller;
-
-        poller = bufferPoller;
+        AbstractBasePoller poller = solarPoller;
         if (poller != null) {
             poller.unregisterPollTask();
-            bufferPoller = null;
+            solarPoller = null;
         }
-        poller = bufferReg50Poller;
+
+        poller = solarReg50Poller;
         if (poller != null) {
             poller.unregisterPollTask();
-            bufferReg50Poller = null;
+            solarReg50Poller = null;
         }
 
         comms = null;
     }
 
-    /**
-     * Returns the current slave id from the bridge
-     */
     public int getSlaveId() {
         return slaveId;
     }
 
-    /**
-     * Get the endpoint handler from the bridge this handler is connected to Checks
-     * that we're connected to the right type of bridge
-     *
-     * @return the endpoint handler or null if the bridge does not exist
-     */
     private @Nullable ModbusEndpointThingHandler getEndpointThingHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Bridge is null");
             return null;
         }
-
         if (bridge.getStatus() != ThingStatus.ONLINE) {
             logger.debug("Bridge is not online");
             return null;
@@ -440,7 +359,6 @@ public class BufferHandler extends BaseThingHandler {
             logger.debug("Bridge handler is null");
             return null;
         }
-
         if (handler instanceof ModbusEndpointThingHandler thingHandler) {
             return thingHandler;
         } else {
@@ -453,70 +371,33 @@ public class BufferHandler extends BaseThingHandler {
         return QuantityType.valueOf(value.doubleValue() * factor, unit);
     }
 
-    protected State getUnscaled(Number value, Unit<?> unit) {
-        return QuantityType.valueOf(value.doubleValue(), unit);
-    }
+    protected void handlePolledSolarData(ModbusRegisterArray registers) {
+        SolarBlock block = solarBlockParser.parse(registers);
 
-    /**
-     * Returns high value * 1000 + low value
-     *
-     * @param high the high value
-     * 
-     * @param low the low valze
-     * 
-     * @return the scaled value as a DecimalType
-     */
-    protected State getEnergyQuantity(int high, int low) {
-        double value = high * 1000 + low;
-        return QuantityType.valueOf(value, KILOWATT_HOUR);
-    }
-
-    /**
-     * These methods are called each time new data has been polled from the modbus
-     * slave The register array is first parsed, then each of the channels are
-     * updated to the new values
-     *
-     * @param registers byte array read from the modbus slave
-     */
-
-    protected void handlePolledBufferData(ModbusRegisterArray registers) {
-        BufferBlock block = bufferBlockParser.parse(registers);
-
-        // Buffer group
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_ERROR_NUMBER), new DecimalType(block.bufferErrorNumber));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_OPERATING_STATE),
-                new DecimalType(block.bufferOperatingState));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_ACTUAL_HIGH_TEMPERATURE),
-                getScaled(block.bufferActualHighTemperature, CELSIUS, -1.0));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_ACTUAL_LOW_TEMPERATURE),
-                getScaled(block.bufferActualLowTemperature, CELSIUS, -1.0));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_ACTUAL_MODBUS_TEMPERATURE),
-                getScaled(block.bufferActualModbusTemperature, CELSIUS, -1.0));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_REQUEST_TYPE), new DecimalType(block.bufferRequestType));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_REQUEST_FLOW_LINE_TEMPERATURE),
-                getScaled(block.bufferrequestFlowLineTemperature, CELSIUS, -1.0));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_REQUEST_RETURN_LINE_TEMPERATURE),
-                getScaled(block.bufferrequestReturnLineTemperature, CELSIUS, -1.0));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_REQUEST_HEAT_SINK_TEMPERATURE),
-                getScaled(block.bufferrequestHeatSinkTemperature, CELSIUS, -1.0));
-        updateState(channelUID(GROUP_BUFFER, CHANNEL_BUFFER_REQUEST_HEATING_CAPACITY),
-                getScaled(block.bufferrequestHeatingCapacity, WATT, 2.0));
+        // Update solar channels
+        updateState(channelUID(GROUP_SOLAR, CHANNEL_SOLAR_ERROR_NUMBER), new DecimalType(block.solarErrorNumber));
+        updateState(channelUID(GROUP_SOLAR, CHANNEL_SOLAR_OPERATING_STATE), new DecimalType(block.solarOperatingState));
+        updateState(channelUID(GROUP_SOLAR, CHANNEL_SOLAR_COLLECTOR_TEMPERATURE),
+                getScaled(block.solarCollectorTemperature, CELSIUS, -1.0));
+        updateState(channelUID(GROUP_SOLAR, CHANNEL_SOLAR_BUFFER1_TEMPERATURE),
+                getScaled(block.solarBuffer1Temperature, CELSIUS, -1.0));
+        updateState(channelUID(GROUP_SOLAR, CHANNEL_SOLAR_BUFFER2_TEMPERATURE),
+                getScaled(block.solarBuffer2Temperature, CELSIUS, -1.0));
 
         resetCommunicationError();
     }
 
-    protected void handlePolledBufferReg50Data(ModbusRegisterArray registers) {
-        BufferReg50Block block = bufferReg50BlockParser.parse(registers);
+    protected void handlePolledSolarReg50Data(ModbusRegisterArray registers) {
+        SolarReg50Block block = solarReg50BlockParser.parse(registers);
 
-        // BufferReg50 group
-        updateState(channelUID(GROUP_BUFFER_REG50, CHANNEL_BUFFER_MAXIMUM_BUFFER_TEMPERATURE),
-                getScaled(block.bufferMaximumBufferTemperature, CELSIUS, -1.0));
+        updateState(channelUID(GROUP_SOLAR_REG50, CHANNEL_SOLAR_MAXIMUM_BUFFER_TEMPERATURE),
+                getScaled(block.solarMaximumBufferTemperature, CELSIUS, -1.0));
+        updateState(channelUID(GROUP_SOLAR_REG50, CHANNEL_SOLAR_BUFFER_CHANGEOVER_TEMPERATURE),
+                getScaled(block.solarBufferChangeoverTemperature, CELSIUS, -1.0));
+
         resetCommunicationError();
     }
 
-    /**
-     * @param bridgeStatusInfo
-     */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
@@ -528,11 +409,7 @@ public class BufferHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Handle errors received during communication
-     */
     protected void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-        // Ignore all incoming data and errors if configuration is not correct
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
@@ -556,20 +433,12 @@ public class BufferHandler extends BaseThingHandler {
                 String.format("Error with write: %s: %s", cls, msg));
     }
 
-    /**
-     * Returns true, if we're in a CONFIGURATION_ERROR state
-     *
-     * @return
-     */
     protected boolean hasConfigurationError() {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
     }
 
-    /**
-     * Reset communication status to ONLINE if we're in an OFFLINE state
-     */
     protected void resetCommunicationError() {
         ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (ThingStatus.OFFLINE.equals(statusInfo.getStatus())
@@ -578,15 +447,6 @@ public class BufferHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Returns the channel UID for the specified group and channel id
-     *
-     * @param string the channel group
-     * 
-     * @param string the channel id in that group
-     * 
-     * @return the globally unique channel uid
-     */
     ChannelUID channelUID(String group, String id) {
         return new ChannelUID(getThing().getUID(), group, id);
     }

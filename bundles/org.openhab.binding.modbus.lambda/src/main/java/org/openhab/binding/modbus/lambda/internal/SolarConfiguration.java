@@ -15,16 +15,15 @@ package org.openhab.binding.modbus.lambda.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link BoilerConfiguration} class contains fields mapping
- * thing configuration parameters.
+ * The {@link SolarConfiguration} class contains fields mapping
+ * thing configuration parameters for the solar handler.
  *
- * @author Paul Frank - Initial contribution
- * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
+ * @author Christian Koch - christian@koch-bensheim.de - Initial contribution
  */
 @NonNullByDefault
-public class BoilerConfiguration extends GeneralConfiguration {
+public class SolarConfiguration extends GeneralConfiguration {
     /**
-     * Subindex to calculate the base adress of the modbus registers
+     * Subindex for multiple solar components
      */
     private int subindex = 0;
 

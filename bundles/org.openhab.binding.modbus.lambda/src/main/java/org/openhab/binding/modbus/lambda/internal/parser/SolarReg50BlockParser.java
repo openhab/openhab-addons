@@ -10,29 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.lambda.internal;
+package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.modbus.lambda.internal.dto.SolarReg50Block;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * The {@link BoilerConfiguration} class contains fields mapping
- * thing configuration parameters.
+ * Parses lambda modbus data into a SolarReg50 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
+ *
  */
 @NonNullByDefault
-public class BoilerConfiguration extends GeneralConfiguration {
-    /**
-     * Subindex to calculate the base adress of the modbus registers
-     */
-    private int subindex = 0;
+public class SolarReg50BlockParser extends AbstractBaseParser {
 
-    public int getSubindex() {
-        return subindex;
-    }
+    public SolarReg50Block parse(ModbusRegisterArray raw) {
+        SolarReg50Block block = new SolarReg50Block();
+        block.solarMaximumBufferTemperature = extractInt16(raw, 0, (short) 0);
+        block.solarBufferChangeoverTemperature = extractInt16(raw, 1, (short) 0);
 
-    public void setSubindex(int subindex) {
-        this.subindex = subindex;
+        return block;
     }
 }

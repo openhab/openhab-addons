@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
+ * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  */
 @NonNullByDefault
 public class HeatpumpHandler extends BaseThingHandler {
