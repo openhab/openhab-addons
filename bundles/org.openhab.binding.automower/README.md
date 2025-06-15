@@ -70,6 +70,10 @@ These channels hold Automower® settings.
 | setting#cutting-height                            | Number | R/W         | Prescaled cutting height, Range: 1-9                                    | false    |
 | setting#headlight-mode<sup id="a1">[1](#f1)</sup> | String | R/W         | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT) | false    |
 
+The absolute cutting height can be calculated from the prescaled cutting height using the following formula:
+
+`cuttingHeightInCM = minCuttingHeightOfMower + (0.5cm * (setting#cutting-height - 1))`
+
 ### Statistics Channels
 
 These channels hold different Automower® statistics.
@@ -191,8 +195,8 @@ The following actions are available for `automower` things:
 ### automower.thing
 
 ```java
-Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", userName="<your_username>", password="<your_password>" ] {
-    Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>", pollingInterval=3600 ] {
+Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", appSecret="<your_private_application_secret>". pollingInterval=300 ] {
+    Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>" ] {
     }
 }
 ```
