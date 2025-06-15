@@ -11,6 +11,9 @@
 		<label>Lambda Buffer</label>
 		<description>Lambda Buffer connected through modbus</description>
 
+		<channel-groups>
+			<channel-group id="buffer-group" typeId="buffer"/>
+		</channel-groups>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="1" max="3600">
@@ -30,6 +33,10 @@
 			</parameter>
 		</config-description>
 
+	</thing-type>
+
+	<channel-group-type id="buffer">
+		<label>Buffer</label>
 		<channels>
 			<channel id="buffer-error-number" typeId="buffer-error-number-channel"/>
 			<channel id="buffer-operating-state" typeId="buffer-operating-state-channel"/>
@@ -43,8 +50,7 @@
 			<channel id="buffer-request-heating-capacity" typeId="buffer-request-heating-capacity-channel"/>
 			<channel id="maximum-buffer-temperature" typeId="maximum-buffer-temperature-channel"/>
 		</channels>
-
-	</thing-type>
+	</channel-group-type>
 
 	<channel-type id="buffer-error-number-channel">
 		<item-type>Number</item-type>
@@ -83,7 +89,7 @@
 
 	<channel-type id="buffer-actual-low-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Actual Low Temperature</label>
+		<label>Buffer Actual Low Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

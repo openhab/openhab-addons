@@ -100,6 +100,8 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_BOILER_OPERATING_STATE = "boiler-operating-state";
     public static final String CHANNEL_BOILER_ACTUAL_HIGH_TEMPERATURE = "boiler-actual-high-temperature";
     public static final String CHANNEL_BOILER_ACTUAL_LOW_TEMPERATURE = "boiler-actual-low-temperature";
+    public static final String CHANNEL_BOILER_ACTUAL_CIRCULATION_TEMPERATURE = "boiler-actual-circulation-low-temperature";
+    public static final String CHANNEL_BOILER_ACTUAL_CIRCULATION_PUMP_STATE = "boiler-actual-circulation-pump-state";
     public static final String CHANNEL_BOILER_MAXIMUM_BOILER_TEMPERATURE = "boiler-maximum-boiler-temperature";
 
     // Buffer
@@ -123,6 +125,7 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_DEVICE_TEMPERATURE = "heating-circuit-room-device-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_SETPOINT_FLOW_LINE_TEMPERATURE = "heating-circuit-setpoint-flow-line-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_OPERATING_MODE = "heating-circuit-operating-mode";
+    public static final String CHANNEL_HEATING_CIRCUIT_TARGET_TEMPERATURE_FLOW_LINE = "heating-circuit-target-temperature-flow-line";
     public static final String CHANNEL_HEATING_CIRCUIT_OFFSET_FLOW_LINE_TEMPERATURE = "heating-circuit-offset-flow-line-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_HEATING_TEMPERATURE = "heating-circuit-room-heating-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_COOLING_TEMPERATURE = "heating-circuit-room-cooling-temperature";

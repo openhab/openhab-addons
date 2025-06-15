@@ -27,4 +27,5 @@ public class HeatingCircuitBlock {
     public int heatingcircuitRoomDeviceTemperature;
     public int heatingcircuitSetpointFlowLineTemperature;
     public int heatingcircuitOperatingMode;
+    public int heatingcircuitTargetTemperatureFlowLine;
 }
