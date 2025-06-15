@@ -43,6 +43,7 @@ public class MelCloudBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_OPERATION_MODE = "operationMode";
+    public static final String CHANNEL_OPERATION_MODE_STRING = "operationModeString";
     public static final String CHANNEL_SET_TEMPERATURE = "setTemperature";
     public static final String CHANNEL_FAN_SPEED = "fanSpeed";
     public static final String CHANNEL_VANE_HORIZONTAL = "vaneHorizontal";

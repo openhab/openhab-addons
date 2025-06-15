@@ -13,6 +13,7 @@
 package org.openhab.binding.melcloud.internal.handler;
 
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
+import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,6 +24,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,6 +73,8 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2 = 0L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE1 = 0x08L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE2 = 0x10L;
+    private static final long EFFECTIVE_FLAG_COOL_FLOW_TEMPERATURE_ZONE1 = 0L;
+    private static final long EFFECTIVE_FLAG_COOL_FLOW_TEMPERATURE_ZONE2 = 0L;
     private static final long EFFECTIVE_FLAG_TARGET_TANK_TEMPERATURE = 0x1000000000020L;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHeatpumpDeviceHandler.class);
@@ -77,6 +82,9 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private @Nullable MelCloudAccountHandler melCloudHandler;
     private @Nullable HeatpumpDeviceStatus heatpumpDeviceStatus;
     private @Nullable ScheduledFuture<?> refreshTask;
+
+    private final String[] operationalModes = { "Idle", "Heat water", "Heat zones", "Cooling", "Defrost", "Stand-by",
+            "Legionella" };
 
     public MelCloudHeatpumpDeviceHandler(Thing thing) {
         super(thing);
@@ -133,11 +141,16 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
 
     @Nullable
     private BigDecimal convertOHValueToHPTemperature(Object command, double rounding) {
-        if (command instanceof QuantityType<?> quantityCommand) {
-            BigDecimal val = quantityCommand.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
-            double inverseRound = 1 / rounding;
-            double v = Math.round(val.doubleValue() * inverseRound) / inverseRound;
-            return new BigDecimal(v);
+        BigDecimal val = null;
+        if (command instanceof QuantityType) {
+            QuantityType<Temperature> quantity = new QuantityType<Temperature>(command.toString()).toUnit(CELSIUS);
+            if (quantity != null) {
+                val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                // round nearest .5
+                double inverseRound = 1 / rounding;
+                double v = Math.round(val.doubleValue() * inverseRound) / inverseRound;
+                return new BigDecimal(v);
+            }
         }
         logger.debug("Can't convert '{}' to set temperature", command);
         return null;
