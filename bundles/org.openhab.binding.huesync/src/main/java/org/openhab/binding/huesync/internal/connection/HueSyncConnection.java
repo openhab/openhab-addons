@@ -33,6 +33,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
+import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.osgi.framework.BundleContext;
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncConnection {
@@ -55,10 +57,8 @@ public class HueSyncConnection {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     /**
      * Request format: The Sync Box API can be accessed locally via HTTPS on root
-     * level (port 443,
-     * /api/v1), resource level /api/v1/<resource> and in some cases sub-resource
-     * level
-     * /api/v1/<resource>/<sub-resource>.
+     * level (port 443, /api/v1), resource level /api/v1/<resource>
+     * and in some cases sub-resource level /api/v1/<resource>/<sub-resource>.
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
     private static final String API = "api/v1";
@@ -110,10 +110,10 @@ public class HueSyncConnection {
 
     protected String registrationId = "";
 
-    public HueSyncConnection(HttpClient httpClient, String host, Integer port)
+    public HueSyncConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
-        this.host = host;
-        this.port = port;
+        this.host = configuration.host;
+        this.port = configuration.port;
 
         this.deviceUri = new URI(String.format("https://%s:%s", this.host, this.port));
 
@@ -123,9 +123,10 @@ public class HueSyncConnection {
         this.tlsProviderService = context.registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider,
                 null);
         this.httpClient = httpClient;
+        this.updateAuthentication(configuration.registrationId, configuration.apiAccessToken);
     }
 
-    public void updateAuthentication(String id, String token) {
+    public final void updateAuthentication(String id, String token) {
         this.removeAuthentication();
 
         if (!id.isBlank() && !token.isBlank()) {
@@ -139,7 +140,6 @@ public class HueSyncConnection {
     // #region protected
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload,
             @Nullable Class<T> type) throws HueSyncConnectionException {
-
         return this.executeRequest(new Request(method, endpoint, payload), type);
     }
 
@@ -173,43 +173,63 @@ public class HueSyncConnection {
     // #region private
 
     private @Nullable <T> T executeRequest(Request request, @Nullable Class<T> type) throws HueSyncConnectionException {
-        String message = "@text/connection.generic-error";
+        var message = "@text/connection.generic-error";
 
         try {
-            ContentResponse response = request.execute();
+            var response = request.execute();
 
             /*
              * 400 Invalid State: Registration in progress
              * 
              * 401 Authentication failed: If credentials are missing or invalid, errors out.
-             * If
-             * credentials are missing, continues on to GET only the Configuration state
-             * when
-             * unauthenticated, to allow for device identification.
+             * If credentials are missing, continues on to GET only the Configuration
+             * state when unauthenticated, to allow for device identification.
              * 
              * 404 Invalid URI Path: Accessing URI path which is not supported
              * 
              * 500 Internal: Internal errors like out of memory
              */
             switch (response.getStatus()) {
-                case HttpStatus.OK_200 -> {
+                case HttpStatus.OK_200:
                     return this.deserialize(response.getContentAsString(), type);
-                }
-                case HttpStatus.BAD_REQUEST_400 -> {
-                    logger.debug("registration in progress: no token received yet");
-                    return null;
-                }
-                case HttpStatus.UNAUTHORIZED_401 -> message = "@text/connection.invalid-login";
-                case HttpStatus.NOT_FOUND_404 -> message = "@text/connection.generic-error";
             }
-            throw new HueSyncConnectionException(message, new HttpResponseException(message, response));
-        } catch (JsonProcessingException | InterruptedException | ExecutionException | TimeoutException e) {
 
-            var logMessage = message + " {}";
-            this.logger.warn(logMessage, e.toString());
+            handleResponseStatus(response.getStatus(), new HttpResponseException(response.getReason(), response));
+        } catch (ExecutionException e) {
+            this.logger.trace("{}: {}", e.getMessage(), message);
+
+            if (e.getCause() instanceof HttpResponseException httpResponseException) {
+                handleResponseStatus(httpResponseException.getResponse().getStatus(), httpResponseException);
+            }
+
+            throw new HueSyncConnectionException(message, e);
+        } catch (HttpResponseException e) {
+            handleResponseStatus(e.getResponse().getStatus(), e);
+        } catch (JsonProcessingException | InterruptedException | TimeoutException e) {
+            this.logger.trace("{}: {}", e.getMessage(), message);
 
             throw new HueSyncConnectionException(message, e);
         }
+
+        throw new HueSyncConnectionException(message);
+    }
+
+    private void handleResponseStatus(int status, Exception e) throws HueSyncConnectionException {
+        var message = "@text/connection.generic-error";
+
+        switch (status) {
+            case HttpStatus.BAD_REQUEST_400:
+            case HttpStatus.UNAUTHORIZED_401:
+                message = "@text/connection.invalid-login";
+                break;
+            case HttpStatus.NOT_FOUND_404:
+                message = "@text/connection.generic-error";
+                break;
+        }
+
+        this.logger.trace("Status: {}, Message Key: {}", status, message);
+
+        throw new HueSyncConnectionException(message, e);
     }
 
     private @Nullable <T> T deserialize(String json, @Nullable Class<T> type) throws JsonProcessingException {
