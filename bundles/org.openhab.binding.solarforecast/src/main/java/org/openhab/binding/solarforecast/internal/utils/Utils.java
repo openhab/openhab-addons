@@ -264,7 +264,7 @@ public class Utils {
             }
             ZonedDateTime stateTimestamp = historicItem.getTimestamp();
             if (lastTimeStamp.isBefore(stateTimestamp.toInstant()) && lastPowerValue >= 0) {
-                total += calcuateKwh(lastTimeStamp, stateTimestamp.toInstant(), lastPowerValue);
+                total += calculateKwh(lastTimeStamp, stateTimestamp.toInstant(), lastPowerValue);
             } else {
                 LOGGER.debug("Skip timestamp {}", stateTimestamp);
             }
@@ -282,7 +282,7 @@ public class Utils {
      * @param power the power in kW
      * @return the energy in kWh
      */
-    private static double calcuateKwh(Instant begin, Instant end, double power) {
+    private static double calculateKwh(Instant begin, Instant end, double power) {
         long durationSeconds = Duration.between(begin, end).getSeconds();
         return power * durationSeconds / 3600;
     }
