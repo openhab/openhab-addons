@@ -50,11 +50,11 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
     @Override
     public void initialize() {
         if (super.doInitialize()) {
-            if (!configuration.powerItemName.isBlank()) {
-                PersistenceService service = persistenceRegistry.get(configuration.powerItemPersistence);
+            if (!configuration.calculationItemName.isBlank()) {
+                PersistenceService service = persistenceRegistry.get(configuration.calculationItemPersistence);
                 if (service != null) {
                     if (service instanceof QueryablePersistenceService queryService) {
-                        if (Utils.checkPersistence(configuration.powerItemName, queryService)) {
+                        if (Utils.checkPersistence(configuration.calculationItemName, queryService)) {
                             persistenceService = Optional.of(queryService);
                             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                                     "@text/solarforecast.plane.status.await-feedback");
@@ -67,23 +67,23 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
                         } else {
                             // item not found in persistence
                             configErrorStatus("@text/solarforecast.plane.status.item-not-in-persistence" + " [\""
-                                    + configuration.powerItemName + "\", \"" + configuration.powerItemPersistence
-                                    + "\"]");
+                                    + configuration.calculationItemName + "\", \""
+                                    + configuration.calculationItemPersistence + "\"]");
                         }
                     } else {
                         // persistence service not queryable
                         configErrorStatus("@text/solarforecast.plane.status.persistence-not-queryable" + " [\""
-                                + configuration.powerItemPersistence + "\"]");
+                                + configuration.calculationItemPersistence + "\"]");
                     }
                 } else {
                     // persistence service not found
                     configErrorStatus("@text/solarforecast.plane.status.persistence-not-found" + " [\""
-                            + configuration.powerItemPersistence + "\"]");
+                            + configuration.calculationItemPersistence + "\"]");
                 }
             } else {
                 // power item not configured
                 configErrorStatus("@text/solarforecast.plane.status.item-not-found" + " [\""
-                        + configuration.powerItemName + "\"]");
+                        + configuration.calculationItemName + "\"]");
             }
         }
         // else initialization failed already in super.doInitialize()
@@ -97,12 +97,12 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
         Map<String, String> parameters = super.queryParameters();
 
         if (isHoldingTimeElapsed()) {
-            if (!configuration.powerItemName.isBlank() && persistenceService.isPresent() && apiKey.isPresent()) {
+            if (!configuration.calculationItemName.isBlank() && persistenceService.isPresent() && apiKey.isPresent()) {
                 // https://doc.forecast.solar/actual
-                parameters.put("actual",
-                        String.valueOf(Utils.getEnergyTillNow(configuration.powerItemName, persistenceService.get())));
+                parameters.put("actual", String
+                        .valueOf(Utils.getEnergyTillNow(configuration.calculationItemName, persistenceService.get())));
             } else {
-                logger.debug("Add reset parameters - config missing powerItem, persistence or API key");
+                logger.debug("Add reset parameters - config missing calculationItem, persistence or API key");
                 parameters.put("actual", "0");
             }
         } else {
