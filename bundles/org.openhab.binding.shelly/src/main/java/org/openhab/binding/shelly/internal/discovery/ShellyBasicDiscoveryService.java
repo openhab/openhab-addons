@@ -137,7 +137,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
                 name = devInfo.hostname;
             }
             if (devInfo.name != null) {
-                deviceName = devInfo.name;
+                deviceName = getString(devInfo.name);
             }
 
             thingType = substringBeforeLast(name, "-");
@@ -176,6 +176,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
             String thingLabel = deviceName.isEmpty() ? name + " - " + ipAddress
                     : deviceName + " (" + name + "@" + ipAddress + ")";
+            logger.debug("{}: Adding Thing to Inbox (type {}, model {}, mode={})", name, thingType, model, mode);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
                     .withRepresentationProperty(PROPERTY_SERVICE_NAME).build();
         }

@@ -58,6 +58,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.Request;
 import org.openhab.binding.matter.internal.client.dto.ws.Response;
+import org.openhab.binding.matter.internal.client.dto.ws.ResponseType;
 import org.openhab.binding.matter.internal.client.dto.ws.TriggerEvent;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -261,8 +262,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                     return;
                 }
                 logger.debug("result type: {} ", response.type);
-                if (!"resultSuccess".equals(response.type)) {
-                    future.completeExceptionally(new Exception(response.error));
+                if (response.type != ResponseType.RESULT_SUCCESS) {
+                    future.completeExceptionally(
+                            new MatterRequestException(response.error, MatterErrorCode.fromErrorId(response.errorId)));
                 } else {
                     future.complete(response.result);
                 }

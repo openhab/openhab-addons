@@ -8,24 +8,40 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Air Pressure</label>
 		<description>Air pressure in hPa</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f hPa"/>
 	</channel-type>
 	<channel-type id="t">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="tmax">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Temperature</label>
 		<description>Highest temperature of the day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="tmin">
 		<item-type>Number:Temperature</item-type>
 		<label>Min Temperature</label>
 		<description>Lowest temperature of the day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="vis" advanced="true">
@@ -38,30 +54,50 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%d °"/>
 	</channel-type>
 	<channel-type id="ws">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="wsmax">
 		<item-type>Number:Speed</item-type>
 		<label>Max Wind Speed</label>
 		<description>Highest wind speed of the day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="wsmin">
 		<item-type>Number:Speed</item-type>
 		<label>Min Wind Speed</label>
 		<description>Lowest wind speed of the day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Relative humidity in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="tstm" advanced="true">
@@ -98,24 +134,40 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust Speed</label>
 		<description>Wind gust speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="pmin">
 		<item-type>Number:Speed</item-type>
 		<label>Minimum Precipitation</label>
 		<description>Minimum precipitation intensity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
 	<channel-type id="pmax">
 		<item-type>Number:Speed</item-type>
 		<label>Maximum Precipitation</label>
 		<description>Maximum precipitation intensity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
 	<channel-type id="ptotal">
 		<item-type>Number:Length</item-type>
 		<label>Total Precipitation</label>
 		<description>Total amount of precipitation during the day</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f mm"/>
 	</channel-type>
 	<channel-type id="pmean" advanced="true">
@@ -134,6 +186,10 @@
 		<item-type>Number</item-type>
 		<label>Precipitation Category</label>
 		<description>Type of precipitation</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No precipitation</option>
