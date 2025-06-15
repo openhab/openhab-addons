@@ -10,25 +10,32 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
-
-import java.util.List;
+package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RingDevicesTO} class is a TO containing all devices for an account
+ * The {@link TokenTO} encapsulates the OAuth token response
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class RingDevicesTO {
-    @SerializedName("doorbots")
-    public List<RingDeviceTO> doorbells = List.of();
-    public List<RingDeviceTO> chimes = List.of();
-    @SerializedName("stickup_cams")
-    public List<RingDeviceTO> stickupCams = List.of();
-    public List<RingDeviceTO> other = List.of();
+public class TokenTO {
+
+    @SerializedName("access_token")
+    public String accessToken = "";
+
+    @SerializedName("refresh_token")
+    public String refreshToken = "";
+
+    @SerializedName("scope")
+    public String scope = "";
+
+    @SerializedName("token_type")
+    public String tokenType = "";
+
+    @SerializedName("expires_in")
+    public int expiresIn = 14400;
 }
