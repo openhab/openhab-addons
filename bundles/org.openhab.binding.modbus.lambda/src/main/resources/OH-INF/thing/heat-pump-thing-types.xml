@@ -8,8 +8,13 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
-		<label>Lambda Heat Pump Group</label>
+
+		<label>Heat Pump</label>
 		<description>Lambda Heat Pump connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="heat-pump-group" typeId="heat-pump"/>
+		</channel-groups>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="0" unit="s">
@@ -33,6 +38,10 @@
 			</parameter>
 
 		</config-description>
+	</thing-type>
+
+	<channel-group-type id="heat-pump">
+		<label>Heat Pump</label>
 
 		<channels>
 			<channel id="heat-pump-error-state" typeId="heat-pump-error-state"/>
@@ -58,8 +67,7 @@
 			<channel id="heat-pump-vdae" typeId="heat-pump-vdae"/>
 			<channel id="heat-pump-vdaq" typeId="heat-pump-vdaq"/>
 		</channels>
-
-	</thing-type>
+	</channel-group-type>
 
 	<channel-type id="heat-pump-error-state">
 		<item-type>Number</item-type>

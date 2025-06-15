@@ -215,7 +215,7 @@ public class SolarHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
-                    logger.trace("Solar: Es wird gepollt }");
+                    logger.trace("Solar: Polling in progress");
                     poller.poll();
                 }
             }

@@ -71,37 +71,6 @@ Heat Pump, Boiler, Buffer and Heating Circuit things use another parameter Subin
 
 Channels within the things are grouped into channel groups.
 
-### Boiler Group
-
-This group contains information about the boiler for the water for domestic use / tap water / washwater.
-
-| Channel ID                     | Item Type          | Read only | Description                                                         |
-| ------------------------------ | ------------------ | --------- | ------------------------------------------------------------------- |
-| boiler-error-number            | Number             | true      | Boiler Error Number (0 = No error)                                  |
-| boiler-operating-state         | Number             | true      | Boiler Operating State: See Modbus description manual, link above   |
-| boiler-actual-high-temperature | Number:Temperature | true      | Actual temperature boiler high sensor                               |
-| boiler- actual-low-temperature | Number:Temperature | true      | Actual temperature boiler low sensor                                |
-| maximum-boiler-temperature     | Number:Temperature | false     | Setting for maximum boiler temperature (min = 25.0°C; max = 65.0°C) |
-
-### Buffer Group
-
-This group contains information about the buffer for the heating circuit.
-
-| Channel ID                                      | Item Type          | Read only | Description                                                          |
-| ------------------------------------------------| ------------------ | --------- | ---------------------------------------------------------------------|
-| buffer-error-number                             | Number             | true      | Buffer Error Number (0 = No error)                                   |
-| buffer-operating-state                          | Number             | true      | Buffer Operating State: See Modbus description manual, link above    |
-| buffer-actual-high-temperature                  | Number:Temperature | true      | Actual temperature buffer high sensor                                |
-| buffer-actual-low-temperature                   | Number:Temperature | true      | Actual temperature buffer low sensor                                 |
-| buffer-actual-modbus-temperature                | Number:Temperature | false     | Actual temperature set via modbus                                    |
-| buffer-request-type                             | Number             | false     | Request Type: See Modbus description manual, link above              |
-| buffer-request-flow-line-temperature            | Number:Temperature | false     | Requested flow line temperature                                      |
-| buffer-request-return-line-temperature          | Number:Temperature | false     | Requested return line temperature                                    |
-| buffer-request-heat-sink-temperature-difference | Number:Temperature | false     | Requested temperature difference between flow line and returen line  |
-| buffer-request-heating-capacity                 | Number:Power       | false     | Requested capacity                                                   |
-| maximum-buffer-temperature                      | Number:Temperature | false     | Setting for maximum buffer temperature )                             |
-
-
 ### General: 
 
 ### Ambient Group
@@ -126,38 +95,6 @@ This group contains parameters signaling the PV excess to the heat pump.
 | actual-power-signed              | Number:Power       | false     | Actual excess power -32768 W .. 32767 W                                                |
 | actual-power-consumption         | Number:Power       | true      | Power consumption of heat-pump (only valid when Betriebsart: Automatik, 0 W otherwise) |
 | power-consumption-setpoint       | Number:Power       | false     | Power consumption setpoint for heat pump 1                                             |
-
-### Heating Circuit Group
-
-This group contains general operational information about the heating circuit.
-
-| Channel ID                                     | Item Type          | Read only | Description                                                |
-| ---------------------------------------------- | -------------------| --------- | ---------------------------------------------------------- |
-| heating-circuit-error-number                   | Number             | true      | Error Number (0 = No error)                                |
-| heating-circuit-operating-state                | Number             | true      | Operating State: See Modbus description manual, link above |
-| heating-circuit-flow-line-temperature          | Number:Temperature | true      | Actual temperature flow line sensor                        |
-| heating-circuit-return-line-temperature        | Number:Temperature | true      | Actual temperature return line sensor                      |
-| heating-circuit-room-device-temperature        | Number:Temperature | false     | Actual temperature room device sensor                      |
-| heating-circuit-setpoint-flow-line-temperature | Number:Temperature | false     | Setpoint temperature flow line                             | 
-| heating-circuit-operating-mode                 | Number             | false     | Operating Mode: See Modbus description manual, link above  |
-| heating-circuit-offset-flow-line-temperature   | Number:Temperature | false     | Setting for flow line temperature setpoint offset          |
-| heating-circuit-room-heating-temperature       | Number:Temperature | false     | Setting for heating mode room setpoint temperature         |
-| heating-circuit-room-cooling-temperature       | Number:Temperature | false     | Setting for cooling mode room setpoint temperature         |
-
-### Solar Group
-
-This group contains information about the solar thermic component.
-
-| Channel ID                     | Item Type          | Read only | Description                                                         |
-| ------------------------------ | ------------------ | --------- | ------------------------------------------------------------------- |
-| solar-error-number            | Number             | true      | Solar Error Number (0 = No error)                                  |
-| solar-operating-state         | Number             | true      | Solar Operating State: See Modbus description manual, link above   |
-| solar-collector-temperature   | Number:Temperature | true      | Temperature of the solar collector                                |
-| solar-storage-temperature     | Number:Temperature | true      | Temperature of the solar storage                                  |
-| solar-pump-speed             | Number             | true      | Speed of the solar pump                                          |
-| solar-heat-quantity          | Number:Energy      | true      | Heat quantity produced by solar                                  |
-| solar-power-output           | Number:Power       | true      | Current power output of solar                                    |
-| solar-operating-hours        | Number             | true      | Operating hours of solar component                               |
 
 ### Heat Pump Group
 
@@ -187,6 +124,71 @@ This group contains general operational information about the heat pump itself.
 | heat-pump-relais-state         | Number:Temperature        | true      | Heatpump Relais State for 2nd heating stage                             |
 | heat-pump-vdae                 | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit            |
 | heat-pump-vdaq                 | Number:Energy             | true      | Accumulated thermal energy output of compressor unit                    |
+
+### Boiler Group
+
+This group contains information about the boiler for the water for domestic use / tap water / washwater.
+
+| Channel ID                            | Item Type          | Read only | Description                                                         |
+| ------------------------------------- | ------------------ | --------- | ------------------------------------------------------------------- |
+| boiler-error-number                   | Number             | true      | Boiler Error Number (0 = No error)                                  |
+| boiler-operating-state                | Number             | true      | Boiler Operating State: See Modbus description manual, link above   |
+| boiler-actual-high-temperature        | Number:Temperature | true      | Actual temperature boiler high sensor                               |
+| boiler-actual-low-temperature         | Number:Temperature | true      | Actual temperature boiler low sensor                                |
+| boiler-actual-circulation-temperature | Number:Temperature | true      | Actual circulation temperature                                      |
+| boiler-actual-circulation-pump-state  | Number             | true      | Actual circulation pump state                                       |
+| maximum-boiler-temperature            | Number:Temperature | false     | Setting for maximum boiler temperature (min = 25.0°C; max = 65.0°C) |
+
+### Buffer Group
+
+This group contains information about the buffer for the heating circuit.
+
+| Channel ID                                      | Item Type          | Read only | Description                                                          |
+| ------------------------------------------------| ------------------ | --------- | ---------------------------------------------------------------------|
+| buffer-error-number                             | Number             | true      | Buffer Error Number (0 = No error)                                   |
+| buffer-operating-state                          | Number             | true      | Buffer Operating State: See Modbus description manual, link above    |
+| buffer-actual-high-temperature                  | Number:Temperature | true      | Actual temperature buffer high sensor                                |
+| buffer-actual-low-temperature                   | Number:Temperature | true      | Actual temperature buffer low sensor                                 |
+| buffer-actual-modbus-temperature                | Number:Temperature | false     | Actual temperature set via modbus                                    |
+| buffer-request-type                             | Number             | false     | Request Type: See Modbus description manual, link above              |
+| buffer-request-flow-line-temperature            | Number:Temperature | false     | Requested flow line temperature                                      |
+| buffer-request-return-line-temperature          | Number:Temperature | false     | Requested return line temperature                                    |
+| buffer-request-heat-sink-temperature-difference | Number:Temperature | false     | Requested temperature difference between flow line and return line   |
+| buffer-request-heating-capacity                 | Number:Power       | false     | Requested capacity                                                   |
+| maximum-buffer-temperature                      | Number:Temperature | false     | Setting for maximum buffer temperature )                             |
+### Solar Group
+
+This group contains information about the solar thermic component.
+
+| Channel ID                     | Item Type          | Read only | Description                                                         |
+| ------------------------------ | ------------------ | --------- | ------------------------------------------------------------------- |
+| solar-error-number            | Number             | true      | Solar Error Number (0 = No error)                                  |
+| solar-operating-state         | Number             | true      | Solar Operating State: See Modbus description manual, link above   |
+| solar-collector-temperature   | Number:Temperature | true      | Temperature of the solar collector                                |
+| solar-storage-temperature     | Number:Temperature | true      | Temperature of the solar storage                                  |
+| solar-pump-speed             | Number             | true      | Speed of the solar pump                                          |
+| solar-heat-quantity          | Number:Energy      | true      | Heat quantity produced by solar                                  |
+| solar-power-output           | Number:Power       | true      | Current power output of solar                                    |
+| solar-operating-hours        | Number             | true      | Operating hours of solar component                               |
+
+
+### Heating Circuit Group
+
+This group contains general operational information about the heating circuit.
+
+| Channel ID                                     | Item Type          | Read only | Description                                                 |
+| ---------------------------------------------- | -------------------| --------- | ----------------------------------------------------------- |
+| heating-circuit-error-number                   | Number             | true      | Error Number (0 = No error)                                 |
+| heating-circuit-operating-state                | Number             | true      | Operating State: See Modbus description manual, link above  |
+| heating-circuit-flow-line-temperature          | Number:Temperature | true      | Actual temperature flow line sensor                         |
+| heating-circuit-return-line-temperature        | Number:Temperature | true      | Actual temperature return line sensor                       |
+| heating-circuit-room-device-temperature        | Number:Temperature | false     | Actual temperature room device sensor                       |
+| heating-circuit-setpoint-flow-line-temperature | Number:Temperature | false     | Setpoint temperature flow line                              | 
+| heating-circuit-operating-mode                 | Number             | false     | Operating Mode: See Modbus description manual, link above   |
+| heating-circuit-target-temperature-flow-line   | Number:Temperature | false     | Setpoin temperature flow line  (min = 15.0°C; max = 65.0°C) |
+| heating-circuit-offset-flow-line-temperature   | Number:Temperature | false     | Setting for flow line temperature setpoint offset           |
+| heating-circuit-room-heating-temperature       | Number:Temperature | false     | Setting for heating mode room setpoint temperature          |
+| heating-circuit-room-cooling-temperature       | Number:Temperature | false     | Setting for cooling mode room setpoint temperature          |
 
 ## Full Example
 

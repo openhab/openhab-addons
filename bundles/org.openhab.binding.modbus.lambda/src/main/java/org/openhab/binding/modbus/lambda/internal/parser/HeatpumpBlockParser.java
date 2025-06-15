@@ -44,9 +44,9 @@ public class HeatpumpBlockParser extends AbstractBaseParser {
         block.heatpumpCOP = extractInt16(raw, 13, (short) 0);
         block.heatpumpRequestPassword = extractUInt16(raw, 14, (short) 0);
         block.heatpumpRequestType = extractInt16(raw, 15, (short) 0);
-        block.heatpumpRequestTFlow = extractInt16(raw, 14, (short) 0);
-        block.heatpumpRequestTReturn = extractInt16(raw, 15, (short) 0);
-        block.heatpumpRequestHeatSink = extractInt16(raw, 16, (short) 0);
+        block.heatpumpRequestTFlow = extractInt16(raw, 16, (short) 0);
+        block.heatpumpRequestTReturn = extractInt16(raw, 17, (short) 0);
+        block.heatpumpRequestHeatSink = extractInt16(raw, 18, (short) 0);
         block.heatpumpRelaisState = extractInt16(raw, 19, (short) 0);
         block.heatpumpVdAE = extractInt32(raw, 20, (long) 0);
         block.heatpumpVdAQ = extractInt32(raw, 22, (long) 0);
