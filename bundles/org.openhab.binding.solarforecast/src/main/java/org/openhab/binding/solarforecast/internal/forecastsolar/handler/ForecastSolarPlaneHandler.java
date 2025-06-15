@@ -192,6 +192,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 }
             } else {
                 // else use available forecast
+                updateStatus(ThingStatus.ONLINE);
                 updateChannels(forecast);
             }
         } else {

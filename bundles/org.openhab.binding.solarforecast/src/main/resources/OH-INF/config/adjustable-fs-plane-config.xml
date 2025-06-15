@@ -24,12 +24,12 @@
 		</parameter>
 		<parameter name="calculationItemName" type="text" required="true">
 			<context>item</context>
-			<label>Power Item</label>
-			<description>Power item from your solar inverter for this plane</description>
+			<label>Calculation Item Name</label>
+			<description>Power or Energy item from your solar inverter for this plane</description>
 		</parameter>
 		<parameter name="calculationItemPersistence" type="text" required="true">
-			<label>Item Persistence</label>
-			<description>Persistence service to query power item values</description>
+			<label>Calculation Item Persistence</label>
+			<description>Persistence service to query calculation item values</description>
 		</parameter>
 		<parameter name="holdingTime" type="integer" unit="min" required="true">
 			<label>Holding Time</label>

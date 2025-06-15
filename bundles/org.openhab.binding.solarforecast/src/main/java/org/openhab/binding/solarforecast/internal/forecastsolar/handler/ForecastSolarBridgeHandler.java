@@ -49,6 +49,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ForecastSolarBridgeHandler} is responsible for handling the attached planes and give an accumulated
@@ -59,6 +61,8 @@ import org.openhab.core.types.TimeSeries.Policy;
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
     private static final int CALM_DOWN_TIME_MINUTES = 61;
+
+    private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
 
     private ForecastSolarBridgeConfiguration configuration = new ForecastSolarBridgeConfiguration();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
@@ -234,6 +238,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     public synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
+        logger.trace("Adding plane {}", sfph.getThing().getUID());
         planes.add(sfph);
         // update passive PV plane with necessary data
         sfph.setLocation(new PointType(configuration.location));
@@ -244,6 +249,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     public synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
+        logger.trace("Removing plane {}", sfph.getThing().getUID());
         planes.remove(sfph);
     }
 

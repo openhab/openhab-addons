@@ -190,25 +190,25 @@ But it doesn't fit 100% to the required configuration.
 Currently there's no tool available which is providing the configuration information 1 to 1.
 So you need to know what you're doing.
 
-#### Power Feedback Configuration
+#### Energy Feedback Configuration
 
-You can provide feedback of your power production in order to correct the forecast of the current day.
+You can provide feedback of your energy production in order to correct the forecast of the current day.
 This is mandatory for `adjustable-fs-plane` and `smart-fs-plane`.
 
 | Name                          | Type    | Description                                                         | Default |
 |-------------------------------|---------|---------------------------------------------------------------------|---------|
-| calculationItemName           | text    | Power item from your solar inverter for this plane                  | N/A     |
-| calculationItemPersistence    | text    | Persistence service to query power item values                      | N/A     |
+| calculationItemName           | text    | Power or Energy item from your solar inverter for this plane        | N/A     |
+| calculationItemPersistence    | text    | Persistence service to query calculation item values                | N/A     |
 | holdingTime                   | integer | Time to wait in minutes from first prediction to adjust forecast    | 120     |
 
 The name `calculationItemName` shall be the calculation item directly corresponding to this plane.
 
-**Strict requirement** for item type is `Number:Power`_or_ `Number:Energy`. 
+**Strict requirement** for `calculationItemName` type is `Number:Power`_or_ `Number:Energy`. 
 Values without unit will be rejected.  
 
 
-The `calculationItemPersistence` shall point to the persitence service storing the power item values.
-In UI all installed persistence services are given as options.
+The `calculationItemPersistence` shall point to the persitence service storing the calculation item values.
+All installed persistence services are given as options.
 
 Parameter `holdingTime` defines the time between the first forecast prediciton and when corrections shall start.
 The correction shall not start at *early stages*.
