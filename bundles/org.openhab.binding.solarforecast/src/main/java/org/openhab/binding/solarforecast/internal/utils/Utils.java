@@ -195,6 +195,11 @@ public class Utils {
         fc.setOrdering(FilterCriteria.Ordering.ASCENDING);// workaround for rrd4j bug
         Iterable<HistoricItem> historicItems = service.query(fc);
 
+        Iterator<HistoricItem> iterator = historicItems.iterator();
+        if (!iterator.hasNext()) {
+            LOGGER.warn("No historic data found for item {}", calculationItemName);
+            return Optional.empty();
+        }
         State calculationState = historicItems.iterator().next().getState();
         if (calculationState instanceof QuantityType<?> qs) {
             QuantityType<Power> powerStateConverted = (QuantityType<Power>) qs.toInvertibleUnit(KILOWATT_UNIT);
@@ -226,12 +231,13 @@ public class Utils {
         for (HistoricItem historicItem : historicItems) {
             State energyState = historicItem.getState();
             if (energyState instanceof QuantityType<?> qs) {
-                QuantityType<Energy> energyStateConverted = (QuantityType<Energy>) qs.toInvertibleUnit(KILOWATT_UNIT);
+                QuantityType<Energy> energyStateConverted = (QuantityType<Energy>) qs
+                        .toInvertibleUnit(Units.KILOWATT_HOUR);
                 if (energyStateConverted != null) {
                     total = energyStateConverted.doubleValue();
                     lastTimeStamp = historicItem.getTimestamp().toInstant();
                 } else {
-                    LOGGER.warn("Cannot convert Unit {} to {}", qs.getUnit(), KILOWATT_UNIT);
+                    LOGGER.warn("Cannot convert Unit {} to {}", qs.getUnit(), Units.KILOWATT_HOUR);
                     return 0;
                 }
             }
