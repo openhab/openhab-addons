@@ -87,7 +87,7 @@ public interface Device {
     /**
      * Handles next request for this device
      *
-     * @return time (in milliseconds) before processing the subsequent request
+     * @return delay (in milliseconds) before processing the subsequent request
      */
     public long handleNextRequest();
 
