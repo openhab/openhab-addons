@@ -26,9 +26,9 @@ public class GeneralConfiguration {
     /**
      * Refresh interval in seconds
      */
-    private int refresh = 50;
+    private int refresh = 30;
 
-    private int maxTries = 2;// backwards compatibility and tests
+    private int maxTries = 3;// backwards compatibility and tests
 
     /**
      * Gets refresh period in milliseconds

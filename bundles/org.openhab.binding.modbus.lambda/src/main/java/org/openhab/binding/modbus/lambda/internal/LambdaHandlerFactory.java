@@ -49,13 +49,11 @@ public class LambdaHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GENERAL, THING_TYPE_HEAT_PUMP,
             THING_TYPE_BOILER, THING_TYPE_BUFFER, THING_TYPE_HEATING_CIRCUIT);
-            
+
     private static final Map<ThingTypeUID, Function<Thing, ThingHandler>> HANDLER_FACTORY_MAP = Map.of(
-            THING_TYPE_HEAT_PUMP, HeatpumpHandler::new,
-            THING_TYPE_GENERAL, GeneralHandler::new,
-            THING_TYPE_BUFFER, BufferHandler::new,
-            THING_TYPE_BOILER, BoilerHandler::new,
-            THING_TYPE_HEATING_CIRCUIT, HeatingCircuitHandler::new);
+            THING_TYPE_HEAT_PUMP, HeatpumpHandler::new, THING_TYPE_GENERAL, GeneralHandler::new, THING_TYPE_BUFFER,
+            BufferHandler::new, THING_TYPE_BOILER, BoilerHandler::new, THING_TYPE_HEATING_CIRCUIT,
+            HeatingCircuitHandler::new);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,7 +64,7 @@ public class LambdaHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("LambdaHandlerFactory thingTypeUID: {}", thingTypeUID);
-        
+
         Function<Thing, ThingHandler> factory = HANDLER_FACTORY_MAP.get(thingTypeUID);
         return factory != null ? factory.apply(thing) : null;
     }

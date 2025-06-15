@@ -1,7 +1,7 @@
 # Lambda Heat Pump
 
 This extension adds support for the Lambda Heat Pump modbus protocol as provided by
-<https://wp.at/wp-content/uploads/2025/02/Modbus-Beschreibung-und-Protokoll.pdf>
+<https://lambda-wp.at/wp-content/uploads/2025/02/Modbus-Beschreibung-und-Protokoll.pdf>
 
 A Lambda Heat Pump has to be reachable within your network.
 If you plan to use the E-Manager part to hand over your PV excess to the heat pump ask Lambda support to configure it to  

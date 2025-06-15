@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Koch - christian@koch-bensheim.de - Initial contribution
  */
 @NonNullByDefault
-public class SolarConfiguration extends LambdaConfiguration {
+public class SolarConfiguration extends GeneralConfiguration {
     /**
      * Subindex for multiple solar components
      */

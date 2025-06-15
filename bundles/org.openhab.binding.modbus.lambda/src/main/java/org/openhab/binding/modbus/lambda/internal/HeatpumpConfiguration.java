@@ -22,36 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  */
 @NonNullByDefault
-public class HeatpumpConfiguration {
-
-    /**
-     * Refresh interval in seconds
-     */
-    private int refresh = 30;
-
-    private int maxTries = 3;
-
-    // backwards compatibility and tests
-
+public class HeatpumpConfiguration extends GeneralConfiguration {
     /**
      * Subindex to calculate the base adress of the modbus registers
      */
     private int subindex = 0;
-
-    /**
-     * Gets refresh period in milliseconds
-     */
-    public long getRefreshMillis() {
-        return refresh * 1000;
-    }
-
-    public int getMaxTries() {
-        return maxTries;
-    }
-
-    public void setMaxTries(int maxTries) {
-        this.maxTries = maxTries;
-    }
 
     public int getSubindex() {
         return subindex;

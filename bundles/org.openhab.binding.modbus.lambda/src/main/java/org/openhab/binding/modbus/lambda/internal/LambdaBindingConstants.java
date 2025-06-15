@@ -53,6 +53,7 @@ public class LambdaBindingConstants {
     public static final String GROUP_HEATING_CIRCUIT = "heating-circuit-group";
     public static final String GROUP_HEATING_CIRCUIT_REG50 = "heating-circuit-reg50-group";
     public static final String GROUP_SOLAR = "solar-group";
+    public static final String GROUP_SOLAR_REG50 = "solar-reg50-group";
 
     // List of all Channel ids in device information group
     // General Ambient
@@ -130,9 +131,8 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_SOLAR_ERROR_NUMBER = "solar-error-number";
     public static final String CHANNEL_SOLAR_OPERATING_STATE = "solar-operating-state";
     public static final String CHANNEL_SOLAR_COLLECTOR_TEMPERATURE = "solar-collector-temperature";
-    public static final String CHANNEL_SOLAR_STORAGE_TEMPERATURE = "solar-storage-temperature";
-    public static final String CHANNEL_SOLAR_PUMP_SPEED = "solar-pump-speed";
-    public static final String CHANNEL_SOLAR_HEAT_QUANTITY = "solar-heat-quantity";
-    public static final String CHANNEL_SOLAR_POWER_OUTPUT = "solar-power-output";
-    public static final String CHANNEL_SOLAR_OPERATING_HOURS = "solar-operating-hours";
+    public static final String CHANNEL_SOLAR_BUFFER1_TEMPERATURE = "solar-buffer1-temperature";
+    public static final String CHANNEL_SOLAR_BUFFER2_TEMPERATURE = "solar-buffer2-temperature";
+    public static final String CHANNEL_SOLAR_MAXIMUM_BUFFER_TEMPERATURE = "solar-maximum-buffer-temperature";
+    public static final String CHANNEL_SOLAR_BUFFER_CHANGEOVER_TEMPERATURE = "solar-buffer-changeover-temperature";
 }
