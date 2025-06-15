@@ -540,7 +540,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                 case QUERY_QUEUED:
                     // wait for feature queried request to be sent unless next request has higher priority
                     DeviceRequest request = peekNextRequest();
-                    if (request == null || request.getMessage().hasHigherPriorityThan(feature.getQueryMessage())) {
+                    if (request == null || !request.getMessage().hasHigherPriorityThan(feature.getQueryMessage())) {
                         logger.trace("still waiting for {} query to be sent to {}", feature.getName(), address);
                         return now + 1000L; // retry in 1000 ms
                     }
