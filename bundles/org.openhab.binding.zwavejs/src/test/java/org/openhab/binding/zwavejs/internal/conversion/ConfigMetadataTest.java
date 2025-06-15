@@ -53,7 +53,6 @@ public class ConfigMetadataTest {
         assertEquals("Key S 1 Associations : Send When Double Clicking", details.label);
         assertNull(details.description);
         assertEquals(true, details.writable);
-        assertNull(details.statePattern);
         // assertEquals(BigDecimal.valueOf(0), details.statePattern.getMinimum());
         // assertEquals(BigDecimal.valueOf(1), details.statePattern.getMaximum());
         // assertEquals(BigDecimal.valueOf(1), details.statePattern.getStep());

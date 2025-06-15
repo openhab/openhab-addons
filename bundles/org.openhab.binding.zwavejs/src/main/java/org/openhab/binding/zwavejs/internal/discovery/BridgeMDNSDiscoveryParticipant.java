@@ -14,7 +14,6 @@ package org.openhab.binding.zwavejs.internal.discovery;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
-import java.util.Objects;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -33,7 +32,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link zwavejs} is responsible for discovering new and removed Zwave JS servers. It uses the
+ * The {@link BridgeMDNSDiscoveryParticipant} is responsible for discovering new and removed Zwave JS servers. It uses
+ * the
  * central {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Leo Siepel - Initial contribution
@@ -66,12 +66,12 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
 
-        if (Objects.nonNull(uid)) {
+        if (uid != null) {
             String host = service.getHostAddresses()[0];
             String homeId = service.getPropertyString(MDNS_PROPERTY_HOME_ID);
-            String thingID = uid.getAsString().split(ThingUID.SEPARATOR)[1];
+            String thingTypeId = uid.getAsString().split(ThingUID.SEPARATOR)[1];
             String label = translationProvider.getText(FrameworkUtil.getBundle(getClass()),
-                    "discovery.%s.label".formatted(thingID), null, null, host);
+                    "discovery.%s.label".formatted(thingTypeId), null, null, host);
 
             DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
                     .withLabel(label) //

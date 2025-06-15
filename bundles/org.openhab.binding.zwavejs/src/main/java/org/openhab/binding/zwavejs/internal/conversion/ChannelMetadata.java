@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
-import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragment;
@@ -70,6 +68,7 @@ public class ChannelMetadata extends BaseMetadata {
         super(nodeId, data);
     }
 
+    @Override
     protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, int commandClass,
             @Nullable Map<String, String> optionList) {
         String baseItemType = super.itemTypeFromMetadata(type, value, commandClass, optionList);
@@ -94,38 +93,19 @@ public class ChannelMetadata extends BaseMetadata {
                 || (commandClassId == COMMAND_CLASS_SWITCH_COLOR && propertyKey != null);
     }
 
-    private static boolean compare(@Nullable Object str1, @Nullable Object str2) {
-        return (str1 == null ? str2 == null : str1.equals(str2));
-    }
-
-    public static boolean isSameReadWriteChannel(Configuration configA, Configuration configB) {
-        ZwaveJSChannelConfiguration cA = configA.as(ZwaveJSChannelConfiguration.class);
-        ZwaveJSChannelConfiguration cB = configB.as(ZwaveJSChannelConfiguration.class);
-
-        Object writePropertyA = cA.writePropertyInt != null ? cA.writePropertyInt : cA.writePropertyStr;
-        Object writePropertyB = cB.writePropertyInt != null ? cB.writePropertyInt : cB.writePropertyStr;
-
-        return cA.endpoint == cB.endpoint //
-                && cA.commandClassId == cB.commandClassId //
-                && compare(cA.propertyKeyInt, cB.propertyKeyInt) //
-                && compare(cA.propertyKeyStr, cB.propertyKeyStr) //
-                && !compare(writePropertyA, writePropertyB); //
-    }
-
     public boolean isIgnoredCommandClass(@Nullable String commandClassName) {
         return commandClassName != null && IGNORED_COMMANDCLASSES.contains(commandClassName);
     }
 
-    /*
-     * Sets the state based on the provided event, item type, and unit symbol.
+    /**
+     * Sets the state for this channel metadata based on the provided value and configuration.
      *
-     * @param event The event containing the new value to set the state to.
-     *
-     * @param itemType The type of the item for which the state is being set.
-     *
-     * @param unitSymbol The unit symbol to be used for the state, can be null.
-     *
-     * @return The new state after setting it based on the event's new value.
+     * @param value the raw value to convert to a State
+     * @param itemType the openHAB item type (e.g., "Switch", "Number", "Color")
+     * @param incomingUnit the unit of the incoming value, or {@code null} if not applicable
+     * @param inverted {@code true} if the value should be logically inverted, {@code false} otherwise
+     * @return the corresponding {@link State} for the given value and configuration, or {@code null} if conversion is
+     *         not possible
      */
     public @Nullable State setState(Object value, String itemType, @Nullable String unitSymbol, boolean inverted) {
         this.unitSymbol = normalizeUnit(unitSymbol, value);

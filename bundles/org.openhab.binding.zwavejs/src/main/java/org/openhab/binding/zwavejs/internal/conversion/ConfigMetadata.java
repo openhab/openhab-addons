@@ -13,13 +13,10 @@
 package org.openhab.binding.zwavejs.internal.conversion;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
-import org.openhab.core.types.State;
-import org.openhab.core.types.StateDescriptionFragment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +31,6 @@ public class ConfigMetadata extends BaseMetadata {
 
     private Logger logger = LoggerFactory.getLogger(ConfigMetadata.class);
 
-    public @Nullable State state;
-    public @Nullable StateDescriptionFragment statePattern;
     public Type configType = Type.TEXT;
 
     public ConfigMetadata(int nodeId, Value data) {
@@ -63,7 +58,7 @@ public class ConfigMetadata extends BaseMetadata {
             case STRING_ARRAY:
                 return Type.TEXT;
             default:
-                logger.error(
+                logger.warn(
                         "Node {}. Could not determine config type based on metadata.type: {}, fallback to 'Text' please file a bug report",
                         this.nodeId, type);
                 return Type.TEXT;
@@ -73,7 +68,7 @@ public class ConfigMetadata extends BaseMetadata {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("BaseMetadata [");
+        sb.append("ConfigMetadata [");
         sb.append(", nodeId=" + nodeId);
         sb.append(", Id=" + id);
         sb.append(", label=" + label);
@@ -84,9 +79,7 @@ public class ConfigMetadata extends BaseMetadata {
         sb.append(", writable=" + writable);
         sb.append(", readProperty=" + readProperty);
         sb.append(", writeProperty=" + writeProperty);
-        sb.append(", state=" + state);
         sb.append(", configType=" + configType);
-        sb.append(", statePattern=" + statePattern);
         sb.append(", commandClassName=" + commandClassName);
         sb.append(", commandClassId=" + commandClassId);
         sb.append(", endpoint=" + endpoint);

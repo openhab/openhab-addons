@@ -7,7 +7,6 @@
 	<name>Z-Wave JS Binding</name>
 	<description>This is the binding for Z-Wave JS.</description>
 	<connection>local</connection>
-	<!-- <countries/> All -->
 
 	<discovery-methods>
 		<discovery-method>

@@ -60,6 +60,7 @@
 		</parameter>
 		<parameter name="itemType" type="text">
 			<label>Item Type</label>
+			<default>String</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassId" type="integer">
@@ -92,8 +93,12 @@
 			<label>Read Property</label>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="writeProperty" type="text">
-			<label>Write Property</label>
+		<parameter name="writePropertyStr" type="text">
+			<label>Write Property Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyInt" type="integer">
+			<label>Write Property Int</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="inverted" type="boolean">

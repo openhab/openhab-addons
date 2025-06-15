@@ -13,6 +13,7 @@
 package org.openhab.binding.zwavejs.internal.action;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This class allows interaction with Z-Wave devices through rule actions.
+ * It implements the {@link ThingActions} interface and provides methods forn
+ * inclusion, exclusion, and sending multicast commands to Z-Wave nodes.
  *
  * @author Leo Siepel - Initial contribution
  */
@@ -43,7 +47,7 @@ public class ZwaveJSActions implements ThingActions {
     private static final int INCLUSION_EXCLUSION_TIMEOUT_SECONDS = 30;
     private @Nullable ZwaveJSBridgeHandler handler;
 
-    @RuleAction(label = "start inclusion", description = "Put the controller for 30s in network wide inclusion mode")
+    @RuleAction(label = "start inclusion", description = "Puts the controller for 30s in network wide inclusion mode")
     public void startInclusion() {
         ZwaveJSBridgeHandler localHandler = handler;
         if (localHandler != null) {
@@ -51,7 +55,7 @@ public class ZwaveJSActions implements ThingActions {
             localHandler.startInclusion();
             SCHEDULER.schedule(() -> {
                 localHandler.stopInclusion();
-            }, INCLUSION_EXCLUSION_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
+            }, INCLUSION_EXCLUSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
     }
 

@@ -504,7 +504,7 @@ public abstract class BaseMetadata {
             case STRING_ARRAY:
                 return CoreItemFactory.STRING;
             default:
-                logger.error(
+                logger.warn(
                         "Node {}. Unable to determine item type based on metadata.type: {}, fallback to 'String' please file a bug report",
                         nodeId, type);
                 return CoreItemFactory.STRING;
@@ -513,11 +513,11 @@ public abstract class BaseMetadata {
 
     protected @Nullable StateDescriptionFragment createStatePattern(boolean writeable, @Nullable Integer min,
             @Nullable Long max, @Nullable Integer step, @Nullable Object value) {
-        String pattern = "";
+        String pattern = null;
         String itemTypeSplitted[] = itemType.split(":");
         switch (itemTypeSplitted[0]) {
             case CoreItemFactory.NUMBER:
-                String numberFormat = "%1d";
+                String numberFormat = "%d";
                 if (value instanceof Double) {
                     // TODO: how to properly determine the decimals?
                     numberFormat = "%.2f";
@@ -532,7 +532,6 @@ public abstract class BaseMetadata {
                 pattern = "%1d %%";
                 break;
             case CoreItemFactory.COLOR:
-                pattern = "";
                 break;
             case CoreItemFactory.STRING:
             case CoreItemFactory.SWITCH:
@@ -541,7 +540,9 @@ public abstract class BaseMetadata {
         }
 
         var fragment = StateDescriptionFragmentBuilder.create();
-        fragment.withPattern(pattern);
+        if (pattern != null) {
+            fragment.withPattern(pattern);
+        }
         fragment.withReadOnly(!writeable);
         if (min != null) {
             fragment.withMinimum(BigDecimal.valueOf(min));

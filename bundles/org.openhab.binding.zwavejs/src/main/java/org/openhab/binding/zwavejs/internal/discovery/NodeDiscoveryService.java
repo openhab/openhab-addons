@@ -98,7 +98,7 @@ public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<Z
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
+        removeOlderResults(getTimestampOfLastScan(), getBridgeUID());
     }
 
     public void addNodeDiscovery(Node node) {

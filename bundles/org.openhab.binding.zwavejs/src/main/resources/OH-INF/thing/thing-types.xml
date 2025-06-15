@@ -9,11 +9,13 @@
 		<label>Z-Wave JS Gateway</label>
 		<description>The Z-Wave JS server that acts as a bridge to the Z-Wave network</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<representation-property>hostname</representation-property>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP address of Z-Wave JS server</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
@@ -45,15 +47,7 @@
 		<label>Z-Wave node</label>
 		<description>A Z-Wave node provided by Zwave JS</description>
 
-		<properties>
-			<property name="manufacturer"></property>
-			<property name="product"></property>
-			<property name="isSecure"></property>
-			<property name="isListening"></property>
-			<property name="isRouting"></property>
-			<property name="lastSeen"></property>
-			<property name="isFrequentListening"></property>
-		</properties>
+		<representation-property>id</representation-property>
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="255" readOnly="true" required="true">

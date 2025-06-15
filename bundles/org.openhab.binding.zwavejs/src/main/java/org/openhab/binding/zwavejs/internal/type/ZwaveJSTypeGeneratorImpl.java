@@ -174,9 +174,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
         ConfigDescriptionParameterBuilder parameterBuilder = ConfigDescriptionParameterBuilder
                 .create(details.id, details.configType) //
-                .withRequired(details.state != null) //
+                .withRequired(false) //
                 .withLabel(details.label) //
-                .withVerify(details.state != null) //
+                .withVerify(false) //
                 .withUnit(null) //
                 .withDescription(details.description);
 
