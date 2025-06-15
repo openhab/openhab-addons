@@ -2753,6 +2753,10 @@
 		<label>Motion Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2782,6 +2786,10 @@
 		<label>Cell Motion Alarm</label>
 		<description>Cell based motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2854,6 +2862,10 @@
 		<label>Line Crossing Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2954,6 +2966,10 @@
 		<label>Enable Motion Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="externalMotion" advanced="true">
@@ -2976,6 +2992,10 @@
 		<label>Enable Line Crossing Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableAudioAlarm" advanced="true">
@@ -3011,6 +3031,10 @@
 		<item-type>Switch</item-type>
 		<label>Start HLS Stream</label>
 		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableLED" advanced="true">

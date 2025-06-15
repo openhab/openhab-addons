@@ -10,6 +10,10 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>Sends a command to a device</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="STOP">Stop Dimming</option>
@@ -34,6 +38,10 @@
 		<label>Fan Speed</label>
 		<description>Sets fan speed</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rawFanSpeedChannelType" advanced="true">
@@ -47,6 +55,10 @@
 		<item-type>Switch</item-type>
 		<label>Breeze Mode</label>
 		<description>Enables or disables breeze mode</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="breezeMeanChannelType">
@@ -54,6 +66,10 @@
 		<label>Mean Breeze Speed</label>
 		<description>Sets the average speed in breeze mode. 0 = minimum average speed (calm), 100 = maximum average speed
 			(storm)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="breezeVariabilityChannelType">
@@ -62,6 +78,10 @@
 		<description>Sets the variability of the speed in breeze mode. 0 = minimum variation (steady), 100 = maximum
 			variation
 			(gusty)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="directionChannelType">
@@ -70,6 +90,10 @@
 		<description>Sets the fan direction; forward or reverse. The forward and reverse modes are sometimes called Summer
 			and
 			Winter</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="summer">Summer</option>
@@ -83,6 +107,10 @@
 		<label>Timer</label>
 		<description>Starts a timer for s seconds. If power if off, device is implicitly turned on</description>
 		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lightChannelType">
@@ -90,6 +118,10 @@
 		<label>Light</label>
 		<description>Turns the light on the ceiling fan on or off</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableChannelType">
@@ -98,6 +130,10 @@
 		<description>Enables or disables the up or down light of the ceiling fan. The light must also be on to turn on the up
 			light.</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="flameChannelType">
@@ -112,6 +148,10 @@
 		<label>Fireplace Fan Speed</label>
 		<description>Adjusts the speed of the fireplace fan</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollershutterChannelType">
@@ -119,6 +159,10 @@
 		<label>Shade</label>
 		<description>Opens, closes, or stops motorized shades</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

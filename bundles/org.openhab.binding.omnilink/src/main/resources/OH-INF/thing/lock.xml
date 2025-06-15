@@ -29,6 +29,10 @@
 		<label>Lock/Unlock</label>
 		<description>Lock or unlock this lock.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

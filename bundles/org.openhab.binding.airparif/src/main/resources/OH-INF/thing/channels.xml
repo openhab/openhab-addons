@@ -8,6 +8,10 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -31,6 +35,10 @@
 		<item-type>Number</item-type>
 		<label>Hazel Level</label>
 		<category>oh:airparif:hazel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -45,6 +53,10 @@
 		<item-type>Number</item-type>
 		<label>Birch Level</label>
 		<category>oh:airparif:birch</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -59,6 +71,10 @@
 		<item-type>Number</item-type>
 		<label>Cypress</label>
 		<category>oh:airparif:cypress</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -73,6 +89,10 @@
 		<item-type>Number</item-type>
 		<label>Alder</label>
 		<category>oh:airparif:alder</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -87,6 +107,10 @@
 		<item-type>Number</item-type>
 		<label>Poplar</label>
 		<category>oh:airparif:poplar</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -100,6 +124,10 @@
 		<item-type>Number</item-type>
 		<label>Ash</label>
 		<category>oh:airparif:ash</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -113,6 +141,10 @@
 		<item-type>Number</item-type>
 		<label>Olive</label>
 		<category>oh:airparif:olive</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -127,6 +159,10 @@
 		<item-type>Number</item-type>
 		<label>Urticacea</label>
 		<category>oh:airparif:urticaceae</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -141,6 +177,10 @@
 		<item-type>Number</item-type>
 		<label>Wormwood</label>
 		<category>oh:airparif:wormwood</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -155,6 +195,10 @@
 		<item-type>Number</item-type>
 		<label>Rumex</label>
 		<category>oh:airparif:rumex</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -169,6 +213,10 @@
 		<item-type>Number</item-type>
 		<label>Ragweed</label>
 		<category>oh:airparif:ragweed</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -183,6 +231,10 @@
 		<item-type>Number</item-type>
 		<label>Grasses</label>
 		<category>oh:airparif:grasses</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -197,6 +249,10 @@
 		<item-type>Number</item-type>
 		<label>Plantain</label>
 		<category>oh:airparif:plantain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -211,6 +267,10 @@
 		<item-type>Number</item-type>
 		<label>Chestnut</label>
 		<category>oh:airparif:chestnut</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -225,6 +285,10 @@
 		<item-type>Number</item-type>
 		<label>Oak</label>
 		<category>oh:airparif:oak</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -239,6 +303,10 @@
 		<item-type>Number</item-type>
 		<label>Linden</label>
 		<category>oh:airparif:linden</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -253,6 +321,10 @@
 		<item-type>Number</item-type>
 		<label>Plane</label>
 		<category>oh:airparif:plane</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -267,6 +339,10 @@
 		<item-type>Number</item-type>
 		<label>Hornbeam</label>
 		<category>oh:airparif:hornbeam</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -281,6 +357,10 @@
 		<item-type>Number</item-type>
 		<label>Willow</label>
 		<category>oh:airparif:willow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -300,6 +380,10 @@
 	<channel-type id="mpc-value">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Measure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -307,6 +391,10 @@
 		<item-type>Number</item-type>
 		<label>Air Quality</label>
 		<category>oh:airparif:aq</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Good</option>

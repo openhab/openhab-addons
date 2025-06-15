@@ -53,6 +53,10 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop Playback</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="app-launcher">
 		<item-type>String</item-type>
