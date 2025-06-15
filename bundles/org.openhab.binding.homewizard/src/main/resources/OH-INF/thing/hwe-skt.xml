@@ -66,6 +66,10 @@
 		<description>
 			This channel provides access to the brightness of the ring of the Energy Socket.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

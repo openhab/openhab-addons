@@ -1275,6 +1275,10 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1283,6 +1287,10 @@
 		<label>Shade Level</label>
 		<description>Raise/lower the shade level</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1291,6 +1299,10 @@
 		<label>Blind Level</label>
 		<description>Raise/lower the blind level</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1299,6 +1311,10 @@
 		<label>Blind Tilt</label>
 		<description>Tilt the blinds up/down</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="50" pattern="%d %%"/>
 	</channel-type>
 
@@ -1307,6 +1323,10 @@
 		<label>Switch State</label>
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="occupiedState">
@@ -1314,12 +1334,20 @@
 		<label>Occupied State</label>
 		<description>Occupancy status</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fanControl">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Off</option>
@@ -1335,6 +1363,10 @@
 		<item-type>String</item-type>
 		<label>Occupancy State</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OCCUPIED">Occupied</option>
@@ -1349,6 +1381,10 @@
 		<label>Keypad Button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="buttonAdvanced" advanced="true">
@@ -1363,6 +1399,10 @@
 		<label>Keypad Button LED Indicator</label>
 		<description>LED indicator for the associated button</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ledIndicatorAdvanced" advanced="true">
@@ -1391,6 +1431,10 @@
 		<label>Time Clock</label>
 		<description>Current time on the PRG</description>
 		<category>Schedule</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="schedule">
@@ -1406,6 +1450,10 @@
 		<label>Sunrise/Sunset</label>
 		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1454,6 +1502,10 @@
 		<label>Superschedule</label>
 		<description>superschedule</description>
 		<category>Super Schedule</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="superschedulestatus">
@@ -1485,6 +1537,10 @@
 		<label>Scene Lock</label>
 		<description>Locks/Unlocks the scene</description>
 		<category>Scene</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sceneseq">
@@ -1492,6 +1548,10 @@
 		<label>Sequence Scenes</label>
 		<description>Adds/Removes sequencing of scenes</description>
 		<category>Scene</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zonelock">
@@ -1499,6 +1559,10 @@
 		<label>Zone Lockout</label>
 		<description>Locks/Unlocks the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zonerampdown">
@@ -1506,6 +1570,10 @@
 		<label>Ramps Down the Zone</label>
 		<description>Starts ramping down the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zonerampup">
@@ -1513,6 +1581,10 @@
 		<label>Ramps up the Zone</label>
 		<description>Starts ramping up the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zonefade">
@@ -1537,6 +1609,10 @@
 		<label>Zone Shade</label>
 		<description>Specifies the QED shade for the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="5"/>
 	</channel-type>
 

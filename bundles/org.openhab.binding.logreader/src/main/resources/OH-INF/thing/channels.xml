@@ -8,12 +8,18 @@
 		<item-type>String</item-type>
 		<label>Last Error Event</label>
 		<description>Displays contents of last [ERROR] event</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastWarningEvent">
 		<item-type>String</item-type>
 		<label>Last Warning Event</label>
 		<description>Displays contents of last [WARN] event</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastCustomEvent" advanced="true">

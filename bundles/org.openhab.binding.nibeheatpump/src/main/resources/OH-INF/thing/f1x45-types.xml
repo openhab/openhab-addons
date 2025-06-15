@@ -8,6 +8,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Outdoor Temp</label>
 		<description>Outdoor temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -29,6 +33,10 @@
 		<item-type>Number</item-type>
 		<label>EP21-BT2 Supply Temp S2</label>
 		<description>Supply temperature for system 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -36,6 +44,10 @@
 		<item-type>Number</item-type>
 		<label>BT2 Supply Temp S1</label>
 		<description>Supply temperature for system 1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -43,6 +55,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT3 Return Temp</label>
 		<description>Return temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -57,6 +73,10 @@
 		<item-type>Number</item-type>
 		<label>BT6 Hot Water Load</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -64,6 +84,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT10 Brine in Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -71,6 +95,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT11 Brine out Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -85,6 +113,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -218,6 +250,10 @@
 		<item-type>Number</item-type>
 		<label>BT25 External Supply Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -421,6 +457,10 @@
 		<item-type>Number</item-type>
 		<label>Calculated Supply Temperature S2</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -428,6 +468,10 @@
 		<item-type>Number</item-type>
 		<label>Calculated Supply Temperature S1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -4678,6 +4722,10 @@
 		<item-type>Number</item-type>
 		<label>Low Brine out Temp.</label>
 		<description></description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="-120" max="150" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -4859,6 +4907,10 @@
 		<item-type>Number</item-type>
 		<label>Speed Brine Pump</label>
 		<description></description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
 		</state>
 	</channel-type>

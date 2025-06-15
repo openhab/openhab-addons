@@ -47,6 +47,10 @@
 	<channel-type id="update">
 		<item-type>DateTime</item-type>
 		<label>Update Time</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

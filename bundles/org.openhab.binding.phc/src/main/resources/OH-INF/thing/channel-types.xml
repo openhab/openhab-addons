@@ -78,6 +78,10 @@
 		<item-type>Switch</item-type>
 		<label>PHC AM Channel</label>
 		<description>Channel to an AM or EM(LED) module.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="em-channel">
@@ -91,6 +95,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>PHC JRM Channel</label>
 		<description>Channel to a JRM module.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="jrmTime-channel" advanced="true">
@@ -104,6 +112,10 @@
 		<item-type>Dimmer</item-type>
 		<label>DIM Channel</label>
 		<description>Channel for a DIM module.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

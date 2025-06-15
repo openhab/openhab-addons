@@ -8,6 +8,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -29,6 +33,10 @@
 		<item-type>Number</item-type>
 		<label>EP21-BT2 Supply temp S2</label>
 		<description>Supply temperature for system 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -36,6 +44,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT3 Return temp</label>
 		<description>Return temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -43,6 +55,10 @@
 		<item-type>Number</item-type>
 		<label>BT7 HW Top</label>
 		<description>Hot water top temperature, BT7</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -50,6 +66,10 @@
 		<item-type>Number</item-type>
 		<label>BT6 HW Load</label>
 		<description>Hot water load temperature, BT6</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -92,6 +112,10 @@
 		<item-type>Number</item-type>
 		<label>BT50 Room Temp S1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -134,6 +158,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Average</label>
 		<description>EB100-BT1 Outdoor temperature average</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -148,6 +176,10 @@
 		<item-type>Number</item-type>
 		<label>BT25 Ext. Supply</label>
 		<description>External supply temperature, BT25</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -239,6 +271,10 @@
 		<item-type>Number</item-type>
 		<label>BT71 Ext. Return Temp</label>
 		<description>External return temperature, BT71</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -814,6 +850,10 @@
 		<item-type>Number</item-type>
 		<label>EB101 Cpr Frequency Desired F2040</label>
 		<description>The desired frequency as shown in service info</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%d Hz" readOnly="true">
 		</state>
 	</channel-type>
@@ -1066,6 +1106,10 @@
 		<item-type>Number</item-type>
 		<label>EB101 F2120 Fan Speed</label>
 		<description>F2120 Current Fan Speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d rpm" readOnly="true">
 		</state>
 	</channel-type>
@@ -3287,6 +3331,10 @@
 		<label>Degree Minutes (16 bit)</label>
 		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the
 			closest valid value.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
@@ -3315,6 +3363,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S1</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -4266,6 +4318,10 @@
 		<item-type>Number</item-type>
 		<label>EB101-EP14-BT3 Return Temp.</label>
 		<description>Return temperature, BT3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -4273,6 +4329,10 @@
 		<item-type>Number</item-type>
 		<label>EB101-EP14-BT12 Condensor Out</label>
 		<description>Condensor temperature, BT12</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -4662,6 +4722,10 @@
 		<item-type>Number</item-type>
 		<label>EB101-EP14-BT28 Outdoor Temp</label>
 		<description>Current outdoor temperature, BT28</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -4725,6 +4789,10 @@
 		<item-type>Number</item-type>
 		<label>EB101 Speed charge pump</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
@@ -5149,6 +5217,10 @@
 		<item-type>Number</item-type>
 		<label>EB101-EP14 Actual Cpr Frequency Outdoor Unit</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%.1f Hz" readOnly="true">
 		</state>
 	</channel-type>
@@ -5274,6 +5346,10 @@
 		<item-type>Number</item-type>
 		<label>EB101-EP14 calc. ou compressor freq</label>
 		<description>Calculated compressor frequency</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%d Hz" readOnly="true">
 		</state>
 	</channel-type>
@@ -6808,6 +6884,10 @@
 		<item-type>String</item-type>
 		<label>Temporary Lux</label>
 		<description>0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state min="-128" max="127" step="1" pattern="%d" readOnly="false">
 			<options>
 				<option value="0">Off</option>
