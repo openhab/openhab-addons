@@ -63,6 +63,7 @@ public class ForecastSolarObject implements SolarForecast {
     private Instant expirationDateTime;
     private Instant creationDateTime;
     private String identifier;
+    private double correctionFactor = 1;
 
     public ForecastSolarObject(String id) {
         expirationDateTime = Utils.now().minusSeconds(1);
@@ -100,6 +101,11 @@ public class ForecastSolarObject implements SolarForecast {
                                 "Error parsing time " + dateStr + " Reason: " + dtpe.getMessage());
                     }
                 }
+
+                // log ratelimit if available
+                JSONObject messageJson = contentJson.getJSONObject("message");
+                JSONObject rateLimitJson = messageJson.getJSONObject("ratelimit");
+                logger.debug("Rate limit: {}/{}", rateLimitJson.getInt("remaining"), rateLimitJson.getInt("limit"));
             } catch (JSONException je) {
                 throw new SolarForecastException(this,
                         "Error parsing JSON response " + content + " Reason: " + je.getMessage());
@@ -212,6 +218,17 @@ public class ForecastSolarObject implements SolarForecast {
         return -1;
     }
 
+    /**
+     * Returns the timestamp of the first power value greater than zero.
+     * If no such value exists, returns Instant.MAX.
+     *
+     * @return Instant representing the first power timestamp or Instant.MAX if none found
+     */
+    public Optional<Instant> getFirstPowerTimestamp() {
+        return wattMap.entrySet().stream().filter(entry -> entry.getValue() > 0)
+                .map(entry -> entry.getKey().toInstant()).findFirst();
+    }
+
     @Override
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
@@ -234,7 +251,12 @@ public class ForecastSolarObject implements SolarForecast {
         JSONObject wattsDay = resultJson.getJSONObject("watt_hours_day");
 
         if (wattsDay.has(queryDate.toString())) {
-            return wattsDay.getDouble(queryDate.toString()) / 1000.0;
+            // correction factor applies only for today, not for other forecasts
+            double forecastValue = wattsDay.getDouble(queryDate.toString()) / 1000.0;
+            if (LocalDate.now(Utils.getClock()).equals(queryDate)) {
+                forecastValue *= correctionFactor;
+            }
+            return forecastValue;
         } else {
             throw new SolarForecastException(this,
                     "Day " + queryDate + " not available in forecast. " + getTimeRange());
@@ -331,6 +353,10 @@ public class ForecastSolarObject implements SolarForecast {
         return zdt.toInstant();
     }
 
+    public boolean isEmpty() {
+        return wattHourMap.isEmpty();
+    }
+
     @Override
     public void triggerUpdate() {
         expirationDateTime = Instant.MIN;
@@ -359,6 +385,30 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    /**
+     * Sets the correction factor for the forecast from now on, not for past values. This is used to adjust the forecast
+     * based on actual production.
+     *
+     * @param factor The correction factor to apply.
+     */
+    public void setCorrectionFactor(double factor) {
+        correctionFactor = factor;
+        // ZonedDateTime startCorrection = ZonedDateTime.now(Utils.getClock());
+        ZonedDateTime startCorrection = ZonedDateTime.now(Utils.getClock()).toLocalDate().atStartOfDay(zone);
+        ZonedDateTime endCorrection = startCorrection.toLocalDate().plusDays(1).atStartOfDay(zone);
+
+        wattHourMap.forEach((timestamp, value) -> {
+            if (timestamp.isAfter(startCorrection) && timestamp.isBefore(endCorrection)) {
+                wattHourMap.put(timestamp, value * factor);
+            }
+        });
+        wattMap.forEach((timestamp, value) -> {
+            if (timestamp.isAfter(startCorrection) && timestamp.isBefore(endCorrection)) {
+                wattMap.put(timestamp, value * factor);
+            }
+        });
     }
 
     @Override
