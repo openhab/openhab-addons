@@ -153,7 +153,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
@@ -266,7 +266,7 @@
 		<label>Thermostat Mode</label>
 		<description>Chosen thermostat mode (home, frost guard, manual, max).</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
@@ -284,7 +284,7 @@
 		<label>House Mode</label>
 		<description>Chosen mode for the house (schedule, away, frost guard, manual).</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">

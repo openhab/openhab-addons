@@ -101,7 +101,6 @@
 		<label>Boolean Channel</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="camera-image">

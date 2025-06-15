@@ -864,7 +864,7 @@
 		<label>Running time</label>
 		<description>The total running time of the selected item</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>

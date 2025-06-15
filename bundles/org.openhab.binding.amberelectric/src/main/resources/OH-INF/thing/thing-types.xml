@@ -61,10 +61,6 @@
 		<label>Current Electricity Price</label>
 		<description>Current price to import power from the grid</description>
 		<category>Price</category>
-		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="electricity-status">

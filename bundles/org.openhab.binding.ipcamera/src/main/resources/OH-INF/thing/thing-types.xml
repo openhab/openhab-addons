@@ -2967,8 +2967,8 @@
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Motion</tag>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
@@ -2993,8 +2993,8 @@
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Motion</tag>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 

@@ -119,7 +119,7 @@
 		<description>Adjust screen color</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -507,7 +507,7 @@
 		<description>To adjust sound mode</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>

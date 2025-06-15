@@ -237,7 +237,6 @@
 		<label>Switch Channel</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-switch"/>
 	</channel-type>

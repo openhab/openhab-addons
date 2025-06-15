@@ -28,7 +28,7 @@
 		<label>Battery Charge Level</label>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
