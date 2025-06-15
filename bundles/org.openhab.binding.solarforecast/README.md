@@ -200,10 +200,9 @@ This is mandatory for `adjustable-fs-plane` and `smart-fs-plane`.
 | calculationItemPersistence    | text    | Persistence service to query calculation item values                | N/A     |
 | holdingTime                   | integer | Time to wait in minutes from first prediction to adjust forecast    | 120     |
 
-The name `calculationItemName` shall be the calculation item directly corresponding to this plane.
-
 **Strict requirement** for `calculationItemName` type is `Number:Power`_or_ `Number:Energy`. 
 Values without unit will be rejected.  
+The name `calculationItemName` shall be the calculation item directly corresponding to this plane.
 
 
 The `calculationItemPersistence` shall point to the persitence service storing the calculation item values.

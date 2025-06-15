@@ -147,16 +147,18 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     /**
      * Get data for all planes. Synchronized to protect plane list from being modified during update
      */
-    protected synchronized boolean getData() {
+    protected synchronized void getData() {
         if (planes.isEmpty()) {
-            return false;
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
+                    "@text/solarforecast.site.status.no-planes");
+            return;
         }
         if (calmDownEnd.isAfter(Utils.now())) {
             // wait until calm down time is expired
             long minutes = Duration.between(Utils.now(), calmDownEnd).toMinutes();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.site.status.calmdown [\"" + minutes + "\"]");
-            return false;
+            return;
         }
         boolean update = true;
         double energySum = 0;
@@ -183,7 +185,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
             updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
         }
-        return update;
     }
 
     public synchronized void forecastUpdate() {
