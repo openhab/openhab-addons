@@ -376,14 +376,16 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     }
 
     /**
-     * Request new data from Go-eCharger
+     * Retrieves data from the Go-E Charger API based on the configured API version.
+     * Sends an HTTP GET request to the charger and parses the response into the appropriate DTO.
      *
-     * @return the Go-eCharger object mapping the JSON response or null in case of
-     *         error
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws ConfigurationException
+     * @return A {@link GoEStatusResponseBaseDTO} object containing the parsed response data.
+     *         Returns {@link GoEStatusResponseDTO} for API version 1 and {@link GoEStatusResponseV2DTO} for API version 2.
+     * @throws InterruptedException If the thread is interrupted while waiting for the response.
+     * @throws TimeoutException If the request times out.
+     * @throws ExecutionException If an exception occurs during the execution of the request.
+     * @throws JsonSyntaxException If the response JSON cannot be parsed into the expected DTO.
+     * @throws IllegalArgumentException If the response JSON is invalid or does not match the expected format.
      */
     @Override
     protected @Nullable GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException,
