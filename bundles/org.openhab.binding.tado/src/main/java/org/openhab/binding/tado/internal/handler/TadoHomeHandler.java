@@ -15,11 +15,10 @@ package org.openhab.binding.tado.internal.handler;
 import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,7 +37,6 @@ import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -56,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoHomeHandler} is the bridge of all home-based things.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - OAuth RFC18628 authentication
  */
 @NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
@@ -63,11 +62,8 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     // thing status description i18n text pointers
     private static final String CONF_ERROR_NO_HOME = "@text/tado.home.status.nohome";
     private static final String CONF_ERROR_NO_HOME_ID = "@text/tado.home.status.nohomeid";
-    private static final String CONF_PENDING_USER_CREDS = "@text/tado.home.status.username";
-    private static final String CONF_PENDING_OAUTH_CREDS = "@text/tado.home.status.oauth [\"http(s)://<YOUROPENHAB>:<YOURPORT>%s\"]";
-
-    // tado specific RFC-8628 oAuth authentication parameters
-    private static final ZonedDateTime OAUTH_MANDATORY_FROM_DATE = ZonedDateTime.parse("2025-03-15T00:00:00Z");
+    private static final String CONF_PENDING_OAUTH_CREDS = //
+            "@text/tado.home.status.oauth [\"http(s)://<YOUROPENHAB>:<YOURPORT>%s?%s=%s\"]";
 
     private final Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
@@ -83,7 +79,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     private @Nullable ScheduledFuture<?> initializationFuture;
     private @Nullable OAuthClientService oAuthClientService;
 
-    public TadoHomeHandler(Bridge bridge, TadoHandlerFactory tadoHandlerFactory, OAuthFactory oAuthFactory) {
+    public TadoHomeHandler(Bridge bridge, TadoHandlerFactory tadoHandlerFactory) {
         super(bridge);
         this.batteryChecker = new TadoBatteryChecker(this);
         this.configuration = getConfigAs(TadoHomeConfig.class);
@@ -99,28 +95,17 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoHomeConfig.class);
+        String user = Boolean.TRUE.equals(configuration.rfcWithUser)
+                ? configuration.username instanceof String name && !name.isBlank() ? name : null
+                : null;
 
-        String userName = configuration.username;
-        String password = configuration.password;
-        boolean v1CredentialsMissing = userName == null || userName.isBlank() || password == null || password.isBlank();
-
-        boolean suggestRfc8628 = false;
-        suggestRfc8628 |= Boolean.TRUE.equals(configuration.useRfc8628);
-        suggestRfc8628 |= v1CredentialsMissing;
-        suggestRfc8628 |= ZonedDateTime.now().isAfter(OAUTH_MANDATORY_FROM_DATE);
-
-        if (suggestRfc8628) {
-            OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this);
-            oAuthClientService.addAccessTokenRefreshListener(this);
-            this.api = new HomeApiFactory().create(oAuthClientService);
-            this.oAuthClientService = oAuthClientService;
-            logger.trace("initialize() api v2 created");
-            confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH);
-        } else {
-            api = new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
-            logger.trace("initialize() api v1 created");
-            confPendingText = CONF_PENDING_USER_CREDS;
-        }
+        OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, user);
+        oAuthClientService.addAccessTokenRefreshListener(this);
+        this.api = new HomeApiFactory().create(oAuthClientService);
+        this.oAuthClientService = oAuthClientService;
+        logger.trace("initialize() api v2 created");
+        confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH,
+                TadoAuthenticationServlet.PARAM_NAME_USER, user != null ? user : "");
 
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture == null || initializationFuture.isDone()) {
@@ -156,7 +141,24 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     return;
                 }
 
+                /*
+                 * If there is only one home, or if there is no valid configuration.homeId entry, then use the first
+                 * home id. Otherwise use the configuration.homeId entry value (if one exists). If there is no valid
+                 * configuration.homeId entry but there are multiple homes then log the available home to help the
+                 * user set up the proper configuration.homeId entry.
+                 */
                 Integer firstHomeId = homes.get(0).getId();
+                if (homes.size() > 1) {
+                    Integer configHomeId = configuration.homeId;
+                    if (configHomeId == null || configHomeId == 0) {
+                        logger.info("Trying first Home Id in the list [{}]", homes.stream()
+                                .map(home -> String.valueOf(home.getId())).collect(Collectors.joining(",")));
+                    } else {
+                        firstHomeId = homes.stream().map(home -> home.getId()).filter(id -> configHomeId.equals(id))
+                                .findFirst().orElse(null);
+                    }
+                }
+
                 if (firstHomeId == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
                     return;

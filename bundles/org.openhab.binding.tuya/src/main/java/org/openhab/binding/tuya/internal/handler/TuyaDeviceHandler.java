@@ -25,12 +25,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,8 +69,10 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,8 +227,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             int pollingInterval = configuration.pollingInterval;
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null && pollingInterval > 0) {
-                pollingJob = scheduler.scheduleWithFixedDelay(tuyaDevice::refreshStatus, pollingInterval,
-                        pollingInterval, TimeUnit.SECONDS);
+                pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    tuyaDevice.refreshStatus(
+                            Stream.concat(dpToChannelId.keySet().stream(), dp2ToChannelId.keySet().stream()).toList());
+                }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
             }
 
             // start learning code if thing is online and presents 'ir-code' channel
@@ -255,6 +261,14 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("Channel '{}' received a command but device is not ONLINE. Discarding command.", channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            State state = channelStateCache.get(channelUID.getId());
+            if (state != null) {
+                updateState(channelUID, state);
+            }
             return;
         }
 
@@ -419,7 +433,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             if (schema == null) {
                 if (!schemaDps.isEmpty()) {
                     // fallback to retrieved schema
-                    schema = schemaDps.stream().collect(Collectors.toMap(s -> s.code, s -> s));
+                    schema = schemaDps.stream()
+                            .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "No channels added and schema not found.");
@@ -466,7 +481,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        Map<String, Channel> channels = new HashMap<>(schema.entrySet().stream().map(e -> {
+        Map<String, Channel> channels = new LinkedHashMap<>(schema.entrySet().stream().map(e -> {
             String channelId = e.getKey();
             SchemaDp schemaDp = e.getValue();
 
@@ -498,8 +513,20 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 return Map.entry("", ChannelBuilder.create(channelUID).build());
             }
 
-            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID).withLabel(channelId)
-                    .withConfiguration(new Configuration(configuration)).build());
+            if (schemaDp.label.isEmpty()) {
+                schemaDp.label = schemaDp.code;
+
+                String label = StringUtils.capitalizeByWhitespace(schemaDp.code.replaceAll("_", " "));
+                if (label != null) {
+                    label = label.trim();
+                    if (!label.isEmpty()) {
+                        schemaDp.label = label;
+                    }
+                }
+            }
+
+            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID)
+                    .withLabel(schemaDp.label).withConfiguration(new Configuration(configuration)).build());
         }).filter(c -> !c.getKey().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         List<String> channelSuffixes = List.of("", "_1", "_2");
@@ -577,7 +604,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {
-        return options.stream().map(c -> new CommandOption(c, c)).toList();
+        return options.stream()
+                .map(c -> new CommandOption(c, StringUtils.capitalizeByWhitespace(c.replaceAll("_", " ")))).toList();
     }
 
     private void addSingleExpiringCache(Integer key, Object value) {

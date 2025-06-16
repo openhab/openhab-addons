@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -246,8 +245,7 @@ class BoschShcCommandExtensionTest {
                 .walk(Paths.get("src/main/java/org/openhab/binding/boschshc/internal/services").toAbsolutePath(), 1)
                 .filter(Files::isDirectory).map(Path::getFileName).map(Path::toString)
                 // exclude folders which no service implementation
-                .filter(name -> !name.equals("dto")).filter(name -> !name.equals("services")).sorted()
-                .collect(Collectors.toList());
+                .filter(name -> !name.equals("dto")).filter(name -> !name.equals("services")).sorted().toList();
         assertThat(services, is(fixture.getAllBoschShcServices()));
     }
 }
