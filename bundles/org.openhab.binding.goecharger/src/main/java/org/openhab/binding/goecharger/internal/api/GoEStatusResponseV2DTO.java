@@ -23,6 +23,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Reinhard Plaim - Initial contribution
  */
 public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
+
+    @Deprecated
     @SerializedName("mod")
     public String version;
 

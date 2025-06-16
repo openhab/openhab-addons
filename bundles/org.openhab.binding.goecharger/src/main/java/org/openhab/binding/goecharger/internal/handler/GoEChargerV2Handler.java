@@ -324,7 +324,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         super.initialize();
     }
 
-    private String getReadUrl() {
+    private String getReadUrl() throws IllegalArgumentException {
         if (config.ip != null) {
             return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + "?" + filter;
         } else if (config.serial != null && config.token != null) {
@@ -335,7 +335,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         }
     }
 
-    private String getWriteUrl(String key, String value) {
+    private String getWriteUrl(String key, String value) throws IllegalArgumentException {
         if (config.ip != null) {
             return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
                     .replace("%VALUE%", value);
@@ -348,11 +348,19 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     }
 
     private void sendData(String key, String value) {
-        String urlStr = getWriteUrl(key, value);
-        logger.trace("POST URL = {}", urlStr);
+        String urlStr;
+        try {
+            urlStr = getWriteUrl(key, value);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid configuration writing data: {}", e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        HttpMethod httpMethod = HttpMethod.GET;
+        logger.trace("{} URL = {}", httpMethod, urlStr);
 
         try {
-            HttpMethod httpMethod = HttpMethod.GET;
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(httpMethod)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();

@@ -27,7 +27,7 @@ The thing has these configuration parameters:
 
 *) Configure ip for the Local API or serial and token for Cloud API. If both are configured the local API will be used.
 
-The apiVersion 2 is only available for go-e Charger with new hardware revision (CM-03, GM-10 and potentially others), which can be recognized with the serial number on the back of the device. It's also mandatory for use with the Go-eCharger Cluod API.
+The apiVersion 2 is only available for go-e Charger with new hardware revision (CM-03, GM-10 and potentially others), which can be recognized with the serial number on the back of the device. It's also mandatory for use with the Go-eCharger Cloud API.
 
 ## Channels
 

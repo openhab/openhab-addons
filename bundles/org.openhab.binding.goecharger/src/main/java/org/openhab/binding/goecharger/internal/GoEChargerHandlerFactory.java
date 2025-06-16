@@ -56,23 +56,13 @@ public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        var config = thing.getConfiguration().as(GoEChargerConfiguration.class);
-        var apiVersion = config.apiVersion;
+        var apiVersion = thing.getConfiguration().as(GoEChargerConfiguration.class).apiVersion;
 
         if (THING_TYPE_GOE.equals(thingTypeUID)) {
             if (apiVersion == 1) {
-                if (config.ip == null) {
-                    // apiVersion == 1 requires ip
-                    return null;
-                }
                 return new GoEChargerHandler(thing, httpClient);
             }
             if (apiVersion == 2) {
-                if (config.ip == null && (config.serial == null || config.token == null)) {
-                    // apiVersion == 2 requires either ip or serial/token
-                    return null;
-                }
                 return new GoEChargerV2Handler(thing, httpClient);
             }
         }
