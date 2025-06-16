@@ -23,7 +23,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * {{@link MSpaCommandOptionProvider} for commands options calculated during runtime.
+ * {@link MSpaCommandOptionProvider} for commands options calculated during runtime.
  *
  * @author Bernd Weymann - Initial contribution
  */

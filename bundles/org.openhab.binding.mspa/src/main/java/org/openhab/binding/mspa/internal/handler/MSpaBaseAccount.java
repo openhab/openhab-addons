@@ -108,6 +108,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Failed to get device list - reason {}", e.toString());
+            handlePossibleInterrupt(e);
         }
     }
 
@@ -209,6 +210,12 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
     protected void persist(String id, JSONObject json) {
         logger.trace("Persit {} : {}", id, json);
         store.put(id, json.toString());
+    }
+
+    protected void handlePossibleInterrupt(Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public abstract void requestToken();

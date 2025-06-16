@@ -121,6 +121,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.warn("Device grant failed - reason {}", e.toString());
+                    handlePossibleInterrupt(e);
                 }
             }
         }
@@ -162,6 +163,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             failReason = e.toString();
             logger.warn("Failed to get token - reason {}", failReason);
+            handlePossibleInterrupt(e);
         }
         if (failReason != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

@@ -98,7 +98,7 @@ public class MSpaUtils {
     /**
      * Decode token delivered by MSpa cloud. Expiration and creation set manually, no refresh token provided by MSpa
      *
-     * @param content as JSIN encoded String
+     * @param content as JSON encoded String
      * @return AccessToken object
      */
     public static AccessTokenResponse decodeNewToken(String content) {

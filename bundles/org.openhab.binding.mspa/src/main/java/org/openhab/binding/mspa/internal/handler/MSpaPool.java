@@ -147,6 +147,7 @@ public class MSpaPool extends BaseThingHandler {
                         }
                     } catch (InterruptedException | TimeoutException | ExecutionException e) {
                         logger.warn("Error sending command {} - {}", commandBody.toString(), e.toString());
+                        handlePossibleInterrupt(e);
                     }
                 });
             });
@@ -221,6 +222,7 @@ public class MSpaPool extends BaseThingHandler {
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("Failed to get data - reason {}", e.toString());
+                handlePossibleInterrupt(e);
             }
         }
     }
@@ -274,6 +276,7 @@ public class MSpaPool extends BaseThingHandler {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.pool.request-failed [\"" + e.toString() + "\"]");
+            handlePossibleInterrupt(e);
         }
         return false;
     }
@@ -337,5 +340,11 @@ public class MSpaPool extends BaseThingHandler {
         }
         ChannelUID cuid = new ChannelUID(thing.getUID(), WATER_TARGET_TEMPERATURE);
         commandProvider.setCommandOptions(cuid, commandOptions);
+    }
+
+    private void handlePossibleInterrupt(Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
