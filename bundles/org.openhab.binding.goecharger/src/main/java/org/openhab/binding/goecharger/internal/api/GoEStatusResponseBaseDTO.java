@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.goecharger.internal.api;
 
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.*;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,21 +23,21 @@ import com.google.gson.annotations.SerializedName;
  * @author Reinhard Plaim - Initial contribution
  */
 public class GoEStatusResponseBaseDTO {
-    @SerializedName("car")
+    @SerializedName(CAR)
     public Integer pwmSignal;
 
-    @SerializedName("amp")
+    @SerializedName(AMP)
     public Integer maxCurrent;
 
-    @SerializedName("err")
+    @SerializedName(ERR)
     public Integer errorCode;
 
-    @SerializedName("cbl")
+    @SerializedName(CBL)
     public Integer cableEncoding;
 
-    @SerializedName("eto")
+    @SerializedName(ETO)
     public Long totalChargeConsumption;
 
-    @SerializedName("fwv")
+    @SerializedName(FWV)
     public String firmware;
 }
