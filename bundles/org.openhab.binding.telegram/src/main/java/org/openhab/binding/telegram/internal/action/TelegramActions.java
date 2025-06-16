@@ -387,8 +387,8 @@ public class TelegramActions implements ThingActions {
         boolean successful = true;
         for (Long chatId : chatIdentifiers) {
             // supports both with and without args
-            successful &= sendTelegramGeneral(chatId, String.format(message, args), (String) null,
-                    replyMessageId, silent, messageThreadId);
+            successful &= sendTelegramGeneral(chatId, String.format(message, args), (String) null, replyMessageId,
+                    silent, messageThreadId);
         }
 
         return successful;
