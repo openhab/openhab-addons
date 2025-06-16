@@ -44,12 +44,11 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlayCommand;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.PlaystateCommand;
-import org.openhab.binding.jellyfin.internal.api.version.legacy.model.SessionInfo;
+import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PlayCommand;
+import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.exceptions.ApiClientException;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
 import org.openhab.core.library.types.DecimalType;

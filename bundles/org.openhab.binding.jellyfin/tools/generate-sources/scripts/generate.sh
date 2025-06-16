@@ -69,7 +69,7 @@ OUTPUT=.
 INDEX=0
 for i in "${VERSIONS[@]}"; do
     ALIAS=${VERSION_ALIAS[INDEX++]}
-    PACKAGE=org.openhab.binding.jellyfin.internal.api.generated_sources.${ALIAS}
+    PACKAGE=org.openhab.binding.jellyfin.internal.api.generated.${ALIAS}
     PACKAGE_API=$PACKAGE
     PACKAGE_MODEL=$PACKAGE.model
 
