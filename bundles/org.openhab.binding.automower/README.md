@@ -72,7 +72,7 @@ These channels hold Automower® settings.
 
 The absolute cutting height can be calculated from the prescaled cutting height using the following formula:
 
-`cuttingHeightInCM = minCuttingHeightOfMower + (0.5cm * (setting#cutting-height - 1))`
+`cuttingHeightInCM = round((minCuttingHeight + ((maxCuttingHeight - minCuttingHeight) * (setting#cutting-height - 1) / 8)) * 2) / 2`
 
 ### Statistics Channels
 
