@@ -156,6 +156,20 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode7ReadProperty() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
+
+        assertEquals("currentValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY));
+    }
+
+    @Test
+    public void testGenCTNode7WriteProperty() throws IOException {
+        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
+
+        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+    }
+
+    @Test
     public void testGenCTNode7MultilevelSwitchType() throws IOException {
         Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
@@ -180,27 +194,6 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
-    public void testGenCTNode16MultilevelSwitchType() throws IOException {
-        Channel channel = getChannel("store_4.json", 16, "multilevel-switch-value");
-        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
-                null);
-        Configuration configuration = channel.getConfiguration();
-
-        assertNotNull(type);
-        assertEquals("zwavejs:test-bridge:test-thing:multilevel-switch-value", channel.getUID().getAsString());
-        assertEquals("Dimmer", Objects.requireNonNull(type).getItemType());
-        assertEquals("Current Value", channel.getLabel());
-        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
-
-        StateDescription statePattern = type.getState();
-        assertNotNull(statePattern);
-        assertEquals(BigDecimal.valueOf(0), statePattern.getMinimum());
-        assertEquals(BigDecimal.valueOf(100), statePattern.getMaximum());
-        assertNull(statePattern.getStep());
-        assertEquals("%1d %%", statePattern.getPattern());
-    }
-
-    @Test
     public void testGenCTNode13MultilevelSwitchType() throws IOException {
         Channel channel = getChannel("store_4.json", 13, "multilevel-switch-value");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
@@ -222,6 +215,34 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode16MultilevelSwitchType() throws IOException {
+        Channel channel = getChannel("store_4.json", 16, "multilevel-switch-value");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:multilevel-switch-value", channel.getUID().getAsString());
+        assertEquals("Dimmer", Objects.requireNonNull(type).getItemType());
+        assertEquals("Current Value", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+        assertEquals(BigDecimal.valueOf(0), statePattern.getMinimum());
+        assertEquals(BigDecimal.valueOf(100), statePattern.getMaximum());
+        assertNull(statePattern.getStep());
+        assertEquals("%1d %%", statePattern.getPattern());
+    }
+
+    @Test
+    public void testGenCTNode25WriteProperty() throws IOException {
+        Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
+
+        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+    }
+
+    @Test
     public void testGenCTNode44ColorType() throws IOException {
         Channel channel = getChannel("store_4.json", 44, "color-switch-hex-color");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
@@ -239,27 +260,6 @@ public class ZwaveJSTypeGeneratorTest {
 
         assertNotNull(type);
         assertEquals("Color", type.getItemType());
-    }
-
-    @Test
-    public void testGenCTNode7ReadProperty() throws IOException {
-        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
-
-        assertEquals("currentValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_READ_PROPERTY));
-    }
-
-    @Test
-    public void testGenCTNode7WriteProperty() throws IOException {
-        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
-
-        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
-    }
-
-    @Test
-    public void testGenCTNode25WriteProperty() throws IOException {
-        Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
-
-        assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
     }
 
     @Test
