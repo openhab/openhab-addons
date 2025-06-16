@@ -18,30 +18,33 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Record as part of {@link ElspotpriceRecords} from Energi Data Service.
+ * Common interface defining a spot price.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public record ElspotpriceRecord(@SerializedName("HourUTC") Instant hour,
-        @Nullable @SerializedName("SpotPriceDKK") BigDecimal spotPriceDKK,
-        @Nullable @SerializedName("SpotPriceEUR") BigDecimal spotPriceEUR) implements SpotPriceRecord {
+public interface SpotPriceRecord {
+    /**
+     * Validity start, i.e. the "from" timestamp for the period, in which the values are valid.
+     *
+     * @return Validity start
+     */
+    Instant time();
 
-    @Override
-    public Instant time() {
-        return hour;
-    }
+    /**
+     * Day-Ahead price in Danish Kroner (DKK).
+     *
+     * @return Price in DKK
+     */
+    @Nullable
+    BigDecimal priceDKK();
 
-    @Override
-    public @Nullable BigDecimal priceDKK() {
-        return spotPriceDKK;
-    }
-
-    @Override
-    public @Nullable BigDecimal priceEUR() {
-        return spotPriceEUR;
-    }
+    /**
+     * Day-Ahead price in Euro (EUR).
+     *
+     * @return price in EUR
+     */
+    @Nullable
+    BigDecimal priceEUR();
 }
