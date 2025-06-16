@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Main Jellyfin client class for interacting with Jellyfin servers
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 public class Jellyfin {
 

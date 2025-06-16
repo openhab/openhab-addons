@@ -17,7 +17,8 @@ import java.util.Objects;
 /**
  * The device information is used to identify the device the client application is running on.
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 public class DeviceInfo {
 

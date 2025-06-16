@@ -15,7 +15,8 @@ package org.openhab.binding.jellyfin.internal.client.api.client.exception;
 /**
  * Exception thrown when the base URL is missing when required
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 public class MissingBaseUrlException extends ApiClientException {
 

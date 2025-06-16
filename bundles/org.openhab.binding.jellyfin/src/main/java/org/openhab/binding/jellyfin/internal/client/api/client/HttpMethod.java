@@ -15,7 +15,8 @@ package org.openhab.binding.jellyfin.internal.client.api.client;
 /**
  * Enum representing HTTP methods for the Jellyfin API client
  * 
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 public enum HttpMethod {
     GET,

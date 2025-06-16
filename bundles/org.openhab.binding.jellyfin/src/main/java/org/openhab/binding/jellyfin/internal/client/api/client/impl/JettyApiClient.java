@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of the Jellyfin API client using Jetty HTTP client
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 @NonNullByDefault
 public class JettyApiClient extends ApiClient {

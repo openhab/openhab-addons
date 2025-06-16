@@ -23,7 +23,8 @@ import org.openhab.binding.jellyfin.internal.client.model.DeviceInfo;
 /**
  * Factory for creating Jetty-based API clients
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 @NonNullByDefault
 public class JettyApiClientFactory implements ApiClientFactory {

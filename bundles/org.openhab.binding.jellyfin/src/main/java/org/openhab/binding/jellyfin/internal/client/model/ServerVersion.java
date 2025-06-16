@@ -19,7 +19,8 @@ import java.util.regex.Pattern;
 /**
  * Model to help with Jellyfin server versions. The format is similar to SemVer.
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 public class ServerVersion implements Comparable<ServerVersion> {
 

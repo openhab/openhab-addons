@@ -17,7 +17,8 @@ import java.time.Duration;
 /**
  * Configuration options for the Jellyfin API HTTP client
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 public class HttpClientOptions {
 

@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory for creating Jellyfin client instances
  *
- * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude Sonnet 3.7")
+ * @author Patrik Gfeller, based on Android SDK by Peter Feller - Initial contribution (AI generated code by "Claude
+ *         Sonnet 3.7")
  */
 @Component(service = JellyfinClientFactory.class)
 @NonNullByDefault
