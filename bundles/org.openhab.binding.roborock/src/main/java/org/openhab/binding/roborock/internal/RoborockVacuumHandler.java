@@ -34,8 +34,6 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link RoborockHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -51,10 +49,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     RoborockAccountHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> pollFuture;
 
-    private final Gson gson = new Gson();
-
     private String token = "";
-    private String email = "";
     private @Nullable Rriot rriot;
     private String rrHomeId = "";
 
@@ -143,6 +138,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
                     updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_FILTER_PERC,
                             new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
+                    if (homeData.result.devices[i].online == true) {
+                        // get MQTT data
+                    }
                 }
             }
         }

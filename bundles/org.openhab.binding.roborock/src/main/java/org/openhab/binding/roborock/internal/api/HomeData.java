@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Class for holding the set of parameters used to read the controller variables.
+ * Class for holding the set of parameters used by the HomeData response
  *
  * @author Paul Smedley - Initial Contribution
  *
@@ -62,6 +62,7 @@ public class HomeData {
         public String name = "";
         public String localKey = "";
         public String productId = "";
+        public boolean online;
         public String sn = "";
         public @NonNullByDefault({}) DeviceStatus deviceStatus;
         public boolean silentOtaSwitch;

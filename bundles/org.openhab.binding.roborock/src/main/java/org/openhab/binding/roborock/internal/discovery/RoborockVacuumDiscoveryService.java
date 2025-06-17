@@ -30,8 +30,6 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The RoborockVacuumDiscoveryService is responsible for auto detecting a vacuum
  * cleaner in the Roborock ecosystem.
@@ -44,8 +42,6 @@ import com.google.gson.Gson;
 public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscoveryService<RoborockAccountHandler> {
 
     private Logger logger = LoggerFactory.getLogger(RoborockVacuumDiscoveryService.class);
-
-    private final Gson gson = new Gson();
 
     public RoborockVacuumDiscoveryService() {
         super(RoborockAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5, false);

@@ -15,7 +15,7 @@ package org.openhab.binding.roborock.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Class for holding the set of parameters used to read the controller variables.
+ * Class for holding the set of parameters used by the Login response
  *
  * @author Paul Smedley - Initial Contribution
  *
