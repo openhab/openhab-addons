@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.api;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

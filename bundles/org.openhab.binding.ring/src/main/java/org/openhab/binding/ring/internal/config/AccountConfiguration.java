@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.handler;
+package org.openhab.binding.ring.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,4 +28,5 @@ public class AccountConfiguration {
     public int videoRetentionCount;
     public String videoStoragePath = "";
     public int refreshInterval;
+    public boolean limitToOwner;
 }

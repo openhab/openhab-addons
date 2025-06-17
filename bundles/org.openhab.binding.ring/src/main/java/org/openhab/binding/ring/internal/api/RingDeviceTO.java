@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -43,16 +43,10 @@ public class RingDeviceTO {
     @SerializedName("firmware_version")
     public String firmwareVersion = "";
 
-    public @NonNullByDefault({}) Health health;
+    public HealthTO health = new HealthTO();
 
     @SerializedName("battery_life")
     public String battery = "";
 
-    public class Health {
-        @SerializedName("battery_percentage")
-        public int batteryPercentage;
-    }
-
-    private RingDeviceTO() {
-    }
+    public OwnerTO owner = new OwnerTO();
 }

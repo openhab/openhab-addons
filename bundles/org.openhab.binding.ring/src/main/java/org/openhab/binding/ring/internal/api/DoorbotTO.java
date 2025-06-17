@@ -10,22 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Ben Rosenblum - Initial contribution
+ * @author Wim Vissers - Initial contribution
  */
-@NonNullByDefault
-public class OtherDevice extends AbstractRingDevice {
 
-    /**
-     * Create OtherDevice instance from JSON object.
-     *
-     * @param deviceTO the JSON Other retrieved from the Ring API.
-     */
-    public OtherDevice(RingDeviceTO deviceTO) {
-        super(deviceTO);
-    }
+@NonNullByDefault
+public class DoorbotTO {
+    public String id = "";
+    public String description = "";
 }

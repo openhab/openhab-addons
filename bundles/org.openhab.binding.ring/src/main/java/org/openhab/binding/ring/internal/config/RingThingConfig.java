@@ -10,16 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.config;
+
+import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Wim Vissers - Initial contribution
+ * The {@link RingThingConfig} class encapsulates the thing configuration
+ *
+ * @author Jan N. Klug - Initial contribution
  */
-
 @NonNullByDefault
-public class DoorbotTO {
+public class RingThingConfig {
     public String id = "";
-    public String description = "";
+    public BigDecimal offOffset = BigDecimal.ZERO;
+    public int refreshInterval = 5;
 }

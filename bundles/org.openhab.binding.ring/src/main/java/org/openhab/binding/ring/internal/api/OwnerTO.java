@@ -10,24 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * @author Chris Milbert - Initial contribution
- * @author Ben Rosenblum - Updated for OH4 / New Maintainer
+ * @author Wim Vissers - Initial contribution
  */
-
 @NonNullByDefault
-public class Stickupcam extends AbstractRingDevice {
-
-    /**
-     * Create Stickup Cam instance from JSON object.
-     *
-     * @param deviceTO the JSON Stickup Cam retrieved from the Ring API.
-     */
-    public Stickupcam(RingDeviceTO deviceTO) {
-        super(deviceTO);
-    }
+public class OwnerTO {
+    public long id;
+    @SerializedName("first_name")
+    public String firstName = "";
+    @SerializedName("last_name")
+    public String lastName = "";
+    public String email = "";
 }

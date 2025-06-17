@@ -8,7 +8,6 @@
 	<bridge-type id="account">
 		<label>Ring Account Bridge</label>
 		<description>Account with ring.com to access the devices</description>
-		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="event" typeId="eventGroup"/>
@@ -33,9 +32,8 @@
 			<parameter name="hardwareId" type="text">
 				<label>A unique hardware id</label>
 				<description>Enter a hardware id that is unique for all your devices connected to Ring (e.g. computer's MAC address)</description>
-				<default></default>
 			</parameter>
-			<parameter name="refreshInterval" type="integer">
+			<parameter name="refreshInterval" type="integer" unit="s">
 				<label>Refresh interval</label>
 				<description>How often to poll the Ring service for events in seconds</description>
 				<default>5</default>
@@ -51,7 +49,13 @@
 					disable auto downloading</description>
 				<default>10</default>
 			</parameter>
-
+			<parameter name="limitToOwner" type="boolean">
+				<label>Limit To Owner</label>
+				<description>By default all accessible devices are discovered. When enabled, disocovery is limited to devices you
+					own.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 	<!-- Other Device Thing Type -->
@@ -61,17 +65,15 @@
 		</supported-bridge-type-refs>
 		<label>Other Device Binding Thing</label>
 		<description>A Ring Other Device device</description>
-		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
-		<properties>
-			<property name="Description">unknown</property>
-			<property name="Device ID">unknown</property>
-			<property name="Kind">unknown</property>
-		</properties>
 		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
 			<parameter name="offOffset" type="decimal">
 				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
@@ -91,16 +93,14 @@
 		</supported-bridge-type-refs>
 		<label>Chime Binding Thing</label>
 		<description>Ring Chime connected to the system</description>
-		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 		</channel-groups>
-		<properties>
-			<property name="Description">unknown</property>
-			<property name="Device ID">unknown</property>
-			<property name="Kind">unknown</property>
-		</properties>
 		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
 			<parameter name="offOffset" type="decimal">
 				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
@@ -120,17 +120,15 @@
 		</supported-bridge-type-refs>
 		<label>Video Doorbell Binding Thing</label>
 		<description>A Ring Video Doorbell device</description>
-		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
-		<properties>
-			<property name="Description">unknown</property>
-			<property name="Device ID">unknown</property>
-			<property name="Kind">unknown</property>
-		</properties>
 		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
 			<parameter name="offOffset" type="decimal">
 				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
@@ -150,17 +148,15 @@
 		</supported-bridge-type-refs>
 		<label>Stickup Cam Binding Thing</label>
 		<description>A Ring Stickup Cam device</description>
-		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
-		<properties>
-			<property name="Description">unknown</property>
-			<property name="Device ID">unknown</property>
-			<property name="Kind">unknown</property>
-		</properties>
 		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
 			<parameter name="offOffset" type="decimal">
 				<label>Power-off Time</label>
 				<description>Offset in minutes to switch off</description>
