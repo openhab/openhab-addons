@@ -102,7 +102,7 @@ public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<A
     public void startBackgroundDiscovery() {
         ScheduledFuture<?> job = this.discoveryJob;
         if (job == null || job.isCancelled()) {
-            this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 1, 5, TimeUnit.MINUTES);
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 1, 5, TimeUnit.MINUTES);
         }
     }
 
@@ -111,7 +111,7 @@ public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<A
         ScheduledFuture<?> job = this.discoveryJob;
         if (job != null) {
             job.cancel(true);
-            this.discoveryJob = null;
+            discoveryJob = null;
         }
     }
 }

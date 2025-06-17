@@ -28,5 +28,5 @@ public class AccountConfiguration {
     public int videoRetentionCount;
     public String videoStoragePath = "";
     public int refreshInterval;
-    public boolean limitToOwner = false;
+    public boolean limitToOwner;
 }

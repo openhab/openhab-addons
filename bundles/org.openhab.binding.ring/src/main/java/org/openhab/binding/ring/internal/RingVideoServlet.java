@@ -62,9 +62,6 @@ public class RingVideoServlet extends HttpServlet {
     private final Map<ThingUID, Path> pathRegistrations = new ConcurrentHashMap<>();
     private List<Path> videoPaths = List.of();
 
-    public RingVideoServlet() {
-    }
-
     public void addVideoStoragePath(ThingUID thingUID, String pathString) {
         Path path = Paths.get(pathString);
         pathRegistrations.put(thingUID, path);
@@ -96,8 +93,8 @@ public class RingVideoServlet extends HttpServlet {
                     """;
 
             responseString += videoPaths.stream().flatMap(path -> {
-                try {
-                    return Files.list(path);
+                try (Stream<Path> stream = Files.list(path)) {
+                    return stream.toList().stream();
                 } catch (IOException ignored) {
                     return Stream.empty();
                 }

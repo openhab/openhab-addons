@@ -439,7 +439,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 logger.debug("AccountHandler - eventTick - Event id: {} lastEvents: {}", id,
                         lastEvents.getFirst().id == id);
                 if (lastEvents.getFirst().id != id) {
-                    logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.get(0).id);
+                    logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.getFirst().id);
                     updateState(CHANNEL_EVENT_CREATED_AT, lastEvents.getFirst().getCreatedAt());
                     updateState(CHANNEL_EVENT_KIND, new StringType(lastEvents.getFirst().kind));
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
