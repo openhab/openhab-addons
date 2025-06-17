@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>com.ibm.icu.*;resolution:=optional,groovy.runtime.metaclass;resolution:=optional,groovyjarjarantlr4.stringtemplate;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.fusesource.jansi.*;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
-    <groovy.version>4.0.26</groovy.version>
+    <groovy.version>4.0.27</groovy.version>
   </properties>
 
   <dependencies>
