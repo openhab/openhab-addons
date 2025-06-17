@@ -10,23 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
 
 /**
- * @author Wim Vissers - Initial contribution
+ * @author Chris Milbert - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 @NonNullByDefault
-public class Doorbell extends AbstractRingDevice {
+public class Stickupcam extends AbstractRingDevice {
+
     /**
-     * Create Doorbell instance from JSON object.
+     * Create Stickup Cam instance from JSON object.
      *
-     * @param deviceTO the JSON doorbell (doorbot) retrieved from the Ring API.
+     * @param deviceTO the JSON Stickup Cam retrieved from the Ring API.
      */
-    public Doorbell(RingDeviceTO deviceTO) {
+    public Stickupcam(RingDeviceTO deviceTO) {
         super(deviceTO);
     }
 }

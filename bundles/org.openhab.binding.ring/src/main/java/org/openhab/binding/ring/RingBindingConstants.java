@@ -52,4 +52,10 @@ public class RingBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL,
             THING_TYPE_CHIME, THING_TYPE_STICKUPCAM, THING_TYPE_OTHERDEVICE);
+
+    public static final String THING_CONFIG_ID = "id";
+    public static final String THING_PROPERTY_DESCRIPTION = "description";
+    public static final String THING_PROPERTY_KIND = "kind";
+    public static final String THING_PROPERTY_DEVICE_ID = "deviceId";
+    public static final String THING_PROPERTY_OWNER_ID = "ownerId";
 }

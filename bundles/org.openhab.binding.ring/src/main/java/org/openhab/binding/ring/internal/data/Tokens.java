@@ -10,25 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal;
-
-import java.util.Collection;
+package org.openhab.binding.ring.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.internal.device.RingDevice;
 
 /**
- * The AccountHandler implements this interface to facilitate the
- * use of the common services.
+ * The {@link Tokens} encapsulates the tokens needed for accessing the API
  *
  * @author Wim Vissers - Initial contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
+ * @author Jan N. Klug - Refactored to <code>record</code>
  */
-@NonNullByDefault
-public interface RingAccount {
-    Collection<RingDevice> getAllDevices();
 
-    @Nullable
-    RingDevice getDevice(String id);
+@NonNullByDefault
+public record Tokens(String refreshToken, String accessToken) {
 }
