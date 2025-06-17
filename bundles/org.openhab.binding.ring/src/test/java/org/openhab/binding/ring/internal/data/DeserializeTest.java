@@ -26,6 +26,7 @@ import java.util.Scanner;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.ring.internal.RestClient;
+import org.openhab.binding.ring.internal.api.RingEventTO;
 
 import com.google.gson.Gson;
 
