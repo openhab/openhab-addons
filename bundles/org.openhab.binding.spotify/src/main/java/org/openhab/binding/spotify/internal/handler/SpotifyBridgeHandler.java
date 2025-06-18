@@ -66,6 +66,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaDevice;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaAlbum;
@@ -345,6 +346,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         mediaService.addMediaListenner("Spotify", this);
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        List<Device> devices = spotifyApi.getDevices();
+        for (Device device : devices) {
+            logger.debug("devices:" + device.getName());
+            mediaService.registerDevice(new MediaDevice(device.getId(), device.getName(), device.getType()));
+
+        }
 
         MediaSource mediaSource = mediaRegistry.registerEntry("Spotify", () -> {
             return new MediaSource("Spotify", "Spotify", "/static/Spotify.png");
