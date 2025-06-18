@@ -380,7 +380,8 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
      * Sends an HTTP GET request to the charger and parses the response into the appropriate DTO.
      *
      * @return A {@link GoEStatusResponseBaseDTO} object containing the parsed response data.
-     *         Returns {@link GoEStatusResponseDTO} for API version 1 and {@link GoEStatusResponseV2DTO} for API version 2.
+     *         Returns {@link GoEStatusResponseDTO} for API version 1 and {@link GoEStatusResponseV2DTO} for API version
+     *         2.
      * @throws InterruptedException If the thread is interrupted while waiting for the response.
      * @throws TimeoutException If the request times out.
      * @throws ExecutionException If an exception occurs during the execution of the request.
