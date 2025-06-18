@@ -109,6 +109,10 @@
 	<channel-type id="pollencount">
 		<item-type>String</item-type>
 		<label>Pollen Count</label>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Pollen</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
