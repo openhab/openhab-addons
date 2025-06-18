@@ -348,6 +348,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
 
+        List<Device> devices = spotifyApi.getDevices();
+        for (Device device : devices) {
+            logger.debug("devices:" + device.getName());
+            mediaService.registerDevice(new MediaDevice(device.getId(), device.getName(), device.getType()));
+
+        }
+
         MediaSource mediaSource = mediaRegistry.registerEntry("Spotify", () -> {
             return new MediaSource("Spotify", "Spotify", "/static/Spotify.png");
         });
