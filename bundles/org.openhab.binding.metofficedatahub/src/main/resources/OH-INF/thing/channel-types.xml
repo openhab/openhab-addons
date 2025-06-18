@@ -210,10 +210,10 @@
 		<label>Previous Hour Snowfall</label>
 		<description>Total Snowfall Amount Over Previous Hour</description>
 		<category>Snow</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Precipitation</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
 
