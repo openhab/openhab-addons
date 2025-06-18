@@ -75,6 +75,9 @@ public class ShellyThingCreatorTest {
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
         return Stream.of( //
                 Arguments.of("johndoe-" + DEVICE_ID, "", "", "shellyunknown"), //
+                Arguments.of("shellyazplug-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS_STR), //
+                Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGOUTDOORSG3, "",
+                        THING_TYPE_SHELLYPLUSPLUGS_STR), //
                 Arguments.of("shellyswitch25-" + DEVICE_ID, "", "relay", THING_TYPE_SHELLY25_RELAY_STR), //
                 Arguments.of("shellyswitch25xx-" + DEVICE_ID, "", "relay", THING_TYPE_SHELLY25_RELAY_STR), //
                 Arguments.of("shellyswitch25xx-" + DEVICE_ID, "", "", THING_TYPE_SHELLY25_ROLLER_STR), //
@@ -85,6 +88,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplug-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG_STR), //
                 Arguments.of("shellyplug-u1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUG_STR), //
                 Arguments.of("shellyplugs-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS_STR), //
+                Arguments.of("shellyplugsg3-" + DEVICE_ID, SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS_STR), //
                 Arguments.of("shellyplug-s-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS_STR), //
                 Arguments.of("shellyplug-su1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS_STR), //
                 Arguments.of("shellyplugu1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1_STR), //
