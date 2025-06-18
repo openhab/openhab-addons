@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
+package org.openhab.binding.ring.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ring.internal.RingDeviceRegistry;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,30 +28,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRingDevice implements RingDevice {
     private final Logger logger = LoggerFactory.getLogger(AbstractRingDevice.class);
     private RingDeviceTO deviceStatus;
-    private RingDeviceRegistry.Status registrationStatus = RingDeviceRegistry.Status.ADDED;
 
     protected AbstractRingDevice(RingDeviceTO jsonObject) {
         this.deviceStatus = jsonObject;
-    }
-
-    /**
-     * Get the registration status.
-     *
-     * @return
-     */
-    @Override
-    public RingDeviceRegistry.Status getRegistrationStatus() {
-        return registrationStatus;
-    }
-
-    /**
-     * Set the registration status.
-     *
-     * @param registrationStatus
-     */
-    @Override
-    public void setRegistrationStatus(RingDeviceRegistry.Status registrationStatus) {
-        this.registrationStatus = registrationStatus;
     }
 
     @Override
