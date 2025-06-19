@@ -2561,11 +2561,11 @@
 	<channel-type id="smo40-41573" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB104 F2120 Min Compressor Speed</label>
+		<description>F2120 Current Min Compressor Speed</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
 		</tags>
-		<description>F2120 Current Min Compressor Speed</description>
 		<state pattern="%.1f Hz" readOnly="true">
 		</state>
 	</channel-type>
