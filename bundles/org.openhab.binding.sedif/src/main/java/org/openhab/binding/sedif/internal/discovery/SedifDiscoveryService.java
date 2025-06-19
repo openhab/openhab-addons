@@ -68,19 +68,19 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start Linky device background discovery");
+        logger.debug("Start Sedif device background discovery");
         thingHandler.addListener(this);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop Linky device background discovery");
+        logger.debug("Stop Sedif device background discovery");
         thingHandler.removeListener(this);
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Linky discovery: Start {}", thingHandler.getThing().getUID());
+        logger.debug("Sedif discovery: Start {}", thingHandler.getThing().getUID());
 
         // Start the search for new devices
         thingHandler.addListener(this);
@@ -88,14 +88,14 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     public synchronized void abortScan() {
-        logger.debug("Linky discovery: Abort {}", thingHandler.getThing().getUID());
+        logger.debug("Sedif discovery: Abort {}", thingHandler.getThing().getUID());
         thingHandler.removeListener(this);
         super.abortScan();
     }
 
     @Override
     protected synchronized void stopScan() {
-        logger.debug("Linky discovery: Stop {}", thingHandler.getThing().getUID());
+        logger.debug("Sedif discovery: Stop {}", thingHandler.getThing().getUID());
         // thingHandler.removeListener(this);
         super.stopScan();
     }

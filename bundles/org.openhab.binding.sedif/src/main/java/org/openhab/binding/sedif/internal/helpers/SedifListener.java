@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sedif.internal.dto.Contract;
 
 /**
- * The {@link LinkyListener} interface defines all events pushed by a
+ * The {@link SedifListener} interface defines all events pushed by a
  * {@link BridgeLocalBaseHandler}.
  *
  * @author Laurent Arnal - Initial contribution
