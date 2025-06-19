@@ -26,6 +26,7 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
       <version>${graaljs.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
     <!-- Graal JavaScript ScriptEngine JSR 223 support -->
@@ -33,6 +34,7 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.js.js-scriptengine</artifactId>
       <version>${graaljs.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
   </dependencies>
