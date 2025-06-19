@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
@@ -57,9 +56,8 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private static final org.python.jsr223.PyScriptEngineFactory factory = new org.python.jsr223.PyScriptEngineFactory();
 
-    private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes())
-            .flatMap(List::stream) //
-            .toList();
+    public static final String SCRIPT_TYPE = "application/x-python2";
+    private final List<String> scriptTypes = Arrays.asList("jythonpy", SCRIPT_TYPE);
 
     @Activate
     public JythonScriptEngineFactory() {

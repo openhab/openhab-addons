@@ -9,6 +9,7 @@
 		<label>Nuki Bridge</label>
 		<description>This bridge represents a Nuki Bridge on your local network. Nuki Smart Locks have to be paired via
 			Bluetooth with it.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="bridgeId"/>
 			<property name="hardwareId"/>
@@ -67,6 +68,7 @@
 		</supported-bridge-type-refs>
 		<label>Nuki Smart Lock</label>
 		<description>Nuki Smart Lock which is paired via Bluetooth to a Nuki Bridge.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="lock" typeId="smartlockLock"/>
 			<channel id="lockState" typeId="smartlockState"/>
@@ -119,6 +121,7 @@
 		</supported-bridge-type-refs>
 		<label>Nuki Opener</label>
 		<description>Nuki Opener which is paired via Bluetooth to a Nuki Bridge.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="openerState" typeId="openerState"/>
 			<channel id="openerMode" typeId="openerMode"/>

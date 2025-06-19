@@ -26,6 +26,7 @@ import com.google.gson.annotations.SerializedName;
 public class Device extends AbstractMessageBody {
     public static final Pattern DEVICE_HREF_PATTERN = Pattern.compile("/device/([0-9]+)");
     private static final Pattern ZONE_HREF_PATTERN = Pattern.compile("/zone/([0-9]+)");
+    private static final Pattern AREA_HREF_PATTERN = Pattern.compile("/area/([0-9]+)");
 
     @SerializedName("href")
     public String href;
@@ -103,6 +104,14 @@ public class Device extends AbstractMessageBody {
     public int getZone() {
         if (localZones != null && localZones.length > 0) {
             return hrefNumber(ZONE_HREF_PATTERN, localZones[0].href);
+        } else {
+            return 0;
+        }
+    }
+
+    public int getArea() {
+        if (associatedArea != null && !associatedArea.href.isEmpty()) {
+            return hrefNumber(AREA_HREF_PATTERN, associatedArea.href);
         } else {
             return 0;
         }

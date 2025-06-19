@@ -25,6 +25,7 @@
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
+    <module>org.openhab.automation.pythonscripting</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
@@ -71,6 +72,7 @@
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
+    <module>org.openhab.binding.bambulab</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
@@ -115,6 +117,7 @@
     <module>org.openhab.binding.deutschebahn</module>
     <module>org.openhab.binding.digiplex</module>
     <module>org.openhab.binding.digitalstrom</module>
+    <module>org.openhab.binding.dirigera</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dolbycp</module>
@@ -135,6 +138,7 @@
     <module>org.openhab.binding.electroluxappliance</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.elroconnects</module>
+    <module>org.openhab.binding.emby</module>
     <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
@@ -165,6 +169,7 @@
     <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.frenchgovtenergydata</module>
     <module>org.openhab.binding.fronius</module>
+    <module>org.openhab.binding.froniuswattpilot</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
@@ -230,6 +235,7 @@
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
+    <module>org.openhab.binding.lgthinq</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
@@ -245,6 +251,7 @@
     <module>org.openhab.binding.luxtronikheatpump</module>
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>
+    <module>org.openhab.binding.matter</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcd</module>
     <module>org.openhab.binding.mcp23017</module>
@@ -252,6 +259,7 @@
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
+    <module>org.openhab.binding.meross</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
@@ -356,13 +364,13 @@
     <module>org.openhab.binding.renault</module>
     <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.ring</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.roku</module>
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.sagercaster</module>
-    <module>org.openhab.binding.saicismart</module>
     <module>org.openhab.binding.salus</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
@@ -430,6 +438,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
+    <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
@@ -692,10 +701,53 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <validationSets>
+            <validationSet>
+              <dir>.</dir>
+              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
+              <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
+            </validationSet>
+          </validationSets>
+          <catalogs>
+            <catalog>${basedirRoot}/src/thing-type-xml-validation-catalog.xml</catalog>
+          </catalogs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>
+    <profile>
+      <id>skipXmlValidation</id>
+      <activation>
+        <file>
+          <exists>skipXmlValidation.marker</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <!-- suppress embedding of dependencies -->
     <profile>
       <id>no-embed-dependencies</id>

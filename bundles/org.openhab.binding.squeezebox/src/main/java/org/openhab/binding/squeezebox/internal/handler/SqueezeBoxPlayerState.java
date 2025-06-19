@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.squeezebox.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  * @author Patrik Gfeller - Moved class to its own file.
  */
+@NonNullByDefault
 class SqueezeBoxPlayerState {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerState.class);
 

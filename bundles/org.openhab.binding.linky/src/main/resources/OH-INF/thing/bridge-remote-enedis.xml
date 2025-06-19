@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="enedis-api">
+		<label>Enedis API Bridge</label>
+		<description>
+			Provides your energy consumption data.
+			In order to receive the data, you must activate your account at
+			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+		</description>
+
+		<config-description>
+			<parameter name="clientId" type="text" required="false">
+				<label>clientId</label>
+				<description>Your Enedis clientId</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="false">
+				<label>clientSecret</label>
+				<description>Your Enedis clientSecret</description>
+			</parameter>
+			<parameter name="isSandbox" type="boolean" required="false">
+				<label>isSandbox</label>
+				<description>To test on the sandbox environment</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+</thing:thing-descriptions>

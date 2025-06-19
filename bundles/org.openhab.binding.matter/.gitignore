@@ -1,0 +1,13 @@
+# Node.js dependencies
+code-gen/node_modules/
+matter-server/node_modules/
+
+# Node.js bin dirs
+code-gen/node
+matter-server/node
+
+# Build output directories
+code-gen/dist/
+code-gen/out/
+matter-server/dist/
+matter-server/out/ 

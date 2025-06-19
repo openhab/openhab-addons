@@ -107,7 +107,7 @@ class StatusTests {
         tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        ahm.refreshToken();
+        ahm.refresh();
         tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth offline");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth detail");
@@ -138,7 +138,7 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        ahm.refreshToken();
+        ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth Offline");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth details");

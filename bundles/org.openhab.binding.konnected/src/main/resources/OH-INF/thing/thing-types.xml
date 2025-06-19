@@ -7,12 +7,14 @@
 	<thing-type id="wifi-module" extensible="switch-wifi,actuator-wifi,temperature-wifi,humidity-wifi">
 		<label>The Konnected Alarm Panel</label>
 		<description>The Konnected Wi-Fi Alarm Panel</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:konnected:module"/>
 	</thing-type>
 	<!-- This is the Konnected Alarm Panel Pro Thing-Type -->
 	<thing-type id="pro-module" extensible="switch-pro,actuator-pro,temperature-pro,humidity-pro">
 		<label>The Konnected Alarm Panel Pro</label>
 		<description>The Konnected Alarm Panel Pro</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:konnected:module"/>
 	</thing-type>
 

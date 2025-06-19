@@ -7,7 +7,7 @@
 	<thing-type id="wonder">
 		<label>Yeelight Color LED Bulb</label>
 		<description>Yeelight Color LED Bulb</description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="color"/>
 			<channel id="colorTemperature" typeId="colorTemperature"/>

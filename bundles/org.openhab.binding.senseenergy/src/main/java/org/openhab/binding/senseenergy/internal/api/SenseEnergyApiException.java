@@ -13,6 +13,7 @@
 package org.openhab.binding.senseenergy.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link SenseEnergyApiException} exception class for any api exception
@@ -22,20 +23,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SenseEnergyApiException extends Exception {
     private static final long serialVersionUID = -7059398508028583720L;
-    private final boolean configurationIssue;
+    public final SEVERITY severity;
+    @Nullable
+    public final Exception e;
 
-    public SenseEnergyApiException(String message, boolean configurationIssue) {
-        super(message);
-        this.configurationIssue = configurationIssue;
+    public static enum SEVERITY {
+        CONFIG,
+        TRANSIENT,
+        DATA,
+        FATAL
     }
 
-    public boolean isConfigurationIssue() {
-        return configurationIssue;
+    public SenseEnergyApiException(String message, SEVERITY severity) {
+        super(message);
+        this.severity = severity;
+        this.e = null;
+    }
+
+    public SenseEnergyApiException(String message, SEVERITY severity, Exception e) {
+        super(message);
+        this.severity = severity;
+        this.e = e;
     }
 
     @Override
     public String toString() {
-        return String.format("SenseEnergyApiException{message='%s', configurationIssue=%b}", getMessage(),
-                configurationIssue);
+        Exception localE = e;
+        return String.format("SenseEnergyApiException{message='%s', severity=%s}",
+                (localE == null) ? getMessage() : localE.getMessage(), severity.toString());
     }
 }

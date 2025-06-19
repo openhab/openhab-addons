@@ -2,13 +2,12 @@
 <config-description:config-descriptions
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
-		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:jrubyscripting">
 
 		<parameter-group name="gems">
 			<label>Ruby Gems</label>
-			<description>This group defines the list of Ruby Gems to install.</description>
+			<description>This group defines the management of Ruby Gems.</description>
 		</parameter-group>
 
 		<parameter-group name="environment">
@@ -23,44 +22,76 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
+		<parameter-group name="console">
+			<label>JRuby Console</label>
+			<description>This group defines the JRuby console settings.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+
 		<parameter name="gems" type="text" required="false" groupName="gems">
 			<label>Ruby Gems</label>
-			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
-				<tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>5.0</tt>".
-				]]></description>
-			<default>openhab-scripting=~>5.0.0</default>
+			<description>
+				<![CDATA[A comma separated list of Ruby Gems to install.
+				Versions may be constrained by separating with an <code>=</code> followed by standard
+				RubyGems version constraint, such as "<code>openhab-scripting=~>5.0</code>".]]>
+			</description>
+			<default>openhab-scripting=~&gt;5.0</default>
 		</parameter>
 
-		<parameter name="require" type="text" required="false" groupName="gems">
-			<label>Require Scripts</label>
-			<description>A comma separated list of script names to be required by the JRuby Scripting Engine before running user
-				scripts.</description>
-			<default>openhab/dsl</default>
+		<parameter name="bundle_gemfile" type="text" required="false" groupName="gems">
+			<label>Gemfile Path</label>
+			<description>
+				<![CDATA[Path to your own Gemfile relative to <code>OPENHAB_CONF/automation/ruby/</code>.
+				An absolute path can be used.
+				If this file exists, the <code>gems</code> setting above will be ignored,
+				so your Gemfile must include <code>openhab-scripting</code> to use the helper library.]]>
+			</description>
+			<default>Gemfile</default>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="check_update" type="boolean" required="true" groupName="gems">
 			<label>Check for Gem Updates</label>
-			<description>Check RubyGems for updates to the above gems when OpenHAB starts or JRuby settings are changed.
-				Otherwise it will try to fulfill the requirements with locally installed gems, and you can manage them yourself with
-				an external Ruby by setting the same GEM_HOME.</description>
+			<description>
+				<![CDATA[Check RubyGems for updated gems when OpenHAB starts or JRuby settings are changed.
+				Otherwise it will try to fulfill the requirements with locally installed gems,
+				and you can manage them yourself with either the <code>jrubyscripting gem</code>
+				or <code>jrubyscripting bundle</code> console commands,
+				or an external Ruby by setting the same GEM_HOME.]]>
+			</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 
+		<parameter name="require" type="text" required="false" groupName="gems">
+			<label>Require Scripts</label>
+			<description>
+				<![CDATA[A comma separated list of file names to be required by the
+				JRuby Scripting Engine before running user scripts.
+				This can be used to automatically include a common (personal) library
+				without having to add a <code>require</code> line in every script.]]>
+			</description>
+			<default>openhab/dsl</default>
+		</parameter>
+
 		<parameter name="gem_home" type="text" required="false" groupName="environment">
 			<label>GEM_HOME</label>
-			<description><![CDATA[Location Ruby Gems will be installed to and loaded from. Directory will be created if necessary.
-				You can use <tt>{RUBY_ENGINE_VERSION}</tt>, <tt>{RUBY_ENGINE}</tt> and/or <tt>{RUBY_VERSION}</tt> replacements in this value to automatically point to
+			<description>
+				<![CDATA[Location Ruby Gems will be installed to and loaded from. Directory will be created if necessary.
+				You can use <code>{RUBY_ENGINE_VERSION}</code>, <code>{RUBY_ENGINE}</code> and/or
+				<code>{RUBY_VERSION}</code> replacements in this value to automatically point to
 				a new directory when the addon is updated with a new version of JRuby.
-				Defaults to "<tt>OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}</tt>" when not specified.
-				]]></description>
+				Defaults to "<code>OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}</code>" when not specified.]]>
+			</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="rubylib" type="text" required="false" groupName="environment">
 			<label>RUBYLIB</label>
-			<description><![CDATA[Search path for user libraries. Separate each path with a colon (semicolon in Windows). Defaults to
-				"<tt>OPENHAB_CONF/automation/ruby/lib</tt>" when not specified.]]></description>
+			<description>
+				<![CDATA[Search path for user libraries. Separate each path with a colon (semicolon in Windows).
+				Defaults to "<code>OPENHAB_CONF/automation/ruby/lib</code>" when not specified.]]>
+			</description>
 			<advanced>true</advanced>
 		</parameter>
 
@@ -75,9 +106,11 @@
 
 		<parameter name="local_context" type="text" required="false" groupName="system">
 			<label>Context Instance Type</label>
-			<description><![CDATA[The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See
-				<a href="https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type">the documentation</a> for options and details.
-				]]></description>
+			<description>
+				<![CDATA[The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby.
+				See <a href="https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type">the documentation</a>
+				for options and details.]]>
+			</description>
 			<default>singlethread</default>
 			<options>
 				<option value="singleton">Singleton</option>
@@ -90,15 +123,27 @@
 
 		<parameter name="local_variable" type="text" required="false" groupName="system">
 			<label>Local Variable Behavior</label>
-			<description><![CDATA[Defines how variables are shared between Ruby and Java. See
-				<a href="https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options">the documentation</a> for options and details.
-				]]></description>
+			<description>
+				<![CDATA[Defines how variables are shared between Ruby and Java.
+				See <a href="https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options">the documentation</a>
+				for options and details.]]>
+			</description>
 			<default>transient</default>
 			<options>
 				<option value="transient">Transient</option>
 				<option value="persistent">Persistent</option>
 				<option value="global">Global</option>
 			</options>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="console" type="text" required="false" groupName="console">
+			<label>Console Script</label>
+			<description>
+				<![CDATA[The script file to be required by the <code>jrubyscripting console</code> console command.
+				When specified without any path, <code>openhab/console/</code> will be prepended.]]>
+			</description>
+			<default>irb</default>
 			<advanced>true</advanced>
 		</parameter>
 

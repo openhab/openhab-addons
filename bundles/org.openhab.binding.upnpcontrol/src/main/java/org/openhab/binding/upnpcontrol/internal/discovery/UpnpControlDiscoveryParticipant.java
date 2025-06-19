@@ -95,4 +95,9 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
         }
         return result;
     }
+
+    @Override
+    public boolean notifyChildDevices() {
+        return true;
+    }
 }

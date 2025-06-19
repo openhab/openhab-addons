@@ -59,6 +59,7 @@ public class LinkTapBindingConstants {
     public static final String BRIDGE_CONFIG_MDNS_ENABLE = "enableMDNS";
     public static final String BRIDGE_CONFIG_NON_HTML_COMM_ENABLE = "enableJSONComms";
     public static final String BRIDGE_CONFIG_ENFORCE_COMM_LIMITS = "enforceProtocolLimits";
+    public static final String BRIDGE_CONFIG_GATEWAY_RESPONSE_TIMEOUT = "gatewayResponseTimeout";
 
     public static final String DEVICE_PROP_DEV_ID = "deviceId";
     public static final String DEVICE_PROP_DEV_NAME = "deviceName";
