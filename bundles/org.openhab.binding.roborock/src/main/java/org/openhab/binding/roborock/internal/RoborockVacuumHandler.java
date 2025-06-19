@@ -16,9 +16,9 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -44,8 +44,10 @@ import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
 import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
+import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 /**
@@ -67,10 +69,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @Nullable Rriot rriot;
     private String rrHomeId = "";
     private @Nullable Mqtt3AsyncClient mqttClient;
-    private @Nullable MqttConnection mqttConnection;
-    private String mqttUser = "";
-
-    private final Object mqttConnectionLock = new Object();
 
     public RoborockVacuumHandler(Thing thing) {
         super(thing);
@@ -136,56 +134,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void establishMqttConnection() {
+    // ecoVacs
+    public void connect(/* final EventListener listener, */ ScheduledExecutorService scheduler)
+            throws RoborockCommunicationException, InterruptedException {
         if (rriot == null) {
-            logger.trace("Api not yet initialized, postponing MQTT connection");
-            return;
+            throw new RoborockCommunicationException("Can not connect when not logged in");
         }
 
-        synchronized (mqttConnectionLock) {
-            MqttConnection oldConnection = mqttConnection;
-            if (oldConnection != null) {
-                try {
-                    oldConnection.disconnect().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    logger.debug("Could not discard MQTT connection", e);
-                }
-            }
-
-            mqttConnection = null;
-
-            try {
-                Mqtt3AsyncClient client = establishMqttConnection(rriot.u);
-
-                MqttConnection connection = new MqttConnection(client, rriot, mqttUser);
-                subscribeForDeviceLocked(connection, getThing().getUID().getId());
-
-                mqttConnection = connection;
-
-                // for (AbstractEcoflowHandler handler : activeChildHandlers.values()) {
-                // handler.handleMqttConnected();
-                // }
-            } catch (RoborockCommunicationException e) {
-                logger.debug("Could not establish MQTT connection", e);
-                // mqttConnectTask.schedule(5);
-            }
-        }
-    }
-
-    private void subscribeForDeviceLocked(MqttConnection connection, String deviceId)
-            throws RoborockCommunicationException {
-        try {
-            logger.debug("Subscribing for updates from {}", deviceId);
-            connection.subscribeForDevice(deviceId, this::handleQuotaMessage, this::handleStatusMessage);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RoborockCommunicationException(e);
-        }
-    }
-
-    private Mqtt3AsyncClient establishMqttConnection(String username) throws RoborockCommunicationException {
         String mqttHost = "";
         int mqttPort = 1883;
-        mqttUser = "";
+        String mqttUser = "";
         String mqttPassword = "";
         try {
             URI mqttURL = new URI(rriot.r.m);
@@ -202,10 +160,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         final MqttClientDisconnectedListener disconnectListener = ctx -> {
             boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
                     && ctx.getCause() instanceof Mqtt3DisconnectException;
-            mqttConnection = null;
+            // As the client already was disconnected, there's no need to do it again in disconnect() later
+            this.mqttClient = null;
             if (!expectedShutdown) {
-                logger.debug("MQTT disconnected (source {}): {}", ctx.getSource(), ctx.getCause().getMessage());
-                // mqttConnectTask.schedule(5);
+                logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
+                        ctx.getCause().getMessage());
+                // listener.onEventStreamFailure(EcovacsIotMqDevice.this, ctx.getCause());
             }
         };
 
@@ -218,61 +178,51 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 .sslWithDefaultConfig() //
                 .addDisconnectedListener(disconnectListener) //
                 .buildAsync();
+
         try {
-            logger.debug("Opening MQTT connection");
+            this.mqttClient = client;
             client.connect().get();
 
-            logger.debug("Established MQTT connection");
-            return client;
-        } catch (ExecutionException | InterruptedException e) {
+            // final ReportParser parser = desc.protoVersion == ProtocolVersion.XML
+            // ? new XmlReportParser(this, listener, gson, logger)
+            // : new JsonReportParser(this, listener, desc.protoVersion, gson, logger);
+            final Consumer<@Nullable Mqtt3Publish> eventCallback = publish -> {
+                if (publish == null) {
+                    return;
+                }
+                String receivedTopic = publish.getTopic().toString();
+                String payload = new String(publish.getPayloadAsBytes());
+                // try {
+                String eventName = receivedTopic.split("/")[2].toLowerCase();
+                logger.trace("{}: Got MQTT message on topic {}: {}", getThing().getUID().getId(), receivedTopic,
+                        payload);
+                // parser.handleMessage(eventName, payload);
+                // } catch (DataParsingException e) {
+                // listener.onEventStreamFailure(this, e);
+                // }
+            };
+
+            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
+
+            client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
+            logger.debug("Established MQTT connection to device {}", getThing().getUID().getId());
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
+                    && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
             throw new RoborockCommunicationException(e);
         }
     }
 
-    private void handleQuotaMessage(@Nullable Mqtt3Publish publish) {
-        if (publish == null) {
-            return;
+    public void disconnect(ScheduledExecutorService scheduler) {
+        Mqtt3AsyncClient client = this.mqttClient;
+        if (client != null) {
+            client.disconnect();
         }
-        // final AbstractEcoflowHandler handler = findHandlerForTopic(publish.getTopic());
-        // if (handler != null) {
-        // handler.handleQuotaMessage(extractPayload(publish));
-        // }
-    }
-
-    private void handleStatusMessage(@Nullable Mqtt3Publish publish) {
-        if (publish == null) {
-            return;
-        }
-        // final AbstractEcoflowHandler handler = findHandlerForTopic(publish.getTopic());
-        // if (handler != null) {
-        // handler.handleStatusMessage(extractPayload(publish));
-        // }
-    }
-
-    private static class MqttConnection {
-        final Mqtt3AsyncClient client;
-        private final String topicBase;
-
-        MqttConnection(Mqtt3AsyncClient client, @Nullable Rriot rriot2, String userName) {
-            this.client = client;
-            String topic = "rr/m/o/" + rriot2.u + "/" + userName + "/#";
-            topicBase = topic;
-        }
-
-        void subscribeForDevice(String deviceId, Consumer<@Nullable Mqtt3Publish> quotaHandler,
-                Consumer<@Nullable Mqtt3Publish> statusHandler) throws ExecutionException, InterruptedException {
-            String deviceTopicBase = topicBase + deviceId + "/";
-            client.subscribeWith().topicFilter(deviceTopicBase + "quota").callback(quotaHandler).send().get();
-            client.subscribeWith().topicFilter(deviceTopicBase + "status").callback(statusHandler).send().get();
-        }
-
-        CompletableFuture<Void> disconnect() {
-            return client.disconnect();
-        }
+        this.mqttClient = null;
     }
 
     private void pollStatus() {
-
         HomeData homeData;
         homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
         if (homeData != null) {
