@@ -183,13 +183,31 @@ class SpotifyHandleCommands {
             MediaType mediaType = (MediaType) command;
             MediaCommandType mediaTypeCommand = mediaType.getCommand();
             String param = mediaType.getParam().toFullString();
+            String targetDevice = mediaType.getDevice().toFullString().isEmpty() ? deviceId
+                    : mediaType.getDevice().toFullString();
 
             int px = param.lastIndexOf("/");
             if (px >= 0) {
                 param = param.substring(px + 1);
             }
 
-            spotifyApi.playTrack(deviceId, param, 0, 0);
+            if (mediaTypeCommand == MediaCommandType.DEVICE) {
+                final boolean play = true;
+
+                if (active || deviceId.isEmpty()) {
+                    if (play) {
+                        spotifyApi.play(targetDevice);
+                    } else {
+                        spotifyApi.pause(targetDevice);
+                    }
+                } else {
+                    spotifyApi.transferPlay(targetDevice, play);
+                }
+            } else if (mediaTypeCommand == MediaCommandType.PLAY) {
+                spotifyApi.playTrack(targetDevice, param, 0, 0);
+            } else if (mediaTypeCommand == MediaCommandType.ENQUEUE) {
+                spotifyApi.queueTrack(targetDevice, param, 0, 0);
+            }
             return true;
         } else if (command instanceof StringType) {
             String val = command.toFullString();

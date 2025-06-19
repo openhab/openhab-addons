@@ -78,6 +78,7 @@ public class SpotifyApi {
     private static final CurrentlyPlayingContext EMPTY_CURRENTLYPLAYINGCONTEXT = new CurrentlyPlayingContext();
     private static final String PLAY_TRACK_URIS = "{\"uris\":[%s],\"offset\":{\"position\":%d},\"position_ms\":%d}";
     private static final String PLAY_TRACK_CONTEXT_URI = "{\"context_uri\":\"%s\",\"offset\":{\"position\":%d},\"position_ms\":%d}}";
+    private static final String ENQUEUE_URI = "uri=%s";
     private static final String TRANSFER_PLAY = "{\"device_ids\":[\"%s\"],\"play\":%b}";
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyApi.class);
@@ -125,6 +126,22 @@ public class SpotifyApi {
             play = String.format(PLAY_TRACK_CONTEXT_URI, trackId, offset, positionMs);
         }
         requestPlayer(PUT, url, play, String.class);
+    }
+
+    /**
+     * Call Spotify Api to play the given track on the given device. If the device id is empty it will be played on
+     * the active device.
+     *
+     * @param deviceId device to play on or empty if play on the active device
+     * @param trackId id of the track to play
+     * @param offset offset
+     * @param positionMs position in ms
+     */
+    public void queueTrack(String deviceId, String trackId, int offset, int positionMs) {
+        String url = "queue";
+        url = url + "?uri=" + trackId;
+        url = url + optionalDeviceId(deviceId, QSM);
+        requestPlayer(POST, url, "", String.class);
     }
 
     /**
