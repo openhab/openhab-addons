@@ -13,8 +13,9 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.time.Instant;
@@ -69,6 +70,7 @@ public class MBWebsocket {
     private Instant runTill = Instant.now();
     private @Nullable Session session;
     private List<ClientMessage> commandQueue = new ArrayList<>();
+    private List<File> fileDumps = new ArrayList<>();
 
     private boolean keepAlive = false;
 
@@ -102,7 +104,7 @@ public class MBWebsocket {
                 // avoid unit test requesting real web socket - simply return
                 return;
             }
-            logger.trace("Websocket start {} max message size{}", websocketURL, client.getMaxBinaryMessageSize());
+            logger.trace("Websocket start {} max message size {}", websocketURL, client.getMaxBinaryMessageSize());
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -175,6 +177,17 @@ public class MBWebsocket {
         }
     }
 
+    /**
+     * If disposed temp debug files are deleted
+     */
+    public void dispose() {
+        interrupt();
+        fileDumps.forEach(file -> {
+            file.delete();
+        });
+        fileDumps.clear();
+    }
+
     public void keepAlive(boolean b) {
         if (!keepAlive) {
             if (b) {
@@ -196,14 +209,21 @@ public class MBWebsocket {
      */
 
     @OnWebSocketMessage
-    public void onByteStream(InputStream is) {
+    public void onByteArray(byte[] blob, int offset, int length) {
         try {
-            PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
+            byte[] message = blob;
+            if (offset != 0) {
+                int offsetLength = length - offset;
+                message = new byte[offsetLength];
+                System.arraycopy(blob, offset, message, 0, offsetLength);
+
+            }
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(message);
             logger.trace("WebSocket - Message {}", pm.getMsgCase());
             accountHandler.enqueueMessage(pm);
             /**
              * https://community.openhab.org/t/mercedes-me/136866/12
-             * Release Websocket thread as early as possible to avoid execeptions
+             * Release Websocket thread as early as possible to avoid exceptions
              *
              * 1. Websocket thread responsible for reading stream into PushMessage and enqueue for
              * AccountHandler.
@@ -214,6 +234,23 @@ public class MBWebsocket {
              */
         } catch (IOException e) {
             logger.warn("IOException decoding message {}", e.getMessage());
+            try {
+                // write max 10 file dumps
+                if (fileDumps.size() >= 10) {
+                    logger.warn("MercedesMe Max File dump exceeded - please report files from {}",
+                            fileDumps.get(0).getCanonicalPath());
+                } else {
+                    String sizeInfo = blob.length + "-" + length + "-" + offset + "-";
+                    File outputFile = File.createTempFile("mercedesme-" + sizeInfo, null);
+                    FileOutputStream outputStream = new FileOutputStream(outputFile);
+                    outputStream.write(blob);
+                    outputStream.close();
+                    fileDumps.add(outputFile);
+                    logger.warn("MercedesMe File dump {}", outputFile.getCanonicalPath());
+                }
+            } catch (IOException e1) {
+                logger.warn("MercedesMe File dump error {}", e1.getMessage());
+            }
         } catch (Error err) {
             logger.warn("Error decoding message {}", err.getMessage());
         }
