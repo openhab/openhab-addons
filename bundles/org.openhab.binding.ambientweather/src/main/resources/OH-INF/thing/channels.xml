@@ -15,10 +15,6 @@
 		<item-type>String</item-type>
 		<label>Location</label>
 		<description>Weather station location</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
@@ -26,10 +22,6 @@
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<description>Observation date and time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -38,10 +30,6 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -50,10 +38,6 @@
 		<label>Dew Point Temperature</label>
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -62,10 +46,6 @@
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -74,10 +54,6 @@
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Forecast</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -86,10 +62,6 @@
 		<label>Pressure</label>
 		<description>Barometric Pressure</description>
 		<category>Pressure</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -98,10 +70,6 @@
 		<label>Pressure Trend</label>
 		<description>Pressure evolution trend (up, down, stable)</description>
 		<category>Pressure</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -110,10 +78,6 @@
 		<label>Rain Fall Hourly Rate</label>
 		<description>Rain fall hourly rate</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true" pattern="%.7f %unit%"/>
 	</channel-type>
 
@@ -122,10 +86,6 @@
 		<label>Rain Fall Day</label>
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -134,10 +94,6 @@
 		<label>Rain Fall Week</label>
 		<description>Rain fall amount for the week</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -146,10 +102,6 @@
 		<label>Rain Fall Month</label>
 		<description>Rain fall amount for the month</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -158,10 +110,6 @@
 		<label>Rain Fall Year</label>
 		<description>Rain fall amount for the year</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -170,10 +118,6 @@
 		<label>Rain Fall Total</label>
 		<description>Rain fall total amount since factpry reset</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -182,10 +126,6 @@
 		<label>Rain Fall 24 Hours</label>
 		<description>Rain fall in last 24 hours</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -194,10 +134,6 @@
 		<label>Rain Fall Event</label>
 		<description>Rain fall total for last rain event</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -205,10 +141,6 @@
 		<item-type>DateTime</item-type>
 		<label>Rain Last Time</label>
 		<description>Date and time of last rainfall</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -217,10 +149,6 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -229,10 +157,6 @@
 		<label>Maximum Daily Wind Speed</label>
 		<description>Maximum daily wind speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -240,10 +164,6 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction Degrees</label>
 		<description>Wind direction in degrees</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -251,10 +171,6 @@
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -263,10 +179,6 @@
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -274,10 +186,6 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Gust Direction Degrees</label>
 		<description>Wind gust direction in degrees</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -285,10 +193,6 @@
 		<item-type>String</item-type>
 		<label>Wind Gust Direction</label>
 		<description>Wind gust direction</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -297,10 +201,6 @@
 		<label>Maximum Daily Wind Gust</label>
 		<description>Maximum daily wind gust</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -309,10 +209,6 @@
 		<label>Wind Speed 2-Minute</label>
 		<description>Wind speed 2-minute average</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -320,10 +216,6 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction Degrees 2-minute</label>
 		<description>Wind direction 2-minute average in degrees</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -331,10 +223,6 @@
 		<item-type>String</item-type>
 		<label>Wind Direction 2-minute</label>
 		<description>Wind direction 2-minute Average</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -343,10 +231,6 @@
 		<label>Wind Speed 10-Minute</label>
 		<description>Wind speed 10-minute average</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -354,10 +238,6 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction Degrees 10-minute</label>
 		<description>Wind direction 10-minute average in degrees</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -365,10 +245,6 @@
 		<item-type>String</item-type>
 		<label>Wind Direction 10-minute</label>
 		<description>Wind direction 10-minute Average</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -383,10 +259,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>UV Index</label>
 		<description>Ultraviolet radiation index</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
@@ -394,10 +266,6 @@
 		<item-type>String</item-type>
 		<label>UV Danger</label>
 		<description>Ultraviolet radiation danger level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -406,10 +274,6 @@
 		<label>Soil Temperature</label>
 		<description>Temperature of the soil</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -418,10 +282,6 @@
 		<label>Soil Moisture</label>
 		<description>Amount of moisture in the soil</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d"/>
 	</channel-type>
 
@@ -430,10 +290,6 @@
 		<label>Soil Moisture Level</label>
 		<description>Soil moisture level from Very Dry to Very Wet</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -442,10 +298,6 @@
 		<label>Carbon Dioxide</label>
 		<description>Amount of carbon dioxide</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -454,10 +306,6 @@
 		<label>Relay</label>
 		<description>Relay</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -466,10 +314,6 @@
 		<label>Battery Indicator</label>
 		<description>Indicates if battery is good or needs replacing</description>
 		<category>Battery</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 

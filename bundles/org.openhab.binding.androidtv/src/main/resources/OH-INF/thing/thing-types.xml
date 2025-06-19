@@ -283,10 +283,6 @@
 		<item-type>String</item-type>
 		<label>App</label>
 		<description>App Control</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="appname">
@@ -335,10 +331,6 @@
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>Player Control</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="tvChannel" advanced="true">
@@ -360,10 +352,6 @@
 		<label>Ambilight Power</label>
 		<description>Ambilight power. Turns ambilight on or off.</description>
 		<category>Ambilight</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightHuePower">
@@ -371,10 +359,6 @@
 		<label>Ambilight + Hue Power</label>
 		<description>Ambilight + Hue power. Turns ambilight with connected Philips Hue Lamps on or off.</description>
 		<category>Ambilight</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightLoungePower">
@@ -382,10 +366,6 @@
 		<label>Ambilight Lounge Power</label>
 		<description>Ambilight lounge power. Turns ambilight lounge on or off.</description>
 		<category>Ambilight</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightStyle" advanced="true">

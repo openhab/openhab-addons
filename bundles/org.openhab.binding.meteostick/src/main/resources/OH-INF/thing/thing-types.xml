@@ -97,10 +97,6 @@
 		<label>Indoor Temperature</label>
 		<description>Current indoor temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -110,10 +106,6 @@
 		<label>Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -123,10 +115,6 @@
 		<label>Outdoor Humidity</label>
 		<description>Current humidity in percent</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -136,10 +124,6 @@
 		<label>Pressure</label>
 		<description>Current atmospheric pressure</description>
 		<category>Pressure</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -149,10 +133,6 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -171,10 +151,6 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
@@ -211,10 +187,6 @@
 		<label>Rainfall (previous Hour)</label>
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -224,10 +196,6 @@
 		<label>Rainfall (60 Minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -237,10 +205,6 @@
 		<label>Rainfall Today</label>
 		<description>Total rainfall today</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -250,10 +214,6 @@
 		<label>Solar Power</label>
 		<description>Solar panel power percentage</description>
 		<category>Light</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %%">
 		</state>
 	</channel-type>

@@ -6,37 +6,21 @@
 	<channel-type id="pressure-front-right">
 		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Front Right</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-right">
 		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-front-left">
 		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Front Left</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-left">
 		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sensor-available">
@@ -111,10 +95,6 @@
 	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
 		<label>Tire Update Time</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

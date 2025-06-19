@@ -143,10 +143,6 @@
 		<label>Current Time</label>
 		<description>Current time reported by the air unit</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -185,10 +181,6 @@
 		<label>Supply Fan Speed</label>
 		<description>Current rotation of the fan supplying air to the rooms</description>
 		<category>Fan</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
-		</tags>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 
@@ -197,10 +189,6 @@
 		<label>Extract Fan Speed</label>
 		<description>Current rotation of the fan extracting air from the rooms</description>
 		<category>Fan</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
-		</tags>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 
@@ -209,10 +197,6 @@
 		<label>Supply Fan Step</label>
 		<description>Current step setting of the fan supplying air to the rooms</description>
 		<category>Fan</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
 
@@ -221,10 +205,6 @@
 		<label>Extract Fan Step</label>
 		<description>Current step setting of the fan extracting air from the rooms</description>
 		<category>Fan</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
 
@@ -246,20 +226,12 @@
 		<item-type>Switch</item-type>
 		<label>Boost</label>
 		<description>Enables fan boost</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="night-cooling">
 		<item-type>Switch</item-type>
 		<label>Night Cooling</label>
 		<description>Enables night cooling</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="bypass">
@@ -267,10 +239,6 @@
 		<label>Bypass</label>
 		<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside
 			temperature is below target</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="calculated-temperature">
@@ -278,10 +246,6 @@
 		<label>Calculated Room Temperature</label>
 		<description>Calculated Room Temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -296,10 +260,6 @@
 		<item-type>Number</item-type>
 		<label>Power Cycles</label>
 		<description>The total count of power cycles, indicating how many times the unit has been turned off and on again</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -308,10 +268,6 @@
 		<label>Operating Hours</label>
 		<description>The number of hours the unit has been in operation (in minutes)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%1$tdd %1$tHh %1$tMm" readOnly="true"/>
 	</channel-type>
 

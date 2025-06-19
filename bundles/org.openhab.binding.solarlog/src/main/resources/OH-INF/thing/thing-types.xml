@@ -43,10 +43,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Last Update Time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pac">
@@ -65,20 +61,12 @@
 		<item-type>Number</item-type>
 		<label>UAC</label>
 		<description>Average voltage UAC from the inverter</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
 	<channel-type id="udc">
 		<item-type>Number</item-type>
 		<label>UDC</label>
 		<description>Average voltage UDC from the inverter</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
 	<channel-type id="yieldday">
@@ -151,10 +139,6 @@
 		<item-type>Number</item-type>
 		<label>Total Power</label>
 		<description>Installed generator power (Wp)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%d Wp"></state>
 	</channel-type>
 

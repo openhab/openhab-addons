@@ -257,10 +257,6 @@
 		<label>Minimum Temperature</label>
 		<description>Minimum temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -269,10 +265,6 @@
 		<label>Maximum Temperature</label>
 		<description>Maximum temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -313,10 +305,6 @@
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Forecast</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%">
 		</state>
 	</channel-type>
@@ -325,10 +313,6 @@
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -372,10 +356,6 @@
 		<label>Maximum Wind Speed</label>
 		<description>Maximum wind speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -384,10 +364,6 @@
 		<label>Average Wind Speed</label>
 		<description>Average wind speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -396,10 +372,6 @@
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -445,10 +417,6 @@
 		<label>Rain Fall Day</label>
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -457,10 +425,6 @@
 		<label>Rain Fall Hour</label>
 		<description>Rain fall during the last hour</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -469,10 +433,6 @@
 		<label>Snow Fall</label>
 		<description>Snow fall</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -480,10 +440,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Probability of precipitation</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%">
 		</state>
 	</channel-type>

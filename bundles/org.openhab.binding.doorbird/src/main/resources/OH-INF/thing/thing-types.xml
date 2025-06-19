@@ -82,10 +82,6 @@
 		<item-type>DateTime</item-type>
 		<label>Doorbell Timestamp</label>
 		<description>Time when doorbell was last pressed</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="doorbellImage">
@@ -98,10 +94,6 @@
 		<item-type>DateTime</item-type>
 		<label>Motion Timestamp</label>
 		<description>Time when motion was last detected</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motionImage">
@@ -114,50 +106,30 @@
 		<item-type>Switch</item-type>
 		<label>Light</label>
 		<description>Energize the light relay</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="openDoor1">
 		<item-type>Switch</item-type>
 		<label>Open Door 1</label>
 		<description>Energize opendoor / alarm output relay 1</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="openDoor2">
 		<item-type>Switch</item-type>
 		<label>Open Door 2</label>
 		<description>Energize opendoor / alarm output relay 2</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="openDoor3">
 		<item-type>Switch</item-type>
 		<label>Open Door 3</label>
 		<description>Energize opendoor / alarm output relay 3</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="imageTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Image Timestamp</label>
 		<description>Time when image was captured from device</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="image">
@@ -175,10 +147,6 @@
 		<item-type>DateTime</item-type>
 		<label>Doorbell History Timestamp</label>
 		<description>Time when doorbell was pressed for history image</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="doorbellHistoryImage">
@@ -191,20 +159,12 @@
 		<item-type>Number</item-type>
 		<label>Motion History Index</label>
 		<description>Index of Historical image for motion</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Motion</tag>
-		</tags>
 		<state min="1" max="50" step="1"></state>
 	</channel-type>
 	<channel-type id="motionHistoryTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Motion History Timestamp</label>
 		<description>Time when motion was detected for history image</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motionHistoryImage">

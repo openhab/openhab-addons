@@ -129,10 +129,6 @@
 		<label>Temperature</label>
 		<description>The measured temperature.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -142,10 +138,6 @@
 		<label>Humidity</label>
 		<description>The measured humidity.</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -153,10 +145,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC</label>
 		<description>The total Volatile Organic Compounds.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
-		</tags>
 		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>
 
@@ -165,10 +153,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM1</label>
 		<description>The Particulate Matter 1 (0.001mm).</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -176,10 +160,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>The Particulate Matter 2.5 (0.0025mm).</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -187,10 +167,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM10</label>
 		<description>The Particulate Matter 10 (0.01mm).</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -198,10 +174,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>The measured CarbonDioxide.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -216,10 +188,6 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed Setting</label>
 		<description>The fan speed setting.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="1">Level 1</option>
@@ -239,10 +207,6 @@
 		<item-type>String</item-type>
 		<label>Work Mode Setting</label>
 		<description>The work mode setting.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="PowerOff">Power Off</option>
@@ -256,10 +220,6 @@
 		<item-type>Switch</item-type>
 		<label>Ionizer Status</label>
 		<description>The ionizer status On/Off.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ui-light">
@@ -272,20 +232,12 @@
 		<item-type>Switch</item-type>
 		<label>Safety Lock</label>
 		<description>The safety lock status.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="door-lock">
 		<item-type>Contact</item-type>
 		<label>Door Lock</label>
 		<description>The door lock status Open/Closed.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -293,10 +245,6 @@
 		<item-type>Contact</item-type>
 		<label>Door State</label>
 		<description>The door status Open/Closed.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -304,10 +252,6 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Time To Delayed Start</label>
 		<description>The time remaining until the delayed start.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -315,10 +259,6 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Time To End</label>
 		<description>The time remaining until the program will end.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -333,10 +273,6 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Appliance Total Working Time</label>
 		<description>The appliance total working time.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -365,10 +301,6 @@
 		<item-type unitHint="l">Number:Volume</item-type>
 		<label>Water Usage</label>
 		<description>The water usage in litres.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -420,10 +352,6 @@
 		<item-type>String</item-type>
 		<label>Appliance Mode</label>
 		<description>The appliance mode.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="DEMO">Demo</option>
@@ -438,10 +366,6 @@
 		<item-type>String</item-type>
 		<label>Washing Temperature </label>
 		<description>The user configured washing temperature.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="20_CELSIUS">20°C</option>
@@ -460,10 +384,6 @@
 		<item-type>String</item-type>
 		<label>Spin Speed</label>
 		<description>The spin speed.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="DISABLED">Disabled</option>
