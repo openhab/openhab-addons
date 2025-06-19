@@ -1,0 +1,35 @@
+{
+    \"id\":\"1\",
+    \"type\":\"subscribe\",
+    \"payload\":{
+        \"variables\":{},
+        \"extensions\":{},
+        \"operationName\":null,
+        \"query\":\"subscription {
+            liveMeasurement(homeId:\\\"%s\\\") {
+                timestamp
+                power
+                lastMeterConsumption
+                lastMeterProduction
+                accumulatedConsumption
+                accumulatedConsumptionLastHour
+                accumulatedCost
+                currency
+                minPower
+                averagePower
+                maxPower
+                voltagePhase1
+                voltagePhase2
+                voltagePhase3
+                currentL1
+                currentL2
+                currentL3
+                powerProduction
+                accumulatedProduction
+                accumulatedProductionLastHour
+                minPowerProduction
+                maxPowerProduction
+            }
+       }
+   \"}
+}
