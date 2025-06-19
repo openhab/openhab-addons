@@ -14,6 +14,11 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +39,13 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
+import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
+import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
+
 /**
  * The {@link RoborockHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -52,6 +64,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String token = "";
     private @Nullable Rriot rriot;
     private String rrHomeId = "";
+    private @Nullable Mqtt3AsyncClient mqttClient;
 
     public RoborockVacuumHandler(Thing thing) {
         super(thing);
@@ -68,6 +81,22 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return "";
         }
+    }
+
+    public String md5Hex(String data) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            // should never occur
+            throw new RuntimeException(e);
+        }
+        byte[] array = md.digest(data.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : array) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 
     @Override
@@ -117,13 +146,53 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    private Mqtt3AsyncClient establishMqttConnection() throws RoborockCommunicationException {
+        String mqttHost = "";
+        int mqttPort = 1883;
+        String mqttUser = "";
+        String mqttPassword = "";
+        try {
+            URI mqttURL = new URI(rriot.r.m);
+            mqttHost = mqttURL.getHost();
+            mqttPort = mqttURL.getPort();
+            mqttUser = md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
+            mqttPassword = md5Hex(rriot.s + ':' + rriot.k).substring(16);
+        } catch (URISyntaxException e) {
+            logger.info("Malformed mqtt URL");
+        }
+
+        Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
+
+        final MqttClientDisconnectedListener disconnectListener = ctx -> {
+            boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
+                    && ctx.getCause() instanceof Mqtt3DisconnectException;
+            if (!expectedShutdown) {
+                logger.debug("MQTT disconnected (source {}): {}", ctx.getSource(), ctx.getCause().getMessage());
+                // mqttConnectTask.schedule(5);
+            }
+        };
+
+        final Mqtt3AsyncClient client = MqttClient.builder() //
+                .useMqttVersion3() //
+                .identifier(mqttUser) //
+                .simpleAuth(auth) //
+                .serverHost(mqttHost) //
+                .serverPort(mqttPort) //
+                .sslWithDefaultConfig() //
+                .addDisconnectedListener(disconnectListener) //
+                .buildAsync();
+        try {
+            logger.debug("Opening MQTT connection");
+            client.connect().get();
+
+            logger.debug("Established MQTT connection");
+            return client;
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RoborockCommunicationException(e);
+        }
+    }
+
     private void pollStatus() {
-        String mqttServer[] = rriot.r.m.split(":");
-        String mqttHost = mqttServer[0];
-        String mqttPort = mqttServer[1];
-        String mqttUser = webTargets.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-        String mqttPassword = webTargets.md5Hex(rriot.s + ':' + rriot.k).substring(16);
-        logger.info("host = {}, port = {}, user = {}, password = {}", mqttHost, mqttPort, mqttUser, mqttPassword);
 
         HomeData homeData;
         homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
