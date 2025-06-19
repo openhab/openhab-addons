@@ -131,6 +131,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     private void handleIRCommand(String irCommand, boolean replacement) {
+        logger.debug("***** DEBUG2 handle IR COMMAND");
         try {
             String message = "";
             if (replacement) {
@@ -146,8 +147,8 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 return;
             }
 
-            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
-                    new StringType(message + irCommand + "..."));
+            // sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
+            // Thread.sleep(200);
 
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
 
@@ -155,6 +156,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 logger.warn("Got nothing back while getting learnt code");
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
+                logger.debug("Received response with length {}", response.length);
                 String hexString = Utils.toHexString(extractResponsePayload(response));
                 String cmdLabel = null;
                 if (replacement) {
@@ -209,6 +211,8 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                         new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN));
                 sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                        new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN + " done"));
                 break;
             }
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK: {
@@ -231,6 +235,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("****Handling command ****");
         if (!Utils.isOnline(getThing())) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command,
                     getThing().getLabel());
