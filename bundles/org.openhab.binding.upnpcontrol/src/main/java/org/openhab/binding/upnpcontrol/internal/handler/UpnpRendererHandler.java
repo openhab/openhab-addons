@@ -63,6 +63,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaDevice;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -205,6 +206,10 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
 
         initDevice();
+
+        mediaService.registerDevice(
+                new MediaDevice("" + this.getThing().getLabel(), "" + this.getThing().getLabel(), "", "Upnp"));
+
     }
 
     @Override
