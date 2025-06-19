@@ -15,45 +15,22 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
 
   <properties>
-    <graalpy.version>24.2.0</graalpy.version>
+    <graalpy.version>24.2.1</graalpy.version>
   </properties>
 
   <dependencies>
     <!-- Graal Polyglot Framework -->
     <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>polyglot</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
       <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal TRegex engine (internally used by Graal Python engine) -->
-    <dependency>
-      <groupId>org.graalvm.regex</groupId>
-      <artifactId>regex</artifactId>
-      <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
-    <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>python-community</artifactId>
-      <version>${graalpy.version}</version>
-      <type>pom</type>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>embed-dependencies</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-plugin</artifactId>
@@ -104,42 +81,6 @@
                   <filtering>true</filtering>
                 </resource>
               </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.lastnpe.eea:eea-all</exclude>
-                  <exclude>org.apache.karaf.features:framework</exclude>
-                  <!-- we use OSGI-ified version, so we don't need the following -->
-                  <exclude>org.graalvm.sdk:collections</exclude>
-                  <exclude>org.graalvm.sdk:jniutils</exclude>
-                  <exclude>org.graalvm.sdk:nativeimage</exclude>
-                  <exclude>org.graalvm.sdk:word</exclude>
-                  <exclude>org.graalvm.shadowed:icu4j</exclude>
-                  <exclude>org.graalvm.shadowed:xz</exclude>
-                  <exclude>org.graalvm.truffle:truffle-compiler</exclude>
-                  <exclude>org.graalvm.truffle:truffle-runtime</exclude>
-                </excludes>
-              </artifactSet>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <!-- Transformer to merge module-info.class
-                  files, if needed -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
             </configuration>
           </execution>
         </executions>
