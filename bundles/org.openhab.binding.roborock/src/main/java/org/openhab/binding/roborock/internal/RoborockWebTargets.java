@@ -39,6 +39,7 @@ import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
+import org.openhab.binding.roborock.internal.util.HashUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,28 +82,12 @@ public class RoborockWebTargets {
         return new String(encoded);
     }
 
-    public String md5Hex(String data) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            // should never occur
-            throw new RuntimeException(e);
-        }
-        byte[] array = md.digest(data.getBytes());
-        StringBuilder sb = new StringBuilder();
-        for (byte b : array) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-
     private String getHawkAuthentication(String id, String secret, String key, String path)
             throws NoSuchAlgorithmException, InvalidKeyException {
 
         int timestamp = (int) Instant.now().getEpochSecond();
         String nonce = UUID.randomUUID().toString().substring(0, 8);
-        String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + md5Hex(path) + "::";
+        String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + HashUtil.md5Hex(path) + "::";
 
         Mac mac = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
