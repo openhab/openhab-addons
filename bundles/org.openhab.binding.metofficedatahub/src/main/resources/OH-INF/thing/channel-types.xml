@@ -210,6 +210,10 @@
 		<label>Previous Hour Snowfall</label>
 		<description>Total Snowfall Amount Over Previous Hour</description>
 		<category>Snow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
 
@@ -658,7 +662,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -671,7 +675,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -685,7 +689,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -699,7 +703,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -764,7 +768,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -777,7 +781,7 @@
 		<category>Rain</category>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
