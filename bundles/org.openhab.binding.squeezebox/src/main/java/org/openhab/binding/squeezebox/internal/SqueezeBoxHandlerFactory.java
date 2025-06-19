@@ -108,7 +108,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
         if (SQUEEZEBOXPLAYER_THING_TYPE.equals(thingTypeUID)) {
             logger.trace("Creating handler for player thing {}", thing);
             SqueezeBoxPlayerHandler playerHandler = new SqueezeBoxPlayerHandler(thing, createCallbackUrl(),
-                    stateDescriptionProvider);
+                    stateDescriptionProvider, mediaService);
 
             // Register the player as an audio sink
             logger.trace("Registering an audio sink for player thing {}", thing.getUID());

@@ -14,4 +14,11 @@
 
   <name>openHAB Add-ons :: Bundles :: SqueezeBox Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.media</artifactId>
+      <version>5.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>
