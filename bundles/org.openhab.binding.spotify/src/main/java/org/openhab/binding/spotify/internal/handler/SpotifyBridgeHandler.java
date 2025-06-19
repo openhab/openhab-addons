@@ -351,7 +351,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         List<Device> devices = spotifyApi.getDevices();
         for (Device device : devices) {
             logger.debug("devices:" + device.getName());
-            mediaService.registerDevice(new MediaDevice(device.getId(), device.getName(), device.getType()));
+            mediaService.registerDevice(new MediaDevice(device.getId(), device.getName(), device.getType(), "Spotify"));
 
         }
 
