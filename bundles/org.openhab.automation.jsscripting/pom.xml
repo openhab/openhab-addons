@@ -23,29 +23,17 @@
   <dependencies>
     <!-- Graal Polyglot Framework -->
     <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>polyglot</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
       <version>${graaljs.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Graal JavaScript ScriptEngine JSR 223 support -->
     <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js-scriptengine</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.js.js-scriptengine</artifactId>
       <version>${graaljs.version}</version>
-    </dependency>
-    <!-- Graal TRegex engine (internally used by Graal JavaScript engine) -->
-    <dependency>
-      <groupId>org.graalvm.regex</groupId>
-      <artifactId>regex</artifactId>
-      <version>${graaljs.version}</version>
-    </dependency>
-    <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
-    <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>js-community</artifactId>
-      <version>${graaljs.version}</version>
-      <type>pom</type>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
