@@ -21,5 +21,5 @@ import java.util.List;
  * @author Laurent Arnal - Initial contribution
  */
 public class Contracts extends Value {
-    public List<Contract> contrats = new ArrayList<Contract>();
+    public List<Contract> contracts = new ArrayList<Contract>();
 }
