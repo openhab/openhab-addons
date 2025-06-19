@@ -13,29 +13,34 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
@@ -50,8 +55,8 @@ import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 @WebSocket
 @NonNullByDefault
 public class MBWebsocket {
-    // timeout 14 Minutes - just below scheduling of 15 Minutes by AccountHandler
-    private static final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
+    // timeout stays unlimited until binding decides to close
+    private static final int CONNECT_TIMEOUT_MS = 0;
     // standard runtime of Websocket
     private static final int WS_RUNTIME_MS = 60 * 1000;
     // addon time of 1 minute for a new send command
@@ -62,12 +67,15 @@ public class MBWebsocket {
     private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
 
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
+    private final Map<String, Instant> pingPongMap = new HashMap<>();
+
+    private List<ClientMessage> commandQueue = new ArrayList<>();
+    private Optional<Session> session = Optional.empty();
+    private List<File> fileDumps = new ArrayList<>();
     private AccountHandler accountHandler;
     private HttpClient httpClient;
     private boolean running = false;
     private Instant runTill = Instant.now();
-    private @Nullable Session session;
-    private List<ClientMessage> commandQueue = new ArrayList<>();
 
     private boolean keepAlive = false;
 
@@ -91,10 +99,9 @@ public class MBWebsocket {
                 runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
             }
         }
+        WebSocketClient client = new WebSocketClient(httpClient);
         try {
-            WebSocketClient client = new WebSocketClient(httpClient);
             client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
-            client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
             if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
@@ -104,11 +111,13 @@ public class MBWebsocket {
             logger.trace("Websocket start {} max message size {}", websocketURL, client.getMaxBinaryMessageSize());
             client.start();
             client.connect(this, new URI(websocketURL), request);
+            Instant nextPing = Instant.now().plusMillis(60 * 1000);
             while (keepAlive || Instant.now().isBefore(runTill)) {
                 try {
                     Thread.sleep(CHECK_INTERVAL_MS);
                 } catch (InterruptedException ie) {
                     logger.trace("Websocket interrupted during sleeping - stop executing");
+                    Thread.currentThread().interrupt();
                     runTill = Instant.MIN;
                 }
                 // sends one message per second
@@ -116,10 +125,21 @@ public class MBWebsocket {
                     // add additional runtime to execute and finish command
                     runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
                 }
+                // send
+                if (Instant.now().isAfter(nextPing)) {
+                    // ping every minute
+                    ping();
+                    nextPing = Instant.now().plusMillis(60 * 1000);
+                }
             }
             logger.trace("Websocket stop");
-            client.stop();
-            client.destroy();
+            if (session.isPresent()) {
+                // close session normally and wait till next update cycle
+                session.get().close(1000, "Websocket closed by binding");
+            } else {
+                client.stop();
+                client.destroy();
+            }
         } catch (Throwable t) {
             // catch Exceptions of start stop and declare communication error
             accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -143,10 +163,13 @@ public class MBWebsocket {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
-                if (session != null) {
-                    session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                if (session.isPresent()) {
+                    session.get().getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                    return true;
+                } else {
+                    logger.warn("Cannot send message {} - no session available", message.getAllFields());
+                    return false;
                 }
-                return true;
             } catch (IOException e) {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
             }
@@ -156,15 +179,15 @@ public class MBWebsocket {
     }
 
     public void sendAcknowledgeMessage(ClientMessage message) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            message.writeTo(baos);
-            if (session != null) {
-                session.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+        session.ifPresent(s -> {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                message.writeTo(baos);
+                s.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+            } catch (IOException e) {
+                logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
             }
-        } catch (IOException e) {
-            logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
-        }
+        });
     }
 
     public void interrupt() {
@@ -195,6 +218,19 @@ public class MBWebsocket {
             }
         }
         keepAlive = b;
+    }
+
+    public void ping() {
+        logger.trace("Websocket ping {}", Instant.now().toString());
+        session.ifPresent(session -> {
+            try {
+                String pingId = UUID.randomUUID().toString();
+                pingPongMap.put(pingId, Instant.now());
+                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
+            } catch (IOException e) {
+                logger.warn("Websocket ping failed {}", e.getMessage());
+            }
+        });
     }
 
     /**
@@ -232,23 +268,53 @@ public class MBWebsocket {
         }
     }
 
+    @OnWebSocketFrame
+    public void onFrame(Frame frame) {
+        if (Frame.Type.PONG.equals(frame.getType())) {
+            ByteBuffer buffer = frame.getPayload();
+            byte[] bytes = new byte[frame.getPayloadLength()];
+            for (int i = 0; i < frame.getPayloadLength(); i++) {
+                bytes[i] = buffer.get(i);
+            }
+            String paylodString = new String(bytes);
+            Instant sent = pingPongMap.remove(paylodString);
+            if (sent == null) {
+                logger.debug("Websocket receiced pong without ping {}", paylodString);
+            }
+        } else if (Frame.Type.PING.equals(frame.getType())) {
+            session.ifPresentOrElse((session) -> {
+                ByteBuffer buffer = frame.getPayload();
+                try {
+                    session.getRemote().sendPong(buffer);
+                } catch (IOException e) {
+                    logger.warn("Websocket onPing answer exception {}", e.getMessage());
+                }
+            }, () -> {
+                logger.debug("Websocket onPing answer cannot be initiated");
+            });
+        }
+    }
+
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
+        pingPongMap.clear();
+        this.session = Optional.empty();
         logger.debug("Disconnected from server. Status {} Reason {}", statusCode, reason);
-        this.session = null;
         // ensure execution stop if disconnect was triggered from server side
         interrupt();
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
+        pingPongMap.clear();
+        this.session = Optional.of(session);
         accountHandler.updateStatus(ThingStatus.ONLINE);
-        this.session = session;
     }
 
     @OnWebSocketError
     public void onError(Throwable t) {
         logger.debug("Error during web socket connection - {}", t.getMessage());
+        pingPongMap.clear();
         accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/mercedesme.account.status.websocket-failure [\"" + t.getMessage() + "\"]");
     }
