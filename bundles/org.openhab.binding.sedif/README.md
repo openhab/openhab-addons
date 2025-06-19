@@ -1,6 +1,6 @@
 # Sedif Binding
 
-This binding enable to retrieve water consumption data for french ile de frannce consummer.
+This binding enables you to retrieve water consumption data for consumers in the Île-de-France region of France.
 
 It is based on the new Sedif - Eau Ile de France website : https://www.sedif.com/.
 
@@ -8,20 +8,21 @@ It is based on the new Sedif - Eau Ile de France website : https://www.sedif.com
 
 ## Supported Things
 
-The binding support two different things : sedif-web Bridge and sedif meter.
+The binding supports two different types of things: the `sedif-web` bridge and the `sedif` meter.
 
-- `sedif-web`: This bridge will act as the gateway between your sedif account and the sedif meter thing.
-- `sedif`: A sedif thing that will represent your water meter object, and will expose the water consumption.
+- `sedif-web`: This bridge acts as the gateway between your Sedif account and the Sedif meter thing.
+- `sedif`: A Sedif thing that represents your water meter and exposes your water consumption.
 
 ### Sedif Web Bridge Configuration
 
-To retrieve data, the Sedif device needs to be linked to a sedif-web-bridge. 
+To retrieve data, the Sedif device needs to be linked to a `sedif-web` bridge.
 
-You will need to create an account previour to configure your bridge.
-Go to the connection page, and click on the "Je créer mon espace" button.
+You will need to create an account prior to configuring your bridge.  
+Go to the login page and click on the "Je crée mon espace" button:  
 https://connexion.leaudiledefrance.fr/s/login/
 
-After this, add your bridge, and fill your username and password.
+
+After this, add your bridge and fill in your username and password.
 
       | Parameter      | Description                                |
       |----------------|--------------------------------------------|
@@ -34,7 +35,7 @@ After this, add your bridge, and fill your username and password.
 
 ### Water Meter Discovery
 
-After creating the bridge, the binding will populate the Inbox with meter registered on your sedif account.
+After creating the bridge, the binding will populate the inbox with meters registered in your Sedif account.
 
 ![Discovery](doc/WaterMeterDiscovery.png)
 
@@ -42,8 +43,8 @@ After creating the bridge, the binding will populate the Inbox with meter regist
 ### Sedif Thing Configuration
 
 To create a Sedif thing, you will need your contractId.
-You can find it in the sedif web site, under the section "Tous mes contrats". 
-You will see a list, with first column "Contrat" is the contractId.
+You can find it on the Sedif website, under the section "Tous mes contrats".
+You will see a list where the first column labeled "Contrat" is the contractId.
 
 
 | Name            | Type    | Description                                           | Default | Required | Advanced |
@@ -143,14 +144,12 @@ Number	ConsoYearMinus2  "Conso Year - 2 [%.0f %unit%]"   <energy> { channel="sed
 
 ### Timeseries and Graphs
 
-Thanks to timeseries channel, you will be able to exposer your water consumption has historical graph.
-For exemple, a weekly graph will show like this.
+Thanks to the timeseries channels, you will be able to expose your water consumption as historical graphs.
+For example, a weekly graph might look like this:
 ![SedifGraph](doc/SedifGraph.png)
 
-
-The code to obtains this graph.
-Note that you bind your series to one of the timeseries channel: ConsoDaily, ConsoWeekly, ConsoMonthly, ConsoYearly
-
+Here's the code to produce the graph.
+Note that you bind your series to one of the timeseries channels: ConsoDaily, ConsoWeekly, ConsoMonthly, or ConsoYearly.
 
 ```
 config:
@@ -205,27 +204,29 @@ slots:
 
 ### Historical Data Retrieve
 
-The first time you launch this binding, it will make multiple query to the sedif web site to get historical data.
-This request is done 3 month by 3 month, from the end of contract, to the begin of contract.
-Be warned that it can take some times (for ten years, takes around 2-3 minutes).
+The first time you launch this binding, it will send multiple requests to the Sedif website to retrieve historical data.
+This is done in 3-month chunks, from the end to the beginning of the contract.
 
-Thenthis data will be cached to userdata/sedif/sedif.json files.
-So on next launch, the binding will only retrieve the last data.
-And it will refresh every day to get new data.
+Be aware that this process can take some time (around 2–3 minutes for 10 years of data).
 
-If something go wrong, you can delete the sedif.json file to start from a fresh state.
+This data is then cached in userdata/sedif/sedif.json.
+On subsequent runs, the binding only retrieves the most recent data and refreshes daily.
+
+If something goes wrong, you can delete the sedif.json file to start fresh.
+
 
 ### Multiple Contract
 
-Sometimes, you can have multiple contract on your sedif account.
+You may have multiple contracts on your Sedif account:
 
-- Because you have multiple house with different meters:
-  In this case, just create has many sedif thing meters that you have different contract.
+Multiple properties with different meters:
+In this case, simply create as many sedif things as you have separate contracts.
 
-- Because of a contract change.
-  In this case, you can have two contract for the same meter.
-  So create only one seidf thing meter for the two contract.
-  Initialize one time with the older contract id to get the historical data from the first contract.
-  Then change the contactId to the second contract, and stop/restart openhab.
-  Like this you will get the full history of your meter.
+Contract change on the same meter:
+In this case, you may have two contracts for the same meter.
+Create only one sedif thing and follow this process:
 
+- Set the contractId to the older contract and let the binding retrieve the full historical data.
+- Then change the contractId to the new contract, and restart OpenHAB.
+
+This way, you will maintain the full history of the meter.
