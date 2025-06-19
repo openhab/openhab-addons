@@ -4,14 +4,23 @@
 
 	<feature name="openhab-automation-pythonscripting" description="Python Scripting" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/24.2.0</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-language/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-resources/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.regex.regex/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.json/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/${graalpy.version}</bundle>
+		<bundle dependency="true" start-level="79">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-api/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi/${graalpy.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/${graalpy.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.pythonscripting/${project.version}</bundle>
 	</feature>
 </features>
