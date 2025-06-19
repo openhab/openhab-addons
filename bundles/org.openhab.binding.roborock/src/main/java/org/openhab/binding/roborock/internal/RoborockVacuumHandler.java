@@ -118,6 +118,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollStatus() {
+        String mqttServer[] = rriot.r.m.split(":");
+        String mqttHost = mqttServer[0];
+        String mqttPort = mqttServer[1];
+        String mqttUser = webTargets.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
+        String mqttPassword = webTargets.md5Hex(rriot.s + ':' + rriot.k).substring(16);
+        logger.info("host = {}, port = {}, user = {}, password = {}", mqttHost, mqttPort, mqttUser, mqttPassword);
+
         HomeData homeData;
         homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
         if (homeData != null) {
