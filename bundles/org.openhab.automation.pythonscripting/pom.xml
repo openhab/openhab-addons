@@ -21,22 +21,11 @@
   <dependencies>
     <!-- Graal Polyglot Framework -->
     <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>polyglot</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
       <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal TRegex engine (internally used by Graal Python engine) -->
-    <dependency>
-      <groupId>org.graalvm.regex</groupId>
-      <artifactId>regex</artifactId>
-      <version>${graalpy.version}</version>
-    </dependency>
-    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
-    <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>python-community</artifactId>
-      <version>${graalpy.version}</version>
-      <type>pom</type>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
