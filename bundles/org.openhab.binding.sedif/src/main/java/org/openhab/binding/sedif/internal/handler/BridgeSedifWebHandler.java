@@ -248,8 +248,8 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // =====================================================================
         logger.debug("Step 6a: Get contract");
         Contracts contracts = sedifApi.getContracts();
-        if (contracts != null && contracts.contrats != null) {
-            for (Contract contract : contracts.contrats) {
+        if (contracts != null && contracts.contracts != null) {
+            for (Contract contract : contracts.contracts) {
                 String contractName = contract.name;
                 if (contractName != null) {
                     contractDict.put(contractName, contract);
