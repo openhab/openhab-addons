@@ -229,7 +229,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing the Linky handler {}", numCompteur);
+        logger.debug("Disposing the Sedif handler {}", numCompteur);
         ScheduledFuture<?> job = this.refreshJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
