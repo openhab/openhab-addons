@@ -71,7 +71,6 @@ public class LightState {
     private boolean compareXYWithTolerance(double @Nullable [] a, double @Nullable [] b, double tolerance) {
         return a == null || b == null || (a.length > 1) && (b.length > 1) && (Math.abs(a[0] - b[0]) < tolerance)
                 && (Math.abs(a[1] - b[1]) < tolerance);
-
     }
 
     /**
