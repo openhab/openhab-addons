@@ -21,7 +21,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <hikari.version>5.1.0</hikari.version>
-    <dbutils.version>1.8.1</dbutils.version>
+    <dbutils.version>1.6</dbutils.version>
     <yank.version>3.5.0</yank.version>
 
     <!-- JDBC database driver versions -->
