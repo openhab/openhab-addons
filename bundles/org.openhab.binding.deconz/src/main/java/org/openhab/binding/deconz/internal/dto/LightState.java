@@ -58,7 +58,7 @@ public class LightState {
      * @return true if equal
      */
     public boolean equalsIgnoreNull(LightState other) {
-        boolean colorsEqual = false;
+        boolean colorsEqual = true;
         if ("ct".equals(this.colormode) || "ct".equals(other.colormode)) {
             colorsEqual = equalsIgnoreNull(this.ct, other.ct);
         } else if ("hs".equals(this.colormode) || "hs".equals(other.colormode)) {
