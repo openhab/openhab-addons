@@ -17,7 +17,6 @@ import static org.openhab.binding.froniuswattpilot.internal.FroniusWattpilotBind
 import java.io.IOException;
 import java.net.NoRouteToHostException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -63,8 +62,6 @@ import com.florianhotze.wattpilot.dto.EnforcedChargingState;
 public class FroniusWattpilotHandler extends BaseThingHandler implements WattpilotClientListener {
     private final Logger logger = LoggerFactory.getLogger(FroniusWattpilotHandler.class);
     private final WattpilotClient client;
-
-    private @Nullable CompletableFuture<@Nullable Void> awaitDisconnect;
 
     private @Nullable FroniusWattpilotConfiguration config;
 
@@ -182,19 +179,12 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void dispose() {
-        if (client.isConnected()) {
-            CompletableFuture<@Nullable Void> awaitDisconnect = this.awaitDisconnect;
-            if (awaitDisconnect != null) {
-                awaitDisconnect.cancel(true);
-            }
-            awaitDisconnect = this.awaitDisconnect = new CompletableFuture<>();
-            client.disconnect();
-            try {
-                awaitDisconnect.get(3, TimeUnit.SECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.error("Failed to wait for disconnect", e);
-            }
+        try {
+            client.disconnect().get(3, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.error("Failed to disconnect", e);
         }
+        client.removeListener(this);
     }
 
     @Override
@@ -205,10 +195,6 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
-        CompletableFuture<@Nullable Void> awaitDisconnect = this.awaitDisconnect;
-        if (awaitDisconnect != null) {
-            awaitDisconnect.complete(null);
-        }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         if (cause instanceof TimeoutException || cause instanceof NoRouteToHostException
                 || cause instanceof EofException || cause instanceof Utf8Appendable.NotUtf8Exception) {
