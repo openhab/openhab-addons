@@ -88,7 +88,7 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
         if (msg.content == null || msg.content instanceof Map<?, ?>) {
             Map<String, Object> content = (Map<String, Object>) msg.content;
             Map<String, Object> payload = new HashMap<>();
-            if (msg.commandType == REQ_DEVINFO) {
+            if (msg.commandType == REQ_DEVINFO || msg.commandType == DP_REFRESH) {
                 if (content != null) {
                     payload.putAll(content);
                 }
