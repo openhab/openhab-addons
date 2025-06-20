@@ -65,6 +65,13 @@
 				<description>Enter the long polling time in seconds.</description>
 				<default>25</default>
 			</parameter>
+			<parameter name="replyIdToMessageIdMappings" type="text" required="false">
+				<label>Reply ID to Message ID Mappings</label>
+				<description>JSON formatted Mapping of Reply IDs to Message IDs. Needed to be able to delete Telegram Queries
+					after a
+					re-start of openHAB. In case of issues, you might delete the content.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
