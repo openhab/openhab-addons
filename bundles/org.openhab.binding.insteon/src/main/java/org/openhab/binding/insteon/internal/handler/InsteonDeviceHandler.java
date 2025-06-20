@@ -122,7 +122,6 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         InsteonBridgeHandler handler = getInsteonBridgeHandler();
         if (handler != null) {
             device = InsteonDevice.makeDevice(address, modem, handler.getProductData(address));
-            device.setPollInterval(handler.getDevicePollInterval());
             device.setIsDeviceSyncEnabled(handler.isDeviceSyncEnabled());
             handler.loadDeviceCache(device);
         } else {
@@ -213,7 +212,6 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
     public void bridgeThingUpdated(InsteonBridgeConfiguration config, InsteonModem modem) {
         InsteonDevice device = getDevice();
         if (device != null) {
-            device.setPollInterval(config.getDevicePollInterval());
             device.setIsDeviceSyncEnabled(config.isDeviceSyncEnabled());
             device.setModem(modem);
 
