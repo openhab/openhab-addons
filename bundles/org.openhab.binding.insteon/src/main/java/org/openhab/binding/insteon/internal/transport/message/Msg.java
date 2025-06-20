@@ -608,6 +608,18 @@ public class Msg {
         return priority.compareTo(msg.priority) < 0;
     }
 
+    /**
+     * Returns a copy of this message
+     *
+     * @return the copied message
+     */
+    public Msg copy() {
+        Msg msg = new Msg(data, definition);
+        msg.priority = priority;
+        msg.quietTime = quietTime;
+        return msg;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj == this) {

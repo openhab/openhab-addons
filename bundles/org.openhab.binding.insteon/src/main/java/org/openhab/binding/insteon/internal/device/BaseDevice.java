@@ -620,9 +620,9 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         setFeatureQueried(null);
         feature.setQueryMessage(null);
         feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
-        // poll feature again if device is responding
-        if (isResponding()) {
-            feature.poll(0L);
+        // resend feature query message if defined and device is responding
+        if (msg != null && isResponding()) {
+            sendMessage(msg.copy(), feature, 0L);
         }
     }
 
