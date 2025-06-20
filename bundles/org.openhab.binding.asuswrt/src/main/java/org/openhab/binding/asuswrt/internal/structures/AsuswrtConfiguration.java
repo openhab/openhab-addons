@@ -36,7 +36,6 @@ public class AsuswrtConfiguration {
     public String username = "";
     public String password = "";
     public int pollingInterval = 20;
-    public int reconnectInterval = 60;
     public int discoveryInterval = 3600;
     public int httpPort = 80;
     public int httpsPort = 443;
