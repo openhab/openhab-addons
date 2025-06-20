@@ -210,7 +210,7 @@
 		<description>Current step setting of the fan supplying air to the rooms</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state step="10" min="0" max="100" readOnly="true"/>
