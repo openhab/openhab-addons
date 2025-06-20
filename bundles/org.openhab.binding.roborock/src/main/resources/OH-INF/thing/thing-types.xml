@@ -47,6 +47,16 @@
 			<channel-group id="network" typeId="network"/>
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" unit="min" min="1" required="false">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies the refresh interval in minutes.</description>
+				<unitLabel>Minutes</unitLabel>
+				<default>5</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-group-type id="actions">

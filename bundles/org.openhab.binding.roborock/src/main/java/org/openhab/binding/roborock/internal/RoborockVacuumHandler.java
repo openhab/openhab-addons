@@ -17,10 +17,7 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +26,7 @@ import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.util.HashUtil;
+import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -63,15 +61,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Nullable
     RoborockAccountHandler bridgeHandler;
-    private @Nullable ScheduledFuture<?> pollFuture;
-
+    private final SchedulerTask initTask;
+    private final SchedulerTask reconnectTask;
+    private final SchedulerTask pollTask;
     private String token = "";
     private @Nullable Rriot rriot;
     private String rrHomeId = "";
     private @Nullable Mqtt3AsyncClient mqttClient;
+    private long lastSuccessfulPollTimestamp;
 
     public RoborockVacuumHandler(Thing thing) {
         super(thing);
+        initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
+        reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
+        pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
     }
 
     protected String getToken() {
@@ -109,29 +112,70 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (home != null) {
                 rrHomeId = Integer.toString(home.data.rrHomeId);
             }
-            updateStatus(ThingStatus.ONLINE);
-            schedulePoll();
+            initTask.setNamePrefix(getThing().getUID().getId());
+            reconnectTask.setNamePrefix(getThing().getUID().getId());
+            pollTask.setNamePrefix(getThing().getUID().getId());
+            initTask.submit();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
+        }
+    }
+
+    private synchronized void scheduleNextPoll(long initialDelaySeconds) {
+        final RoborockVacuumConfiguration config = getConfigAs(RoborockVacuumConfiguration.class);
+        final long delayUntilNextPoll;
+        if (initialDelaySeconds < 0) {
+            long intervalSeconds = config.refresh * 60;
+            long secondsSinceLastPoll = (System.currentTimeMillis() - lastSuccessfulPollTimestamp) / 1000;
+            long deltaRemaining = intervalSeconds - secondsSinceLastPoll;
+            delayUntilNextPoll = Math.max(0, deltaRemaining);
+        } else {
+            delayUntilNextPoll = initialDelaySeconds;
+        }
+        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", getThing().getUID().getId(),
+                delayUntilNextPoll, config.refresh);
+        pollTask.cancel();
+        pollTask.schedule(delayUntilNextPoll);
+    }
+
+    private void initDevice() {
+        connectToDevice();
+    }
+
+    private void teardownAndScheduleReconnection() {
+        teardown(true);
+    }
+
+    private synchronized void teardown(boolean scheduleReconnection) {
+        disconnect(scheduler);
+
+        pollTask.cancel();
+
+        reconnectTask.cancel();
+        initTask.cancel();
+
+        if (scheduleReconnection) {
+            SchedulerTask connectTask = reconnectTask;
+            connectTask.schedule(5);
+        }
+    }
+
+    private void connectToDevice() {
+        try {
+            connect(scheduler);
+            scheduleNextPoll(-1);
+            logger.debug("Device connected");
+            updateStatus(ThingStatus.ONLINE);
+        } catch (InterruptedException | RoborockCommunicationException e) {
+            logger.info("Failed to connect to device");
+            // should also set thing offline
         }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        stopPoll();
-    }
-
-    private void schedulePoll() {
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
-    }
-
-    private void stopPoll() {
-        final Future<?> future = pollFuture;
-        if (future != null) {
-            future.cancel(true);
-            pollFuture = null;
-        }
+        teardown(false);
     }
 
     // ecoVacs
@@ -202,7 +246,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 // }
             };
 
-            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
+            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/" + getThing().getUID().getId();
 
             client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
             logger.debug("Established MQTT connection to device {}", getThing().getUID().getId());
@@ -222,7 +266,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         this.mqttClient = null;
     }
 
-    private void pollStatus() {
+    private void pollData() {
         HomeData homeData;
         homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
         if (homeData != null) {
@@ -248,6 +292,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     }
                 }
             }
+            lastSuccessfulPollTimestamp = System.currentTimeMillis();
+            scheduleNextPoll(-1);
         }
 
         updateStatus(ThingStatus.ONLINE);
