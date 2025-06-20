@@ -54,12 +54,21 @@ public class LightState {
     /**
      * compares two light states and ignore all fields that are null in either state
      *
-     * @param o state to compare with
+     * @param other state to compare with
      * @return true if equal
      */
-    public boolean equalsIgnoreNull(LightState o) {
-        return equalsIgnoreNull(on, o.on) && equalsIgnoreNull(bri, o.bri) && equalsIgnoreNull(hue, o.hue)
-                && equalsIgnoreNull(sat, o.sat) && ((xy != null && o.xy != null) ? Arrays.equals(xy, o.xy) : true);
+    public boolean equalsIgnoreNull(LightState other) {
+        boolean colorsEqual = false;
+        if ("ct".equals(this.colormode) || "ct".equals(other.colormode)) {
+            colorsEqual = equalsIgnoreNull(this.ct, other.ct);
+        } else if ("hs".equals(this.colormode) || "hs".equals(other.colormode)) {
+            colorsEqual = equalsIgnoreNull(this.hue, other.hue) && equalsIgnoreNull(this.sat, other.sat);
+        } else if ("xy".equals(this.colormode) || "xy".equals(other.colormode)) {
+            colorsEqual = this.xy == null || other.xy == null
+                    || this.xy instanceof double[] thisXY && thisXY.length > 1 && other.xy instanceof double[] otherXY
+                            && otherXY.length > 1 && Math.abs(thisXY[0] - otherXY[0]) < 0.01 && Math.abs(thisXY[1] - otherXY[1]) < 0.01;
+        }
+        return colorsEqual && equalsIgnoreNull(this.on, other.on) && equalsIgnoreNull(this.bri, other.bri);
     }
 
     /**
