@@ -21,6 +21,10 @@
 				<type>solarforecast:latest-update</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="json" groupIds="raw">
+			</remove-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="solarforecast:sc-site">
@@ -40,6 +44,13 @@
 			<add-channel id="latest-update" groupIds="update">
 				<type>solarforecast:latest-update</type>
 			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="solarforecast:fs-plane">
+		<instruction-set targetVersion="1">
+			<remove-channel id="json">
+			</remove-channel>
 		</instruction-set>
 	</thing-type>
 
