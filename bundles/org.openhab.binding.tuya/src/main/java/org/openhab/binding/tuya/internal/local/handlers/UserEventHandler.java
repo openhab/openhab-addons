@@ -59,9 +59,8 @@ public class UserEventHandler extends ChannelDuplexHandler {
         String deviceId = ctx.channel().attr(TuyaDevice.DEVICE_ID_ATTR).get();
 
         if (cause instanceof IOException) {
-            logger.debug("{}{}: IOException caught, closing channel.", deviceId,
-                    Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), cause);
-            logger.debug("IOException caught: ", cause);
+            logger.debug("{}{}: {}, closing channel.", deviceId,
+                    Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), cause.getMessage());
         } else {
             logger.warn("{}{}: {} caught, closing the channel", deviceId,
                     Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), cause.getClass(), cause);
