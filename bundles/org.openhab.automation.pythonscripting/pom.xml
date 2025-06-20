@@ -16,6 +16,7 @@
 
   <properties>
     <graalpy.version>24.2.1</graalpy.version>
+    <helperlib.version>v1.0.0-rc3</helperlib.version>
   </properties>
 
   <dependencies>
@@ -57,7 +58,7 @@
             <configuration>
               <connectionUrl>scm:git:https://github.com/openhab/openhab-python</connectionUrl>
               <checkoutDirectory>${project.build.directory}/python</checkoutDirectory>
-              <scmVersion>v1.0.0-rc2</scmVersion>
+              <scmVersion>${helperlib.version}</scmVersion>
               <scmVersionType>tag</scmVersionType>
             </configuration>
           </execution>
