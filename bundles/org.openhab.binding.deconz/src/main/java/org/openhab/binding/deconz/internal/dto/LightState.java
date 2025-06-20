@@ -66,9 +66,7 @@ public class LightState {
         } else if (thisMode == ColorMode.HS || otherMode == ColorMode.HS) {
             colorsEqual = equalsIgnoreNull(this.hue, other.hue) && equalsIgnoreNull(this.sat, other.sat);
         } else if (thisMode == ColorMode.XY || otherMode == ColorMode.XY) {
-            colorsEqual = this.xy == null || other.xy == null
-                    || this.xy instanceof double[] thisXY && thisXY.length > 1 && other.xy instanceof double[] otherXY
-                            && otherXY.length > 1 && Math.abs(thisXY[0] - otherXY[0]) < 0.01 && Math.abs(thisXY[1] - otherXY[1]) < 0.01;
+            colorsEqual = compareXYWithTolerance(this.xy, other.xy, 0.01);
         }
         return colorsEqual && equalsIgnoreNull(this.on, other.on) && equalsIgnoreNull(this.bri, other.bri);
     }
