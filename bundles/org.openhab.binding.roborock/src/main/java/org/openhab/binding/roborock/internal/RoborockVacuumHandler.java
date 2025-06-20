@@ -18,12 +18,17 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.zip.CRC32;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -276,9 +281,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (homeData != null) {
             for (int i = 0; i < homeData.result.devices.length; i++) {
                 if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
-                    logger.info("Update channels");
-                    if (localKey.isEmpty())
+                    if (localKey.isEmpty()) {
                         localKey = homeData.result.devices[i].localKey;
+                    }
                     updateState(RoborockBindingConstants.CHANNEL_ERROR_ID,
                             new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
                     updateState(RoborockBindingConstants.CHANNEL_STATE,
@@ -305,16 +310,30 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    String bytesToString(byte[] data, Integer start, Integer length) {
+    public byte[] decrypt(byte[] payload, String key) throws Exception {
+        byte[] aesKeyBytes = md5bin(key);
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        SecretKeySpec keySpec = new SecretKeySpec(aesKeyBytes, "AES");
+        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+        logger.info("decrypt4");
+        return cipher.doFinal(payload);
+    }
+
+    private byte[] md5bin(String key) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        return md.digest(key.getBytes("UTF-8"));
+    }
+
+    String bytesToString(byte[] data, int start, int length) {
         return new String(data, start, length, StandardCharsets.UTF_8);
     }
 
-    int readInt32BE(byte[] data, Integer start) {
+    int readInt32BE(byte[] data, int start) {
         return (((data[start] & 0xFF) << 24) | ((data[start + 1] & 0xFF) << 16) | ((data[start + 2] & 0xFF) << 8)
                 | (data[start + 3] & 0xFF));
     }
 
-    int readInt16BE(byte[] data, Integer start) {
+    int readInt16BE(byte[] data, int start) {
         return (((data[start] & 0xFF) << 8) | (data[start + 1] & 0xFF));
     }
 
@@ -334,14 +353,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     String encodeTimestamp(int timestamp) {
         // Convert the timestamp to a hexadecimal string and pad it to ensure it's at least 8 characters
         String hex = new BigInteger(Long.toString(timestamp)).toString(16);
-        String hex2 = padLeftZeros(hex, 8);
-        logger.debug("hex2 = {}", hex2);
-        List<String> hexChars = hex2.toList();
+        hex = String.format("%8s", hex).replace(' ', '0');
+        List<String> hexChars = new ArrayList<>();
+        for (char c : hex.toCharArray()) {
+            hexChars.add(String.valueOf(c));
+        }
         // Define the order in which to rearrange the hexadecimal characters
-        // int[] order = [5, 6, 3, 7, 1, 2, 0, 4];
-        // String result = order.collect ( hexChars[it] ).join('');
-        // return result;
-        return hex;
+        int[] order = { 5, 6, 3, 7, 1, 2, 0, 4 };
+        StringBuilder result = new StringBuilder();
+        for (int index : order) {
+            result.append(hexChars.get(index));
+        }
+        logger.debug("encodedtimestamp = {}", result.toString());
+        return result.toString();
     }
 
     public void handleMessage(String eventName, byte[] message) {
@@ -357,7 +381,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         int expectedCrc32 = readInt32BE(message, message.length - 4);
         if (crc32.getValue() != expectedCrc32) {
-            logger.debug("message was not crc32 {} as expected {}", crc32, expectedCrc32);
+            logger.debug("message was not crc32 {} as expected {}", crc32.getValue(), expectedCrc32);
         }
         int sequence = readInt32BE(message, 3);
         int random = readInt32BE(message, 7);
@@ -369,9 +393,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         int payloadLen = readInt16BE(message, 17);
         byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen - 1);
+        String stringPayload = new String(payload, StandardCharsets.UTF_8);
         logger.debug(
                 "parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
                 version, sequence, random, timestamp, protocol, payloadLen);
+        logger.debug("payload = {}", payload);
         String key = encodeTimestamp(timestamp) + localKey + salt;
+        logger.debug(" key = {}, localKey = {}, salt = {}", key, localKey, salt);
+        try {
+            byte[] result = decrypt(payload, key);
+            String stringResult = new String(result, StandardCharsets.UTF_8);
+            logger.debug("stringResult = {}", stringResult);
+        } catch (Exception e) {
+            logger.debug("Exception decrypting payload");
+        }
     }
 }
