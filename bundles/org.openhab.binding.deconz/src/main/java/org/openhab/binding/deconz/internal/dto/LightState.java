@@ -51,6 +51,29 @@ public class LightState {
 
     public @Nullable Integer transitiontime;
 
+    private static enum ColorMode {
+        CT,
+        HS,
+        XY
+    }
+
+    private @Nullable ColorMode colorModeFrom(@Nullable String value) {
+        if (value != null) {
+            try {
+                return ColorMode.valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // fall through
+            }
+        }
+        return null;
+    }
+
+    private boolean compareXYWithTolerance(double @Nullable [] a, double @Nullable [] b, double tolerance) {
+        return a == null || b == null || (a.length > 1) && (b.length > 1) && (Math.abs(a[0] - b[0]) < tolerance)
+                && (Math.abs(a[1] - b[1]) < tolerance);
+
+    }
+
     /**
      * compares two light states and ignore all fields that are null in either state
      *
@@ -59,8 +82,8 @@ public class LightState {
      */
     public boolean equalsIgnoreNull(LightState other) {
         boolean colorsEqual = true;
-        ColorMode thisMode = ColorMode.fromString(this.colormode);
-        ColorMode otherMode = ColorMode.fromString(other.colormode);
+        ColorMode thisMode = colorModeFrom(this.colormode);
+        ColorMode otherMode = colorModeFrom(other.colormode);
         if (thisMode == ColorMode.CT || otherMode == ColorMode.CT) {
             colorsEqual = equalsIgnoreNull(this.ct, other.ct);
         } else if (thisMode == ColorMode.HS || otherMode == ColorMode.HS) {
