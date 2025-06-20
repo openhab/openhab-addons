@@ -59,11 +59,13 @@ public class LightState {
      */
     public boolean equalsIgnoreNull(LightState other) {
         boolean colorsEqual = true;
-        if ("ct".equals(this.colormode) || "ct".equals(other.colormode)) {
+        ColorMode thisMode = ColorMode.fromString(this.colormode);
+        ColorMode otherMode = ColorMode.fromString(other.colormode);
+        if (thisMode == ColorMode.CT || otherMode == ColorMode.CT) {
             colorsEqual = equalsIgnoreNull(this.ct, other.ct);
-        } else if ("hs".equals(this.colormode) || "hs".equals(other.colormode)) {
+        } else if (thisMode == ColorMode.HS || otherMode == ColorMode.HS) {
             colorsEqual = equalsIgnoreNull(this.hue, other.hue) && equalsIgnoreNull(this.sat, other.sat);
-        } else if ("xy".equals(this.colormode) || "xy".equals(other.colormode)) {
+        } else if (thisMode == ColorMode.XY || otherMode == ColorMode.XY) {
             colorsEqual = this.xy == null || other.xy == null
                     || this.xy instanceof double[] thisXY && thisXY.length > 1 && other.xy instanceof double[] otherXY
                             && otherXY.length > 1 && Math.abs(thisXY[0] - otherXY[0]) < 0.01 && Math.abs(thisXY[1] - otherXY[1]) < 0.01;
