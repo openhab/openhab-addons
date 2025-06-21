@@ -64,12 +64,20 @@
 		<label>Power</label>
 		<description>Is the HVAC unit powered on?</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hvac_mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>HVAC unit operation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<!-- Note: The value fields here map directly to coolmasternet commands -->
@@ -101,6 +109,10 @@
 	<channel-type id="fan_speed">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="l">Low</option>
@@ -115,6 +127,10 @@
 	<channel-type id="louvre_angle">
 		<item-type>String</item-type>
 		<label>Louvre Position</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Position</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">No Control</option>

@@ -10,6 +10,10 @@
 		<label>Switch</label>
 		<description>Switches the current on/off</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Dimmer Channel -->
@@ -18,6 +22,10 @@
 		<label>Dimmer</label>
 		<description>Dims the connected light</description>
 		<category>Lightbulb</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<!-- RollerShutter Channel -->
@@ -26,6 +34,10 @@
 		<label>Blinds Position</label>
 		<description>Controls the blinds</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
 				<label>Invert Position</label>
@@ -40,6 +52,10 @@
 		<label>State</label>
 		<description>Switches the state on/off</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- ThermostatActuator -->
@@ -120,6 +136,10 @@
 		<label>Contact</label>
 		<description>Shows the open/close state</description>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -129,6 +149,10 @@
 		<label>Smoke</label>
 		<description>Shows if smoke was detected</description>
 		<category>Smoke</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -138,6 +162,10 @@
 		<label>Alarm</label>
 		<description>Switches the alarm on/off</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- SirenActuator Channel (Alarm) -->
@@ -146,6 +174,10 @@
 		<label>Alarm</label>
 		<description>Switches the alarm of the siren on/off</description>
 		<category>Siren</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- SirenActuator Channel (Notification) -->
@@ -154,6 +186,10 @@
 		<label>Notification</label>
 		<description>Switches the notification sound of the siren on/off</description>
 		<category>Siren</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- SirenActuator Channel (Feedback) -->
@@ -162,6 +198,10 @@
 		<label>Feedback</label>
 		<description>Switches the feedback sound of the siren on/off</description>
 		<category>Siren</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- MotionDetectionSensor Channel -->
@@ -170,6 +210,10 @@
 		<label>Motion Count</label>
 		<description>The count of detected motions</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -206,6 +250,10 @@
 		<label>Total Consumption</label>
 		<description>The absolute energy consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -224,6 +272,10 @@
 		<label>Consumption Costs (day)</label>
 		<description>The energy consumption per day in Euro</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -233,6 +285,10 @@
 		<label>Consumption (day)</label>
 		<description>The energy consumption per day in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -242,6 +298,10 @@
 		<label>Current Power Consumption</label>
 		<description>The current power consumption in Watt</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -260,6 +320,10 @@
 		<label>Total Generation</label>
 		<description>The total energy generation</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -278,6 +342,10 @@
 		<label>Generation Value (day)</label>
 		<description>The energy generation per day in Euro</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -287,6 +355,10 @@
 		<label>Generation (day)</label>
 		<description>The energy generation per day in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -296,6 +368,10 @@
 		<label>Current Power Generation</label>
 		<description>The current power generation in Watt</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -305,6 +381,10 @@
 		<label>Total Consumption</label>
 		<description>The total energy consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -323,6 +403,10 @@
 		<label>Total Fed</label>
 		<description>The total energy fed</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -341,6 +425,10 @@
 		<label>Feed Income (day)</label>
 		<description>The energy feed per day in Euro</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -350,6 +438,10 @@
 		<label>Feed (day)</label>
 		<description>The energy feed per day in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

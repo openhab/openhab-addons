@@ -161,6 +161,10 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stops the player. ON if the player is stopped.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="playuri" advanced="true">

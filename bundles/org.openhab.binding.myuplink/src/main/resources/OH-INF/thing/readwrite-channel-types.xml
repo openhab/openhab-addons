@@ -7,6 +7,10 @@
 	<channel-type id="rwtype-switch">
 		<item-type>Switch</item-type>
 		<label>Generic Switch</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="rwtype-command" advanced="true">

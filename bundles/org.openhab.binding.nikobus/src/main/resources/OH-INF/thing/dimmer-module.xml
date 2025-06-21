@@ -59,6 +59,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Output</label>
 		<description>Dimmer Module's Output</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

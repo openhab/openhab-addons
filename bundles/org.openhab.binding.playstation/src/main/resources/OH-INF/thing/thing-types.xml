@@ -49,12 +49,20 @@
 		<item-type>Switch</item-type>
 		<label>PlayStation 3 Power</label>
 		<description>Shows if PlayStation 3 is On or Off.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 4 Power</label>
 		<description>Shows if PlayStation 4 is On or in Standby/Off.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
@@ -67,6 +75,10 @@
 		<label>Application ID</label>
 		<description>ID of the Currently running application.</description>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="applicationImage-channel">
 		<item-type>Image</item-type>

@@ -42,6 +42,10 @@
 		<item-type>DateTime</item-type>
 		<label>Date and Time</label>
 		<description>Date and time when the event happened.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
