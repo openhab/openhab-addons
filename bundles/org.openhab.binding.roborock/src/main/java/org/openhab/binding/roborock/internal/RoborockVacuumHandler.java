@@ -452,14 +452,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     public void sendCommand(String method, String params) throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
-        int protocol = 102;
+        int protocol = 101;
         Random random = new Random();
         int id = random.nextInt(22767 + 1) + 10000;
 
         Map<String, Object> inner = new HashMap<>();
         inner.put("id", id);
         inner.put("method", method);
-        // inner.put("params", params);
+        inner.put("params", "[]");
 
         Map<String, Object> dps = new HashMap<>();
         dps.put(Integer.toString(protocol), new Gson().toJson(inner));
