@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,11 +33,12 @@ import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solarman.internal.defmodel.Lookup;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
-import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
+import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
@@ -64,7 +65,7 @@ public class SolarmanChannelUpdater {
     }
 
     public SolarmanProcessResult fetchDataFromLogger(List<Request> requests,
-            SolarmanLoggerConnector solarmanLoggerConnector, SolarmanV5Protocol solarmanV5Protocol,
+            SolarmanLoggerConnector solarmanLoggerConnector, SolarmanProtocol solarmanProtocol,
             Map<ParameterItem, ChannelUID> paramToChannelMapping) {
         try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector.createConnection()) {
             logger.debug("Fetching data from logger");
@@ -77,7 +78,7 @@ public class SolarmanChannelUpdater {
             SolarmanProcessResult solarmanProcessResult = requests.stream().map(request -> {
                 try {
                     return SolarmanProcessResult.ofValue(request,
-                            solarmanV5Protocol.readRegisters(solarmanLoggerConnection,
+                            solarmanProtocol.readRegisters(solarmanLoggerConnection,
                                     (byte) request.getMbFunctioncode().intValue(), request.getStart(),
                                     request.getEnd()));
                 } catch (SolarmanException e) {
@@ -120,6 +121,7 @@ public class SolarmanChannelUpdater {
                 .map(rawVal -> String.format("%02d", rawVal / 100) + ":" + String.format("%02d", rawVal % 100))
                 .collect(Collectors.joining());
 
+        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
@@ -143,6 +145,7 @@ public class SolarmanChannelUpdater {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/M/d H:m:s");
             LocalDateTime dateTime = LocalDateTime.parse(stringValue, formatter);
 
+            logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), dateTime.toString());
             stateUpdater.updateState(channelUID, new DateTimeType(dateTime.atZone(ZoneId.systemDefault())));
         } catch (DateTimeParseException e) {
             logger.debug("Unable to parse string date {} to a DateTime object", stringValue);
@@ -156,6 +159,7 @@ public class SolarmanChannelUpdater {
                         + (rawVal & 0x0F))
                 .collect(Collectors.joining());
 
+        logger.debug("Update Version state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
@@ -166,6 +170,7 @@ public class SolarmanChannelUpdater {
             return acc.append((char) (shortValue >> 8)).append((char) (shortValue & 0xFF));
         }, StringBuilder::append).toString();
 
+        logger.debug("Update String state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
@@ -175,23 +180,37 @@ public class SolarmanChannelUpdater {
         BigDecimal convertedValue = convertNumericValue(value, parameterItem.getOffset(), parameterItem.getScale());
         String uom = Objects.requireNonNullElse(parameterItem.getUom(), "");
 
-        State state;
-        if (!uom.isBlank()) {
-            try {
-                Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
-                if (unitFromDefinition != null) {
-                    state = new QuantityType<>(convertedValue, unitFromDefinition);
-                } else {
-                    logger.debug("Unable to parse unit: {}", uom);
+        if (parameterItem.hasLookup()) {
+            String stringValue = getStringFromLookupList(value.intValue(), parameterItem.getLookup());
+            logger.debug("Update Lookup state: channelUID: {}, key: {}, state: {}", channelUID.getAsString(),
+                    value.intValue(), stringValue);
+            stateUpdater.updateState(channelUID, new StringType(stringValue));
+        } else {
+            State state;
+            if (!uom.isBlank()) {
+                try {
+                    Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
+                    if (unitFromDefinition != null) {
+                        state = new QuantityType<>(convertedValue, unitFromDefinition);
+                    } else {
+                        logger.debug("Unable to parse unit: {}", uom);
+                        state = new DecimalType(convertedValue);
+                    }
+                } catch (MeasurementParseException e) {
                     state = new DecimalType(convertedValue);
                 }
-            } catch (MeasurementParseException e) {
+            } else {
                 state = new DecimalType(convertedValue);
             }
-        } else {
-            state = new DecimalType(convertedValue);
+            logger.debug("Update Numeric state: channelUID: {}, state: {}", channelUID.getAsString(),
+                    state.toFullString());
+            stateUpdater.updateState(channelUID, state);
         }
-        stateUpdater.updateState(channelUID, state);
+    }
+
+    private @Nullable String getStringFromLookupList(int key, List<Lookup> lookupList) {
+        return lookupList.stream().filter(lookup -> key == lookup.getKey()).map(Lookup::getValue).findFirst()
+                .orElse("");
     }
 
     private void updateChannelWithRawValue(ParameterItem parameterItem, ChannelUID channelUID, List<Integer> registers,
@@ -200,7 +219,7 @@ public class SolarmanChannelUpdater {
                 reversed(registers).stream().map(readRegistersMap::get).map(
                         val -> String.format("0x%02X", ByteBuffer.wrap(val).order(ByteOrder.BIG_ENDIAN).getShort()))
                         .collect(Collectors.joining(",")));
-
+        logger.debug("Update RawValue state: channelUID: {}, state: {}", channelUID.getAsString(), hexString);
         stateUpdater.updateState(channelUID, new StringType(hexString));
     }
 

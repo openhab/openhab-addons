@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,19 +19,14 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlComman
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.emotiva.internal.EmotivaCommandHelper;
-import org.openhab.binding.emotiva.internal.EmotivaProcessorState;
 import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -42,6 +37,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Unit tests for EmotivaControl requests.
@@ -49,7 +45,7 @@ import org.openhab.core.types.State;
  * @author Espen Fossen - Initial contribution
  */
 @NonNullByDefault
-class EmotivaControlRequestTest {
+class EmotivaControlRequestTest extends AbstractEmotivaControlTest {
 
     private static Stream<Arguments> channelToDTOs() {
         return Stream.of(Arguments.of(CHANNEL_STANDBY, OnOffType.ON, standby, PROTOCOL_V2, "0"),
@@ -133,7 +129,7 @@ class EmotivaControlRequestTest {
                 Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("HDMI1"), hdmi1, PROTOCOL_V2, "0"),
                 Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("SHIELD"), source_2, PROTOCOL_V2, "0"),
                 Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("hdmi1"), hdmi1, PROTOCOL_V2, "0"),
-                Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("coax1"), none, PROTOCOL_V2, "0"),
+                Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("coax1"), coax1, PROTOCOL_V2, "0"),
                 Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("zone2_coax1"), zone2_coax1, PROTOCOL_V2, "0"),
                 Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("zone2_ARC"), zone2_ARC, PROTOCOL_V2, "0"),
                 Arguments.of(CHANNEL_ZONE2_SOURCE, new StringType("NOT_REAL"), none, PROTOCOL_V2, "0"),
@@ -208,47 +204,6 @@ class EmotivaControlRequestTest {
                         "-2.0"));
     }
 
-    private static final EnumMap<EmotivaControlCommands, String> MAP_SOURCES_MAIN_ZONE = new EnumMap<>(
-            EmotivaControlCommands.class);
-    private static final EnumMap<EmotivaControlCommands, String> MAP_SOURCES_ZONE_2 = new EnumMap<>(
-            EmotivaControlCommands.class);
-    private static final EnumMap<EmotivaControlCommands, String> CHANNEL_MAP = new EnumMap<>(
-            EmotivaControlCommands.class);
-    private static final EnumMap<EmotivaControlCommands, String> RADIO_BAND_MAP = new EnumMap<>(
-            EmotivaControlCommands.class);
-    private static final Map<String, State> STATE_MAP = Collections.synchronizedMap(new HashMap<>());
-    private static final EmotivaProcessorState state = new EmotivaProcessorState();
-
-    @BeforeAll
-    static void beforeAll() {
-        MAP_SOURCES_MAIN_ZONE.put(source_1, "HDMI 1");
-        MAP_SOURCES_MAIN_ZONE.put(source_2, "SHIELD");
-        MAP_SOURCES_MAIN_ZONE.put(hdmi1, "HDMI1");
-        MAP_SOURCES_MAIN_ZONE.put(coax1, "Coax 1");
-        state.setSourcesMainZone(MAP_SOURCES_MAIN_ZONE);
-
-        MAP_SOURCES_ZONE_2.put(source_1, "HDMI 1");
-        MAP_SOURCES_ZONE_2.put(source_2, "SHIELD");
-        MAP_SOURCES_ZONE_2.put(hdmi1, "HDMI1");
-        MAP_SOURCES_ZONE_2.put(zone2_coax1, "Coax 1");
-        MAP_SOURCES_ZONE_2.put(zone2_ARC, "Audio Return Channel");
-        MAP_SOURCES_ZONE_2.put(zone2_follow_main, "Follow Main");
-        state.setSourcesZone2(MAP_SOURCES_ZONE_2);
-
-        CHANNEL_MAP.put(channel_1, "Channel 1");
-        CHANNEL_MAP.put(channel_2, "Channel 2");
-        CHANNEL_MAP.put(channel_3, "My Radio Channel");
-        state.setChannels(CHANNEL_MAP);
-
-        RADIO_BAND_MAP.put(band_am, "AM");
-        RADIO_BAND_MAP.put(band_fm, "FM");
-        state.setTunerBands(RADIO_BAND_MAP);
-
-        STATE_MAP.put(CHANNEL_TREBLE, new DecimalType(-3));
-        STATE_MAP.put(CHANNEL_TUNER_CHANNEL, new StringType("FM    87.50MHz"));
-        STATE_MAP.put(CHANNEL_FREQUENCY, QuantityType.valueOf(107.90, Units.HERTZ));
-    }
-
     @ParameterizedTest
     @MethodSource("channelToDTOs")
     void createDTO(String channel, Command ohValue, EmotivaControlCommands controlCommand,
@@ -256,7 +211,8 @@ class EmotivaControlRequestTest {
         EmotivaControlRequest controlRequest = EmotivaCommandHelper.channelToControlRequest(channel, state,
                 protocolVersion);
 
-        EmotivaControlDTO dto = controlRequest.createDTO(ohValue, STATE_MAP.get(channel));
+        Optional<State> previousState = state.getChannel(channel).or(() -> Optional.of(UnDefType.UNDEF));
+        EmotivaControlDTO dto = controlRequest.createDTO(ohValue, previousState.get());
         assertThat(dto.getCommands().size(), is(1));
         assertThat(dto.getCommands().get(0).getName(), is(controlCommand.name()));
         assertThat(dto.getCommands().get(0).getValue(), is(requestValue));

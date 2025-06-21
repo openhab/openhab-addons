@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tellstick.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Bridge;
 import org.tellstick.device.iface.Device;
 import org.tellstick.device.iface.TellstickEvent;
@@ -22,12 +23,13 @@ import org.tellstick.device.iface.TellstickEvent;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public interface DeviceStatusListener {
 
     /**
      * This method is called whenever the state of the given device has changed.
      * The new state can be obtained by
-     * {@link org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice#getState()} /
+     * {@link org.openhab.binding.tellstick.internal.live.dto.TellstickNetDevice#getState()} /
      * {@link org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO#getState()}.
      *
      * @param bridge

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.reactivex.annotations.NonNull;
 
 /**
  * The {@link ShellyHandlerFactory} is responsible for creating things and thing handlers.
@@ -126,7 +124,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
-                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
+                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
+                || thingType.equals(THING_TYPE_SHELLYPLUSRGBWPM_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
@@ -155,7 +154,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      * Remove handler of things.
      */
     @Override
-    protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof ShellyBaseHandler shellyBaseHandler) {
             shellyBaseHandler.stop();
             String uid = thingHandler.getThing().getUID().getAsString();

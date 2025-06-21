@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -340,7 +340,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, refreshInterval, TimeUnit.SECONDS);
         }
         if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
-            queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
+            queueConsumerThread = new Thread(new QueueConsumer(commandQueue),
+                    "OH-binding-" + getThing().getUID() + "-max-queue-consumer");
             queueConsumerThread.setDaemon(true);
             queueConsumerThread.start();
         }

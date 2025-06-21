@@ -7,16 +7,17 @@
 	<thing-type id="WebOSTV">
 		<label>WebOS TV</label>
 		<description>WebOS based smart TV</description>
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="volume" typeId="system.volume"/>
-			<channel id="channel" typeId="channelType"/>
+			<channel id="channel" typeId="channel"/>
 			<channel id="toast" typeId="toastType"/>
 			<channel id="mediaPlayer" typeId="system.media-control"/>
 			<channel id="mediaStop" typeId="mediaStopType"/>
-			<channel id="appLauncher" typeId="appLauncherChannelType"/>
+			<channel id="appLauncher" typeId="app-launcher"/>
 			<channel id="rcButton" typeId="rcButtonType"/>
 		</channels>
 
@@ -26,6 +27,7 @@
 			<property name="deviceOS"/>
 			<property name="deviceOSVersion"/>
 			<property name="deviceOSReleaseVersion"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
 
@@ -33,10 +35,14 @@
 		<config-description-ref uri="thing-type:lgwebos:WebOSTV"/>
 	</thing-type>
 
-	<channel-type id="channelType">
+	<channel-type id="channel">
 		<item-type>String</item-type>
 		<label>Channel</label>
 		<description>Current Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="toastType">
 		<item-type>String</item-type>
@@ -47,11 +53,19 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop Playback</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
-	<channel-type id="appLauncherChannelType">
+	<channel-type id="app-launcher">
 		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Start application and monitor running applications.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="rcButtonType">
 		<item-type>String</item-type>

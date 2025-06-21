@@ -7,7 +7,7 @@
 	<thing-type id="tesla-powerwall">
 		<label>Tesla Powerwall</label>
 		<description>Tesla Powerwall</description>
-
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 		<channels>
 			<channel id="grid-status" typeId="grid-status"/>
 			<channel id="grid-services" typeId="grid-services"/>
@@ -57,6 +57,10 @@
 		<item-type>String</item-type>
 		<label>Grid Status</label>
 		<description>Current status of the power grid</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-services">
@@ -69,101 +73,169 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery SOE</label>
 		<description>Current battery state of charge</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
 		<description>Current operating mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="reserve">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Reserve</label>
 		<description>Current battery reserve %</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="grid-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Grid Power</label>
 		<description>Instantaneous grid power supply</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="battery-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Battery Power</label>
 		<description>Instantaneous battery power supply</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="home-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Home Power</label>
 		<description>Instantaneous home power supply</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Solar Power</label>
 		<description>Instantaneous solar power supply</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="grid-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Energy Exported</label>
 		<description>Total grid energy exported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="battery-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Exported</label>
 		<description>Total battery energy exported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="home-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Home Energy Exported</label>
 		<description>Total home energy exported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy Exported</label>
 		<description>Total solar energy exported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="grid-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Energy Imported</label>
 		<description>Total grid energy imported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="battery-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Imported</label>
 		<description>Total battery energy imported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="home-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Home Energy Imported</label>
 		<description>Total home energy emported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy Imported</label>
 		<description>Total solar energy imported</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="full-pack-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Full Pack Energy</label>
 		<description>Battery full pack energy</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="degradation">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Degradation</label>
 		<description>Current battery degradation %, based on 13.5kW full capacity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 

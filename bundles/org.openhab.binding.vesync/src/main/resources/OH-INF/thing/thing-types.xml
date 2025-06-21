@@ -7,7 +7,7 @@
 	<bridge-type id="bridge">
 		<label>VeSync Bridge</label>
 		<description>The VeSync bridge represents the VeSync cloud service.</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<properties>
 			<property name="Registration Time"/>
 			<property name="Country Code"/>
@@ -37,8 +37,54 @@
 				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="outletPollInterval" type="integer" min="5" step="1" unit="s">
+				<label>Outlet Poll Rate</label>
+				<description>Seconds between fetching background updates about the outlets.</description>
+				<default>60</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<thing-type id="outlet">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Outlet via VeSync</label>
+		<description>An Outlet uplinking to VeSync</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="enabled" typeId="deviceEnabledType"/>
+			<channel id="current" typeId="currentType"/>
+			<channel id="energy" typeId="energyType"/>
+			<channel id="power" typeId="powerType"/>
+			<channel id="voltage" typeId="voltageType"/>
+			<channel id="highestVoltage" typeId="highestVoltageType"/>
+			<channel id="voltagePTStatus" typeId="voltagePTStatusType"/>
+			<channel id="energyWeek" typeId="energyWeekType"/>
+			<channel id="energyMonth" typeId="energyMonthType"/>
+			<channel id="energyYear" typeId="energyYearType"/>
+		</channels>
+
+		<properties>
+			<property name="deviceName"/>
+			<property name="deviceType"/>
+			<property name="mac"/>
+			<property name="deviceFamily"/>
+		</properties>
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="mac" type="text">
+				<label>MAC</label>
+				<description>The MAC of the device as reported by the API.</description>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<thing-type id="airPurifier">
 		<supported-bridge-type-refs>
@@ -47,7 +93,7 @@
 
 		<label>Air Purifier via VeSync</label>
 		<description>An Air Purifier uplinking to VeSync</description>
-
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="enabled" typeId="deviceEnabledType"/>
 			<channel id="childLock" typeId="deviceChildLockEnabledType"/>
@@ -64,6 +110,8 @@
 			<channel id="configAutoRoomSize" typeId="deviceAFConfigAutoPrefRoomSizeType"/>
 			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
 			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
+			<channel id="lightDetection" typeId="deviceAFLightDetection"/>
+			<channel id="lightDetected" typeId="deviceAFLightDetected"/>
 		</channels>
 
 		<properties>
@@ -71,6 +119,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 			<property name="Device Family"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>macId</representation-property>
 
@@ -94,7 +143,7 @@
 
 		<label>Air Humidifier via VeSync</label>
 		<description>An Air Humidifier uplinking to VeSync</description>
-
+		<semantic-equipment-tag>Humidifier</semantic-equipment-tag>
 		<channels>
 			<channel id="enabled" typeId="deviceEnabledType"/>
 			<channel id="display" typeId="deviceDisplayEnabledType"/>
@@ -109,6 +158,8 @@
 			<channel id="humiditySetpoint" typeId="deviceConfigTargetHumidity"/>
 			<channel id="warmEnabled" typeId="warmModeEnabled"/>
 			<channel id="warmLevel" typeId="warmLevel"/>
+			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
+			<channel id="timerExpiry" typeId="deviceAFTimerExpiry"/>
 		</channels>
 
 		<properties>
@@ -116,6 +167,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 			<property name="Device Family"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>macId</representation-property>
 
@@ -132,10 +184,112 @@
 
 	</thing-type>
 
+	<channel-type id="currentType">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Actual current in A</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<description>Today's energy in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="powerType">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Power</label>
+		<description>Current power in W</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltageType">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current Voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="highestVoltageType">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Highest Voltage</label>
+		<description>Highest Voltage ever measured by the outlet</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltagePTStatusType">
+		<item-type>Switch</item-type>
+		<label>Voltage PT Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energyWeekType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Week</label>
+		<description>Total energy of week in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyMonthType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Month</label>
+		<description>Total energy of month in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyYearType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Year</label>
+		<description>Total energy of year in kWh</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
 	<channel-type id="deviceEnabledType">
 		<item-type>Switch</item-type>
 		<label>Switched On</label>
 		<description>Indicator if the device is switched on</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -143,6 +297,10 @@
 		<item-type>Switch</item-type>
 		<label>Display Lock</label>
 		<description>Indicator if the devices child lock is enabled (Display Lock)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -150,14 +308,18 @@
 		<item-type>Switch</item-type>
 		<label>Display</label>
 		<description>Indicator if the devices display is enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="deviceFilterLifePercentageType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Filter Life Remaining</label>
 		<description>Indicator of the remaining filter life</description>
-		<state readOnly="true" pattern="%.0f %%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="airPurifierModeType">
@@ -169,6 +331,7 @@
 				<option value="auto">Auto</option>
 				<option value="manual">Manual Fan Control</option>
 				<option value="sleep">Sleeping Auto</option>
+				<option value="pet">Pet Auto</option>
 			</options>
 		</state>
 	</channel-type>
@@ -177,6 +340,10 @@
 		<item-type>String</item-type>
 		<label>Night Light</label>
 		<description>The operating mode of the night light functionality</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="on">On</option>
@@ -188,14 +355,18 @@
 
 
 	<channel-type id="airPurifierFanLevelType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Fan Speed</label>
 		<description>Indicator of the current fan speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="deviceErrorCodeType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Device Error Code</label>
 		<description>Indicator of the current error code of the device</description>
 		<state readOnly="true" pattern="%.0f"/>
@@ -205,13 +376,21 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Air Quality</label>
 		<description>System representation of air quality</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="airQualityPM25">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -219,12 +398,42 @@
 		<item-type>Switch</item-type>
 		<label>Config: Display Forever</label>
 		<description>Configuration: If the devices display is enabled forever</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="deviceAFLightDetection">
+		<item-type>Switch</item-type>
+		<label>Light Detection</label>
+		<description>If the devices light detection is enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceAFLightDetected">
+		<item-type>Switch</item-type>
+		<label>Light Detected</label>
+		<description>Indicator if the device detects light</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefType">
 		<item-type>String</item-type>
 		<label>Config: Auto Mode</label>
 		<description>The operating mode when the air purifier is set to auto</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="default">Auto (Air Quality)</option>
@@ -238,18 +447,22 @@
 		<item-type>DateTime</item-type>
 		<label>Auto Off Expiry</label>
 		<description>The time when the auto off timer will be reached</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefRoomSizeType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ft2">Number:Area</item-type>
 		<label>Config: Room size</label>
-		<description>Room size (foot sq) for efficient auto mode</description>
-		<state readOnly="true" pattern="%.0f sq ft"/>
+		<description>Room size for efficient auto mode</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoScheduleCountType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Config: Schedules Count</label>
 		<description>The current number of schedules configured</description>
 		<state readOnly="true" pattern="%.0f"/>
@@ -260,6 +473,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Low/Empty</label>
 		<description>Indicator if the devices water is low or empty</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -267,6 +484,10 @@
 		<item-type>Switch</item-type>
 		<label>High Humidity</label>
 		<description>Indicator if the device is measuring high humidity</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -274,6 +495,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Tank Removed</label>
 		<description>Indicator if the device is reporting the water tank as removed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -281,6 +506,10 @@
 		<item-type>Switch</item-type>
 		<label>Stop @ Set Point</label>
 		<description>Indicator if the device is set to stop when the humidity set point has been reached</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -288,6 +517,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Level</label>
 		<description>System representation of humidity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -295,13 +528,21 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Set Point</label>
 		<description>Humidity Set Point</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceMistLevelType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Mist Level</label>
 		<description>System representation of mist level</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 
@@ -322,15 +563,22 @@
 		<item-type>Switch</item-type>
 		<label>Warm Mode Enabled</label>
 		<description>Indicator if the device is set to warm mist</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="warmLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Warm Level</label>
 		<description>Warm Level</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
-
 
 </thing:thing-descriptions>

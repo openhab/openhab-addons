@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.tellstick.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Runtime exception in tellstick binding.
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TellstickRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -1644730263645760297L;

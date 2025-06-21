@@ -7,8 +7,9 @@
 	<thing-type id="goe">
 		<label>Go-eCharger</label>
 		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
+			<channel id="awattarMaxPrice" typeId="awp"/>
 			<channel id="maxCurrent" typeId="current"/>
 			<channel id="maxCurrentTemp" typeId="maxCurrTmp"/>
 			<channel id="pwmSignal" typeId="pwm"/>
@@ -37,11 +38,23 @@
 			<channel id="temperature" typeId="tmp"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
-			<parameter name="ip" type="text" required="true">
+			<parameter name="ip" type="text" required="false">
 				<label>IP Address</label>
 				<description>The IP address of the Go-eCharger</description>
 				<context>network-address</context>
+			</parameter>
+			<parameter name="serial" type="text" required="false">
+				<label>Serial Number</label>
+				<description>The serial number of the Go-eCharger</description>
+			</parameter>
+			<parameter name="token" type="text" required="false">
+				<label>Cloud Access Token</label>
+				<description>The access token for the Go-eCharger Cloud API</description>
 			</parameter>
 			<parameter name="apiVersion" type="integer" required="false" min="1" max="2">
 				<label>API version</label>
@@ -177,6 +190,11 @@
 		<label>Force state</label>
 		<description>Force state (Neutral=0, Off=1, On=2)</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="awp">
+		<item-type>Number</item-type>
+		<label>Awatttar Max Price</label>
+		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="scl">
 		<item-type>Number:Energy</item-type>

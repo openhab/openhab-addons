@@ -1,6 +1,6 @@
 # JavaScript Scripting
 
-This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
+This add-on provides support for JavaScript (ECMAScript 2024+) that can be used as a scripting language within automation rules.
 It is based on [GraalJS](https://www.graalvm.org/javascript/) from the [GraalVM project](https://www.graalvm.org/).
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
@@ -342,6 +342,14 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
   - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
   - .rawState ⇒ `HostState`
+  - .previousState ⇒ `string|null`: Previous state as string, or `null` if not available
+  - .previousNumericState ⇒ `number|null`: Previous state as number, if state can be represented as number, or `null` if that's not the case or not available
+  - .previousQuantityState ⇒ [`Quantity|null`](#quantity): Previous item state as Quantity or `null` if state is not Quantity-compatible, without unit or not available
+  - .previousRawState ⇒ `HostState`
+  - .lastStateUpdateTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last updated as ZonedDateTime or `null` if not available
+  - .lastStateUpdateInstant ⇒ [`time.Instant`](#time): The time the state was last updated as Instant or `null` if not available
+  - .lastStateChangeTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last changed as ZonedDateTime or `null` if not available
+  - .lastStateChangeInstant ⇒ [`time.Instant`](#time): The time the state was last changed as Instant or `null` if not available
   - .members ⇒ `Array[Item]`
   - .descendents ⇒ `Array[Item]`
   - .isUninitialized ⇒ `boolean`
@@ -350,8 +358,10 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .getMetadata(namespace) ⇒ `object|null`
   - .replaceMetadata(namespace, value, configuration) ⇒ `object`
   - .removeMetadata(namespace) ⇒ `object|null`
-  - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
-  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .sendCommand(value): `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time) or a [`Quantity`](#quantity)
+  - .sendCommand(value, expire): `expire` is a [`time.Duration`](#time), this will return the Item to its previous state after the given `expire` duration
+  - .sendCommand(value, expire, onExpire): `onExpire` can be the same type as `value`, this will return the Item to the given `onExpire` value after the given `expire` duration
+  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time) or a [`Quantity`](#quantity)
   - .sendIncreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
   - .sendDecreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
   - .sendToggleCommand(): Sends a command to flip the Item's state (e.g. if it is 'ON' an 'OFF' command is sent).
@@ -441,9 +451,9 @@ See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#I
 Calling `Item.persistence` returns an `ItemPersistence` object with the following functions:
 
 - ItemPersistence :`object`
-  - .averageSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .averageUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .averageBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .averageSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .averageUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .averageBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
   - .changedSince(timestamp, serviceId) ⇒ `boolean`
   - .changedUntil(timestamp, serviceId) ⇒ `boolean`
   - .changedBetween(begin, end, serviceId) ⇒ `boolean`
@@ -456,12 +466,12 @@ Calling `Item.persistence` returns an `ItemPersistence` object with the followin
   - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
   - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
   - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .deviationSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deviationUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deviationBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateUntil(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
+  - .deviationSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .deviationUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .deviationBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .evolutionRateSince(timestamp, riemannType, serviceId) ⇒ `number | null`
+  - .evolutionRateUntil(timestamp, riemannType, serviceId) ⇒ `number | null`
+  - .evolutionRateBetween(begin, end, riemannType, serviceId) ⇒ `number | null`
   - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
   - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
   - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
@@ -485,6 +495,9 @@ Calling `Item.persistence` returns an `ItemPersistence` object with the followin
   - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
   - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
   - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+  - .riemannSumSince(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .riemannSumUntil(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .riemannSumBetween(begin, end, riemannType, serviceId)  ⇒ `PersistedState | null`
   - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
   - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
   - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
@@ -494,6 +507,20 @@ Calling `Item.persistence` returns an `ItemPersistence` object with the followin
   - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
   - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
   - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+
+`riemannType` is an optional argument for methods that require calculating an approximation of the integral value.
+The approximation is calculated using a Riemann sum, with left, right, trapezoidal or midpoint value approximations.
+The argument is a Java RiemannType enum with possible values: `RiemannType.LEFT`, `RiemannType.RIGHT`, `RiemannType.TRAPEZOIDAL` or `RiemannType.MIDPOINT`. If omitted, `RiemannType.LEFT` is used.
+The RiemannType enum can be statically accessed on the `items` namespace, e.g.:
+
+```javascript
+items.RiemannType.LEFT
+```
+
+A Riemann sum is always calculated using seconds as unit for time.
+As an example, the Riemann sum of power values in `kW` will result in an energy measurement in `kWs`.
+You can rely on framework functionality to convert to the appropriate unit (e.g. `kWh`), or do an explicit conversion.
+If you don't use units, be aware of this time factor.
 
 Note: `serviceId` is optional, if omitted, the default persistence service will be used.
 
@@ -513,6 +540,7 @@ The `PersistedState` object contains the following properties, representing Item
 The `PersistedItem` object extends `PersistedState` with the following properties, representing Item state and the respective timestamp:
 
 - `timestamp`: Timestamp as [`time.ZonedDateTime`](#time)
+- `instant`: Timestamp as [`time.Instant`](#time)
 
 ```javascript
 var midnight = time.toZDT('00:00');
@@ -799,34 +827,49 @@ actions.notificationBuilder('Hello World!').logOnly().send();
 // Sends a simple log notification with icon and tag
 actions.notificationBuilder('Hello World!').logOnly()
   .withIcon('f7:bell_fill').withTag('important').send();
+
+// Sends a notification about a temperature change ...
+actions.notificationBuilder('new temperature: xyz').withIcon('oh:temperature').withTag('Temperature change').withReferenceId('livingRoom').send();
+// ... and hides it again after 10 minutes
+setTimeout(() => {
+  actions.notificationBuilder().hide().withReferenceId('livingRoom').send();
+}, 10 * 60 * 1000);
 ```
 
 See [openhab-js : actions.NotificationBuilder](https://openhab.github.io/openhab-js/actions.html#.notificationBuilder) for complete documentation.
 
 ### Cache
 
-The cache namespace provides both a private and a shared cache that can be used to set and retrieve objects that will be persisted between subsequent runs of the same or between scripts.
+The cache namespace provides both a private and a shared cache that can be used to set and retrieve data that will be persisted between subsequent runs of the same or between scripts.
 
 The private cache can only be accessed by the same script and is cleared when the script is unloaded.
-You can use it to e.g. store timers or counters between subsequent runs of that script.
+You can use it to store primitives and objects, e.g. store timers or counters between subsequent runs of that script.
 When a script is unloaded and its cache is cleared, all timers (see [`createTimer`](#createtimer)) stored in its private cache are automatically cancelled.
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
 If that key stored a timer, the timer will be cancelled.
+You can use it to store primitives and **Java** objects, e.g. store timers or counters between multiple scripts.
+
+Due to a multi-threading limitation in GraalJS (the JavaScript engine used by JavaScript Scripting), it is not recommended to store JavaScript objects in the shared cache.
+Multi-threaded access to JavaScript objects will lead to script execution failure!
+You can work-around that limitation by either serialising and deserialising JS objects or by switching to their Java counterparts.
+
+Timers as created by [`createTimer`](#createtimer) can be stored in the shared cache.
+The ids of timers and intervals as created by `setTimeout` and `setInterval` cannot be shared across scripts as these ids are local to the script where they were created.
 
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
 - cache : <code>object</code>
   - .private
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
   - .shared
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
@@ -834,26 +877,24 @@ The `defaultSupplier` provided function will return a default value if a specifi
 **Example** *(Get a previously set value with a default value (times = 0))*
 
 ```js
-var counter = cache.private.get('counter', () => ({ 'times': 0 }));
-console.log('Count', counter.times++);
+var counter = cache.shared.get('counter', () => 0);
+console.log('Counter: ' + counter);
 ```
 
-**Example** *(Get a previously set object)*
+**Example** *(Get a previously set value, modify and store it)*
 
 ```js
 var counter = cache.private.get('counter');
-if (counter === null) {
-  counter = { times: 0 };
-  cache.private.put('counter', counter);
-}
-console.log('Count', counter.times++);
+counter++;
+console.log('Counter: ' + counter);
+cache.private.put('counter', counter);
 ```
 
 ### Time
 
 openHAB internally makes extensive use of the `java.time` package.
 openHAB-JS exports the excellent [JS-Joda](https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native JavaScript port of the same API standard used in Java for `java.time`.
-Anywhere a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
+Anywhere a native Java `ZonedDateTime`, `Instant`, or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime`, `Instant`, or `Duration` to its Java counterpart.
 
 The exported JS-Joda library is also extended with convenient functions relevant to openHAB usage.
 
@@ -892,11 +933,11 @@ var formatter = time.DateTimeFormatter.ofPattern('dd.MM.yyyy HH:mm').withLocale(
 
 #### `time.javaInstantToJsInstant()`
 
-Converts a [`java.time.Instant`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html) to a JS-Joda [`Instant`](https://js-joda.github.io/js-joda/manual/Instant.html).
+Converts a [`java.time.Instant`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Instant.html) to a JS-Joda [`Instant`](https://js-joda.github.io/js-joda/manual/Instant.html).
 
 #### `time.javaZDTToJsZDT()`
 
-Converts a [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html) to a JS-Joda [`ZonedDateTime`](https://js-joda.github.io/js-joda/manual/ZonedDateTime.html).
+Converts a [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/ZonedDateTime.html) to a JS-Joda [`ZonedDateTime`](https://js-joda.github.io/js-joda/manual/ZonedDateTime.html).
 
 #### `time.toZDT()`
 
@@ -909,7 +950,8 @@ The following rules are used during the conversion:
 | `null` or `undefined`                                                        | `time.ZonedDateTime.now()`                                                                                      | `time.toZDT();`                                                                        |
 | `time.ZonedDateTime`                                                         | passed through unmodified                                                                                       |                                                                                        |
 | `java.time.ZonedDateTime`                                                    | converted to the `time.ZonedDateTime` equivalent                                                                |                                                                                        |
-| JavaScript native `Date`                                                     | converted to the equivalent `time.ZonedDateTime` using `SYSTEM` as the timezone                                 |                                                                                        |
+| `time.Instant`, `java.time.Instant`                                          | converted to the `time.ZonedDateTime` equivalent using `SYSTEM` as the timezone                                 | `time.toZDT(time.toInstant(500));` (epoch milli 500 to ZDT)                            |
+| JavaScript native `Date`                                                     | converted to the `time.ZonedDateTime` equivalent using `SYSTEM` as the timezone                                 |                                                                                        |
 | `number`, `bingint`, `java.lang.Number`, `DecimalType`                       | rounded to the nearest integer and added to `now` as milliseconds                                               | `time.toZDT(1000);`                                                                    |
 | [`Quantity`](#quantity) or `QuantityType`                                    | if the unit is time-compatible, added to `now`                                                                  | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
 | `items.Item` or `org.openhab.core.types.Item`                                | if the state is supported (see the `Type` rules in this table, e.g. `DecimalType`), the state is converted      | `time.toZDT(items.getItem('MyItem'));`                                                 |
@@ -922,7 +964,11 @@ The following rules are used during the conversion:
 If no time zone is explicitly set, the system default time zone is used.
 When a type or string that cannot be handled is encountered, an error is thrown.
 
-#### `toToday()`
+#### Additions to `time.ZonedDateTime`
+
+The openHAB JavaScript library extends the JS-Joda `ZonedDateTime` class with additional methods that are useful in openHAB.
+
+##### `toToday()`
 
 When you have a `time.ZonedDateTime`, a new `toToday()` method was added which will return a new `time.ZonedDateTime` with today's date but the original's time, accounting for DST changes.
 
@@ -933,7 +979,7 @@ var alarm = items.Alarm;
 alarm.postUpdate(time.toZDT(alarm).toToday());
 ```
 
-#### `isBeforeTime(timestamp)`, `isBeforeDate(timestamp)`, `isBeforeDateTime(timestamp)`
+##### `isBeforeTime(timestamp)`, `isBeforeDate(timestamp)`, `isBeforeDateTime(timestamp)`
 
 Tests whether this `time.ZonedDateTime` is before the time passed in `timestamp`, tested in various ways:
 
@@ -950,7 +996,7 @@ time.toZDT('22:00').isBeforeTime('23:00')
 time.toZDT('2022-12-01T12:00Z').isBeforeDateTime('2022-12-02T13:00Z')
 ```
 
-#### `isAfterTime(timestamp)`, `isAfterDate(timestamp)`, `isAfterDateTime(timestamp)`
+##### `isAfterTime(timestamp)`, `isAfterDate(timestamp)`, `isAfterDateTime(timestamp)`
 
 Tests whether this `time.ZonedDateTime` is after the time passed in `timestamp`, tested in various ways:
 
@@ -966,7 +1012,7 @@ time.toZDT().isAfterTime(items.getItem('Sunset')) // is now after sunset?
 time.toZDT().isAfterDateTime('2022-12-01T12:00Z') // is now after 2022-12-01 noon?
 ```
 
-#### `isBetweenTimes(start, end)`
+##### `isBetweenTimes(start, end)`
 
 Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
 However, the function only compares the time portion of the three, ignoring the date portion.
@@ -983,7 +1029,7 @@ time.toZDT().isBetweenTimes(items.getItem('Sunset'), '11:30 PM') // is now betwe
 time.toZDT(items.getItem('StartTime')).isBetweenTimes(time.toZDT(), 'PT1H'); // is the state of StartTime between now and one hour from now
 ```
 
-#### `isBetweenDates(start, end)`
+##### `isBetweenDates(start, end)`
 
 Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
 However, the function only compares the date portion of the three, ignoring the time portion.
@@ -995,7 +1041,7 @@ Examples:
 time.toZDT().isBetweenDates('2022-06-18', '2023-12-24') // currently between 2022-06-18 and 2023-12-24
 ```
 
-#### `isBetweenDateTimes(start, end)`
+##### `isBetweenDateTimes(start, end)`
 
 Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
 `start` and `end` can be anything supported by `time.toZDT()`.
@@ -1006,7 +1052,7 @@ Examples:
 time.toZDT().isBetweenDateTimes('2022-06-18T22:00Z', '2023-12-24T05:00Z') // currently between 2022-06-18 22:00 and 2023-12-24 05:00
 ```
 
-#### `isClose(zdt, maxDur)`
+##### `isClose(zdt, maxDur)`
 
 Tests to see if the delta between the `time.ZonedDateTime` and the passed in `time.ZonedDateTime` is within the passed in `time.Duration`.
 
@@ -1018,7 +1064,7 @@ if(timestamp.isClose(time.toZDT(), time.Duration.ofMillis(100))) {
 }
 ```
 
-#### `getMillisFromNow`
+##### `getMillisFromNow`
 
 This method on `time.ZonedDateTime` returns the milliseconds from now to the passed in `time.ZonedDateTime`.
 
@@ -1026,6 +1072,24 @@ This method on `time.ZonedDateTime` returns the milliseconds from now to the pas
 var timestamp = time.ZonedDateTime.now().plusMinutes(5);
 console.log(timestamp.getMillisFromNow());
 ```
+
+#### `time.toInstant()`
+
+The following rules are used during the conversion:
+
+| Argument Type                                          | Rule                                                                                    | Examples                                     |
+|--------------------------------------------------------|-----------------------------------------------------------------------------------------|----------------------------------------------|
+| `null` or `undefined`                                  | `time.Instant.now()`                                                                    | `time.toInstant();`                          |
+| `time.Instant`                                         | passed through unmodified                                                               |                                              |
+| `java.time.Instant`                                    | converted to the `time.Instant` equivalent                                              |                                              |
+| `number`, `bingint`, `java.lang.Number`, `DecimalType` | handled as epoch milliseconds and converted to the `time.Instant` equivalent            | `time.toInstant(500);`                       |
+| `java.time.ZonedDateTime`                              | converted to the `time.Instant` equivalent                                              |                                              |
+| JavaScript native `Date`                               | converted to the `time.Instant` equivalent                                              |                                              |
+| `items.Item` or `org.openhab.core.types.Item`          | if the state is supported (see the `*Type` rules in this table), the state is converted | `time.toInstant(items.getItem('MyItem'));`   |
+| `String`, `java.lang.String`, `StringType`             | parsed                                                                                  | `time.toInstant('2019-10-12T07:20:50.52Z');` |
+| `DateTimeType`                                         | converted to the `time.Instant` equivalent                                              |                                              |
+
+When a type or string that cannot be handled is encountered, an error is thrown.
 
 ### Quantity
 
@@ -1133,8 +1197,8 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 
 ## File Based Rules
 
-The JS Scripting binding will load scripts from `automation/js` in the user configuration directory.
-The system will automatically reload scripts when changes are detected to files.
+The JavaScript Scripting automation add-on will load `.js` scripts from `automation/js` in the user configuration directory.
+The system will automatically reload a script when changes are detected to the script file.
 Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
@@ -1240,7 +1304,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1257,27 +1321,27 @@ See [Examples](#rule-builder-examples) for further patterns.
   - `.cron(cronExpression)`: Specifies a cron schedule for the rule to fire.
   - `.timeOfDay(time)`: Specifies a time of day in `HH:mm` for the rule to fire.
   - `.item(itemName)`: Specifies an Item as the source of changes to trigger a rule.
-    - `.for(duration)`
-    - `.from(state)`
-    - `.fromOn()`
-    - `.fromOff()`
-    - `.to(state)`
-    - `.toOn()`
-    - `.toOff()`
-    - `.receivedCommand()`
-    - `.receivedUpdate()`
-    - `.changed()`
+    - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
+      - `.of(command)`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+    - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.for(duration)` where duration is in milliseconds
   - `.memberOf(groupName)`: Specifies a group Item as the source of changes to trigger the rule.
-    - `.for(duration)`
-    - `.from(state)`
-    - `.fromOn()`
-    - `.fromOff()`
-    - `.to(state)`
-    - `.toOn()`
-    - `.toOff()`
-    - `.receivedCommand()`
-    - `.receivedUpdate()`
-    - `.changed()`
+    - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
+      - `.of(command)`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+    - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.for(duration)` where duration is in milliseconds
   - `.system()`: Specifies a system event as a source for the rule to fire.
     - `.ruleEngineStarted()`
     - `.rulesLoaded()`
@@ -1287,9 +1351,9 @@ See [Examples](#rule-builder-examples) for further patterns.
     - `.startLevel(level)`
   - `.thing(thingName)`: Specifies a Thing event as a source for the rule to fire.
     - `changed()`
+      - `from(state)`
+      - `to(state)`
     - `updated()`
-    - `from(state)`
-    - `to(state)`
   - `.dateTime(itemName)`: Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
     - `.timeOnly()`: Only the time of the Item should be compared, the date should be ignored.
     - `.withOffset(offset)`: The offset in seconds to add to the time of the DateTime Item.

@@ -338,8 +338,6 @@ Switch                      SmartBatteryControl         "Smart Battery Control" 
 Number:Dimensionless        MaxDepthOfDischarge         "Max Depth Of Discharge"                    <energy> { channel="kostalinverter:piko1020:mypiko1020:maxDepthOfDischarge" }
 Number:Dimensionless        ShadowManagement            "Shadow Management"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:shadowManagement" }
 Number:Dimensionless        ExternalModuleControl       "External Module Control"                   <energy> { channel="kostalinverter:piko1020:mypiko1020:externalModuleControl" }
-
-
 ```
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)

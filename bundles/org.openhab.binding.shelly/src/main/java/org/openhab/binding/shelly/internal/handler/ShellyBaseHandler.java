@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private String lastWakeupReason = "";
 
     // Scheduler
-    private long watchdog = now();
+    private double watchdog = now();
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -356,7 +356,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             tmpPrf.updatePeriod = "m".equalsIgnoreCase(getString(tmpPrf.settings.sleepMode.unit))
                     ? tmpPrf.settings.sleepMode.period * 60 // minutes
                     : tmpPrf.settings.sleepMode.period * 3600; // hours
-            tmpPrf.updatePeriod += 60; // give 1min extra
+            if (tmpPrf.isSmoke) {
+                tmpPrf.updatePeriod += 1800; // for smoke sensor give 30min extra
+            } else {
+                tmpPrf.updatePeriod += 60; // give 1min extra
+            }
         } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
             tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
@@ -724,9 +728,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private boolean isWatchdogExpired() {
-        long delta = now() - watchdog;
+        double delta = now() - watchdog;
         if ((watchdog > 0) && (delta > profile.updatePeriod)) {
-            stats.remainingWatchdog = delta;
+            stats.remainingWatchdog = (long) delta;
             return true;
         }
         return false;
@@ -761,7 +765,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             stats.timeoutErrors = api.getTimeoutErrors();
             stats.timeoutsRecorvered = api.getTimeoutsRecovered();
         }
-        stats.remainingWatchdog = watchdog > 0 ? now() - watchdog : 0;
+        stats.remainingWatchdog = watchdog > 0 ? (long) (now() - watchdog) : 0;
 
         // Check various device indicators like overheating
         if (checkRestarted(status)) {
@@ -855,7 +859,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     triggerChannel(channelId, event);
                     cache.updateChannel(channelId, getStringType(event.toUpperCase()));
                     stats.lastAlarm = event;
-                    stats.lastAlarmTs = now();
+                    stats.lastAlarmTs = (long) now();
                     stats.alarms++;
             }
         }

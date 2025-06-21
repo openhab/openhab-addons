@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,13 +120,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     @NonNullByDefault({})
     public class TVProperties {
         class Device {
-            boolean frameTVSupport;
-            boolean gamePadSupport;
-            boolean imeSyncedSupport;
-            String oS;
-            String powerState;
-            boolean tokenAuthSupport;
-            boolean voiceSupport;
+            boolean FrameTVSupport;
+            boolean GamePadSupport;
+            boolean ImeSyncedSupport;
+            String OS;
+            String PowerState;
+            boolean TokenAuthSupport;
+            boolean VoiceSupport;
             String countryCode;
             String description;
             String firmwareVersion;
@@ -143,22 +143,22 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         String isSupport;
 
         public boolean getFrameTVSupport() {
-            return Optional.ofNullable(device).map(a -> a.frameTVSupport).orElse(false);
+            return Optional.ofNullable(device).map(a -> a.FrameTVSupport).orElse(false);
         }
 
         public boolean getTokenAuthSupport() {
-            return Optional.ofNullable(device).map(a -> a.tokenAuthSupport).orElse(false);
+            return Optional.ofNullable(device).map(a -> a.TokenAuthSupport).orElse(false);
         }
 
         public String getPowerState() {
             if (!getOS().isBlank()) {
-                return Optional.ofNullable(device).map(a -> a.powerState).orElse("on");
+                return Optional.ofNullable(device).map(a -> a.PowerState).orElse("on");
             }
             return "off";
         }
 
         public String getOS() {
-            return Optional.ofNullable(device).map(a -> a.oS).orElse("");
+            return Optional.ofNullable(device).map(a -> a.OS).orElse("");
         }
 
         public String getWifiMac() {

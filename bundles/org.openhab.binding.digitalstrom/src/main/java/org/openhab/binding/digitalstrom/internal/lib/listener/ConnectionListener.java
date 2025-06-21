@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public interface ConnectionListener {
      */
     final String CONNECTION_LOST = "connLost";
     /**
-     * State, if a ssl handshake problem occured while communicating with the digitalSTROM-Server.
+     * State, if a ssl handshake problem occurred while communicating with the digitalSTROM-Server.
      */
     final String SSL_HANDSHAKE_ERROR = "sslHandshakeError";
     /**

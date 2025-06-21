@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="global-state-id-channel">
+		<item-type>Number</item-type>
+		<label>Global State</label>
+		<description>Current state of your heat pump</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">Standby</option>
+				<option value="1">Alarm</option>
+				<option value="2">DrinkingWater</option>
+				<option value="4">Heating</option>
+				<option value="5">Defrost</option>
+				<option value="6">Preparing</option>
+				<option value="7">Blocked</option>
+				<option value="8">EVU Blocktime</option>
+				<option value="9">Unavailable</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="global-alarm-channel">
+		<item-type>Contact</item-type>
+		<label>Global Alarm State</label>
+		<description>If there's a global alarm</description>
+	</channel-type>
+</thing:thing-descriptions>

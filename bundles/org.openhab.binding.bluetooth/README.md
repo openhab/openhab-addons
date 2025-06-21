@@ -39,9 +39,9 @@ Other configuration parameters may be required depending on the bluetooth thing 
 
 Every Bluetooth thing has the following channel:
 
-| Channel ID | Item Type | Description                                                                                         |
-|------------|-----------|-----------------------------------------------------------------------------------------------------|
-| rssi       | Number    | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
+| Channel ID | Item Type    | Description                                                                                         |
+|------------|--------------|-----------------------------------------------------------------------------------------------------|
+| rssi       | Number:Power | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
 
 ## Full Example
 
@@ -54,7 +54,7 @@ bluetooth:beacon:hci0:b1  "BLE Beacon" (bluetooth:bluez:hci0) [ address="68:64:4
 demo.items:
 
 ```java
-Number Beacon_RSSI "My Beacon [%.0f]" { channel="bluetooth:beacon:hci0:b1:rssi" }
+Number:Power Beacon_RSSI "My Beacon [%.0f %unit%]" { unit="dBm", channel="bluetooth:beacon:hci0:b1:rssi" }
 ```
 
 demo.sitemap:

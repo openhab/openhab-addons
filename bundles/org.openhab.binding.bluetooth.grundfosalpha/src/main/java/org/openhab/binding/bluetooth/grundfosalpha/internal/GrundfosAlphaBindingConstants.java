@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.bluetooth.grundfosalpha.internal;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
@@ -26,11 +28,21 @@ import org.openhab.core.thing.ThingTypeUID;
 public class GrundfosAlphaBindingConstants {
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_ALPHA3 = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
+            "alpha3");
     public static final ThingTypeUID THING_TYPE_MI401 = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID, "mi401");
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ALPHA3, THING_TYPE_MI401);
+
+    // List of configuration parameters
+    public static final String CONFIGURATION_REFRESH_INTERVAL = "refreshInterval";
+
     // List of all Channel ids
-    public static final String CHANNEL_TYPE_FLOW_RATE = "flow-rate";
-    public static final String CHANNEL_TYPE_PUMP_HEAD = "pump-head";
-    public static final String CHANNEL_TYPE_BATTERY_LEVEL = "battery-level";
-    public static final String CHANNEL_TYPE_PUMP_TEMPERATUR = "pump-temperature";
+    public static final String CHANNEL_FLOW_RATE = "flow-rate";
+    public static final String CHANNEL_PUMP_HEAD = "pump-head";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_PUMP_TEMPERATURE = "pump-temperature";
+    public static final String CHANNEL_VOLTAGE_AC = "voltage-ac";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_MOTOR_SPEED = "motor-speed";
 }

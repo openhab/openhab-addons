@@ -6,6 +6,7 @@
 
 	<thing-type id="airconditioner">
 		<label>@text/thing-type.gree.airconditioner.label</label>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="mode" typeId="mode"/>
@@ -31,7 +32,7 @@
 			<parameter name="broadcastAddress" type="text" required="false">
 				<context>network-address</context>
 			</parameter>
-			<parameter name="refresh" type="integer" required="true" unit="s">
+			<parameter name="refreshInterval" type="integer" required="true" unit="s">
 				<default>60</default>
 				<unitLabel>seconds</unitLabel>
 				<advanced>true</advanced>
@@ -40,6 +41,15 @@
 				<default>0</default>
 				<unitLabel>Degrees Celsius</unitLabel>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="encryptionType" type="text">
+				<advanced>true</advanced>
+				<options>
+					<option value="UNKNOWN">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.UNKNOWN</option>
+					<option value="ECB">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.ECB</option>
+					<option value="COMBINED">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.COMBINED</option>
+					<option value="GCM">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.GCM</option>
+				</options>
 			</parameter>
 		</config-description>
 

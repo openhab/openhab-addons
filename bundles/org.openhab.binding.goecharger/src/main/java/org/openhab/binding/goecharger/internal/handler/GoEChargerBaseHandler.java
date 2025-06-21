@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -110,8 +111,8 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
     }
 
     @Nullable
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException, ExecutionException,
+            JsonSyntaxException, IllegalArgumentException {
         return null;
     }
 
@@ -129,6 +130,9 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
                 updateChannelsAndStatus(null, ie.getMessage());
             } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
                 updateChannelsAndStatus(null, e.getMessage());
+            } catch (IllegalArgumentException e) {
+                logger.debug("Invalid configuration getting data: {}", e.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             }
         }
     }

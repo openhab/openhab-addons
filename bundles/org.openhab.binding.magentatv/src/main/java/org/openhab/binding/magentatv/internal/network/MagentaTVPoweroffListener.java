@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.net.NetworkInterface;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.magentatv.internal.MagentaTVBindingConstants;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class MagentaTVPoweroffListener extends Thread {
 
     public MagentaTVPoweroffListener(MagentaTVHandlerFactory handlerFactory,
             @Nullable NetworkInterface networkInterface) throws IOException {
-        setName("OH-Binding-magentatv-upnp-listener");
+        super(String.format("OH-binding-%s-%s", MagentaTVBindingConstants.BINDING_ID, "PoweroffListener"));
         setDaemon(true);
 
         this.handlerFactory = handlerFactory;

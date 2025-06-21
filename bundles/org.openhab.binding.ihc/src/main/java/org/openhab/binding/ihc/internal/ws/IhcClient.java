@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import org.openhab.binding.ihc.internal.IhcBindingConstants;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
@@ -456,6 +457,10 @@ public class IhcClient {
     private class IhcResourceValueNotificationListener extends Thread {
         private volatile boolean interrupted = false;
 
+        public IhcResourceValueNotificationListener() {
+            super(String.format("OH-binding-%s-%s", IhcBindingConstants.BINDING_ID, "NotificationListener"));
+        }
+
         public void setInterrupted(boolean interrupted) {
             this.interrupted = interrupted;
             this.interrupt();
@@ -561,7 +566,7 @@ public class IhcClient {
     private void sendErrorEvent(IhcExecption err) {
         eventListeners.forEach(listener -> {
             try {
-                listener.errorOccured(err);
+                listener.errorOccurred(err);
             } catch (RuntimeException e) {
                 logger.debug("Event listener invoking error.", e);
             }

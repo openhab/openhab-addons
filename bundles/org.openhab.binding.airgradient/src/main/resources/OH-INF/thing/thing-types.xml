@@ -8,6 +8,7 @@
 	<bridge-type id="airgradient-api">
 		<label>AirGradient API</label>
 		<description>Connection to the AirGradient Cloud API</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<representation-property>token</representation-property>
 		<config-description>
@@ -36,6 +37,7 @@
 	<thing-type id="airgradient-local">
 		<label>AirGradient Local Sensor</label>
 		<description>Direct network connection to a local AirGradient Sensor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="pm01" typeId="pm1"/>
@@ -72,6 +74,7 @@
 			<property name="firmwareVersion"/>
 			<property name="serialNumber"/>
 			<property name="modelId"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 
@@ -121,6 +124,7 @@
 			<property name="firmwareVersion"/>
 			<property name="serialNumber"/>
 			<property name="modelId"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>location</representation-property>
 
@@ -161,7 +165,7 @@
 	</channel-type>
 
 	<channel-type id="wifi">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>

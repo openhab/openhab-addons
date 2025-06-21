@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,10 +52,13 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,16 +104,16 @@ public class GuntamaticHandler extends BaseThingHandler {
     private List<String> staticChannelIDs;
     private GuntamaticConfiguration config = new GuntamaticConfiguration();
     private Boolean channelsInitialized = false;
-    private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
+    private GuntamaticDynamicTypeProvider typeProvider;
     private Map<Integer, String> channels = new HashMap<>();
     private Map<Integer, String> types = new HashMap<>();
     private Map<Integer, Unit<?>> units = new HashMap<>();
 
-    public GuntamaticHandler(Thing thing, HttpClient httpClient,
-            GuntamaticChannelTypeProvider guntamaticChannelTypeProvider, List<String> staticChannelIDs) {
+    public GuntamaticHandler(Thing thing, HttpClient httpClient, GuntamaticDynamicTypeProvider typeProvider,
+            List<String> staticChannelIDs) {
         super(thing);
         this.httpClient = httpClient;
-        this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
+        this.typeProvider = typeProvider;
         this.staticChannelIDs = staticChannelIDs;
     }
 
@@ -122,11 +125,11 @@ public class GuntamaticHandler extends BaseThingHandler {
                 Map<String, String> map;
                 String channelID = channelUID.getId();
                 switch (channelID) {
-                    case CHANNEL_CONTROLBOILERAPPROVAL:
+                    case CHANNEL_CONTROL_BOILERAPPROVAL:
                         param = getThing().getProperties().get(PARAMETER_BOILERAPPROVAL);
                         map = MAP_COMMAND_PARAM_APPROVAL;
                         break;
-                    case CHANNEL_CONTROLPROGRAM:
+                    case CHANNEL_CONTROL_PROGRAM:
                         param = getThing().getProperties().get(PARAMETER_PROGRAM);
                         ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
 
@@ -137,31 +140,30 @@ public class GuntamaticHandler extends BaseThingHandler {
                         } else {
                             map = MAP_COMMAND_PARAM_PROG_WOMANU;
                         }
-
                         break;
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM0:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM1:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM2:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM3:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM4:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM5:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM6:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM7:
-                    case CHANNEL_CONTROLHEATCIRCPROGRAM8:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM0:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM1:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM2:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM3:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM4:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM5:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM6:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM7:
+                    case CHANNEL_CONTROL_HEATCIRCPROGRAM8:
                         param = getThing().getProperties().get(PARAMETER_HEATCIRCPROGRAM).replace("x",
                                 channelID.substring(channelID.length() - 1));
                         map = MAP_COMMAND_PARAM_HC;
                         break;
-                    case CHANNEL_CONTROLWWHEAT0:
-                    case CHANNEL_CONTROLWWHEAT1:
-                    case CHANNEL_CONTROLWWHEAT2:
+                    case CHANNEL_CONTROL_WWHEAT0:
+                    case CHANNEL_CONTROL_WWHEAT1:
+                    case CHANNEL_CONTROL_WWHEAT2:
                         param = getThing().getProperties().get(PARAMETER_WWHEAT).replace("x",
                                 channelID.substring(channelID.length() - 1));
                         map = MAP_COMMAND_PARAM_WW;
                         break;
-                    case CHANNEL_CONTROLEXTRAWWHEAT0:
-                    case CHANNEL_CONTROLEXTRAWWHEAT1:
-                    case CHANNEL_CONTROLEXTRAWWHEAT2:
+                    case CHANNEL_CONTROL_EXTRAWWHEAT0:
+                    case CHANNEL_CONTROL_EXTRAWWHEAT1:
+                    case CHANNEL_CONTROL_EXTRAWWHEAT2:
                         param = getThing().getProperties().get(PARAMETER_EXTRAWWHEAT).replace("x",
                                 channelID.substring(channelID.length() - 1));
                         map = MAP_COMMAND_PARAM_WW;
@@ -197,8 +199,9 @@ public class GuntamaticHandler extends BaseThingHandler {
             String channel = channels.get(i);
             Unit<?> unit = units.get(i);
             if ((channel != null) && (i < daqdata.length)) {
+                String channelId = GROUP_STATUS + String.format("%03d", i) + "-" + channel;
                 String value = daqdata[i];
-                Channel chn = thing.getChannel(channel);
+                Channel chn = thing.getChannel(channelId);
                 if ((chn != null) && (value != null)) {
                     value = value.trim();
                     String typeName = chn.getAcceptedItemType();
@@ -234,7 +237,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                             }
                         }
                         if (newState != null) {
-                            updateState(channel, newState);
+                            updateState(channelId, newState);
                         } else {
                             logger.warn("Data for unknown typeName '{}' or unknown unit received", typeName);
                         }
@@ -268,6 +271,9 @@ public class GuntamaticHandler extends BaseThingHandler {
     private void parseAndInit(String html) {
         String[] daqdesc = html.split("\\n");
         List<Channel> channelList = new ArrayList<>();
+        for (Channel chn : thing.getChannels()) {
+            logger.debug("Static Channel '{}' present", chn.getUID());
+        }
 
         // make sure that static channels are present
         for (String channelID : staticChannelIDs) {
@@ -285,67 +291,76 @@ public class GuntamaticHandler extends BaseThingHandler {
             String label = param[0].replace("C02", "CO2");
 
             if (!"reserved".equals(label)) {
-                String channel = toLowerCamelCase(replaceUmlaut(label));
+                String channel = toLowerCaseHyphen(replaceUmlaut(label));
                 label = label.substring(0, 1).toUpperCase() + label.substring(1);
 
                 String unitStr = ((param.length == 1) || param[1].isBlank()) ? "" : param[1].trim();
                 Unit<?> unit = guessUnit(unitStr);
 
-                boolean channelInitialized = channels.containsValue(channel);
-                if (!channelInitialized) {
-                    String itemType;
-                    String pattern;
-                    String type = types.get(i);
-                    if (type == null) {
-                        type = "";
-                    }
+                String itemType;
+                String pattern;
+                String type = types.get(i);
+                if (type == null) {
+                    type = "";
+                }
 
-                    if ("boolean".equals(type)) {
-                        itemType = CoreItemFactory.SWITCH;
-                        pattern = "";
-                    } else if ("integer".equals(type)) {
-                        itemType = guessItemType(unit);
-                        pattern = "%d";
-                        if (unit != null) {
-                            pattern += " %unit%";
-                        }
-                    } else if ("float".equals(type)) {
+                if ("boolean".equals(type)) {
+                    itemType = CoreItemFactory.SWITCH;
+                    pattern = "";
+                } else if ("integer".equals(type)) {
+                    itemType = guessItemType(unit);
+                    pattern = "%d";
+                    if (unit != null) {
+                        pattern += " %unit%";
+                    }
+                } else if ("float".equals(type)) {
+                    itemType = guessItemType(unit);
+                    pattern = "%.2f";
+                    if (unit != null) {
+                        pattern += " %unit%";
+                    }
+                } else if ("string".equals(type)) {
+                    itemType = CoreItemFactory.STRING;
+                    pattern = "%s";
+                } else {
+                    if (unitStr.isBlank()) {
+                        itemType = CoreItemFactory.STRING;
+                        pattern = "%s";
+                    } else {
                         itemType = guessItemType(unit);
                         pattern = "%.2f";
                         if (unit != null) {
                             pattern += " %unit%";
                         }
-                    } else if ("string".equals(type)) {
-                        itemType = CoreItemFactory.STRING;
-                        pattern = "%s";
-                    } else {
-                        if (unitStr.isBlank()) {
-                            itemType = CoreItemFactory.STRING;
-                            pattern = "%s";
-                        } else {
-                            itemType = guessItemType(unit);
-                            pattern = "%.2f";
-                            if (unit != null) {
-                                pattern += " %unit%";
-                            }
-                        }
                     }
-
-                    ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channel);
-                    guntamaticChannelTypeProvider.addChannelType(channelTypeUID, channel, itemType,
-                            "Guntamatic " + label, false, pattern);
-                    Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channel), itemType)
-                            .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
-                    channelList.add(newChannel);
-                    channels.put(i, channel);
-                    if (unit != null) {
-                        units.put(i, unit);
-                    }
-
-                    logger.debug(
-                            "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
-                            String.format("%03d", i), label, channel, type, itemType, unitStr, pattern);
                 }
+
+                String channelId = String.format("%03d", i) + "-" + channel;
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+                StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder
+                        .create().withReadOnly(true);
+                if (!pattern.isEmpty()) {
+                    stateDescriptionFragmentBuilder.withPattern(pattern);
+                }
+
+                ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                        .withDescription("Guntamatic " + label)
+                        .withStateDescriptionFragment(stateDescriptionFragmentBuilder.build()).build();
+
+                typeProvider.putChannelType(channelType);
+
+                Channel newChannel = ChannelBuilder
+                        .create(new ChannelUID(thing.getUID(), GROUP_STATUS + channelId), itemType)
+                        .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
+                channelList.add(newChannel);
+                channels.put(i, channel);
+                if (unit != null) {
+                    units.put(i, unit);
+                }
+
+                logger.debug(
+                        "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
+                        String.format("%03d", i), label, GROUP_STATUS + channelId, type, itemType, unitStr, pattern);
             }
         }
         ThingBuilder thingBuilder = editThing();
@@ -385,28 +400,14 @@ public class GuntamaticHandler extends BaseThingHandler {
         return output;
     }
 
-    private String toLowerCamelCase(String input) {
-        char delimiter = ' ';
-        String output = input.replace("´", "").replaceAll("[^\\w]", String.valueOf(delimiter));
-
-        StringBuilder builder = new StringBuilder();
-        boolean nextCharLow = true;
-
-        for (int i = 0; i < output.length(); i++) {
-            char currentChar = output.charAt(i);
-            if (delimiter == currentChar) {
-                nextCharLow = false;
-            } else if (nextCharLow) {
-                builder.append(Character.toLowerCase(currentChar));
-            } else {
-                builder.append(Character.toUpperCase(currentChar));
-                nextCharLow = true;
-            }
-        }
-        return builder.toString();
+    private String toLowerCaseHyphen(String input) {
+        return input.replaceAll("[^a-zA-Z0-9\\s]", "").trim().replaceAll("([a-z])([A-Z0-9])", "$1-$2")
+                .replaceAll("\\s+", "-").toLowerCase();
     }
 
     private @Nullable String sendGetRequest(String url, String... params) {
+        logger.debug("sendGetRequest '{}'", url);
+
         String errorReason = "";
         String req = "http://" + config.hostname + url;
 
@@ -436,13 +437,13 @@ public class GuntamaticHandler extends BaseThingHandler {
                     String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
                     if (url.equals(DAQEXTDESC_URL)) {
                         parseAndJsonInit(response);
-                    } else if (url.equals(DAQDATA_URL)) {
-                        parseAndUpdate(response);
                     } else if (url.equals(DAQDESC_URL)) {
                         parseAndInit(response);
+                    } else if (url.equals(DAQDATA_URL)) {
+                        parseAndUpdate(response);
                     } else {
-                        logger.debug(req);
-                        // PARSET_URL via return
+                        logger.debug("parset request: {}", req);
+                        // PARSET_URL request is handled via return value only
                     }
                     return response;
                 } catch (IllegalArgumentException e) {
@@ -471,7 +472,10 @@ public class GuntamaticHandler extends BaseThingHandler {
                 sendGetRequest(DAQEXTDESC_URL);
             }
             sendGetRequest(DAQDESC_URL);
-        } else {
+        }
+
+        // above intialization usually changes channelsInitialized to TRUE
+        if (channelsInitialized) {
             sendGetRequest(DAQDATA_URL);
         }
     }
@@ -496,5 +500,11 @@ public class GuntamaticHandler extends BaseThingHandler {
             pollingFuture = null;
         }
         channelsInitialized = false;
+    }
+
+    @Override
+    public void handleRemoval() {
+        typeProvider.removeChannelTypesForThing(getThing().getUID());
+        super.handleRemoval();
     }
 }

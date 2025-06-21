@@ -152,7 +152,7 @@ This is a sample:
 
 Not all the [arguments](https://developer.android.com/studio/command-line/adb#IntentSpec) are supported. Please open an issue or pull request if you need more.
 
-### Available key-event values:
+### Available key-event values
 
 - KEYCODE_0
 - KEYCODE_1

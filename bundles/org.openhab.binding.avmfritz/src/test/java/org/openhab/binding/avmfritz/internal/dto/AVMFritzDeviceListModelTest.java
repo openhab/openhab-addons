@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,13 @@
 package org.openhab.binding.avmfritz.internal.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
@@ -25,15 +28,26 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseThingHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Fabian Girgert - Fixed incorrect state of dimmable bulb when switched off
  */
 @NonNullByDefault
 public class AVMFritzDeviceListModelTest {
@@ -111,7 +125,24 @@ public class AVMFritzDeviceListModelTest {
                         <interfaces>512,514,513</interfaces>
                     </etsiunitinfo>
                 </device>\
-                </devicelist>\
+                <device identifier="Z001788011D4B55D30B" id="2038" functionbitmask="106500" fwversion="0.0" manufacturer="0x100b" productname="Signify Netherlands B.V. LWG004">
+                    <present>1</present>
+                    <txbusy>0</txbusy>
+                    <name>Zigbee dimmable bulb</name>
+                    <simpleonoff>
+                        <state>0</state>
+                    </simpleonoff>
+                    <levelcontrol>
+                        <level>255</level>
+                        <levelpercentage>100</levelpercentage>
+                    </levelcontrol>
+                    <etsiunitinfo>
+                        <etsideviceid>20029</etsideviceid>
+                        <unittype>265</unittype>
+                        <interfaces>512,513</interfaces>
+                    </etsiunitinfo>
+                </device>\
+            </devicelist>\
                 """;
         //@formatter:on
         XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
@@ -122,7 +153,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(17, devices.getDevicelist().size());
+        assertEquals(18, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -733,6 +764,57 @@ public class AVMFritzDeviceListModelTest {
     }
 
     @Test
+    public void validateHANFUNDimmableLightModel() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("Z001788011D4B55D30B");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("Signify Netherlands B.V. LWG004", device.getProductName());
+        assertEquals("Z001788011D4B55D30B", device.getIdentifier());
+        assertEquals("2038", device.getDeviceId());
+        assertEquals("0.0", device.getFirmwareVersion());
+        assertEquals("0x100b", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("Zigbee dimmable bulb", device.getName());
+
+        assertFalse(device.isHANFUNDevice());
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isButton());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isTemperatureSensor());
+        assertFalse(device.isHumiditySensor());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.isHeatingThermostat());
+        assertFalse(device.hasMicrophone());
+        assertTrue(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
+        assertTrue(device.isDimmableLight());
+        assertFalse(device.isColorLight());
+        assertFalse(device.isHANFUNBlinds());
+
+        assertTrue(device.getButtons().isEmpty());
+
+        assertNull(device.getAlert());
+
+        assertNull(device.getSwitch());
+
+        assertNull(device.getTemperature());
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
+
+        LevelControlModel levelcontrol = device.getLevelControlModel();
+        assertNotNull(levelcontrol);
+        assertEquals(BigDecimal.valueOf(255L), levelcontrol.getLevel());
+        assertEquals(BigDecimal.valueOf(100L), levelcontrol.getLevelPercentage());
+    }
+
+    @Test
     public void validateHANFUNOnOffModel() {
         Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("113240824499-1");
         assertTrue(optionalDevice.isPresent());
@@ -894,5 +976,56 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(model.getNextchange());
         assertEquals(1484341200, model.getNextchange().getEndperiod());
         assertEquals(new BigDecimal(28), model.getNextchange().getTchange());
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testCallbacks() {
+        AVMFritzBaseThingHandler thingHandler0 = mock(AVMFritzHeatingDeviceHandler.class);
+        AVMFritzBaseThingHandler thingHandler1 = mock(AVMFritzHeatingDeviceHandler.class);
+        AVMFritzBaseThingHandler thingHandler2 = mock(AVMFritzHeatingDeviceHandler.class);
+
+        Thing thing0 = mock(Thing.class);
+        Thing thing1 = mock(Thing.class);
+        Thing thing2 = mock(Thing.class);
+
+        when(thing0.getUID()).thenReturn(new ThingUID("fritz:thing:thing0"));
+        when(thing1.getUID()).thenReturn(new ThingUID("fritz:thing:thing1"));
+        when(thing2.getUID()).thenReturn(new ThingUID("fritz:thing:thing2"));
+
+        when(thing0.getHandler()).thenReturn(thingHandler0);
+        when(thing1.getHandler()).thenReturn(thingHandler1);
+        when(thing2.getHandler()).thenReturn(thingHandler2);
+
+        when(thingHandler0.getIdentifier()).thenReturn("087610000437");
+        when(thingHandler1.getIdentifier()).thenReturn("087610000436");
+        when(thingHandler2.getIdentifier()).thenReturn("087610000435");
+
+        when(thingHandler0.getThing()).thenReturn(thing0);
+        when(thingHandler1.getThing()).thenReturn(thing1);
+        when(thingHandler2.getThing()).thenReturn(thing2);
+
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(new ThingUID("fritz:box:aardvark"));
+        when(bridge.getThings()).thenReturn(List.of(thing0, thing1, thing2));
+
+        HttpClient httpClient = mock(HttpClient.class);
+        AVMFritzDynamicCommandDescriptionProvider cDP = mock(AVMFritzDynamicCommandDescriptionProvider.class);
+        AVMFritzBaseBridgeHandler bridgeHandler = new BoxHandler(bridge, httpClient, cDP);
+
+        bridgeHandler.childHandlerInitialized(thingHandler0, thing0);
+        bridgeHandler.childHandlerInitialized(thingHandler1, thing1);
+        bridgeHandler.childHandlerInitialized(thingHandler2, thing2);
+
+        AVMFritzDiscoveryService discoveryService = mock(AVMFritzDiscoveryService.class);
+        bridgeHandler.registerStatusListener(discoveryService);
+
+        bridgeHandler.onDeviceListAdded(devices.getDevicelist());
+
+        verify(thingHandler0, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler1, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler2, times(1)).onDeviceUpdated(any(), any());
+
+        verify(discoveryService, times(devices.getDevicelist().size() - 3)).onDeviceAdded(any());
     }
 }

@@ -1,6 +1,6 @@
 # Amber Electric Binding
 
-A binding that supports the Australian energy retailer Amber's API (<https://www.amber.com.au/>) and provides data on the current pricing for buying and selling power, as well as the current level of renewables in the NEM.
+A binding that supports the Australian energy retailer Amber's API (<https://www.amber.com.au/>) and provides data on the current pricing for buying and selling power, as well as the current level of renewables in the Australian National Electricity Market (NEM).
 
 ## Supported Things
 
@@ -12,35 +12,36 @@ The binding does not support auto discovery.
 
 ## Thing Configuration
 
-As a minimum, the IP address is needed:
-
-- `apiKey` - The API key from the 'Developer' section of <https://apps.amber.com.au>
-- 'nmi' optional -  the NMI for your property. Required if you have multiple properties with Amber
-- 'refresh' the refresh rate for querying the API.
+As a minimum, the apiKey is needed:
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                                           |
+|-----------------|---------------|----------|----------|-------------------------------------------------------------------------------------------------------|
+| apiKey          | N/A           | Yes      | No       | The API key from the 'Developer' section of <https://apps.amber.com.au>                               |
+| nmi             | N/A           | No       | No       | The NMI (NMI (National Metering Identifier) for your property. Required if you have multiple accounts |
+| refresh         | 60            | No       | Yes      | The refresh rate (in seconds) for querying the API.                                                   |
 
 ## Channels
 
-| channel id             | type                 | description                                                                     |
-|------------------------|----------------------|---------------------------------------------------------------------------------|
-| electricity-price      | Number:EnergyPrice   | Current price to import power from the grid
-| controlled-load-price  | Number:EnergyPrice   | Current price to import power for Controlled Load
-| feed-in-price          | Number:EnergyPrice   | Current price to export power to the grid
-| electricity-status     | String               | Current price status of grid import
-| controlled-load-status | String               | Current price status of controlled load import
-| feed-in-status         | String               | Current price status of Feed-In
-| nem-time               | String               | NEM time of last pricing update
-| renewables             | Number:Dimensionless | Current level of renewables in the grid
-| spike                  | Switch               | Report if the grid has a current price spike
+| channel id             | type                 | description                                       |
+|------------------------|----------------------|---------------------------------------------------|
+| electricity-price      | Number:EnergyPrice   | Current price to import power from the grid       |
+| controlled-load-price  | Number:EnergyPrice   | Current price to import power for Controlled Load |
+| feed-in-price          | Number:EnergyPrice   | Current price to export power to the grid         |
+| electricity-status     | String               | Current price status of grid import               |
+| controlled-load-status | String               | Current price status of controlled load import    |
+| feed-in-status         | String               | Current price status of Feed-In                   |
+| nem-time               | String               | NEM time of last pricing update                   |
+| renewables             | Number:Dimensionless | Current level of renewables in the NEM            |
+| spike                  | Switch               | Report if the grid has a current price spike      |
 
 ## Full Example
 
-### `amberelectric.things`:
+### `amberelectric.things`
 
 ```java
 amberelectric:service:AmberElectric [ apiKey="psk_xxxxxxxxxxxxxxxxxxxx" ]
 ```
 
-### `amberelectric.items`:
+### `amberelectric.items`
 
 ```java
 Number:EnergyPrice AmberElectric_ElectricityPrice { channel="amberelectric:service:AmberElectric:electricity-price" }
@@ -54,7 +55,7 @@ Number AmberElectric_Renewables { channel="amberelectric:service:AmberElectric:r
 Switch AmberElectric_Spike { channel="amberelectric:service:AmberElectric:spike" }
 ```
 
-### `amberelectric.sitemap`:
+### `amberelectric.sitemap`
 
 ```perl
 Text item=AmberElectric_ElectricityPrice label="Electricity Price"

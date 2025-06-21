@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,7 @@ public class ShellyDeviceProfile {
 
     public int numMeters = 0;
     public boolean isEMeter = false; // true for ShellyEM/3EM
+    public boolean isCB = false; // true for Shelly Pro CB
 
     public boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb = false; // true only if it is a Bulb
@@ -157,7 +158,6 @@ public class ShellyDeviceProfile {
         String mode = getString(device.mode);
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
-
         numRelays = !isLight ? getInteger(device.numOutputs) : 0;
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
@@ -208,7 +208,8 @@ public class ShellyDeviceProfile {
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
-        isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX);
+        isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)
+                || thingType.equals(THING_TYPE_SHELLYPLUSRGBWPM_STR);
         isLight = isBulb || isDuo || isRGBW2;
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
@@ -410,7 +411,8 @@ public class ShellyDeviceProfile {
 
     public static boolean isGeneration2(String thingType) {
         return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
-                || thingType.startsWith("shellywall") || (thingType.startsWith("shelly") && thingType.contains("g3"))
+                || thingType.startsWith("shellywall")
+                || (thingType.startsWith("shelly") && (thingType.contains("g3") || thingType.contains("g4")))
                 || isBluSeries(thingType) || thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 

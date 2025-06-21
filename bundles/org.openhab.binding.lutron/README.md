@@ -733,7 +733,7 @@ Most channels receive immediate notifications of device state changes from the L
 The only exceptions are **greenmode** _step_, which is periodically polled and accepts REFRESH commands to initiate immediate polling, and **timeclock** _sunrise_ and _sunset_, which must be polled daily using REFRESH commands to retrieve current values.
 Many other channels accept REFRESH commands to initiate a poll, but sending one should not normally be necessary.
 
-## RadioRA 2/HomeWorks QS Configuration File Examples:
+## RadioRA 2/HomeWorks QS Configuration File Examples
 
 demo.things:
 

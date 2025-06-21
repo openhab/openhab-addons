@@ -11,11 +11,11 @@ The following databases are currently supported and tested:
 
 | Database                                     | Tested Driver / Version                                                                                                                     |
 | -------------------------------------------- |---------------------------------------------------------------------------------------------------------------------------------------------|
-| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
+| [Apache Derby](https://db.apache.org/derby/) | [derby-10.17.1.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
 | [H2](https://www.h2database.com/)            | [h2-2.2.224.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                                                      |
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                                                    |
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
-| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
+| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-9.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
 | [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                                                       |
 | [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
@@ -79,7 +79,7 @@ All item- and event-related configuration is done in the file `persistence/jdbc.
 
 To configure this service as the default persistence service for openHAB, add or change the line
 
-```
+```ini
 org.openhab.core.persistence:default=jdbc
 ```
 
@@ -89,7 +89,7 @@ in the file `services/runtime.cfg`.
 
 services/jdbc.cfg
 
-```
+```ini
 url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 ```
 
@@ -102,7 +102,7 @@ To connect to an Oracle Autonomous Database, use the instructions at https://www
 
 Your services/jdbc.cfg should contain the following minimal configuration for connecting to an Oracle Autonomous Database:
 
-```
+```ini
 url=jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder
 user=openhab
 password=openhab_password
@@ -111,12 +111,14 @@ password=openhab_password
 The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
 Other Oracle DB setups may require different connection parameters.
 
-It is advised to create a specific user with sufficient permissions and space for OpenHAB persistence.
+It is advised to create a specific user with sufficient permissions and space for openHAB persistence.
 This is the user that should be in `jdbc.cfg`.
 The user default schema will be used.
 
 Default data types for an Oracle DB are different from the general defaults:
 
+| Type                        | Oracle DB Type         |
+|-----------------------------|------------------------|
 | sqltype.COLOR               | `VARCHAR2(70)`         |
 | sqltype.CONTACT             | `VARCHAR2(6)`          |
 | sqltype.DATETIME            | `TIMESTAMP`            |
@@ -147,7 +149,7 @@ Here is an example of a configuration for a MySQL database named `testMysql` wit
 
 services/jdbc.cfg
 
-```
+```ini
 url=jdbc:mysql://192.168.0.1:3306/testMysql
 user=test
 password=test

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class EmotivaUdpSendingService {
         if (config.controlPort <= 0) {
             throw new IllegalArgumentException("Invalid udpSendingControlPort: " + config.controlPort);
         }
-        if (config.ipAddress.trim().isEmpty()) {
+        if (config.ipAddress.isBlank()) {
             throw new IllegalArgumentException("Missing ipAddress");
         }
         this.ipAddress = config.ipAddress;
@@ -128,8 +128,8 @@ public class EmotivaUdpSendingService {
         executorService.execute(() -> {
             if (answer.getAddress() != null && answer.getLength() > 0) {
                 logger.trace("Received data on port '{}'", answer.getPort());
-                EmotivaUdpResponse emotivaUdpResponse = new EmotivaUdpResponse(
-                        new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress());
+                var emotivaUdpResponse = new EmotivaUdpResponse(new String(answer.getData(), 0, answer.getLength()),
+                        answer.getAddress().getHostAddress());
                 localListener.accept(emotivaUdpResponse);
             }
         });
@@ -183,17 +183,17 @@ public class EmotivaUdpSendingService {
 
         final InetAddress ipAddress = InetAddress.getByName(this.ipAddress);
         byte[] buf = msg.getBytes(Charset.defaultCharset());
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, ipAddress, sendingControlPort);
+        var packet = new DatagramPacket(buf, buf.length, ipAddress, sendingControlPort);
 
         // make sure we are not interrupted by a disconnect while sending this message
         synchronized (this) {
             DatagramSocket localDatagramSocket = this.sendingSocket;
-            final DatagramPacket answer = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
+            final var answer = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
             final Consumer<EmotivaUdpResponse> localListener = listener;
             if (localDatagramSocket != null && !localDatagramSocket.isClosed()) {
                 localDatagramSocket.setSoTimeout(DEFAULT_UDP_SENDING_TIMEOUT);
                 localDatagramSocket.send(packet);
-                logger.debug("Sending successful");
+                logger.trace("Successfully sending to {}:{}", ipAddress, sendingControlPort);
 
                 localDatagramSocket.receive(answer);
 
@@ -208,5 +208,9 @@ public class EmotivaUdpSendingService {
                 throw new SocketException("Datagram Socket closed or not initialized");
             }
         }
+    }
+
+    public boolean isConnected() {
+        return sendingSocket != null;
     }
 }

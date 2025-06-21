@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
@@ -22,6 +25,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -40,6 +44,20 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     public static final String COVER_CHANNEL_ID = "cover";
     public static final String STATE_CHANNEL_ID = "state";
 
+    public static final String PAYLOAD_OPEN = "OPEN";
+    public static final String PAYLOAD_CLOSE = "CLOSE";
+    public static final String PAYLOAD_STOP = "STOP";
+
+    public static final String STATE_CLOSED = "closed";
+    public static final String STATE_CLOSING = "closing";
+    public static final String STATE_OPEN = "open";
+    public static final String STATE_OPENING = "opening";
+    public static final String STATE_STOPPED = "stopped";
+
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_CLOSED, "@text/state.cover.closed",
+            STATE_CLOSING, "@text/state.cover.closing", STATE_OPEN, "@text/state.cover.open", STATE_OPENING,
+            "@text/state.cover.opening", STATE_STOPPED, "@text/state.cover.stopped");
+
     /**
      * Configuration class for MQTT component
      */
@@ -48,16 +66,18 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
             super("MQTT Cover");
         }
 
+        protected @Nullable Boolean optimistic;
+
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
         @SerializedName("command_topic")
         protected @Nullable String commandTopic;
         @SerializedName("payload_open")
-        protected String payloadOpen = "OPEN";
+        protected String payloadOpen = PAYLOAD_OPEN;
         @SerializedName("payload_close")
-        protected String payloadClose = "CLOSE";
+        protected String payloadClose = PAYLOAD_CLOSE;
         @SerializedName("payload_stop")
-        protected String payloadStop = "STOP";
+        protected String payloadStop = PAYLOAD_STOP;
         @SerializedName("position_closed")
         protected int positionClosed = 0;
         @SerializedName("position_open")
@@ -71,31 +91,41 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         @SerializedName("set_position_topic")
         protected @Nullable String setPositionTopic;
         @SerializedName("state_closed")
-        protected String stateClosed = "closed";
+        protected String stateClosed = STATE_CLOSED;
         @SerializedName("state_closing")
-        protected String stateClosing = "closing";
+        protected String stateClosing = STATE_CLOSING;
         @SerializedName("state_open")
-        protected String stateOpen = "open";
+        protected String stateOpen = STATE_OPEN;
         @SerializedName("state_opening")
-        protected String stateOpening = "opening";
+        protected String stateOpening = STATE_OPENING;
         @SerializedName("state_stopped")
-        protected String stateStopped = "stopped";
+        protected String stateStopped = STATE_STOPPED;
     }
 
     @Nullable
     ComponentChannel stateChannel = null;
 
-    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
+        boolean optimistic = false;
+        Boolean localOptimistic = channelConfiguration.optimistic;
+        if (localOptimistic != null && localOptimistic == true
+                || channelConfiguration.stateTopic == null && channelConfiguration.positionTopic == null) {
+            optimistic = true;
+        }
         String stateTopic = channelConfiguration.stateTopic;
 
         // State can indicate additional information than just
         // the current position, so expose it as a separate channel
         if (stateTopic != null) {
-            TextValue value = new TextValue(new String[] { channelConfiguration.stateClosed,
-                    channelConfiguration.stateClosing, channelConfiguration.stateOpen,
-                    channelConfiguration.stateOpening, channelConfiguration.stateStopped });
+            Map<String, String> states = new LinkedHashMap<>();
+            states.put(channelConfiguration.stateClosed, STATE_CLOSED);
+            states.put(channelConfiguration.stateClosing, STATE_CLOSING);
+            states.put(channelConfiguration.stateOpen, STATE_OPEN);
+            states.put(channelConfiguration.stateOpening, STATE_OPENING);
+            states.put(channelConfiguration.stateStopped, STATE_STOPPED);
+            TextValue value = new TextValue(states, Map.of(), STATE_LABELS, Map.of());
             buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
                     componentConfiguration.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
         }
@@ -149,6 +179,8 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                         return false;
                     }
                     return true;
-                }).build();
+                }).withAutoUpdatePolicy(optimistic ? AutoUpdatePolicy.RECOMMEND : null).build();
+
+        finalizeChannels();
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class EmotivaUdpReceivingService {
         if (receivingPort <= 0) {
             throw new IllegalArgumentException("Invalid receivingPort: " + receivingPort);
         }
-        if (config.ipAddress.trim().isEmpty()) {
+        if (config.ipAddress.isBlank()) {
             throw new IllegalArgumentException("Missing ipAddress");
         }
         this.ipAddress = config.ipAddress;
@@ -150,7 +150,7 @@ public class EmotivaUdpReceivingService {
         final DatagramSocket localReceivingSocket = receivingSocket;
         while (localListener != null && localReceivingSocket != null && receivingSocket != null) {
             try {
-                final DatagramPacket answer = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
+                final var answer = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
 
                 listenerNotifyActive = true;
                 localReceivingSocket.receive(answer); // receive packet (blocking call)
@@ -193,8 +193,8 @@ public class EmotivaUdpReceivingService {
         executorService.execute(() -> {
             if (answer.getAddress() != null && answer.getLength() > 0) {
                 logger.trace("Received data on port '{}'", answer.getPort());
-                EmotivaUdpResponse emotivaUdpResponse = new EmotivaUdpResponse(
-                        new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress());
+                var emotivaUdpResponse = new EmotivaUdpResponse(new String(answer.getData(), 0, answer.getLength()),
+                        answer.getAddress().getHostAddress());
                 localListener.accept(emotivaUdpResponse);
             }
         });

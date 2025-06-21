@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smsmodem.internal.SMSModemBindingConstants;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +146,9 @@ public class Modem {
                                     modemPollingInterval, TimeUnit.SECONDS);
                             this.modemDriver.refreshRssi();
                             this.messageSender = new MessageSender(
-                                    String.format("Gateway Dispatcher 1 [%s]", this.gatewayId), messageQueue, this,
-                                    gatewayDispatcherYield);
+                                    String.format("OH-binding-%s-%s-%s", SMSModemBindingConstants.BINDING_ID,
+                                            "GatewayDispatcher", this.gatewayId),
+                                    messageQueue, this, gatewayDispatcherYield);
                             startSendingQueue();
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Gateway: {}: {}, SL:{}, SIG: {} / {}", toShortString(),

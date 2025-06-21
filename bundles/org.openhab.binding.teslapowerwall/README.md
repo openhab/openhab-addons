@@ -12,12 +12,13 @@ The binding does not support auto discovery.
 
 ## Thing Configuration
 
-As a minimum, the hostname is needed:
+| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
+|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
+| hostname        | N/A           | Yes      | No       | The IP or hostname of the Tesla Powerwall                                            |
+| email           | N/A           | Yes      | No       | the email of the local account on the Powerwall that the installer provided          |
+| password        | N/A           | Yes      | No       | the password of the local account on the Powerwall that the installer provided       |
+| refresh         | 10            | No       | Yes      | The frequency with which to refresh information from the Powerwall (in seconds)      |
 
-- hostname - The hostname of the Tesla Powerwall 2. Defaults to powerwall to avoid SSL certificate issues
-- email - the email of the local account on the Powerwall that the installer provided
-- password - the password of the local account on the Powerwall that the installer provided
-- refresh - The frequency with which to refresh information from the Tesla Powerwall2 specified in seconds. Defaults to 10 seconds.
 
 ## Channels
 
@@ -39,18 +40,18 @@ As a minimum, the hostname is needed:
 | battery-energy-imported   | Number:Energy        | Total Battery Energy Imported                                |
 | home-energy-imported      | Number:Energy        | Total Home Energy Imported                                   |
 | solar-energy-imported     | Number:Energy        | Total Solar Energy Imported                                  |
-| degradation               | Number:Dimensionless | Current battery degradation % (Based on single battery)      |
+| degradation               | Number:Dimensionless | Current battery degradation %                                |
 | full-pack-energy          | Number:Energy        | Reported battery capacity at full                            |
 
 ## Full Example
 
-### `teslapowerwall.things`:
+### `teslapowerwall.things`
 
 ```java
 teslapowerwall:tesla-powerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 ```
 
-### `teslapowerwall.items`:
+### `teslapowerwall.items`
 
 ```java
 String TeslaPowerwall_grid-status { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-status" }
@@ -74,7 +75,7 @@ Number:Dimensionless TeslaPowerwall_degradation { channel="teslapowerwall:tesla-
 Number:Energy TeslaPowerwall_full-pack-energy { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:full-pack-energy" }
 ```
 
-### `teslapowerwall.sitemap`:
+### `teslapowerwall.sitemap`
 
 ```perl
 Text item=TeslaPowerwall_grid-status label="Grid Status [%s]"
@@ -97,4 +98,3 @@ Text item=TeslaPowerwall_solar-energy-imported label="Solar Energy Imported [%.1
 Text item=TeslaPowerwall_full-pack-energy label="Full Pack Energy"
 Text item=TeslaPowerwall_degradation label="Degradation level"
 ```
-

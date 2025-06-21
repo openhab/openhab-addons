@@ -7,6 +7,7 @@
 	<thing-type id="group">
 		<label>Group Multiple Cameras</label>
 		<description>Show multiple cameras as a single rotating feed</description>
+
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="mjpegUrl" typeId="mjpegUrl"/>
@@ -97,6 +98,7 @@
 	<thing-type id="generic">
 		<label>RTSP/HTTP IP Camera</label>
 		<description>Use when your camera is not ONVIF compatible.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -322,6 +324,7 @@
 	<thing-type id="onvif">
 		<label>ONVIF IP Camera</label>
 		<description>Use when the binding does not list your brand of ONVIF camera.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -548,6 +551,21 @@
 				<default>0</default>
 			</parameter>
 
+			<parameter name="onvifEventServiceType" type="integer" groupName="Settings" multiple="false">
+				<label>ONVIF event method:</label>
+				<description>ONVIF event method to use. If camera does not report event capabilities, the event method can be forced
+					here.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="0">Auto detect (0)</option>
+					<option value="1">Disabled (1)</option>
+					<option value="2">Force PullMessages (2)</option>
+					<option value="3">Force WSBaseSubscription (3)</option>
+				</options>
+			</parameter>
+
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -597,6 +615,7 @@
 	<thing-type id="amcrest">
 		<label>Amcrest Camera with API</label>
 		<description>Use for older Amcrest Cameras, that wont work as dahua thing type.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -872,6 +891,7 @@
 	<thing-type id="dahua">
 		<label>Dahua Camera with API</label>
 		<description>Use for all current Dahua cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -887,6 +907,7 @@
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionDetectionLevel" typeId="motionDetectionLevel"/>
 			<channel id="motionAlarm" typeId="motionAlarm"/>
 			<channel id="externalMotion" typeId="externalMotion"/>
 			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
@@ -922,10 +943,17 @@
 			<channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
+			<channel id="acceptedCardNumber" typeId="acceptedCardNumber"/>
+			<channel id="unacceptedCardNumber" typeId="unacceptedCardNumber"/>
+			<channel id="doorUnlock" typeId="doorUnlock"/>
+			<channel id="doorContact" typeId="doorContact"/>
+			<channel id="exitButton" typeId="exitButton"/>
+			<channel id="exitButtonEnabled" typeId="exitButtonEnabled"/>
+			<channel id="magneticLockWarning" typeId="magneticLockWarning"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -1172,6 +1200,7 @@
 	<thing-type id="doorbird">
 		<label>Doorbird Camera with API</label>
 		<description>Use for all current Doorbird Cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -1433,6 +1462,7 @@
 	<thing-type id="foscam">
 		<label>Foscam Camera with API</label>
 		<description>Use for all current HD FOSCAM Cameras as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -1719,6 +1749,7 @@
 	<thing-type id="hikvision">
 		<label>Hikvision Camera with API</label>
 		<description>Use for all current Hikvision Cameras as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -2006,6 +2037,7 @@
 	<thing-type id="instar">
 		<label>Instar Camera with API</label>
 		<description>Use for all current INSTAR HD Cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -2277,6 +2309,7 @@
 	<thing-type id="reolink">
 		<label>Reolink Camera with API</label>
 		<description>Use for all Reolink cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -2419,7 +2452,7 @@
 				<label>MJPEG Options</label>
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
-				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<default>-q:v 4 -r 4 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -2564,6 +2597,21 @@
 				<default>0</default>
 			</parameter>
 
+			<parameter name="onvifEventServiceType" type="integer" groupName="Settings" multiple="false">
+				<label>ONVIF event method:</label>
+				<description>ONVIF event method to use. If camera does not report event capabilities, the event method can be forced
+					here.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="0">Auto detect (0)</option>
+					<option value="1">Disabled (1)</option>
+					<option value="2">Force PullMessages (2)</option>
+					<option value="3">Force WSBaseSubscription (3)</option>
+				</options>
+			</parameter>
+
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
 				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
@@ -2705,6 +2753,10 @@
 		<label>Motion Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2734,6 +2786,10 @@
 		<label>Cell Motion Alarm</label>
 		<description>Cell based motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2806,6 +2862,10 @@
 		<label>Line Crossing Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2906,6 +2966,10 @@
 		<label>Enable Motion Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="externalMotion" advanced="true">
@@ -2928,6 +2992,10 @@
 		<label>Enable Line Crossing Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableAudioAlarm" advanced="true">
@@ -2963,6 +3031,10 @@
 		<item-type>Switch</item-type>
 		<label>Start HLS Stream</label>
 		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableLED" advanced="true">
@@ -3039,6 +3111,78 @@
 		<item-type>String</item-type>
 		<label>Text Overlay</label>
 		<description>Enter some text you wish to overlay on top of the cameras snapshot and video streams.</description>
+	</channel-type>
+
+	<channel-type id="acceptedCardNumber" advanced="true">
+		<item-type>String</item-type>
+		<label>Accepted Card Number</label>
+		<description>Displays last accepted card number.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="unacceptedCardNumber" advanced="true">
+		<item-type>String</item-type>
+		<label>Unaccepted Card Number</label>
+		<description>Displays last unaccepted card number.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorUnlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Door Unlock</label>
+		<description>Lock/unlock.</description>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="doorContact" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Door Contact</label>
+		<description>Door contact representing if the door is opened/closed.</description>
+		<category>Door</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exitButton" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Exit Button</label>
+		<description>Exit button pressed/released.</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exitButtonEnabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Disable/Enable Exit Button</label>
+		<description>Use to enable/disable exit button.</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="magneticLockWarning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Magnetic Lock Fail Warning</label>
+		<description>Will switch to ON if the door will be opened while locked.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="motionDetectionLevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Motion Detection Level</label>
+		<description>Change how sensitive the camera's motion detection is to
+			movement.</description>
+		<category>Motion</category>
+		<state min="0" max="6" step="1" readOnly="false">
+			<options>
+				<option value="0">Detection Off</option>
+				<option value="1">Lowest sensitivity</option>
+				<option value="2">Low sensitivity</option>
+				<option value="3">Middle sensitivity</option>
+				<option value="4">High sensitivity</option>
+				<option value="5">Higher sensitivity</option>
+				<option value="6">Highest sensitivity</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="gotoPreset" advanced="true">

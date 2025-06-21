@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
+
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +32,10 @@ import com.google.gson.annotations.SerializedName;
 public class Button extends AbstractComponent<Button.ChannelConfiguration> {
     public static final String BUTTON_CHANNEL_ID = "button";
 
+    public static final String PAYLOAD_PRESS = "PRESS";
+
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_PRESS, "@text/command.button.press");
+
     /**
      * Configuration class for MQTT component
      */
@@ -44,18 +50,20 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
         protected @Nullable String commandTopic;
 
         @SerializedName("payload_press")
-        protected String payloadPress = "PRESS";
+        protected String payloadPress = PAYLOAD_PRESS;
     }
 
-    public Button(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+    public Button(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
-        TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
+        TextValue value = new TextValue(Map.of(), Map.of(PAYLOAD_PRESS, channelConfiguration.payloadPress), Map.of(),
+                COMMAND_LABELS);
 
         buildChannel(BUTTON_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+        finalizeChannels();
     }
 }

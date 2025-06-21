@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,5 +27,6 @@ public class FolderWatcherBindingConstants {
     public static final ThingTypeUID THING_TYPE_FTPFOLDER = new ThingTypeUID(BINDING_ID, "ftpfolder");
     public static final ThingTypeUID THING_TYPE_LOCALFOLDER = new ThingTypeUID(BINDING_ID, "localfolder");
     public static final ThingTypeUID THING_TYPE_S3BUCKET = new ThingTypeUID(BINDING_ID, "s3bucket");
+    public static final ThingTypeUID THING_TYPE_AZUREBLOB = new ThingTypeUID(BINDING_ID, "azureblob");
     public static final String CHANNEL_NEWFILE = "newfile";
 }

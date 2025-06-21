@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,13 +47,16 @@ public class EmotivaBindingConstants {
     /** Connection retry interval in minutes */
     static final int DEFAULT_RETRY_INTERVAL_MINUTES = 2;
 
+    /** Refresh source labels interval in minutes */
+    static final int DEFAULT_REFRESH_SOURCE_LABEL_JOB_IN_MINUTES = 60;
+
+    /** Refresh source labels unsubscribe delay, giving enough time to get answer from device */
+    static final int DEFAULT_REFRESH_SOURCE_UNSUBSCRIBE_DELAY_IN_SECONDS = 60;
+
     /**
      * Default Emotiva device keep alive in milliseconds. {@link org.openhab.binding.emotiva.internal.dto.ControlDTO}
      */
     static final int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
-
-    /** State name for storing keepAlive timestamp messages */
-    public static final String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
 
     /**
      * Default Emotiva device considered list in milliseconds.
@@ -79,7 +82,7 @@ public class EmotivaBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(List.of(THING_PROCESSOR));
 
     /** Default values for Emotiva channels **/
-    public static final String DEFAULT_EMOTIVA_PROTOCOL_VERSION = "2.0";
+    public static final String DEFAULT_EMOTIVA_PROTOCOL_VERSION = "3.0";
     public static final int DEFAULT_VOLUME_MIN_DECIBEL = -96;
     public static final int DEFAULT_VOLUME_MAX_DECIBEL = 15;
     public static final int DEFAULT_TRIM_MIN_DECIBEL = -12;
@@ -96,6 +99,11 @@ public class EmotivaBindingConstants {
     static final String MENU_PANEL_CHECKBOX_ON = "on";
     static final String MENU_PANEL_HIGHLIGHTED = "true";
     static final String EMOTIVA_SOURCE_COMMAND_PREFIX = "source_";
+
+    /** Emotiva Configuration Constants **/
+    public static final String CONFIG_ACTIVATE_FRONT_BAR = "activateFrontBar";
+    public static final String CONFIG_ACTIVATE_OSD_MENU = "activateOSDMenu";
+    public static final String CONFIG_ACTIVATE_ZONE2 = "activateZone2";
 
     /** Emotiva Protocol V1 channels **/
     public static final String CHANNEL_STANDBY = "general#standby";
@@ -118,7 +126,7 @@ public class EmotivaBindingConstants {
     public static final String CHANNEL_MODE_SURROUND = "general#mode-surround";
     public static final String CHANNEL_SPEAKER_PRESET = "general#speaker-preset";
     public static final String CHANNEL_MAIN_VOLUME = "main-zone#volume";
-    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume_db";
+    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume-db";
     public static final String CHANNEL_LOUDNESS = "general#loudness";
     public static final String CHANNEL_ZONE2_POWER = "zone2#power";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";

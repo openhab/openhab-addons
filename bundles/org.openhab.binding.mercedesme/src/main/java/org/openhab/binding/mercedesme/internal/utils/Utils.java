@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,8 @@
 package org.openhab.binding.mercedesme.internal.utils;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -37,7 +35,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeHandlerFactory;
-import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -78,14 +75,13 @@ public class Utils {
 
     private static final int R = 6371; // Radius of the earth
     private static int port = 8090;
-    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+    public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
         }
     };
-    private static LocaleProvider localeProvider = new LocaleProvider() {
-
+    public static LocaleProvider localeProvider = new LocaleProvider() {
         @Override
         public Locale getLocale() {
             return Locale.getDefault();
@@ -94,10 +90,13 @@ public class Utils {
     public static final Gson GSON = new Gson();
     public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<>();
     public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<>();
+    public static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
 
     public static void initialize(TimeZoneProvider tzp, LocaleProvider lp) {
         timeZoneProvider = tzp;
         localeProvider = lp;
+        INVALID_TOKEN.setAccessToken(Constants.NOT_SET);
+        INVALID_TOKEN.setRefreshToken(Constants.NOT_SET);
     }
 
     /**
@@ -107,8 +106,7 @@ public class Utils {
      * @return openHAB DateTimeType according to configured TimeZone
      */
     public static DateTimeType getDateTimeType(long ms) {
-        Instant timestamp = Instant.ofEpochMilli(ms);
-        return new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone()));
+        return new DateTimeType(Instant.ofEpochMilli(ms));
     }
 
     /**
@@ -137,27 +135,6 @@ public class Utils {
         }
         PORTS.add(port);
         return port;
-    }
-
-    /**
-     * Register port for an AccountHandler
-     */
-    public static synchronized void addPort(int portNr) {
-        if (PORTS.contains(portNr) && portNr != 99999) {
-            LOGGER.warn("Port {} already occupied", portNr);
-        }
-        PORTS.add(portNr);
-    }
-
-    /**
-     * Unregister port for an AccountHandler
-     */
-    public static synchronized void removePort(int portNr) {
-        PORTS.remove(Integer.valueOf(portNr));
-    }
-
-    public static String getCallbackAddress(String callbackIP, int callbackPort) {
-        return "http://" + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
     }
 
     /**
@@ -288,41 +265,6 @@ public class Utils {
     }
 
     /**
-     * Calculate authorization config URL as pre-configuration prior to authorization call
-     *
-     * @param region - configured region
-     * @return authorization config URL as String
-     */
-    public static String getAuthConfigURL(String region) {
-        return getRestAPIServer(region) + "/v1/config";
-    }
-
-    /**
-     * Calculate login app id according to region
-     *
-     * @param region - configured region
-     * @return login app id as String
-     */
-    public static String getLoginAppId(String region) {
-        switch (region) {
-            case Constants.REGION_CHINA:
-                return Constants.LOGIN_APP_ID_CN;
-            default:
-                return Constants.LOGIN_APP_ID;
-        }
-    }
-
-    /**
-     * Calculate authorization URL for authorization call
-     *
-     * @param region - configured region
-     * @return authorization URL as String
-     */
-    public static String getAuthURL(String region) {
-        return getRestAPIServer(region) + "/v1/login";
-    }
-
-    /**
      * Calculate token URL for getting token
      *
      * @param region - configured region
@@ -338,6 +280,7 @@ public class Utils {
      * @param token - Base64 String from storage
      * @return AccessTokenResponse decoded from String, invalid token otherwise
      */
+    @Deprecated
     public static AccessTokenResponse fromString(String token) {
         try {
             byte[] data = Base64.getDecoder().decode(token);
@@ -348,25 +291,7 @@ public class Utils {
         } catch (IOException | ClassNotFoundException e) {
             LOGGER.warn("Error converting string to token {}", e.getMessage());
         }
-        return AuthService.INVALID_TOKEN;
-    }
-
-    /**
-     * Encode AccessTokenResponse as Base64 String for storage
-     *
-     * @param token - AccessTokenResponse to convert
-     */
-    public static String toString(AccessTokenResponse token) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(token);
-            oos.close();
-            return Base64.getEncoder().encodeToString(baos.toByteArray());
-        } catch (IOException e) {
-            LOGGER.warn("Error converting token to string {}", e.getMessage());
-        }
-        return Constants.NOT_SET;
+        return INVALID_TOKEN;
     }
 
     /**

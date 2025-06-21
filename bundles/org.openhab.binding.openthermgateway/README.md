@@ -185,7 +185,7 @@ This will cause the OpenTherm Gateway to send a READ-DATA message to the slave d
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Bridge openthermgateway:openthermgateway:1 "OpenTherm Gateway" [ ipaddress="192.168.1.100", port="8000", connectionRetryInterval=60 ] {
@@ -301,7 +301,7 @@ Number:Dimensionless FaultHistoryBufferNumber "Fault History Buffer Number" { ch
 Number:Dimensionless FaultHistoryBufferEntry "Fault History Buffer Entry" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_fhbentry }
 ```
 
-### demo.sitemap
+### `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Main Menu" {

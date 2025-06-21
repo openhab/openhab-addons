@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,54 +12,11 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.BINDING_ID;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ACTUALTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BATTERY;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BATTERY_LOW;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLOR;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE_ABS;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COMFORTTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_CONTACT_STATE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_DEVICE_LOCKED;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ECOTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ENERGY;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_LAST_CHANGE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_LOCKED;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_NEXTTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_NEXT_CHANGE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_OBSTRUCTION_ALARM;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ON_OFF;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_OUTLET;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_RADIATOR_MODE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ROLLERSHUTTER;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_SETTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_TEMPERATURE_ALARM;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_VOLTAGE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CONFIG_CHANNEL_TEMP_OFFSET;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_BOOST;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_COMFORT;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_ECO;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_OFF;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_ON;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_UNKNOWN;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_WINDOW_OPEN;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_MAX;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_OFF;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_ON;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_UNDEFINED;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.fromCelsius;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.normalizeCelsius;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.toCelsius;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -126,6 +83,7 @@ import org.slf4j.LoggerFactory;
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Christoph Sommer - Added support for color temperature
  * @author Tobias Lange - Added abs color temperature and fixed on/off behavior of light blub
+ * @author Fabian Girgert - Fixed incorrect state of dimmable bulb when switched off
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -207,9 +165,11 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
                             deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
-                    updateDimmableLight(deviceModel.getLevelControlModel());
+                    updateDimmableLight(deviceModel.getLevelControlModel(), deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
                     updateSimpleOnOffUnit(deviceModel.getSimpleOnOffUnit());
+                } else if (HAN_FUN_HOST_THING_TYPE.equals(thing.getThingTypeUID())) {
+                    updateBattery(deviceModel);
                 }
             }
         }
@@ -255,9 +215,16 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         }
     }
 
-    private void updateDimmableLight(@Nullable LevelControlModel levelControlModel) {
+    private void updateDimmableLight(@Nullable LevelControlModel levelControlModel,
+            @Nullable SimpleOnOffModel simpleOnOff) {
         if (levelControlModel != null) {
-            updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.getLevelPercentage()));
+            PercentType brightness;
+            if (simpleOnOff == null || simpleOnOff.state) {
+                brightness = new PercentType(levelControlModel.getLevelPercentage());
+            } else {
+                brightness = PercentType.ZERO;
+            }
+            updateThingChannelState(CHANNEL_BRIGHTNESS, brightness);
         }
     }
 
@@ -306,9 +273,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             NextChangeModel nextChange = heatingModel.getNextchange();
             if (nextChange != null) {
                 int endPeriod = nextChange.getEndperiod();
-                updateThingChannelState(CHANNEL_NEXT_CHANGE, endPeriod == 0 ? UnDefType.UNDEF
-                        : new DateTimeType(
-                                ZonedDateTime.ofInstant(Instant.ofEpochSecond(endPeriod), ZoneId.systemDefault())));
+                updateThingChannelState(CHANNEL_NEXT_CHANGE,
+                        endPeriod == 0 ? UnDefType.UNDEF : new DateTimeType(Instant.ofEpochSecond(endPeriod)));
                 BigDecimal nextTemperature = nextChange.getTchange();
                 updateThingChannelState(CHANNEL_NEXTTEMP, TEMP_FRITZ_UNDEFINED.equals(nextTemperature) ? UnDefType.UNDEF
                         : new QuantityType<>(toCelsius(nextTemperature), SIUnits.CELSIUS));
@@ -538,7 +504,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
                 BigDecimal colorTemperature = null;
-                if (command instanceof QuantityType quantityCommand) {
+                if (command instanceof QuantityType<?> quantityCommand) {
                     QuantityType<?> convertedCommand = quantityCommand.toInvertibleUnit(Units.KELVIN);
                     if (convertedCommand != null) {
                         colorTemperature = convertedCommand.toBigDecimal();

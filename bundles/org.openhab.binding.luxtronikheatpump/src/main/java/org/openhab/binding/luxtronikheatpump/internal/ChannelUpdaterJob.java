@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.luxtronikheatpump.internal;
 import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,8 +124,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
 
         if (itemClass == DateTimeItem.class && rawValue > 0) {
             try {
-                Instant instant = Instant.ofEpochSecond(rawValue.longValue());
-                return new DateTimeType(instant.atZone(ZoneId.of("UTC")));
+                return new DateTimeType(Instant.ofEpochSecond(rawValue.longValue()));
             } catch (DateTimeException e) {
                 logger.warn("Invalid timestamp '{}' received from heatpump: {}", rawValue, e.getMessage());
             }
@@ -243,6 +241,11 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         properties.put("subnetMask", transformIpAddress(heatpumpValues[92]));
         properties.put("broadcastAddress", transformIpAddress(heatpumpValues[93]));
         properties.put("gateway", transformIpAddress(heatpumpValues[94]));
+
+        if (heatpumpValues.length >= 258 && heatpumpValues[258] > 0) {
+            // Only set property if RBE unit is installed
+            properties.put("RbeVersion", heatpumpValues[258]);
+        }
 
         return properties;
     }

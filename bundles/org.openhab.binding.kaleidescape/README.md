@@ -13,10 +13,11 @@ All movie player components including the original K-Player series, M Class Play
 It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
 
 The supported thing types are:
-`player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
-`cinemaone` Cinema One (2nd Gen)
-`alto`
-`strato` Includes Strato, Strato S, Strato C or Strato V
+
+- `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
+- `cinemaone` Cinema One (2nd Gen)
+- `alto`
+- `strato` Includes Strato, Strato S, Strato C, Strato V or Strato M
 
 The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
@@ -139,7 +140,7 @@ The following channels are available:
 
 ## Full Example
 
-kaleidescape.things:
+### `kaleidescape.things` Example
 
 ```java
 kaleidescape:strato:myzone1 "Strato Theater Rm" [ host="192.168.1.10", updatePeriod=0, loadHighlightedDetails=true ]
@@ -147,7 +148,7 @@ kaleidescape:player:myzone2 "M500 Living Rm" [ host="192.168.1.11", updatePeriod
 kaleidescape:cinemaone:myzone3 "My Cinema One" [ host="192.168.1.12", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
 ```
 
-kaleidescape.items:
+### `kaleidescape.items` Example
 
 ```java
 // Virtual switch to send a command, see sitemap and rules below
@@ -162,12 +163,12 @@ String z1_Ui_TitleName "Movie Title: [%s]" { channel="kaleidescape:player:myzone
 String z1_Ui_PlayMode "Play Mode: [%s]" { channel="kaleidescape:player:myzone1:ui#play_mode" }
 String z1_Ui_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1:ui#play_speed" }
 Number z1_Ui_TitleNum "Title Number: [%s]" { channel="kaleidescape:player:myzone1:ui#title_num" }
-Number:Time z1_Ui_TitleLength "Title Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
-Number:Time z1_Ui_TitleLoc "Title Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
+Number:Time z1_Ui_TitleLength "Title Length: [%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
+Number:Time z1_Ui_TitleLoc "Title Location: [%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
 DateTime z1_Ui_TitleEndTime "Title End Time: [%s]" { channel="kaleidescape:player:myzone1:ui#endtime" }
 Number z1_Ui_ChapterNum "Chapter Number: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_num" }
-Number:Time z1_Ui_ChapterLength "Chapter Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
-Number:Time z1_Ui_ChapterLoc "Chapter Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
+Number:Time z1_Ui_ChapterLength "Chapter Length: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
+Number:Time z1_Ui_ChapterLoc "Chapter Location: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
 String z1_Ui_MovieMediaType "Media Type: [%s]" { channel="kaleidescape:player:myzone1:ui#movie_media_type" }
 String z1_Ui_MovieLocation "Movie Location: [%s]" { channel="kaleidescape:player:myzone1:ui#movie_location" }
 String z1_Ui_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:ui#aspect_ratio" }
@@ -203,8 +204,8 @@ String z1_Music_Artist "Artist: [%s]" { channel="kaleidescape:player:myzone1:mus
 String z1_Music_Album "Album: [%s]" { channel="kaleidescape:player:myzone1:music#album" }
 String z1_Music_PlayMode "Play Mode: [%s]" { channel="kaleidescape:player:myzone1:music#play_mode" }
 String z1_Music_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1:music#play_speed" }
-Number:Time z1_Music_TrackLength "Track Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_length" }
-Number:Time z1_Music_TrackPosition "Track Position: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_position" }
+Number:Time z1_Music_TrackLength "Track Length: [%s]" { channel="kaleidescape:player:myzone1:music#track_length" }
+Number:Time z1_Music_TrackPosition "Track Position: [%s]" { channel="kaleidescape:player:myzone1:music#track_position" }
 Number z1_Music_TrackProgress "Track Progress: [%s %%]" { channel="kaleidescape:player:myzone1:music#track_progress" }
 String z1_Music_Title "Music Title Raw: [%s]" { channel="kaleidescape:player:myzone1:music#title" }
 String z1_Music_TrackHandle "Track Handle: [%s]" { channel="kaleidescape:player:myzone1:music#track_handle" }
@@ -220,7 +221,7 @@ String z1_Detail_CoverUrl "[%s]" { channel="kaleidescape:player:myzone1:detail#c
 String z1_Detail_HiresCoverUrl "[%s]" { channel="kaleidescape:player:myzone1:detail#hires_cover_url" }
 String z1_Detail_Rating "Rating: [%s]" { channel="kaleidescape:player:myzone1:detail#rating" }
 String z1_Detail_Year "Year: [%s]" { channel="kaleidescape:player:myzone1:detail#year" }
-Number:Time z1_Detail_RunningTime "Running Time: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:detail#running_time" }
+Number:Time z1_Detail_RunningTime "Running Time: [%s]" { channel="kaleidescape:player:myzone1:detail#running_time" }
 String z1_Detail_Actors "Actors: [%s]" { channel="kaleidescape:player:myzone1:detail#actors" }
 String z1_Detail_Directors "Directors: [%s]" { channel="kaleidescape:player:myzone1:detail#directors" }
 String z1_Detail_Artist "Artist: [%s]" { channel="kaleidescape:player:myzone1:detail#artist" }
@@ -235,31 +236,7 @@ String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:play
 String z1_MovieSearch "Movie Search"
 ```
 
-ksecondsformat.js:
-
-```javascript
-(function(timestamp) {
-    var totalSeconds = Date.parse(timestamp) / 1000
-
-    if (isNaN(totalSeconds)) {
-        return '-';
-    } else {
-        hours = Math.floor(totalSeconds / 3600);
-        totalSeconds %= 3600;
-        minutes = Math.floor(totalSeconds / 60);
-        seconds = totalSeconds % 60;
-        if ( minutes < 10 ) {
-            minutes = '0' + minutes;
-        }
-        if ( seconds < 10 ) {
-            seconds = '0' + seconds;
-        }
-        return hours + ':' + minutes + ':' + seconds;
-    }
-})(input)
-```
-
-kaleidescape.sitemap:
+### `kaleidescape.sitemap` Example
 
 ```perl
 sitemap kaleidescape label="Kaleidescape" {
@@ -349,7 +326,7 @@ sitemap kaleidescape label="Kaleidescape" {
 }
 ```
 
-kaleidescape.rules:
+### `kaleidescape.rules` Example
 
 ```java
 var int lightPercent
@@ -378,7 +355,7 @@ when
 then
     var volEvt = newState.toString()
 
-    // When `volumeBasicEnabled` is true for the thing, VOLUME_UP, VOLUME_DOWN and TOGGLE_MUTE are received from the iPad and phone apps
+    // When `volumeBasicEnabled` is true for the Thing, VOLUME_UP, VOLUME_DOWN and TOGGLE_MUTE are received from the iPad and phone apps
     // VOLUME_UP_PRESS/RELEASE, VOLUME_DOWN_PRESS/RELEASE, TOGGLE_MUTE events will always be received from the IR remote
     // *RELEASE events are not used in this example
 
@@ -458,7 +435,7 @@ then
     }
 end
 
-// The following are no longer required since the thing configuration will enable automatic loading of metatdata.
+// The following are no longer required since the Thing configuration will enable automatic loading of metatdata.
 // However the examples are still valid for advanced use cases where retrieving metadata from an arbitrary content handle is desired.
 
 rule "Load selected item Metadata"

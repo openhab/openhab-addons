@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,10 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,6 +46,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.osgi.framework.BundleContext;
@@ -58,7 +60,7 @@ import ch.qos.logback.core.read.ListAppender;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 
 /**
- * This is the implementation of the test for MongoDB {@link PersistenceService}.
+ * This is the implementation of the test for MongoDB {@link org.openhab.core.persistence.PersistenceService}.
  *
  * @author René Ulbricht - Initial contribution
  */
@@ -205,7 +207,7 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("testCollection");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
@@ -243,7 +245,7 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("testCollection");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
@@ -283,7 +285,7 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("testCollection");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(2, documents.size()); // Assert that there are two documents
 
@@ -325,7 +327,7 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("testCollection");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(2, documents.size()); // Assert that there are two documents
 
@@ -365,13 +367,55 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("testCollection");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
             Document insertedDocument = documents.get(0); // Get the first (and only) document
 
             VerificationHelper.verifyDocumentWithAlias(insertedDocument, "AliasName", "TestItem", "TestValue");
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /**
+     * Tests the reading of String Items stored with an alias
+     *
+     * @param dbContainer The container running the MongoDB instance.
+     */
+    @ParameterizedTest
+    @MethodSource("org.openhab.persistence.mongodb.internal.DataCreationHelper#provideDatabaseBackends")
+    public void testQueryStringWithAlias(DatabaseTestContainer dbContainer) {
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testCollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            MongoCollection<Document> collection = database.getCollection("testCollection");
+
+            StringItem item = DataCreationHelper.createStringItem("TestItem", "TestValue");
+            try {
+                Mockito.when(setupResult.itemRegistry.getItem("TestItem")).thenReturn(item);
+            } catch (ItemNotFoundException e) {
+            }
+
+            String alias = "AliasName";
+
+            Document obj = new Document();
+            obj.put(MongoDBFields.FIELD_ID, new ObjectId());
+            obj.put(MongoDBFields.FIELD_ITEM, alias);
+            obj.put(MongoDBFields.FIELD_REALNAME, "TestItem");
+            obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
+            obj.put(MongoDBFields.FIELD_VALUE, "TestValue");
+            collection.insertOne(obj);
+
+            // Execution
+            FilterCriteria filter = DataCreationHelper.createFilterCriteria("TestItem");
+            @NonNull
+            Iterable<@NonNull HistoricItem> result = service.query(filter, alias);
+            VerificationHelper.verifyQueryResult(result, new StringType("TestValue"));
         } finally {
             dbContainer.stop();
         }
@@ -606,7 +650,7 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("testCollection");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
@@ -698,8 +742,9 @@ public class MongoDBPersistenceServiceTest {
 
             if (item instanceof DateTimeItem) {
                 // verify just the date part
-                assertEquals(((DateTimeType) item.getState()).getZonedDateTime().toLocalDate(),
-                        ((DateTimeType) result.iterator().next().getState()).getZonedDateTime().toLocalDate());
+                assertEquals(((DateTimeType) item.getState()).getZonedDateTime(ZoneId.systemDefault()).toLocalDate(),
+                        ((DateTimeType) result.iterator().next().getState()).getZonedDateTime(ZoneId.systemDefault())
+                                .toLocalDate());
             } else {
                 VerificationHelper.verifyQueryResult(result, item.getState());
             }
@@ -733,7 +778,7 @@ public class MongoDBPersistenceServiceTest {
             service.store(item, null);
 
             // Verification
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
@@ -791,14 +836,13 @@ public class MongoDBPersistenceServiceTest {
 
     /**
      * Tests the toString of a MongoDBItem
-     * 
      *
      * @param item The item to store in the database.
      */
     @Test
     public void testHistoricItemToString() {
         // Preparation
-        ZonedDateTime now = ZonedDateTime.now();
+        Instant now = Instant.now();
         HistoricItem item = new MongoDBItem("TestItem", new DecimalType(10.1), now);
 
         // Execution
@@ -806,7 +850,7 @@ public class MongoDBPersistenceServiceTest {
 
         // Verification
         // Jan 29, 2024, 8:43:26 PM: TestItem -> 10.1
-        String expected = DateFormat.getDateTimeInstance().format(Date.from(now.toInstant())) + ": TestItem -> 10.1";
+        String expected = DateFormat.getDateTimeInstance().format(Date.from(now)) + ": TestItem -> 10.1";
         assertEquals(expected, result);
     }
 
@@ -838,7 +882,7 @@ public class MongoDBPersistenceServiceTest {
 
             // Verification
             MongoCollection<Document> collection = database.getCollection("TestItem");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
@@ -878,8 +922,8 @@ public class MongoDBPersistenceServiceTest {
             service.store(item, now, historicState, "AliasName");
 
             // Verification
-            MongoCollection<Document> collection = database.getCollection("TestItem");
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            MongoCollection<Document> collection = database.getCollection("AliasName");
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is only one document
 
@@ -917,7 +961,7 @@ public class MongoDBPersistenceServiceTest {
             // Verification
             MongoCollection<Document> collection = database.getCollection("testcollection");
 
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             assertEquals(1, documents.size()); // Assert that there is the other document
 
@@ -957,7 +1001,7 @@ public class MongoDBPersistenceServiceTest {
             MongoCollection<Document> collection = database.getCollection("testcollection");
 
             // Query the database for all data points
-            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+            List<Document> documents = collection.find().into(new ArrayList<>());
 
             // Create a set of the returned data points
             Set<PersistenceTestItem> returnedData = documents.stream()

@@ -5,11 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="logger" extensible="true">
+	<thing-type id="logger" extensible="string,number,datetime">
 		<label>Solarman Logger</label>
 		<description>This thing allows communication with Solarman (IGEN-Tech) v5 based solar inverter data loggers over the
 			local network. Compatible with inverters from manufacturers such as Deye, Sofar, Solis, ZCS Azzurro, and KStar.</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
@@ -55,6 +55,17 @@
 				<label>Refresh Interval</label>
 				<description>Interval to query the logger (default 60).</description>
 				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="solarmanLoggerMode" type="text" required="false">
+				<label>Logger Mode</label>
+				<description>Use RAW Modbus for LAN Stick LSE-3 and V5 NODBUS for most Wifi Sticks. If your Wifi stick uses Raw
+					Modbus choose RAW. If you do not use this advanced option, V5 MODBUS will be the default.</description>
+				<options>
+					<option value="V5MODBUS">V5 Modbus</option>
+					<option value="RAWMODBUS">RAW Modbus</option>
+				</options>
+				<default>V5MODBUS</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="additionalRequests" type="text" required="false">

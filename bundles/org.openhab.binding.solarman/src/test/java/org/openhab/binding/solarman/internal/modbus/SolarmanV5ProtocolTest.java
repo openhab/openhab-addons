@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
+import org.openhab.binding.solarman.internal.SolarmanLoggerMode;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 
 /**
@@ -39,7 +40,7 @@ class SolarmanV5ProtocolTest {
             SolarmanLoggerConnection.class);
 
     private SolarmanLoggerConfiguration loggerConfiguration = new SolarmanLoggerConfiguration("192.168.1.1", 8899,
-            "1234567890", "sg04lp3", 60, null);
+            "1234567890", "sg04lp3", 60, SolarmanLoggerMode.V5MODBUS.toString(), null);
 
     private SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(loggerConfiguration);
 

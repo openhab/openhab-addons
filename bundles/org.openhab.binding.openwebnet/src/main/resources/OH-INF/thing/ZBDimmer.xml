@@ -12,7 +12,7 @@
 
 		<label>Zigbee Dimmer</label>
 		<description>An OpenWebNet Zigbee dimmer for the dimmer control of 1 light. BTicino models: 4585/4594/etc.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 		</channels>

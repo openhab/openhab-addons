@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmbelpir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBELPIR</label>
+		<description>Edge-lit Motion detector with one touch button</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="2channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp4pir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4PIR</label>
+		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel4pir-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL4PIR-20</label>
+		<description>Edge-lit Motion detector with four touch button</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="4channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbmeteo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBMETEO</label>
+		<description>Weather station with thermometer, anemometer, rain sensor and light sensor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="weatherStation" typeId="weatherStation"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:13channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbpir-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPIR-20</label>
+		<description>Mini motion and twilight sensor for recessed or surface mounting</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="7channelInputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:7channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbgp4pir-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4PIR-2</label>
+		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp4pir-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4PIR-20</label>
+		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbpirc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRC</label>
+		<description>Motion and twilight sensor for ceiling mounting</description>
+		<channel-groups>
+			<channel-group id="input" typeId="7channelInputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:7channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbpirm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRM</label>
+		<description>Mini motion and twilight sensor for recessed or surface mounting</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="7channelInputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:7channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbpiro">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRO</label>
+		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureAndLightSensor"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensorWithoutSubAddress"/>
+	</thing-type>
+
+	<thing-type id="vmbpiro-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRO-10</label>
+		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureAndLightSensor"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensorWithoutSubAddress"/>
+	</thing-type>
+
+</thing:thing-descriptions>

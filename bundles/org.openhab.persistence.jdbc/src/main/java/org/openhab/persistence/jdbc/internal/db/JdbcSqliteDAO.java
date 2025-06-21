@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
+    private static final String DATETIME_FORMAT = "'%Y-%m-%d %H:%M:%f'";
+
     /********
      * INIT *
      ********/
@@ -66,7 +68,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("tablePrimaryValue", "strftime('%Y-%m-%d %H:%M:%f' , 'now' , 'localtime')");
+        sqlTypes.put("tablePrimaryValue", "strftime(" + DATETIME_FORMAT + " , 'now', 'localtime')");
     }
 
     /**
@@ -96,7 +98,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
     public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
-                new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype() });
+                new String[] { formattedIdentifier(vo.getItemsManageTable()), vo.getColname(), vo.getColtype() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
         try {
             Yank.execute(sql, null);
@@ -114,7 +116,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -129,10 +132,13 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
-        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
-        Object[] params = { timestamp, storedVO.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        "strftime(" + DATETIME_FORMAT + " , ?, 'unixepoch', 'localtime')" });
+
+        double epochSecondsWithMillis = date.toInstant().toEpochMilli() / 1_000.0;
+        Object[] params = { epochSecondsWithMillis, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} epochSecondsWithMillis={} value='{}'", sql, epochSecondsWithMillis,
+                storedVO.getValue());
         try {
             Yank.execute(sql, params);
         } catch (YankSQLException e) {

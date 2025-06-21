@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmb1ry">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1RY</label>
+		<description>1-channel relay module</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb1ryno">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYNO</label>
+		<description>1-channel relay module with potential-free changeover contact</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb1rynos">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYNOS</label>
+		<description>1-channel relay module with potential-free changeover contact</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb1rys">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYS</label>
+		<description>1-channel relay module with input</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+			<channel id="CH6" typeId="button-channel"/>
+			<channel id="CH6t" typeId="trigger-channel"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ry">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RY</label>
+		<description>4-channel relay module</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:4channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ryld">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYLD</label>
+		<description>4-channel relay module with voltage outputs</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ryld-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYLD-10</label>
+		<description>4-channel relay module with voltage outputs</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ryno">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYNO</label>
+		<description>4-channel relay module with potential-free contacts</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ryno-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYNO-10</label>
+		<description>4-channel relay module with potential-free contacts</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+</thing:thing-descriptions>

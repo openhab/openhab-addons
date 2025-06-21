@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,7 +142,15 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                     return UnDefType.UNDEF;
                 }
                 return new DecimalType(goeResponse.transaction);
+            case AWATTAR_MAX_PRICE:
+                if (goeResponse.awattarMaxPrice == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new DecimalType(goeResponse.awattarMaxPrice);
             case ALLOW_CHARGING:
+                if (goeResponse.allowCharging == null) {
+                    return UnDefType.UNDEF;
+                }
                 return OnOffType.from(goeResponse.allowCharging);
             case TEMPERATURE_TYPE2_PORT:
                 // It was reported that the temperature is invalid when only one value is returned
@@ -250,6 +258,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                     value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
                 }
                 break;
+            case AWATTAR_MAX_PRICE:
+                key = "awp";
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand);
+                }
+                break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 key = "dwo";
                 var multiplier = 1000;
@@ -295,7 +309,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     @Override
     public void initialize() {
         // only read needed parameters
-        filter = "?filter=";
+        filter = "filter=";
         var declaredFields = GoEStatusResponseV2DTO.class.getDeclaredFields();
         var declaredFieldsBase = GoEStatusResponseV2DTO.class.getSuperclass().getDeclaredFields();
 
@@ -310,21 +324,43 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         super.initialize();
     }
 
-    private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + filter;
+    private String getReadUrl() throws IllegalArgumentException {
+        if (config.ip != null) {
+            return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + "?" + filter;
+        } else if (config.serial != null && config.token != null) {
+            return GoEChargerBindingConstants.API_URL_CLOUD_V2.replace("%SERIAL%", config.serial.toString())
+                    .replace("%TOKEN%", config.token.toString()) + "&" + filter;
+        } else {
+            throw new IllegalArgumentException("either ip or token+serial must be configured");
+        }
     }
 
-    private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
-                .replace("%VALUE%", value);
+    private String getWriteUrl(String key, String value) throws IllegalArgumentException {
+        if (config.ip != null) {
+            return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
+                    .replace("%VALUE%", value);
+        } else if (config.serial != null && config.token != null) {
+            return GoEChargerBindingConstants.SET_URL_CLOUD_V2.replace("%SERIAL%", config.serial.toString())
+                    .replace("%TOKEN%", config.token.toString()).replace("%KEY%", key).replace("%VALUE%", value);
+        } else {
+            throw new IllegalArgumentException("either ip or token+serial must be configured");
+        }
     }
 
     private void sendData(String key, String value) {
-        String urlStr = getWriteUrl(key, value);
-        logger.trace("POST URL = {}", urlStr);
+        String urlStr;
+        try {
+            urlStr = getWriteUrl(key, value);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid configuration writing data: {}", e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        HttpMethod httpMethod = HttpMethod.GET;
+        logger.trace("{} URL = {}", httpMethod, urlStr);
 
         try {
-            HttpMethod httpMethod = HttpMethod.GET;
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(httpMethod)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
@@ -332,7 +368,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
             logger.trace("{} Response: {}", httpMethod.toString(), response);
 
             var statusCode = contentResponse.getStatus();
-            if (!(statusCode == 200 || statusCode == 204)) {
+            if (!(statusCode == 200 || statusCode == 202 || statusCode == 204)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/unsuccessful.communication-error");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);

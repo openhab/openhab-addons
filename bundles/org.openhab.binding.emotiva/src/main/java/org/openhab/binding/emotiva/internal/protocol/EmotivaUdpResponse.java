@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ public record EmotivaUdpResponse(String answer, String ipAddress) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        EmotivaUdpResponse that = (EmotivaUdpResponse) o;
+        var that = (EmotivaUdpResponse) o;
         return answer.equals(that.answer) && ipAddress.equals(that.ipAddress);
     }
 }

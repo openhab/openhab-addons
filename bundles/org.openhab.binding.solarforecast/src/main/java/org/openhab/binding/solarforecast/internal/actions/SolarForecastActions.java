@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class SolarForecastActions implements ThingActions {
     private Optional<ThingHandler> thingHandler = Optional.empty();
 
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
-    public @ActionOutput(name = "getEnergyOfDay", type = "QuantityType<Energy>") QuantityType<Energy> getEnergyOfDay(
+    public @ActionOutput(label = "Energy Of Day", type = "QuantityType<Energy>") QuantityType<Energy> getEnergyOfDay(
             @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate,
             @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
@@ -78,7 +78,7 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
-    public @ActionOutput(name = "getPower", type = "QuantityType<Power>") QuantityType<Power> getPower(
+    public @ActionOutput(label = "Power", type = "QuantityType<Power>") QuantityType<Power> getPower(
             @ActionInput(name = "timestamp", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") Instant timestamp,
             @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
@@ -108,7 +108,7 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionEnergyLabel", description = "@text/actionEnergyDesc")
-    public @ActionOutput(name = "getEnergy", type = "QuantityType<Energy>") QuantityType<Energy> getEnergy(
+    public @ActionOutput(label = "Energy", type = "QuantityType<Energy>") QuantityType<Energy> getEnergy(
             @ActionInput(name = "start", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") Instant start,
             @ActionInput(name = "end", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") Instant end,
             @ActionInput(name = "args") String... args) {
@@ -139,7 +139,7 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionForecastBeginLabel", description = "@text/actionForecastBeginDesc")
-    public @ActionOutput(name = "getForecastBegin", type = "java.time.Instant") Instant getForecastBegin() {
+    public @ActionOutput(label = "Forecast Begin", type = "java.time.Instant") Instant getForecastBegin() {
         if (thingHandler.isPresent()) {
             List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             return Utils.getCommonStartTime(forecastObjectList);
@@ -150,7 +150,7 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionForecastEndLabel", description = "@text/actionForecastEndDesc")
-    public @ActionOutput(name = "getForecastEnd", type = "java.time.Instant") Instant getForecastEnd() {
+    public @ActionOutput(label = "Forecast End", type = "java.time.Instant") Instant getForecastEnd() {
         if (thingHandler.isPresent()) {
             List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             return Utils.getCommonEndTime(forecastObjectList);

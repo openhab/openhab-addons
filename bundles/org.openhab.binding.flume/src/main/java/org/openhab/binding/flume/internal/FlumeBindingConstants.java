@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,6 @@ public class FlumeBindingConstants {
     // Properties
     public static final String PROPERTY_ID = "id";
 
-    public static final int DEFAULT_POLLING_INTERVAL_INSTANTANEOUS = 1;
-    public static final int DEFAULT_POLLING_INTERVAL_CUMULATIVE = 5;
+    public static final int DEFAULT_POLLING_INTERVAL_INSTANTANEOUS_MIN = 1;
+    public static final int DEFAULT_POLLING_INTERVAL_CUMULATIVE_MIN = 5;
 }

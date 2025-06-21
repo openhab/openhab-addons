@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,14 +20,18 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlComman
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.band_fm;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.channel_1;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
+import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTagGroup;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 import org.openhab.core.types.State;
 
@@ -43,7 +47,9 @@ public class EmotivaProcessorState {
 
     private EnumMap<EmotivaControlCommands, String> sourcesMainZone;
     private EnumMap<EmotivaControlCommands, String> sourcesZone2;
+    private final Set<EmotivaSubscriptionTagGroup> subscriptions = new HashSet<>();
     private final EnumMap<EmotivaSubscriptionTags, String> modes;
+    private Instant lastSeen = Instant.EPOCH;
 
     private EnumMap<EmotivaControlCommands, String> tunerChannels = new EnumMap<>(
             Map.ofEntries(Map.entry(channel_1, channel_1.getLabel()),
@@ -135,8 +141,8 @@ public class EmotivaProcessorState {
         channelStateMap.put(channel, state);
     }
 
-    public void updateSourcesMainZone(EmotivaControlCommands command, String value) {
-        sourcesMainZone.put(command, value);
+    public void updateSourcesMainZone(EmotivaControlCommands command, String label) {
+        sourcesMainZone.put(command, label.trim());
     }
 
     public void updateModes(EmotivaSubscriptionTags tag, String value) {
@@ -145,5 +151,25 @@ public class EmotivaProcessorState {
 
     public void removeChannel(String channel) {
         channelStateMap.remove(channel);
+    }
+
+    public void updateLastSeen(Instant instant) {
+        lastSeen = instant;
+    }
+
+    public Instant getLastSeen() {
+        return lastSeen;
+    }
+
+    public Set<EmotivaSubscriptionTagGroup> getSubscriptionsTagGroups() {
+        return subscriptions;
+    }
+
+    public void updateSubscribedTagGroups(Set<EmotivaSubscriptionTagGroup> toAddSubscriptions) {
+        subscriptions.addAll(toAddSubscriptions);
+    }
+
+    public void updateUnsubscribedTagGroups(Set<EmotivaSubscriptionTagGroup> toRemoveSubscriptions) {
+        subscriptions.removeAll(toRemoveSubscriptions);
     }
 }

@@ -12,11 +12,17 @@
 
 		<label>L530 Series Color-Bulb</label>
 		<description>Tapo Smart Multicolor Light-Bulb</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="colorBulb"/>
 			<channel-group id="effects" typeId="lightEffectL530"/>
 			<channel-group id="device" typeId="deviceState"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:tapo:device"/>

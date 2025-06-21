@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -298,10 +298,12 @@ public class IpObserverHandler extends BaseThingHandler {
         createChannelHandler(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "weeklyrainin");
         createChannelHandler(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "monthlyrainin");
         createChannelHandler(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "yearlyrainin");
+        createChannelHandler(TOTAL_RAIN, QuantityType.class, ImperialUnits.INCH, "totalrainin");
         createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "UV");
         createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeedmph");
         createChannelHandler(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windgustmph");
         createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarradiation");
+        createChannelHandler(ABS_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "absbaromin");
         createChannelHandler(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "baromin");
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "lowbatt");
     }

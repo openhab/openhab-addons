@@ -1,27 +1,36 @@
 # Panasonic Blu-ray Player Binding
 
 This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray players from 2018 to openHAB.
+
 **Supported Blu-ray models:** DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500.
+
 **Supported UHD models:** DP-UB420/424, DP-UB820/824 & DP-UB9000/9004.
 
 **Please note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
 If the connection to the player originates from a different subnet, 404 response errors are sent in response to all requests.
 
 To enable network remote control of the Blu-ray model players, configure the following settings:
-**Player Settings/Network/Network Settings/Remote Device Settings**
+
+- **Player Settings/Network/Network Settings/Remote Device Settings**
+
 Then make sure you have the following values set:
-**Remote Device Operation: On**
-**Registration Type: Automatic**
+
+- **Remote Device Operation: On**
+- **Registration Type: Automatic**
 
 For the UHD models, Voice Control must be enabled for the player's http interface to be active:
-**Player Settings/Network/Voice Control: On**
+
+- **Player Settings/Network/Voice Control: On**
 
 To enable the binding to control the player while off (network active while off), Quick Start mode must be On as follows:
-**Player Settings/System/Quick Start: On**
+
+- **Player Settings/System/Quick Start: On**
 
 **UHD Model Command Authentication:**
+
 The UHD models require authentication to use the control API.
 A player key must be specified in the thing configuration in order for the `power`, `button` and `control` channels to work.
+
 UHD model players that are patched do not require a player key.
 See the [AVForums discussions](https://www.avforums.com/forums/blu-ray-dvd-player-multiregion-hacks.126/) of the DP-UB420/820/9000 players for more information.
 
@@ -34,7 +43,7 @@ Multiple Things can be added if more than one player is to be controlled.
 ## Discovery
 
 Auto-discovery is supported if the player can be located on the local network using UPnP.
-Otherwise the thing must be manually added.
+Otherwise the Thing must be manually added.
 
 ## Binding Configuration
 
@@ -57,6 +66,7 @@ Some notes:
 - The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
 - There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
 - Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
+- Netflix is no longer supported on the BD models.
 
 ## Channels
 
@@ -68,21 +78,21 @@ The following channels are available:
 | button          | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
 | control         | Player      | RW         | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind.                       |
 | player-status   | String      | R          | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. |
-| time-elapsed    | Number:Time | R          | The total number of seconds of playback time elapsed.                                 |
-| time-total      | Number:Time | R          | The total length of the current playing title in seconds. Not on UHD models.          |
+| time-elapsed    | Number:Time | R          | The total playback time elapsed.                                                      |
+| time-total      | Number:Time | R          | The total length of the current playing title. Not on UHD models.                     |
 | chapter-current | Number      | R          | The current chapter number. Not on UHD models.                                        |
 | chapter-total   | Number      | R          | The total number of chapters in the current title. Not on UHD models.                 |
 
 ## Full Example
 
-panasonicbdp.things:
+### `panasonicbdp.things` Example
 
 ```java
 panasonicbdp:bd-player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
 panasonicbdp:uhd-player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
 ```
 
-panasonicbdp.items:
+### `panasonicbdp.items` Example
 
 ```java
 // BD Player
@@ -90,8 +100,8 @@ Switch Player_Power            "Power"                     { channel="panasonicb
 String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:bd-player:mybdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd-player:mybdplayer:player-status" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
-Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="panasonicbdp:bd-player:mybdplayer:time-total" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%s]"        { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
+Number:Time Player_TimeTotal   "Total Time: [%s]"          { channel="panasonicbdp:bd-player:mybdplayer:time-total" }
 Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbdp:bd-player:mybdplayer:chapter-current" }
 Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbdp:bd-player:mybdplayer:chapter-total" }
 
@@ -100,10 +110,10 @@ Switch Player_Power            "Power"                     { channel="panasonicb
 String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:uhd-player:myuhdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd-player:myuhdplayer:player-status" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%s]"        { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
 ```
 
-panasonicbdp.sitemap:
+### `panasonicbdp.sitemap` Example
 
 ```perl
 sitemap panasonicbdp label="Panasonic Blu-ray" {
@@ -123,7 +133,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 }
 ```
 
-### Appendix A - 'button' channel command codes:
+### Appendix A - 'button' channel command codes
 
 **List of available button commands for BD players:**
 

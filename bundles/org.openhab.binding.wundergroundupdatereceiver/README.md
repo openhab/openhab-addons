@@ -48,9 +48,9 @@ For example, AqPM2.5 has a channel named `AqPM2-5`.
 The channel name set up in the binding should be considered an id with no semantic content other than pointing to the wunderground API.
 Additionally there is a receipt timestamp and a trigger channel.
 
-### Request parameters are mapped to one of the following channel-types:
+### Request parameters are mapped to one of the following channel-types
 
-#### Normal channel-types:
+#### Normal channel-types
 
 | Request parameter |  Channel type id             | Type                 | Label                          | Description                                                                            | Group       |
 |-------------------|------------------------------|----------------------|--------------------------------|----------------------------------------------------------------------------------------|-------------|
@@ -68,7 +68,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | indoorhumidity    | indoor-humidity              | Number:Dimensionless | Indoor Humidity                | Indoor humidity in %.                                                                  | Humidity    |
 | baromin           |
 
-#### Advanced channel-types:
+#### Advanced channel-types
 
 | Request parameter |  Channel type id             | Type                 | Label                          | Description                                                                                         | Group       |
 |-------------------|------------------------------|----------------------|--------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
@@ -107,7 +107,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | AqPM10            | pm10-mass                    | Number:Density       | PM10 Mass                      | PM10 mass, µG/m3.                                                                                   | Pollution   |
 | AqOZONE           | ozone                        | Number:Dimensionless | Ozone                          | Ozone, ppb.                                                                                         | Pollution   |
 
-#### Metadata channel-types:
+#### Metadata channel-types
 
 | Request parameter |  Channel type id             | Type                 | Label                             | Description                                                                                | Group       |
 |-------------------|------------------------------|----------------------|-----------------------------------|--------------------------------------------------------------------------------------------|-------------|
@@ -116,7 +116,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | rtfreq            | realtime-frequency           | Number               | Realtime Frequency                | How often does the device submit measurements                                              | Metadata    |
 | lowbatt           | system:low-battery           | Switch               | Low Battery                       | Low battery warning with possible values on (low battery) and off (battery ok)             | Metadata    |
 
-#### Synthetic channel-types. These are programmatically added:
+#### Synthetic channel-types. These are programmatically added
 
 |  Channel type id       | Type                 | Channel type | Label                    | Description                                                                                                                                       | Group    |
 |------------------------|----------------------|--------------|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------|
@@ -172,7 +172,7 @@ None of the current channels take config.
 
 ```java
 Number:Speed WuBinding_WeatherStation_WindSpeed "Current Wind Speed [%.2f %unit%]" <wind> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:windspeedmph" }
-DateTime WuBinding_LastRecieved "Last Recieved Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:last-received-datetime" }
+DateTime WuBinding_LastReceived "Last Received Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:last-received-datetime" }
 ```
 
 The binding tries to post received values as the item types described in the channel types table, so attaching a channel that takes a given type to an item of a different type has undefined behaviour.

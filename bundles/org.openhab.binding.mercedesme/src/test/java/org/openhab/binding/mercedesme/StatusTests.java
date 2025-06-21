@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,18 @@
 package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandlerMock;
@@ -33,7 +39,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 
 /**
- * {@link StatusTests} sequencess for testing ThingStatus
+ * {@link StatusTests} sequences for testing ThingStatus
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -41,23 +47,41 @@ import org.openhab.core.thing.internal.BridgeImpl;
 class StatusTests {
 
     public static void tearDown(AccountHandlerMock ahm) {
-        // ahm.setCallback(null);
-        ahm.dispose();
         try {
             Thread.sleep(250);
         } catch (InterruptedException e) {
             fail();
         }
+        ahm.dispose();
+    }
+
+    public static HttpClient getHttpClient(int tokenResponseCode) {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+        HttpClient httpClient = mock(HttpClient.class);
+        try {
+            Request clientRequest = mock(Request.class);
+            when(httpClient.POST(anyString())).thenReturn(clientRequest);
+            when(clientRequest.header(anyString(), anyString())).thenReturn(clientRequest);
+            when(clientRequest.content(any())).thenReturn(clientRequest);
+            when(clientRequest.timeout(anyLong(), any())).thenReturn(clientRequest);
+            ContentResponse response = mock(ContentResponse.class);
+            when(response.getStatus()).thenReturn(tokenResponseCode);
+            String tokenResponse = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
+            when(response.getContentAsString()).thenReturn(tokenResponse);
+            when(clientRequest.send()).thenReturn(response);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+        return httpClient;
     }
 
     @Test
     void testInvalidConfig() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
         Map<String, Object> config = new HashMap<>();
-        config.put("callbackIP", "999.999.999.999");
-        config.put("callbackPort", "99999");
+        config.put("refreshToken", Constants.JUNIT_REFRESH_TOKEN);
         bi.setConfiguration(new Configuration(config));
-        AccountHandlerMock ahm = new AccountHandlerMock(bi, null);
+        AccountHandlerMock ahm = new AccountHandlerMock(bi, null, getHttpClient(404));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
@@ -83,6 +107,7 @@ class StatusTests {
         tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
+        ahm.refresh();
         tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth offline");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth detail");
@@ -107,13 +132,13 @@ class StatusTests {
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
-        config.put("callbackIP", "999.999.999.999");
-        config.put("callbackPort", "99999");
+        config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
-        AccountHandlerMock ahm = new AccountHandlerMock(bi, null);
+        AccountHandlerMock ahm = new AccountHandlerMock(bi, null, getHttpClient(404));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
+        ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth Offline");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth details");
@@ -140,17 +165,10 @@ class StatusTests {
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
-        config.put("callbackIP", "999.999.999.999");
-        config.put("callbackPort", "99999");
+        config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
-        AccessTokenResponse token = new AccessTokenResponse();
-        token.setExpiresIn(3000);
-        token.setAccessToken(Constants.JUNIT_TOKEN);
-        token.setRefreshToken(Constants.JUNIT_REFRESH_TOKEN);
-        token.setCreatedOn(Instant.now());
-        token.setTokenType("Bearer");
-        token.setScope(Constants.SCOPE);
-        AccountHandlerMock ahm = new AccountHandlerMock(bi, Utils.toString(token));
+        String tokenResponse = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
+        AccountHandlerMock ahm = new AccountHandlerMock(bi, tokenResponse, getHttpClient(200));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();

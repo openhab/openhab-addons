@@ -41,6 +41,7 @@
 	<thing-type id="HT-MT500">
 		<label>SONY Soundbar HT-MT500</label>
 		<description>SONY Soundbar HT-MT500</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-mt500"/>

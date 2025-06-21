@@ -13,7 +13,7 @@
 		<label>Dry Contact/IR Interface</label>
 		<description>An OpenWebNet BUS/SCS Dry Contact Interface or IR Interface. BTicino models: 3477/F428, IR 4610-4611-4640
 			etc.</description>
-
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="sensor" typeId="dryContactIR"/>
 		</channels>

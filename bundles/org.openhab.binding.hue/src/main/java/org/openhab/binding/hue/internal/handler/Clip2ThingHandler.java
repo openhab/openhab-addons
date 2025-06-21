@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.api.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
@@ -50,6 +51,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
@@ -60,7 +62,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -71,6 +72,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -108,6 +111,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Set<ResourceType> SUPPORTED_SCENE_TYPES = Set.of(ResourceType.SCENE, ResourceType.SMART_SCENE);
+
+    private static final Set<Archetype> STRIPLIGHT_ARCHETYPES = Set.of(Archetype.HUE_LIGHTSTRIP,
+            Archetype.HUE_LIGHTSTRIP_TV, Archetype.HUE_TUBE, Archetype.STRING_LIGHT, Archetype.CHRISTMAS_TREE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
@@ -174,7 +180,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
-    private final TimeZoneProvider timeZoneProvider;
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -196,8 +201,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateServiceContributorsTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
-            TimeZoneProvider timeZoneProvider, ThingRegistry thingRegistry,
-            ItemChannelLinkRegistry itemChannelLinkRegistry) {
+            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -214,7 +218,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -764,7 +767,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param fullResources the full list of resources of the given type.
      */
     public void onResourcesList(ResourceType resourceType, List<Resource> fullResources) {
-        if (resourceType == ResourceType.SCENE) {
+        if (SUPPORTED_SCENE_TYPES.contains(resourceType)) {
             updateSceneContributors(fullResources);
         } else {
             fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny()
@@ -925,7 +928,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 }
                 // Update channel from timestamp if last button pressed.
-                State buttonLastUpdatedState = resource.getButtonLastUpdatedState(timeZoneProvider.getTimeZone());
+                State buttonLastUpdatedState = resource.getButtonLastUpdatedState();
                 if (buttonLastUpdatedState instanceof DateTimeType) {
                     Instant buttonLastUpdatedInstant = ((DateTimeType) buttonLastUpdatedState).getInstant();
                     if (buttonLastUpdatedInstant.isAfter(buttonGroupLastUpdated)) {
@@ -945,6 +948,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case LIGHT:
                 if (fullUpdate) {
                     updateEffectChannel(resource);
+                    updateColorTemperatureAbsoluteChannel(resource);
                 }
                 updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
@@ -966,16 +970,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case LIGHT_LEVEL:
                 updateState(CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
-                updateState(CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED,
-                        resource.getLightLevelLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED, resource.getLightLevelLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case MOTION:
             case CAMERA_MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
-                updateState(CHANNEL_2_MOTION_LAST_UPDATED,
-                        resource.getMotionLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
@@ -986,14 +988,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 } else {
                     updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }
-                updateState(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED,
-                        resource.getRotaryStepsLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED, resource.getRotaryStepsLastUpdatedState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
                 updateState(CHANNEL_2_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
-                updateState(CHANNEL_2_TEMPERATURE_LAST_UPDATED,
-                        resource.getTemperatureLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_TEMPERATURE_LAST_UPDATED, resource.getTemperatureLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
@@ -1007,15 +1007,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CONTACT:
                 updateState(CHANNEL_2_SECURITY_CONTACT, resource.getContactState(), fullUpdate);
-                updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED,
-                        resource.getContactLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED, resource.getContactLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_SECURITY_CONTACT_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case TAMPER:
                 updateState(CHANNEL_2_SECURITY_TAMPER, resource.getTamperState(), fullUpdate);
-                updateState(CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED,
-                        resource.getTamperLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED, resource.getTamperLastUpdatedState(), fullUpdate);
                 break;
 
             case SMART_SCENE:
@@ -1043,7 +1041,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (Objects.nonNull(zigbeeStatus)) {
             logger.debug("{} -> updateConnectivityState() thingStatus:{}, zigbeeStatus:{}", resourceId,
                     thing.getStatus(), zigbeeStatus);
-            hasConnectivityIssue = zigbeeStatus != ZigbeeStatus.CONNECTED;
+            hasConnectivityIssue = zigbeeStatus.isConnectivityIssue();
             if (hasConnectivityIssue) {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
@@ -1077,6 +1075,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateServiceContributors();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
+                updateEquipmentTag();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1111,6 +1110,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (!stateOptions.isEmpty()) {
             stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
             logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
+        }
+    }
+
+    /**
+     * Process the incoming Resource to initialize the colour temperature absolute channel's state description based on
+     * the minimum and maximum values supported by the lamp's Mirek schema.
+     *
+     * @param resource a Resource possibly containing a color temperature element and respective Mirek schema element.
+     */
+    private void updateColorTemperatureAbsoluteChannel(Resource resource) {
+        ColorTemperature colorTemperature = resource.getColorTemperature();
+        if (colorTemperature != null) {
+            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
+            if (mirekSchema != null) {
+                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
+                        1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
+                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
+            }
         }
     }
 
@@ -1398,6 +1415,56 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 newProperties.remove(PROPERTY_LEGACY_THING_UID);
 
                 updateThing(editBuilder.withProperties(newProperties).build());
+            }
+        }
+    }
+
+    /**
+     * Update the thing's semantic equipment tag. The main determinant for the equipment type is the supported channels.
+     * For lights use the product archetype to split between light bulbs and strip lights. Rooms and Zones are
+     * considered to be zones.
+     */
+    private void updateEquipmentTag() {
+        if (!disposing) {
+            int sensorCount = 0;
+            SemanticTag equipmentTag = null;
+
+            if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
+                equipmentTag = Equipment.ZONE;
+            }
+            if ((thing.getChannel(CHANNEL_2_COLOR) != null) || (thing.getChannel(CHANNEL_2_BRIGHTNESS) != null)
+                    || (thing.getChannel(CHANNEL_2_SWITCH) != null)) {
+                equipmentTag = (thisResource.getProductData() instanceof ProductData productData)
+                        && STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype()) ? Equipment.LIGHT_STRIP
+                                : Equipment.LIGHTBULB;
+            }
+            if (thing.getChannel(CHANNEL_2_BUTTON_LAST_EVENT) != null) {
+                equipmentTag = Equipment.BUTTON;
+            }
+            if (thing.getChannel(CHANNEL_2_ROTARY_STEPS) != null) {
+                equipmentTag = Equipment.DIAL;
+            }
+            if (thing.getChannel(CHANNEL_2_SECURITY_CONTACT) != null) {
+                equipmentTag = Equipment.CONTACT_SENSOR;
+            }
+            if (thing.getChannel(CHANNEL_2_MOTION) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.MOTION_DETECTOR;
+            }
+            if (thing.getChannel(CHANNEL_2_LIGHT_LEVEL) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.ILLUMINANCE_SENSOR;
+            }
+            if (thing.getChannel(CHANNEL_2_TEMPERATURE) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.TEMPERATURE_SENSOR;
+            }
+            if (sensorCount > 1) {
+                equipmentTag = Equipment.SENSOR;
+            }
+            if (equipmentTag != null) {
+                logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
+                updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
             }
         }
     }
