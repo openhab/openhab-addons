@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.deconz;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.core.thing.internal.ThingManagerImpl.PROPERTY_THING_TYPE_VERSION;
@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.deconz.internal.DeconzDynamicCommandDescriptionProvider;
 import org.openhab.binding.deconz.internal.DeconzDynamicStateDescriptionProvider;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
+import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
@@ -310,5 +311,17 @@ public class LightsTest {
 
         lightThingHandler.messageReceived(lightMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDPos), eq(new PercentType("41")));
+    }
+
+    @Test
+    public void testCompareLightStates() {
+        Gson gson = new Gson();
+        String commandJson = "{\"on\":true,\"bri\":203,\"xy\":[0.2210631504407662,0.7055816687044134]}";
+        String responseJson = "{\"alert\":\"none\",\"bri\":203,\"colormode\":\"xy\",\"ct\":500,\"effect\":\"none\",\"hue\":21504,\"on\":true,\"reachable\":true,\"sat\":254,\"xy\":[0.2211,0.7056]}";
+        LightState command = gson.fromJson(commandJson, LightState.class);
+        LightState response = gson.fromJson(responseJson, LightState.class);
+        assertNotNull(command);
+        assertNotNull(response);
+        assertTrue(command.equalsIgnoreNull(response));
     }
 }
