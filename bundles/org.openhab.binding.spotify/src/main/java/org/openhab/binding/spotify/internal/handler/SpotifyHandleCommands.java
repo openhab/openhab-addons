@@ -194,7 +194,7 @@ class SpotifyHandleCommands {
             if (mediaTypeCommand == MediaCommandType.DEVICE) {
                 final boolean play = true;
 
-                if (active || deviceId.isEmpty()) {
+                if (!active || targetDevice.isEmpty()) {
                     if (play) {
                         spotifyApi.play(targetDevice);
                     } else {
