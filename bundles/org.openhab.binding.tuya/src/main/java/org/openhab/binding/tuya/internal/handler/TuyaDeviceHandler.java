@@ -106,6 +106,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     private DeviceConfiguration configuration = new DeviceConfiguration();
     private @Nullable TuyaDevice tuyaDevice;
     private final Map<String, SchemaDp> schemaDps;
+    private int pollBurst = 0;
     private boolean oldColorMode = false;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -152,8 +153,65 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        deviceStatus.forEach(this::addSingleExpiringCache);
+        // Changes to function DPs might lead to changes in status DPs. For instance, if a
+        // power switch is turned on the measured current and power can be expected to change
+        // within a few seconds.
+        boolean needRefresh = false;
+        boolean missingStatus = false;
+        for (var e : schemaDps.values()) {
+            Object value = deviceStatus.get(e.id);
+
+            if (value != null) {
+                addSingleExpiringCache(e.id, value);
+
+                if (!e.readOnly) {
+                    needRefresh = true;
+                }
+            } else if (e.readOnly) {
+                missingStatus = true;
+            }
+        }
+
+        if (needRefresh) {
+            TuyaDevice tuyaDevice = this.tuyaDevice;
+            if (tuyaDevice != null) {
+                ScheduledFuture<?> pollingJob = this.pollingJob;
+                if (pollingJob != null) {
+                    pollingJob.cancel(true);
+                }
+
+                pollBurst = 3;
+                this.pollingJob = scheduler.scheduleWithFixedDelay(this::burstPoller, 1, 1, TimeUnit.SECONDS);
+            }
+        } else if (!missingStatus) {
+            // If we have updates for everything we can stand down the burst polling.
+            pollBurst = 0;
+        }
+
         deviceStatus.forEach(this::processChannelStatus);
+    }
+
+    private void burstPoller() {
+        TuyaDevice tuyaDevice = this.tuyaDevice;
+        if (tuyaDevice != null) {
+            if (pollBurst > 0) {
+                tuyaDevice.refreshStatus(List.of());
+                pollBurst = pollBurst - 1;
+            } else {
+                ScheduledFuture<?> pollingJob = this.pollingJob;
+                if (pollingJob != null) {
+                    this.pollingJob = null;
+                    pollingJob.cancel(true);
+                }
+
+                int pollingInterval = configuration.pollingInterval;
+                if (pollingInterval > 0) {
+                    this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                        tuyaDevice.refreshStatus(List.of());
+                    }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                }
+            }
+        }
     }
 
     private void processChannelStatus(Integer dp, Object value) {
