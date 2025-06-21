@@ -14,14 +14,19 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -38,6 +43,7 @@ import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.util.HashUtil;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -48,6 +54,7 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -81,6 +88,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
     static final String salt = "TXdfu$jyZ#TZHsg4";
+    private final Gson gson = new Gson();
 
     public RoborockVacuumHandler(Thing thing) {
         super(thing);
@@ -105,6 +113,26 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // we do not have any channels -> nothing to do here
+        String channel = channelUID.getId();
+
+        try {
+            if (channel.equals(CHANNEL_CONTROL) && command instanceof StringType) {
+                if ("vacuum".equals(command.toString())) {
+                    sendCommand("app_start", "");
+                } else if ("spot".equals(command.toString())) {
+                    sendCommand("app_spot", "");
+                } else if ("pause".equals(command.toString())) {
+                    sendCommand("app_pause", "");
+                } else if ("dock".equals(command.toString())) {
+                    sendCommand("app_charge", "");
+                } else {
+                    logger.info("Command {} not recognised", command.toString());
+                }
+                return;
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("UnsupportedEncodingException, {}", e.getMessage());
+        }
     }
 
     @Override
@@ -190,7 +218,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         teardown(false);
     }
 
-    // ecoVacs
     public void connect(/* final EventListener listener, */ ScheduledExecutorService scheduler)
             throws RoborockCommunicationException, InterruptedException {
         if (rriot == null) {
@@ -246,10 +273,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String receivedTopic = publish.getTopic().toString();
                 String payload = new String(publish.getPayloadAsBytes());
                 // try {
-                String eventName = receivedTopic.split("/")[2].toLowerCase();
-                logger.trace("{}: Got MQTT message on topic {}: {}", getThing().getUID().getId(), receivedTopic,
-                        payload);
-                handleMessage(eventName, publish.getPayloadAsBytes());
+                logger.debug("{}: Got MQTT message on topic {}", getThing().getUID().getId(), receivedTopic);
+                handleMessage(publish.getPayloadAsBytes());
                 // } catch (DataParsingException e) {
                 // listener.onEventStreamFailure(this, e);
                 // }
@@ -315,7 +340,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         SecretKeySpec keySpec = new SecretKeySpec(aesKeyBytes, "AES");
         cipher.init(Cipher.DECRYPT_MODE, keySpec);
-        logger.info("decrypt4");
+        return cipher.doFinal(payload);
+    }
+
+    public byte[] encrypt(byte[] payload, String key) throws Exception {
+        byte[] aesKeyBytes = md5bin(key);
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        SecretKeySpec keySpec = new SecretKeySpec(aesKeyBytes, "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
         return cipher.doFinal(payload);
     }
 
@@ -335,6 +367,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     int readInt16BE(byte[] data, int start) {
         return (((data[start] & 0xFF) << 8) | (data[start + 1] & 0xFF));
+    }
+
+    void writeInt32BE(byte[] msg, int value, int start) {
+        msg[start + 0] = (byte) ((value >> 24) & 0xFF);
+        msg[start + 1] = (byte) ((value >> 16) & 0xFF);
+        msg[start + 2] = (byte) ((value >> 8) & 0xFF);
+        msg[start + 3] = (byte) (value & 0xFF);
+    }
+
+    void writeInt16BE(byte[] msg, int value, int start) {
+        msg[start + 0] = (byte) ((value >> 8) & 0xFF);
+        msg[start + 1] = (byte) (value & 0xFF);
     }
 
     public String padLeftZeros(String inputString, int length) {
@@ -364,11 +408,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         for (int index : order) {
             result.append(hexChars.get(index));
         }
-        logger.debug("encodedtimestamp = {}", result.toString());
         return result.toString();
     }
 
-    public void handleMessage(String eventName, byte[] message) {
+    public void handleMessage(byte[] message) {
         String version = bytesToString(message, 0, 3);
         // Do some checks
         if (!"1.0".equals(version)) {// && version!="A01") {
@@ -392,20 +435,93 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         int payloadLen = readInt16BE(message, 17);
-        byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen - 1);
+        byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen);
         String stringPayload = new String(payload, StandardCharsets.UTF_8);
         logger.debug(
                 "parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
                 version, sequence, random, timestamp, protocol, payloadLen);
-        logger.debug("payload = {}", payload);
         String key = encodeTimestamp(timestamp) + localKey + salt;
-        logger.debug(" key = {}, localKey = {}, salt = {}", key, localKey, salt);
         try {
             byte[] result = decrypt(payload, key);
             String stringResult = new String(result, StandardCharsets.UTF_8);
             logger.debug("stringResult = {}", stringResult);
         } catch (Exception e) {
-            logger.debug("Exception decrypting payload");
+            logger.debug("Exception decrypting payload, {}", e.getMessage());
+        }
+    }
+
+    public void sendCommand(String method, String params) throws UnsupportedEncodingException {
+        int timestamp = (int) Instant.now().getEpochSecond();
+        int protocol = 102;
+        Random random = new Random();
+        int id = random.nextInt(22767 + 1) + 10000;
+
+        Map<String, Object> inner = new HashMap<>();
+        inner.put("id", id);
+        inner.put("method", method);
+        // inner.put("params", params);
+
+        Map<String, Object> dps = new HashMap<>();
+        dps.put(Integer.toString(protocol), new Gson().toJson(inner));
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("t", timestamp);
+        payloadMap.put("dps", dps);
+
+        String payload = new Gson().toJson(payloadMap);
+        logger.debug("payload = {}", payload);
+        byte[] message = build(getThing().getUID().getId(), protocol, timestamp, payload.getBytes("UTF-8"));
+        // now send message via mqtt
+        String mqttUser = HashUtil.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
+
+        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + getThing().getUID().getId();
+        mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
+                .whenComplete((mqtt3Publish, throwable) -> {
+                    if (throwable != null) {
+                        logger.info("mqtt publish failed");
+                    } else {
+                        logger.info("mqtt publish succeeded");
+                    }
+                });
+
+        // Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).payload(message).retain(false).build();
+
+        // mqttClient.publish(publishMessage);
+        // handleMessage(message); // helps confirm we have encoded it correctly
+    }
+
+    byte[] build(String deviceId, int protocol, int timestamp, byte[] payload) {
+        try {
+            String key = encodeTimestamp(timestamp) + localKey + salt;
+            byte[] encrypted = encrypt(payload, key);
+
+            Random random = new Random();
+            int randomInt = random.nextInt(90000) + 10000;
+            int seq = random.nextInt(900000) + 100000;
+
+            int totalLength = 23 + encrypted.length;
+            byte[] msg = new byte[totalLength];
+            // Writing fixed string '1.0'
+            msg[0] = 49; // ASCII for '1'
+            msg[1] = 46; // ASCII for '.'
+            msg[2] = 48; // ASCII for '0'
+            writeInt32BE(msg, (int) (seq & 0xFFFFFFFF), 3);
+            writeInt32BE(msg, (int) (randomInt & 0xFFFFFFFF), 7);
+            writeInt32BE(msg, timestamp, 11);
+            writeInt16BE(msg, protocol, 15);
+            writeInt16BE(msg, encrypted.length, 17);
+            // Manually copying encrypted data into msg
+            for (int i = 0; i < encrypted.length; i++) {
+                msg[19 + i] = encrypted[i];
+            }
+            byte[] buf = Arrays.copyOfRange(msg, 0, msg.length - 4);
+            CRC32 crc32 = new CRC32();
+            crc32.update(buf);
+            writeInt32BE(msg, (int) crc32.getValue(), msg.length - 4);
+            return msg;
+        } catch (Exception e) {
+            logger.debug("Exception encrypting payload, {}", e.getMessage());
+            return new byte[0];
         }
     }
 }

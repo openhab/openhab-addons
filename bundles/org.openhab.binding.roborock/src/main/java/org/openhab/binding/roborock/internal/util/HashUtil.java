@@ -16,16 +16,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Johannes Ptaszyk - Initial contribution
  */
 @NonNullByDefault
 public class HashUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HashUtil.class);
-
     private HashUtil() {
         // Prevent instantiation of util class
     }
