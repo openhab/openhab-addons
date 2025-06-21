@@ -135,4 +135,5 @@ Import-Package: \
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.18.2,2.18.3)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
-	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)'
+	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
