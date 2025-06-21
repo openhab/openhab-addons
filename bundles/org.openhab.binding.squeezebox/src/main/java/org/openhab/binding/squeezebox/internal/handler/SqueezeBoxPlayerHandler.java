@@ -45,6 +45,8 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaDevice;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -95,6 +97,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      */
     private @Nullable SqueezeBoxServerHandler squeezeBoxServerHandler;
 
+    private final MediaService mediaService;
+
     /**
      * Our mac address, needed everywhere
      */
@@ -136,10 +140,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @param stateDescriptionProvider
      */
     public SqueezeBoxPlayerHandler(Thing thing, @Nullable String callbackUrl,
-            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
+            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider, MediaService mediaService) {
         super(thing);
         this.callbackUrl = callbackUrl;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -158,6 +163,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             // ensure we get an up-to-date connection state
             squeezeBoxServerHandler.requestPlayers();
         }
+
+        mediaService.registerDevice(
+                new MediaDevice("" + this.getThing().getLabel(), "" + this.getThing().getLabel(), "", "Squeezebox"));
     }
 
     @Override
