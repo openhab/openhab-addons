@@ -283,16 +283,4 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         logger.debug("JDBC::query queryString = {}", queryString);
         return queryString;
     }
-
-    /*****************
-     * H E L P E R S *
-     *****************/
-    @Override
-    protected String formattedIdentifier(String identifier) {
-        return "\"" + identifier + "\"";
-    }
-
-    /******************************
-     * public Getters and Setters *
-     ******************************/
 }
