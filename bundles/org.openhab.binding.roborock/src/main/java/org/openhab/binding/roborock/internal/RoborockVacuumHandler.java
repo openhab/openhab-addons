@@ -118,13 +118,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             if (channel.equals(CHANNEL_CONTROL) && command instanceof StringType) {
                 if ("vacuum".equals(command.toString())) {
-                    sendCommand("app_start", "");
+                    sendCommand("app_start");
                 } else if ("spot".equals(command.toString())) {
-                    sendCommand("app_spot", "");
+                    sendCommand("app_spot");
                 } else if ("pause".equals(command.toString())) {
-                    sendCommand("app_pause", "");
+                    sendCommand("app_pause");
                 } else if ("dock".equals(command.toString())) {
-                    sendCommand("app_charge", "");
+                    sendCommand("app_charge");
                 } else {
                     logger.info("Command {} not recognised", command.toString());
                 }
@@ -448,6 +448,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.debug("Exception decrypting payload, {}", e.getMessage());
         }
+    }
+
+    public void sendCommand(String method) throws UnsupportedEncodingException {
+        sendCommand(method, "");
     }
 
     public void sendCommand(String method, String params) throws UnsupportedEncodingException {
