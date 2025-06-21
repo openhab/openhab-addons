@@ -453,6 +453,7 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsRoller {
+        public Integer id;
         public Double maxtime;
         @SerializedName("maxtime_open")
         public Double maxtimeOpen;
