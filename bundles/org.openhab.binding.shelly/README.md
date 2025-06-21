@@ -53,8 +53,6 @@ See section [Discovery](#discovery) for details.
 | shellydimmer2     | Shelly Dimmer2                                         | SHDM-2              |
 | shellyix3         | Shelly ix3                                             | SHIX3-1             |
 | shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1             |
-| shellyplug        | Shelly Plug                                            | SHPLG2-1            |
-| shellyplugs       | Shelly Plug-S                                          | SHPLG-S             |
 | shellyem          | Shelly EM with integrated Power Meters                 | SHEM                |
 | shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3              |
 | shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2             |
@@ -78,6 +76,14 @@ See section [Discovery](#discovery) for details.
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
 
+### Shelly Plug series (Generation 1+3)
+
+| thing-type        | Model                                                  | Vendor ID           |
+| ----------------- | ------------------------------------------------------ | ------------------- |
+| shellyplug        | Shelly Plug                                            | SHPLG2-1            |
+| shellyplugs       | Shelly Plug-S                                          | SHPLG-S             |
+| shellyplugsg3     | Shelly Plug-S G3                                       | S3PL-00112EU        |
+
 ### Shelly Plus series (Generation 2+3+4)
 
 | thing-type           | Model                                                    | Vendor ID                                   |
@@ -99,7 +105,7 @@ See section [Discovery](#discovery) for details.
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                 |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                               |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                             |
-| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                                   |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                   |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
@@ -727,7 +733,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 | meter3 |         |      |           | See group meter1 for Shelly 2 |
 | meter4 |         |      |           | See group meter1 for Shelly 2 |
 
-### Shelly Plug-S (thing-type: shellyplugs)
+### Shelly Plug-S (G3) (thing-type: shellyplugs, shellyplugsg3)
 
 | Group | Channel | Type | read-only | Description                   |
 | ----- | ------- | ---- | --------- | ----------------------------- |

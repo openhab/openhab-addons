@@ -44,6 +44,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLY4PRO, //
             THING_TYPE_SHELLYPLUG, //
             THING_TYPE_SHELLYPLUGS, //
+            THING_TYPE_SHELLYPLUGSG3, //
             THING_TYPE_SHELLYPLUGU1, //
             THING_TYPE_SHELLYUNI, //
             THING_TYPE_SHELLYDIMMER, //

@@ -61,6 +61,7 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_BUTTON2 = "SHBTN-2";
     public static final String SHELLYDT_UNI = "SHUNI-1";
     public static final String SHELLYDT_TRV = "SHTRV-01";
+    public static final String SHELLYDT_PLUGSG3 = "S3PL-00112EU";
 
     // Shelly Plus Series
     public static final String SHELLYDT_PLUS1 = "SNSW-001X16EU";
@@ -84,7 +85,6 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PLUSPLUGIT = "SNPL-00110IT";
     public static final String SHELLYDT_PLUSPLUGUK = "SNPL-00112UK";
     public static final String SHELLYDT_PLUSPLUGUS = "SNPL-00116US";
-    public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU";
     public static final String SHELLYDT_PLUSI4 = "SNSN-0024X";
     public static final String SHELLYDT_PLUSI4G3 = "S3SN-0024X";
     public static final String SHELLYDT_PLUSI4DC = "SNSN-0D24X";
@@ -158,6 +158,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLY4PRO_STR = "shelly4pro";
     public static final String THING_TYPE_SHELLYPLUG_STR = "shellyplug";
     public static final String THING_TYPE_SHELLYPLUGS_STR = "shellyplugs";
+    public static final String THING_TYPE_SHELLYPLUGSG3_STR = "shellyplugsg3";
     public static final String THING_TYPE_SHELLYPLUGU1_STR = "shellyplugu1"; // Shely Plug US
     public static final String THING_TYPE_SHELLYDIMMER_STR = "shellydimmer";
     public static final String THING_TYPE_SHELLYDIMMER2_STR = "shellydimmer2";
@@ -263,6 +264,8 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLY4PRO = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY4PRO_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPLUG = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUG_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPLUGS = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUGS_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUGSG3 = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYPLUGSG3_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPLUGU1 = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPLUGU1_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYUNI = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYUNI_STR);
@@ -383,6 +386,7 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR), //
             Map.entry(SHELLYDT_SHPLG_S, THING_TYPE_SHELLYPLUGS_STR),
             Map.entry(SHELLYDT_SHPLG_U1, THING_TYPE_SHELLYPLUGU1_STR),
+            Map.entry(SHELLYDT_PLUGSG3, THING_TYPE_SHELLYPLUGSG3_STR),
             Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR), //
             Map.entry(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN_STR),
             Map.entry(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2_STR), //
@@ -422,7 +426,6 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUSPLUGIT, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSPLUGUK, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSPLUGUS, THING_TYPE_SHELLYPLUSPLUGUS_STR),
-            Map.entry(SHELLYDT_PLUSPLUGSG3, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSI4, THING_TYPE_SHELLYPLUSI4_STR),
             Map.entry(SHELLYDT_PLUSI4G3, THING_TYPE_SHELLYPLUSI4_STR),
             Map.entry(SHELLYDT_PLUSI4DC, THING_TYPE_SHELLYPLUSI4DC_STR),
@@ -607,6 +610,9 @@ public class ShellyThingCreator {
             return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY_STR, THING_TYPE_SHELLY2_ROLLER_STR, mode);
         }
         if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR) && !serviceNameLowerCase.contains("plugus")) {
+            if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGSG3_STR)) {
+                return THING_TYPE_SHELLYPLUGSG3_STR;
+            }
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
             if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGS_STR) || serviceNameLowerCase.contains("-s")) {
