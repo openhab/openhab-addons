@@ -42,8 +42,7 @@ public class ElectroluxApplianceDiscoveryService
     @Override
     protected void startScan() {
         // TODO: Check with original author's this feel's like this is using the wrong thing and should be using the
-        // generic
-        // types to mach non specific models
+        // generic types to mach non specific models
 
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         thingHandler.getElectroluxApplianceThings().entrySet().stream().forEach(thing -> {
