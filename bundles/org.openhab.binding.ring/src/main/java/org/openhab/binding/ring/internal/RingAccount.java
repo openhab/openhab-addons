@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.ring.internal;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.internal.data.Profile;
+import org.openhab.binding.ring.internal.device.RingDevice;
 
 /**
  * The AccountHandler implements this interface to facilitate the
@@ -25,26 +27,8 @@ import org.openhab.binding.ring.internal.data.Profile;
  */
 @NonNullByDefault
 public interface RingAccount {
+    Collection<RingDevice> getAllDevices();
 
-    /**
-     * Get the linked REST client.
-     *
-     * @return the REST client.
-     */
-    public @Nullable RestClient getRestClient();
-
-    /**
-     * Get the linked user profile.
-     *
-     * @return the user profile.
-     */
-    public @Nullable Profile getProfile();
-
-    /**
-     * Get the Account Handler Thing ID
-     * *
-     * 
-     * @return the ring account thing id.
-     */
-    public String getThingId();
+    @Nullable
+    RingDevice getDevice(String id);
 }

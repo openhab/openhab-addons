@@ -65,13 +65,13 @@ public class MeterAggregates {
         public float instantAverageCurrent;
 
         @SerializedName("i_a_current")
-        public int iaCurrent;
+        public float iaCurrent;
 
         @SerializedName("i_b_current")
-        public int ibCurrent;
+        public float ibCurrent;
 
         @SerializedName("i_c_current")
-        public int icCurrent;
+        public float icCurrent;
 
         @SerializedName("last_phase_voltage_communication_time")
         public String lastPhaseVoltageCommunicationTime = "";
@@ -83,7 +83,7 @@ public class MeterAggregates {
         public String lastPhaseEnergyCommunicationTime = "";
 
         @SerializedName("timeout")
-        public int timeout;
+        public float timeout;
 
         @SerializedName("instant_total_current")
         public float instantTotalCurrent;
