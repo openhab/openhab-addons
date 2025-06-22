@@ -14,6 +14,7 @@ package org.openhab.binding.electroluxappliance.internal.api;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -37,6 +39,11 @@ import org.openhab.binding.electroluxappliance.internal.dto.ApplianceStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.PortableAirConditionerStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.WashingMachineStateDTO;
 import org.openhab.binding.electroluxappliance.internal.listener.TokenUpdateListener;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,13 +74,25 @@ public class ElectroluxGroupAPI {
     private String accessToken = "";
     private Instant tokenExpiry = Instant.MAX;
     private final TokenUpdateListener tokenUpdateListener;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
 
     public ElectroluxGroupAPI(ElectroluxApplianceBridgeConfiguration configuration, Gson gson, HttpClient httpClient,
-            TokenUpdateListener listener) {
+            TokenUpdateListener listener, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
         this.gson = gson;
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.tokenUpdateListener = listener;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+    }
+
+    private String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     public boolean refresh(Map<String, ApplianceDTO> electroluxApplianceThings, boolean isCommunicationError) {
@@ -129,7 +148,7 @@ public class ElectroluxGroupAPI {
                 return true;
             }
         } catch (JsonSyntaxException | ElectroluxApplianceException e) {
-            logger.warn("Failed to refresh! {}", e.getMessage());
+            logger.warn("{}", getLocalizedText("error.electroluxappliance.api.failed-to-refresh", e.getMessage()));
         }
         return false;
     }
@@ -390,7 +409,7 @@ public class ElectroluxGroupAPI {
                         return true;
                     }
                 } catch (TimeoutException | InterruptedException e) {
-                    logger.warn("TimeoutException error in get");
+                    logger.warn("{}", getLocalizedText("error.electroluxappliance.api.get-timeout"));
                 }
             }
         } catch (JsonSyntaxException | ElectroluxApplianceException | ExecutionException e) {

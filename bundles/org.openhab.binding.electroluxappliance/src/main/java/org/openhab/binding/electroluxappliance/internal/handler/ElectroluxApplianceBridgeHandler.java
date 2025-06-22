@@ -102,7 +102,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
                     getLocalizedText("error.electroluxappliance.bridge.refresh-too-short", 10));
         } else {
             try {
-                this.api = new ElectroluxGroupAPI(config, gson, httpClient, this);
+                this.api = new ElectroluxGroupAPI(config, gson, httpClient, this, translationProvider, localeProvider);
                 scheduler.execute(() -> {
                     updateStatus(ThingStatus.UNKNOWN);
                     startAutomaticRefresh();
