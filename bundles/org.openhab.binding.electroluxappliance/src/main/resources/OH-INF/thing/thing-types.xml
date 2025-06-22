@@ -510,7 +510,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 
@@ -523,7 +523,7 @@
 			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="16" max="32" step="1" pattern="%.1f %unit%"/>
+		<state min="16" max="32" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sleep-mode">
@@ -623,7 +623,7 @@
 		<label>RSSI</label>
 		<description>WiFi Received Signal Strength Indicator</description>
 		<category>QualityOfService</category>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="compressor-state" advanced="true">
@@ -674,11 +674,11 @@
 	</channel-type>
 
 	<channel-type id="off-timer-duration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Timer Off Duration</label>
 		<description>Off timer duration applied when enabled.</description>
 		<category>Settings</category>
-		<state min="0" max="86400" step="1800" pattern="%.1f %unit%"/>
+		<state min="0" max="86400" step="1800" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="on-timer-active" advanced="true">
@@ -693,11 +693,11 @@
 	</channel-type>
 
 	<channel-type id="on-timer-duration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Timer On Duration</label>
 		<description>On timer duration applied when enabled.</description>
 		<category>Settings</category>
-		<state min="0" max="86400" step="1800" pattern="%.1f %unit%"/>
+		<state min="0" max="86400" step="1800" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

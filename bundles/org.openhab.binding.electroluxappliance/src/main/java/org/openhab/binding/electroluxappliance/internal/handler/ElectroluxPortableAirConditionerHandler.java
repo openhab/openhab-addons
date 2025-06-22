@@ -261,6 +261,20 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                 if (reported.getIsReadStartTime()) {
                     return reported.getStartTime() > 0 ? OnOffType.ON : OnOffType.OFF;
                 }
+            case CHANNEL_OFF_TIMER_DURATION:
+                final String storedOffValue = strStore.get(CHANNEL_OFF_TIMER_DURATION);
+                if (storedOffValue != null) {
+                    return new QuantityType<>(Integer.valueOf(storedOffValue), Units.SECOND);
+                } else {
+                    return new QuantityType<>(1800, Units.SECOND);
+                }
+            case CHANNEL_ON_TIMER_DURATION:
+                final String storedOnValue = strStore.get(CHANNEL_ON_TIMER_DURATION);
+                if (storedOnValue != null) {
+                    return new QuantityType<>(Integer.valueOf(storedOnValue), Units.SECOND);
+                } else {
+                    return new QuantityType<>(1800, Units.SECOND);
+                }
         }
         logger.warn("Read {}", reported);
         return UnDefType.UNDEF;
