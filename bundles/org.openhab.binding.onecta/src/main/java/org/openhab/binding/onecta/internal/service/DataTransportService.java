@@ -24,6 +24,8 @@ import com.google.gson.JsonObject;
 
 /**
  *
+ * This class is responsible for storing and interpreting the per-unit data obtained from the OnectaConnectionClient.
+ * 
  * @author Alexander Drent - Initial contribution
  *
  */

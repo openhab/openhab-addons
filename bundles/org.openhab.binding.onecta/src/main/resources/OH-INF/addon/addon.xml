@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>DaikinOnecta Binding</name>
+	<name>Daikin Onecta Binding</name>
 	<description>This binding is for connecting to Daikin Onecta.</description>
 	<connection>cloud</connection>
 </addon:addon>

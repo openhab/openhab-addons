@@ -71,7 +71,7 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     public void startScan() {
-        logger.debug("Start discovery.");
+        logger.debug("Starting discovery.");
         scheduler.execute(this::scan);
     }
 

@@ -458,7 +458,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
     }
 
     private State getEnergyHeatingCurrentDay() {
-
         State state = Optional.ofNullable(dataTransService.getConsumptionHeatingWeek())
                 .filter(consumptionArray -> consumptionArray.length > 7 + getCurrentDayOfWeek()) //
                 .map(consumptionArray -> consumptionArray[7 + getCurrentDayOfWeek()]) //

@@ -20,6 +20,11 @@ import org.openhab.core.thing.Thing;
 
 /**
  *
+ * This class is responsible for providing a delay of data refresh after an update has been sent to Onecta.
+ * If a new status has been sent to Onecta, it takes extra time for Onecta to process this.
+ * To prevent e.g. the on/off button from going back to the old value after an update, a delay per data component is
+ * required.
+ * 
  * @author Alexander Drent - Initial contribution
  *
  */
