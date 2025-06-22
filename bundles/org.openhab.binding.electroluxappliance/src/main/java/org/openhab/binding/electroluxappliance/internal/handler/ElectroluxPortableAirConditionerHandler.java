@@ -26,6 +26,8 @@ import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.PortableAirConditionerStateDTO;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -42,6 +44,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +61,9 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
 
     private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
-    public ElectroluxPortableAirConditionerHandler(Thing thing) {
-        super(thing);
+    public ElectroluxPortableAirConditionerHandler(Thing thing, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -105,7 +109,8 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                         }
                         api.setPACTargetTemperature(dto.getApplianceId(), (int) Math.round(value));
                     } catch (UnconvertibleException e) {
-                        logger.warn("Failed to get correct units for target temperature {}", e.getMessage());
+                        logger.warn("{}", getLocalizedText("error.electroluxappliance.pac.failed-target-temp-units",
+                                e.getMessage()));
                     }
                 }
             }
@@ -126,7 +131,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Portable Air Conditioner not connected");
+                        getLocalizedText("error.electroluxappliance.pac.not-connected"));
             }
         }
     }

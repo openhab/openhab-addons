@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -46,11 +48,16 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_ELECTROLUX_WASHING_MACHINE, THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER, THING_TYPE_BRIDGE);
     private final Gson gson;
     private HttpClient httpClient;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
-    public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.gson = new Gson();
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -63,13 +70,14 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ELECTROLUX_AIR_PURIFIER.equals(thingTypeUID)) {
-            return new ElectroluxAirPurifierHandler(thing);
+            return new ElectroluxAirPurifierHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_ELECTROLUX_WASHING_MACHINE.equals(thingTypeUID)) {
-            return new ElectroluxWashingMachineHandler(thing);
+            return new ElectroluxWashingMachineHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER.equals(thingTypeUID)) {
-            return new ElectroluxPortableAirConditionerHandler(thing);
+            return new ElectroluxPortableAirConditionerHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson);
+            return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson, translationProvider,
+                    localeProvider);
         }
         return null;
     }

@@ -24,6 +24,8 @@ import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfi
 import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
@@ -40,6 +42,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +59,9 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
 
     private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
-    public ElectroluxAirPurifierHandler(Thing thing) {
-        super(thing);
+    public ElectroluxAirPurifierHandler(Thing thing, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -128,7 +132,8 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
             if ("Connected".equalsIgnoreCase(dto.getApplianceState().getConnectionState())) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Air Purifier not connected");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        getLocalizedText("error.electroluxappliance.ap.not-connected"));
             }
         }
     }

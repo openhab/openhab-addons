@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfiguration;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.WashingMachineStateDTO;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -36,6 +38,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +56,9 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
 
     private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
-    public ElectroluxWashingMachineHandler(Thing thing) {
-        super(thing);
+    public ElectroluxWashingMachineHandler(Thing thing, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -79,7 +83,7 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Washing Machine not connected");
+                        getLocalizedText("error.electroluxappliance.wm.not-connected"));
             }
         }
     }
