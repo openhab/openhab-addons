@@ -71,6 +71,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaDevice;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaAlbum;
