@@ -25,6 +25,7 @@ public class ApplianceDTO {
     private String applianceName = "";
     private String applianceType = "";
     private String created = "";
+
     private ApplianceInfoDTO applianceInfo = new ApplianceInfoDTO();
     private ApplianceStateDTO applianceState = new ApplianceStateDTO();
 

@@ -128,8 +128,9 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     }
 
     private boolean refreshAndUpdateStatus() {
-        if (api != null) {
-            if (api.refresh(electroluxApplianceThings, isCommunicationError)) {
+        final ElectroluxGroupAPI apiRef = api;
+        if (apiRef != null) {
+            if (apiRef.refresh(electroluxApplianceThings, isCommunicationError)) {
                 getThing().getThings().stream().forEach(thing -> {
                     ElectroluxApplianceHandler handler = (ElectroluxApplianceHandler) thing.getHandler();
                     if (handler != null) {

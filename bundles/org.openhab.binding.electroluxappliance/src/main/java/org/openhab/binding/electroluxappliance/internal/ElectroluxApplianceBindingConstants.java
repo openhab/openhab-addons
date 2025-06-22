@@ -32,6 +32,8 @@ public class ElectroluxApplianceBindingConstants {
     public static final ThingTypeUID THING_TYPE_ELECTROLUX_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "air-purifier");
     public static final ThingTypeUID THING_TYPE_ELECTROLUX_WASHING_MACHINE = new ThingTypeUID(BINDING_ID,
             "washing-machine");
+    public static final ThingTypeUID THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
+            "portable-air-conditioner");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "api");
 
     // List of all common Channel ids
@@ -71,6 +73,21 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_ANALOG_SPIN_SPEED = "analog-spin-speed";
     public static final String CHANNEL_STEAM_VALUE = "steam-value";
     public static final String CHANNEL_PROGRAMS_ORDER = "programs-order";
+
+    // List of all Channel Ids for Portable Air Conditioner
+    public static final String CHANNEL_DEVICE_RUNNING = "appliance-running";
+    public static final String CHANNEL_AMBIENT_TEMPERATURE = "ambient-temperature";
+    public static final String CHANNEL_TARGET_TEMPERATURE = "target-temperature";
+    public static final String CHANNEL_SLEEP_MODE = "sleep-mode";
+    public static final String CHANNEL_FAN_SWING = "fan-swing";
+    public static final String CHANNEL_CHILD_LOCK = "child-ui-lock";
+    public static final String CHANNEL_FAN_MODE = "fan-mode";
+    public static final String CHANNEL_MODE = "mode";
+    public static final String CHANNEL_NETWORK_QUALITY_INDICATOR = "network-quality-indicator";
+    public static final String CHANNEL_NETWORK_RSSI = "network-rssi";
+    public static final String CHANNEL_COMPRESSOR_STATE = "compressor-state";
+    public static final String CHANNEL_FOURWAY_VALVE_STATE = "fourway_valve-state";
+    public static final String CHANNEL_EVAP_DEFROST_STATE = "evap-defrost-state";
 
     // List of all Properties ids
     public static final String PROPERTY_BRAND = "brand";

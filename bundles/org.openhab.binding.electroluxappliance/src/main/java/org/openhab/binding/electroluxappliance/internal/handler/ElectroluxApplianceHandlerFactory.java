@@ -29,8 +29,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -45,10 +43,9 @@ import com.google.gson.Gson;
 public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ELECTROLUX_AIR_PURIFIER,
-            THING_TYPE_ELECTROLUX_WASHING_MACHINE, THING_TYPE_BRIDGE);
+            THING_TYPE_ELECTROLUX_WASHING_MACHINE, THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER, THING_TYPE_BRIDGE);
     private final Gson gson;
     private HttpClient httpClient;
-    private final Logger logger = LoggerFactory.getLogger(ElectroluxApplianceHandlerFactory.class);
 
     @Activate
     public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -69,6 +66,8 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
             return new ElectroluxAirPurifierHandler(thing);
         } else if (THING_TYPE_ELECTROLUX_WASHING_MACHINE.equals(thingTypeUID)) {
             return new ElectroluxWashingMachineHandler(thing);
+        } else if (THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER.equals(thingTypeUID)) {
+            return new ElectroluxPortableAirConditionerHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson);
         }

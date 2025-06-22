@@ -41,6 +41,10 @@ public class ElectroluxApplianceDiscoveryService
 
     @Override
     protected void startScan() {
+        // TODO: Check with original author's this feel's like this is using the wrong thing and should be using the
+        // generic
+        // types to mach non specific models
+
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         thingHandler.getElectroluxApplianceThings().entrySet().stream().forEach(thing -> {
             String applianceType = thing.getValue().getApplianceType();
@@ -55,6 +59,12 @@ public class ElectroluxApplianceDiscoveryService
                 thingDiscovered(DiscoveryResultBuilder
                         .create(new ThingUID(THING_TYPE_ELECTROLUX_WASHING_MACHINE, bridgeUID, thing.getKey()))
                         .withLabel("Electrolux Washing Machine").withBridge(bridgeUID)
+                        .withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, thing.getKey())
+                        .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL).build());
+            } else if ("Azul".equalsIgnoreCase(applianceType)) { // AEG Device code for portable air conditioner
+                thingDiscovered(DiscoveryResultBuilder
+                        .create(new ThingUID(THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER, bridgeUID, thing.getKey()))
+                        .withLabel("Electrolux Air Conditioner").withBridge(bridgeUID)
                         .withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, thing.getKey())
                         .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL).build());
             }

@@ -34,6 +34,7 @@ import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceInfoDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceStateDTO;
+import org.openhab.binding.electroluxappliance.internal.dto.PortableAirConditionerStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.WashingMachineStateDTO;
 import org.openhab.binding.electroluxappliance.internal.listener.TokenUpdateListener;
 import org.slf4j.Logger;
@@ -110,6 +111,15 @@ public class ElectroluxGroupAPI {
                             String jsonApplianceState = getApplianceState(applianceId);
                             ApplianceStateDTO applianceState = gson.fromJson(jsonApplianceState,
                                     WashingMachineStateDTO.class);
+                            if (applianceState != null) {
+                                dto.setApplianceState(applianceState);
+                            }
+                            electroluxApplianceThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
+                        } else if ("PORTABLE_AIR_CONDITIONER"
+                                .equals(applianceInfo.getApplianceInfo().getDeviceType())) {
+                            String jsonApplianceState = getApplianceState(applianceId);
+                            ApplianceStateDTO applianceState = gson.fromJson(jsonApplianceState,
+                                    PortableAirConditionerStateDTO.class);
                             if (applianceState != null) {
                                 dto.setApplianceState(applianceState);
                             }
@@ -195,6 +205,76 @@ public class ElectroluxGroupAPI {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
             logger.warn("Work mode manual failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACFanMode(final String applianceId, final String fanMode) {
+        String commandJSON = "{ \"fanSpeedSetting\": \"" + fanMode + "\"}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Fan Mode failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACSleepMode(final String applianceId, final String sleepMode) {
+        String commandJSON = "{ \"sleepMode\": \"" + sleepMode + "\"}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Sleep failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACSwingState(final String applianceId, final String swingState) {
+        String commandJSON = "{ \"verticalSwing\": \"" + swingState + "\"}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Vertical Swing failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACChildLockState(final String applianceId, final boolean swingState) {
+        String commandJSON = "{ \"uiLockMode\": " + swingState + "}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Child Lock failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACRunning(final String applianceId, final String running) {
+        String commandJSON = "{ \"executeCommand\": \"" + running + "\"}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Running failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACMode(final String applianceId, final String mode) {
+        String commandJSON = "{ \"mode\": \"" + mode + "\"}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Mode failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setPACTargetTemperature(final String applianceId, final int targetTempC) {
+        String commandJSON = "{ \"targetTemperatureC\": " + targetTempC + "}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("Target Temperature failed {}", e.getMessage());
         }
         return false;
     }
