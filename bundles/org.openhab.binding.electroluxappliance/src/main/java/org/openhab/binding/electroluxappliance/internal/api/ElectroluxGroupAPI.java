@@ -84,7 +84,6 @@ public class ElectroluxGroupAPI {
                 refreshToken();
             } else {
                 logger.debug("Now: {} Token expiry: {}", Instant.now(), this.tokenExpiry);
-
             }
             // Get all appliances
             String json = getAppliances();
