@@ -100,6 +100,22 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 
+    public static final String COMMAND_GET_STATUS = "get_status";
+    public static final String COMMAND_GET_CONSUMABLE = "get_consumable";
+    public static final String COMMAND_APP_PAUSE = "app_pause";
+    public static final String COMMAND_APP_SPOT = "app_spot";
+    public static final String COMMAND_APP_START = "app_start";
+    public static final String COMMAND_APP_START_BUILD_MAP = "app_start_build_map";
+    public static final String COMMAND_APP_START_COLLECT_DUST = "app_start_collect_dust";
+    public static final String COMMAND_APP_START_EASTER_EGG = "app_start_easter_egg";
+    public static final String COMMAND_APP_START_PATROL = "app_start_patrol";
+    public static final String COMMAND_APP_START_PET_PATROL = "app_start_pet_patrol";
+    public static final String COMMAND_APP_START_WASH = "app_start_wash";
+    public static final String COMMAND_APP_STAT = "app_stat";
+    public static final String COMMAND_APP_STOP = "app_stop";
+    public static final String COMMAND_APP_STOP_COLLECT_DUST = "app_stop_collect_dust";
+    public static final String COMMAND_APP_STOP_WASH = "app_stop_wash";
+
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT, ROBOROCK_VACUUM);
 }

@@ -37,6 +37,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.roborock.internal.api.GetConsumables;
+import org.openhab.binding.roborock.internal.api.GetStatus;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
@@ -55,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -89,6 +92,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private long lastSuccessfulPollTimestamp;
     static final String salt = "TXdfu$jyZ#TZHsg4";
     private final Gson gson = new Gson();
+    int getStatusID = 0;
+    int getConsumableID = 0;
 
     public RoborockVacuumHandler(Thing thing) {
         super(thing);
@@ -118,13 +123,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             if (channel.equals(CHANNEL_CONTROL) && command instanceof StringType) {
                 if ("vacuum".equals(command.toString())) {
-                    sendCommand("app_start");
+                    sendCommand(COMMAND_APP_START);
                 } else if ("spot".equals(command.toString())) {
-                    sendCommand("app_spot");
+                    sendCommand(COMMAND_APP_SPOT);
                 } else if ("pause".equals(command.toString())) {
-                    sendCommand("app_pause");
+                    sendCommand(COMMAND_APP_PAUSE);
                 } else if ("dock".equals(command.toString())) {
-                    sendCommand("app_charge");
+                    sendCommand(COMMAND_APP_STOP);
                 } else {
                     logger.info("Command {} not recognised", command.toString());
                 }
@@ -274,7 +279,22 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String payload = new String(publish.getPayloadAsBytes());
                 // try {
                 logger.debug("{}: Got MQTT message on topic {}", getThing().getUID().getId(), receivedTopic);
-                handleMessage(publish.getPayloadAsBytes());
+                String response = handleMessage(publish.getPayloadAsBytes());
+                logger.trace("MQTT message output: {}", response);
+
+                JsonParser jsonParser = new JsonParser();
+                String jsonObject = jsonParser.parse(response).getAsJsonObject().get("dps").getAsJsonObject().get("102")
+                        .getAsString();
+                int messageId = jsonParser.parse(jsonObject).getAsJsonObject().get("id").getAsInt();
+
+                if (messageId == getStatusID) {
+                    logger.debug("Received getStatus response, parse it");
+                    handleGetStatus(jsonObject);
+                } else if (messageId == getConsumableID) {
+                    logger.debug("Received getConsumable response, parse it");
+                    handleGetConsumables(jsonObject);
+                }
+
                 // } catch (DataParsingException e) {
                 // listener.onEventStreamFailure(this, e);
                 // }
@@ -328,11 +348,33 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     }
                 }
             }
+            try {
+                logger.debug("Sending command: {}", COMMAND_GET_STATUS);
+                sendCommand(COMMAND_GET_STATUS);
+                sendCommand(COMMAND_GET_CONSUMABLE);
+            } catch (UnsupportedEncodingException e) {
+                // Shouldn't occur
+            }
             lastSuccessfulPollTimestamp = System.currentTimeMillis();
             scheduleNextPoll(-1);
         }
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void handleGetStatus(String response) {
+        GetStatus getStatus = gson.fromJson(response, GetStatus.class);
+        if (getStatus != null) {
+            updateState(RoborockBindingConstants.CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
+        }
+    }
+
+    public void handleGetConsumables(String response) {
+        GetConsumables getConsumables = gson.fromJson(response, GetConsumables.class);
+        if (getConsumables != null) {
+            updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_MAIN_TIME,
+                    new DecimalType(getConsumables.result[0].mainBrushWorkTime));
+        }
     }
 
     public byte[] decrypt(byte[] payload, String key) throws Exception {
@@ -411,12 +453,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         return result.toString();
     }
 
-    public void handleMessage(byte[] message) {
+    public String handleMessage(byte[] message) {
         String version = bytesToString(message, 0, 3);
         // Do some checks
         if (!"1.0".equals(version)) {// && version!="A01") {
             logger.debug("Parse was not version as expected:{}", version);
-            return;
+            return "";
         }
         byte[] buf = Arrays.copyOfRange(message, 0, message.length - 4);
         CRC32 crc32 = new CRC32();
@@ -432,7 +474,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         int protocol = readInt16BE(message, 15);
         if (protocol != 102) {
             logger.debug("we don't handle images yet");
-            return;
         }
         int payloadLen = readInt16BE(message, 17);
         byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen);
@@ -444,9 +485,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             byte[] result = decrypt(payload, key);
             String stringResult = new String(result, StandardCharsets.UTF_8);
-            logger.debug("stringResult = {}", stringResult);
+            return stringResult;
         } catch (Exception e) {
             logger.debug("Exception decrypting payload, {}", e.getMessage());
+            return "";
         }
     }
 
@@ -485,6 +527,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         logger.info("mqtt publish failed");
                     } else {
                         logger.info("mqtt publish succeeded");
+                        if (COMMAND_GET_STATUS.equals(method)) {
+                            getStatusID = id;
+                        } else if (COMMAND_GET_CONSUMABLE.equals(method)) {
+                            getConsumableID = id;
+                        }
                     }
                 });
 
