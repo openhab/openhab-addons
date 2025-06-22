@@ -117,10 +117,7 @@ public class PortableAirConditionerStateDTO extends ApplianceStateDTO {
 
         public boolean getUiLockModeOn() {
             final @Nullable Boolean lockMode = uiLockMode;
-            if (lockMode == null) {
-                return false;
-            }
-            return lockMode;
+            return lockMode != null && lockMode;
         }
 
         @SerializedName("mode")
