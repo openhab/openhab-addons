@@ -70,10 +70,26 @@ public class PortableAirConditionerStateDTO extends ApplianceStateDTO {
         }
 
         @SerializedName("startTime")
-        private long startTime;
+        private int startTime = Integer.MIN_VALUE;
+
+        public boolean getIsReadStartTime() {
+            return startTime != Integer.MIN_VALUE;
+        }
+
+        public int getStartTime() {
+            return startTime;
+        }
 
         @SerializedName("stopTime")
-        private long stopTime;
+        private int stopTime = Integer.MIN_VALUE;
+
+        public boolean getIsReadStopTime() {
+            return stopTime != Integer.MIN_VALUE;
+        }
+
+        public int getStopTime() {
+            return stopTime;
+        }
 
         @SerializedName("temperatureRepresentation")
         private String temperatureRepresentation = "";

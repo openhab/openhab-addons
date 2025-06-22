@@ -24,6 +24,8 @@ import org.openhab.binding.electroluxappliance.internal.dto.ApplianceInfoDTO;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -53,15 +55,18 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
     private HttpClient httpClient;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
+    private final StorageService storageService;
 
     @Activate
     public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
+            @Reference StorageService storageService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.gson = new GsonBuilder().registerTypeAdapter(ApplianceInfoDTO.Action.class, new ActionDeserializer())
                 .create();
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -78,7 +83,9 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_ELECTROLUX_WASHING_MACHINE.equals(thingTypeUID)) {
             return new ElectroluxWashingMachineHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER.equals(thingTypeUID)) {
-            return new ElectroluxPortableAirConditionerHandler(thing, translationProvider, localeProvider);
+            final Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                    String.class.getClassLoader());
+            return new ElectroluxPortableAirConditionerHandler(thing, translationProvider, localeProvider, storage);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson, translationProvider,
                     localeProvider);

@@ -138,6 +138,10 @@
 			<channel id="compressor-state" typeId="compressor-state"/>
 			<channel id="fourway_valve-state" typeId="fourway_valve-state"/>
 			<channel id="evap-defrost-state" typeId="evap-defrost-state"/>
+			<channel id="off-timer-active" typeId="off-timer-active"/>
+			<channel id="off-timer-duration" typeId="off-timer-duration"/>
+			<channel id="on-timer-active" typeId="on-timer-active"/>
+			<channel id="on-timer-duration" typeId="on-timer-duration"/>
 		</channels>
 
 		<properties>
@@ -656,6 +660,44 @@
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="off-timer-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer Off Activate</label>
+		<description>Whether a timer is active to turn of fthe appliance.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="off-timer-duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Timer Off Duration</label>
+		<description>Off timer duration applied when enabled.</description>
+		<category>Settings</category>
+		<state min="0" max="86400" step="1800" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="on-timer-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer On Activate</label>
+		<description>Whether a timer is active to turn on the appliance.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="on-timer-duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Timer On Duration</label>
+		<description>On timer duration applied when enabled.</description>
+		<category>Settings</category>
+		<state min="0" max="86400" step="1800" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
