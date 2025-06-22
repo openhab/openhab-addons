@@ -77,8 +77,8 @@ public class DescriptorCluster extends BaseCluster {
      * characteristics of an endpoint, or to augment what is provided in the TagID field of the same structure.
      */
     public List<Semtag> tagList; // 4 list R V
-    // Structs
 
+    // Structs
     /**
      * The device type and revision define endpoint conformance to a release of a device type definition. See the Data
      * Model specification for more information.

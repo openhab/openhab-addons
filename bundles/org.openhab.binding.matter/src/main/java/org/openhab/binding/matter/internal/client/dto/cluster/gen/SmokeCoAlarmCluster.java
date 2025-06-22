@@ -122,8 +122,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * based on the ExpiryDate by up to 24 hours to best align with the local time zone.
      */
     public Integer expiryDate; // 12 epoch-s R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when SmokeState attribute changes to either Warning or Critical state.
      */

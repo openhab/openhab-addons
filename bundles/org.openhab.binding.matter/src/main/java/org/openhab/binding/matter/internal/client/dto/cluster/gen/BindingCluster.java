@@ -38,8 +38,8 @@ public class BindingCluster extends BaseCluster {
      * Each entry shall represent a binding.
      */
     public List<TargetStruct> binding; // 0 list RW F VM
-    // Structs
 
+    // Structs
     public class TargetStruct {
         /**
          * This field is the remote target node ID. If the Endpoint field is present, this field shall be present.

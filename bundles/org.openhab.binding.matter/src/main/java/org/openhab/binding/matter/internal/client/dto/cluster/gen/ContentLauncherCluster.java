@@ -49,8 +49,8 @@ public class ContentLauncherCluster extends BaseCluster {
      * This attribute shall provide information about supported streaming protocols.
      */
     public SupportedProtocolsBitmap supportedStreamingProtocols; // 1 SupportedProtocolsBitmap R V
-    // Structs
 
+    // Structs
     /**
      * This object defines additional name&#x3D;value pairs that can be used for identifying content.
      */
