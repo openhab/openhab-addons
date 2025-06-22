@@ -117,7 +117,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     @Override
     @Deactivate
     protected void deactivate() {
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
         super.deactivate();
     }
 
