@@ -279,8 +279,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (rs.output != null) {
             sr.ison = rstatus.ison = getBool(rs.output);
         }
-        if (rs.timerStartetAt != null && (rs.timerStartetAt) > 0) {
-            sr.timerRemaining = (int) (now() - getDouble(rs.timerStartetAt));
+        if (rs.timerStartetAt != null && rs.timerStartetAt > 0) {
+            sr.timerRemaining = (int) (now() - rs.timerStartetAt);
         }
         if (rs.temperature != null && rs.temperature.tC != null) {
             if (status.tmp == null) {
@@ -569,18 +569,19 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         ArrayList<@Nullable ShellySettingsRoller> rollers = new ArrayList<>();
 
-        addRollerSettings(rollers, dc.cover0);
+        addRollerSettings(rollers, 0, dc.cover0);
         fillRollerFavorites(profile, dc);
         return rollers;
     }
 
-    private void addRollerSettings(ArrayList<@Nullable ShellySettingsRoller> rollers,
+    private void addRollerSettings(ArrayList<@Nullable ShellySettingsRoller> rollers, int id,
             @Nullable Shelly2DevConfigCover coverConfig) {
         if (coverConfig == null) {
             return;
         }
 
         ShellySettingsRoller settings = new ShellySettingsRoller();
+        settings.id = id;
         settings.isValid = true;
         settings.defaultState = coverConfig.initialState;
         settings.inputMode = mapValue(MAP_INPUT_MODE, coverConfig.inMode);
@@ -622,11 +623,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs == null) {
             return false;
         }
-        if (cs.id == 0) {
+        Integer csId = cs.id;
+        if (cs.id == null) {
             cs.id = id;
         }
         int rIdx = getRollerIdx(getProfile(), cs.id);
-
         ShellyRollerStatus rs = status.rollers.get(rIdx);
         ShellySettingsMeter sm = status.meters.get(rIdx);
         ShellySettingsEMeter emeter = status.emeters.get(rIdx);
@@ -698,7 +699,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 idx++;
             }
         }
-        return -1;
+        throw new IllegalArgumentException("Update for invalid roller index");
     }
 
     protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
