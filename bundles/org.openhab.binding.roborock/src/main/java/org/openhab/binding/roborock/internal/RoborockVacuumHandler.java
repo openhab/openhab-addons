@@ -26,7 +26,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +47,7 @@ import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
 import org.openhab.binding.roborock.internal.api.enums.FanModeType;
+import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.util.HashUtil;
@@ -56,11 +59,16 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -68,6 +76,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
@@ -100,6 +109,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String rrHomeId = "";
     private String localKey = "";
     private int stateId;
+    private boolean hasChannelStructure;
+    private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
+    private ChannelTypeRegistry channelTypeRegistry;
     private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
     static final String salt = "TXdfu$jyZ#TZHsg4";
@@ -107,8 +119,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     int getStatusID = 0;
     int getConsumableID = 0;
 
-    public RoborockVacuumHandler(Thing thing) {
+    public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
+        this.channelTypeRegistry = channelTypeRegistry;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
         reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
         pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
@@ -170,6 +183,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         updateStatus(ThingStatus.UNKNOWN);
+        hasChannelStructure = false;
         token = getToken();
         if (!token.isEmpty()) {
             rriot = bridgeHandler.getRriot();
@@ -244,7 +258,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         teardown(false);
     }
 
-    public void connect(/* final EventListener listener, */ ScheduledExecutorService scheduler)
+    public void connect(ScheduledExecutorService scheduler)
             throws RoborockCommunicationException, InterruptedException {
         if (rriot == null) {
             throw new RoborockCommunicationException("Can not connect when not logged in");
@@ -381,6 +395,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     public void handleGetStatus(String response) {
         GetStatus getStatus = gson.fromJson(response, GetStatus.class);
+        JsonParser jsonParser = new JsonParser();
+        JsonObject statusResponse = jsonParser.parse(response).getAsJsonObject().getAsJsonArray("result").get(0)
+                .getAsJsonObject();
+        if (!hasChannelStructure) {
+            setCapabilities(statusResponse);
+            createCapabilityChannels();
+        }
         if (getStatus != null) {
             updateState(CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
@@ -468,6 +489,54 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new DecimalType(getConsumables.result[0].filterWorkTime));
             updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new DecimalType(getConsumables.result[0].sensorDirtyTime));
         }
+    }
+
+    private void setCapabilities(JsonObject statusResponse) {
+        for (RobotCapabilities capability : RobotCapabilities.values()) {
+            if (statusResponse.has(capability.getStatusFieldName())) {
+                deviceCapabilities.putIfAbsent(capability, false);
+                logger.debug("Setting additional vacuum {}", capability);
+            }
+        }
+    }
+
+    private void createCapabilityChannels() {
+        ThingBuilder thingBuilder = editThing();
+        int cnt = 0;
+
+        for (Entry<RobotCapabilities, Boolean> robotCapability : deviceCapabilities.entrySet()) {
+            RobotCapabilities capability = robotCapability.getKey();
+            Boolean channelCreated = robotCapability.getValue();
+            if (!channelCreated) {
+                if (thing.getChannels().stream()
+                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(capability.getChannel()))) {
+                    logger.debug("Channel already available...skip creation of channel '{}'.", capability.getChannel());
+                    deviceCapabilities.replace(capability, true);
+                    continue;
+                }
+                logger.debug("Creating dynamic channel for capability {}", capability);
+                ChannelType channelType = channelTypeRegistry.getChannelType(capability.getChannelType());
+                if (channelType != null) {
+                    logger.debug("Found channelType '{}' for capability {}", channelType, capability.name());
+                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), capability.getChannel());
+                    Channel channel = ChannelBuilder.create(channelUID, channelType.getItemType())
+                            .withType(capability.getChannelType()).withLabel(channelType.getLabel()).build();
+                    thingBuilder.withChannel(channel);
+                    cnt++;
+                } else {
+                    logger.debug("ChannelType {} not found (Unexpected). Available types:",
+                            capability.getChannelType());
+                    for (ChannelType ct : channelTypeRegistry.getChannelTypes()) {
+                        logger.debug("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
+                                ct.getConfigDescriptionURI());
+                    }
+                }
+            }
+        }
+        if (cnt > 0) {
+            updateThing(thingBuilder.build());
+        }
+        hasChannelStructure = true;
     }
 
     public byte[] decrypt(byte[] payload, String key) throws Exception {
