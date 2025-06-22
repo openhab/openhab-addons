@@ -791,12 +791,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             logger.debug(val);
 
             if (mediaTypeCommand == MediaCommandType.PLAY || mediaTypeCommand == MediaCommandType.ENQUEUE) {
-            int idx = val.indexOf("/l");
-            val = val.substring(idx);
-
-                if (serverHandlers.isEmpty()) {
-
-                }
+                int idx = val.indexOf("/l");
+                val = val.substring(idx);
 
                 if (!serverHandlers.isEmpty()) {
                     UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
@@ -812,26 +808,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     play();
                     udpateControlState(PlayPauseType.PLAY);
                 }
-
-            if (serverHandlers.isEmpty()) {
-
             }
-
-            if (!serverHandlers.isEmpty()) {
-                UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
-                serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
-                try {
-                    Thread.sleep(2000);
-                } catch (Exception ex) {
-
-                }
-
-                serverHandler.serveMedia();
-                // pause();
-                play();
-                udpateControlState(PlayPauseType.PLAY);
-            }
-
         } else if (command instanceof StringType) {
             String val = ((StringType) command).toFullString();
             logger.debug(val);
@@ -851,9 +828,9 @@ public class UpnpRendererHandler extends UpnpHandler {
                 play();
                 udpateControlState(PlayPauseType.PLAY);
             }
-            }
 
         }
+    }
 
     private void handleCommandRepeat(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
