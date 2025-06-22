@@ -13,6 +13,7 @@
 package org.openhab.binding.onecta.internal.oauth2.config.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -68,8 +69,9 @@ public abstract class AbstractShowPageServlet extends HttpServlet {
         try {
             String html = handleGetRequest(request, response);
             response.setContentType(CONTENT_TYPE);
-            response.getWriter().write(html);
-            response.getWriter().close();
+            try (PrintWriter writer = response.getWriter()) {
+                writer.write(html);
+            }
         } catch (OnectaHttpException e) {
             response.sendError(e.getHttpErrorCode());
         } catch (IOException e) {

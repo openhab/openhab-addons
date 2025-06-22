@@ -68,8 +68,6 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
     }
 
     private String renderRedirectUri(HttpServletRequest request, String skeleton) {
-        // <!-- redirect_uri -->
-        // TODO Auto-generated method stub
         return skeleton.replace(REDIRECT_URI_PLACEHOLDER, deriveRedirectUri(request.getRequestURL().toString()));
     }
 
