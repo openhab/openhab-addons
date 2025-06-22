@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.zip.CRC32;
 
@@ -42,10 +43,18 @@ import org.openhab.binding.roborock.internal.api.GetStatus;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
+import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
+import org.openhab.binding.roborock.internal.api.enums.FanModeType;
+import org.openhab.binding.roborock.internal.api.enums.StatusType;
+import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.util.HashUtil;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -53,6 +62,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +99,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @Nullable Rriot rriot;
     private String rrHomeId = "";
     private String localKey = "";
+    private int stateId;
     private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
     static final String salt = "TXdfu$jyZ#TZHsg4";
@@ -117,11 +129,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // we do not have any channels -> nothing to do here
-        String channel = channelUID.getId();
-
         try {
-            if (channel.equals(CHANNEL_CONTROL) && command instanceof StringType) {
+            if (channelUID.getId().equals(CHANNEL_VACUUM)) {
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        sendCommand(COMMAND_APP_START);
+                        return;
+                    } else {
+                        sendCommand(COMMAND_APP_STOP);
+                        return;
+                    }
+                }
+            }
+
+            if (channelUID.getId().equals(CHANNEL_CONTROL) && command instanceof StringType) {
                 if ("vacuum".equals(command.toString())) {
                     sendCommand(COMMAND_APP_START);
                 } else if ("spot".equals(command.toString())) {
@@ -329,23 +350,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     if (localKey.isEmpty()) {
                         localKey = homeData.result.devices[i].localKey;
                     }
-                    updateState(RoborockBindingConstants.CHANNEL_ERROR_ID,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
-                    updateState(RoborockBindingConstants.CHANNEL_STATE,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
-                    updateState(RoborockBindingConstants.CHANNEL_BATTERY,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.battery));
-                    updateState(RoborockBindingConstants.CHANNEL_FAN_POWER,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
-                    updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_MAIN_PERC,
+                    updateState(CHANNEL_ERROR_ID, new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
+                    updateState(CHANNEL_STATE, new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
+                    updateState(CHANNEL_BATTERY, new DecimalType(homeData.result.devices[i].deviceStatus.battery));
+                    updateState(CHANNEL_FAN_POWER, new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
+                    updateState(CHANNEL_MOP_DRYING,
+                            new DecimalType(homeData.result.devices[i].deviceStatus.dryingStatus));
+
+                    updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
                             new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
-                    updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_SIDE_PERC,
+                    updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
                             new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
-                    updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_FILTER_PERC,
+                    updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                             new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
-                    if (homeData.result.devices[i].online == true) {
-                        // get MQTT data
-                    }
                 }
             }
             try {
@@ -365,15 +382,91 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void handleGetStatus(String response) {
         GetStatus getStatus = gson.fromJson(response, GetStatus.class);
         if (getStatus != null) {
-            updateState(RoborockBindingConstants.CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
+            updateState(CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
+            updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
+            updateState(CHANNEL_FAN_CONTROL,
+                    new DecimalType(FanModeType.getType(getStatus.result[0].fanPower).getId()));
+            updateState(CHANNEL_CLEAN_AREA,
+                    new QuantityType<>(getStatus.result[0].cleanArea / 1000000.0, SIUnits.SQUARE_METRE));
+            updateState(CHANNEL_CLEAN_TIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].cleanTime), Units.MINUTE));
+            updateState(CHANNEL_DND_ENABLED, new DecimalType(getStatus.result[0].dndEnabled));
+            updateState(CHANNEL_ERROR_CODE,
+                    new StringType(VacuumErrorType.getType(getStatus.result[0].errorCode).getDescription()));
+            updateState(CHANNEL_ERROR_ID, new DecimalType(getStatus.result[0].errorCode));
+            updateState(CHANNEL_IN_CLEANING, new DecimalType(getStatus.result[0].inCleaning));
+            updateState(CHANNEL_MAP_PRESENT, new DecimalType(getStatus.result[0].mapPresent));
+
+            // handle vacuum state
+            stateId = getStatus.result[0].state;
+            StatusType state = StatusType.getType(getStatus.result[0].state);
+            updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+            updateState(CHANNEL_STATE_ID, new DecimalType(getStatus.result[0].state));
+
+            State vacuum = OnOffType.OFF;
+            String control;
+            switch (state) {
+                case ZONE:
+                case ROOM:
+                case CLEANING:
+                case RETURNING:
+                    control = "vacuum";
+                    vacuum = OnOffType.ON;
+                    break;
+                case CHARGING:
+                case CHARGING_ERROR:
+                case DOCKING:
+                case FULL:
+                    control = "dock";
+                    break;
+                case SLEEPING:
+                case PAUSED:
+                case IDLE:
+                    control = "pause";
+                    break;
+                case SPOTCLEAN:
+                    control = "spot";
+                    vacuum = OnOffType.ON;
+                    break;
+                default:
+                    control = "undef";
+                    break;
+            }
+            if ("undef".equals(control)) {
+                updateState(CHANNEL_CONTROL, UnDefType.UNDEF);
+            } else {
+                updateState(CHANNEL_CONTROL, new StringType(control));
+            }
+            updateState(CHANNEL_VACUUM, vacuum);
+
+            DockStatusType dockState = DockStatusType.getType(getStatus.result[0].dockErrorStatus);
+            updateState(CHANNEL_DOCK_STATE, new StringType(dockState.getDescription()));
+            updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(dockState.getId()));
+
+            // miio checks for vac capabilities before populating these channels
+            updateState(CHANNEL_WATER_BOX_MODE, new DecimalType(getStatus.result[0].waterBoxMode));
+            updateState(CHANNEL_MOP_MODE, new DecimalType(getStatus.result[0].mopMode));
+            updateState(CHANNEL_WATERBOX_STATUS, new DecimalType(getStatus.result[0].waterBoxStatus));
+            updateState(CHANNEL_WATERBOX_CARRIAGE, new DecimalType(getStatus.result[0].waterBoxCarriageStatus));
+            updateState(CHANNEL_LOCKSTATUS, new DecimalType(getStatus.result[0].lockStatus));
+            updateState(CHANNEL_MOP_FORBIDDEN, new DecimalType(getStatus.result[0].mopForbiddenEnable));
+            updateState(CHANNEL_LOCATING, new DecimalType(getStatus.result[0].isLocating));
+            updateState(CHANNEL_CLEAN_MOP_START, new DecimalType(0));
+            updateState(CHANNEL_CLEAN_MOP_STOP, new DecimalType(0));
+            updateState(CHANNEL_COLLECT_DUST, new DecimalType(0));
+            // I don't see a suitable piece of data for this with my Qrevo S
+            // updateState(CHANNEL_MOP_TOTAL_DRYTIME,
+            // new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].mopDryTime), Units.MINUTE));
         }
     }
 
     public void handleGetConsumables(String response) {
         GetConsumables getConsumables = gson.fromJson(response, GetConsumables.class);
         if (getConsumables != null) {
-            updateState(RoborockBindingConstants.CHANNEL_CONSUMABLE_MAIN_TIME,
-                    new DecimalType(getConsumables.result[0].mainBrushWorkTime));
+            updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new DecimalType(getConsumables.result[0].mainBrushWorkTime));
+            updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new DecimalType(getConsumables.result[0].sideBrushWorkTime));
+            updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new DecimalType(getConsumables.result[0].filterWorkTime));
+            updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new DecimalType(getConsumables.result[0].sensorDirtyTime));
         }
     }
 
