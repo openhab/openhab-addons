@@ -132,8 +132,6 @@ public class OnectaBridgeHandlerTest {
         things.add(new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.OFFLINE));
         things.add(new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.OFFLINE));
 
-        // when(handler.getThing().getThings()).thenReturn(things);
-
         handler.getThing();
 
         privateMethod.invoke(handler);
@@ -146,30 +144,4 @@ public class OnectaBridgeHandlerTest {
         verify(onectaWaterTankHandlerMock, times(0)).refreshDevice();
         verify(onectaIndoorUnitHandlerMock, times(0)).refreshDevice();
     }
-
-    /*
-     * @Test
-     * public void pollDevicesOfflineExceptionTest() throws NoSuchMethodException, InvocationTargetException,
-     * IllegalAccessException, DaikinCommunicationException, NoSuchFieldException {
-     * 
-     * Method privateMethod = OnectaBridgeHandler.class.getDeclaredMethod("pollDevices");
-     * privateMethod.setAccessible(true);
-     * 
-     * when(onectaConnectionClientMock.isOnline()).thenReturn(true);
-     * 
-     * doThrow(new DaikinCommunicationException("Connection failed")).when(onectaConnectionClientMock)
-     * .refreshUnitsData();
-     * 
-     * handler.getThing();
-     * 
-     * privateMethod.invoke(handler);
-     * 
-     * verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-     * verify(onectaConnectionClientMock).refreshUnitsData();
-     * verify(onectaDeviceHandlerMock, times(0)).refreshDevice();
-     * verify(onectaGatewayHandlerMock, times(0)).refreshDevice();
-     * verify(onectaWaterTankHandlerMock, times(0)).refreshDevice();
-     * verify(onectaIndoorUnitHandlerMock, times(0)).refreshDevice();
-     * }
-     */
 }
