@@ -15,7 +15,7 @@ package org.openhab.binding.ecoflow.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EcovacsApiConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EcoflowApiConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Danny Baumann - Initial contribution
  */

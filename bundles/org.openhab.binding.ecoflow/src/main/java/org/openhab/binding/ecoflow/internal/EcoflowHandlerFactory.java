@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link EcovacsHandlerFactory} is responsible for creating things and thing
+ * The {@link EcoflowHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Danny Baumann - Initial contribution
