@@ -13,6 +13,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonObject;
+
 /**
  *
  * This class is responsible for transforming to a State type
