@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.electroluxappliance.internal.dto.ActionDeserializer;
+import org.openhab.binding.electroluxappliance.internal.dto.ApplianceInfoDTO;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -33,6 +35,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link ElectroluxApplianceHandlerFactory} is responsible for creating things and thing
@@ -55,7 +58,8 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
     public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.gson = new Gson();
+        this.gson = new GsonBuilder().registerTypeAdapter(ApplianceInfoDTO.Action.class, new ActionDeserializer())
+                .create();
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
     }

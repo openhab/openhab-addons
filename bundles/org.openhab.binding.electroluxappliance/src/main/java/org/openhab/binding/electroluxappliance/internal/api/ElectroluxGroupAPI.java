@@ -227,74 +227,101 @@ public class ElectroluxGroupAPI {
         return false;
     }
 
-    public boolean setPACFanMode(final String applianceId, final String fanMode) {
-        String commandJSON = "{ \"fanSpeedSetting\": \"" + fanMode + "\"}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Fan Mode failed {}", e.getMessage());
+    public void sendCapabilityRequest(final String applianceId, final String capbilityNmae,
+            final @Nullable ApplianceDTO dto, final String value) {
+        if (dto == null) {
+            logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.unknown-dto", capbilityNmae));
+            return;
         }
-        return false;
-    }
 
-    public boolean setPACSleepMode(final String applianceId, final String sleepMode) {
-        String commandJSON = "{ \"sleepMode\": \"" + sleepMode + "\"}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Sleep failed {}", e.getMessage());
+        final ApplianceInfoDTO.@Nullable Capability capability = dto.getApplianceInfo().getCapability(capbilityNmae);
+        if (capability == null) {
+            logger.warn("{}",
+                    getLocalizedText("error.electroluxappliance.api.capability.capability-unknown", capbilityNmae));
+            return;
         }
-        return false;
-    }
 
-    public boolean setPACSwingState(final String applianceId, final String swingState) {
-        String commandJSON = "{ \"verticalSwing\": \"" + swingState + "\"}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Vertical Swing failed {}", e.getMessage());
+        // If the capability on the device does not support readwrite then we cant set it
+        if (!capability.getAccess().equals("readwrite")) {
+            logger.warn("{}",
+                    getLocalizedText("error.electroluxappliance.api.capability.no-read-write", capbilityNmae));
+            return;
         }
-        return false;
-    }
 
-    public boolean setPACChildLockState(final String applianceId, final boolean swingState) {
-        String commandJSON = "{ \"uiLockMode\": " + swingState + "}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Child Lock failed {}", e.getMessage());
-        }
-        return false;
-    }
+        String payload = "";
 
-    public boolean setPACRunning(final String applianceId, final String running) {
-        String commandJSON = "{ \"executeCommand\": \"" + running + "\"}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Running failed {}", e.getMessage());
-        }
-        return false;
-    }
+        // Determine the capability type for further processing
+        switch (capability.getType()) {
+            case "string":
+                // If it's a string typically there is a range of values allowed.
+                String command = value;
+                if (!capability.getValuesContains(command)) {
+                    // try forcing uppercase as all commands are for the PAC units
+                    command = command.toUpperCase();
+                    if (!capability.getValuesContains(command)) {
+                        logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.not-in-values",
+                                capbilityNmae, value));
+                        return;
+                    }
+                }
+                payload = "{ \"" + capbilityNmae + "\": \"" + command + "\"}";
+                break;
+            case "temperature":
+            case "number":
+                int valNum = Integer.MIN_VALUE;
+                try {
+                    valNum = Integer.parseInt(value);
+                } catch (NumberFormatException nfe) {
+                    logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.not-expected-numeric",
+                            capbilityNmae, value));
+                    return;
+                }
+                if (capability.getIsReadMin() && capability.getMin() > valNum) {
+                    logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.numeric-below-min",
+                            capbilityNmae, value, capability.getMin()));
+                    return;
+                }
+                if (capability.getIsReadMax() && valNum > capability.getMax()) {
+                    logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.numeric-above-max",
+                            capbilityNmae, value, capability.getMax()));
+                    return;
+                }
 
-    public boolean setPACMode(final String applianceId, final String mode) {
-        String commandJSON = "{ \"mode\": \"" + mode + "\"}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Mode failed {}", e.getMessage());
-        }
-        return false;
-    }
+                // If step is defined ensure the transmitted value is rounded to the nearest step
+                if (capability.getIsReadStep()) {
+                    int remainder = valNum % capability.getStep();
+                    if (remainder != 0) {
+                        valNum = Math.round((float) valNum / capability.getStep()) * capability.getStep();
+                    }
+                }
 
-    public boolean setPACTargetTemperature(final String applianceId, final int targetTempC) {
-        String commandJSON = "{ \"targetTemperatureC\": " + targetTempC + "}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxApplianceException e) {
-            logger.warn("Target Temperature failed {}", e.getMessage());
+                if (!capability.getValuesContains(String.valueOf(valNum))) {
+                    logger.warn("{}",
+                            getLocalizedText(
+                                    "error.electroluxappliance.api.capability.numeric-after-step-not-in-values",
+                                    capbilityNmae, value, valNum));
+                    return;
+                }
+
+                payload = "{ \"" + capbilityNmae + "\": " + valNum + " }";
+
+                break;
+            case "boolean":
+                final String boolCommand = value.toLowerCase();
+                if (!"true".equals(boolCommand) && !"false".equals(boolCommand)) {
+                    logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.invalid-boolean-value",
+                            capbilityNmae, value));
+                }
+                payload = "{ \"" + capbilityNmae + "\": " + boolCommand + " }";
+                break;
         }
-        return false;
+
+        try {
+            sendCommand(payload, applianceId);
+        } catch (ElectroluxApplianceException e) {
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.failed-capability-send", capbilityNmae,
+                    e.getMessage()));
+        }
     }
 
     private Request createRequest(String uri, HttpMethod httpMethod) {

@@ -14,6 +14,7 @@ package org.openhab.binding.electroluxappliance.internal.handler;
 
 import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceBindingConstants.*;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.PortableAirConditionerStateDTO;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -61,6 +63,13 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
 
     private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
+    private final ExpiringCache<ApplianceDTO> cachedDTO = new ExpiringCache<>(Duration.ofHours(1),
+            ElectroluxPortableAirConditionerHandler::expireCacheContents);
+
+    private static @Nullable ApplianceDTO expireCacheContents() {
+        return null;
+    }
+
     public ElectroluxPortableAirConditionerHandler(Thing thing, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
         super(thing, translationProvider, localeProvider);
@@ -76,27 +85,33 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
         ElectroluxGroupAPI api = getElectroluxGroupAPI();
         if (CHANNEL_FAN_MODE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.setPACFanMode(dto.getApplianceId(), command.toString().toUpperCase());
+                api.sendCapabilityRequest(dto.getApplianceId(), "fanSpeedSetting", cachedDTO.getValue(),
+                        command.toString().toUpperCase());
             }
         } else if (CHANNEL_SLEEP_MODE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.setPACSleepMode(dto.getApplianceId(), command.equals(OnOffType.ON) ? "ON" : "OFF");
+                api.sendCapabilityRequest(dto.getApplianceId(), "sleepMode", cachedDTO.getValue(),
+                        command.equals(OnOffType.ON) ? "ON" : "OFF");
             }
         } else if (CHANNEL_FAN_SWING.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.setPACSwingState(dto.getApplianceId(), command.equals(OnOffType.ON) ? "ON" : "OFF");
+                api.sendCapabilityRequest(dto.getApplianceId(), "verticalSwing", cachedDTO.getValue(),
+                        command.equals(OnOffType.ON) ? "ON" : "OFF");
             }
         } else if (CHANNEL_CHILD_LOCK.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.setPACChildLockState(dto.getApplianceId(), command.equals(OnOffType.ON));
+                api.sendCapabilityRequest(dto.getApplianceId(), "uiLockMode", cachedDTO.getValue(),
+                        String.valueOf(command.equals(OnOffType.ON)).toLowerCase());
             }
         } else if (CHANNEL_DEVICE_RUNNING.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.setPACRunning(dto.getApplianceId(), command.equals(OnOffType.ON) ? "ON" : "OFF");
+                api.sendCapabilityRequest(dto.getApplianceId(), "executeCommand", cachedDTO.getValue(),
+                        command.equals(OnOffType.ON) ? "ON" : "OFF");
             }
         } else if (CHANNEL_MODE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.setPACMode(dto.getApplianceId(), command.toString().toUpperCase());
+                api.sendCapabilityRequest(dto.getApplianceId(), "mode", cachedDTO.getValue(),
+                        command.toString().toUpperCase());
             }
         } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
@@ -107,7 +122,10 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                             value = ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS)
                                     .convert(quantityCommand.doubleValue());
                         }
-                        api.setPACTargetTemperature(dto.getApplianceId(), (int) Math.round(value));
+
+                        api.sendCapabilityRequest(dto.getApplianceId(), "targetTemperatureC", cachedDTO.getValue(),
+                                String.valueOf(Math.round(value)));
+
                     } catch (UnconvertibleException e) {
                         logger.warn("{}", getLocalizedText("error.electroluxappliance.pac.failed-target-temp-units",
                                 e.getMessage()));
@@ -120,6 +138,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
     @Override
     public void update(@Nullable ApplianceDTO dto) {
         if (dto != null) {
+            cachedDTO.putValue(dto);
             // Update all channels from the updated data
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
                     .forEach(channelUID -> {
