@@ -208,7 +208,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         initDevice();
 
         mediaService.registerDevice(
-                new MediaDevice("" + this.getThing().getLabel(), "" + this.getThing().getLabel(), "", "Upnp"));
+                new MediaDevice("" + this.getThing().getUID().getId(), "" + this.getThing().getLabel(), "", "Upnp"));
 
     }
 
@@ -731,7 +731,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void handleCommandStop(Command command) {
         if (OnOffType.ON.equals(command)) {
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
             stop();
             updateState(TRACK_POSITION, new QuantityType<>(0, Units.SECOND));
         }
@@ -741,15 +741,14 @@ public class UpnpRendererHandler extends UpnpHandler {
         String state;
         if (command instanceof RefreshType) {
             state = transportState;
-            State newState = UnDefType.UNDEF;
             if ("PLAYING".equals(state)) {
-                newState = PlayPauseType.PLAY;
+                udpateControlState(PlayPauseType.PLAY);
             } else if ("STOPPED".equals(state)) {
-                newState = PlayPauseType.PAUSE;
+                udpateControlState(PlayPauseType.PAUSE);
             } else if ("PAUSED_PLAYBACK".equals(state)) {
-                newState = PlayPauseType.PAUSE;
+                udpateControlState(PlayPauseType.PAUSE);
             }
-            updateState(channelUID, newState);
+            udpateControlState(PlayPauseType.NONE);
         } else if (command instanceof PlayPauseType) {
             if (PlayPauseType.PLAY.equals(command)) {
                 if (registeredQueue) {
@@ -760,9 +759,15 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } else {
                     play();
                 }
+
+                udpateControlState(PlayPauseType.PLAY);
+
             } else if (PlayPauseType.PAUSE.equals(command)) {
                 checkPaused();
                 pause();
+
+                udpateControlState(PlayPauseType.PAUSE);
+
             }
         } else if (command instanceof NextPreviousType) {
             if (NextPreviousType.NEXT.equals(command)) {
@@ -785,8 +790,32 @@ public class UpnpRendererHandler extends UpnpHandler {
 
             logger.debug(val);
 
+            if (mediaTypeCommand == MediaCommandType.PLAY || mediaTypeCommand == MediaCommandType.ENQUEUE) {
             int idx = val.indexOf("/l");
             val = val.substring(idx);
+
+                if (serverHandlers.isEmpty()) {
+
+                }
+
+                if (!serverHandlers.isEmpty()) {
+                    UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                    serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (Exception ex) {
+
+                    }
+
+                    serverHandler.serveMedia();
+                    // pause();
+                    play();
+                    udpateControlState(PlayPauseType.PLAY);
+                }
+
+            if (serverHandlers.isEmpty()) {
+
+            }
 
             if (!serverHandlers.isEmpty()) {
                 UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
@@ -796,8 +825,11 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } catch (Exception ex) {
 
                 }
-                pause();
+
+                serverHandler.serveMedia();
+                // pause();
                 play();
+                udpateControlState(PlayPauseType.PLAY);
             }
 
         } else if (command instanceof StringType) {
@@ -815,12 +847,13 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } catch (Exception ex) {
 
                 }
-                pause();
+                // pause();
                 play();
+                udpateControlState(PlayPauseType.PLAY);
+            }
             }
 
         }
-    }
 
     private void handleCommandRepeat(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -1076,7 +1109,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (!status) {
             removeSubscriptions();
 
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
             cancelTrackPositionRefresh();
         }
         super.onStatusChanged(status);
@@ -1250,7 +1283,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             }
 
             cancelCheckPaused();
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
             cancelTrackPositionRefresh();
             // Only go to next for first STOP command, then wait until we received PLAYING before moving
             // to next (avoids issues with renderers sending multiple stop states)
@@ -1281,13 +1314,13 @@ public class UpnpRendererHandler extends UpnpHandler {
             playerStopped = false;
             playing = true;
             registeredQueue = false; // reset queue registration flag as we are playing something
-            updateState(CONTROL, PlayPauseType.PLAY);
+            udpateControlState(PlayPauseType.PLAY);
             scheduleTrackPositionRefresh();
         } else if ("PAUSED_PLAYBACK".equals(value)) {
             cancelCheckPaused();
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
         } else if ("NO_MEDIA_PRESENT".equals(value)) {
-            updateState(CONTROL, UnDefType.UNDEF);
+            udpateControlState(PlayPauseType.NONE);
         }
     }
 
@@ -1615,7 +1648,18 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void resetPaused() {
-        updateState(CONTROL, PlayPauseType.PLAY);
+        udpateControlState(PlayPauseType.PLAY);
+    }
+
+    private void udpateControlState(PlayPauseType state) {
+        MediaType mType = new MediaType(state, MediaCommandType.NONE, "param",
+                new StringType(this.getThing().getUID().getId()), new StringType("Upnp"));
+        updateState(CONTROL, mType);
+    }
+
+    private void MediaType(MediaType mediaType) {
+        // TODO Auto-generated method stub
+
     }
 
     private void cancelCheckPaused() {

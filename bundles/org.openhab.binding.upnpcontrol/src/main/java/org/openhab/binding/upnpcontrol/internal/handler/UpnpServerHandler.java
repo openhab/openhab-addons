@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -42,6 +44,9 @@ import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.library.types.MediaCommandType;
+import org.openhab.core.library.types.MediaType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
@@ -357,6 +362,19 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} for channel {} on server {}", command, channelUID, thing.getLabel());
 
+        if (command instanceof MediaType) {
+            MediaType mediaType = (MediaType) command;
+            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+            String device = mediaType.getDevice().toFullString();
+
+            if (mediaTypeCommand == MediaCommandType.DEVICE) {
+                StringType st = new StringType("upnpcontrol:upnprenderer:" + device);
+                Channel chan = this.thing.getChannel(UpnpControlBindingConstants.UPNPRENDERER);
+
+                handleCommandUpnpRenderer(chan.getUID(), st);
+            }
+
+        }
         switch (channelUID.getId()) {
             case UPNPRENDERER:
                 handleCommandUpnpRenderer(channelUID, command);
@@ -425,6 +443,8 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             updateState(channelUID, StringType.valueOf(renderer.getThing().getUID().toString()));
         } else {
             updateState(channelUID, UnDefType.UNDEF);
+
+            // new MediaType(PlayPauseType.NONE, MediaCommandType.NONE, "", new StringType(""), new StringType("Upnp"))
         }
     }
 
@@ -606,7 +626,9 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         UpnpRendererHandler handler = currentRendererHandler;
         Channel channel;
         if ((handler != null) && (channel = handler.getThing().getChannel(channelId)) != null) {
-            handler.handleCommand(channel.getUID(), command);
+        } else if (channelId.equals(CONTROL)) {
+            updateState(channelId, new MediaType(PlayPauseType.NONE, MediaCommandType.NONE, "", new StringType(""),
+                    new StringType("Upnp")));
         } else if (!STOP.equals(channelId)) {
             updateState(channelId, UnDefType.UNDEF);
         }
@@ -739,7 +761,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         updateState(BROWSE, StringType.valueOf(currentEntry.getId()));
         updateState(CURRENTTITLE, StringType.valueOf(currentEntry.getTitle()));
 
-        serveMedia();
+        // serveMedia();
     }
 
     /**
@@ -838,7 +860,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         return newList;
     }
 
-    private void serveMedia() {
+    public void serveMedia() {
         UpnpRendererHandler handler = currentRendererHandler;
         if (handler != null) {
             List<UpnpEntry> mediaQueue = new ArrayList<>();
