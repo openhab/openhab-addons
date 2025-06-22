@@ -514,7 +514,7 @@
 		<description>Sends the robotic vacuum cleaner back to the dock</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Switch</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
