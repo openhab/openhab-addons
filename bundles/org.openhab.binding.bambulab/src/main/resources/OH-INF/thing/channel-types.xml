@@ -51,6 +51,10 @@
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
 		<description>Current Wi-Fi signal strength.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="number">
@@ -61,12 +65,20 @@
 	<channel-type id="time-min">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time (min)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Time Stamp</label>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="number-advanced" advanced="true">
@@ -87,6 +99,9 @@
 	<channel-type id="boolean-rw">
 		<item-type>Switch</item-type>
 		<label>Boolean Channel</label>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="camera-image">
 		<item-type>Image</item-type>
@@ -99,6 +114,10 @@
 		<item-type>String</item-type>
 		<label>Print Speed Level</label>
 		<description>Current speed setting of the print job.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="SILENT">Silent</option>
@@ -138,6 +157,10 @@
 	<channel-type id="tray-color">
 		<item-type>Color</item-type>
 		<label>Tray Color</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Color</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="tray-loaded">

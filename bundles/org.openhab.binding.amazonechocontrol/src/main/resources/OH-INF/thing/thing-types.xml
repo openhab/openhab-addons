@@ -301,6 +301,10 @@
 		<item-type>Switch</item-type>
 		<label>Active</label>
 		<description>Activate this flash briefing configuration</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playOnDevice" advanced="true">
 		<item-type>String</item-type>
@@ -374,21 +378,37 @@
 		<item-type>Switch</item-type>
 		<label>Loop</label>
 		<description>Loop</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
 		<item-type>Switch</item-type>
 		<label>Shuffle</label>
 		<description>Shuffle play</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>Music Player</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of the sound</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="equalizerTreble">
 		<item-type>Number</item-type>
@@ -428,6 +448,10 @@
 		<item-type>Switch</item-type>
 		<label>Refresh Activity</label>
 		<description>A command send to this channel refreshes the customer history activity (write-only)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="announcement" advanced="true">
@@ -471,6 +495,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Media Progress</label>
 		<description>Media progress in percent</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
 		<item-type>Number:Time</item-type>
@@ -501,6 +529,10 @@
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
 		<description>Do Not Disturb mode enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="nextReminder" advanced="true">
 		<item-type>DateTime</item-type>
@@ -533,12 +565,20 @@
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
 	<!-- Alexa.ColorController -->
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description>
 			<parameter name="matchColors" type="boolean">
 				<label>Match Colors</label>
@@ -551,11 +591,19 @@
 	<channel-type id="colorName">
 		<item-type>String</item-type>
 		<label>Color Name</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.ColorTemperatureController -->
 	<channel-type id="colorTemperatureName">
 		<item-type>String</item-type>
 		<label>Color Temperature Name</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.PercentageController -->
 	<channel-type id="percentage">
@@ -566,16 +614,28 @@
 	<channel-type id="powerState">
 		<item-type>Switch</item-type>
 		<label>Power State</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.LockController -->
 	<channel-type id="lockState">
 		<item-type>Switch</item-type>
 		<label>Lock State</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.PowerLevelController -->
 	<channel-type id="powerLevel">
 		<item-type>Dimmer</item-type>
 		<label>Power Level</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
 	<!-- Alexa.SecurityPanelController -->
@@ -586,33 +646,56 @@
 	<channel-type id="burglaryAlarm">
 		<item-type>Contact</item-type>
 		<label>Burglary Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="carbonMonoxideAlarm">
 		<item-type>Contact</item-type>
 		<label>Carbon Monoxide Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fireAlarm">
 		<item-type>Contact</item-type>
 		<label>Fire Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="waterAlarm">
 		<item-type>Contact</item-type>
 		<label>Water Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<!-- Alexa.TemperatureSensor -->
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Alexa.MotionSensor -->
 	<channel-type id="motionDetected">
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<!-- Alexa.EndpointHealth -->
@@ -631,12 +714,20 @@
 	<channel-type id="geoLocation">
 		<item-type>Location</item-type>
 		<label>Location</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<!-- Alexa.ThermostatController -->
 	<channel-type id="targetSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Setpoint</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="upperSetpoint">
@@ -662,6 +753,10 @@
 	<channel-type id="thermostatMode">
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">Auto</option>
@@ -676,6 +771,10 @@
 	<channel-type id="indoorAirQuality">
 		<item-type>Number</item-type>
 		<label>Indoor Air Quality</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="relativeHumidity">
@@ -692,11 +791,19 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>Particulate Matter PM2.5 density.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="carbonMonoxide">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Carbon Monoxide</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="voc">
@@ -707,6 +814,10 @@
 	<channel-type id="fanSpeed">
 		<item-type>Number</item-type>
 		<label>Fan speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 

@@ -14,21 +14,27 @@ package org.openhab.binding.ring.internal.discovery;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.internal.RingDeviceRegistry;
-import org.openhab.binding.ring.internal.data.RingDevice;
-import org.openhab.binding.ring.internal.data.RingDeviceTO;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.binding.ring.internal.api.RingDeviceTO;
+import org.openhab.binding.ring.internal.device.Chime;
+import org.openhab.binding.ring.internal.device.Doorbell;
+import org.openhab.binding.ring.internal.device.RingDevice;
+import org.openhab.binding.ring.internal.device.Stickupcam;
+import org.openhab.binding.ring.internal.handler.AccountHandler;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The RingDiscoveryService is responsible for auto detecting a Ring
@@ -37,73 +43,75 @@ import com.google.gson.Gson;
  * @author Wim Vissers - Initial contribution
  * @author Chris Milbert - Stickupcam contribution
  * @author Ben Rosenblum - Updated for OH4 / New Maintainer
+ * @author Jan N. Klug - Refactored to ThingHandlerService
  */
 
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ring")
+@Component(scope = ServiceScope.PROTOTYPE, service = RingDiscoveryService.class)
 @NonNullByDefault
-public class RingDiscoveryService extends AbstractDiscoveryService {
-
-    private Logger logger = LoggerFactory.getLogger(RingDiscoveryService.class);
+public class RingDiscoveryService extends AbstractThingHandlerDiscoveryService<AccountHandler> {
     private @Nullable ScheduledFuture<?> discoveryJob;
 
-    private final Gson gson = new Gson();
-
     public RingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 5, true);
-    }
-
-    public void activate() {
-        logger.debug("Starting Ring discovery...");
-        startScan();
-        startBackgroundDiscovery();
-    }
-
-    @Override
-    public void deactivate() {
-        logger.debug("Stopping Ring discovery...");
-        stopBackgroundDiscovery();
-        stopScan();
-    }
-
-    private void discover() {
-        RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
-        for (RingDevice device : registry.getRingDevices(RingDeviceRegistry.Status.ADDED)) {
-            RingDeviceTO deviceTO = gson.fromJson(device.getJsonObject(), RingDeviceTO.class);
-            if (deviceTO != null) {
-                thingDiscovered(device.getDiscoveryResult(deviceTO));
-                registry.setStatus(deviceTO.id, RingDeviceRegistry.Status.DISCOVERED);
-            }
-        }
-    }
-
-    private void refresh() {
-        discover();
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        discoveryJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 120, TimeUnit.SECONDS);
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.info("Stop Ring background discovery");
-        ScheduledFuture<?> job = discoveryJob;
-        if (job != null) {
-            job.cancel(true);
-        }
-        discoveryJob = null;
+        super(AccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 5);
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Starting device search...");
-        discover();
+        ThingHandler thingHandler = getThingHandler();
+        if (thingHandler instanceof AccountHandler accountHandler) {
+            ThingUID bridgeUID = accountHandler.getThing().getUID();
+            for (RingDevice device : accountHandler.getAllDevices()) {
+                RingDeviceTO deviceTO = device.getDeviceStatus();
+                ThingTypeUID thingTypeUID = switch (device) {
+                    case Chime chime -> THING_TYPE_CHIME;
+                    case Doorbell doorbell -> THING_TYPE_DOORBELL;
+                    case Stickupcam stickupcam -> THING_TYPE_STICKUPCAM;
+                    default -> THING_TYPE_OTHERDEVICE;
+                };
+
+                Configuration configuration = new Configuration();
+                configuration.put(THING_CONFIG_ID, deviceTO.id);
+                configuration.put(THING_PROPERTY_KIND, deviceTO.kind);
+                configuration.put(THING_PROPERTY_DESCRIPTION, deviceTO.description);
+                configuration.put(THING_PROPERTY_DEVICE_ID, deviceTO.deviceId);
+                configuration.put(THING_PROPERTY_OWNER_ID, deviceTO.owner.id);
+
+                DiscoveryResult result = DiscoveryResultBuilder
+                        .create(new ThingUID(thingTypeUID, bridgeUID, deviceTO.id))
+                        .withProperties(configuration.getProperties()).withLabel(deviceTO.description)
+                        .withRepresentationProperty(THING_CONFIG_ID).withBridge(bridgeUID).build();
+
+                thingDiscovered(result);
+            }
+        }
     }
 
     @Override
     protected synchronized void stopScan() {
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
+    }
+
+    @Override
+    public void startBackgroundDiscovery() {
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job == null || job.isCancelled()) {
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 1, 5, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    public void stopBackgroundDiscovery() {
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job != null) {
+            job.cancel(true);
+            discoveryJob = null;
+        }
     }
 }

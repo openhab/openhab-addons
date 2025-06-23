@@ -10,16 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ring.internal.data;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+@org.osgi.annotation.bundle.Header(name = org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE, value = "*")
+package org.openhab.automation.jsscripting.internal;
 
 /**
- * @author Wim Vissers - Initial contribution
+ * Additional information for the JavaScript Scripting package
+ *
+ * @author Florian Hotze - Initial contribution
  */
-
-@NonNullByDefault
-public class DoorbotTO {
-    public String id = "";
-    public String description = "";
-}

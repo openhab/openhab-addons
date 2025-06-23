@@ -67,6 +67,10 @@
 		<item-type>String</item-type>
 		<label>Current Electricity Status</label>
 		<description>Current price status of grid import</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="nem-time">
@@ -79,12 +83,20 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Current Renewables</label>
 		<description>Current level of renewables in the grid</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="spike">
 		<item-type>Switch</item-type>
 		<label>Energy Price Spike</label>
 		<description>Report if the grid has a current price spike</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
