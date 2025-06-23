@@ -90,8 +90,10 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_EVAP_DEFROST_STATE = "evap-defrost-state";
     public static final String CHANNEL_OFF_TIMER_ACTIVE = "off-timer-active";
     public static final String CHANNEL_OFF_TIMER_DURATION = "off-timer-duration";
+    public static final String CHANNEL_OFF_TIMER_TIME = "off-timer-time";
     public static final String CHANNEL_ON_TIMER_ACTIVE = "on-timer-active";
     public static final String CHANNEL_ON_TIMER_DURATION = "on-timer-duration";
+    public static final String CHANNEL_ON_TIMER_TIME = "on-timer-time";
 
     // List of all Properties ids
     public static final String PROPERTY_BRAND = "brand";

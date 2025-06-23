@@ -116,8 +116,10 @@ The following channels are supported:
 | evap-defrost-state        | Switch             | The state of the evap defrost.                                                                      | No                                       |
 | off-timer-active          | Switch             | Whether a timer is active to turn off the appliance.                                                | Yes - When on applies off-timer-duration |
 | off-timer-duration        | Number:Time        | Whether a timer is active to turn off the appliance. (Applied when off-timer-active is switched on) | Yes - to set time for off-timer-active   |
+| off-timer-time            | DateTime           | The time when the auto off timer will be reached.                                                   | No                                       |
 | on-timer-active           | Switch             | Whether a timer is active to turn on the appliance.                                                 | Yes - When on applies on-timer-duration  |
 | on-timer-duration         | Number:Time        | Whether a timer is active to turn on the appliance. (Applied when on-timer-active is switched on)   | Yes - to set time for on-timer-active    |
+| on-timer-time             | DateTime           | The time when the auto on timer will be reached.                                                    | No                                       |
 
 ## Full Example
 
@@ -171,6 +173,8 @@ Switch Electrolux_Air_Conditioner_Sleep_Mode "Sleep Mode" <Switch> (Electrolux_A
 Number:Temperature Electrolux_Air_Conditioner_Target_Temperature "Target Temperature [%.1f %unit%]" <Temperature> (Electrolux_Air_Conditioner) [Status, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:target-temperature", unit="°C" }
 Switch Electrolux_Air_Conditioner_Timer_Off_Activate "Timer Off Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-active" }
 Number:Time Electrolux_Air_Conditioner_Timer_Off_Duration "Timer Off Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-duration", unit="s" }
+DateTime Electrolux_Air_Conditioner_Offtimertime "Auto Off Expiry [%1$tF %1$tR]" <Time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-time" }
 Switch Electrolux_Air_Conditioner_Timer_On_Activate "Timer On Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-active" }
 Number:Time Electrolux_Air_Conditioner_Timer_On_Duration "Timer On Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-duration", unit="s" }
+DateTime Electrolux_Air_Conditioner_Ontimertime "Auto On Expiry [%1$tF %1$tR]" <Time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-time" }
 ```

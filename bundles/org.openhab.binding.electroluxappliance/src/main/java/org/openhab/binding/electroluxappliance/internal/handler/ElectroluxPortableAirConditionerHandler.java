@@ -14,7 +14,8 @@ package org.openhab.binding.electroluxappliance.internal.handler;
 
 import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceBindingConstants.*;
 
-import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,9 +28,9 @@ import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.PortableAirConditionerStateDTO;
-import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -64,13 +65,6 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
 
     private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
-    private final ExpiringCache<ApplianceDTO> cachedDTO = new ExpiringCache<>(Duration.ofHours(1),
-            ElectroluxPortableAirConditionerHandler::expireCacheContents);
-
-    private static @Nullable ApplianceDTO expireCacheContents() {
-        return null;
-    }
-
     private final Storage<String> strStore;
 
     public ElectroluxPortableAirConditionerHandler(Thing thing, @Reference TranslationProvider translationProvider,
@@ -90,33 +84,32 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
         ElectroluxGroupAPI api = getElectroluxGroupAPI();
         if (CHANNEL_FAN_MODE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.sendCapabilityRequest(dto.getApplianceId(), "fanSpeedSetting", cachedDTO.getValue(),
+                api.sendCapabilityRequest(dto.getApplianceId(), "fanSpeedSetting", dto,
                         command.toString().toUpperCase());
             }
         } else if (CHANNEL_SLEEP_MODE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.sendCapabilityRequest(dto.getApplianceId(), "sleepMode", cachedDTO.getValue(),
+                api.sendCapabilityRequest(dto.getApplianceId(), "sleepMode", dto,
                         command.equals(OnOffType.ON) ? "ON" : "OFF");
             }
         } else if (CHANNEL_FAN_SWING.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.sendCapabilityRequest(dto.getApplianceId(), "verticalSwing", cachedDTO.getValue(),
+                api.sendCapabilityRequest(dto.getApplianceId(), "verticalSwing", dto,
                         command.equals(OnOffType.ON) ? "ON" : "OFF");
             }
         } else if (CHANNEL_CHILD_LOCK.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.sendCapabilityRequest(dto.getApplianceId(), "uiLockMode", cachedDTO.getValue(),
+                api.sendCapabilityRequest(dto.getApplianceId(), "uiLockMode", dto,
                         String.valueOf(command.equals(OnOffType.ON)).toLowerCase());
             }
         } else if (CHANNEL_DEVICE_RUNNING.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.sendCapabilityRequest(dto.getApplianceId(), "executeCommand", cachedDTO.getValue(),
+                api.sendCapabilityRequest(dto.getApplianceId(), "executeCommand", dto,
                         command.equals(OnOffType.ON) ? "ON" : "OFF");
             }
         } else if (CHANNEL_MODE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
-                api.sendCapabilityRequest(dto.getApplianceId(), "mode", cachedDTO.getValue(),
-                        command.toString().toUpperCase());
+                api.sendCapabilityRequest(dto.getApplianceId(), "mode", dto, command.toString().toUpperCase());
             }
         } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
             if (api != null && dto != null) {
@@ -128,7 +121,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                                     .convert(quantityCommand.doubleValue());
                         }
 
-                        api.sendCapabilityRequest(dto.getApplianceId(), "targetTemperatureC", cachedDTO.getValue(),
+                        api.sendCapabilityRequest(dto.getApplianceId(), "targetTemperatureC", dto,
                                 String.valueOf(Math.round(value)));
 
                     } catch (UnconvertibleException e) {
@@ -141,11 +134,19 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
             if (api != null && dto != null) {
                 if (command instanceof OnOffType) {
                     if (OnOffType.OFF.equals(command)) {
-                        api.sendCapabilityRequest(dto.getApplianceId(), "stopTime", cachedDTO.getValue(), "0");
+                        api.sendCapabilityRequest(dto.getApplianceId(), "stopTime", dto, "0");
                     } else {
                         final String savedVal = strStore.get(CHANNEL_OFF_TIMER_DURATION);
                         if (savedVal != null) {
-                            api.sendCapabilityRequest(dto.getApplianceId(), "stopTime", cachedDTO.getValue(), savedVal);
+                            boolean result = api.sendCapabilityRequest(dto.getApplianceId(), "stopTime", dto, savedVal);
+                            if (result) {
+                                try {
+                                    int durationSeconds = Integer.parseInt(savedVal);
+                                    updateState(CHANNEL_OFF_TIMER_TIME,
+                                            new DateTimeType(Instant.now().plus(durationSeconds, ChronoUnit.SECONDS)));
+                                } catch (NumberFormatException nfe) {
+                                }
+                            }
                         }
                     }
                 }
@@ -154,12 +155,20 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
             if (api != null && dto != null) {
                 if (command instanceof OnOffType) {
                     if (OnOffType.OFF.equals(command)) {
-                        api.sendCapabilityRequest(dto.getApplianceId(), "startTime", cachedDTO.getValue(), "0");
+                        api.sendCapabilityRequest(dto.getApplianceId(), "startTime", dto, "0");
                     } else {
                         final String savedVal = strStore.get(CHANNEL_ON_TIMER_DURATION);
                         if (savedVal != null) {
-                            api.sendCapabilityRequest(dto.getApplianceId(), "startTime", cachedDTO.getValue(),
+                            boolean result = api.sendCapabilityRequest(dto.getApplianceId(), "startTime", dto,
                                     savedVal);
+                            if (result) {
+                                try {
+                                    int durationSeconds = Integer.parseInt(savedVal);
+                                    updateState(CHANNEL_ON_TIMER_TIME,
+                                            new DateTimeType(Instant.now().plus(durationSeconds, ChronoUnit.SECONDS)));
+                                } catch (NumberFormatException nfe) {
+                                }
+                            }
                         }
                     }
                 }
@@ -180,7 +189,6 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
     @Override
     public void update(@Nullable ApplianceDTO dto) {
         if (dto != null) {
-            cachedDTO.putValue(dto);
             // Update all channels from the updated data
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
                     .forEach(channelUID -> {
@@ -276,8 +284,17 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                 } else {
                     return new QuantityType<>(1800, Units.SECOND);
                 }
+            case CHANNEL_ON_TIMER_TIME:
+                if (reported.getIsReadStartTime() && reported.getStartTime() > 0) {
+                    return new DateTimeType(
+                            dto.getApplianceStateTimestamp().plus(reported.getStartTime(), ChronoUnit.SECONDS));
+                }
+            case CHANNEL_OFF_TIMER_TIME:
+                if (reported.getIsReadStopTime() && reported.getStopTime() > 0) {
+                    return new DateTimeType(
+                            dto.getApplianceStateTimestamp().plus(reported.getStopTime(), ChronoUnit.SECONDS));
+                }
         }
-        logger.warn("Read {}", reported);
         return UnDefType.UNDEF;
     }
 

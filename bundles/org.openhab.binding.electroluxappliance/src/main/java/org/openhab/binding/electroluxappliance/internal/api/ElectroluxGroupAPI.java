@@ -112,6 +112,7 @@ public class ElectroluxGroupAPI {
                     String applianceId = dto.getApplianceId();
                     // Get appliance info
                     String jsonApplianceInfo = getApplianceInfo(applianceId);
+                    Instant retrievalTs = Instant.now();
                     ApplianceInfoDTO applianceInfo = gson.fromJson(jsonApplianceInfo, ApplianceInfoDTO.class);
                     if (applianceInfo != null) {
                         dto.setApplianceInfo(applianceInfo);
@@ -121,7 +122,7 @@ public class ElectroluxGroupAPI {
                             ApplianceStateDTO applianceState = gson.fromJson(jsonApplianceState,
                                     AirPurifierStateDTO.class);
                             if (applianceState != null) {
-                                dto.setApplianceState(applianceState);
+                                dto.setApplianceState(applianceState, retrievalTs);
                             }
                             electroluxApplianceThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
                         } else if ("WASHING_MACHINE".equals(applianceInfo.getApplianceInfo().getDeviceType())) {
@@ -228,25 +229,25 @@ public class ElectroluxGroupAPI {
         return false;
     }
 
-    public void sendCapabilityRequest(final String applianceId, final String capbilityNmae,
+    public boolean sendCapabilityRequest(final String applianceId, final String capbilityNmae,
             final @Nullable ApplianceDTO dto, final String value) {
         if (dto == null) {
             logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.unknown-dto", capbilityNmae));
-            return;
+            return false;
         }
 
         final ApplianceInfoDTO.@Nullable Capability capability = dto.getApplianceInfo().getCapability(capbilityNmae);
         if (capability == null) {
             logger.warn("{}",
                     getLocalizedText("error.electroluxappliance.api.capability.capability-unknown", capbilityNmae));
-            return;
+            return false;
         }
 
         // If the capability on the device does not support readwrite then we cant set it
         if (!capability.getAccess().equals("readwrite")) {
             logger.warn("{}",
                     getLocalizedText("error.electroluxappliance.api.capability.no-read-write", capbilityNmae));
-            return;
+            return false;
         }
 
         String payload = "";
@@ -262,7 +263,7 @@ public class ElectroluxGroupAPI {
                     if (!capability.getValuesContains(command)) {
                         logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.not-in-values",
                                 capbilityNmae, value));
-                        return;
+                        return false;
                     }
                 }
                 payload = "{ \"" + capbilityNmae + "\": \"" + command + "\"}";
@@ -275,17 +276,17 @@ public class ElectroluxGroupAPI {
                 } catch (NumberFormatException nfe) {
                     logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.not-expected-numeric",
                             capbilityNmae, value));
-                    return;
+                    return false;
                 }
                 if (capability.getIsReadMin() && capability.getMin() > valNum) {
                     logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.numeric-below-min",
                             capbilityNmae, value, capability.getMin()));
-                    return;
+                    return false;
                 }
                 if (capability.getIsReadMax() && valNum > capability.getMax()) {
                     logger.warn("{}", getLocalizedText("error.electroluxappliance.api.capability.numeric-above-max",
                             capbilityNmae, value, capability.getMax()));
-                    return;
+                    return false;
                 }
 
                 // If step is defined ensure the transmitted value is rounded to the nearest step
@@ -301,7 +302,7 @@ public class ElectroluxGroupAPI {
                             getLocalizedText(
                                     "error.electroluxappliance.api.capability.numeric-after-step-not-in-values",
                                     capbilityNmae, value, valNum));
-                    return;
+                    return false;
                 }
 
                 payload = "{ \"" + capbilityNmae + "\": " + valNum + " }";
@@ -318,10 +319,11 @@ public class ElectroluxGroupAPI {
         }
 
         try {
-            sendCommand(payload, applianceId);
+            return sendCommand(payload, applianceId);
         } catch (ElectroluxApplianceException e) {
             logger.warn("{}", getLocalizedText("warning.electroluxappliance.failed-capability-send", capbilityNmae,
                     e.getMessage()));
+            return false;
         }
     }
 
