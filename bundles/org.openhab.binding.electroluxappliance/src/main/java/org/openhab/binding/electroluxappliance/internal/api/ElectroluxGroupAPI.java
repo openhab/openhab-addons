@@ -158,7 +158,8 @@ public class ElectroluxGroupAPI {
         try {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
-            logger.warn("Work mode powerOff failed {}", e.getMessage());
+            logger.warn("{}",
+                    getLocalizedText("warning.electroluxappliance.work-mode-poweroff-failed", e.getMessage()));
         }
         return false;
     }
@@ -168,7 +169,7 @@ public class ElectroluxGroupAPI {
         try {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
-            logger.warn("Work mode auto failed {}", e.getMessage());
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.work-mode-auto-failed", e.getMessage()));
         }
         return false;
     }
@@ -178,7 +179,7 @@ public class ElectroluxGroupAPI {
         try {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
-            logger.warn("Work mode manual failed {}", e.getMessage());
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.work-mode-manual-failed", e.getMessage()));
         }
         return false;
     }
@@ -191,7 +192,7 @@ public class ElectroluxGroupAPI {
             try {
                 return sendCommand(commandJSON, applianceId);
             } catch (ElectroluxApplianceException e) {
-                logger.warn("Work mode manual failed {}", e.getMessage());
+                logger.warn("{}", getLocalizedText("warning.electroluxappliance.fanspeed-failed", e.getMessage()));
             }
         }
         return false;
@@ -202,7 +203,7 @@ public class ElectroluxGroupAPI {
         try {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
-            logger.warn("Work mode manual failed {}", e.getMessage());
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.ionizer-failed", e.getMessage()));
         }
         return false;
     }
@@ -212,7 +213,7 @@ public class ElectroluxGroupAPI {
         try {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
-            logger.warn("Work mode manual failed {}", e.getMessage());
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.uilight-failed", e.getMessage()));
         }
         return false;
     }
@@ -222,7 +223,7 @@ public class ElectroluxGroupAPI {
         try {
             return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxApplianceException e) {
-            logger.warn("Work mode manual failed {}", e.getMessage());
+            logger.warn("{}", getLocalizedText("warning.electroluxappliance.safetylock-failed", e.getMessage()));
         }
         return false;
     }
