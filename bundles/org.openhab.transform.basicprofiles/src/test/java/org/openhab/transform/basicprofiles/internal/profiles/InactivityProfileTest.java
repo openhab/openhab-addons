@@ -36,19 +36,19 @@ import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
 
 /**
- * Unit test for {@link FlatLineProfile}.
+ * Unit test for {@link InactivityProfile}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-class FlatLineProfileTest {
+class InactivityProfileTest {
 
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
     private @NonNullByDefault({}) @Mock ScheduledExecutorService mockScheduler;
 
-    private FlatLineProfile initFlatLineProfile(String timeout, @Nullable String inverted) {
+    private InactivityProfile initInactivityProfile(String timeout, @Nullable String inverted) {
         Configuration config = new Configuration();
         config.put("timeout", timeout);
         if (inverted != null) {
@@ -62,10 +62,10 @@ class FlatLineProfileTest {
         when(mockContext.getExecutorService()).thenReturn(mockScheduler);
         when(mockContext.getConfiguration()).thenReturn(config);
 
-        return new FlatLineProfile(mockCallback, mockContext);
+        return new InactivityProfile(mockCallback, mockContext);
     }
 
-    public static Stream<Arguments> testFlatLineProfile() {
+    public static Stream<Arguments> testInactivityProfile() {
         return Stream.of( //
                 Arguments.of("500 ms", null, 500, OnOffType.OFF), //
                 Arguments.of("500 ms", "false", 500, OnOffType.OFF), //
@@ -75,8 +75,8 @@ class FlatLineProfileTest {
 
     @ParameterizedTest
     @MethodSource
-    public void testFlatLineProfile(String timeout, String inverted, long expectedMilliSeconds, State expectedState) {
-        FlatLineProfile profile = initFlatLineProfile(timeout, inverted);
+    public void testInactivityProfile(String timeout, String inverted, long expectedMilliSeconds, State expectedState) {
+        InactivityProfile profile = initInactivityProfile(timeout, inverted);
 
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));

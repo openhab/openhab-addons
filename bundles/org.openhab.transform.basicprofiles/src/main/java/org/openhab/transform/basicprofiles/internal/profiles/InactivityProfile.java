@@ -12,8 +12,9 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.FLAT_LINE_UID;
+import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.INACTIVITY_UID;
 
+import java.lang.ref.Cleaner;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -32,7 +33,7 @@ import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.transform.basicprofiles.internal.config.FlatLineProfileConfig;
+import org.openhab.transform.basicprofiles.internal.config.InactivityProfileConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,23 +44,24 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class FlatLineProfile implements StateProfile, AutoCloseable {
+public class InactivityProfile implements StateProfile, AutoCloseable {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofHours(1);
+    private static final Cleaner CLEANER = Cleaner.create();
 
-    private final Logger logger = LoggerFactory.getLogger(FlatLineProfile.class);
+    private final Logger logger = LoggerFactory.getLogger(InactivityProfile.class);
 
     private final ProfileCallback callback;
     private final ScheduledExecutorService scheduler;
     private final Duration timeout;
     private final boolean inverted;
-    private final Runnable onTimeout;
+    private final Cleaner.Cleanable cleanable;
     private boolean closed;
 
     private @Nullable ScheduledFuture<?> timeoutTask;
 
-    public FlatLineProfile(ProfileCallback callback, ProfileContext context) {
-        FlatLineProfileConfig config = context.getConfiguration().as(FlatLineProfileConfig.class);
+    public InactivityProfile(ProfileCallback callback, ProfileContext context) {
+        InactivityProfileConfig config = context.getConfiguration().as(InactivityProfileConfig.class);
         long mSec = 0;
         try {
             QuantityType<?> timeQty = QuantityType.valueOf(config.timeout);
@@ -80,21 +82,22 @@ public class FlatLineProfile implements StateProfile, AutoCloseable {
         this.scheduler = context.getExecutorService();
         this.timeout = mSec > 0 ? Duration.ofMillis(mSec) : DEFAULT_TIMEOUT;
         this.inverted = config.inverted != null ? config.inverted : false;
-
-        this.onTimeout = () -> {
-            State itemState = OnOffType.from(!inverted);
-            logger.debug("timeout:{} => itemState:{}", timeout, itemState);
-            this.callback.sendUpdate(itemState);
-        };
+        this.cleanable = CLEANER.register(this, () -> clean());
 
         logger.debug("Created(timeout:{}, inverted:{})", timeout, inverted);
 
         onStateUpdateFromHandler(UnDefType.NULL); // dummy to set initial item state
     }
 
+    private void onTimeout() {
+        State itemState = OnOffType.from(!inverted);
+        logger.debug("timeout:{} => itemState:{}", timeout, itemState);
+        this.callback.sendUpdate(itemState);
+    }
+
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return FLAT_LINE_UID;
+        return INACTIVITY_UID;
     }
 
     @Override
@@ -125,6 +128,14 @@ public class FlatLineProfile implements StateProfile, AutoCloseable {
 
     @Override
     public void close() throws Exception {
+        // causes immediate clean up instead of waiting on the garbage collector
+        cleanable.clean();
+    }
+
+    /**
+     * Called by the {@link Cleaner} callback
+     */
+    private void clean() {
         cancelTimeoutTask();
         closed = true;
     }
@@ -140,7 +151,7 @@ public class FlatLineProfile implements StateProfile, AutoCloseable {
         cancelTimeoutTask();
         if (!closed) {
             long mSec = timeout.toMillis();
-            timeoutTask = scheduler.scheduleWithFixedDelay(onTimeout, mSec, mSec, TimeUnit.MILLISECONDS);
+            timeoutTask = scheduler.scheduleWithFixedDelay(() -> onTimeout(), mSec, mSec, TimeUnit.MILLISECONDS);
         }
     }
 }

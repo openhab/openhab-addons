@@ -14,15 +14,15 @@ package org.openhab.transform.basicprofiles.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.transform.basicprofiles.internal.profiles.FlatLineProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.InactivityProfile;
 
 /**
- * Configuration class for {@link FlatLineProfile}.
+ * Configuration class for {@link InactivityProfile}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class FlatLineProfileConfig {
+public class InactivityProfileConfig {
     public String timeout = "1 h"; // string of a {@link QuantityType} with a time value
     public @Nullable Boolean inverted; // (optional) boolean value
 }
