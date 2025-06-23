@@ -39,6 +39,12 @@ The Electrolux appliance things can be added by hand, or you can let the discove
 |--------------|--------------------------------------------------------------------------|--------|----------|----------|
 | serialNumber | Serial Number of your Electrolux appliance found in the Electrolux app   | Number | NA       | yes      |
 
+#### `portable-air-conditioner` Electrolux Portable Air Conditioner
+
+| Parameter    | Description                                                              | Type   | Default  | Required |
+|--------------|--------------------------------------------------------------------------|--------|----------|----------|
+| serialNumber | Serial Number of your Electrolux appliance found in the Electrolux app   | Number | NA       | yes      |
+
 ## Channels
 
 ### Electrolux Air Purifier
@@ -88,6 +94,30 @@ The following channels are supported:
 | water-usage                  | Number:Volume         | This channel reports the water usage in litres.                                |
 | total-wash-cycles-count      | Number                | This channel reports the total number of washing cycles.                       |
 | status                       | String                | This channel is used to fetch latest status from the API.                      |
+
+### Electrolux Portable Air Conditioner
+
+The following channels are supported:
+
+| Channel Type ID           | Item Type          | Description                                                                                         |
+|---------------------------|--------------------|-----------------------------------------------------------------------------------------------------|
+| appliance-running         | Switch             | The device's state running state.                                                                   |
+| ambient-temperature       | Number:Temperature | The measured ambient temperature.                                                                   |
+| target-temperature        | Number:Temperature | The target set-point temperature.                                                                   |
+| sleep-mode                | Switch             | Whether sleep mode is active.                                                                       |
+| fan-swing                 | Switch             | Whether fan swing is active.                                                                        |
+| child-ui-lock             | Switch             | Whether child lock is active.                                                                       |
+| fan-mode                  | String             | The fan speed mode.                                                                                 |
+| mode                      | String             | The operating mode.                                                                                 |
+| network-quality-indicator | String             | Indicator for the network quality.                                                                  |
+| network-rssi              | Number:Power       | WiFi Received Signal Strength Indicator.                                                            |
+| compressor-state          | Switch             | Is the compressor running.                                                                          |
+| fourway_valve-state       | Switch             | The state of the four way valve.                                                                    |
+| evap-defrost-state        | Switch             | The state of the evap defrost.                                                                      |
+| off-timer-active          | Switch             | Whether a timer is active to turn off the appliance.                                                |
+| off-timer-duration        | Number:Time        | Whether a timer is active to turn off the appliance. (Applied when off-timer-active is switched on) |
+| on-timer-active           | Switch             | Whether a timer is active to turn on the appliance.                                                 |
+| on-timer-duration         | Number:Time        | Whether a timer is active to turn on the appliance. (Applied when on-timer-active is switched on)   |
 
 ## Full Example
 

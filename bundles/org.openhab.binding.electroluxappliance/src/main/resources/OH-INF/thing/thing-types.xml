@@ -529,7 +529,7 @@
 	<channel-type id="sleep-mode">
 		<item-type>Switch</item-type>
 		<label>Sleep Mode</label>
-		<description>Whether sleep mode is active</description>
+		<description>Whether sleep mode is active.</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -540,7 +540,7 @@
 	<channel-type id="fan-swing">
 		<item-type>Switch</item-type>
 		<label>Fan Swing</label>
-		<description>Whether fan swing is active</description>
+		<description>Whether fan swing is active.</description>
 		<category>Flow</category>
 		<tags>
 			<tag>Status</tag>
@@ -551,7 +551,7 @@
 	<channel-type id="child-ui-lock">
 		<item-type>Switch</item-type>
 		<label>Child Lock</label>
-		<description>Whether child lock is active</description>
+		<description>Whether child lock is active.</description>
 		<category>Lock</category>
 		<tags>
 			<tag>Status</tag>
@@ -562,7 +562,7 @@
 	<channel-type id="fan-mode">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
-		<description>The fan speed mode</description>
+		<description>The fan speed mode.</description>
 		<category>Flow</category>
 		<tags>
 			<tag>Status</tag>
@@ -621,7 +621,7 @@
 	<channel-type id="network-rssi" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
-		<description>WiFi Received Signal Strength Indicator</description>
+		<description>WiFi Received Signal Strength Indicator.</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -665,7 +665,7 @@
 	<channel-type id="off-timer-active" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Timer Off Activate</label>
-		<description>Whether a timer is active to turn of fthe appliance.</description>
+		<description>Whether a timer is active to turn off the appliance.</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Status</tag>
