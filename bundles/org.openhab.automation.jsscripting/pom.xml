@@ -65,7 +65,7 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>install ${ohjs.version} webpack@^5.94.0 webpack-cli@^5.1.4</arguments>
+              <arguments>install ${ohjs.version} webpack@^5.94.0 webpack-cli@^5.1.4 --prefix .</arguments>
               <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
             </configuration>
           </execution>
