@@ -84,6 +84,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
         logger.debug("Command received: {} on channelID: {}", command, channelUID);
         if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
             super.handleCommand(channelUID, command);
+            return;
         }
         ApplianceDTO dto = getApplianceDTO();
         ElectroluxGroupAPI api = getElectroluxGroupAPI();
@@ -199,21 +200,21 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
     private State getValue(final String channelId, final ApplianceDTO dto) {
         var reported = ((PortableAirConditionerStateDTO) dto.getApplianceState()).getProperties().getReported();
         switch (channelId) {
-            case CHANNEL_AMBIENT_TEMPERATURE: // Measured temperature
+            case CHANNEL_AMBIENT_TEMPERATURE:
                 if (reported.getIsReadAmbientTemperatureC()) {
                     return new QuantityType<>(reported.getAmbientTemperatureC(), SIUnits.CELSIUS);
                 } else if (reported.getIsReadAmbientTemperatureF()) {
                     return new QuantityType<>(reported.getAmbientTemperatureF(), ImperialUnits.FAHRENHEIT);
                 }
-            case CHANNEL_TARGET_TEMPERATURE: // Target set-point temperature
+            case CHANNEL_TARGET_TEMPERATURE:
                 if (reported.getIsReadTargetTemperature()) {
                     return new QuantityType<>(reported.getTargetTemperature(), SIUnits.CELSIUS);
                 }
-            case CHANNEL_SLEEP_MODE: // Whether sleep mode is disabled from the dto
+            case CHANNEL_SLEEP_MODE:
                 if (reported.getIsReadSleepMode()) {
                     return reported.getSleepModeOn() ? OnOffType.ON : OnOffType.OFF;
                 }
-            case CHANNEL_FAN_SWING: // Whether the fan swing as its called is enabled
+            case CHANNEL_FAN_SWING:
                 if (reported.getIsReadVerticalSwing()) {
                     return reported.getVerticalSwingOn() ? OnOffType.ON : OnOffType.OFF;
                 }
