@@ -123,7 +123,7 @@
 
 		<label>Air Conditioner</label>
 		<description>This thing represents the Electrolux Portable Air Conditioner.</description>
-		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="appliance-running" typeId="appliance-running"/>
 			<channel id="ambient-temperature" typeId="ambient-temperature"/>

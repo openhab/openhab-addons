@@ -99,25 +99,25 @@ The following channels are supported:
 
 The following channels are supported:
 
-| Channel Type ID           | Item Type          | Description                                                                                         |
-|---------------------------|--------------------|-----------------------------------------------------------------------------------------------------|
-| appliance-running         | Switch             | The device's state running state.                                                                   |
-| ambient-temperature       | Number:Temperature | The measured ambient temperature.                                                                   |
-| target-temperature        | Number:Temperature | The target set-point temperature.                                                                   |
-| sleep-mode                | Switch             | Whether sleep mode is active.                                                                       |
-| fan-swing                 | Switch             | Whether fan swing is active.                                                                        |
-| child-ui-lock             | Switch             | Whether child lock is active.                                                                       |
-| fan-mode                  | String             | The fan speed mode.                                                                                 |
-| mode                      | String             | The operating mode.                                                                                 |
-| network-quality-indicator | String             | Indicator for the network quality.                                                                  |
-| network-rssi              | Number:Power       | WiFi Received Signal Strength Indicator.                                                            |
-| compressor-state          | Switch             | Is the compressor running.                                                                          |
-| fourway_valve-state       | Switch             | The state of the four way valve.                                                                    |
-| evap-defrost-state        | Switch             | The state of the evap defrost.                                                                      |
-| off-timer-active          | Switch             | Whether a timer is active to turn off the appliance.                                                |
-| off-timer-duration        | Number:Time        | Whether a timer is active to turn off the appliance. (Applied when off-timer-active is switched on) |
-| on-timer-active           | Switch             | Whether a timer is active to turn on the appliance.                                                 |
-| on-timer-duration         | Number:Time        | Whether a timer is active to turn on the appliance. (Applied when on-timer-active is switched on)   |
+| Channel Type ID           | Item Type          | Description                                                                                         | Writable                                 |
+|---------------------------|--------------------|-----------------------------------------------------------------------------------------------------|------------------------------------------|
+| appliance-running         | Switch             | The device's state running state.                                                                   | Yes - On / Off                           |
+| ambient-temperature       | Number:Temperature | The measured ambient temperature.                                                                   | No                                       |
+| target-temperature        | Number:Temperature | The target set-point temperature.                                                                   | Yes - 16 -> 32                           |
+| sleep-mode                | Switch             | Whether sleep mode is active.                                                                       | Yes - On / Off                           |
+| fan-swing                 | Switch             | Whether fan swing is active.                                                                        | Yes - On / Off                           |
+| child-ui-lock             | Switch             | Whether child lock is active.                                                                       | Yes - On / Off                           |
+| fan-mode                  | String             | The fan speed mode.                                                                                 | Yes - AUTO / HIGH / MIDDLE / LOW         |
+| mode                      | String             | The operating mode.                                                                                 | Yes - AUTO / COOL / DRY / FANONLY        |
+| network-quality-indicator | String             | Indicator for the network quality.                                                                  | No                                       |
+| network-rssi              | Number:Power       | WiFi Received Signal Strength Indicator.                                                            | No                                       |
+| compressor-state          | Switch             | Is the compressor running.                                                                          | No                                       |
+| fourway_valve-state       | Switch             | The state of the four way valve.                                                                    | No                                       |
+| evap-defrost-state        | Switch             | The state of the evap defrost.                                                                      | No                                       |
+| off-timer-active          | Switch             | Whether a timer is active to turn off the appliance.                                                | Yes - When on applies off-timer-duration |
+| off-timer-duration        | Number:Time        | Whether a timer is active to turn off the appliance. (Applied when off-timer-active is switched on) | Yes - to set time for off-timer-active   |
+| on-timer-active           | Switch             | Whether a timer is active to turn on the appliance.                                                 | Yes - When on applies on-timer-duration  |
+| on-timer-duration         | Number:Time        | Whether a timer is active to turn on the appliance. (Applied when on-timer-active is switched on)   | Yes - to set time for on-timer-active    |
 
 ## Full Example
 
@@ -126,11 +126,12 @@ The following channels are supported:
 ```java
 // Bridge configuration
 Bridge electroluxappliance:api:myAPI "Electrolux Group API" [apiKey="12345678", refreshToken="12345678", refresh="300"] {
-     Thing air-purifier myair-purifier  "Electrolux Pure A9"    [ serialNummber="123456789" ]
+     Thing air-purifier             myair-purifier                "Electrolux Pure A9"    [ serialNummber="123456789" ]
+     Thing portable-air-conditioner myportable-air-con            "AEG Comfort 6000"      [ serialNummber="234567891" ]   
 }
 ```
 
-##  `demo.items` Example
+##  `demo.items` Example - Air Purifier
 
 ```java
 // CO2
@@ -149,4 +150,27 @@ Switch electroluxapplianceUILight "Electrolux Air UI Light Setting" {channel="el
 Switch electroluxapplianceIonizer "Electrolux Air Ionizer Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:ionizer"}
 // Safety Lock
 Switch electroluxapplianceSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:safetyLock"}
+```
+
+##  `demo.items` Example - Portable Air Conditioner
+
+```java
+Group Electrolux_Air_Conditioner "Electrolux Air Conditioner" [AirConditioner]
+Number:Temperature Electrolux_Air_Conditioner_Ambient_Temperature "Ambient Temperature [%.1f %unit%]" <Temperature> (Electrolux_Air_Conditioner) [Measurement, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:ambient-temperature", unit="°C" }
+Switch Electrolux_Air_Conditioner_Child_Lock "Child Lock" <Lock> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:child-ui-lock" }
+Switch Electrolux_Air_Conditioner_Compressor_Running "Compressor Running" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:compressor-state" }
+Switch Electrolux_Air_Conditioner_Evap_Defrost_State "Evap Defrost State" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:evap-defrost-state" }
+String Electrolux_Air_Conditioner_Fan_Speed "Fan Speed" <Flow> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fan-mode" }
+Switch Electrolux_Air_Conditioner_Fan_Swing "Fan Swing" <Flow> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fan-swing" }
+Switch Electrolux_Air_Conditioner_Four_Way_Valve_State "Four Way Valve State" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:fourway_valve-state" }
+String Electrolux_Air_Conditioner_Mode "Mode" <Settings> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:mode" }
+String Electrolux_Air_Conditioner_Network_Quality "Network Quality" <Network> (Electrolux_Air_Conditioner) [SignalStrength, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:network-quality-indicator" }
+Switch Electrolux_Air_Conditioner_Powered_On "Powered On" <Temperature> (Electrolux_Air_Conditioner) [Mode, ^Switch] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:appliance-running" }
+Number:Power Electrolux_Air_Conditioner_RSSI "RSSI" <QualityOfService> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:network-rssi", unit="dBm" }
+Switch Electrolux_Air_Conditioner_Sleep_Mode "Sleep Mode" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:sleep-mode" }
+Number:Temperature Electrolux_Air_Conditioner_Target_Temperature "Target Temperature [%.1f %unit%]" <Temperature> (Electrolux_Air_Conditioner) [Status, Temperature] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:target-temperature", unit="°C" }
+Switch Electrolux_Air_Conditioner_Timer_Off_Activate "Timer Off Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-active" }
+Number:Time Electrolux_Air_Conditioner_Timer_Off_Duration "Timer Off Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:off-timer-duration", unit="s" }
+Switch Electrolux_Air_Conditioner_Timer_On_Activate "Timer On Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-active" }
+Number:Time Electrolux_Air_Conditioner_Timer_On_Duration "Timer On Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-duration", unit="s" }
 ```
