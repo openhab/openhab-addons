@@ -175,7 +175,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 loginResponse = gson.fromJson(json, Login.class);
             } else {
                 loginResponse = doLogin();
-                if (loginResponse.code.equals("200")) {
+                if ((loginResponse != null) && loginResponse.code.equals("200")) {
                     // save data to loginFile if call is successful
                     loginFile.getParentFile().mkdirs();
                     final String json = gson.toJson(loginResponse);

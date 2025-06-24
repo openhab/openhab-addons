@@ -40,6 +40,8 @@ public class RoborockBindingConstants {
     public static final String FILENAME_HOMEDETAIL = OpenHAB.getUserDataFolder() + File.separator + "roborock"
             + File.separator + "homedetail.json";
 
+    public static final String SALT = "TXdfu$jyZ#TZHsg4";
+
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";
     public static final String CHANNEL_CLEAN_AREA = "status#clean_area";

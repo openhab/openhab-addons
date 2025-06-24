@@ -15,16 +15,11 @@ package org.openhab.binding.roborock.internal;
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -34,9 +29,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.zip.CRC32;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -113,7 +105,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private ChannelTypeRegistry channelTypeRegistry;
     private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
-    static final String salt = "TXdfu$jyZ#TZHsg4";
     private final Gson gson = new Gson();
     int getStatusID = 0;
     int getConsumableID = 0;
@@ -186,8 +177,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         token = getToken();
         if (!token.isEmpty()) {
             rriot = bridgeHandler.getRriot();
-            Home home;
-            home = bridgeHandler.getHomeDetail();
+            Home home = bridgeHandler.getHomeDetail();
             if (home != null) {
                 rrHomeId = Integer.toString(home.data.rrHomeId);
             }
@@ -246,8 +236,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Device connected");
             updateStatus(ThingStatus.ONLINE);
         } catch (InterruptedException | RoborockCommunicationException e) {
-            logger.info("Failed to connect to device");
-            // should also set thing offline
+            logger.debug("Failed to connect to device");
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
@@ -260,7 +250,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void connect(ScheduledExecutorService scheduler)
             throws RoborockCommunicationException, InterruptedException {
         if (rriot == null) {
-            throw new RoborockCommunicationException("Can not connect when not logged in");
+            throw new RoborockCommunicationException("Can't connect when not logged in");
         }
 
         String mqttHost = "";
@@ -312,7 +302,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String receivedTopic = publish.getTopic().toString();
                 // try {
                 logger.debug("{}: Got MQTT message on topic {}", getThing().getUID().getId(), receivedTopic);
-                String response = handleMessage(publish.getPayloadAsBytes());
+                String response = ProtocolUtils.handleMessage(publish.getPayloadAsBytes(), localKey);
                 logger.trace("MQTT message output: {}", response);
 
                 String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
@@ -340,6 +330,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             Throwable cause = e.getCause();
             boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
                     && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
+            teardownAndScheduleReconnection();
             throw new RoborockCommunicationException(e);
         }
     }
@@ -353,8 +344,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollData() {
-        HomeData homeData;
-        homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
+        HomeData homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
         if (homeData != null) {
             for (int i = 0; i < homeData.result.devices.length; i++) {
                 if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
@@ -564,120 +554,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = true;
     }
 
-    public byte[] decrypt(byte[] payload, String key) throws Exception {
-        byte[] aesKeyBytes = md5bin(key);
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        SecretKeySpec keySpec = new SecretKeySpec(aesKeyBytes, "AES");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec);
-        return cipher.doFinal(payload);
-    }
-
-    public byte[] encrypt(byte[] payload, String key) throws Exception {
-        byte[] aesKeyBytes = md5bin(key);
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        SecretKeySpec keySpec = new SecretKeySpec(aesKeyBytes, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        return cipher.doFinal(payload);
-    }
-
-    private byte[] md5bin(String key) throws Exception {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        return md.digest(key.getBytes("UTF-8"));
-    }
-
-    String bytesToString(byte[] data, int start, int length) {
-        return new String(data, start, length, StandardCharsets.UTF_8);
-    }
-
-    int readInt32BE(byte[] data, int start) {
-        return (((data[start] & 0xFF) << 24) | ((data[start + 1] & 0xFF) << 16) | ((data[start + 2] & 0xFF) << 8)
-                | (data[start + 3] & 0xFF));
-    }
-
-    int readInt16BE(byte[] data, int start) {
-        return (((data[start] & 0xFF) << 8) | (data[start + 1] & 0xFF));
-    }
-
-    void writeInt32BE(byte[] msg, int value, int start) {
-        msg[start + 0] = (byte) ((value >> 24) & 0xFF);
-        msg[start + 1] = (byte) ((value >> 16) & 0xFF);
-        msg[start + 2] = (byte) ((value >> 8) & 0xFF);
-        msg[start + 3] = (byte) (value & 0xFF);
-    }
-
-    void writeInt16BE(byte[] msg, int value, int start) {
-        msg[start + 0] = (byte) ((value >> 8) & 0xFF);
-        msg[start + 1] = (byte) (value & 0xFF);
-    }
-
-    public String padLeftZeros(String inputString, int length) {
-        if (inputString.length() >= length) {
-            return inputString;
-        }
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length - inputString.length()) {
-            sb.append('0');
-        }
-        sb.append(inputString);
-
-        return sb.toString();
-    }
-
-    String encodeTimestamp(int timestamp) {
-        // Convert the timestamp to a hexadecimal string and pad it to ensure it's at least 8 characters
-        String hex = new BigInteger(Long.toString(timestamp)).toString(16);
-        hex = String.format("%8s", hex).replace(' ', '0');
-        List<String> hexChars = new ArrayList<>();
-        for (char c : hex.toCharArray()) {
-            hexChars.add(String.valueOf(c));
-        }
-        // Define the order in which to rearrange the hexadecimal characters
-        int[] order = { 5, 6, 3, 7, 1, 2, 0, 4 };
-        StringBuilder result = new StringBuilder();
-        for (int index : order) {
-            result.append(hexChars.get(index));
-        }
-        return result.toString();
-    }
-
-    public String handleMessage(byte[] message) {
-        String version = bytesToString(message, 0, 3);
-        // Do some checks
-        if (!"1.0".equals(version)) {// && version!="A01") {
-            logger.debug("Parse was not version 1.0 as expected:{}", version);
-            return "";
-        }
-        byte[] buf = Arrays.copyOfRange(message, 0, message.length - 4);
-        CRC32 crc32 = new CRC32();
-        crc32.update(buf);
-
-        int expectedCrc32 = readInt32BE(message, message.length - 4);
-        if (crc32.getValue() != expectedCrc32) {
-            logger.debug("message was not crc32 {} as expected {}", crc32.getValue(), expectedCrc32);
-        }
-        int sequence = readInt32BE(message, 3);
-        int random = readInt32BE(message, 7);
-        int timestamp = readInt32BE(message, 11);
-        int protocol = readInt16BE(message, 15);
-        if (protocol != 102) {
-            logger.debug("we don't handle images yet");
-        }
-        int payloadLen = readInt16BE(message, 17);
-        byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen);
-        logger.trace(
-                "parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
-                version, sequence, random, timestamp, protocol, payloadLen);
-        String key = encodeTimestamp(timestamp) + localKey + salt;
-        try {
-            byte[] result = decrypt(payload, key);
-            String stringResult = new String(result, StandardCharsets.UTF_8);
-            return stringResult;
-        } catch (Exception e) {
-            logger.debug("Exception decrypting payload, {}", e.getMessage());
-            return "";
-        }
-    }
-
     public void sendCommand(String method) throws UnsupportedEncodingException {
         sendCommand(method, "");
     }
@@ -729,8 +605,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     byte[] build(String deviceId, int protocol, int timestamp, byte[] payload) {
         try {
-            String key = encodeTimestamp(timestamp) + localKey + salt;
-            byte[] encrypted = encrypt(payload, key);
+            String key = ProtocolUtils.encodeTimestamp(timestamp) + localKey + SALT;
+            byte[] encrypted = ProtocolUtils.encrypt(payload, key);
 
             Random random = new Random();
             int randomInt = random.nextInt(90000) + 10000;
@@ -742,11 +618,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             msg[0] = 49; // ASCII for '1'
             msg[1] = 46; // ASCII for '.'
             msg[2] = 48; // ASCII for '0'
-            writeInt32BE(msg, (int) (seq & 0xFFFFFFFF), 3);
-            writeInt32BE(msg, (int) (randomInt & 0xFFFFFFFF), 7);
-            writeInt32BE(msg, timestamp, 11);
-            writeInt16BE(msg, protocol, 15);
-            writeInt16BE(msg, encrypted.length, 17);
+            ProtocolUtils.writeInt32BE(msg, (int) (seq & 0xFFFFFFFF), 3);
+            ProtocolUtils.writeInt32BE(msg, (int) (randomInt & 0xFFFFFFFF), 7);
+            ProtocolUtils.writeInt32BE(msg, timestamp, 11);
+            ProtocolUtils.writeInt16BE(msg, protocol, 15);
+            ProtocolUtils.writeInt16BE(msg, encrypted.length, 17);
             // Manually copying encrypted data into msg
             for (int i = 0; i < encrypted.length; i++) {
                 msg[19 + i] = encrypted[i];
@@ -754,7 +630,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             byte[] buf = Arrays.copyOfRange(msg, 0, msg.length - 4);
             CRC32 crc32 = new CRC32();
             crc32.update(buf);
-            writeInt32BE(msg, (int) crc32.getValue(), msg.length - 4);
+            ProtocolUtils.writeInt32BE(msg, (int) crc32.getValue(), msg.length - 4);
             return msg;
         } catch (Exception e) {
             logger.debug("Exception encrypting payload, {}", e.getMessage());

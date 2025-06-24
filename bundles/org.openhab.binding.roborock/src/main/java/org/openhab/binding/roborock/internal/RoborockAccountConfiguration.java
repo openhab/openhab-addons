@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RoborockAccountConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Account configuration parameters.
      */
     public String email = "";
     public String password = "";
