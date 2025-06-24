@@ -107,6 +107,11 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
             return DEFAULT_TIMEOUT;
         }
         try {
+            return Duration.ofSeconds(Integer.valueOf(timeOrDuration));
+        } catch (IllegalArgumentException e) {
+            // fall through
+        }
+        try {
             if (QuantityType.valueOf(timeOrDuration) instanceof QuantityType<?> time
                     && time.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> msec) {
                 return Duration.ofMillis(msec.longValue());
