@@ -474,4 +474,25 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="airquality-airquality">
+		<item-type>Number</item-type>
+		<label>Air Quality</label>
+		<description>Indicates the currently measured air quality.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">Good</option>
+				<option value="2">Fair</option>
+				<option value="3">Moderate</option>
+				<option value="4">Poor</option>
+				<option value="5">Very Poor</option>
+				<option value="6">Extremely Poor</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
