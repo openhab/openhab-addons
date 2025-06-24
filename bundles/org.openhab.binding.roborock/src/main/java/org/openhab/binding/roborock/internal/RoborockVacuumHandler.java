@@ -108,6 +108,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final Gson gson = new Gson();
     int getStatusID = 0;
     int getConsumableID = 0;
+    int getRoomMappingID = 0;
+    int getNetworkInfoID = 0;
 
     public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -133,6 +135,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
+            if (channelUID.getId().equals(CHANNEL_RPC)) {
+                sendCommand(command.toString());
+                return;
+            }
             if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
@@ -360,6 +366,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else if (messageId == getConsumableID) {
                     logger.debug("Received getConsumable response, parse it");
                     handleGetConsumables(jsonString);
+                } else if (messageId == getRoomMappingID) {
+                    logger.debug("Received getRoomMapping response, parse it");
+                    handleGetRoomMapping(jsonString);
+                } else if (messageId == getNetworkInfoID) {
+                    logger.debug("Received getNetworkInfo response, parse it");
+                    handleGetNetworkInfo(jsonString);
                 }
 
                 // } catch (DataParsingException e) {
@@ -415,6 +427,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 logger.debug("Sending command: {}", COMMAND_GET_STATUS);
                 sendCommand(COMMAND_GET_STATUS);
                 sendCommand(COMMAND_GET_CONSUMABLE);
+                sendCommand(COMMAND_GET_ROOM_MAPPING);
             } catch (UnsupportedEncodingException e) {
                 // Shouldn't occur
             }
@@ -437,6 +450,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         if (getStatus != null) {
+            // updateState(CHANNEL_SSID, new StringType(getStatus.result[0].getSsid()));
+            // updateState(CHANNEL_BSSID, new StringType(getStatus.result[0].getBssid()));
+            // updateState(CHANNEL_LIFE, new DecimalType(getStatus.result[0].life));
+
+            updateState(CHANNEL_RSSI, new DecimalType(getStatus.result[0].rss));
             updateState(CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
             updateState(CHANNEL_FAN_CONTROL,
@@ -550,6 +568,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    public void handleGetRoomMapping(String response) {
+        logger.debug("getRoomMapping response = {}", response);
+    }
+
+    public void handleGetNetworkInfo(String response) {
+        logger.debug("getNetworkInfo response = {}", response);
+    }
+
     private void setCapabilities(JsonObject statusResponse) {
         logger.trace("setCapabilities");
         for (RobotCapabilities capability : RobotCapabilities.values()) {
@@ -638,6 +664,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             getStatusID = id;
                         } else if (COMMAND_GET_CONSUMABLE.equals(method)) {
                             getConsumableID = id;
+                        } else if (COMMAND_GET_ROOM_MAPPING.equals(method)) {
+                            getRoomMappingID = id;
+                        } else if (COMMAND_GET_NETWORK_INFO.equals(method)) {
+                            getNetworkInfoID = id;
                         }
                     }
                 });

@@ -127,6 +127,8 @@ public class RoborockBindingConstants {
     public static final String COMMAND_SET_COLLECT_DUST = "app_start_collect_dust";
     public static final String COMMAND_SET_CLEAN_MOP_START = "app_start_wash";
     public static final String COMMAND_SET_CLEAN_MOP_STOP = "app_stop_wash";
+    public static final String COMMAND_GET_ROOM_MAPPING = "get_room_mapping";
+    public static final String COMMAND_GET_NETWORK_INFO = "get_network_info";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT, ROBOROCK_VACUUM);
