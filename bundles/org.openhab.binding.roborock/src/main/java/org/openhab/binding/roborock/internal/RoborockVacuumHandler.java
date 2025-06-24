@@ -144,7 +144,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     }
                 }
             }
-
             if (channelUID.getId().equals(CHANNEL_CONTROL) && command instanceof StringType) {
                 if ("vacuum".equals(command.toString())) {
                     sendCommand(COMMAND_APP_START);
@@ -157,6 +156,52 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else {
                     logger.info("Command {} not recognised", command.toString());
                 }
+                return;
+            }
+            if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
+                sendCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                return;
+            }
+
+            if (channelUID.getId().equals(RobotCapabilities.WATERBOX_MODE.getChannel())) {
+                sendCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
+                return;
+            }
+            if (channelUID.getId().equals(RobotCapabilities.MOP_MODE.getChannel())) {
+                sendCommand(COMMAND_SET_MOP_MODE, "[" + command.toString() + "]");
+                return;
+            }
+            if (channelUID.getId().equals(RobotCapabilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
+                    && !command.toString().contentEquals("-")) {
+                sendCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
+                updateState(RobotCapabilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
+                return;
+            }
+            if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
+                if (Integer.valueOf(command.toString()) > 0) {
+                    sendCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                }
+                return;
+            }
+            if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
+                sendCommand(COMMAND_CONSUMABLES_RESET, "[" + command.toString() + "]");
+                updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
+            }
+
+            if (channelUID.getId().equals(RobotCapabilities.COLLECT_DUST.getChannel()) && !command.toString().isEmpty()
+                    && !command.toString().contentEquals("-")) {
+                sendCommand(COMMAND_SET_COLLECT_DUST);
+                return;
+            }
+
+            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_START.getChannel())
+                    && !command.toString().isEmpty() && !command.toString().contentEquals("-")) {
+                sendCommand(COMMAND_SET_CLEAN_MOP_START);
+                return;
+            }
+            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_STOP.getChannel())
+                    && !command.toString().isEmpty() && !command.toString().contentEquals("-")) {
+                sendCommand(COMMAND_SET_CLEAN_MOP_STOP);
                 return;
             }
         } catch (UnsupportedEncodingException e) {
