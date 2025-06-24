@@ -106,9 +106,13 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
         if (timeOrDuration.isBlank()) {
             return DEFAULT_TIMEOUT;
         }
-        if (QuantityType.valueOf(timeOrDuration) instanceof QuantityType<?> time
-                && time.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> msec) {
-            return Duration.ofMillis(msec.longValue());
+        try {
+            if (QuantityType.valueOf(timeOrDuration) instanceof QuantityType<?> time
+                    && time.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> msec) {
+                return Duration.ofMillis(msec.longValue());
+            }
+        } catch (IllegalArgumentException e) {
+            // fall through
         }
         // TODO refactor when #4868 is merged: return DurationUtils.parse(timeOrDuration);
         throw new IllegalArgumentException("invalid time or duration");
