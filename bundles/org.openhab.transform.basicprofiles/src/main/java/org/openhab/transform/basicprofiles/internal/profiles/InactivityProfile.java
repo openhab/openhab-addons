@@ -81,33 +81,37 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
 
     public InactivityProfile(ProfileCallback callback, ProfileContext context) {
         InactivityProfileConfig config = context.getConfiguration().as(InactivityProfileConfig.class);
-        long mSec = 0;
-        try {
-            QuantityType<?> timeQty = QuantityType.valueOf(config.timeout);
-            if (!Units.SECOND.getDimension().equals(timeQty.getDimension())) {
-                throw new IllegalArgumentException();
-            }
-            mSec = timeQty.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> mSecQty
-                    ? mSecQty.longValue()
-                    : 0;
-            if (mSec <= 0) {
-                throw new IllegalArgumentException();
-            }
-        } catch (IllegalArgumentException e) {
-            logger.warn("Profile configuration timeout value \"{}\" is invalid", config.timeout);
-        }
 
         this.callback = callback;
         this.scheduler = context.getExecutorService();
-        this.timeout = mSec > 0 ? Duration.ofMillis(mSec) : DEFAULT_TIMEOUT;
         this.inverted = config.inverted != null ? config.inverted : false;
 
         this.cleanerTaskCanceller = new CleanerTaskCanceller();
         CLEANER.register(this, cleanerTaskCanceller);
 
-        logger.debug("Created(timeout:{}, inverted:{})", timeout, inverted);
+        Duration timeout;
+        try {
+            timeout = parseDuration(config.timeout);
+            logger.debug("Profile created with timeout:{}, inverted:{}", timeout, inverted);
+        } catch (IllegalArgumentException e) {
+            timeout = DEFAULT_TIMEOUT;
+            logger.warn("Profile configuration timeout value \"{}\" is invalid", config.timeout);
+        }
 
+        this.timeout = timeout;
         onStateUpdateFromHandler(UnDefType.NULL); // dummy to set initial item state
+    }
+
+    private Duration parseDuration(String timeOrDuration) throws IllegalArgumentException {
+        if (timeOrDuration.isBlank()) {
+            return DEFAULT_TIMEOUT;
+        }
+        if (QuantityType.valueOf(timeOrDuration) instanceof QuantityType<?> time
+                && time.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> msec) {
+            return Duration.ofMillis(msec.longValue());
+        }
+        // TODO refactor when #4868 is merged: return DurationUtils.parse(timeOrDuration);
+        throw new IllegalArgumentException("invalid time or duration");
     }
 
     private void onTimeout() {
