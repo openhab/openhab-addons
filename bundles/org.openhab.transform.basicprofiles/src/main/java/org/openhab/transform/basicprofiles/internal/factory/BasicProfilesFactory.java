@@ -142,31 +142,28 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext context) {
-        Profile retVal;
         if (GENERIC_COMMAND_UID.equals(profileTypeUID)) {
-            retVal = new GenericCommandTriggerProfile(callback, context);
+            return new GenericCommandTriggerProfile(callback, context);
         } else if (GENERIC_TOGGLE_SWITCH_UID.equals(profileTypeUID)) {
-            retVal = new GenericToggleSwitchTriggerProfile(callback, context);
+            return new GenericToggleSwitchTriggerProfile(callback, context);
         } else if (DEBOUNCE_COUNTING_UID.equals(profileTypeUID)) {
-            retVal = new DebounceCountingStateProfile(callback, context);
+            return new DebounceCountingStateProfile(callback, context);
         } else if (DEBOUNCE_TIME_UID.equals(profileTypeUID)) {
-            retVal = new DebounceTimeStateProfile(callback, context);
+            return new DebounceTimeStateProfile(callback, context);
         } else if (INVERT_UID.equals(profileTypeUID)) {
-            retVal = new InvertStateProfile(callback);
+            return new InvertStateProfile(callback);
         } else if (ROUND_UID.equals(profileTypeUID)) {
-            retVal = new RoundStateProfile(callback, context);
+            return new RoundStateProfile(callback, context);
         } else if (THRESHOLD_UID.equals(profileTypeUID)) {
-            retVal = new ThresholdStateProfile(callback, context);
+            return new ThresholdStateProfile(callback, context);
         } else if (TIME_RANGE_COMMAND_UID.equals(profileTypeUID)) {
-            retVal = new TimeRangeCommandProfile(callback, context, timeZoneProvider);
+            return new TimeRangeCommandProfile(callback, context, timeZoneProvider);
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
-            retVal = new StateFilterProfile(callback, context, itemRegistry);
+            return new StateFilterProfile(callback, context, itemRegistry);
         } else if (INACTIVITY_UID.equals(profileTypeUID)) {
-            retVal = new InactivityProfile(callback, context);
-        } else {
-            retVal = null;
+            return new InactivityProfile(callback, context);
         }
-        return retVal;
+        return null;
     }
 
     @Override

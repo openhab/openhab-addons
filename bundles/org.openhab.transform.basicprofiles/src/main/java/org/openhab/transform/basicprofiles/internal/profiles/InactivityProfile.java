@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,13 +50,31 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
     private static final Duration DEFAULT_TIMEOUT = Duration.ofHours(1);
     private static final Cleaner CLEANER = Cleaner.create();
 
+    public static final AtomicBoolean DEBUG_CLEANER_TASK_CALLED = new AtomicBoolean();
+
     private final Logger logger = LoggerFactory.getLogger(InactivityProfile.class);
+
+    private static class CleanerTaskCanceller implements Runnable {
+        private @Nullable ScheduledFuture<?> task;
+
+        public void setTask(@Nullable ScheduledFuture<?> task) {
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            DEBUG_CLEANER_TASK_CALLED.set(true);
+            if (task instanceof ScheduledFuture target) {
+                target.cancel(true);
+            }
+        }
+    }
 
     private final ProfileCallback callback;
     private final ScheduledExecutorService scheduler;
     private final Duration timeout;
     private final boolean inverted;
-    private final Cleaner.Cleanable cleanable;
+    private final CleanerTaskCanceller cleanerTaskCanceller;
     private boolean closed;
 
     private @Nullable ScheduledFuture<?> timeoutTask;
@@ -82,7 +101,9 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
         this.scheduler = context.getExecutorService();
         this.timeout = mSec > 0 ? Duration.ofMillis(mSec) : DEFAULT_TIMEOUT;
         this.inverted = config.inverted != null ? config.inverted : false;
-        this.cleanable = CLEANER.register(this, () -> clean());
+
+        this.cleanerTaskCanceller = new CleanerTaskCanceller();
+        CLEANER.register(this, cleanerTaskCanceller);
 
         logger.debug("Created(timeout:{}, inverted:{})", timeout, inverted);
 
@@ -128,23 +149,16 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        // causes immediate clean up instead of waiting on the garbage collector
-        cleanable.clean();
-    }
-
-    /**
-     * Called by the {@link Cleaner} callback
-     */
-    private void clean() {
         cancelTimeoutTask();
         closed = true;
     }
 
     private synchronized void cancelTimeoutTask() {
-        ScheduledFuture<?> priorTask = timeoutTask;
-        if (priorTask != null) {
-            priorTask.cancel(false);
+        cleanerTaskCanceller.setTask(null);
+        if (timeoutTask instanceof ScheduledFuture task) {
+            task.cancel(false);
         }
+        timeoutTask = null;
     }
 
     private synchronized void rescheduleTimeoutTask() {
@@ -152,6 +166,9 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
         if (!closed) {
             long mSec = timeout.toMillis();
             timeoutTask = scheduler.scheduleWithFixedDelay(() -> onTimeout(), mSec, mSec, TimeUnit.MILLISECONDS);
+            if (timeoutTask instanceof ScheduledFuture task) {
+                cleanerTaskCanceller.setTask(task);
+            }
         }
     }
 }

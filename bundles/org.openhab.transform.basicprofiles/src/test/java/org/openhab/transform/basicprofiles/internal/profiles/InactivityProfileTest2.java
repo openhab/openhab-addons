@@ -20,6 +20,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import javax.measure.Quantity;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Order;
@@ -33,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
@@ -44,7 +47,7 @@ import org.openhab.core.types.State;
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-class InactivityProfileTest {
+class InactivityProfileTest2 {
 
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
@@ -103,6 +106,13 @@ class InactivityProfileTest {
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
 
         assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
+    }
+
+    @Test
+    @Order(9999)
+    public void testWoofly() {
+        QuantityType<? extends Quantity<?>> x = QuantityType.valueOf("1d1h3m");
+        assertNotNull(x);
     }
 
     @Test
