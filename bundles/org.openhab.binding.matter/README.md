@@ -209,6 +209,7 @@ Possible channels include:
 
 | Channel ID                                                  | Type                     | Label                        | Description                                                                                                                                                                                                                                                          | Category         | ReadOnly | Pattern     |
 |-------------------------------------------------------------|--------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|-------------|
+| airquality-airquality                                       | Number                   | Air Quality                  | Indicates the currently measured air quality                                                                                                                                                                                                                         |                  | true     |             |
 | battery-voltage                                             | Number:ElectricPotential | Battery Voltage              | The current battery voltage                                                                                                                                                                                                                                          | Energy           | true     | %.1f %unit% |
 | battery-alarm                                               | String                   | Battery Alarm                | The battery alarm state                                                                                                                                                                                                                                              | Energy           | true     |             |
 | powersource-batpercentremaining                             | Number:Dimensionless     | Battery Percent Remaining    | Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to provide power to the Node                                                                                                                                 | Energy           | true     | %d %%       |
@@ -268,6 +269,49 @@ Possible channels include:
 | threadborderroutermanagement-activedataset                  | String                   | Active Dataset               | The active Thread network dataset configuration                                                                                                                                                                                                                      | Network          |          |             |
 | threadborderroutermanagement-pendingdatasettimestamp        | Number                   | Pending Dataset Timestamp    | Timestamp of the pending Thread network dataset (only available if PAN change feature is supported)                                                                                                                                                                  | Network          | true     | %d          |
 | threadborderroutermanagement-pendingdataset                 | String                   | Pending Dataset              | The pending Thread network dataset configuration (only available if PAN change feature is supported)                                                                                                                                                                 | Network          |          |             |
+
+## Supported Matter Device Types
+
+The following is a list of known Matter device types supported by openHAB as defined in the Matter Device Library Specification Version 1.4.1.
+Other device types may be supported, but with limited or missing functionality.
+
+| Device Type Name              | Matter Device ID | Supported Clusters                                                                                     |
+|-------------------------------|------------------|--------------------------------------------------------------------------------------------------------|
+| Power Source                  | 0x0011           | Power Source (0x002F)                                                                                  |
+| Bridged Node                  | 0x0013           | Bridged Device Basic Information (0x0039)                                                              |
+| Electrical Sensor             | 0x0510           | Power Topology (0x009C), Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091) |
+| On/Off Light                  | 0x0100           | On/Off (0x0006)                                                                                        |
+| Dimmable Light                | 0x0101           | On/Off (0x0006), Level Control (0x0008)                                                                |
+| Color Temperature Light       | 0x010C           | On/Off (0x0006), Level Control (0x0008), Color Control (0x0300)                                        |
+| Extended Color Light          | 0x010D           | On/Off (0x0006), Level Control (0x0008), Color Control (0x0300)                                        |
+| On/Off Plug-in Unit           | 0x010A           | On/Off (0x0006)                                                                                        |
+| Dimmable Plug-In Unit         | 0x010B           | On/Off (0x0006), Level Control (0x0008)                                                                |
+| Mounted On/Off Control        | 0x010F           | On/Off (0x0006)                                                                                        |
+| Mounted Dimmable Load Control | 0x0110           | On/Off (0x0006), Level Control (0x0008)                                                                |
+| On/Off Light Switch           | 0x0103           | On/Off (0x0006)                                                                                        |
+| Dimmer Switch                 | 0x0104           | On/Off (0x0006), Level Control (0x0008)                                                                |
+| Color Dimmer Switch           | 0x0105           | On/Off (0x0006), Level Control (0x0008), Color Control (0x0300)                                        |
+| Generic Switch                | 0x000F           | Switch (0x003B)                                                                                        |
+| Contact Sensor                | 0x0015           | Boolean State (0x0045)                                                                                 |
+| Light Sensor                  | 0x0106           | Illuminance Measurement (0x0400)                                                                       |
+| Occupancy Sensor              | 0x0107           | Occupancy Sensing (0x0406)                                                                             |
+| Temperature Sensor            | 0x0302           | Temperature Measurement (0x0402), Identify (0x0003)                                                    |
+| Humidity Sensor               | 0x0307           | Relative Humidity Measurement (0x0405)                                                                 |
+| On/Off Sensor                 | 0x0850           | On/Off (0x0006)                                                                                        |
+| Air Quality Sensor            | 0x002C           | Air Quality (0x005B)                                                                                   |
+| Water Freeze Detector         | 0x0041           | Boolean State (0x0045)                                                                                 |
+| Water Leak Detector           | 0x0043           | Boolean State (0x0045)                                                                                 |
+| Rain Sensor                   | 0x0044           | Boolean State (0x0045)                                                                                 |
+| Door Lock                     | 0x000A           | Door Lock (0x0101)                                                                                     |
+| Window Covering               | 0x0202           | Window Covering (0x0102)                                                                               |
+| Thermostat                    | 0x0301           | Thermostat (0x0201)                                                                                    |
+| Fan                           | 0x002B           | Fan Control (0x0202)                                                                                   |
+| Air Purifier                  | 0x002D           | Fan Control (0x0202)                                                                                   |
+| Robotic Vacuum Cleaner        | 0x0074           | RVC Run Mode (0x0054), RVC Operational State (0x0061), RVC Clean Mode (0x0055), Service Area (0x0150)  |
+| Room Air Conditioner          | 0x0072           | On/Off (0x0006), Thermostat (0x0201)                                                                   |
+| Solar Power                   | 0x0017           | Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091)                          |
+| Battery Storage               | 0x0018           | Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091), Power Source (0x002F)   |
+| Thread Border Router          | 0x0091           | Thread Network Diagnostics (0x0035), Thread Border Router Management (0x0452)                          |
 
 ## Full Example
 
