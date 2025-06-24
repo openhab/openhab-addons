@@ -215,6 +215,37 @@ public class FroniusBatteryControl {
     }
 
     /**
+     * Prevents the battery from charging right now.
+     * 
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void preventBatteryCharging() throws FroniusCommunicationException, FroniusUnauthorizedException {
+        reset();
+        addPreventBatteryChargingSchedule(BEGIN_OF_DAY, END_OF_DAY);
+    }
+
+    /**
+     * Prevents the battery from charging during a specific time period.
+     * 
+     * @param from start time of the prevented charging period
+     * @param until end time of the prevented charging period
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addPreventBatteryChargingSchedule(LocalTime from, LocalTime until)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
+        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
+        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
+
+        TimeOfUseRecord preventCharging = new TimeOfUseRecord(true, 0, ScheduleType.CHARGE_MAX,
+                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
+        timeOfUse[timeOfUse.length - 1] = preventCharging;
+        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+    }
+
+    /**
      * Sets the reserved battery capacity for backup power.
      *
      * @param percent the reserved battery capacity for backup power
