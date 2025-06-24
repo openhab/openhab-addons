@@ -338,7 +338,7 @@ Number:Power PowerUsage {
 
 ## Inactivity Profile
 
-This profile sets the state of the item to `ON` (resp. `OFF`) if the binding has not provided any new data values within a given timeout period.
+This profile sets the state of the item to `ON` if the binding has not provided any new data values within a given timeout period.
 The purpose is to indicate an alarm condition if the binding is no longer providing values for the given channel.
 
 ### Inactivity Profile Configuration
