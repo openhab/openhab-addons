@@ -31,6 +31,9 @@ public class MatterBindingConstants {
     public static final ThingTypeUID THING_TYPE_ENDPOINT = new ThingTypeUID(BINDING_ID, "endpoint");
     public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing";
     // List of Channel UIDs
+    public static final String CHANNEL_ID_AIRQUALITY_AIRQUALITY = "airquality-airquality";
+    public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_AIRQUALITY_AIRQUALITY);
     public static final String CHANNEL_ID_ONOFF_ONOFF = "onoffcontrol-onoff";
     public static final ChannelTypeUID CHANNEL_ONOFF_ONOFF = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_ONOFF_ONOFF);
     public static final String CHANNEL_ID_LEVEL_LEVEL = "levelcontrol-level";
