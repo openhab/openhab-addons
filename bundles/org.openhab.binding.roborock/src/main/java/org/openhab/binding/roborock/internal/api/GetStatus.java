@@ -30,11 +30,11 @@ public class GetStatus {
     public @NonNullByDefault({}) Result[] result;
 
     public class Result {
-        @SerializedName("120")
-        public int msg_ver;
+        @SerializedName("msg_ver")
+        public int msgVer;
 
-        @SerializedName("120")
-        public int msg_seq;
+        @SerializedName("msg_seq")
+        public int msgSeq;
 
         public int state;
 
