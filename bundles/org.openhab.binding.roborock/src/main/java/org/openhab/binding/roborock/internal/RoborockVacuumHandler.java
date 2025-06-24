@@ -50,7 +50,7 @@ import org.openhab.binding.roborock.internal.api.enums.FanModeType;
 import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
-import org.openhab.binding.roborock.internal.util.HashUtil;
+import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -108,7 +108,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @Nullable Rriot rriot;
     private String rrHomeId = "";
     private String localKey = "";
-    private int stateId;
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
@@ -272,8 +271,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             URI mqttURL = new URI(rriot.r.m);
             mqttHost = mqttURL.getHost();
             mqttPort = mqttURL.getPort();
-            mqttUser = HashUtil.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-            mqttPassword = HashUtil.md5Hex(rriot.s + ':' + rriot.k).substring(16);
+            mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
+            mqttPassword = ProtocolUtils.md5Hex(rriot.s + ':' + rriot.k).substring(16);
         } catch (URISyntaxException e) {
             logger.info("Malformed mqtt URL");
         }
@@ -311,23 +310,21 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     return;
                 }
                 String receivedTopic = publish.getTopic().toString();
-                String payload = new String(publish.getPayloadAsBytes());
                 // try {
                 logger.debug("{}: Got MQTT message on topic {}", getThing().getUID().getId(), receivedTopic);
                 String response = handleMessage(publish.getPayloadAsBytes());
                 logger.trace("MQTT message output: {}", response);
 
-                JsonParser jsonParser = new JsonParser();
-                String jsonObject = jsonParser.parse(response).getAsJsonObject().get("dps").getAsJsonObject().get("102")
-                        .getAsString();
-                int messageId = jsonParser.parse(jsonObject).getAsJsonObject().get("id").getAsInt();
+                String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
+                        .get("102").getAsString();
+                int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
 
                 if (messageId == getStatusID) {
                     logger.debug("Received getStatus response, parse it");
-                    handleGetStatus(jsonObject);
+                    handleGetStatus(jsonString);
                 } else if (messageId == getConsumableID) {
                     logger.debug("Received getConsumable response, parse it");
-                    handleGetConsumables(jsonObject);
+                    handleGetConsumables(jsonString);
                 }
 
                 // } catch (DataParsingException e) {
@@ -394,14 +391,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleGetStatus(String response) {
-        GetStatus getStatus = gson.fromJson(response, GetStatus.class);
-        JsonParser jsonParser = new JsonParser();
-        JsonObject statusResponse = jsonParser.parse(response).getAsJsonObject().getAsJsonArray("result").get(0)
+        logger.trace("handleGetStatus - response {}", response);
+        JsonObject statusResponse = JsonParser.parseString(response).getAsJsonObject().getAsJsonArray("result").get(0)
                 .getAsJsonObject();
+        GetStatus getStatus;
+        getStatus = gson.fromJson(response, GetStatus.class);
         if (!hasChannelStructure) {
             setCapabilities(statusResponse);
             createCapabilityChannels();
         }
+
         if (getStatus != null) {
             updateState(CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
@@ -419,7 +418,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_MAP_PRESENT, new DecimalType(getStatus.result[0].mapPresent));
 
             // handle vacuum state
-            stateId = getStatus.result[0].state;
             StatusType state = StatusType.getType(getStatus.result[0].state);
             updateState(CHANNEL_STATE, new StringType(state.getDescription()));
             updateState(CHANNEL_STATE_ID, new DecimalType(getStatus.result[0].state));
@@ -460,24 +458,50 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
             updateState(CHANNEL_VACUUM, vacuum);
 
-            DockStatusType dockState = DockStatusType.getType(getStatus.result[0].dockErrorStatus);
-            updateState(CHANNEL_DOCK_STATE, new StringType(dockState.getDescription()));
-            updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(dockState.getId()));
-
+            if (this.deviceCapabilities.containsKey(RobotCapabilities.DOCK_STATE_ID)) {
+                DockStatusType dockState = DockStatusType.getType(getStatus.result[0].dockErrorStatus);
+                updateState(CHANNEL_DOCK_STATE, new StringType(dockState.getDescription()));
+                updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(dockState.getId()));
+            }
             // miio checks for vac capabilities before populating these channels
-            updateState(CHANNEL_WATER_BOX_MODE, new DecimalType(getStatus.result[0].waterBoxMode));
-            updateState(CHANNEL_MOP_MODE, new DecimalType(getStatus.result[0].mopMode));
-            updateState(CHANNEL_WATERBOX_STATUS, new DecimalType(getStatus.result[0].waterBoxStatus));
-            updateState(CHANNEL_WATERBOX_CARRIAGE, new DecimalType(getStatus.result[0].waterBoxCarriageStatus));
-            updateState(CHANNEL_LOCKSTATUS, new DecimalType(getStatus.result[0].lockStatus));
-            updateState(CHANNEL_MOP_FORBIDDEN, new DecimalType(getStatus.result[0].mopForbiddenEnable));
-            updateState(CHANNEL_LOCATING, new DecimalType(getStatus.result[0].isLocating));
-            updateState(CHANNEL_CLEAN_MOP_START, new DecimalType(0));
-            updateState(CHANNEL_CLEAN_MOP_STOP, new DecimalType(0));
-            updateState(CHANNEL_COLLECT_DUST, new DecimalType(0));
-            // I don't see a suitable piece of data for this with my Qrevo S
-            // updateState(CHANNEL_MOP_TOTAL_DRYTIME,
-            // new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].mopDryTime), Units.MINUTE));
+            if (deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_MODE)) {
+                updateState(RobotCapabilities.WATERBOX_MODE.getChannel(),
+                        new DecimalType(getStatus.result[0].waterBoxMode));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.MOP_MODE)) {
+                updateState(RobotCapabilities.MOP_MODE.getChannel(), new DecimalType(getStatus.result[0].mopMode));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_STATUS)) {
+                updateState(RobotCapabilities.WATERBOX_STATUS.getChannel(),
+                        new DecimalType(getStatus.result[0].waterBoxStatus));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_CARRIAGE)) {
+                updateState(RobotCapabilities.WATERBOX_CARRIAGE.getChannel(),
+                        new DecimalType(getStatus.result[0].waterBoxCarriageStatus));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.LOCKSTATUS)) {
+                updateState(RobotCapabilities.LOCKSTATUS.getChannel(), new DecimalType(getStatus.result[0].lockStatus));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.MOP_FORBIDDEN)) {
+                updateState(RobotCapabilities.MOP_FORBIDDEN.getChannel(),
+                        new DecimalType(getStatus.result[0].mopForbiddenEnable));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.LOCATING)) {
+                updateState(RobotCapabilities.LOCATING.getChannel(), new DecimalType(getStatus.result[0].isLocating));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.CLEAN_MOP_START)) {
+                updateState(RobotCapabilities.CLEAN_MOP_START.getChannel(), new DecimalType(0));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.CLEAN_MOP_STOP)) {
+                updateState(RobotCapabilities.CLEAN_MOP_STOP.getChannel(), new DecimalType(0));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.COLLECT_DUST)) {
+                updateState(RobotCapabilities.COLLECT_DUST.getChannel(), new DecimalType(0));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.MOP_DRYING_REMAINING_TIME)) {
+                updateState(CHANNEL_MOP_TOTAL_DRYTIME,
+                        new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].dryStatus), Units.MINUTE));
+            }
         }
     }
 
@@ -492,6 +516,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void setCapabilities(JsonObject statusResponse) {
+        logger.trace("setCapabilities");
         for (RobotCapabilities capability : RobotCapabilities.values()) {
             if (statusResponse.has(capability.getStatusFieldName())) {
                 deviceCapabilities.putIfAbsent(capability, false);
@@ -619,7 +644,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         String version = bytesToString(message, 0, 3);
         // Do some checks
         if (!"1.0".equals(version)) {// && version!="A01") {
-            logger.debug("Parse was not version as expected:{}", version);
+            logger.debug("Parse was not version 1.0 as expected:{}", version);
             return "";
         }
         byte[] buf = Arrays.copyOfRange(message, 0, message.length - 4);
@@ -639,8 +664,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         int payloadLen = readInt16BE(message, 17);
         byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen);
-        String stringPayload = new String(payload, StandardCharsets.UTF_8);
-        logger.debug(
+        logger.trace(
                 "parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
                 version, sequence, random, timestamp, protocol, payloadLen);
         String key = encodeTimestamp(timestamp) + localKey + salt;
@@ -670,17 +694,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         inner.put("params", "[]");
 
         Map<String, Object> dps = new HashMap<>();
-        dps.put(Integer.toString(protocol), new Gson().toJson(inner));
+        dps.put(Integer.toString(protocol), gson.toJson(inner));
 
         Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put("t", timestamp);
         payloadMap.put("dps", dps);
 
-        String payload = new Gson().toJson(payloadMap);
+        String payload = gson.toJson(payloadMap);
         logger.debug("payload = {}", payload);
         byte[] message = build(getThing().getUID().getId(), protocol, timestamp, payload.getBytes("UTF-8"));
         // now send message via mqtt
-        String mqttUser = HashUtil.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
+        String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + getThing().getUID().getId();
         mqttClient.publishWith().topic(topic).payload(message).retain(false).send()

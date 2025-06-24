@@ -39,7 +39,7 @@ import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
-import org.openhab.binding.roborock.internal.util.HashUtil;
+import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class RoborockWebTargets {
 
         int timestamp = (int) Instant.now().getEpochSecond();
         String nonce = UUID.randomUUID().toString().substring(0, 8);
-        String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + HashUtil.md5Hex(path) + "::";
+        String prestr = id + ":" + secret + ":" + nonce + ":" + timestamp + ":" + ProtocolUtils.md5Hex(path) + "::";
 
         Mac mac = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");

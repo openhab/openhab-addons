@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Johannes Ptaszyk - Initial contribution
  */
 @NonNullByDefault
-public class HashUtil {
-    private HashUtil() {
+public class ProtocolUtils {
+    private ProtocolUtils() {
         // Prevent instantiation of util class
     }
 
@@ -32,7 +32,7 @@ public class HashUtil {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             // should never occur
-            throw new RuntimeException(e);
+            return "";
         }
         byte[] array = md.digest(data.getBytes());
         StringBuilder sb = new StringBuilder();

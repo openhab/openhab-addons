@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roborock.internal;
 
-import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -153,6 +151,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void handleRemoval() {
+        stopPoll();
+        super.handleRemoval();
+    }
+
+    @Override
+    public void dispose() {
+        stopPoll();
+        super.dispose();
     }
 
     private void pollStatus() {

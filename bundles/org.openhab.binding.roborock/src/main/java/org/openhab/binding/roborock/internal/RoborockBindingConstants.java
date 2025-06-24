@@ -54,13 +54,6 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_STATE_ID = "status#state_id";
     public static final String CHANNEL_DOCK_STATE = "status#dock_state";
     public static final String CHANNEL_DOCK_STATE_ID = "status#dock_state_id";
-    public static final String CHANNEL_WATER_BOX_MODE = "status#water_box_mode";
-    public static final String CHANNEL_MOP_MODE = "status#mop_mode";
-    public static final String CHANNEL_WATERBOX_STATUS = "status#water_box_status";
-    public static final String CHANNEL_WATERBOX_CARRIAGE = "status#water_box_carriage_status";
-    public static final String CHANNEL_LOCKSTATUS = "status#lock_status";
-    public static final String CHANNEL_MOP_FORBIDDEN = "status#mop_forbidden_enable";
-    public static final String CHANNEL_LOCATING = "status#is_locating";
     public static final String CHANNEL_MOP_DRYING = "status#is_mop_drying";
     public static final String CHANNEL_MOP_TOTAL_DRYTIME = "status#mop_drying_time";
 
@@ -72,9 +65,6 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
     public static final String CHANNEL_TESTMIOT = "actions#testmiot";
     public static final String CHANNEL_POWER = "actions#power";
-    public static final String CHANNEL_CLEAN_MOP_START = "actions#clean_mop_start";
-    public static final String CHANNEL_CLEAN_MOP_STOP = "actions#clean_mop_stop";
-    public static final String CHANNEL_COLLECT_DUST = "actions#collect_dust";
 
     public static final String CHANNEL_SSID = "network#ssid";
     public static final String CHANNEL_BSSID = "network#bssid";
