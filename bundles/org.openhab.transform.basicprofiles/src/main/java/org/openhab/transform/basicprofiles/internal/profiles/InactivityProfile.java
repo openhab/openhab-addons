@@ -24,9 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
@@ -108,14 +105,6 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
         }
         try {
             return Duration.ofSeconds(Integer.valueOf(timeOrDuration));
-        } catch (IllegalArgumentException e) {
-            // fall through
-        }
-        try {
-            if (QuantityType.valueOf(timeOrDuration) instanceof QuantityType<?> time
-                    && time.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> msec) {
-                return Duration.ofMillis(msec.longValue());
-            }
         } catch (IllegalArgumentException e) {
             // fall through
         }

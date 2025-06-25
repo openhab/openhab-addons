@@ -23,6 +23,6 @@ import org.openhab.transform.basicprofiles.internal.profiles.InactivityProfile;
  */
 @NonNullByDefault
 public class InactivityProfileConfig {
-    public String timeout = "1 h"; // string of a {@link QuantityType} with a time value
+    public String timeout = "1h"; // string of a time value
     public @Nullable Boolean inverted; // (optional) boolean value
 }
