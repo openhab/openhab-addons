@@ -57,19 +57,11 @@ public class ElectroluxApplianceDiscoveryService
                     // and I cannot confirm the deviceTypes reported by them.
                     // Hence they fall-back to the traditional discovery methods here.
                     if ("PUREA9".equalsIgnoreCase(applianceType)) {
-                        thingDiscovered(DiscoveryResultBuilder
-                                .create(new ThingUID(THING_TYPE_ELECTROLUX_AIR_PURIFIER, bridgeUID, thing.getKey()))
-                                .withLabel("Electrolux Pure A9").withBridge(bridgeUID)
-                                .withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, thing.getKey())
-                                .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL)
-                                .build());
+                        handleThingDiscovered("Electrolux Pure A9", bridgeUID, THING_TYPE_ELECTROLUX_AIR_PURIFIER,
+                                thing.getKey());
                     } else if ("WM".equalsIgnoreCase(applianceType)) {
-                        thingDiscovered(DiscoveryResultBuilder
-                                .create(new ThingUID(THING_TYPE_ELECTROLUX_WASHING_MACHINE, bridgeUID, thing.getKey()))
-                                .withLabel("Electrolux Washing Machine").withBridge(bridgeUID)
-                                .withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, thing.getKey())
-                                .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL)
-                                .build());
+                        handleThingDiscovered("Electrolux Washing Machine", bridgeUID,
+                                THING_TYPE_ELECTROLUX_WASHING_MACHINE, thing.getKey());
                     }
             }
         });
