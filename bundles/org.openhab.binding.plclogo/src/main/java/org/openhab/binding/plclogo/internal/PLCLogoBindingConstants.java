@@ -111,14 +111,7 @@ public class PLCLogoBindingConstants {
         LOGO_STATES = Collections.unmodifiableMap(buffer);
     }
 
-    public static final class Layout {
-        public final int address;
-        public final int length;
-
-        public Layout(int address, int length) {
-            this.address = address;
-            this.length = length;
-        }
+    public record Layout(int address, int length) {
     }
 
     public static final Map<String, Layout> LOGO_CHANNELS;

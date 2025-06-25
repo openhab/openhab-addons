@@ -47,7 +47,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCCommonHandler.class);
 
-    private Map<String, @Nullable State> oldValues = new HashMap<>();
+    private final Map<String, @Nullable State> oldValues = new HashMap<>();
 
     private @Nullable PLCLogoClient client;
     private String family = NOT_SUPPORTED;
@@ -98,7 +98,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
         Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
         Layout layout = (memory != null) ? memory.get(kind) : null;
-        return layout != null ? layout.address : INVALID;
+        return layout != null ? layout.address() : INVALID;
     }
 
     /**
@@ -113,7 +113,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
         Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
         Layout layout = (memory != null) ? memory.get(kind) : null;
-        return layout != null ? layout.length : 0;
+        return layout != null ? layout.length() : 0;
     }
 
     /**
@@ -197,7 +197,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             }
         }
 
-        return layout != null ? layout.address : INVALID;
+        return layout != null ? layout.address() : INVALID;
     }
 
     /**
