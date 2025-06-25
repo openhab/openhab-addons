@@ -60,8 +60,8 @@ public class ScenesManagementCluster extends BaseCluster {
      * The number of list entries for this attribute shall NOT exceed the number of supported fabrics by the device.
      */
     public List<SceneInfoStruct> fabricSceneInfo; // 2 list R F V
-    // Structs
 
+    // Structs
     public class SceneInfoStruct {
         /**
          * This field shall indicate the number of scenes currently used in the server’s Scene Table on the endpoint

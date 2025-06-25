@@ -97,8 +97,8 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * Indicates when cumulative measurements were most recently zero.
      */
     public CumulativeEnergyResetStruct cumulativeEnergyReset; // 5 CumulativeEnergyResetStruct R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the server takes a snapshot of the cumulative energy imported by the server,
      * exported from the server, or both, but not more frequently than the rate mentioned in the description above of

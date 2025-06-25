@@ -107,8 +107,8 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * See Boost and CancelBoost commands for more details.
      */
     public BoostStateEnum boostState; // 5 BoostStateEnum R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated whenever a Boost command is accepted.
      * The corresponding structure fields within the WaterHeaterBoostInfoStruct are copied from the Boost command.

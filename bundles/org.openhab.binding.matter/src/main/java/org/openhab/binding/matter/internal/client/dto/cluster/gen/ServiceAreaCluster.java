@@ -183,8 +183,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * have been successfully serviced (marked as completed).
      */
     public List<ProgressStruct> progress; // 5 list R V
-    // Structs
 
+    // Structs
     /**
      * The data from this structure indicates a landmark and position relative to the landmark.
      */
@@ -246,7 +246,7 @@ public class ServiceAreaCluster extends BaseCluster {
          * &quot;Under&quot; position semantic tag. With such an area indication, the client can request the device to
          * operate in (or service) the area located under the table.
          */
-        public String locationInfo; // locationdesc
+        public Locationdesc locationInfo; // locationdesc
         /**
          * This field shall indicate an association with a landmark. A value of null indicates that the information is
          * not available or known. For example, this may indicate that the area refers to a zone next to a table.
@@ -256,7 +256,7 @@ public class ServiceAreaCluster extends BaseCluster {
          */
         public LandmarkInfoStruct landmarkInfo; // LandmarkInfoStruct
 
-        public AreaInfoStruct(String locationInfo, LandmarkInfoStruct landmarkInfo) {
+        public AreaInfoStruct(Locationdesc locationInfo, LandmarkInfoStruct landmarkInfo) {
             this.locationInfo = locationInfo;
             this.landmarkInfo = landmarkInfo;
         }

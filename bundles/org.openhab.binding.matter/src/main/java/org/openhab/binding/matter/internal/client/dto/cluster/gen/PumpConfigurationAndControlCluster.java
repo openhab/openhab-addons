@@ -238,8 +238,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * returned.
      */
     public ControlModeEnum controlMode; // 33 ControlModeEnum RW VM
-    // Structs
 
+    // Structs
     public class SupplyVoltageLow {
         public SupplyVoltageLow() {
         }

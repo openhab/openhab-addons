@@ -67,8 +67,8 @@ public class SwitchCluster extends BaseCluster {
      * factory reset for which generating events towards the client is not appropriate).
      */
     public Integer multiPressMax; // 2 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated, when the latching switch is moved to a new position. It may have been delayed by
      * debouncing within the switch.

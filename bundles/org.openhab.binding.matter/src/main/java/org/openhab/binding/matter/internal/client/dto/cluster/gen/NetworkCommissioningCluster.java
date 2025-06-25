@@ -144,8 +144,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * For example, Thread 1.3.0 would have ThreadVersion set to 4.
      */
     public Integer threadVersion; // 10 uint16 R V
-    // Structs
 
+    // Structs
     /**
      * NetworkInfoStruct struct describes an existing network configuration, as provided in the Networks attribute.
      */

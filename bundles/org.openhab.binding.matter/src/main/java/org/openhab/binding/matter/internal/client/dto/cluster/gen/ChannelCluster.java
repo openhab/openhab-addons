@@ -54,8 +54,8 @@ public class ChannelCluster extends BaseCluster {
      * content application is in foreground), the value of the field shall be null.
      */
     public ChannelInfoStruct currentChannel; // 2 ChannelInfoStruct R V
-    // Structs
 
+    // Structs
     /**
      * This indicates a channel in a channel lineup.
      * While the major and minor numbers in the ChannelInfoStruct support use of ATSC channel format, a lineup may use

@@ -137,8 +137,8 @@ public class ContentControlCluster extends BaseCluster {
      * attribute list for the same day of week.
      */
     public List<TimeWindowStruct> blockContentTimeWindow; // 10 list R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the RemainingScreenTime equals 0.
      */

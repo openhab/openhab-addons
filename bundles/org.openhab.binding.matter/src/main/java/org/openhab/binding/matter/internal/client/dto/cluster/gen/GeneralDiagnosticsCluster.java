@@ -116,8 +116,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * and take appropriate action (e.g. warn the user and/or offer to remove all fabrics on the Node).
      */
     public Boolean testEventTriggersEnabled; // 8 bool R V
-    // Structs
 
+    // Structs
     /**
      * The HardwareFaultChange Event shall indicate a change in the set of hardware faults currently detected by the
      * Node.

@@ -159,8 +159,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * may include domain names. If this is False, the Address for a DefaultNTP shall be an IPv6 address.
      */
     public Boolean supportsDnsResolve; // 12 bool R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the node stops applying the current DSTOffset and there are no entries in the
      * list with a larger ValidStarting time, indicating the need to possibly get new DST data. This event shall also be

@@ -64,8 +64,8 @@ public class ActionsCluster extends BaseCluster {
      * with ActionID 0x3039.
      */
     public String setupUrl; // 2 string R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when there is a change in the State of an ActionID during the execution of an
      * action and the most recent command using that ActionID used an InvokeID data field.

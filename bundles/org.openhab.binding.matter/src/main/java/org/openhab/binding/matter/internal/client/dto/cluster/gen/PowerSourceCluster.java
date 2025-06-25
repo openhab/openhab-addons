@@ -268,8 +268,8 @@ public class PowerSourceCluster extends BaseCluster {
      * battery backup would list the endpoints that have a battery backup.
      */
     public List<Integer> endpointList; // 31 list R V
-    // Structs
 
+    // Structs
     /**
      * The WiredFaultChange Event shall be generated when the set of wired faults currently detected by the Node on this
      * wired power source changes. This event shall correspond to a change in value of ActiveWiredFaults.

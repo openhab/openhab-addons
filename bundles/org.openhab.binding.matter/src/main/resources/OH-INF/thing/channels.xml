@@ -474,6 +474,60 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<!-- Robotic Vacuum Cleaner Channels -->
+	<channel-type id="rvcrunmode-mode">
+		<item-type>Number</item-type>
+		<label>Run Mode</label>
+		<description>Selects the run mode (idle, cleaning, mapping) of the robotic vacuum cleaner</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="rvccleanmode-mode">
+		<item-type>Number</item-type>
+		<label>Clean Mode</label>
+		<description>Selects the cleaning mode (vacuum, mop etc.) of the robotic vacuum cleaner</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="rvcoperationalstate-state">
+		<item-type>Number</item-type>
+		<label>Operational State</label>
+		<description>Reports the operational state of the robotic vacuum cleaner</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rvcoperationalstate-gohome">
+		<item-type>Switch</item-type>
+		<label>Go Home</label>
+		<description>Sends the robotic vacuum cleaner back to the dock</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="servicearea-selectedarea">
+		<item-type>Switch</item-type>
+		<label>Area Selection</label>
+		<description>Toggle to enable a mapped area for cleaning</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+
 	<channel-type id="airquality-airquality">
 		<item-type>Number</item-type>
 		<label>Air Quality</label>
