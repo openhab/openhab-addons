@@ -64,7 +64,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
 
-    private Map<ChannelUID, String> oldValues = new HashMap<>();
+    private final Map<ChannelUID, String> oldValues = new HashMap<>();
 
     @Nullable
     private volatile PLCLogoClient client; // S7 client used for communication with Logo!
@@ -98,7 +98,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             Layout layout = (memory != null) ? memory.get(MEMORY_SIZE) : null;
             if ((layout != null) && (localClient != null)) {
                 try {
-                    int result = localClient.readDBArea(1, 0, layout.length, S7Client.S7WLByte, buffer);
+                    int result = localClient.readDBArea(1, 0, layout.length(), S7Client.S7WLByte, buffer);
                     if (result == 0) {
                         synchronized (handlers) {
                             for (PLCCommonHandler handler : handlers) {
@@ -149,9 +149,9 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         Channel channel = thing.getChannel(channelId);
         Layout layout = LOGO_CHANNELS.get(channelId);
         if ((localClient != null) && (channel != null) && (layout != null)) {
-            byte[] buffer = new byte[layout.length];
+            byte[] buffer = new byte[layout.length()];
             Arrays.fill(buffer, (byte) 0);
-            int result = localClient.readDBArea(1, layout.address, buffer.length, S7Client.S7WLByte, buffer);
+            int result = localClient.readDBArea(1, layout.address(), buffer.length, S7Client.S7WLByte, buffer);
             if (result == 0) {
                 if (RTC_CHANNEL.equals(channelId)) {
                     ZonedDateTime clock = ZonedDateTime.now();
@@ -282,9 +282,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         super.childHandlerInitialized(childHandler, childThing);
         if (childHandler instanceof PLCCommonHandler plcCommonHandler) {
             synchronized (handlers) {
-                if (!handlers.contains(plcCommonHandler)) {
-                    handlers.add(plcCommonHandler);
-                }
+                handlers.add(plcCommonHandler);
             }
         }
     }
@@ -293,9 +291,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof PLCCommonHandler plcCommonHandler) {
             synchronized (handlers) {
-                if (handlers.contains(plcCommonHandler)) {
-                    handlers.remove(plcCommonHandler);
-                }
+                handlers.remove(plcCommonHandler);
             }
         }
         super.childHandlerDisposed(childHandler, childThing);
@@ -347,7 +343,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             Integer local = config.get().getLocalTSAP();
             Integer remote = config.get().getRemoteTSAP();
             if (!localClient.isConnected() && (local != null) && (remote != null)) {
-                localClient.Connect(config.get().getAddress(), local.intValue(), remote.intValue());
+                localClient.Connect(config.get().getAddress(), local, remote);
             }
             result = localClient.isConnected();
         }

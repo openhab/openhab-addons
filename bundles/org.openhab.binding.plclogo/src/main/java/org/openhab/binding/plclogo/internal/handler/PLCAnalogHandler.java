@@ -218,7 +218,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
 
         Map<?, Integer> blocks = LOGO_BLOCK_NUMBER.get(family);
         Integer number = (blocks != null) ? blocks.get(kind) : null;
-        return (number != null) ? number.intValue() : 0;
+        return (number != null) ? number : 0;
     }
 
     @Override

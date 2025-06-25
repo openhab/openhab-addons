@@ -58,7 +58,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private class Runner implements Runnable {
         private final ReentrantLock lock = new ReentrantLock();
-        private String host;
+        private final String host;
 
         public Runner(final String address) {
             this.host = address;
