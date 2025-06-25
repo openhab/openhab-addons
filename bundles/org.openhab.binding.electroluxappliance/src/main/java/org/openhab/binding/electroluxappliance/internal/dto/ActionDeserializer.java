@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link AirPurifierStateDTO} class defines a deserializer required to support the capability information.
+ * The {@link ActionDeserializer} class defines a deserializer required to support the capability information.
  *
  * @author David Goodyear - Initial contribution
  */
