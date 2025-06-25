@@ -87,8 +87,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * transferred to another Joint Fabric Anchor Administrator.
      */
     public DatastoreAdministratorInformationEntry statusEntry; // 8 DatastoreAdministratorInformationEntry R S A
-    // Structs
 
+    // Structs
     public class DatastoreStatusEntry {
         /**
          * This field shall contain the current state of the target device operation.

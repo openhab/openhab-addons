@@ -124,8 +124,8 @@ public class IcdManagementCluster extends BaseCluster {
      * If the MaximumCheckInBackoff is equal to the IdleModeDuration, it means the ICD does not back-off.
      */
     public Integer maximumCheckInBackoff; // 9 uint32 R V
-    // Structs
 
+    // Structs
     public class MonitoringRegistrationStruct {
         /**
          * This field shall indicate the NodeID of the Node to which Check-In messages will be sent when the
@@ -149,7 +149,7 @@ public class IcdManagementCluster extends BaseCluster {
          * 0x0002 or higher within its NOC, then the entry matches.
          */
         public BigInteger monitoredSubject; // subject-id
-        public String key; //
+        public String key;
         /**
          * This field shall indicate the client’s type to inform the ICD of the availability for communication of the
          * client.

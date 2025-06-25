@@ -135,8 +135,8 @@ public class MediaPlaybackCluster extends BaseCluster {
      * selectable by the client.
      */
     public List<TrackStruct> availableTextTracks; // 10 list R V
-    // Structs
 
+    // Structs
     /**
      * If supported, this event shall be generated when there is a change in any of the supported attributes of the
      * Media Playback cluster.

@@ -98,8 +98,8 @@ public class OperationalStateCluster extends BaseCluster {
      * When there is no error detected, this shall have an ErrorStateID of NoError.
      */
     public ErrorStateStruct operationalError; // 5 ErrorStateStruct R V
-    // Structs
 
+    // Structs
     /**
      * This event is generated when a reportable error condition is detected. A device that generates this event shall
      * also set the OperationalState attribute to Error, indicating an error condition.

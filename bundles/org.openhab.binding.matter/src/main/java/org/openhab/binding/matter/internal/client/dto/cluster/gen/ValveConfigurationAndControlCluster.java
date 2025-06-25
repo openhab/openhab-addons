@@ -140,8 +140,8 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      * The values of 0 and 100 shall always be supported, regardless of the value of this attribute.
      */
     public Integer levelStep; // 10 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the valve state changed. For level changes, after the end of movement, for
      * state changes when the new state has been reached.

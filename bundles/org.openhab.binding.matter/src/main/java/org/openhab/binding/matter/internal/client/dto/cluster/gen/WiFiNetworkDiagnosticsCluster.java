@@ -107,8 +107,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * upon a reboot of the Node.
      */
     public BigInteger overrunCount; // 12 uint64 R V
-    // Structs
 
+    // Structs
     /**
      * The Disconnection Event shall indicate that a Node’s Wi-Fi connection has been disconnected as a result of
      * de-authenticated or dis-association and indicates the reason.

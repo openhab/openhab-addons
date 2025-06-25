@@ -51,8 +51,8 @@ public class TargetNavigatorCluster extends BaseCluster {
      * objects in the TargetList attribute.
      */
     public Integer currentTarget; // 1 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when there is a change in either the active target or the list of available targets
      * or both.

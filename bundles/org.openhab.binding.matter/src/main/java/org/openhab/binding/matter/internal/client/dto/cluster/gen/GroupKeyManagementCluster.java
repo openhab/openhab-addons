@@ -69,8 +69,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
      * be set according to the minimum number of group key sets to support as specified in Group Limits.
      */
     public Integer maxGroupKeysPerFabric; // 3 uint16 R V
-    // Structs
 
+    // Structs
     public class GroupKeyMapStruct {
         /**
          * This field uniquely identifies the group within the scope of the given Fabric.

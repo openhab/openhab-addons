@@ -146,8 +146,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * own energy usage, for example, using tariff information it may obtain.
      */
     public OptOutStateEnum optOutState; // 7 OptOutStateEnum R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the Power Adjustment session is started.
      */

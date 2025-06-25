@@ -89,6 +89,42 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_ACTIONS_SETUPURL);
 
     // ActivatedCarbonFilterMonitoring Cluster
+    public static final String CHANNEL_NAME_ACTIVATEDCARBONFILTERMONITORING_CONDITION = "Condition";
+    public static final String CHANNEL_LABEL_ACTIVATEDCARBONFILTERMONITORING_CONDITION = "Condition";
+    public static final String CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_CONDITION = "activatedcarbonfiltermonitoring-condition";
+    public static final ChannelTypeUID CHANNEL_ACTIVATEDCARBONFILTERMONITORING_CONDITION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_CONDITION);
+
+    public static final String CHANNEL_NAME_ACTIVATEDCARBONFILTERMONITORING_DEGRADATIONDIRECTION = "DegradationDirection";
+    public static final String CHANNEL_LABEL_ACTIVATEDCARBONFILTERMONITORING_DEGRADATIONDIRECTION = "Degradation Direction";
+    public static final String CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_DEGRADATIONDIRECTION = "activatedcarbonfiltermonitoring-degradationdirection";
+    public static final ChannelTypeUID CHANNEL_ACTIVATEDCARBONFILTERMONITORING_DEGRADATIONDIRECTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_DEGRADATIONDIRECTION);
+
+    public static final String CHANNEL_NAME_ACTIVATEDCARBONFILTERMONITORING_CHANGEINDICATION = "ChangeIndication";
+    public static final String CHANNEL_LABEL_ACTIVATEDCARBONFILTERMONITORING_CHANGEINDICATION = "Change Indication";
+    public static final String CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_CHANGEINDICATION = "activatedcarbonfiltermonitoring-changeindication";
+    public static final ChannelTypeUID CHANNEL_ACTIVATEDCARBONFILTERMONITORING_CHANGEINDICATION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_CHANGEINDICATION);
+
+    public static final String CHANNEL_NAME_ACTIVATEDCARBONFILTERMONITORING_INPLACEINDICATOR = "InPlaceIndicator";
+    public static final String CHANNEL_LABEL_ACTIVATEDCARBONFILTERMONITORING_INPLACEINDICATOR = "In Place Indicator";
+    public static final String CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_INPLACEINDICATOR = "activatedcarbonfiltermonitoring-inplaceindicator";
+    public static final ChannelTypeUID CHANNEL_ACTIVATEDCARBONFILTERMONITORING_INPLACEINDICATOR = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_INPLACEINDICATOR);
+
+    public static final String CHANNEL_NAME_ACTIVATEDCARBONFILTERMONITORING_LASTCHANGEDTIME = "LastChangedTime";
+    public static final String CHANNEL_LABEL_ACTIVATEDCARBONFILTERMONITORING_LASTCHANGEDTIME = "Last Changed Time";
+    public static final String CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_LASTCHANGEDTIME = "activatedcarbonfiltermonitoring-lastchangedtime";
+    public static final ChannelTypeUID CHANNEL_ACTIVATEDCARBONFILTERMONITORING_LASTCHANGEDTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_LASTCHANGEDTIME);
+
+    public static final String CHANNEL_NAME_ACTIVATEDCARBONFILTERMONITORING_REPLACEMENTPRODUCTLIST = "ReplacementProductList";
+    public static final String CHANNEL_LABEL_ACTIVATEDCARBONFILTERMONITORING_REPLACEMENTPRODUCTLIST = "Replacement Product List";
+    public static final String CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_REPLACEMENTPRODUCTLIST = "activatedcarbonfiltermonitoring-replacementproductlist";
+    public static final ChannelTypeUID CHANNEL_ACTIVATEDCARBONFILTERMONITORING_REPLACEMENTPRODUCTLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACTIVATEDCARBONFILTERMONITORING_REPLACEMENTPRODUCTLIST);
+
     // AdministratorCommissioning Cluster
     public static final String CHANNEL_NAME_ADMINISTRATORCOMMISSIONING_WINDOWSTATUS = "WindowStatus";
     public static final String CHANNEL_LABEL_ADMINISTRATORCOMMISSIONING_WINDOWSTATUS = "Window Status";
@@ -114,31 +150,6 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_AIRQUALITY_AIRQUALITY = "airquality-airquality";
     public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_AIRQUALITY_AIRQUALITY);
-
-    // AlarmBase Cluster
-    public static final String CHANNEL_NAME_ALARMBASE_MASK = "Mask";
-    public static final String CHANNEL_LABEL_ALARMBASE_MASK = "Mask";
-    public static final String CHANNEL_ID_ALARMBASE_MASK = "alarmbase-mask";
-    public static final ChannelTypeUID CHANNEL_ALARMBASE_MASK = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_ALARMBASE_MASK);
-
-    public static final String CHANNEL_NAME_ALARMBASE_LATCH = "Latch";
-    public static final String CHANNEL_LABEL_ALARMBASE_LATCH = "Latch";
-    public static final String CHANNEL_ID_ALARMBASE_LATCH = "alarmbase-latch";
-    public static final ChannelTypeUID CHANNEL_ALARMBASE_LATCH = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_ALARMBASE_LATCH);
-
-    public static final String CHANNEL_NAME_ALARMBASE_STATE = "State";
-    public static final String CHANNEL_LABEL_ALARMBASE_STATE = "State";
-    public static final String CHANNEL_ID_ALARMBASE_STATE = "alarmbase-state";
-    public static final ChannelTypeUID CHANNEL_ALARMBASE_STATE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_ALARMBASE_STATE);
-
-    public static final String CHANNEL_NAME_ALARMBASE_SUPPORTED = "Supported";
-    public static final String CHANNEL_LABEL_ALARMBASE_SUPPORTED = "Supported";
-    public static final String CHANNEL_ID_ALARMBASE_SUPPORTED = "alarmbase-supported";
-    public static final ChannelTypeUID CHANNEL_ALARMBASE_SUPPORTED = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_ALARMBASE_SUPPORTED);
 
     // ApplicationBasic Cluster
     public static final String CHANNEL_NAME_APPLICATIONBASIC_VENDORNAME = "VendorName";
@@ -504,7 +515,139 @@ public class ClusterConstants {
 
     // BridgedDeviceBasicInformation Cluster
     // CarbonDioxideConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbondioxideconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "carbondioxideconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "carbondioxideconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "carbondioxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "carbondioxideconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "carbondioxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "carbondioxideconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "carbondioxideconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "carbondioxideconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "carbondioxideconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "carbondioxideconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // CarbonMonoxideConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "carbonmonoxideconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "carbonmonoxideconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "carbonmonoxideconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "carbonmonoxideconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "carbonmonoxideconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "carbonmonoxideconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // Channel Cluster
     public static final String CHANNEL_NAME_CHANNEL_CHANNELLIST = "ChannelList";
     public static final String CHANNEL_LABEL_CHANNEL_CHANNELLIST = "Channel List";
@@ -844,73 +987,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_COMMISSIONERCONTROL_SUPPORTEDDEVICECATEGORIES = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_COMMISSIONERCONTROL_SUPPORTEDDEVICECATEGORIES);
 
-    // ConcentrationMeasurement Cluster
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "concentrationmeasurement-measuredvalue";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREDVALUE);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "concentrationmeasurement-minmeasuredvalue";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "concentrationmeasurement-maxmeasuredvalue";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "concentrationmeasurement-peakmeasuredvalue";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "concentrationmeasurement-peakmeasuredvaluewindow";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "concentrationmeasurement-averagemeasuredvalue";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "concentrationmeasurement-averagemeasuredvaluewindow";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_UNCERTAINTY = "concentrationmeasurement-uncertainty";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_UNCERTAINTY);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "concentrationmeasurement-measurementunit";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "concentrationmeasurement-measurementmedium";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
-
-    public static final String CHANNEL_NAME_CONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
-    public static final String CHANNEL_LABEL_CONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
-    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_LEVELVALUE = "concentrationmeasurement-levelvalue";
-    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_CONCENTRATIONMEASUREMENT_LEVELVALUE);
-
     // ContentAppObserver Cluster
     // ContentControl Cluster
     public static final String CHANNEL_NAME_CONTENTCONTROL_ENABLED = "Enabled";
@@ -1075,6 +1151,30 @@ public class ClusterConstants {
     // DeviceEnergyManagementMode Cluster
     // DiagnosticLogs Cluster
     // DishwasherAlarm Cluster
+    public static final String CHANNEL_NAME_DISHWASHERALARM_MASK = "Mask";
+    public static final String CHANNEL_LABEL_DISHWASHERALARM_MASK = "Mask";
+    public static final String CHANNEL_ID_DISHWASHERALARM_MASK = "dishwasheralarm-mask";
+    public static final ChannelTypeUID CHANNEL_DISHWASHERALARM_MASK = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_DISHWASHERALARM_MASK);
+
+    public static final String CHANNEL_NAME_DISHWASHERALARM_LATCH = "Latch";
+    public static final String CHANNEL_LABEL_DISHWASHERALARM_LATCH = "Latch";
+    public static final String CHANNEL_ID_DISHWASHERALARM_LATCH = "dishwasheralarm-latch";
+    public static final ChannelTypeUID CHANNEL_DISHWASHERALARM_LATCH = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_DISHWASHERALARM_LATCH);
+
+    public static final String CHANNEL_NAME_DISHWASHERALARM_STATE = "State";
+    public static final String CHANNEL_LABEL_DISHWASHERALARM_STATE = "State";
+    public static final String CHANNEL_ID_DISHWASHERALARM_STATE = "dishwasheralarm-state";
+    public static final ChannelTypeUID CHANNEL_DISHWASHERALARM_STATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_DISHWASHERALARM_STATE);
+
+    public static final String CHANNEL_NAME_DISHWASHERALARM_SUPPORTED = "Supported";
+    public static final String CHANNEL_LABEL_DISHWASHERALARM_SUPPORTED = "Supported";
+    public static final String CHANNEL_ID_DISHWASHERALARM_SUPPORTED = "dishwasheralarm-supported";
+    public static final ChannelTypeUID CHANNEL_DISHWASHERALARM_SUPPORTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_DISHWASHERALARM_SUPPORTED);
+
     // DishwasherMode Cluster
     // DoorLock Cluster
     public static final String CHANNEL_NAME_DOORLOCK_LOCKSTATE = "LockState";
@@ -1850,6 +1950,72 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_FLOWMEASUREMENT_TOLERANCE);
 
     // FormaldehydeConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "formaldehydeconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "formaldehydeconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "formaldehydeconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "formaldehydeconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "formaldehydeconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "formaldehydeconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "formaldehydeconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "formaldehydeconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "formaldehydeconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "formaldehydeconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE = "formaldehydeconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // GeneralCommissioning Cluster
     public static final String CHANNEL_NAME_GENERALCOMMISSIONING_BREADCRUMB = "Breadcrumb";
     public static final String CHANNEL_LABEL_GENERALCOMMISSIONING_BREADCRUMB = "Breadcrumb";
@@ -1999,6 +2165,42 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_GROUPS_NAMESUPPORT);
 
     // HepaFilterMonitoring Cluster
+    public static final String CHANNEL_NAME_HEPAFILTERMONITORING_CONDITION = "Condition";
+    public static final String CHANNEL_LABEL_HEPAFILTERMONITORING_CONDITION = "Condition";
+    public static final String CHANNEL_ID_HEPAFILTERMONITORING_CONDITION = "hepafiltermonitoring-condition";
+    public static final ChannelTypeUID CHANNEL_HEPAFILTERMONITORING_CONDITION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_HEPAFILTERMONITORING_CONDITION);
+
+    public static final String CHANNEL_NAME_HEPAFILTERMONITORING_DEGRADATIONDIRECTION = "DegradationDirection";
+    public static final String CHANNEL_LABEL_HEPAFILTERMONITORING_DEGRADATIONDIRECTION = "Degradation Direction";
+    public static final String CHANNEL_ID_HEPAFILTERMONITORING_DEGRADATIONDIRECTION = "hepafiltermonitoring-degradationdirection";
+    public static final ChannelTypeUID CHANNEL_HEPAFILTERMONITORING_DEGRADATIONDIRECTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_HEPAFILTERMONITORING_DEGRADATIONDIRECTION);
+
+    public static final String CHANNEL_NAME_HEPAFILTERMONITORING_CHANGEINDICATION = "ChangeIndication";
+    public static final String CHANNEL_LABEL_HEPAFILTERMONITORING_CHANGEINDICATION = "Change Indication";
+    public static final String CHANNEL_ID_HEPAFILTERMONITORING_CHANGEINDICATION = "hepafiltermonitoring-changeindication";
+    public static final ChannelTypeUID CHANNEL_HEPAFILTERMONITORING_CHANGEINDICATION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_HEPAFILTERMONITORING_CHANGEINDICATION);
+
+    public static final String CHANNEL_NAME_HEPAFILTERMONITORING_INPLACEINDICATOR = "InPlaceIndicator";
+    public static final String CHANNEL_LABEL_HEPAFILTERMONITORING_INPLACEINDICATOR = "In Place Indicator";
+    public static final String CHANNEL_ID_HEPAFILTERMONITORING_INPLACEINDICATOR = "hepafiltermonitoring-inplaceindicator";
+    public static final ChannelTypeUID CHANNEL_HEPAFILTERMONITORING_INPLACEINDICATOR = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_HEPAFILTERMONITORING_INPLACEINDICATOR);
+
+    public static final String CHANNEL_NAME_HEPAFILTERMONITORING_LASTCHANGEDTIME = "LastChangedTime";
+    public static final String CHANNEL_LABEL_HEPAFILTERMONITORING_LASTCHANGEDTIME = "Last Changed Time";
+    public static final String CHANNEL_ID_HEPAFILTERMONITORING_LASTCHANGEDTIME = "hepafiltermonitoring-lastchangedtime";
+    public static final ChannelTypeUID CHANNEL_HEPAFILTERMONITORING_LASTCHANGEDTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_HEPAFILTERMONITORING_LASTCHANGEDTIME);
+
+    public static final String CHANNEL_NAME_HEPAFILTERMONITORING_REPLACEMENTPRODUCTLIST = "ReplacementProductList";
+    public static final String CHANNEL_LABEL_HEPAFILTERMONITORING_REPLACEMENTPRODUCTLIST = "Replacement Product List";
+    public static final String CHANNEL_ID_HEPAFILTERMONITORING_REPLACEMENTPRODUCTLIST = "hepafiltermonitoring-replacementproductlist";
+    public static final ChannelTypeUID CHANNEL_HEPAFILTERMONITORING_REPLACEMENTPRODUCTLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_HEPAFILTERMONITORING_REPLACEMENTPRODUCTLIST);
+
     // IcdManagement Cluster
     public static final String CHANNEL_NAME_ICDMANAGEMENT_IDLEMODEDURATION = "IdleModeDuration";
     public static final String CHANNEL_LABEL_ICDMANAGEMENT_IDLEMODEDURATION = "Idle Mode Duration";
@@ -2161,7 +2363,6 @@ public class ClusterConstants {
 
     // JointFabricPki Cluster
     // KeypadInput Cluster
-    // Label Cluster
     // LaundryDryerControls Cluster
     public static final String CHANNEL_NAME_LAUNDRYDRYERCONTROLS_SUPPORTEDDRYNESSLEVELS = "SupportedDrynessLevels";
     public static final String CHANNEL_LABEL_LAUNDRYDRYERCONTROLS_SUPPORTEDDRYNESSLEVELS = "Supported Dryness Levels";
@@ -2436,31 +2637,6 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_MICROWAVEOVENCONTROL_WATTRATING);
 
     // MicrowaveOvenMode Cluster
-    // ModeBase Cluster
-    public static final String CHANNEL_NAME_MODEBASE_SUPPORTEDMODES = "SupportedModes";
-    public static final String CHANNEL_LABEL_MODEBASE_SUPPORTEDMODES = "Supported Modes";
-    public static final String CHANNEL_ID_MODEBASE_SUPPORTEDMODES = "modebase-supportedmodes";
-    public static final ChannelTypeUID CHANNEL_MODEBASE_SUPPORTEDMODES = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_MODEBASE_SUPPORTEDMODES);
-
-    public static final String CHANNEL_NAME_MODEBASE_CURRENTMODE = "CurrentMode";
-    public static final String CHANNEL_LABEL_MODEBASE_CURRENTMODE = "Current Mode";
-    public static final String CHANNEL_ID_MODEBASE_CURRENTMODE = "modebase-currentmode";
-    public static final ChannelTypeUID CHANNEL_MODEBASE_CURRENTMODE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_MODEBASE_CURRENTMODE);
-
-    public static final String CHANNEL_NAME_MODEBASE_STARTUPMODE = "StartUpMode";
-    public static final String CHANNEL_LABEL_MODEBASE_STARTUPMODE = "Start Up Mode";
-    public static final String CHANNEL_ID_MODEBASE_STARTUPMODE = "modebase-startupmode";
-    public static final ChannelTypeUID CHANNEL_MODEBASE_STARTUPMODE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_MODEBASE_STARTUPMODE);
-
-    public static final String CHANNEL_NAME_MODEBASE_ONMODE = "OnMode";
-    public static final String CHANNEL_LABEL_MODEBASE_ONMODE = "On Mode";
-    public static final String CHANNEL_ID_MODEBASE_ONMODE = "modebase-onmode";
-    public static final ChannelTypeUID CHANNEL_MODEBASE_ONMODE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_MODEBASE_ONMODE);
-
     // ModeSelect Cluster
     public static final String CHANNEL_NAME_MODESELECT_DESCRIPTION = "Description";
     public static final String CHANNEL_LABEL_MODESELECT_DESCRIPTION = "Description";
@@ -2566,6 +2742,72 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_NETWORKCOMMISSIONING_THREADVERSION);
 
     // NitrogenDioxideConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "nitrogendioxideconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "nitrogendioxideconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = "nitrogendioxideconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "nitrogendioxideconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "nitrogendioxideconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "nitrogendioxideconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // OccupancySensing Cluster
     public static final String CHANNEL_NAME_OCCUPANCYSENSING_OCCUPANCY = "Occupancy";
     public static final String CHANNEL_LABEL_OCCUPANCYSENSING_OCCUPANCY = "Occupancy";
@@ -2781,11 +3023,305 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATESTATEPROGRESS);
 
     // OvenCavityOperationalState Cluster
+    public static final String CHANNEL_NAME_OVENCAVITYOPERATIONALSTATE_PHASELIST = "PhaseList";
+    public static final String CHANNEL_LABEL_OVENCAVITYOPERATIONALSTATE_PHASELIST = "Phase List";
+    public static final String CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_PHASELIST = "ovencavityoperationalstate-phaselist";
+    public static final ChannelTypeUID CHANNEL_OVENCAVITYOPERATIONALSTATE_PHASELIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_PHASELIST);
+
+    public static final String CHANNEL_NAME_OVENCAVITYOPERATIONALSTATE_CURRENTPHASE = "CurrentPhase";
+    public static final String CHANNEL_LABEL_OVENCAVITYOPERATIONALSTATE_CURRENTPHASE = "Current Phase";
+    public static final String CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_CURRENTPHASE = "ovencavityoperationalstate-currentphase";
+    public static final ChannelTypeUID CHANNEL_OVENCAVITYOPERATIONALSTATE_CURRENTPHASE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_CURRENTPHASE);
+
+    public static final String CHANNEL_NAME_OVENCAVITYOPERATIONALSTATE_COUNTDOWNTIME = "CountdownTime";
+    public static final String CHANNEL_LABEL_OVENCAVITYOPERATIONALSTATE_COUNTDOWNTIME = "Countdown Time";
+    public static final String CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_COUNTDOWNTIME = "ovencavityoperationalstate-countdowntime";
+    public static final ChannelTypeUID CHANNEL_OVENCAVITYOPERATIONALSTATE_COUNTDOWNTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_COUNTDOWNTIME);
+
+    public static final String CHANNEL_NAME_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATELIST = "OperationalStateList";
+    public static final String CHANNEL_LABEL_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATELIST = "Operational State List";
+    public static final String CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATELIST = "ovencavityoperationalstate-operationalstatelist";
+    public static final ChannelTypeUID CHANNEL_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATELIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATELIST);
+
+    public static final String CHANNEL_NAME_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATE = "OperationalState";
+    public static final String CHANNEL_LABEL_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATE = "Operational State";
+    public static final String CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATE = "ovencavityoperationalstate-operationalstate";
+    public static final ChannelTypeUID CHANNEL_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OVENCAVITYOPERATIONALSTATE_OPERATIONALSTATE);
+
     // OvenMode Cluster
     // OzoneConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "ozoneconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "ozoneconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "ozoneconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "ozoneconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "ozoneconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "ozoneconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "ozoneconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_UNCERTAINTY = "ozoneconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "ozoneconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "ozoneconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE = "ozoneconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // Pm10ConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm10concentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "pm10concentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "pm10concentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm10concentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "pm10concentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm10concentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "pm10concentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_UNCERTAINTY = "pm10concentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "pm10concentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "pm10concentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm10concentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // Pm1ConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm1concentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "pm1concentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "pm1concentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm1concentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "pm1concentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm1concentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "pm1concentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_UNCERTAINTY = "pm1concentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "pm1concentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "pm1concentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm1concentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // Pm25ConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm25concentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "pm25concentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "pm25concentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm25concentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "pm25concentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm25concentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "pm25concentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_UNCERTAINTY = "pm25concentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "pm25concentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "pm25concentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm25concentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // PowerSource Cluster
     public static final String CHANNEL_NAME_POWERSOURCE_STATUS = "Status";
     public static final String CHANNEL_LABEL_POWERSOURCE_STATUS = "Status";
@@ -3202,7 +3738,97 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_PUMPCONFIGURATIONANDCONTROL_CONTROLMODE);
 
     // RadonConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "radonconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "radonconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "radonconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "radonconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "radonconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "radonconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "radonconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_UNCERTAINTY = "radonconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "radonconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "radonconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE = "radonconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // RefrigeratorAlarm Cluster
+    public static final String CHANNEL_NAME_REFRIGERATORALARM_MASK = "Mask";
+    public static final String CHANNEL_LABEL_REFRIGERATORALARM_MASK = "Mask";
+    public static final String CHANNEL_ID_REFRIGERATORALARM_MASK = "refrigeratoralarm-mask";
+    public static final ChannelTypeUID CHANNEL_REFRIGERATORALARM_MASK = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_REFRIGERATORALARM_MASK);
+
+    public static final String CHANNEL_NAME_REFRIGERATORALARM_LATCH = "Latch";
+    public static final String CHANNEL_LABEL_REFRIGERATORALARM_LATCH = "Latch";
+    public static final String CHANNEL_ID_REFRIGERATORALARM_LATCH = "refrigeratoralarm-latch";
+    public static final ChannelTypeUID CHANNEL_REFRIGERATORALARM_LATCH = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_REFRIGERATORALARM_LATCH);
+
+    public static final String CHANNEL_NAME_REFRIGERATORALARM_STATE = "State";
+    public static final String CHANNEL_LABEL_REFRIGERATORALARM_STATE = "State";
+    public static final String CHANNEL_ID_REFRIGERATORALARM_STATE = "refrigeratoralarm-state";
+    public static final ChannelTypeUID CHANNEL_REFRIGERATORALARM_STATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_REFRIGERATORALARM_STATE);
+
+    public static final String CHANNEL_NAME_REFRIGERATORALARM_SUPPORTED = "Supported";
+    public static final String CHANNEL_LABEL_REFRIGERATORALARM_SUPPORTED = "Supported";
+    public static final String CHANNEL_ID_REFRIGERATORALARM_SUPPORTED = "refrigeratoralarm-supported";
+    public static final ChannelTypeUID CHANNEL_REFRIGERATORALARM_SUPPORTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_REFRIGERATORALARM_SUPPORTED);
+
     // RefrigeratorAndTemperatureControlledCabinetMode Cluster
     // RelativeHumidityMeasurement Cluster
     public static final String CHANNEL_NAME_RELATIVEHUMIDITYMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
@@ -3229,45 +3855,38 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_RELATIVEHUMIDITYMEASUREMENT_TOLERANCE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_RELATIVEHUMIDITYMEASUREMENT_TOLERANCE);
 
-    // ResourceMonitoring Cluster
-    public static final String CHANNEL_NAME_RESOURCEMONITORING_CONDITION = "Condition";
-    public static final String CHANNEL_LABEL_RESOURCEMONITORING_CONDITION = "Condition";
-    public static final String CHANNEL_ID_RESOURCEMONITORING_CONDITION = "resourcemonitoring-condition";
-    public static final ChannelTypeUID CHANNEL_RESOURCEMONITORING_CONDITION = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_RESOURCEMONITORING_CONDITION);
-
-    public static final String CHANNEL_NAME_RESOURCEMONITORING_DEGRADATIONDIRECTION = "DegradationDirection";
-    public static final String CHANNEL_LABEL_RESOURCEMONITORING_DEGRADATIONDIRECTION = "Degradation Direction";
-    public static final String CHANNEL_ID_RESOURCEMONITORING_DEGRADATIONDIRECTION = "resourcemonitoring-degradationdirection";
-    public static final ChannelTypeUID CHANNEL_RESOURCEMONITORING_DEGRADATIONDIRECTION = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_RESOURCEMONITORING_DEGRADATIONDIRECTION);
-
-    public static final String CHANNEL_NAME_RESOURCEMONITORING_CHANGEINDICATION = "ChangeIndication";
-    public static final String CHANNEL_LABEL_RESOURCEMONITORING_CHANGEINDICATION = "Change Indication";
-    public static final String CHANNEL_ID_RESOURCEMONITORING_CHANGEINDICATION = "resourcemonitoring-changeindication";
-    public static final ChannelTypeUID CHANNEL_RESOURCEMONITORING_CHANGEINDICATION = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_RESOURCEMONITORING_CHANGEINDICATION);
-
-    public static final String CHANNEL_NAME_RESOURCEMONITORING_INPLACEINDICATOR = "InPlaceIndicator";
-    public static final String CHANNEL_LABEL_RESOURCEMONITORING_INPLACEINDICATOR = "In Place Indicator";
-    public static final String CHANNEL_ID_RESOURCEMONITORING_INPLACEINDICATOR = "resourcemonitoring-inplaceindicator";
-    public static final ChannelTypeUID CHANNEL_RESOURCEMONITORING_INPLACEINDICATOR = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_RESOURCEMONITORING_INPLACEINDICATOR);
-
-    public static final String CHANNEL_NAME_RESOURCEMONITORING_LASTCHANGEDTIME = "LastChangedTime";
-    public static final String CHANNEL_LABEL_RESOURCEMONITORING_LASTCHANGEDTIME = "Last Changed Time";
-    public static final String CHANNEL_ID_RESOURCEMONITORING_LASTCHANGEDTIME = "resourcemonitoring-lastchangedtime";
-    public static final ChannelTypeUID CHANNEL_RESOURCEMONITORING_LASTCHANGEDTIME = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_RESOURCEMONITORING_LASTCHANGEDTIME);
-
-    public static final String CHANNEL_NAME_RESOURCEMONITORING_REPLACEMENTPRODUCTLIST = "ReplacementProductList";
-    public static final String CHANNEL_LABEL_RESOURCEMONITORING_REPLACEMENTPRODUCTLIST = "Replacement Product List";
-    public static final String CHANNEL_ID_RESOURCEMONITORING_REPLACEMENTPRODUCTLIST = "resourcemonitoring-replacementproductlist";
-    public static final ChannelTypeUID CHANNEL_RESOURCEMONITORING_REPLACEMENTPRODUCTLIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_RESOURCEMONITORING_REPLACEMENTPRODUCTLIST);
-
     // RvcCleanMode Cluster
     // RvcOperationalState Cluster
+    public static final String CHANNEL_NAME_RVCOPERATIONALSTATE_PHASELIST = "PhaseList";
+    public static final String CHANNEL_LABEL_RVCOPERATIONALSTATE_PHASELIST = "Phase List";
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_PHASELIST = "rvcoperationalstate-phaselist";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_PHASELIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RVCOPERATIONALSTATE_PHASELIST);
+
+    public static final String CHANNEL_NAME_RVCOPERATIONALSTATE_CURRENTPHASE = "CurrentPhase";
+    public static final String CHANNEL_LABEL_RVCOPERATIONALSTATE_CURRENTPHASE = "Current Phase";
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_CURRENTPHASE = "rvcoperationalstate-currentphase";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_CURRENTPHASE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RVCOPERATIONALSTATE_CURRENTPHASE);
+
+    public static final String CHANNEL_NAME_RVCOPERATIONALSTATE_COUNTDOWNTIME = "CountdownTime";
+    public static final String CHANNEL_LABEL_RVCOPERATIONALSTATE_COUNTDOWNTIME = "Countdown Time";
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_COUNTDOWNTIME = "rvcoperationalstate-countdowntime";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_COUNTDOWNTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RVCOPERATIONALSTATE_COUNTDOWNTIME);
+
+    public static final String CHANNEL_NAME_RVCOPERATIONALSTATE_OPERATIONALSTATELIST = "OperationalStateList";
+    public static final String CHANNEL_LABEL_RVCOPERATIONALSTATE_OPERATIONALSTATELIST = "Operational State List";
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_OPERATIONALSTATELIST = "rvcoperationalstate-operationalstatelist";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_OPERATIONALSTATELIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RVCOPERATIONALSTATE_OPERATIONALSTATELIST);
+
+    public static final String CHANNEL_NAME_RVCOPERATIONALSTATE_OPERATIONALSTATE = "OperationalState";
+    public static final String CHANNEL_LABEL_RVCOPERATIONALSTATE_OPERATIONALSTATE = "Operational State";
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_OPERATIONALSTATE = "rvcoperationalstate-operationalstate";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_OPERATIONALSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_RVCOPERATIONALSTATE_OPERATIONALSTATE);
+
     // RvcRunMode Cluster
     // ScenesManagement Cluster
     public static final String CHANNEL_NAME_SCENESMANAGEMENT_LASTCONFIGUREDBY = "LastConfiguredBy";
@@ -4443,6 +5062,72 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_TIMESYNCHRONIZATION_SUPPORTSDNSRESOLVE);
 
     // TotalVolatileOrganicCompoundsConcentrationMeasurement Cluster
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "MinMeasuredValue";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "Min Measured Value";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-minmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MINMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "MaxMeasuredValue";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "Max Measured Value";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-maxmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MAXMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "PeakMeasuredValue";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "Peak Measured Value";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "PeakMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "Peak Measured Value Window";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = "totalvolatileorganiccompoundsconcentrationmeasurement-peakmeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "AverageMeasuredValue";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "Average Measured Value";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "AverageMeasuredValueWindow";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "Average Measured Value Window";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = "totalvolatileorganiccompoundsconcentrationmeasurement-averagemeasuredvaluewindow";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUEWINDOW);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_UNCERTAINTY = "Uncertainty";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_UNCERTAINTY = "totalvolatileorganiccompoundsconcentrationmeasurement-uncertainty";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_UNCERTAINTY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_UNCERTAINTY);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "MeasurementUnit";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "Measurement Unit";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = "totalvolatileorganiccompoundsconcentrationmeasurement-measurementunit";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTUNIT);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "MeasurementMedium";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "Measurement Medium";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = "totalvolatileorganiccompoundsconcentrationmeasurement-measurementmedium";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREMENTMEDIUM);
+
+    public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE = "LevelValue";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE = "Level Value";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE);
+
     // UnitLocalization Cluster
     public static final String CHANNEL_NAME_UNITLOCALIZATION_TEMPERATUREUNIT = "TemperatureUnit";
     public static final String CHANNEL_LABEL_UNITLOCALIZATION_TEMPERATUREUNIT = "Temperature Unit";
@@ -4583,6 +5268,42 @@ public class ClusterConstants {
 
     // WaterHeaterMode Cluster
     // WaterTankLevelMonitoring Cluster
+    public static final String CHANNEL_NAME_WATERTANKLEVELMONITORING_CONDITION = "Condition";
+    public static final String CHANNEL_LABEL_WATERTANKLEVELMONITORING_CONDITION = "Condition";
+    public static final String CHANNEL_ID_WATERTANKLEVELMONITORING_CONDITION = "watertanklevelmonitoring-condition";
+    public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_CONDITION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_CONDITION);
+
+    public static final String CHANNEL_NAME_WATERTANKLEVELMONITORING_DEGRADATIONDIRECTION = "DegradationDirection";
+    public static final String CHANNEL_LABEL_WATERTANKLEVELMONITORING_DEGRADATIONDIRECTION = "Degradation Direction";
+    public static final String CHANNEL_ID_WATERTANKLEVELMONITORING_DEGRADATIONDIRECTION = "watertanklevelmonitoring-degradationdirection";
+    public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_DEGRADATIONDIRECTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_DEGRADATIONDIRECTION);
+
+    public static final String CHANNEL_NAME_WATERTANKLEVELMONITORING_CHANGEINDICATION = "ChangeIndication";
+    public static final String CHANNEL_LABEL_WATERTANKLEVELMONITORING_CHANGEINDICATION = "Change Indication";
+    public static final String CHANNEL_ID_WATERTANKLEVELMONITORING_CHANGEINDICATION = "watertanklevelmonitoring-changeindication";
+    public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_CHANGEINDICATION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_CHANGEINDICATION);
+
+    public static final String CHANNEL_NAME_WATERTANKLEVELMONITORING_INPLACEINDICATOR = "InPlaceIndicator";
+    public static final String CHANNEL_LABEL_WATERTANKLEVELMONITORING_INPLACEINDICATOR = "In Place Indicator";
+    public static final String CHANNEL_ID_WATERTANKLEVELMONITORING_INPLACEINDICATOR = "watertanklevelmonitoring-inplaceindicator";
+    public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_INPLACEINDICATOR = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_INPLACEINDICATOR);
+
+    public static final String CHANNEL_NAME_WATERTANKLEVELMONITORING_LASTCHANGEDTIME = "LastChangedTime";
+    public static final String CHANNEL_LABEL_WATERTANKLEVELMONITORING_LASTCHANGEDTIME = "Last Changed Time";
+    public static final String CHANNEL_ID_WATERTANKLEVELMONITORING_LASTCHANGEDTIME = "watertanklevelmonitoring-lastchangedtime";
+    public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_LASTCHANGEDTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_LASTCHANGEDTIME);
+
+    public static final String CHANNEL_NAME_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST = "ReplacementProductList";
+    public static final String CHANNEL_LABEL_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST = "Replacement Product List";
+    public static final String CHANNEL_ID_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST = "watertanklevelmonitoring-replacementproductlist";
+    public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST);
+
     // WiFiNetworkDiagnostics Cluster
     public static final String CHANNEL_NAME_WIFINETWORKDIAGNOSTICS_BSSID = "Bssid";
     public static final String CHANNEL_LABEL_WIFINETWORKDIAGNOSTICS_BSSID = "Bssid";
