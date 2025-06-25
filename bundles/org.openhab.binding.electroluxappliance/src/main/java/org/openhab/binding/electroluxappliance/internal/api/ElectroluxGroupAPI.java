@@ -131,7 +131,7 @@ public class ElectroluxGroupAPI {
                             ApplianceStateDTO applianceState = gson.fromJson(jsonApplianceState,
                                     WashingMachineStateDTO.class);
                             if (applianceState != null) {
-                                dto.setApplianceState(applianceState);
+                                dto.setApplianceState(applianceState, retrievalTs);
                             }
                             electroluxApplianceThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
                         } else if ("PORTABLE_AIR_CONDITIONER"
@@ -140,7 +140,7 @@ public class ElectroluxGroupAPI {
                             ApplianceStateDTO applianceState = gson.fromJson(jsonApplianceState,
                                     PortableAirConditionerStateDTO.class);
                             if (applianceState != null) {
-                                dto.setApplianceState(applianceState);
+                                dto.setApplianceState(applianceState, retrievalTs);
                             }
                             electroluxApplianceThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
                         }

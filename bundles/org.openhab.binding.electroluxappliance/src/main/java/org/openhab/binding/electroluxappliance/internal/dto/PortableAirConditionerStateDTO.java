@@ -47,6 +47,28 @@ public class PortableAirConditionerStateDTO extends ApplianceStateDTO {
     // Inner class for Reported properties
     public static class Reported {
 
+        @SerializedName("VmNo_MCU")
+        private String vmNoMCU = NOT_READ_STRING;
+
+        public boolean getIsReadVmNoMCU() {
+            return !NOT_READ_STRING.equals(vmNoMCU);
+        }
+
+        public String getVmNoMCU() {
+            return vmNoMCU;
+        }
+
+        @SerializedName("VmNo_NIU")
+        private String getVmNoNIO = NOT_READ_STRING;
+
+        public boolean getIsReadVmNoNIO() {
+            return !NOT_READ_STRING.equals(getVmNoNIO);
+        }
+
+        public String getVmNoNIO() {
+            return getVmNoNIO;
+        }
+
         @SerializedName("networkInterface")
         public NetworkInterface networkInterface = new NetworkInterface();
 
@@ -176,14 +198,8 @@ public class PortableAirConditionerStateDTO extends ApplianceStateDTO {
         @SerializedName("filterState")
         private String filterState = "";
 
-        @SerializedName("VmNo_MCU")
-        private String vmNoMCU = "";
-
         @SerializedName("dataModelVersion")
         private String dataModelVersion = "";
-
-        @SerializedName("VmNo_NIU")
-        private String vmNoNIU = "";
 
         @SerializedName("schedulerSession")
         private String schedulerSession = "";

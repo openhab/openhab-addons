@@ -16,6 +16,7 @@ import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplian
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -88,11 +89,15 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.UNKNOWN);
 
-            scheduler.execute(() -> {
+            // The bridge updates, then attempts to read the config, this fails, then refreshes the token and try's
+            // again
+            // while this is going on this kicks in where the DTO data is not yet read, so this allows for these initial
+            // delays.
+            scheduler.schedule(() -> {
                 update();
                 Map<String, String> properties = refreshProperties();
                 updateProperties(properties);
-            });
+            }, 5, TimeUnit.SECONDS);
         }
     }
 
@@ -124,4 +129,8 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
     public abstract void update(@Nullable ApplianceDTO dto);
 
     public abstract Map<String, String> refreshProperties();
+
+    protected ElectroluxApplianceConfiguration getApplianceConfig() {
+        return config;
+    }
 }

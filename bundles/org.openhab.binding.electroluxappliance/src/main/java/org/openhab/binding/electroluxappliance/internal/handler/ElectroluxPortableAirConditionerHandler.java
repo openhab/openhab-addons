@@ -23,9 +23,7 @@ import javax.measure.UnconvertibleException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfiguration;
 import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
-import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.PortableAirConditionerStateDTO;
 import org.openhab.core.i18n.LocaleProvider;
@@ -62,8 +60,6 @@ import org.slf4j.LoggerFactory;
 public class ElectroluxPortableAirConditionerHandler extends ElectroluxApplianceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxPortableAirConditionerHandler.class);
-
-    private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
     private final Storage<String> strStore;
 
@@ -304,7 +300,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof ElectroluxApplianceBridgeHandler bridgeHandler) {
-            ApplianceDTO dto = bridgeHandler.getElectroluxApplianceThings().get(config.getSerialNumber());
+            ApplianceDTO dto = bridgeHandler.getElectroluxApplianceThings().get(getApplianceConfig().getSerialNumber());
             if (dto != null) {
                 var applianceInfo = dto.getApplianceInfo().getApplianceInfo();
                 properties.put(Thing.PROPERTY_VENDOR, applianceInfo.getBrand());
@@ -312,9 +308,15 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                 properties.put(PROPERTY_DEVICE, applianceInfo.getDeviceType());
                 properties.put(Thing.PROPERTY_MODEL_ID, applianceInfo.getModel());
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, applianceInfo.getSerialNumber());
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getFrmVerNIU());
 
+                if (dto.getApplianceState() instanceof PortableAirConditionerStateDTO pacDto) {
+                    if (pacDto.getProperties().getReported().getIsReadVmNoNIO()) {
+                        properties.put(PROPERTY_NIU_FW_VERSION, pacDto.getProperties().getReported().getVmNoNIO());
+                    }
+                    if (pacDto.getProperties().getReported().getIsReadVmNoMCU()) {
+                        properties.put(PROPERTY_MCU_FW_VERSION, pacDto.getProperties().getReported().getVmNoMCU());
+                    }
+                }
             }
         }
         return properties;

@@ -103,6 +103,8 @@ public class ElectroluxApplianceBindingConstants {
     public static final String PROPERTY_FW_VERSION = "fwVersion";
     public static final String PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String PROPERTY_WORKMODE = "workmode";
+    public static final String PROPERTY_NIU_FW_VERSION = "nioFwVersion";
+    public static final String PROPERTY_MCU_FW_VERSION = "mcuFwVersion";
 
     // List of all Commands for Air Purifiers
     public static final String COMMAND_WORKMODE_POWEROFF = "PowerOff";

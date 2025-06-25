@@ -20,7 +20,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceBindingConstants;
-import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfiguration;
 import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
@@ -56,8 +55,6 @@ import org.slf4j.LoggerFactory;
 public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxAirPurifierHandler.class);
-
-    private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
     public ElectroluxAirPurifierHandler(Thing thing, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
@@ -179,7 +176,7 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof ElectroluxApplianceBridgeHandler bridgeHandler) {
-            ApplianceDTO dto = bridgeHandler.getElectroluxApplianceThings().get(config.getSerialNumber());
+            ApplianceDTO dto = bridgeHandler.getElectroluxApplianceThings().get(getApplianceConfig().getSerialNumber());
             if (dto != null) {
                 var applianceInfo = dto.getApplianceInfo().getApplianceInfo();
                 properties.put(Thing.PROPERTY_VENDOR, applianceInfo.getBrand());

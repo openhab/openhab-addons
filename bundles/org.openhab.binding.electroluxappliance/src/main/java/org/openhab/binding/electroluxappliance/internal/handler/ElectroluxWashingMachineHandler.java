@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfiguration;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.WashingMachineStateDTO;
 import org.openhab.core.i18n.LocaleProvider;
@@ -53,8 +52,6 @@ import org.slf4j.LoggerFactory;
 public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxWashingMachineHandler.class);
-
-    private ElectroluxApplianceConfiguration config = new ElectroluxApplianceConfiguration();
 
     public ElectroluxWashingMachineHandler(Thing thing, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
@@ -137,7 +134,7 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
         Map<String, String> properties = new HashMap<>();
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof ElectroluxApplianceBridgeHandler bridgeHandler) {
-            ApplianceDTO dto = bridgeHandler.getElectroluxApplianceThings().get(config.getSerialNumber());
+            ApplianceDTO dto = bridgeHandler.getElectroluxApplianceThings().get(getApplianceConfig().getSerialNumber());
             if (dto != null) {
                 var applianceInfo = dto.getApplianceInfo().getApplianceInfo();
                 properties.put(Thing.PROPERTY_VENDOR, applianceInfo.getBrand());
