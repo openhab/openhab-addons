@@ -81,6 +81,19 @@ public class ConverterRegistry {
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
                 ThreadBorderRouterManagementConverter.class);
+        // Robotic Vacuum Cleaner converters
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.CLUSTER_ID,
+                RvcRunModeConverter.class);
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcCleanModeCluster.CLUSTER_ID,
+                RvcCleanModeConverter.class);
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcOperationalStateCluster.CLUSTER_ID,
+                RvcOperationalStateConverter.class);
+        ConverterRegistry.registerConverter(
+                org.openhab.binding.matter.internal.client.dto.cluster.gen.ServiceAreaCluster.CLUSTER_ID,
+                ServiceAreaConverter.class);
     }
 
     public static void registerConverter(Integer clusterId,

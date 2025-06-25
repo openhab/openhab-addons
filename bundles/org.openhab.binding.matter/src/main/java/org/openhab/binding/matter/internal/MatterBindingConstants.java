@@ -188,6 +188,26 @@ public class MatterBindingConstants {
     public static final ChannelTypeUID CHANNEL_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET = new ChannelTypeUID(
             BINDING_ID, CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET);
 
+    // Robotic Vacuum Cleaner channels
+    public static final String CHANNEL_ID_RVCRUNMODE_MODE = "rvcrunmode-mode";
+    public static final ChannelTypeUID CHANNEL_RVCRUNMODE_MODE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_RVCRUNMODE_MODE);
+    public static final String CHANNEL_ID_RVCCLEANMODE_MODE = "rvccleanmode-mode";
+    public static final ChannelTypeUID CHANNEL_RVCCLEANMODE_MODE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_RVCCLEANMODE_MODE);
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_STATE = "rvcoperationalstate-state";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_RVCOPERATIONALSTATE_STATE);
+    public static final String CHANNEL_ID_SERVICEAREA_CURRENTAREA = "servicearea-currentarea";
+    public static final ChannelTypeUID CHANNEL_SERVICEAREA_CURRENTAREA = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SERVICEAREA_CURRENTAREA);
+    public static final String CHANNEL_ID_RVCOPERATIONALSTATE_GOHOME = "rvcoperationalstate-gohome";
+    public static final ChannelTypeUID CHANNEL_RVCOPERATIONALSTATE_GOHOME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_RVCOPERATIONALSTATE_GOHOME);
+    public static final String CHANNEL_ID_SERVICEAREA_SELECTEDAREA_PREFIX = "servicearea-selectedarea-";
+    public static final ChannelTypeUID CHANNEL_SERVICEAREA_SELECTEDAREA = new ChannelTypeUID(BINDING_ID,
+            "servicearea-selectedarea");
+
     // Thread Border Router Configuration Keys
     public static final String CONFIG_THREAD_CHANNEL = "channel";
     public static final String CONFIG_THREAD_ALLOWED_CHANNELS = "allowedChannels";

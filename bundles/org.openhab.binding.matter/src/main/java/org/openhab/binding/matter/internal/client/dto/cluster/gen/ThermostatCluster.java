@@ -627,8 +627,8 @@ public class ThermostatCluster extends BaseCluster {
      * duration.
      */
     public Integer setpointHoldExpiryTimestamp; // 82 epoch-s R V
-    // Structs
 
+    // Structs
     public class PresetStruct {
         /**
          * This field shall indicate a device generated identifier for this preset. It shall be unique on the device,
