@@ -16,15 +16,14 @@ import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.List;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Falkenstern - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class)
+@Component(service = DiscoveryService.class, configurationPid = "discovery.plclogo")
 public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PLCDiscoveryService.class);
@@ -56,75 +55,64 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
     private static final int CONNECTION_TIMEOUT = 500;
     private static final int DISCOVERY_TIMEOUT = 30;
 
-    private class Runner implements Runnable {
-        private final ReentrantLock lock = new ReentrantLock();
-        private final String host;
+    private final Runnable scanner = () -> {
+        logger.debug("Start discovery for LOGO! bridge");
+        for (final InetAddress address : NetUtil.getFullRangeOfAddressesToScan()) {
+            final NetworkInterface device;
+            try {
+                device = NetworkInterface.getByInetAddress(address);
+                if (!device.isUp() || device.isLoopback()) {
+                    continue;
+                }
+            } catch (SocketException exception) {
+                logger.warn("LOGO! bridge discovering: {}.", exception.toString());
+                continue;
+            }
 
-        public Runner(final String address) {
-            this.host = address;
-        }
-
-        @Override
-        public void run() {
+            final String host = address.getHostAddress();
             try {
                 if (Ping.checkVitality(host, LOGO_PORT, CONNECTION_TIMEOUT)) {
                     logger.debug("LOGO! device found at: {}.", host);
 
-                    ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, host.replace('.', '_'));
-                    DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
-                    builder.withProperty(LOGO_HOST, host);
-                    builder.withLabel(host);
-
-                    lock.lock();
-                    try {
-                        thingDiscovered(builder.build());
-                    } finally {
-                        lock.unlock();
-                    }
+                    final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, host.replace('.', '_'));
+                    final DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
+                    builder.withProperty(LOGO_HOST, address).withLabel(String.format("Logo %s", address));
+                    builder.withRepresentationProperty(LOGO_HOST);
+                    thingDiscovered(builder.build());
                 }
             } catch (IOException exception) {
                 logger.debug("LOGO! device not found at: {}.", host);
             }
         }
-    }
+    };
+    private @Nullable ScheduledFuture<?> scanJob;
 
     /**
      * Constructor.
      */
     public PLCDiscoveryService() {
-        super(THING_TYPES_UIDS, DISCOVERY_TIMEOUT);
+        super(THING_TYPES_UIDS, DISCOVERY_TIMEOUT, true);
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        stopBackgroundDiscovery();
+        scanJob = scheduler.scheduleWithFixedDelay(scanner, 0, 60, TimeUnit.SECONDS);
+        super.startBackgroundDiscovery();
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        final ScheduledFuture<?> scanJob = this.scanJob;
+        if (scanJob != null) {
+            scanJob.cancel(true);
+        }
+        this.scanJob = null;
+        super.stopBackgroundDiscovery();
     }
 
     @Override
     protected void startScan() {
-        stopScan();
-
-        logger.debug("Start scan for LOGO! bridge");
-
-        List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
-        logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (InetAddress address : addressesToScan) {
-            try {
-                executor.execute(new Runner(address.getHostAddress()));
-            } catch (RejectedExecutionException exception) {
-                logger.warn("LOGO! bridge discovering: {}.", exception.toString());
-            }
-        }
-
-        try {
-            executor.awaitTermination(CONNECTION_TIMEOUT * addressesToScan.size(), TimeUnit.MILLISECONDS);
-        } catch (InterruptedException exception) {
-            logger.warn("LOGO! bridge discovering: {}.", exception.toString());
-        }
-        executor.shutdown();
-
-        stopScan();
-    }
-
-    @Override
-    protected synchronized void stopScan() {
-        logger.debug("Stop scan for LOGO! bridge");
-        super.stopScan();
+        scheduler.execute(scanner);
     }
 }
