@@ -421,6 +421,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
                     updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                             new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
+                    // also look at array size of homeData.result.rooms[i] and populate rooms list....
                 }
             }
             try {
@@ -428,6 +429,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 sendCommand(COMMAND_GET_STATUS);
                 sendCommand(COMMAND_GET_CONSUMABLE);
                 sendCommand(COMMAND_GET_ROOM_MAPPING);
+                sendCommand(COMMAND_GET_NETWORK_INFO);
             } catch (UnsupportedEncodingException e) {
                 // Shouldn't occur
             }
@@ -450,10 +452,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         if (getStatus != null) {
-            // updateState(CHANNEL_SSID, new StringType(getStatus.result[0].getSsid()));
-            // updateState(CHANNEL_BSSID, new StringType(getStatus.result[0].getBssid()));
-            // updateState(CHANNEL_LIFE, new DecimalType(getStatus.result[0].life));
-
             updateState(CHANNEL_RSSI, new DecimalType(getStatus.result[0].rss));
             updateState(CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
@@ -574,6 +572,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     public void handleGetNetworkInfo(String response) {
         logger.debug("getNetworkInfo response = {}", response);
+        // updateState(CHANNEL_SSID, new StringType(getStatus.result[0].getSsid()));
+        // updateState(CHANNEL_BSSID, new StringType(getStatus.result[0].getBssid()));
+        // updateState(CHANNEL_LIFE, new DecimalType(getStatus.result[0].life));
     }
 
     private void setCapabilities(JsonObject statusResponse) {
