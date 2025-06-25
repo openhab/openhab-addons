@@ -488,7 +488,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         ConsolFun consolFun = getConsolidationFunction(db);
                         FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
                         Archive archive = db.findMatchingArchive(request);
-                        start = archive.getStartTime() - archive.getArcStep();
+                        long arcStep = archive.getArcStep();
+                        start = archive.getStartTime() - arcStep;
+                        end = end % arcStep == 0 ? end : (end / arcStep + 1) * arcStep; // Make sure end is aligned with
+                                                                                        // matching archive
                     }
                 } else {
                     throw new UnsupportedOperationException(
