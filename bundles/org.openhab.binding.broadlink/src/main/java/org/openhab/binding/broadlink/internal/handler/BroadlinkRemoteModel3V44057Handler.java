@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
+import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
@@ -40,20 +41,16 @@ public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteHandler {
     @Override
     protected byte @Nullable [] sendCommand(byte commandByte, byte[] codeBytes, String purpose) {
         try {
-            // Little Endian len(codeBytes)+4, unsigned short (2 bytes) + command, unsigned int (4 bytes)
-            int length = codeBytes.length + 4;
-            length = length & 0xffff; // truncate
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            outputStream.write((byte) (length & 0xFF));
-            outputStream.write((byte) ((length >> 8) & 0xFF));
-
-            outputStream.write(commandByte);
-            outputStream.write(0x00);
-            outputStream.write(0x00);
-            outputStream.write(0x00);
-            byte[] message = buildMessage((byte) 0x6a, outputStream.toByteArray());
-            logger.debug("Sending byte[]: {}", message);
+            // We start using an unsigned int (2 bytes) that indicates the size of the command (4 bytes) and the length
+            // of the codeBytes
+            int length = codeBytes.length + 4;
+            length = length & 0xffff; // truncate, ensure we have an unsigned short int value
+            outputStream.write((byte) (length & 0xFF)); // We have an unsigned int with little Endian
+            outputStream.write((byte) ((length >> 8) & 0xFF)); // So the larger part goes later
+            buildCommandMessage(commandByte, codeBytes).writeTo(outputStream);
+            byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
+            byte[] message = buildMessage((byte) 0x6a, padded);
             return sendAndReceiveDatagram(message, purpose);
         } catch (IOException e) {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
@@ -62,5 +59,13 @@ public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteHandler {
         }
 
         return null;
+    }
+
+    @Override
+    protected byte[] extractResponsePayload(byte[] responseBytes) throws IOException {
+        byte decryptedResponse[] = decodeDevicePacket(responseBytes);
+        // Interesting stuff begins at the sixth byte, as we now have the extra short unsigned int in the response
+        // as compared to the "standard" devices
+        return Utils.slice(decryptedResponse, 6, decryptedResponse.length);
     }
 }

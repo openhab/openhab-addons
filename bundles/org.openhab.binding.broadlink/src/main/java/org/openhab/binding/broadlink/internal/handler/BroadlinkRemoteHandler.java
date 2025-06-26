@@ -92,7 +92,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return sendCommand(commandByte, new byte[0], purpose);
     }
 
-    private byte @Nullable [] sendCommand(byte commandByte, byte[] codeBytes, String purpose) {
+    protected byte @Nullable [] sendCommand(byte commandByte, byte[] codeBytes, String purpose) {
         try {
             ByteArrayOutputStream outputStream = buildCommandMessage(commandByte, codeBytes);
             byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
@@ -183,7 +183,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 }
             }
         } catch (IOException e) {
-            logger.warn("Exception while attempting to check learnt code: {}", e.getMessage());
+            logger.warn("Exception while attempting to check learnt code: {}", e.getMessage(), e);
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
         }
     }
