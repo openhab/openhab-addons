@@ -271,6 +271,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                 if (storedOffValue != null) {
                     return new QuantityType<>(Integer.valueOf(storedOffValue), Units.SECOND);
                 } else {
+                    strStore.put(CHANNEL_OFF_TIMER_DURATION, "1800");
                     return new QuantityType<>(1800, Units.SECOND);
                 }
             case CHANNEL_ON_TIMER_DURATION:
@@ -278,6 +279,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                 if (storedOnValue != null) {
                     return new QuantityType<>(Integer.valueOf(storedOnValue), Units.SECOND);
                 } else {
+                    strStore.put(CHANNEL_ON_TIMER_DURATION, "1800");
                     return new QuantityType<>(1800, Units.SECOND);
                 }
             case CHANNEL_ON_TIMER_TIME:
