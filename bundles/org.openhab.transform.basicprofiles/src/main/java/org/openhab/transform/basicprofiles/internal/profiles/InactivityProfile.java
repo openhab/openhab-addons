@@ -108,8 +108,7 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
         } catch (IllegalArgumentException e) {
             // fall through
         }
-        // TODO refactor when #4868 is merged: return DurationUtils.parse(timeOrDuration);
-        throw new IllegalArgumentException("invalid time or duration");
+        return org.openhab.core.util.DurationUtils.parse(timeOrDuration);
     }
 
     private void onTimeout() {
