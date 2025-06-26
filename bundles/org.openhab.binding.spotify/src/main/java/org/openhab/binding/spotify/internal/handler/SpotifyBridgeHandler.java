@@ -384,7 +384,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void refreshEntry(MediaEntry mediaEntry) {
+    public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
         if (mediaEntry.getKey().equals("Spotify")) {
 
             MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
