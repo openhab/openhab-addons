@@ -131,7 +131,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     private void handleIRCommand(String irCommand, boolean replacement) {
-        logger.debug("***** DEBUG2 handle IR COMMAND");
         try {
             String message = "";
             if (replacement) {
@@ -146,9 +145,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
                 return;
             }
-
-            // sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
-            // Thread.sleep(200);
 
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
 
@@ -235,7 +231,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("****Handling command ****");
         if (!Utils.isOnline(getThing())) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command,
                     getThing().getLabel());
