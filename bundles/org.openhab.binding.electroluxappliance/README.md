@@ -9,6 +9,7 @@ This binding supports the following thing types:
 - api: Bridge - Implements the Electrolux Group API that is used to communicate with the different appliances
 - air-purifier: The Electrolux Air Purifier
 - washing-machine: The Electrolux Washing Machine
+- portable-air-conditioner: A Portable Air Conditioner
 
 ## Discovery
 
