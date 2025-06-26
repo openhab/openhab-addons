@@ -19,23 +19,29 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.api.GetConsumables;
+import org.openhab.binding.roborock.internal.api.GetNetworkInfo;
 import org.openhab.binding.roborock.internal.api.GetStatus;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
+import org.openhab.binding.roborock.internal.api.HomeData.Rooms;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
 import org.openhab.binding.roborock.internal.api.enums.FanModeType;
@@ -68,8 +74,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -98,6 +107,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final SchedulerTask pollTask;
     private String token = "";
     private @Nullable Rriot rriot;
+    private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
     private String rrHomeId = "";
     private String localKey = "";
     private boolean hasChannelStructure;
@@ -110,6 +120,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     int getConsumableID = 0;
     int getRoomMappingID = 0;
     int getNetworkInfoID = 0;
+
+    private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
+            RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
+            RobotCapabilities.CARPET_MODE, RobotCapabilities.FW_FEATURES, RobotCapabilities.ROOM_MAPPING,
+            RobotCapabilities.MULTI_MAP_LIST, RobotCapabilities.CUSTOMIZE_CLEAN_MODE, RobotCapabilities.COLLECT_DUST,
+            RobotCapabilities.CLEAN_MOP_START, RobotCapabilities.CLEAN_MOP_STOP, RobotCapabilities.MOP_DRYING,
+            RobotCapabilities.MOP_DRYING_REMAINING_TIME, RobotCapabilities.DOCK_STATE_ID).collect(Collectors.toSet()));
 
     public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -422,6 +439,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                             new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
                     // also look at array size of homeData.result.rooms[i] and populate rooms list....
+                    homeRooms = homeData.result.rooms;
                 }
             }
             try {
@@ -452,7 +470,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         if (getStatus != null) {
-            updateState(CHANNEL_RSSI, new DecimalType(getStatus.result[0].rss));
             updateState(CHANNEL_BATTERY, new DecimalType(getStatus.result[0].battery));
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
             updateState(CHANNEL_FAN_CONTROL,
@@ -568,13 +585,40 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     public void handleGetRoomMapping(String response) {
         logger.debug("getRoomMapping response = {}", response);
+        for (RobotCapabilities cmd : FEATURES_CHANNELS) {
+            if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
+                JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+                if (rooms.size() > 0) {
+                    JsonArray mappedRoom = new JsonArray();
+                    String name = "Not found";
+                    for (JsonElement roomE : rooms) {
+                        JsonArray room = roomE.getAsJsonArray();
+                        for (int i = 0; i < homeRooms.length; i++) {
+                            if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
+                                name = homeRooms[i].name;
+                                break;
+                            }
+                        }
+                        room.set(1, new JsonPrimitive(name));
+                        room.remove(2);
+                        mappedRoom.add(room);
+                    }
+                    updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
+                } else {
+                    updateState(cmd.getChannel(), new StringType(response));
+                }
+                break;
+            }
+        }
     }
 
     public void handleGetNetworkInfo(String response) {
-        logger.debug("getNetworkInfo response = {}", response);
-        // updateState(CHANNEL_SSID, new StringType(getStatus.result[0].getSsid()));
-        // updateState(CHANNEL_BSSID, new StringType(getStatus.result[0].getBssid()));
-        // updateState(CHANNEL_LIFE, new DecimalType(getStatus.result[0].life));
+        GetNetworkInfo getNetworkInfo = gson.fromJson(response, GetNetworkInfo.class);
+        if (getNetworkInfo != null) {
+            updateState(CHANNEL_SSID, new StringType(getNetworkInfo.result.ssid));
+            updateState(CHANNEL_BSSID, new StringType(getNetworkInfo.result.bssid));
+            updateState(CHANNEL_RSSI, new DecimalType(getNetworkInfo.result.rssi));
+        }
     }
 
     private void setCapabilities(JsonObject statusResponse) {

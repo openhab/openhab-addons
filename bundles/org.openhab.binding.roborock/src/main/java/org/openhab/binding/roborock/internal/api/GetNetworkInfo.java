@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GetNetworkInfo {
     public int id;
 
-    public @NonNullByDefault({}) Result[] result;
+    public @NonNullByDefault({}) Result result;
 
     public class Result {
         public String ssid = "";
@@ -33,7 +33,7 @@ public class GetNetworkInfo {
         public String mac = "";
         public String bssid = "";
         public int rssi;
-   }
+    }
 
     public GetNetworkInfo() {
     }
