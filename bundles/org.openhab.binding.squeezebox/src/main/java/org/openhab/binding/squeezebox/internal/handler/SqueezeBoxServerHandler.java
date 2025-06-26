@@ -446,7 +446,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
     }
 
     @Override
-    public void refreshEntry(MediaEntry mediaEntry) {
+    public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
         if (mediaEntry.getKey().equals("Lyrion")) {
             MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
                 return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
