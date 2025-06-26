@@ -229,7 +229,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     }
 
     @Override
-    public void refreshEntry(MediaEntry mediaEntry) {
+    public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
         // TODO Auto-generated method stub
         boolean browse = true;
         currentMediaEntry = mediaEntry;
@@ -249,7 +249,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             logger.debug("Browse target {}", browseTarget);
             logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
 
-            browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
+            browse(browseTarget, "BrowseDirectChildren", "*", "" + start, "" + size, config.sortCriteria);
         }
 
         CompletableFuture<Boolean> browsing = isBrowsing;
@@ -703,8 +703,14 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             if (upnpEntry.getUpnpClass().equals("object.container.album.musicAlbum")) {
                 MediaAlbum mediaAlbum = mediaEntry.registerEntry(id, () -> {
                     MediaAlbum album = new MediaAlbum(idFinal, upnpEntry.getTitle());
-                    if (artUri != null && !artUri.isBlank()) {
-                        album.setArtUri(artUri);
+
+                    String artUriMod = artUri;
+                    if (artUriMod != null && !artUriMod.isBlank()) {
+                        int idx = artUriMod.indexOf("http", 1);
+                        if (idx > 0) {
+                            artUriMod = artUriMod.substring(0, idx);
+                        }
+                        album.setArtUri(artUriMod);
                     }
                     album.setArtist(upnpEntry.getArtist());
                     album.setGenre(upnpEntry.getGenre());
