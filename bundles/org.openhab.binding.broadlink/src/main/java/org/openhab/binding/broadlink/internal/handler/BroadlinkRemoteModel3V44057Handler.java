@@ -28,7 +28,9 @@ import org.openhab.core.thing.Thing;
  * Supports quirks in V44057 firmware.
  *
  * @author Stewart Cossey - Initial contribution
+ * @author Anton Jansen - revised based on community feedback
  */
+
 @NonNullByDefault
 public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteHandler {
 
