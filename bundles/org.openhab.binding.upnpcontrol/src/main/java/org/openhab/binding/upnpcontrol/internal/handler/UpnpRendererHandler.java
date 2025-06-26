@@ -802,7 +802,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     }
 
                     serverHandler.serveMedia();
-                    // pause();
+                    pause();
                     play();
                     udpateControlState(PlayPauseType.PLAY);
                 }
