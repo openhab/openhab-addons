@@ -53,6 +53,8 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandType;
+import org.openhab.core.library.types.MediaType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -61,6 +63,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaDevice;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -102,6 +106,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     protected @NonNullByDefault({}) UpnpControlRendererConfiguration config;
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
+
+    private final MediaService mediaService;
 
     private volatile List<CommandOption> favoriteCommandOptionList = List.of();
     private volatile List<CommandOption> playlistCommandOptionList = List.of();
@@ -163,13 +169,14 @@ public class UpnpRendererHandler extends UpnpHandler {
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
+            UpnpControlBindingConfiguration configuration, MediaService mediaService) {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
 
         this.audioSinkReg = audioSinkReg;
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -199,6 +206,10 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
 
         initDevice();
+
+        mediaService.registerDevice(
+                new MediaDevice("" + this.getThing().getUID().getId(), "" + this.getThing().getLabel(), "", "Upnp"));
+
     }
 
     @Override
@@ -718,7 +729,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void handleCommandStop(Command command) {
         if (OnOffType.ON.equals(command)) {
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
             stop();
             updateState(TRACK_POSITION, new QuantityType<>(0, Units.SECOND));
         }
@@ -728,15 +739,14 @@ public class UpnpRendererHandler extends UpnpHandler {
         String state;
         if (command instanceof RefreshType) {
             state = transportState;
-            State newState = UnDefType.UNDEF;
             if ("PLAYING".equals(state)) {
-                newState = PlayPauseType.PLAY;
+                udpateControlState(PlayPauseType.PLAY);
             } else if ("STOPPED".equals(state)) {
-                newState = PlayPauseType.PAUSE;
+                udpateControlState(PlayPauseType.PAUSE);
             } else if ("PAUSED_PLAYBACK".equals(state)) {
-                newState = PlayPauseType.PAUSE;
+                udpateControlState(PlayPauseType.PAUSE);
             }
-            updateState(channelUID, newState);
+            udpateControlState(PlayPauseType.NONE);
         } else if (command instanceof PlayPauseType) {
             if (PlayPauseType.PLAY.equals(command)) {
                 if (registeredQueue) {
@@ -747,9 +757,15 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } else {
                     play();
                 }
+
+                udpateControlState(PlayPauseType.PLAY);
+
             } else if (PlayPauseType.PAUSE.equals(command)) {
                 checkPaused();
                 pause();
+
+                udpateControlState(PlayPauseType.PAUSE);
+
             }
         } else if (command instanceof NextPreviousType) {
             if (NextPreviousType.NEXT.equals(command)) {
@@ -765,6 +781,52 @@ public class UpnpRendererHandler extends UpnpHandler {
                 pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
+        } else if (command instanceof MediaType) {
+            MediaType mediaType = (MediaType) command;
+            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+            String val = mediaType.getParam().toFullString();
+
+            logger.debug(val);
+
+            if (mediaTypeCommand == MediaCommandType.PLAY || mediaTypeCommand == MediaCommandType.ENQUEUE) {
+                int idx = val.indexOf("/l");
+                val = val.substring(idx);
+
+                if (!serverHandlers.isEmpty()) {
+                    UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                    serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (Exception ex) {
+
+                    }
+
+                    serverHandler.serveMedia();
+                    // pause();
+                    play();
+                    udpateControlState(PlayPauseType.PLAY);
+                }
+            }
+        } else if (command instanceof StringType) {
+            String val = ((StringType) command).toFullString();
+            logger.debug(val);
+
+            int idx = val.indexOf("/l");
+            val = val.substring(idx);
+
+            if (!serverHandlers.isEmpty()) {
+                UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception ex) {
+
+                }
+                // pause();
+                play();
+                udpateControlState(PlayPauseType.PLAY);
+            }
+
         }
     }
 
@@ -1022,7 +1084,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (!status) {
             removeSubscriptions();
 
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
             cancelTrackPositionRefresh();
         }
         super.onStatusChanged(status);
@@ -1194,7 +1256,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             }
 
             cancelCheckPaused();
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
             cancelTrackPositionRefresh();
             // Only go to next for first STOP command, then wait until we received PLAYING before moving
             // to next (avoids issues with renderers sending multiple stop states)
@@ -1225,13 +1287,13 @@ public class UpnpRendererHandler extends UpnpHandler {
             playerStopped = false;
             playing = true;
             registeredQueue = false; // reset queue registration flag as we are playing something
-            updateState(CONTROL, PlayPauseType.PLAY);
+            udpateControlState(PlayPauseType.PLAY);
             scheduleTrackPositionRefresh();
         } else if ("PAUSED_PLAYBACK".equals(value)) {
             cancelCheckPaused();
-            updateState(CONTROL, PlayPauseType.PAUSE);
+            udpateControlState(PlayPauseType.PAUSE);
         } else if ("NO_MEDIA_PRESENT".equals(value)) {
-            updateState(CONTROL, UnDefType.UNDEF);
+            udpateControlState(PlayPauseType.NONE);
         }
     }
 
@@ -1559,7 +1621,18 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void resetPaused() {
-        updateState(CONTROL, PlayPauseType.PLAY);
+        udpateControlState(PlayPauseType.PLAY);
+    }
+
+    private void udpateControlState(PlayPauseType state) {
+        MediaType mType = new MediaType(state, MediaCommandType.NONE, "param",
+                new StringType(this.getThing().getUID().getId()), new StringType("Upnp"));
+        updateState(CONTROL, mType);
+    }
+
+    private void MediaType(MediaType mediaType) {
+        // TODO Auto-generated method stub
+
     }
 
     private void cancelCheckPaused() {
