@@ -77,6 +77,10 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>The time that the event occurred</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -102,6 +106,10 @@
 		<item-type>DateTime</item-type>
 		<label>Live Stream Expiration Timestamp</label>
 		<description>Live stream token expiration time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -125,6 +133,10 @@
 		<label>Ambient Humidity</label>
 		<description>Lists the current ambient humidity percentage from the thermostat</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -133,6 +145,10 @@
 		<label>Ambient Temperature</label>
 		<description>Lists the current ambient temperature from the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -140,6 +156,10 @@
 		<item-type>String</item-type>
 		<label>Current Eco Mode</label>
 		<description>Lists the current eco mode from the thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">off</option>
@@ -152,6 +172,10 @@
 		<item-type>String</item-type>
 		<label>Current Mode</label>
 		<description>Lists the current mode from the thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">off</option>
@@ -166,6 +190,10 @@
 		<item-type>Switch</item-type>
 		<label>Fan Timer Mode</label>
 		<description>Lists the current fan timer mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:nest:sdm_fan_timer_mode"/>
 	</channel-type>
 
@@ -173,6 +201,10 @@
 		<item-type>DateTime</item-type>
 		<label>Fan Timer Timeout</label>
 		<description>Timestamp at which timer mode turns OFF</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="SDMHVACStatus">
@@ -193,6 +225,10 @@
 		<label>Maximum Temperature Setting</label>
 		<description>Lists the maximum temperature setting from the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -201,6 +237,10 @@
 		<label>Minimum Temperature Setting</label>
 		<description>Lists the minimum temperature setting from the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -209,6 +249,10 @@
 		<label>Target Temperature</label>
 		<description>Lists the target temperature setting from the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -217,6 +261,10 @@
 		<label>Cool Temperature</label>
 		<description>Lists the cool temperature setting from the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -225,6 +273,10 @@
 		<label>Heat Temperature</label>
 		<description>Lists the heat temperature setting from the thermostat</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
