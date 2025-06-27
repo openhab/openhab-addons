@@ -75,6 +75,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="button">
@@ -82,6 +86,10 @@
 		<label>Scene button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

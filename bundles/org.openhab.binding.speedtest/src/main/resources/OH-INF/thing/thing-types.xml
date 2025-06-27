@@ -80,6 +80,10 @@
 		<item-type>String</item-type>
 		<label>Server</label>
 		<description>The remote server that the Speedtest was run against</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="timestamp" advanced="true">
@@ -98,6 +102,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Ping Latency</label>
 		<description>Ping Latency - the reaction time of your internet connection</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f ms"></state>
 	</channel-type>
 	<channel-type id="downloadBandwidth">
@@ -158,6 +166,10 @@
 		<item-type>String</item-type>
 		<label>Result URL</label>
 		<description>The URL to the Speedtest results in HTML on the Ookla webserver</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="resultImage">

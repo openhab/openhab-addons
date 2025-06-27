@@ -31,12 +31,20 @@
 		<item-type>DateTime</item-type>
 		<label>Date and Time</label>
 		<description>Current date and time in the alarm system</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="troubles">
 		<item-type>Switch</item-type>
 		<label>Troubles</label>
 		<description>Active when the system has troubles (trouble led is blinking on a panel)</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="troubles_memory" advanced="true">
@@ -49,6 +57,10 @@
 		<item-type>Switch</item-type>
 		<label>Service Mode</label>
 		<description>Active when the system is in service mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
