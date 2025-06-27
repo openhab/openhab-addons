@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.test.util;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -42,6 +43,12 @@ public class SimpleDiscoveryListener implements DiscoveryListener {
     @Override
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
         discoveredResults.add(result);
+    }
+
+    @Override
+    public @Nullable Collection<@NonNull ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+            @Nullable Collection<@NonNull ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+        return null;
     }
 
     @Override
