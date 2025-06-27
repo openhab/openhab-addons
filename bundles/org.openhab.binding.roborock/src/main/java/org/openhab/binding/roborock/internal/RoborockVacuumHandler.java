@@ -38,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.api.GetCleanRecord;
 import org.openhab.binding.roborock.internal.api.GetConsumables;
+import org.openhab.binding.roborock.internal.api.GetDndTimer;
 import org.openhab.binding.roborock.internal.api.GetNetworkInfo;
 import org.openhab.binding.roborock.internal.api.GetStatus;
 import org.openhab.binding.roborock.internal.api.Home;
@@ -125,6 +126,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private int getNetworkInfoID = 0;
     private int getCleanRecordID = 0;
     private int getCleanSummaryID = 0;
+    private int getDndTimerID = 0;
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
             RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -400,6 +402,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else if (messageId == getCleanSummaryID) {
                     logger.debug("Received getCleanSummary response, parse it");
                     handleGetCleanSummary(jsonString);
+                } else if (messageId == getDndTimerID) {
+                    logger.debug("Received getDndTimer response, parse it");
+                    handleGetDndTimer(jsonString);
                 }
 
                 // } catch (DataParsingException e) {
@@ -460,6 +465,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 sendCommand(COMMAND_GET_ROOM_MAPPING);
                 sendCommand(COMMAND_GET_NETWORK_INFO);
                 sendCommand(COMMAND_GET_CLEAN_SUMMARY);
+                sendCommand(COMMAND_GET_DND_TIMER);
             } catch (UnsupportedEncodingException e) {
                 // Shouldn't occur
             }
@@ -596,7 +602,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleGetRoomMapping(String response) {
-        logger.debug("getRoomMapping response = {}", response);
+        logger.trace("getRoomMapping response = {}", response);
         for (RobotCapabilities cmd : FEATURES_CHANNELS) {
             if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
                 JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
@@ -634,8 +640,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleGetCleanRecord(String response) {
+        logger.trace("handleGetCleanRecord, response = {}", response);
         GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
-        logger.info("handleGetCleanRecord, response = {}", response);
         Map<String, Object> historyRecord = new HashMap<>();
         if (historyRecord != null) {
             DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result.begin));
@@ -662,7 +668,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleGetCleanSummary(String response) {
-        logger.info("handleGetCleanSummary, response = {}", response);
+        logger.trace("handleGetCleanSummary, response = {}", response);
         JsonObject cleanSummary = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonObject();
         updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(
                 TimeUnit.SECONDS.toMinutes(cleanSummary.get("clean_time").getAsLong()), Units.MINUTE));
@@ -684,6 +690,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    public void handleGetDndTimer(String response) {
+        logger.trace("handleGetDndTimer, response = {}", response);
+        GetDndTimer getDndTimer = gson.fromJson(response, GetDndTimer.class);
+        updateState(CHANNEL_DND_FUNCTION, new DecimalType(getDndTimer.result[0].enabled));
+        updateState(CHANNEL_DND_START, new StringType(
+                String.format("%02d:%02d", getDndTimer.result[0].startHour, getDndTimer.result[0].startMinute)));
+        updateState(CHANNEL_DND_END, new StringType(
+                String.format("%02d:%02d", getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
     }
 
     private void setCapabilities(JsonObject statusResponse) {
@@ -783,6 +799,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             getCleanRecordID = id;
                         } else if (COMMAND_GET_CLEAN_SUMMARY.equals(method)) {
                             getCleanSummaryID = id;
+                        } else if (COMMAND_GET_DND_TIMER.equals(method)) {
+                            getDndTimerID = id;
                         }
                     }
                 });

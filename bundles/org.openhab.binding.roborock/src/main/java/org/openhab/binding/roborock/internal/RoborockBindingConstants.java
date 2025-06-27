@@ -131,6 +131,7 @@ public class RoborockBindingConstants {
     public static final String COMMAND_GET_NETWORK_INFO = "get_network_info";
     public static final String COMMAND_GET_CLEAN_RECORD = "get_clean_record";
     public static final String COMMAND_GET_CLEAN_SUMMARY = "get_clean_summary";
+    public static final String COMMAND_GET_DND_TIMER = "get_dnd_timer";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT, ROBOROCK_VACUUM);
