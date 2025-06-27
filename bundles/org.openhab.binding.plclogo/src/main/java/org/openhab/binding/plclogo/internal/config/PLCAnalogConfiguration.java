@@ -32,7 +32,7 @@ public class PLCAnalogConfiguration extends PLCDigitalConfiguration {
      *
      * @return Configured Siemens LOGO! update threshold
      */
-    public Integer getThreshold() {
+    public int getThreshold() {
         return threshold;
     }
 
@@ -41,7 +41,7 @@ public class PLCAnalogConfiguration extends PLCDigitalConfiguration {
      *
      * @param threshold
      */
-    public void setThreshold(final Integer threshold) {
+    public void setThreshold(final int threshold) {
         this.threshold = threshold;
     }
 

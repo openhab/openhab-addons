@@ -97,7 +97,7 @@ public class PLCLogoClient extends S7Client {
         int offset = packet;
 
         int retry = 0;
-        int result = -1;
+        int result;
         do {
             // read first portion directly to data
             result = super.ReadArea(Area, DBNumber, Start, packet, WordLength, Data);
@@ -160,7 +160,7 @@ public class PLCLogoClient extends S7Client {
         }
 
         int retry = 0;
-        int result = -1;
+        int result;
         do {
             result = super.WriteArea(Area, DBNumber, Start, Amount, WordLength, Data);
 
