@@ -15,7 +15,7 @@
  *
  */
 
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current.model;
+package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

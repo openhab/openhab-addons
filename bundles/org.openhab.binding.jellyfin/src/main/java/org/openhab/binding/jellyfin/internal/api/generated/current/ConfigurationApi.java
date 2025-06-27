@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current;
+package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,12 +26,12 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiException;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiResponse;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.MetadataOptions;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ServerConfiguration;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
+import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.MetadataOptions;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ServerConfiguration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

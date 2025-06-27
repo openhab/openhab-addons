@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current;
+package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,23 +29,23 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiException;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiResponse;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.Pair;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.AuthenticateUserByName;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.AuthenticationResult;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.CreateUserByName;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ForgotPasswordDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ForgotPasswordPinDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ForgotPasswordResult;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PinRedeemResult;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.QuickConnectDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.UpdateUserPassword;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.UserConfiguration;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.UserDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.UserPolicy;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
+import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
+import org.openhab.binding.jellyfin.internal.api.generated.Pair;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.AuthenticateUserByName;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.AuthenticationResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.CreateUserByName;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ForgotPasswordDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ForgotPasswordPinDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ForgotPasswordResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PinRedeemResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.QuickConnectDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UpdateUserPassword;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserConfiguration;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserPolicy;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.openhab.binding.jellyfin.internal.api.generated_sources;
+package org.openhab.binding.jellyfin.internal.api.generated;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;

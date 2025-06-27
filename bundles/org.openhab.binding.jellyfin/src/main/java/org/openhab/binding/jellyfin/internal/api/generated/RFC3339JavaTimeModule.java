@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.openhab.binding.jellyfin.internal.api.generated_sources;
+package org.openhab.binding.jellyfin.internal.api.generated;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RFC3339JavaTimeModule extends SimpleModule {
+    private static final long serialVersionUID = 1L;
 
     public RFC3339JavaTimeModule() {
         super("RFC3339JavaTimeModule");

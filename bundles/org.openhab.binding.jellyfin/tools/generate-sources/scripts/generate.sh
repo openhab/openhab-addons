@@ -53,6 +53,7 @@ echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m
 
 # VERSIONS=("10.8.13" "10.10.7")
 # VERSION_ALIAS=("legacy" "current")
+# VERSIONS=("10.10.7")
 VERSIONS=("10.10.7")
 VERSION_ALIAS=("current")
 
@@ -79,17 +80,22 @@ for i in "${VERSIONS[@]}"; do
     FILENAME_YAML=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml
 
     if [ ! -e "${FILENAME_JSON}" ]; then
-        echo "⏬ - Downloading OPENAPI definition for Version ${i}"
+        echo "  ⏬ - Downloading OPENAPI definition for Version ${i}"
 
-        SERVER=https://repo.jellyfin.org/files/openapi/stable/jellyfin-openapi-${i}.json
+        URL=https://repo.jellyfin.org/files/openapi/stable/jellyfin-openapi-${i}.json
 
         wget \
             --no-verbose \
             --output-document=${FILENAME_JSON} \
-            ${SERVER}
+            ${URL} || {
+            rm ${FILENAME_JSON}
+            echo "  ❌ Error: Failed to download API definition from ${URL}"
+            exit 1
+        }
 
         if [ ! -e "${FILENAME_YAML}" ]; then
             echo "⚙️: json ➡️  yaml"
+
             yq -oy ${FILENAME_JSON} >${FILENAME_YAML}
         fi
     fi
@@ -102,9 +108,9 @@ for i in "${VERSIONS[@]}"; do
         $DOCKER_IMAGE_OPENAPI generate \
         --generator-name java \
         --global-property apiDocs=false,modelDocs=false,apiTests=false,modelTests=false \
-        --api-package ${PACKAGE_API}     \
+        --api-package ${PACKAGE_API} \
         --model-package ${PACKAGE_MODEL} \
-        --config ${OPENAPI_JAVA_CONFIG}  \
+        --config ${OPENAPI_JAVA_CONFIG} \
         --input-spec ${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml -o ${OUTPUT} \
         >/dev/null
 done

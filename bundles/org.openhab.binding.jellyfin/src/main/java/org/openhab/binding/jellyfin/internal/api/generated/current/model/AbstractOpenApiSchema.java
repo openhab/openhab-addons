@@ -15,7 +15,7 @@
  *
  */
 
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current.model;
+package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.Map;
 import java.util.Objects;

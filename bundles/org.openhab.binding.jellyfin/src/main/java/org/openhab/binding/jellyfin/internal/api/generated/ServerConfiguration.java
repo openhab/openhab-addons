@@ -15,7 +15,7 @@
  *
  */
 
-package org.openhab.binding.jellyfin.internal.api.generated_sources;
+package org.openhab.binding.jellyfin.internal.api.generated;
 
 import java.util.Map;
 

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current;
+package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,27 +26,27 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiException;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiResponse;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.BufferRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.GroupInfoDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.IgnoreWaitRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.JoinGroupRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.MovePlaylistItemRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.NewGroupRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.NextItemRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PingRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PlayRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.PreviousItemRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.QueueRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ReadyRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.RemoveFromPlaylistRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SeekRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SetPlaylistItemRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SetRepeatModeRequestDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SetShuffleModeRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
+import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BufferRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.GroupInfoDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.IgnoreWaitRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.JoinGroupRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.MovePlaylistItemRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.NewGroupRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.NextItemRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PingRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PreviousItemRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.QueueRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ReadyRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.RemoveFromPlaylistRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SeekRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetPlaylistItemRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetRepeatModeRequestDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetShuffleModeRequestDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

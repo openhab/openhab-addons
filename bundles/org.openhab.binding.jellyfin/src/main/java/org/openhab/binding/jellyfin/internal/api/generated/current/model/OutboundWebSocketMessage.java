@@ -15,7 +15,7 @@
  *
  */
 
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current.model;
+package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openhab.binding.jellyfin.internal.api.generated_sources.JSON;
+import org.openhab.binding.jellyfin.internal.api.generated.JSON;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.openhab.binding.jellyfin.internal.api.generated_sources.current;
+package org.openhab.binding.jellyfin.internal.api.generated.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,32 +31,32 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiException;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.ApiResponse;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.Pair;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.BaseItemDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ChannelMappingOptionsDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ChannelType;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.GetProgramsDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.GuideInfo;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ImageType;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ItemFields;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ItemSortBy;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.ListingsProviderInfo;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.LiveTvInfo;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.NameIdPair;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.RecordingStatus;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SeriesTimerInfoDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SeriesTimerInfoDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SetChannelMappingDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.SortOrder;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.TimerInfoDto;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.TimerInfoDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.TunerChannelMapping;
-import org.openhab.binding.jellyfin.internal.api.generated_sources.current.model.TunerHostInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
+import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
+import org.openhab.binding.jellyfin.internal.api.generated.Pair;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ChannelMappingOptionsDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ChannelType;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.GetProgramsDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.GuideInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ImageType;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemFields;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ItemSortBy;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.ListingsProviderInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.LiveTvInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.NameIdPair;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.RecordingStatus;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SeriesTimerInfoDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SeriesTimerInfoDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SetChannelMappingDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SortOrder;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.TimerInfoDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.TimerInfoDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.TunerChannelMapping;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.TunerHostInfo;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

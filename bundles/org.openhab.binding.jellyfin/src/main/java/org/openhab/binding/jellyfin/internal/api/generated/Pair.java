@@ -15,7 +15,7 @@
  *
  */
 
-package org.openhab.binding.jellyfin.internal.api.generated_sources;
+package org.openhab.binding.jellyfin.internal.api.generated;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class Pair {
