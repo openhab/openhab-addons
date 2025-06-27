@@ -121,9 +121,9 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
-		      <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -332,7 +332,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -372,11 +372,11 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
-		
-		      <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
-        
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -629,7 +629,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -658,9 +658,9 @@
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 			<channel id="enablePrivacyMode" typeId="enablePrivacyMode"/>
 		</channels>
-		      <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -909,7 +909,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1219,7 +1219,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1243,9 +1243,9 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
-		            <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -1485,7 +1485,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1773,7 +1773,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1814,10 +1814,10 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
-		
-		            <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2066,7 +2066,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -2101,9 +2101,9 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
-		            <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2342,7 +2342,7 @@
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
-            <channel id="createSnapshots" typeId="createSnapshots"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -2659,12 +2659,13 @@
 		<description>Low frame rate image from your camera. Recommend this is NOT used unless you have large pollTime.</description>
 		<category>Camera</category>
 	</channel-type>
-	
-	   <channel-type id="createSnapshots" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Create Snapshots</label>
-        <description>This can be used to start and stop FFmpeg from creating snapshots from your RTSP source using your openHAB CPU.</description>
-    </channel-type>
+
+	<channel-type id="createSnapshots" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Create Snapshots</label>
+		<description>This can be used to start and stop FFmpeg from creating snapshots from your RTSP source using your
+			openHAB CPU.</description>
+	</channel-type>
 
 	<channel-type id="pollImage" advanced="true">
 		<item-type>Switch</item-type>
