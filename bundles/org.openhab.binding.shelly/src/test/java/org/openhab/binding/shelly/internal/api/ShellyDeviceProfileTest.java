@@ -94,9 +94,18 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGUS_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLY1MINI_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPMMINI_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLY1PMMINI_STR, true, false), //
+
+                // SHelly Mini series
+                Arguments.of(THING_TYPE_SHELLYMINI_1_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1G3_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1G4_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1PM_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1PMG3_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1PMG4_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_PM_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_PMG3_STR, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_EM_STR, true, false), //
+
                 // Generation 2 Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1_STR, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO1PM_STR, true, false), //
