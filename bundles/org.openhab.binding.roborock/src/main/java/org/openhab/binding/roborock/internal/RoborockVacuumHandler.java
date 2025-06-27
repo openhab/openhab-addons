@@ -36,6 +36,7 @@ import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.roborock.internal.api.GetCleanRecord;
 import org.openhab.binding.roborock.internal.api.GetConsumables;
 import org.openhab.binding.roborock.internal.api.GetNetworkInfo;
 import org.openhab.binding.roborock.internal.api.GetStatus;
@@ -50,6 +51,7 @@ import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -116,10 +118,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
     private final Gson gson = new Gson();
-    int getStatusID = 0;
-    int getConsumableID = 0;
-    int getRoomMappingID = 0;
-    int getNetworkInfoID = 0;
+    private String lastHistoryID = "";
+    private int getStatusID = 0;
+    private int getConsumableID = 0;
+    private int getRoomMappingID = 0;
+    private int getNetworkInfoID = 0;
+    private int getCleanRecordID = 0;
+    private int getCleanSummaryID = 0;
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
             RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -389,6 +394,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else if (messageId == getNetworkInfoID) {
                     logger.debug("Received getNetworkInfo response, parse it");
                     handleGetNetworkInfo(jsonString);
+                } else if (messageId == getCleanRecordID) {
+                    logger.debug("Received getCleanRecord response, parse it");
+                    handleGetCleanRecord(jsonString);
+                } else if (messageId == getCleanSummaryID) {
+                    logger.debug("Received getCleanSummary response, parse it");
+                    handleGetCleanSummary(jsonString);
                 }
 
                 // } catch (DataParsingException e) {
@@ -448,6 +459,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 sendCommand(COMMAND_GET_CONSUMABLE);
                 sendCommand(COMMAND_GET_ROOM_MAPPING);
                 sendCommand(COMMAND_GET_NETWORK_INFO);
+                sendCommand(COMMAND_GET_CLEAN_SUMMARY);
             } catch (UnsupportedEncodingException e) {
                 // Shouldn't occur
             }
@@ -621,8 +633,60 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    public void handleGetCleanRecord(String response) {
+        GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
+        logger.info("handleGetCleanRecord, response = {}", response);
+        Map<String, Object> historyRecord = new HashMap<>();
+        if (historyRecord != null) {
+            DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result.begin));
+            historyRecord.put("begin", begin.format(null));
+            updateState(CHANNEL_HISTORY_START_TIME, begin);
+            DateTimeType end = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result.end));
+            historyRecord.put("end", end.format(null));
+            updateState(CHANNEL_HISTORY_END_TIME, end);
+            long duration = TimeUnit.SECONDS.toMinutes(getCleanRecord.result.duration);
+            historyRecord.put("duration", duration);
+            updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
+            historyRecord.put("area", getCleanRecord.result.area);
+            updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(getCleanRecord.result.area, SIUnits.SQUARE_METRE));
+            historyRecord.put("error", getCleanRecord.result.error);
+            updateState(CHANNEL_HISTORY_ERROR, new DecimalType(getCleanRecord.result.error));
+            historyRecord.put("complete", getCleanRecord.result.complete);
+            updateState(CHANNEL_HISTORY_FINISH, new DecimalType(getCleanRecord.result.complete));
+            historyRecord.put("finish_reason", getCleanRecord.result.finishReason);
+            updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(getCleanRecord.result.finishReason));
+            historyRecord.put("dust_collection_status", getCleanRecord.result.dustCollectionStatus);
+            updateState(CHANNEL_HISTORY_DUSTCOLLECTION, new DecimalType(getCleanRecord.result.dustCollectionStatus));
+            updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
+        }
+    }
+
+    public void handleGetCleanSummary(String response) {
+        logger.info("handleGetCleanSummary, response = {}", response);
+        JsonObject cleanSummary = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonObject();
+        updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(
+                TimeUnit.SECONDS.toMinutes(cleanSummary.get("clean_time").getAsLong()), Units.MINUTE));
+        updateState(CHANNEL_HISTORY_TOTALAREA,
+                new QuantityType<>(cleanSummary.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
+        updateState(CHANNEL_HISTORY_COUNT, new DecimalType(cleanSummary.get("clean_count").getAsLong()));
+        if (cleanSummary.has("records") & cleanSummary.get("records").isJsonArray()) {
+            JsonArray cleanSummaryRecords = cleanSummary.get("records").getAsJsonArray();
+            if (!cleanSummaryRecords.isEmpty()) {
+                String lastClean = cleanSummaryRecords.get(0).getAsString();
+                if (!lastClean.equals(lastHistoryID)) {
+                    lastHistoryID = lastClean;
+                    try {
+                        logger.debug("sending command for getCleanRecord, id = {}", lastClean);
+                        sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
+                    } catch (UnsupportedEncodingException e) {
+                        // Shouldn't occur
+                    }
+                }
+            }
+        }
+    }
+
     private void setCapabilities(JsonObject statusResponse) {
-        logger.trace("setCapabilities");
         for (RobotCapabilities capability : RobotCapabilities.values()) {
             if (statusResponse.has(capability.getStatusFieldName())) {
                 deviceCapabilities.putIfAbsent(capability, false);
@@ -671,7 +735,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void sendCommand(String method) throws UnsupportedEncodingException {
-        sendCommand(method, "");
+        sendCommand(method, "[]");
     }
 
     public void sendCommand(String method, String params) throws UnsupportedEncodingException {
@@ -683,7 +747,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         Map<String, Object> inner = new HashMap<>();
         inner.put("id", id);
         inner.put("method", method);
-        inner.put("params", "[]");
+        inner.put("params", params);
 
         Map<String, Object> dps = new HashMap<>();
         dps.put(Integer.toString(protocol), gson.toJson(inner));
@@ -694,7 +758,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         String payload = gson.toJson(payloadMap);
         logger.debug("payload = {}", payload);
-        byte[] message = build(getThing().getUID().getId(), protocol, timestamp, payload.getBytes("UTF-8"));
+        String modPayload = payload.replace(":\\\"[", ":[").replace("]\\\"}", "]}");
+
+        byte[] message = build(getThing().getUID().getId(), protocol, timestamp, modPayload.getBytes("UTF-8"));
         // now send message via mqtt
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
@@ -713,6 +779,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             getRoomMappingID = id;
                         } else if (COMMAND_GET_NETWORK_INFO.equals(method)) {
                             getNetworkInfoID = id;
+                        } else if (COMMAND_GET_CLEAN_RECORD.equals(method)) {
+                            getCleanRecordID = id;
+                        } else if (COMMAND_GET_CLEAN_SUMMARY.equals(method)) {
+                            getCleanSummaryID = id;
                         }
                     }
                 });
