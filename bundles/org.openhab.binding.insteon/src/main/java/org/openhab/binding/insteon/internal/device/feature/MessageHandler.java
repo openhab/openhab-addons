@@ -553,7 +553,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
                 // set device insteon engine
                 getInsteonDevice().setInsteonEngine(engine);
                 // continue device polling
-                getInsteonDevice().doPoll(0L);
+                getInsteonDevice().poll(500L);
             } catch (FieldException e) {
                 logger.warn("{}: error parsing msg: {}", nm(), msg, e);
             }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,7 +41,6 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S extends InsteonThingHandler>
         implements Device {
     private static final int DIRECT_ACK_TIMEOUT = 6000; // in milliseconds
-    private static final int REQUEST_QUEUE_TIMEOUT = 30000; // in milliseconds
     private static final int FAILED_REQUEST_THRESHOLD = 5;
 
     protected static enum DeviceStatus {
@@ -63,9 +61,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     private Queue<DeviceRequest> requestQueue = new PriorityQueue<>();
     private Map<Msg, DeviceRequest> requestQueueHash = new HashMap<>();
     private @Nullable DeviceFeature featureQueried;
-    private long pollInterval = -1L; // in milliseconds
     private volatile int failedRequestCount = 0;
-    private volatile long lastRequestQueued = 0L;
     private volatile long lastRequestSent = 0L;
 
     public BaseDevice(T address) {
@@ -141,9 +137,15 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         }
     }
 
-    public @Nullable DeviceFeature getFeatureQueried() {
+    protected @Nullable DeviceFeature getFeatureQueried() {
         synchronized (requestQueue) {
             return featureQueried;
+        }
+    }
+
+    protected boolean isFeatureQueried(DeviceFeature feature) {
+        synchronized (requestQueue) {
+            return feature.equals(featureQueried);
         }
     }
 
@@ -186,13 +188,6 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     public void setFeatureQueried(@Nullable DeviceFeature featureQueried) {
         synchronized (requestQueue) {
             this.featureQueried = featureQueried;
-        }
-    }
-
-    public void setPollInterval(long pollInterval) {
-        if (pollInterval > 0) {
-            logger.trace("setting poll interval for {} to {}", address, pollInterval);
-            this.pollInterval = pollInterval;
         }
     }
 
@@ -247,12 +242,13 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     public void startPolling() {
         InsteonModem modem = getModem();
-        // start polling if currently disabled
-        if (modem != null && getStatus() != DeviceStatus.POLLING) {
-            getFeatures().forEach(DeviceFeature::initializeQueryStatus);
-            int ndbes = modem.getDB().getEntries().size();
-            modem.getPollManager().startPolling(this, pollInterval, ndbes);
-            setStatus(DeviceStatus.POLLING);
+        if (modem != null) {
+            if (modem.getPollManager().startPolling(this)) {
+                getFeatures().forEach(DeviceFeature::initializeQueryStatus);
+                setStatus(DeviceStatus.POLLING);
+            } else {
+                setStatus(DeviceStatus.STOPPED);
+            }
         }
     }
 
@@ -261,8 +257,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     public void stopPolling() {
         InsteonModem modem = getModem();
-        // stop polling if currently enabled
-        if (modem != null && getStatus() == DeviceStatus.POLLING) {
+        if (modem != null) {
             modem.getPollManager().stopPolling(this);
             clearRequestQueue();
             setStatus(DeviceStatus.STOPPED);
@@ -275,7 +270,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param delay scheduling delay (in milliseconds)
      */
     @Override
-    public void doPoll(long delay) {
+    public void poll(long delay) {
         schedulePoll(delay, feature -> true);
     }
 
@@ -286,8 +281,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param delay scheduling delay (in milliseconds)
      * @return poll message
      */
-    public @Nullable Msg pollFeature(String name, long delay) {
-        return Optional.ofNullable(getFeature(name)).map(feature -> feature.doPoll(delay)).orElse(null);
+    protected @Nullable Msg pollFeature(String name, long delay) {
+        return Optional.ofNullable(getFeature(name)).map(feature -> feature.poll(delay)).orElse(null);
     }
 
     /**
@@ -306,7 +301,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             }
             // poll feature with listeners or never queried before
             if (feature.hasListeners() || feature.getQueryStatus() == QueryStatus.NEVER_QUERIED) {
-                Msg msg = feature.doPoll(delay + spacing);
+                Msg msg = feature.poll(delay + spacing);
                 if (msg != null) {
                     spacing += msg.getQuietTime();
                 }
@@ -423,7 +418,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     @Override
     public void sendMessage(Msg msg, DeviceFeature feature, long delay) {
-        addDeviceRequest(msg, feature, delay);
+        addRequest(msg, feature, delay);
     }
 
     /**
@@ -433,7 +428,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param feature device feature that sent this message
      * @param delay time (in milliseconds) to delay before sending message
      */
-    protected void addDeviceRequest(Msg msg, DeviceFeature feature, long delay) {
+    protected void addRequest(Msg msg, DeviceFeature feature, long delay) {
         logger.trace("enqueuing request with delay {} msec", delay);
 
         synchronized (requestQueue) {
@@ -449,7 +444,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         }
         InsteonModem modem = getModem();
         if (modem != null) {
-            modem.getRequestManager().addQueue(this, delay);
+            modem.getRequestManager().addRequest(this, delay);
         }
     }
 
@@ -461,53 +456,73 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     @Override
     public long handleNextRequest() {
         long now = System.currentTimeMillis();
-        // wait for feature queried to complete
-        long waitTime = checkFeatureQueried(now);
+        // wait for feature queried to be processed or next request to be scheduled
+        long waitTime = Optional.of(checkFeatureQueriedStatus(now)).filter(time -> time > 0)
+                .orElseGet(() -> checkNextRequestScheduledTime(now));
         if (waitTime > 0) {
             return waitTime;
         }
+        // poll next request from queue
+        DeviceRequest request = pollNextRequest();
+        if (request == null) {
+            return 0L;
+        }
+        // get request feature and message
+        DeviceFeature feature = request.getFeature();
+        Msg msg = request.getMessage();
+        // update message timestamp
+        msg.setTimestamp(now);
+        // set feature queried for non-broadcast request message
+        if (!msg.isAllLinkBroadcast()) {
+            logger.trace("request taken off direct for {}: {}", feature.getName(), msg);
+            // mark requested feature query status as queued
+            feature.setQueryStatus(QueryStatus.QUERY_QUEUED);
+            // store requested feature query message
+            feature.setQueryMessage(msg);
+            // set feature queried
+            setFeatureQueried(feature);
+        } else {
+            logger.trace("request taken off bcast for {}: {}", feature.getName(), msg);
+        }
+        // write message
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            modem.writeMessage(msg);
+        }
+        // determine the wait time for the next request
+        DeviceRequest nextRequest = peekNextRequest();
+        waitTime = now + msg.getQuietTime();
+        if (nextRequest != null) {
+            waitTime = Math.max(waitTime, nextRequest.getScheduledTime());
+            nextRequest.setScheduledTime(waitTime);
+        }
+        logger.trace("next request scheduled in {} msec", waitTime - now);
+        return waitTime;
+    }
 
+    /**
+     * Polls next request for this device
+     *
+     * @return next request or null if queue is empty
+     */
+    private @Nullable DeviceRequest pollNextRequest() {
         synchronized (requestQueue) {
-            // take the next request off the queue
             DeviceRequest request = requestQueue.poll();
-            if (request == null) {
-                return 0L;
+            if (request != null) {
+                requestQueueHash.remove(request.getMessage());
             }
-            // get requested feature and message
-            DeviceFeature feature = request.getFeature();
-            Msg msg = request.getMessage();
-            // remove request from queue hash
-            requestQueueHash.remove(msg);
-            // set last request queued time
-            lastRequestQueued = now;
-            // set feature queried for non-broadcast request message
-            if (!msg.isAllLinkBroadcast()) {
-                logger.trace("request taken off direct for {}: {}", feature.getName(), msg);
-                // mark requested feature query status as queued
-                feature.setQueryStatus(QueryStatus.QUERY_QUEUED);
-                // store requested feature query message
-                feature.setQueryMessage(msg);
-                // set feature queried
-                setFeatureQueried(feature);
-            } else {
-                logger.trace("request taken off bcast for {}: {}", feature.getName(), msg);
-            }
-            // write message
-            InsteonModem modem = getModem();
-            if (modem != null) {
-                try {
-                    modem.writeMessage(msg);
-                } catch (IOException e) {
-                    logger.warn("message write failed for msg: {}", msg, e);
-                }
-            }
-            // determine the wait time for the next request
-            long quietTime = msg.getQuietTime();
-            long nextExpTime = Optional.ofNullable(requestQueue.peek()).map(DeviceRequest::getExpirationTime)
-                    .orElse(0L);
-            long nextTime = Math.max(now + quietTime, nextExpTime);
-            logger.trace("next request queue processed in {} msec, quiettime {} msec", nextTime - now, quietTime);
-            return nextTime;
+            return request;
+        }
+    }
+
+    /**
+     * Peeks next request for this device
+     *
+     * @return next request or null if queue is empty
+     */
+    private @Nullable DeviceRequest peekNextRequest() {
+        synchronized (requestQueue) {
+            return requestQueue.peek();
         }
     }
 
@@ -517,26 +532,25 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param now the current time
      * @return wait time if necessary otherwise 0
      */
-    private long checkFeatureQueried(long now) {
+    private long checkFeatureQueriedStatus(long now) {
         DeviceFeature feature = getFeatureQueried();
         if (feature != null) {
             QueryStatus queryStatus = feature.getQueryStatus();
             switch (queryStatus) {
                 case QUERY_QUEUED:
-                    // wait for feature queried request to be sent
-                    long maxQueueTime = lastRequestQueued + REQUEST_QUEUE_TIMEOUT;
-                    if (maxQueueTime > now) {
-                        logger.trace("still waiting for {} query to be sent to {} for another {} msec",
-                                feature.getName(), address, maxQueueTime - now);
+                    // wait for feature queried request to be sent unless next request has higher priority
+                    DeviceRequest request = peekNextRequest();
+                    if (request == null || !request.getMessage().hasHigherPriorityThan(feature.getQueryMessage())) {
+                        logger.trace("still waiting for {} query to be sent to {}", feature.getName(), address);
                         return now + 1000L; // retry in 1000 ms
                     }
                     logger.debug("gave up waiting for {} query to be sent to {}", feature.getName(), address);
-                    // notify feature queried failed
-                    featureQueriedFailed(feature);
+                    // notify feature queried expired
+                    featureQueriedExpired(feature);
                     break;
                 case QUERY_SENT:
                 case QUERY_ACKED:
-                    // wait for the feature queried to be answered
+                    // wait for the feature queried to be answered unless timed out
                     long maxAckTime = lastRequestSent + DIRECT_ACK_TIMEOUT;
                     if (maxAckTime > now) {
                         logger.trace("still waiting for {} query reply from {} for another {} msec", feature.getName(),
@@ -553,6 +567,21 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                     // reset feature queried
                     setFeatureQueried(null);
             }
+        }
+        return 0L;
+    }
+
+    /**
+     * Checks next request scheduled time
+     *
+     * @param now the current time
+     * @return wait time if necessary otherwise 0
+     */
+    private long checkNextRequestScheduledTime(long now) {
+        DeviceRequest request = peekNextRequest();
+        // wait for next request scheduled time if necessary
+        if (request != null && request.getScheduledTime() > now) {
+            return request.getScheduledTime() - now;
         }
         return 0L;
     }
@@ -577,24 +606,36 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     }
 
     /**
-     * Notifies that the feature queried failed
+     * Notifies that the feature queried has expired
      *
      * @param feature the feature queried
      */
-    protected void featureQueriedFailed(DeviceFeature feature) {
-        QueryStatus queryStatus = feature.getQueryStatus();
-        // increase failed request count if in sent or acked status
-        if (queryStatus == QueryStatus.QUERY_SENT || queryStatus == QueryStatus.QUERY_ACKED) {
-            failedRequestCount++;
+    protected void featureQueriedExpired(DeviceFeature feature) {
+        Msg msg = feature.getQueryMessage();
+        // set feature query message as expired if defined
+        if (msg != null) {
+            msg.setExpired(true);
         }
         // mark feature queried as processed and never queried
         setFeatureQueried(null);
         feature.setQueryMessage(null);
         feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
-        // poll feature again if device is responding
-        if (isResponding()) {
-            feature.doPoll(0L);
+        // resend feature query message if defined and device is responding
+        if (msg != null && isResponding()) {
+            sendMessage(msg.copy(), feature, 0L);
         }
+    }
+
+    /**
+     * Notifies that the feature queried has failed
+     *
+     * @param feature the feature queried
+     */
+    protected void featureQueriedFailed(DeviceFeature feature) {
+        // increase failed request count
+        failedRequestCount++;
+        // notify feature queried expired
+        featureQueriedExpired(feature);
         // notify status changed if failed request count at threshold
         if (failedRequestCount == FAILED_REQUEST_THRESHOLD) {
             statusChanged();
@@ -634,7 +675,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     public void requestSent(Msg msg, long time) {
         DeviceFeature feature = getFeatureQueried();
         if (feature != null && msg.equals(feature.getQueryMessage())) {
-            // mark feature queried as pending
+            // mark feature queried as sent
             feature.setQueryStatus(QueryStatus.QUERY_SENT);
             // set last request sent time
             lastRequestSent = time;
@@ -672,12 +713,12 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     protected static class DeviceRequest implements Comparable<DeviceRequest> {
         private DeviceFeature feature;
         private Msg msg;
-        private long expirationTime;
+        private long scheduledTime;
 
         public DeviceRequest(DeviceFeature feature, Msg msg, long delay) {
             this.feature = feature;
             this.msg = msg;
-            setExpirationTime(delay);
+            setScheduledDelay(delay);
         }
 
         public DeviceFeature getFeature() {
@@ -688,17 +729,25 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             return msg;
         }
 
-        public long getExpirationTime() {
-            return expirationTime;
+        public long getScheduledTime() {
+            return scheduledTime;
         }
 
-        public void setExpirationTime(long delay) {
-            this.expirationTime = System.currentTimeMillis() + delay;
+        public void setScheduledDelay(long delay) {
+            this.scheduledTime = System.currentTimeMillis() + delay;
+        }
+
+        public void setScheduledTime(long scheduledTime) {
+            this.scheduledTime = scheduledTime;
         }
 
         @Override
         public int compareTo(DeviceRequest other) {
-            return (int) (expirationTime - other.expirationTime);
+            int result = msg.getPriority().compareTo(other.msg.getPriority());
+            if (result == 0) {
+                result = Long.compare(scheduledTime, other.scheduledTime);
+            }
+            return result;
         }
     }
 }
