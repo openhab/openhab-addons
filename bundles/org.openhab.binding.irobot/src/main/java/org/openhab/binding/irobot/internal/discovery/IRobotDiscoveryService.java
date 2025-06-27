@@ -102,7 +102,7 @@ public class IRobotDiscoveryService extends AbstractDiscoveryService {
     private Runnable createScanner() {
         return () -> {
             Set<String> robots = new HashSet<>();
-            long timestampOfLastScan = getTimestampOfLastScan();
+            var timestampOfLastScan = getTimestampOfLastScan();
             for (InetAddress broadcastAddress : getBroadcastAddresses()) {
                 logger.debug("Starting broadcast for {}", broadcastAddress.toString());
 
