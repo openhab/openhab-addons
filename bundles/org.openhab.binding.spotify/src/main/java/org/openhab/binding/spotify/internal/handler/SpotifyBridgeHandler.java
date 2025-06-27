@@ -151,16 +151,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) SpotifyBridgeConfiguration configuration;
     private @NonNullByDefault({}) SpotifyHandleCommands handleCommand;
     private @NonNullByDefault({}) ExpiringCache<CurrentlyPlayingContext> playingContextCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
-    private @NonNullByDefault({}) ExpiringCache<List<SavedAlbum>> albumsCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Artist>> artistsCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Categorie>> categoriesCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Track>> topTracksCache;
-    private @NonNullByDefault({}) ExpiringCache<List<UserTrackEntry>> tracksCache;
-    private @NonNullByDefault({}) ExpiringCache<List<UserTrackEntry>> recentlyPlayedTrackCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Artist>> topArtistsCache;
-    private @NonNullByDefault({}) ExpiringCache<List<AddedShow>> showsCache;
-
     private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
@@ -197,7 +187,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                     albumUpdater.refreshAlbumImage(channelUID);
                     break;
                 case CHANNEL_PLAYLISTS:
-                    playlistCache.invalidateValue();
+                    // playlistCache.invalidateValue();
                     break;
                 case CHANNEL_ACCESSTOKEN:
                     onAccessTokenResponse(getAccessTokenResponse());
@@ -368,18 +358,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             return new MediaSource("Spotify", "Spotify", "/static/Spotify.png");
         });
 
-        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getPlaylists(offset, limit));
-        albumsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getSavedAlbums(offset, limit));
-        artistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getArtists(offset, limit));
-        categoriesCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getCategories(offset, limit));
-
-        topTracksCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTopTracks(offset, limit));
-        tracksCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTracks(offset, limit));
-        recentlyPlayedTrackCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS,
-                () -> spotifyApi.getRecentlyPlayedTracks(offset, limit));
-        topArtistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTopArtists(offset, limit));
-        showsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getShows(offset, limit));
-
         devicesCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getDevices);
 
         // Start with update status by calling Spotify. If no credentials available no polling should be started.
@@ -439,7 +417,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             });
 
         } else if (mediaEntry.getKey().equals("Playlists")) {
-            List<Playlist> playLists = playlistCache.getValue();
+            List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
 
             for (Playlist playList : playLists) {
                 String key = playList.getUri();
@@ -452,7 +430,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 });
             }
         } else if (mediaEntry.getKey().equals("Albums")) {
-            List<SavedAlbum> albums = albumsCache.getValue();
+            List<SavedAlbum> albums = spotifyApi.getSavedAlbums(start, size);
 
             for (SavedAlbum savedAlbum : albums) {
                 String key = savedAlbum.album.getUri();
@@ -467,7 +445,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
             }
         } else if (mediaEntry.getKey().equals("Artists")) {
-            List<Artist> artists = artistsCache.getValue();
+            List<Artist> artists = spotifyApi.getArtists(start, size);
 
             for (Artist artist : artists) {
                 String key = artist.getUri();
@@ -504,7 +482,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
         } else if (mediaEntry instanceof MediaAlbum) {
             MediaAlbum mediaAlbum = (MediaAlbum) mediaEntry;
-            List<SavedAlbum> albums = albumsCache.getValue();
+            List<SavedAlbum> albums = spotifyApi.getSavedAlbums(start, size);
 
             Optional<SavedAlbum> optSavedAlbum = albums.stream()
                     .filter(x -> x.album.getUri().equals(mediaAlbum.getKey())).findFirst();
@@ -560,7 +538,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 }
             }
         } else if (mediaEntry.getKey().equals("TopTracks")) {
-            List<Track> tracks = topTracksCache.getValue();
+            List<Track> tracks = spotifyApi.getTopTracks(start, size);
 
             for (Track track : tracks) {
                 String key = track.getUri();
@@ -577,7 +555,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             }
 
         } else if (mediaEntry.getKey().equals("TopArtists")) {
-            List<Artist> artists = topArtistsCache.getValue();
+            List<Artist> artists = spotifyApi.getTopArtists(start, size);
 
             for (Artist artist : artists) {
                 String key = artist.getUri();
@@ -593,7 +571,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
             }
         } else if (mediaEntry.getKey().equals("Podcasts")) {
-            List<AddedShow> shows = showsCache.getValue();
+            List<AddedShow> shows = spotifyApi.getShows(start, size);
 
             for (AddedShow addedShow : shows) {
                 String key = addedShow.show.getUri();
@@ -610,7 +588,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             }
 
         } else if (mediaEntry.getKey().equals("Tracks")) {
-            List<UserTrackEntry> tracks = tracksCache.getValue();
+            List<UserTrackEntry> tracks = spotifyApi.getTracks(start, size);
 
             for (UserTrackEntry userTrack : tracks) {
                 String key = userTrack.track.getUri();
@@ -626,8 +604,23 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
             }
 
+        } else if (mediaEntry.getKey().equals("NewReleases")) {
+            List<Album> albums = spotifyApi.getNewReleases(start, size);
+
+            for (Album album : albums) {
+                String key = album.getUri();
+                String name = album.getName();
+                String uri = album.getImages().getFirst().getUrl();
+
+                MediaAlbum mediaAlbum = mediaEntry.registerEntry(key, () -> {
+                    MediaAlbum res = new MediaAlbum(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+
+            }
         } else if (mediaEntry.getKey().equals("RecentlyPlayed")) {
-            List<UserTrackEntry> tracks = recentlyPlayedTrackCache.getValue();
+            List<UserTrackEntry> tracks = spotifyApi.getRecentlyPlayedTracks(start, size);
 
             for (UserTrackEntry userTrack : tracks) {
                 String key = userTrack.track.getUri();
@@ -644,7 +637,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             }
 
         } else if (mediaEntry.getKey().equals("Categories")) {
-            List<Categorie> categories = categoriesCache.getValue();
+            List<Categorie> categories = spotifyApi.getCategories(start, size);
 
             for (Categorie categorie : categories) {
                 String key = categorie.getUri();
@@ -709,7 +702,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     private void expireCache() {
         playingContextCache.invalidateValue();
-        playlistCache.invalidateValue();
+        // playlistCache.invalidateValue();
         devicesCache.invalidateValue();
     }
 
@@ -741,11 +734,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
                 // Update play status information.
                 if (hasPlayData || getThing().getStatus() == ThingStatus.UNKNOWN) {
-                    final List<Playlist> lp = playlistCache.getValue();
-                    final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
-                    handleCommand.setPlaylists(playlists);
-                    updatePlayerInfo(playingContext, playlists);
-                    spotifyDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
+                    /*
+                     * final List<Playlist> lp = playlistCache.getValue();
+                     * final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
+                     * handleCommand.setPlaylists(playlists);
+                     * updatePlayerInfo(playingContext, playlists);
+                     * spotifyDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
+                     */
                 }
                 updateStatus(ThingStatus.ONLINE);
                 return true;
