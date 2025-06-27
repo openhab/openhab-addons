@@ -187,6 +187,7 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `preventBatteryCharging()`: Prevent the battery from charging (removes all battery control schedules first and applies all the time).
 - `addPreventBatteryChargingSchedule(LocalTime from, LocalTime until)`: Add a schedule to prevent the battery from charging in the specified time range.
+- `addPreventBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until)`: Add a schedule to prevent the battery from charging in the specified time range.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
 
