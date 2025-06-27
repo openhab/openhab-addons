@@ -29,7 +29,7 @@
 		<parameter name="factor" type="decimal">
 			<label>Factor</label>
 			<advanced>true</advanced>
-			<default>1.0</default>
+			<default>1</default>
 		</parameter>
 		<parameter name="propertyKeyStr" type="text">
 			<label>Property Key Str</label>
@@ -60,7 +60,6 @@
 		</parameter>
 		<parameter name="itemType" type="text">
 			<label>Item Type</label>
-			<default>String</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassId" type="integer">
@@ -79,7 +78,7 @@
 		<parameter name="factor" type="decimal">
 			<label>Factor</label>
 			<advanced>true</advanced>
-			<default>1.0</default>
+			<default>1</default>
 		</parameter>
 		<parameter name="propertyKeyStr" type="text">
 			<label>Property Key Str</label>
