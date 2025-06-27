@@ -83,6 +83,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSPLUGS, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
             THING_TYPE_SHELLYPLUSDIMMERUS, //
+            THING_TYPE_SHELLYPLUSDIMMERG3, //
             THING_TYPE_SHELLYPLUSRGBWPM, //
 
             // Shelly Wall Display
