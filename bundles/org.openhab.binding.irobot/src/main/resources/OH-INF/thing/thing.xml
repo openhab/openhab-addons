@@ -114,6 +114,10 @@
 		<item-type>Number</item-type>
 		<label>Battery</label>
 		<description>Battery charge percentage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="bin">
@@ -132,6 +136,9 @@
 		<item-type>String</item-type>
 		<label>Error</label>
 		<description>Error code</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<!-- Taken from Roomba980-Python, originally reverse engineered from phone app -->
@@ -197,6 +204,10 @@
 	<channel-type id="sched_switch">
 		<item-type>Switch</item-type>
 		<label>Schedule</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="schedule" advanced="true">
 		<item-type>Number</item-type>
