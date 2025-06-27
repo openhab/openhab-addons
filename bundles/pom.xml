@@ -155,6 +155,7 @@
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
+    <module>org.openhab.binding.ferroamp</module>
     <module>org.openhab.binding.fenecon</module>
     <module>org.openhab.binding.fineoffsetweatherstation</module>
     <module>org.openhab.binding.flicbutton</module>
