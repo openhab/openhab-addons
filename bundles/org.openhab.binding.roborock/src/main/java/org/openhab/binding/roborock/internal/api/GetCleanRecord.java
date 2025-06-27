@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 public class GetCleanRecord {
     public int id;
 
-    public @NonNullByDefault({}) Result result;
+    public @NonNullByDefault({}) Result[] result;
 
     public class Result {
         public long begin;

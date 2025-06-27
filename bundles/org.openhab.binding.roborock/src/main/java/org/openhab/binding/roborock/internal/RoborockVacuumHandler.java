@@ -644,25 +644,25 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
         Map<String, Object> historyRecord = new HashMap<>();
         if (historyRecord != null) {
-            DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result.begin));
+            DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].begin));
             historyRecord.put("begin", begin.format(null));
             updateState(CHANNEL_HISTORY_START_TIME, begin);
-            DateTimeType end = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result.end));
+            DateTimeType end = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].end));
             historyRecord.put("end", end.format(null));
             updateState(CHANNEL_HISTORY_END_TIME, end);
-            long duration = TimeUnit.SECONDS.toMinutes(getCleanRecord.result.duration);
+            long duration = TimeUnit.SECONDS.toMinutes(getCleanRecord.result[0].duration);
             historyRecord.put("duration", duration);
             updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
-            historyRecord.put("area", getCleanRecord.result.area);
-            updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(getCleanRecord.result.area, SIUnits.SQUARE_METRE));
-            historyRecord.put("error", getCleanRecord.result.error);
-            updateState(CHANNEL_HISTORY_ERROR, new DecimalType(getCleanRecord.result.error));
-            historyRecord.put("complete", getCleanRecord.result.complete);
-            updateState(CHANNEL_HISTORY_FINISH, new DecimalType(getCleanRecord.result.complete));
-            historyRecord.put("finish_reason", getCleanRecord.result.finishReason);
-            updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(getCleanRecord.result.finishReason));
-            historyRecord.put("dust_collection_status", getCleanRecord.result.dustCollectionStatus);
-            updateState(CHANNEL_HISTORY_DUSTCOLLECTION, new DecimalType(getCleanRecord.result.dustCollectionStatus));
+            historyRecord.put("area", getCleanRecord.result[0].area);
+            updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(getCleanRecord.result[0].area, SIUnits.SQUARE_METRE));
+            historyRecord.put("error", getCleanRecord.result[0].error);
+            updateState(CHANNEL_HISTORY_ERROR, new DecimalType(getCleanRecord.result[0].error));
+            historyRecord.put("complete", getCleanRecord.result[0].complete);
+            updateState(CHANNEL_HISTORY_FINISH, new DecimalType(getCleanRecord.result[0].complete));
+            historyRecord.put("finish_reason", getCleanRecord.result[0].finishReason);
+            updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(getCleanRecord.result[0].finishReason));
+            historyRecord.put("dust_collection_status", getCleanRecord.result[0].dustCollectionStatus);
+            updateState(CHANNEL_HISTORY_DUSTCOLLECTION, new DecimalType(getCleanRecord.result[0].dustCollectionStatus));
             updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
         }
     }
