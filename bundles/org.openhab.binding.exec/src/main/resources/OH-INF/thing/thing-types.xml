@@ -75,6 +75,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Execution</label>
 		<description>Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
