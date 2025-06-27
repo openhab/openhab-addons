@@ -86,6 +86,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Message Date</label>
 		<description>Contains the latest message date as a DateTime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

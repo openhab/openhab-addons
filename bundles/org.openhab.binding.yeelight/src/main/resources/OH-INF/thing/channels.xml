@@ -56,12 +56,20 @@
 		<label>Background Color</label>
 		<description>The color channel allows to control the color of a light.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="nightlight">
 		<item-type>Switch</item-type>
 		<label>nightlight</label>
 		<description>The nightlight channel allows to switch to nightlight mode.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

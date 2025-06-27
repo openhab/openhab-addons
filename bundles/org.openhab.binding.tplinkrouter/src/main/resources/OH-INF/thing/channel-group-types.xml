@@ -22,10 +22,18 @@
 	<channel-type id="qss">
 		<item-type>Switch</item-type>
 		<label>Wifi QSS</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>Switch</item-type>
 		<label>Wifi Status</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="ssid">
 		<item-type>String</item-type>
@@ -40,6 +48,10 @@
 	<channel-type id="security-mode">
 		<item-type>String</item-type>
 		<label>Wifi Security Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="WEP">WEP</option>
@@ -50,6 +62,10 @@
 	<channel-type id="authentication">
 		<item-type>String</item-type>
 		<label>Wifi Authentication Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -64,6 +80,10 @@
 		<item-type>String</item-type>
 		<label>Wifi Encryption Mode</label>
 		<description>Wifi Encryption Mode (only for PSK security mode)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="AUTO">AUTO</option>
