@@ -40,6 +40,7 @@ import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.AddedShow;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.Context;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
@@ -52,6 +53,7 @@ import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
+import org.openhab.binding.spotify.internal.api.model.UserTrackEntry;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -152,7 +154,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
     private @NonNullByDefault({}) ExpiringCache<List<SavedAlbum>> albumsCache;
     private @NonNullByDefault({}) ExpiringCache<List<Artist>> artistsCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Categorie>> categoriesCache;
     private @NonNullByDefault({}) ExpiringCache<List<Track>> topTracksCache;
+    private @NonNullByDefault({}) ExpiringCache<List<UserTrackEntry>> tracksCache;
+    private @NonNullByDefault({}) ExpiringCache<List<UserTrackEntry>> recentlyPlayedTrackCache;
     private @NonNullByDefault({}) ExpiringCache<List<Artist>> topArtistsCache;
     private @NonNullByDefault({}) ExpiringCache<List<AddedShow>> showsCache;
 
@@ -345,7 +350,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
         playingContextCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getPlayerInfo);
         final int offset = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_OFFSET, 0);
-        final int limit = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 20);
+        final int limit = 30;
+        // getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 100);
 
         mediaService.addMediaListenner("Spotify", this);
 
@@ -365,8 +371,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getPlaylists(offset, limit));
         albumsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getSavedAlbums(offset, limit));
         artistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getArtists(offset, limit));
+        categoriesCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getCategories(offset, limit));
 
         topTracksCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTopTracks(offset, limit));
+        tracksCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTracks(offset, limit));
+        recentlyPlayedTrackCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS,
+                () -> spotifyApi.getRecentlyPlayedTracks(offset, limit));
         topArtistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTopArtists(offset, limit));
         showsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getShows(offset, limit));
 
@@ -422,6 +432,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
             MediaCollection mediaNewReleases = mediaEntry.registerEntry("NewReleases", () -> {
                 return new MediaCollection("NewReleases", "New Releases", "/static/NewReleases.png");
+            });
+
+            MediaCollection categories = mediaEntry.registerEntry("Categories", () -> {
+                return new MediaCollection("Categories", "Categories", "/static/Categories.png");
             });
 
         } else if (mediaEntry.getKey().equals("Playlists")) {
@@ -595,6 +609,54 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
             }
 
+        } else if (mediaEntry.getKey().equals("Tracks")) {
+            List<UserTrackEntry> tracks = tracksCache.getValue();
+
+            for (UserTrackEntry userTrack : tracks) {
+                String key = userTrack.track.getUri();
+                String name = userTrack.track.getName();
+
+                MediaTrack mediaTrack = mediaEntry.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    if (userTrack.track.getImages() != null) {
+                        res.setArtUri(userTrack.track.getImages().getFirst().getUrl());
+                    }
+                    return res;
+                });
+
+            }
+
+        } else if (mediaEntry.getKey().equals("RecentlyPlayed")) {
+            List<UserTrackEntry> tracks = recentlyPlayedTrackCache.getValue();
+
+            for (UserTrackEntry userTrack : tracks) {
+                String key = userTrack.track.getUri();
+                String name = userTrack.track.getName();
+
+                MediaTrack mediaTrack = mediaEntry.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    if (userTrack.track.getImages() != null) {
+                        res.setArtUri(userTrack.track.getImages().getFirst().getUrl());
+                    }
+                    return res;
+                });
+
+            }
+
+        } else if (mediaEntry.getKey().equals("Categories")) {
+            List<Categorie> categories = categoriesCache.getValue();
+
+            for (Categorie categorie : categories) {
+                String key = categorie.getUri();
+
+                MediaPlayList mediaPlayList = mediaEntry.registerEntry(key, () -> {
+                    MediaPlayList res = new MediaPlayList(key, categorie.getName());
+                    if (categorie.getImages() != null) {
+                        res.setArtUri(categorie.getImages()[0].getUrl());
+                    }
+                    return res;
+                });
+            }
         }
     }
 

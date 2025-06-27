@@ -39,6 +39,8 @@ import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.Albums;
 import org.openhab.binding.spotify.internal.api.model.Artist;
 import org.openhab.binding.spotify.internal.api.model.Artists;
+import org.openhab.binding.spotify.internal.api.model.Categorie;
+import org.openhab.binding.spotify.internal.api.model.CategoriesResult;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Devices;
@@ -52,6 +54,8 @@ import org.openhab.binding.spotify.internal.api.model.SavedAlbums;
 import org.openhab.binding.spotify.internal.api.model.Shows;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
+import org.openhab.binding.spotify.internal.api.model.UserTrackEntries;
+import org.openhab.binding.spotify.internal.api.model.UserTrackEntry;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -291,6 +295,18 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
+    public List<Categorie> getCategories(int offset, int limit) {
+        final CategoriesResult categoriesRes = request(GET,
+                SPOTIFY_API_BASE_URL + "/browse/categories?offset" + offset + "&limit=" + limit, "",
+                CategoriesResult.class);
+
+        return categoriesRes == null || categoriesRes.categories.getItems() == null ? Collections.emptyList()
+                : categoriesRes.categories.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
     public List<Album> getArtistAlbums(String artistId) {
         final Albums albums = request(GET, SPOTIFY_API_BASE_URL + "/artists/" + artistId + "/albums", "", Albums.class);
 
@@ -325,6 +341,27 @@ public class SpotifyApi {
                 Tracks.class);
 
         return topTracks == null || topTracks.getItems() == null ? Collections.emptyList() : topTracks.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<UserTrackEntry> getTracks(int offset, int limit) {
+        final UserTrackEntries tracks = request(GET, SPOTIFY_API_URL + "/tracks?offset" + offset + "&limit=" + limit,
+                "", UserTrackEntries.class);
+
+        return tracks == null || tracks.getItems() == null ? Collections.emptyList() : tracks.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<UserTrackEntry> getRecentlyPlayedTracks(int offset, int limit) {
+        final UserTrackEntries tracks = request(GET,
+                SPOTIFY_API_URL + "/player/recently-played?offset" + offset + "&limit=" + limit, "",
+                UserTrackEntries.class);
+
+        return tracks == null || tracks.getItems() == null ? Collections.emptyList() : tracks.getItems();
     }
 
     /**

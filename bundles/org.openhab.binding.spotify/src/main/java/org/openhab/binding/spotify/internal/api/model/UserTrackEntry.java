@@ -12,42 +12,12 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
-import java.util.List;
-
 /**
  * Spotify Web Api Track data class : A track entry.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Track {
+public class UserTrackEntry {
 
-    private String name;
-    private String uri;
-
-    private Album album;
-    private List<Artist> artists;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public Album getAlbum() {
-        return album;
-    }
-
-    public List<Artist> getArtists() {
-        return artists;
-    }
-
-    public List<Image> getImages() {
-        if (album != null) {
-            return album.getImages();
-        }
-
-        return null;
-    }
+    public Track track;
 }
