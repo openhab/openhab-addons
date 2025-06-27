@@ -310,9 +310,9 @@ public class FroniusSymoInverterActions implements ThingActions {
         try {
             return supplier.get();
         } catch (FroniusCommunicationException e) {
-            logger.warn("Failed to set battery control to hold battery charge", e);
+            logger.warn("Failed to execute battery control action", e);
         } catch (FroniusUnauthorizedException e) {
-            logger.warn("Failed to set battery control to hold battery charge: Invalid username or password");
+            logger.warn("Failed to execute battery control action: Invalid username or password");
         }
         return false;
     }
