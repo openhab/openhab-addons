@@ -47,6 +47,7 @@ import org.openhab.binding.spotify.internal.api.model.Devices;
 import org.openhab.binding.spotify.internal.api.model.FollowedArtists;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
+import org.openhab.binding.spotify.internal.api.model.NewReleases;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
@@ -254,9 +255,9 @@ public class SpotifyApi {
     /**
      * @return Returns the playlists of the user.
      */
-    public List<Playlist> getPlaylists(int offset, int limit) {
-        final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
-                Playlists.class);
+    public List<Playlist> getPlaylists(long offset, long limit) {
+        final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset=" + offset + "&limit=" + limit,
+                "", Playlists.class);
 
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
     }
@@ -264,11 +265,23 @@ public class SpotifyApi {
     /**
      * @return Returns the albums of the user.
      */
-    public List<SavedAlbum> getSavedAlbums(int offset, int limit) {
+    public List<SavedAlbum> getSavedAlbums(long offset, long limit) {
         final SavedAlbums albums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit, "",
                 SavedAlbums.class);
 
         return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<Album> getNewReleases(long offset, long limit) {
+        final NewReleases newReleases = request(GET,
+                SPOTIFY_API_BASE_URL + "/browse/new-releases?offset" + offset + "&limit=" + limit, "",
+                NewReleases.class);
+
+        return newReleases == null || newReleases.albums.getItems() == null ? Collections.emptyList()
+                : newReleases.albums.getItems();
     }
 
     /**
@@ -283,7 +296,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<Artist> getArtists(int offset, int limit) {
+    public List<Artist> getArtists(long offset, long limit) {
         final FollowedArtists followedArtists = request(GET,
                 SPOTIFY_API_URL + "/following?type=artist&offset" + offset + "&limit=" + limit, "",
                 FollowedArtists.class);
@@ -295,7 +308,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<Categorie> getCategories(int offset, int limit) {
+    public List<Categorie> getCategories(long offset, long limit) {
         final CategoriesResult categoriesRes = request(GET,
                 SPOTIFY_API_BASE_URL + "/browse/categories?offset" + offset + "&limit=" + limit, "",
                 CategoriesResult.class);
@@ -316,7 +329,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<Artist> getTopArtists(int offset, int limit) {
+    public List<Artist> getTopArtists(long offset, long limit) {
         final Artists topArtists = request(GET, SPOTIFY_API_URL + "/top/artists?offset" + offset + "&limit=" + limit,
                 "", Artists.class);
 
@@ -326,7 +339,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<AddedShow> getShows(int offset, int limit) {
+    public List<AddedShow> getShows(long offset, long limit) {
         final Shows shows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
                 Shows.class);
 
@@ -336,7 +349,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<Track> getTopTracks(int offset, int limit) {
+    public List<Track> getTopTracks(long offset, long limit) {
         final Tracks topTracks = request(GET, SPOTIFY_API_URL + "/top/tracks?offset" + offset + "&limit=" + limit, "",
                 Tracks.class);
 
@@ -346,7 +359,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<UserTrackEntry> getTracks(int offset, int limit) {
+    public List<UserTrackEntry> getTracks(long offset, long limit) {
         final UserTrackEntries tracks = request(GET, SPOTIFY_API_URL + "/tracks?offset" + offset + "&limit=" + limit,
                 "", UserTrackEntries.class);
 
@@ -356,7 +369,7 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<UserTrackEntry> getRecentlyPlayedTracks(int offset, int limit) {
+    public List<UserTrackEntry> getRecentlyPlayedTracks(long offset, long limit) {
         final UserTrackEntries tracks = request(GET,
                 SPOTIFY_API_URL + "/player/recently-played?offset" + offset + "&limit=" + limit, "",
                 UserTrackEntries.class);
