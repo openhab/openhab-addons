@@ -231,6 +231,10 @@
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
 		<description>The current state of the Intellitouch® controller</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Auto</option>
@@ -253,6 +257,10 @@
 		<item-type>Number</item-type>
 		<label>Sensor</label>
 		<description>The state of a sensor (water sensor)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">OK</option>
@@ -277,6 +285,10 @@
 		<item-type>Switch</item-type>
 		<label>Circuit 1</label>
 		<description>The current state of a circuit (Spa or Lo-Temp)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="equipment-feature">
 		<item-type>Number</item-type>
@@ -324,6 +336,10 @@
 		<label>Pool Temp</label>
 		<description>The current pool temperature. Note: Only accurate when pool is running</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -332,6 +348,10 @@
 		<label>Spa Temperature</label>
 		<description>The current spa temperature. Note: Only accurate when spa is running</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -340,6 +360,10 @@
 		<label>Air Temperature</label>
 		<description>The current temperature measured by the air sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -348,6 +372,10 @@
 		<label>Solar Temperature</label>
 		<description>The current temperature measured by the solar sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -445,6 +473,10 @@
 		<item-type>Number</item-type>
 		<label>Chlorine Salt Level</label>
 		<description>Chlorine Salt Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -474,6 +506,10 @@
 		<label>Lighting Cmd</label>
 		<description>Send A lighting command</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="alloff">All Off</option>

@@ -571,6 +571,10 @@
 		<label>Alarm State</label>
 		<description>The alarm state of the intrusion detection system. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON,
 			ALARM_MUTED and UNKNOWN.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ALARM_OFF">No alarm</option>
@@ -599,18 +603,30 @@
 		<item-type>Switch</item-type>
 		<label>Disarm Action</label>
 		<description>Disarms the intrusion detection system when an ON command is received.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="mute-action">
 		<item-type>Switch</item-type>
 		<label>Mute Action</label>
 		<description>Mutes the alarm when an ON command is received.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="privacy-mode">
 		<item-type>Switch</item-type>
 		<label>Privacy Mode</label>
 		<description>If privacy mode is enabled, the camera is disabled and vice versa.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Enabled (camera disabled)</option>
@@ -623,6 +639,10 @@
 		<item-type>Switch</item-type>
 		<label>Camera Notifications</label>
 		<description>Enables or disables notifications for the camera.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Enabled</option>
@@ -635,6 +655,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current measured temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="40" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -642,6 +666,10 @@
 		<item-type>String</item-type>
 		<label>Temperature Rating</label>
 		<description>Rating of the currently measured temperature.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GOOD">Good Temperature</option>
@@ -655,6 +683,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -662,6 +694,10 @@
 		<item-type>String</item-type>
 		<label>Humidity Rating</label>
 		<description>Rating of current measured humidity.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GOOD">Good Humidity</option>
@@ -675,6 +711,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -682,6 +722,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -696,6 +740,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Overall description of the air quality.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -710,6 +758,10 @@
 		<item-type>String</item-type>
 		<label>Combined Rating</label>
 		<description>Combined rating of the air quality.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GOOD">Good Quality</option>
@@ -723,6 +775,10 @@
 		<item-type>String</item-type>
 		<label>Smoke Check State</label>
 		<description>State of last smoke detector check.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="NONE">None</option>
@@ -737,6 +793,10 @@
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
 		<description>A window and door contact.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -744,6 +804,10 @@
 		<item-type>DateTime</item-type>
 		<label>Latest motion</label>
 		<description>Timestamp of the latest motion.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -751,6 +815,10 @@
 		<item-type>Number</item-type>
 		<label>Illuminance</label>
 		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state min="0" max="1000" step="1" readOnly="true"/>
 	</channel-type>
 
@@ -758,6 +826,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
 		<description>Current open ratio (0 to 100).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" step="0.5" readOnly="false"/>
 	</channel-type>
 
@@ -765,6 +837,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Valve Tappet Position</label>
 		<description>Current open ratio (0 to 100).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="true"/>
 	</channel-type>
 
@@ -772,6 +848,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -779,12 +859,20 @@
 		<item-type>Switch</item-type>
 		<label>Child Lock</label>
 		<description>Enables or disables the child lock on the device.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="silent-mode">
 		<item-type>Switch</item-type>
 		<label>Silent Mode</label>
 		<description>Enables or disables silent mode on thermostats. When enabled, the battery usage is higher.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Disabled (lower battery usage)</option>
@@ -809,6 +897,10 @@
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State of user-defined state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="bypass-state">
@@ -863,6 +955,10 @@
 		<item-type>DateTime</item-type>
 		<label>Key Event Timestamp</label>
 		<description>Timestamp indicating when the key was pressed.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -870,12 +966,20 @@
 		<item-type>Switch</item-type>
 		<label>Child Protection</label>
 		<description>Enables or disables the child protection on the device.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="water-leakage">
 		<item-type>Switch</item-type>
 		<label>Water Leakage</label>
 		<description>Indicates whether a water leakage was detected.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Leakage detected</option>
@@ -888,6 +992,10 @@
 		<item-type>Switch</item-type>
 		<label>Push Notifications When Moved</label>
 		<description>Indicates whether push notifications are enabled when the sensor is moved.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Enabled</option>
@@ -900,6 +1008,10 @@
 		<item-type>Switch</item-type>
 		<label>Acoustic Signals When Moved</label>
 		<description>Indicates whether acoustic signals are enabled when the sensor is moved.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Enabled</option>
@@ -912,6 +1024,10 @@
 		<item-type>String</item-type>
 		<label>Water Leakage Sensor Check</label>
 		<description>Provides the result of the last water leakage sensor check.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -931,6 +1047,10 @@
 		<label>Impulse Switch</label>
 		<description>Channel to send impulses by means of `ON` events. After the time specified by impulse-length, the relay
 			will switch off automatically and the state will be reset to `OFF`.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="impulse-length">
@@ -938,6 +1058,10 @@
 		<label>Impulse Length</label>
 		<description>Channel to configure how long the relay will stay on after receiving an impulse switch event. The time is
 			specified in tenth seconds (deciseconds), e.g. 15 means 1.5 seconds.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="instant-of-last-impulse">
@@ -945,6 +1069,10 @@
 		<label>Instant of Last Impulse</label>
 		<description>Timestamp indicating when the last impulse was triggered.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -953,6 +1081,10 @@
 		<label>Alarm</label>
 		<description>Alarm state of the smoke detector.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="IDLE_OFF">Alarm off</option>
@@ -969,6 +1101,10 @@
 		<item-type>Switch</item-type>
 		<label>Vibration Sensor Switch</label>
 		<description>Channel to enable or disable the vibration sensor.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="ON">Enabled</option>
@@ -981,6 +1117,10 @@
 		<item-type>String</item-type>
 		<label>Vibration Sensor Sensitivity</label>
 		<description>The sensitivity of the vibration sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="VERY_HIGH">Very high</option>
@@ -997,6 +1137,10 @@
 		<label>Vibration Sensor State</label>
 		<description>Indicates whether vibrations were detected by the sensor.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NO_VIBRATION">No vibration</option>
