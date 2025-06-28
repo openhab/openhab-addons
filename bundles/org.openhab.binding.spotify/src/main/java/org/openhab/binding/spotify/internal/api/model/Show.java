@@ -19,16 +19,12 @@ import java.util.List;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Show {
+public class Show extends BaseEntry {
 
     private List<String> availableMarkets;
     private ExternalUrl externalUrls;
     private String href;
-    private String id;
-    private List<Image> images;
-    private String name;
     private String type;
-    private String uri;
 
     public List<String> getAvailableMarkets() {
         return availableMarkets;
@@ -42,23 +38,8 @@ public class Show {
         return href;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public String getType() {
         return type;
     }
 
-    public String getUri() {
-        return uri;
-    }
 }

@@ -12,51 +12,29 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
-import java.util.List;
-
 /**
  * Spotify Api Audiobook data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Audiobook {
+public class Audiobook extends BaseEntry {
 
     private String description;
     private String htmlDescription;
     private String edition;
     private boolean explicit;
     private String href;
-    private String id;
-    private List<Image> images;
     private String mediaType;
-    private String name;
     private String publisher;
     private String type;
-    private String uri;
     private int totalChapters;
 
     public String getHref() {
         return href;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public String getUri() {
-        return uri;
     }
 
     public String getDescription() {

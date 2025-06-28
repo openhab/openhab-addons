@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
-import java.util.List;
-
 /**
  * Spotify Api Episode data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Episode {
+public class Episode extends BaseEntry {
 
     private String audioPreviewUrl;
     private String description;
@@ -27,34 +25,15 @@ public class Episode {
     private long durationMs;
     private boolean explicit;
     private String href;
-    private String id;
-    private List<Image> images;
-    private String name;
+
     private String type;
-    private String uri;
 
     public String getHref() {
         return href;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public String getUri() {
-        return uri;
     }
 
     public String getDescription() {

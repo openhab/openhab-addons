@@ -19,21 +19,9 @@ import java.util.List;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Track {
-
-    private String name;
-    private String uri;
-
+public class Track extends BaseEntry {
     private Album album;
-    private List<Artist> artists;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUri() {
-        return uri;
-    }
+	private List<Artist> artists;
 
     public Album getAlbum() {
         return album;
@@ -43,6 +31,7 @@ public class Track {
         return artists;
     }
 
+    @Override
     public List<Image> getImages() {
         if (album != null) {
             return album.getImages();
