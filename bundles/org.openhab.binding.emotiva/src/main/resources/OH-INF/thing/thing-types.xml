@@ -127,20 +127,12 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power ON/OFF the device</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="zonePower">
 		<item-type>Switch</item-type>
 		<label>Power (zone)</label>
 		<description>Power ON/OFF this zone of the Processor</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="volume">
@@ -148,10 +140,6 @@
 		<label>Volume</label>
 		<description>Set the volume level of this zone</description>
 		<category>SoundVolume</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 		<state min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -168,10 +156,6 @@
 		<label>Mute</label>
 		<description>Enable or Disable Mute on this zone of the Processor</description>
 		<category>SoundVolume</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="source">
@@ -186,20 +170,12 @@
 		<label>On Standby</label>
 		<description>Set appliance on standby</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="menu">
 		<item-type>String</item-type>
 		<label>Menu</label>
 		<description>Menu display ON/OFF for the device</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="menu-control">
@@ -243,10 +219,6 @@
 		<label>Volume Speaker</label>
 		<description>Increased/Reduced volume for a given speaker, in dB</description>
 		<category>SoundVolume</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 		<state min="-24" step="0.5" max="24" pattern="%.1f dB"/>
 	</channel-type>
 
@@ -255,10 +227,6 @@
 		<label>Front Panel Dimness</label>
 		<description>Percentage of dimness: "0", "20", "40", "60", "80", "100"</description>
 		<category>Light</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state min="0" step="20" max="100" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -266,10 +234,6 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Main zone mode: "Stereo", "Direct", "Auto", etc.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="all-stereo">all-stereo</option>
@@ -306,40 +270,24 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Enable/Disable Loudness on this zone of the Processor</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="frequency">
 		<item-type>Rollershutter</item-type>
 		<label>Radio Tuner Frequency</label>
 		<description>Radio Tuner frequency</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="seek">
 		<item-type>Rollershutter</item-type>
 		<label>Radio Tuner Seek</label>
 		<description>Radio Tuner seek</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="channel">
 		<item-type>Rollershutter</item-type>
 		<label>Tuner Channel</label>
 		<description>Radio Tuner Channel</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<state min="1" max="20"/>
 	</channel-type>
 
@@ -359,10 +307,6 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Radio Tuner Channel Frequency</label>
 		<description>User select radio tuner channel frequency"</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
-		</tags>
 		<state readOnly="true" min="535000" max="108000000" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -370,10 +314,6 @@
 		<item-type>String</item-type>
 		<label>Radio Tuner Channel Name</label>
 		<description>User select radio tuner channel name</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="channel-1">channel-1</option>
@@ -404,10 +344,6 @@
 		<item-type>String</item-type>
 		<label>Radio Tuner Signal</label>
 		<description>Radio tuner signal quality</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>QualityOfService</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -483,10 +419,6 @@
 		<item-type>String</item-type>
 		<label>Audio Input</label>
 		<description>Input source for audio on main zone</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -494,10 +426,6 @@
 		<item-type>String</item-type>
 		<label>Audio Input Bitstream Type</label>
 		<description>Audio input bitstream type: "PCM 2.0", "ATMOS", etc.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -505,10 +433,6 @@
 		<item-type>String</item-type>
 		<label>Audio Input Bits</label>
 		<description>Audio input bits: "32kHZ 24bits", etc.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -548,10 +472,6 @@
 			auto:
 			"Stereo", "Direct", "Auto", etc.
 		</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="all-stereo">all-stereo</option>
@@ -570,10 +490,6 @@
 		<item-type>String</item-type>
 		<label>Media Mode</label>
 		<description>User-selected movie or music mode for main zone: "Movie" or "Music"</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="movie">movie</option>
@@ -586,10 +502,6 @@
 		<item-type>String</item-type>
 		<label>Mode Surround</label>
 		<description>Main zone surround mode: "Auto", "Stereo", "Dolby", ...</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="all-stereo">all-stereo</option>

@@ -14,10 +14,6 @@
 		<item-type>Number</item-type>
 		<label>Valve Position</label>
 		<description>The valve switch position.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Position</tag>
-		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

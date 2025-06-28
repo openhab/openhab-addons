@@ -26,10 +26,6 @@
 		<item-type>Contact</item-type>
 		<label>Zone Status</label>
 		<description>Zone Status (Open/Closed)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Closed</option>
@@ -56,9 +52,6 @@
 		<item-type>Contact</item-type>
 		<label>Alarm Triggered</label>
 		<description>Indicates if zone is in alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -71,10 +64,6 @@
 		<item-type>Contact</item-type>
 		<label>Fire Alarm Triggered</label>
 		<description>Indicates if zone is in fire alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -99,10 +88,6 @@
 		<item-type>Contact</item-type>
 		<label>Low Battery Warning</label>
 		<description>Indicates if zone is low on battery</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -115,10 +100,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Triggered Time</label>
 		<description>Indicates when the zone has been triggered for the last time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

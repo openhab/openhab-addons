@@ -43,10 +43,6 @@
 		<label>Switch</label>
 		<description>Allows to switch a thing ON or OFF.</description>
 		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 	<!-- Control Channel -->
 	<channel-type id="control">
@@ -54,10 +50,6 @@
 		<label>Control</label>
 		<description>Change Fade Configuration</description>
 		<category>Light</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 	<!-- Mute Channel for bridges -->
 	<channel-type id="mute">
@@ -65,9 +57,5 @@
 		<label>Mute</label>
 		<description>Mutes the DMX output of the Bridge</description>
 		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

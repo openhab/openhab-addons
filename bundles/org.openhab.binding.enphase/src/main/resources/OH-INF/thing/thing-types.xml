@@ -191,30 +191,18 @@
 		<item-type>Number:Energy</item-type>
 		<label>Produced Today</label>
 		<category>energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-seven-days">
 		<item-type>Number:Energy</item-type>
 		<label>Produced 7 Days</label>
 		<category>energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-lifetime">
 		<item-type>Number:Energy</item-type>
 		<label>Produced Lifetime</label>
 		<category>energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watts-now">
@@ -222,10 +210,6 @@
 		<label>Latest Produced Power</label>
 		<description>Latest watts produced</description>
 		<category>energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -235,10 +219,6 @@
 		<label>Last Report</label>
 		<description>Last reported power delivery</description>
 		<category>energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-report-watts">
@@ -246,10 +226,6 @@
 		<label>Max Report</label>
 		<description>Maximum reported power</description>
 		<category>energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-report-date">
@@ -257,10 +233,6 @@
 		<label>Last Report Date</label>
 		<description>Date of last reported power delivery</description>
 		<category>energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -268,20 +240,12 @@
 	<channel-type id="relay">
 		<item-type>Contact</item-type>
 		<label>Relay Status</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="line-connected">
 		<item-type>Contact</item-type>
 		<label>Line Connection Status</label>
 		<description>When closed power line is connected</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

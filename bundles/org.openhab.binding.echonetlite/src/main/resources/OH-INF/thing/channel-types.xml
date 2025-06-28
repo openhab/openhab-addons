@@ -9,10 +9,6 @@
 		<label>Operation Status</label>
 		<description>Operation Status</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="installationLocation">
@@ -20,10 +16,6 @@
 		<label>Installation Location</label>
 		<description>Installation Location</description>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Not specified">Not specified</option>
@@ -178,9 +170,6 @@
 		<label>Manufacturer Fault Code</label>
 		<description>Manufacturer Fault Code</description>
 		<category>Text</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -189,9 +178,6 @@
 		<label>Fault Status</label>
 		<description>Fault Status</description>
 		<category>Alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -200,9 +186,6 @@
 		<label>Fault Description</label>
 		<description>Fault Description</description>
 		<category>Text</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -227,10 +210,6 @@
 		<label>Power Saving</label>
 		<description>Controls whether the unit is in power saving operation or not</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="cumulativeOperatingTime">
@@ -238,10 +217,6 @@
 		<label>Cumulative Operating Time</label>
 		<description>Cumulative time the unit has been operating in seconds</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="airFlowRate">
@@ -249,10 +224,6 @@
 		<label>Air Flow Rate</label>
 		<description>Air Flow Rate</description>
 		<category>Flow</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Airflow</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Auto">Auto</option>
@@ -272,10 +243,6 @@
 		<item-type>String</item-type>
 		<label>Automatic Air Flow Direction</label>
 		<description>The type of automatic control applied to the air flow direction, if any</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Automatic">Automatic</option>
@@ -290,10 +257,6 @@
 		<item-type>String</item-type>
 		<label>Automatic Swing Of Air Flow</label>
 		<description>Automatic Swing Of Air Flow</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Not used">Not used</option>
@@ -308,10 +271,6 @@
 		<item-type>String</item-type>
 		<label>Air Flow Direction Vertical</label>
 		<description>Air Flow Direction Vertical</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Airflow</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Uppermost">Uppermost</option>
@@ -327,10 +286,6 @@
 		<item-type>String</item-type>
 		<label>Air Flow Direction Horizontal</label>
 		<description>Air Flow Direction Horizontal</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Airflow</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="XXXOO">XXXOO</option>
@@ -372,10 +327,6 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>The current mode for the Home AC unit (heating, cooling, etc.)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Automatic">Automatic</option>

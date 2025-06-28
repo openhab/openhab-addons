@@ -38,10 +38,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.ekey.relayId.label</label>
 		<description>@text/channel-type.ekey.relayId.description</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="termId">

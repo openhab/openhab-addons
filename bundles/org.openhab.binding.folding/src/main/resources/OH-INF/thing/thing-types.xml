@@ -40,10 +40,6 @@
 		<item-type>Switch</item-type>
 		<label>Run</label>
 		<description>Slot running.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="finish">
 		<item-type>Switch</item-type>

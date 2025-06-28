@@ -89,9 +89,6 @@
 		<item-type>Switch</item-type>
 		<label>Telephone Line</label>
 		<description>Reports telephone line failure</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -105,10 +102,6 @@
 		<label>AC Line</label>
 		<description>Reports power line failure</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -122,10 +115,6 @@
 		<label>Battery</label>
 		<description>Reports battery failure</description>
 		<category>LowBattery</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>LowBattery</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -139,10 +128,6 @@
 		<label>AUX Current Limit</label>
 		<description>Auxiliary Outputs have exceeded their current limits</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Exceeded</option>
@@ -156,10 +141,6 @@
 		<label>Bell Current Limit</label>
 		<description>Bell Output has exceeded its current limit</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Exceeded</option>
@@ -185,9 +166,6 @@
 		<label>Clock</label>
 		<description>Reports if clock is not malfunctioning</description>
 		<category>Time</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -201,10 +179,6 @@
 		<label>Global Fire Loop</label>
 		<description>Reports if fire loop has been triggered</description>
 		<category>Smoke</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Smoke</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Fire!</option>

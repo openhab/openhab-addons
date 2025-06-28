@@ -187,10 +187,6 @@
 		<item-type>DateTime</item-type>
 		<label>Planned Time</label>
 		<description>Provides the planned time of a train.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
@@ -198,10 +194,6 @@
 		<item-type>DateTime</item-type>
 		<label>Changed Time</label>
 		<description>Provides the changed time of a train.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
@@ -243,10 +235,6 @@
 		<label>Messages</label>
 		<description>Messages for this train. Contains all translated codes from the messages of the selected train stop.
 			Multiple messages will be separated with a single dash.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Tilt</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -344,10 +332,6 @@
 		<label>Planned Intermediate Stations</label>
 		<description>Returns the planned stations this train came from (for arrivals) or the stations this train will go to
 			(for departures). Stations will be separated by single dash.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -364,10 +348,6 @@
 		<label>Changed Intermediate Stations</label>
 		<description>Returns the changed stations this train came from (for arrivals) or the stations this train will go to
 			(for departures). Stations will be separated by single dash.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

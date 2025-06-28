@@ -108,10 +108,6 @@
 		<label>Last Update</label>
 		<description>Last successful update via REST-API from the FENECON system.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ess-soc">
@@ -126,10 +122,6 @@
 		<label>Battery Health State</label>
 		<description>Battery state of health.</description>
 		<category>BatteryLevel</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-power">
@@ -137,10 +129,6 @@
 		<label>Charger Power</label>
 		<description>Current charger power of energy storage system.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="discharger-power">
@@ -148,10 +136,6 @@
 		<label>Discharger Power</label>
 		<description>Current discharger power of energy storage system.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="emergency-power-mode">
@@ -159,10 +143,6 @@
 		<label>Emergency Power Mode</label>
 		<description>Indicates if there is no power from the grid and the emergency power mode is on.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="production-active-power">
@@ -170,10 +150,6 @@
 		<label>Producer Power</label>
 		<description>Current active power producer load.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="export-to-grid-power">
@@ -181,10 +157,6 @@
 		<label>Export Grid Power</label>
 		<description>Current export power to grid.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="exported-to-grid-energy">
@@ -192,10 +164,6 @@
 		<label>Exported Grid Energy</label>
 		<description>Total energy exported to the grid.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-active-power">
@@ -203,10 +171,6 @@
 		<label>Consumer Power</label>
 		<description>Current active power consumer load.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-active-power-phase">
@@ -214,10 +178,6 @@
 		<label>Consumer Power Phase</label>
 		<description>Current active power consumer load on the corresponding phase.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-max-active-power">
@@ -225,10 +185,6 @@
 		<label>Consumer Max Power</label>
 		<description>Maximum active consumption power that was measured.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-max-active-power">
@@ -236,10 +192,6 @@
 		<label>Producer Max Power</label>
 		<description>Maximum active production power that was measured.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="import-from-grid-power">
@@ -247,10 +199,6 @@
 		<label>Import Grid Power</label>
 		<description>Current import power from grid.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="imported-from-grid-energy">
@@ -258,10 +206,6 @@
 		<label>Imported Grid Energy</label>
 		<description>Total energy imported from the grid.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-air-temperature">
