@@ -707,7 +707,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().size() > 0
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0)
                         .isJsonArray()) {
-            logger.debug("old clean record format");
             JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray()
                     .get(0).getAsJsonArray();
             Map<String, Object> historyRecord = new HashMap<>();
@@ -755,8 +754,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     }
                 } catch (ClassCastException | NumberFormatException | IllegalStateException e) {
                 }
-                updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
             }
+            updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
         } else {
             GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
             Map<String, Object> historyRecord = new HashMap<>();
