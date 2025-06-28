@@ -6,8 +6,10 @@ import { hideBin } from "yargs/helpers";
 import { BridgeController } from "./bridge/BridgeController";
 import { ClientController } from "./client/ClientController";
 import { Controller } from "./Controller";
-import { Message, MessageType, Request } from "./MessageTypes";
+import { Message, Request } from "./MessageTypes";
 import { printError } from "./util/error";
+import { toJSON } from "./util/Json";
+
 const argv: any = yargs(hideBin(process.argv)).argv;
 
 const logger = Logger.get("matter");
@@ -72,7 +74,7 @@ const shutdownHandler = async (signal: string) => {
 
 export interface WebSocketSession extends WebSocket {
     controller?: Controller;
-    sendResponse(type: string, id: string, result?: any, error?: string): void;
+    sendResponse(type: string, id: string, result?: any, error?: string, errorId?: string): void;
     sendEvent(type: string, data?: any): void;
 }
 
@@ -80,7 +82,7 @@ const socketPort = argv.port ? parseInt(argv.port) : 8888;
 const wss: Server = new WebSocket.Server({ port: socketPort, host: argv.host });
 
 wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
-    ws.sendResponse = (type: string, id: string, result?: any, error?: string) => {
+    ws.sendResponse = (type: string, id: string, result?: any, error?: string, errorId?: string) => {
         const message: Message = {
             type: "response",
             message: {
@@ -88,10 +90,11 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
                 id,
                 result,
                 error,
+                errorId,
             },
         };
-        logger.debug(`Sending response: ${Logger.toJSON(message)}`);
-        ws.send(Logger.toJSON(message));
+        logger.debug(`Sending response: ${toJSON(message)}`);
+        ws.send(toJSON(message));
     };
 
     ws.sendEvent = (type: string, data?: any) => {
@@ -102,8 +105,8 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
                 data,
             },
         };
-        logger.debug(`Sending event: ${Logger.toJSON(message)}`);
-        ws.send(Logger.toJSON(message));
+        logger.debug(`Sending event: ${toJSON(message)}`);
+        ws.send(toJSON(message));
     };
 
     ws.on("open", () => {
@@ -111,17 +114,9 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
     });
 
     ws.on("message", (message: string) => {
-        try {
-            const request: Request = JSON.parse(message);
-            if (ws.controller) {
-                void ws.controller.handleRequest(request).catch((error: Error) => {
-                    ws.sendResponse(MessageType.ResultError, "", undefined, error.message);
-                });
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                ws.sendResponse(MessageType.ResultError, "", undefined, error.message);
-            }
+        const request: Request = JSON.parse(message);
+        if (ws.controller) {
+            void ws.controller.handleRequest(request);
         }
     });
 
@@ -138,63 +133,73 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
         logger.error(`WebSocket error: ${error} ${error.stack}`);
     });
 
-    if (!req.url) {
-        logger.error("No URL in the request");
-        ws.close(1002, "No URL in the request");
-        return;
-    }
+    // Support async init in a non async function
+    void (async () => {
+        if (!req.url) {
+            logger.error("No URL in the request");
+            ws.close(1002, "No URL in the request");
+            return;
+        }
 
-    const params = new URLSearchParams(req.url.slice(req.url.indexOf("?")));
-    const service = params.get("service") === "bridge" ? "bridge" : "client";
+        const params = new URLSearchParams(req.url.slice(req.url.indexOf("?")));
+        const service = params.get("service") === "bridge" ? "bridge" : "client";
 
-    if (service === "client") {
-        const controllerName = params.get("controllerName");
-        try {
-            if (controllerName == null) {
-                throw new Error("No controllerName parameter in the request");
-            }
-            wss.clients.forEach((client: WebSocket) => {
-                const session = client as WebSocketSession;
-                if (session.controller && session.controller.id() === `client-${controllerName}`) {
-                    throw new Error(`Controller with name ${controllerName} already exists!`);
+        if (service === "client") {
+            const controllerName = params.get("controllerName");
+            try {
+                if (controllerName == null) {
+                    throw new Error("No controllerName parameter in the request");
                 }
-            });
-            ws.controller = new ClientController(ws, params);
-            void ws.controller.init().catch(error => {
+                wss.clients.forEach((client: WebSocket) => {
+                    const session = client as WebSocketSession;
+                    if (session.controller && session.controller.id() === `client-${controllerName}`) {
+                        throw new Error(`Controller with name ${controllerName} already exists!`);
+                    }
+                });
+                ws.controller = new ClientController(ws, params);
+                try {
+                    await ws.controller.init();
+                    ws.sendEvent("ready", "Controller initialized");
+                } catch (error: any) {
+                    printError(logger, error, "ClientController.init()");
+                    logger.error("returning error", error.message);
+                    ws.close(1002, error.message);
+                    return;
+                }
+            } catch (error: any) {
                 printError(logger, error, "ClientController.init()");
                 logger.error("returning error", error.message);
                 ws.close(1002, error.message);
-            });
-        } catch (error: any) {
-            printError(logger, error, "ClientController.init()");
-            logger.error("returning error", error.message);
-            ws.close(1002, error.message);
-            return;
-        }
-    } else {
-        // For now we only support one bridge
-        const uniqueId = "0";
-        try {
-            wss.clients.forEach((client: WebSocket) => {
-                const session = client as WebSocketSession;
-                if (session.controller && session.controller.id() === `bridge-${uniqueId}`) {
-                    throw new Error(`Bridge with uniqueId ${uniqueId} already exists!`);
+                return;
+            }
+        } else {
+            // For now we only support one bridge
+            const uniqueId = "0";
+            try {
+                wss.clients.forEach((client: WebSocket) => {
+                    const session = client as WebSocketSession;
+                    if (session.controller && session.controller.id() === `bridge-${uniqueId}`) {
+                        throw new Error(`Bridge with uniqueId ${uniqueId} already exists!`);
+                    }
+                });
+                ws.controller = new BridgeController(ws, params);
+                try {
+                    await ws.controller.init();
+                    ws.sendEvent("ready", "Controller initialized");
+                } catch (error: any) {
+                    printError(logger, error, "BridgeController.init()");
+                    logger.error("returning error", error.message);
+                    ws.close(1002, error.message);
+                    return;
                 }
-            });
-            ws.controller = new BridgeController(ws, params);
-            void ws.controller.init().catch(error => {
+            } catch (error: any) {
                 printError(logger, error, "BridgeController.init()");
                 logger.error("returning error", error.message);
                 ws.close(1002, error.message);
-            });
-        } catch (error: any) {
-            printError(logger, error, "BridgeController.init()");
-            logger.error("returning error", error.message);
-            ws.close(1002, error.message);
-            return;
+                return;
+            }
         }
-    }
-    ws.sendEvent("ready", "Controller initialized");
+    })();
 });
 
 logger.info(`CHIP Controller Server listening on port ${socketPort}`);

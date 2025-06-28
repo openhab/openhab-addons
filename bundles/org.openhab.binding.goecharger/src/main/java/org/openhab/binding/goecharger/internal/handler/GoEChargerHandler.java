@@ -366,8 +366,8 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
      */
     @Nullable
     @Override
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException, ExecutionException,
+            JsonSyntaxException, IllegalArgumentException {
         String urlStr = getReadUrl();
         logger.trace("GET URL = {}", urlStr);
 

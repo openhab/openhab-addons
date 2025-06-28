@@ -9,6 +9,10 @@
 		<label>Intensity</label>
 		<description>Rain intensity level</description>
 		<category>oh:meteofrance:intensity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Dry Weather</option>
@@ -24,6 +28,10 @@
 		<label>Wind</label>
 		<description>Wind event alert level</description>
 		<category>oh:meteofrance:vent</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -39,6 +47,10 @@
 		<label>Storm</label>
 		<description>Storm alert level</description>
 		<category>oh:meteofrance:orage</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -54,6 +66,10 @@
 		<label>Flood</label>
 		<description>Flood alert level</description>
 		<category>oh:meteofrance:inondation</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -69,6 +85,10 @@
 		<label>Snow</label>
 		<description>Snow event alert level</description>
 		<category>oh:meteofrance:neige</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -84,6 +104,10 @@
 		<label>Heat Wave</label>
 		<description>High temperature alert level</description>
 		<category>oh:meteofrance:canicule</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -99,6 +123,10 @@
 		<label>Extreme Cold</label>
 		<description>Negative temperature alert level</description>
 		<category>oh:meteofrance:grand-froid</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -114,6 +142,9 @@
 		<label>Avalanches</label>
 		<description>Avalanche alert level</description>
 		<category>oh:meteofrance:avalanches</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -129,6 +160,10 @@
 		<label>Wave Submersion</label>
 		<description>Submersion wave alert level</description>
 		<category>oh:meteofrance:vague-submersion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>
@@ -144,6 +179,10 @@
 		<label>Rain Flood</label>
 		<description>Flood caused by rainfall alert level</description>
 		<category>oh:meteofrance:pluie-inondation</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No special vigilance</option>

@@ -70,8 +70,8 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
      * endpoint of this node.
      */
     public Integer threadNetworkTableSize; // 2 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * Represents the data associated with a Thread Network.
      */
