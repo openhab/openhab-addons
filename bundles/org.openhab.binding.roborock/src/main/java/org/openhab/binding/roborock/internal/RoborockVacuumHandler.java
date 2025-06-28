@@ -15,6 +15,7 @@ package org.openhab.binding.roborock.internal;
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -707,7 +708,55 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0)
                         .isJsonArray()) {
             logger.debug("old clean record format");
-            JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+            JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray()
+                    .get(0).getAsJsonArray();
+            Map<String, Object> historyRecord = new HashMap<>();
+            for (int i = 0; i < historyData.size(); ++i) {
+                try {
+                    BigInteger value = historyData.get(i).getAsBigInteger();
+                    switch (i) {
+                        case 0:
+                            DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
+                            historyRecord.put("begin", begin.format(null));
+                            updateState(CHANNEL_HISTORY_START_TIME, begin);
+                            break;
+                        case 1:
+                            DateTimeType end = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
+                            historyRecord.put("end", end.format(null));
+                            updateState(CHANNEL_HISTORY_END_TIME, end);
+                            break;
+                        case 2:
+                            long duration = TimeUnit.SECONDS.toMinutes(value.intValue());
+                            historyRecord.put("duration", duration);
+                            updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
+                            break;
+                        case 3:
+                            historyRecord.put("area", value);
+                            updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(value, SIUnits.SQUARE_METRE));
+                            break;
+                        case 4:
+                            historyRecord.put("error", value.intValue());
+                            updateState(CHANNEL_HISTORY_ERROR, new DecimalType(value.intValue()));
+                            break;
+                        case 5:
+                            historyRecord.put("complete", value.intValue());
+                            updateState(CHANNEL_HISTORY_FINISH, new DecimalType(value.intValue()));
+                            break;
+                        case 6:
+                            historyRecord.put("startType", value.intValue());
+                            break;
+                        case 7:
+                            historyRecord.put("cleanType", value.intValue());
+                            break;
+                        case 8:
+                            historyRecord.put("finishReason", value.intValue());
+                            updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(value.intValue()));
+                            break;
+                    }
+                } catch (ClassCastException | NumberFormatException | IllegalStateException e) {
+                }
+                updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
+            }
         } else {
             GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
             Map<String, Object> historyRecord = new HashMap<>();
