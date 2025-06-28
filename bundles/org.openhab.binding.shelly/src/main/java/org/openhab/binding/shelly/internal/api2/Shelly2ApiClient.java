@@ -623,7 +623,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs == null) {
             return false;
         }
-        Integer csId = cs.id;
+
         if (cs.id == null) {
             cs.id = id;
         }
@@ -688,9 +688,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return updateChannels ? ShellyComponents.updateRoller((ShellyBaseHandler) getThing(), rs, rIdx) : false;
     }
 
-    private int getRollerIdx(ShellyDeviceProfile profile, @Nullable Integer id) {
+    private int getRollerIdx(ShellyDeviceProfile profile, Integer id) {
         List<ShellySettingsRoller> rollers = profile.settings.rollers;
-        if (id != null && rollers != null) {
+        if (rollers != null) {
             int idx = 0;
             for (ShellySettingsRoller roller : rollers) {
                 if (roller.isValid && roller.id != null && roller.id.intValue() == id.intValue()) {
