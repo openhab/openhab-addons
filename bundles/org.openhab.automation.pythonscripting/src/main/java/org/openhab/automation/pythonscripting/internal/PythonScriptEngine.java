@@ -211,7 +211,6 @@ public class PythonScriptEngine
                         String.valueOf(pythonScriptEngineConfiguration.isJythonEmulation()))
 
                 // Set python path to point to sources stored in
-                // pass the path to be executed
                 .option(PYTHON_OPTION_PYTHONPATH, PythonScriptEngineFactory.PYTHON_LIB_PATH.toString()
                         + File.pathSeparator + PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString());
 
