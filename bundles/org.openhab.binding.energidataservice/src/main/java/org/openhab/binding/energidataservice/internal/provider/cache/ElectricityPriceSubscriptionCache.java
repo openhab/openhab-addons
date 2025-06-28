@@ -42,11 +42,8 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
 
     protected final Clock clock;
 
-    protected final Duration priceDuration;
-
-    protected ElectricityPriceSubscriptionCache(Clock clock, Duration priceDuration) {
+    protected ElectricityPriceSubscriptionCache(Clock clock) {
         this.clock = clock.withZone(NORD_POOL_TIMEZONE);
-        this.priceDuration = priceDuration;
         this.priceMap = new ConcurrentSkipListMap<>();
     }
 
@@ -75,10 +72,38 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
     @Override
     public @Nullable BigDecimal get(Instant time) {
         Map.Entry<Instant, BigDecimal> entry = priceMap.floorEntry(time);
-        if (entry != null && !time.isAfter(entry.getKey().plus(priceDuration))) {
+        if (entry == null) {
+            return null;
+        }
+
+        Instant validUntil = getValidUntil(entry.getKey());
+        if (validUntil != null && time.isBefore(validUntil)) {
             return entry.getValue();
         }
+
         return null;
+    }
+
+    private @Nullable Instant getValidUntil(Instant current) {
+        Instant next = getPriceMapHigherKey(current);
+        if (next != null) {
+            return next;
+        }
+
+        Instant previous = getPriceMapLowerKey(current);
+        if (previous != null) {
+            return current.plus(Duration.between(previous, current));
+        }
+
+        return null;
+    }
+
+    private @Nullable Instant getPriceMapHigherKey(Instant current) {
+        return priceMap.higherKey(current);
+    }
+
+    private @Nullable Instant getPriceMapLowerKey(Instant current) {
+        return priceMap.lowerKey(current);
     }
 
     /**
@@ -88,14 +113,56 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
      */
     @Override
     public boolean areHistoricPricesCached() {
-        return arePricesCached(getCurrentHourStart().minus(1, ChronoUnit.HOURS));
+        return arePricesCached(getCurrentHourStart());
     }
 
+    /**
+     * Check if prices are cached until provided {@link Instant}.
+     * The default gap expected between prices is one hour.
+     * It is assumed that gaps can only become shorter, not longer.
+     * For example, after day-ahead price transition to 15-minutes
+     * resolution, we no longer expect one hour between prices.
+     *
+     * @param end Check until this time (exclusive)
+     * @return true if prices are fully cached
+     */
     protected boolean arePricesCached(Instant end) {
-        for (Instant start = getFirstHourStart(); start.compareTo(end) <= 0; start = start.plus(priceDuration)) {
-            if (priceMap.get(start) == null) {
+        Instant current = getFirstHourStart();
+        Instant previous = null;
+        Duration maxGap = Duration.ofHours(1);
+
+        while (current.isBefore(end)) {
+            if (!priceMap.containsKey(current)) {
                 return false;
             }
+
+            Instant next = getPriceMapHigherKey(current);
+            if (next != null) {
+                Duration gap = Duration.between(current, next);
+                if (gap.compareTo(maxGap) > 0) {
+                    return false;
+                }
+                if (gap.compareTo(maxGap) < 0) {
+                    maxGap = gap;
+                }
+            } else {
+                // No next entry — infer end time of final segment
+                if (previous != null) {
+                    Instant prev = previous;
+                    Duration gap = Duration.between(prev, current);
+                    if (current.plus(gap).isBefore(end)) {
+                        return false;
+                    }
+                } else {
+                    // Only one entry, can't infer duration
+                    return false;
+                }
+
+                break;
+            }
+
+            previous = current;
+            current = next;
         }
 
         return true;
