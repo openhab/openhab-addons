@@ -519,7 +519,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void handleGetStatus(String response) {
+    private void handleGetStatus(String response) {
         logger.trace("handleGetStatus - response {}", response);
         JsonObject statusResponse = JsonParser.parseString(response).getAsJsonObject().getAsJsonArray("result").get(0)
                 .getAsJsonObject();
@@ -634,7 +634,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    public void handleGetConsumables(String response) {
+    private void handleGetConsumables(String response) {
         GetConsumables getConsumables = gson.fromJson(response, GetConsumables.class);
         if (getConsumables != null) {
             int mainBrush = getConsumables.result[0].mainBrushWorkTime;
@@ -660,7 +660,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    public void handleGetRoomMapping(String response) {
+    private void handleGetRoomMapping(String response) {
         logger.trace("getRoomMapping response = {}", response);
         for (RobotCapabilities cmd : FEATURES_CHANNELS) {
             if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
@@ -691,7 +691,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    public void handleGetNetworkInfo(String response) {
+    private void handleGetNetworkInfo(String response) {
         GetNetworkInfo getNetworkInfo = gson.fromJson(response, GetNetworkInfo.class);
         if (getNetworkInfo != null) {
             updateState(CHANNEL_SSID, new StringType(getNetworkInfo.result.ssid));
@@ -700,17 +700,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    public void handleGetCleanRecord(String response) {
+    private void handleGetCleanRecord(String response) {
         logger.trace("handleGetCleanRecord, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().size() > 0
                 && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0)
                         .isJsonArray()) {
             logger.debug("old clean record format");
+            JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         } else {
             GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
             Map<String, Object> historyRecord = new HashMap<>();
-            if (historyRecord != null) {
+            if (getCleanRecord != null) {
                 DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].begin));
                 historyRecord.put("begin", begin.format(null));
                 updateState(CHANNEL_HISTORY_START_TIME, begin);
@@ -737,7 +738,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    public void handleGetCleanSummary(String response) {
+    private void handleGetCleanSummary(String response) {
         logger.trace("handleGetCleanSummary, response = {}", response);
         if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()) {
             logger.debug("old clean summary format");
@@ -784,7 +785,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    public void handleGetDndTimer(String response) {
+    private void handleGetDndTimer(String response) {
         logger.trace("handleGetDndTimer, response = {}", response);
         GetDndTimer getDndTimer = gson.fromJson(response, GetDndTimer.class);
         updateState(CHANNEL_DND_FUNCTION, new DecimalType(getDndTimer.result[0].enabled));
@@ -794,48 +795,48 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String.format("%02d:%02d", getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
     }
 
-    public void handleGetSegmentStatus(String response) {
+    private void handleGetSegmentStatus(String response) {
         logger.trace("handleGetSegmentStatus, response = {}", response);
         JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         Integer stat = getSegmentStatus.get(0).getAsInt();
         updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), new DecimalType(stat));
     }
 
-    public void handleGetMapStatus(String response) {
+    private void handleGetMapStatus(String response) {
         logger.trace("handleGetMapStatus, response = {}", response);
         JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         Integer stat = getSegmentStatus.get(0).getAsInt();
         updateState(RobotCapabilities.MAP_STATUS.getChannel(), new DecimalType(stat));
     }
 
-    public void handleGetLedStatus(String response) {
+    private void handleGetLedStatus(String response) {
         logger.trace("handleGetLedStatus, response = {}", response);
         JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         Integer stat = getSegmentStatus.get(0).getAsInt();
         updateState(RobotCapabilities.LED_STATUS.getChannel(), new DecimalType(stat));
     }
 
-    public void handleGetCarpetMode(String response) {
+    private void handleGetCarpetMode(String response) {
         logger.trace("handleGetCarpetMode, response = {}", response);
         JsonArray getCarpetMode = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         updateState(RobotCapabilities.CARPET_MODE.getChannel(),
                 new StringType(getCarpetMode.get(0).getAsJsonObject().toString()));
     }
 
-    public void handleGetFwFeatures(String response) {
+    private void handleGetFwFeatures(String response) {
         logger.trace("handleGetFwFeatures, response = {}", response);
         JsonArray getFwFeatures = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         updateState(RobotCapabilities.FW_FEATURES.getChannel(), new StringType(getFwFeatures.toString()));
     }
 
-    public void handleGetMultiMapsList(String response) {
+    private void handleGetMultiMapsList(String response) {
         logger.trace("handleGetMultiMapsList, response = {}", response);
         JsonArray getMultiMapsList = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
         updateState(RobotCapabilities.MULTI_MAP_LIST.getChannel(),
                 new StringType(getMultiMapsList.get(0).getAsJsonObject().toString()));
     }
 
-    public void handleGetCustomizeCleanMode(String response) {
+    private void handleGetCustomizeCleanMode(String response) {
         logger.trace("handleGetCustomizeCleanMode, response = {}", response);
         JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
                 .getAsJsonArray();
@@ -843,7 +844,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 new StringType(getCustomizeCleanMode.toString()));
     }
 
-    public void handleGetMap(String response) {
+    private void handleGetMap(String response) {
         logger.trace("handleGetMap, response = {}", response);
     }
 
@@ -895,11 +896,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = true;
     }
 
-    public void sendCommand(String method) throws UnsupportedEncodingException {
+    private void sendCommand(String method) throws UnsupportedEncodingException {
         sendCommand(method, "[]");
     }
 
-    public void sendCommand(String method, String params) throws UnsupportedEncodingException {
+    private void sendCommand(String method, String params) throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         Random random = new Random();
