@@ -131,6 +131,7 @@
     <module>org.openhab.binding.easee</module>
     <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
+    <module>org.openhab.binding.ecoflow</module>
     <module>org.openhab.binding.ecotouch</module>
     <module>org.openhab.binding.ecovacs</module>
     <module>org.openhab.binding.ecowatt</module>
