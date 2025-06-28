@@ -16,6 +16,7 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbums;
+import org.openhab.binding.spotify.internal.api.model.Show;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.api.model.UserTrackEntries;
@@ -270,11 +272,13 @@ public class SpotifyApi {
         final SavedAlbums savedAlbums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit,
                 "", SavedAlbums.class);
 
-        Albums albums = new Albums();
-        for (SavedAlbum savedAlbum : savedAlbums.getItems()) {
-            albums.getItems().add(savedAlbum.album);
+        List<Album> albums = new ArrayList<Album>();
+        if (savedAlbums != null) {
+            for (SavedAlbum savedAlbum : savedAlbums.getItems()) {
+                albums.add(savedAlbum.album);
+            }
         }
-        return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+        return albums;
     }
 
     /**
@@ -344,11 +348,18 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<AddedShow> getShows(long offset, long limit) {
-        final AddedShows shows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
+    public List<Show> getShows(long offset, long limit) {
+        final AddedShows addedShows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
                 AddedShows.class);
 
-        return shows == null || shows.getItems() == null ? Collections.emptyList() : shows.getItems();
+        List<Show> shows = new ArrayList<Show>();
+        if (addedShows != null) {
+            for (AddedShow addedShow : addedShows.getItems()) {
+                shows.add(addedShow.show);
+            }
+        }
+
+        return shows;
     }
 
     /**
@@ -364,22 +375,33 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public List<UserTrackEntry> getTracks(long offset, long limit) {
-        final UserTrackEntries tracks = request(GET, SPOTIFY_API_URL + "/tracks?offset" + offset + "&limit=" + limit,
-                "", UserTrackEntries.class);
+    public List<Track> getTracks(long offset, long limit) {
+        final UserTrackEntries userTracks = request(GET,
+                SPOTIFY_API_URL + "/tracks?offset" + offset + "&limit=" + limit, "", UserTrackEntries.class);
 
-        return tracks == null || tracks.getItems() == null ? Collections.emptyList() : tracks.getItems();
+        return getTrackFromUserTrackEntries(userTracks);
     }
 
     /**
      * @return Returns the artists of the user.
      */
-    public List<UserTrackEntry> getRecentlyPlayedTracks(long offset, long limit) {
-        final UserTrackEntries tracks = request(GET,
+    public List<Track> getRecentlyPlayedTracks(long offset, long limit) {
+        final UserTrackEntries userTracks = request(GET,
                 SPOTIFY_API_URL + "/player/recently-played?offset" + offset + "&limit=" + limit, "",
                 UserTrackEntries.class);
 
-        return tracks == null || tracks.getItems() == null ? Collections.emptyList() : tracks.getItems();
+        return getTrackFromUserTrackEntries(userTracks);
+    }
+
+    public List<Track> getTrackFromUserTrackEntries(@Nullable UserTrackEntries userTracks) {
+        List<Track> tracks = new ArrayList<Track>();
+        if (userTracks != null) {
+            for (UserTrackEntry userTrack : userTracks.getItems()) {
+                tracks.add(userTrack.track);
+            }
+        }
+
+        return tracks;
     }
 
     /**

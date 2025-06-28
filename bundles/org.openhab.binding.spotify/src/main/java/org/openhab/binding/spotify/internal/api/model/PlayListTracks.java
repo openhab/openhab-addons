@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,5 +28,15 @@ public class PlayListTracks {
 
     public List<PlaylistTrack> getPlaylistTrack() {
         return items;
+    }
+
+    public List<Track> getTrack() {
+        List<Track> tracks = new ArrayList<Track>();
+        if (items != null) {
+            for (PlaylistTrack playListTrack : items) {
+                tracks.add(playListTrack.track);
+            }
+        }
+        return tracks;
     }
 }
