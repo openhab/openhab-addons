@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -41,19 +42,17 @@ import org.openhab.binding.spotify.internal.api.model.AddedShow;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
 import org.openhab.binding.spotify.internal.api.model.Artist;
-import org.openhab.binding.spotify.internal.api.model.Audiobook;
+import org.openhab.binding.spotify.internal.api.model.BaseEntry;
 import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.Context;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
-import org.openhab.binding.spotify.internal.api.model.Episode;
 import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
-import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
 import org.openhab.binding.spotify.internal.api.model.Show;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
@@ -85,7 +84,7 @@ import org.openhab.core.media.model.MediaArtist;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
-import org.openhab.core.media.model.MediaPostcast;
+import org.openhab.core.media.model.MediaPodcast;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.media.model.MediaTrack;
@@ -423,92 +422,62 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 return new MediaCollection("Search", "Search", "/static/Search.png");
             });
 
-        } else if (mediaEntry.getKey().equals("Playlists")) {
+        } else if ("Playlists".equals(mediaEntry.getKey())) {
             List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
-
-            for (Playlist playList : playLists) {
-                String key = playList.getUri();
-                MediaPlayList mediaPlayList = mediaEntry.registerEntry(key, () -> {
-                    MediaPlayList res = new MediaPlayList(key, playList.getName());
-                    if (playList.getImages() != null) {
-                        res.setArtUri(playList.getImages()[0].getUrl());
-                    }
-                    return res;
-                });
-            }
-        } else if (mediaEntry.getKey().equals("Albums")) {
-            List<SavedAlbum> albums = spotifyApi.getSavedAlbums(start, size);
-
-            for (SavedAlbum savedAlbum : albums) {
-                String key = savedAlbum.album.getUri();
-                String name = savedAlbum.album.getName();
-                String uri = savedAlbum.album.getImages().getFirst().getUrl();
-
-                MediaAlbum mediaAlbum = mediaEntry.registerEntry(key, () -> {
-                    MediaAlbum res = new MediaAlbum(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-
-            }
-        } else if (mediaEntry.getKey().equals("Artists")) {
+            RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+        } else if ("Albums".equals(mediaEntry.getKey())) {
+            List<Album> albums = spotifyApi.getAlbums(start, size);
+            RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+        } else if ("Artists".equals(mediaEntry.getKey())) {
             List<Artist> artists = spotifyApi.getArtists(start, size);
-
-            for (Artist artist : artists) {
-                String key = artist.getUri();
-                String name = artist.getName();
-
-                MediaArtist mediaArtist = mediaEntry.registerEntry(key, () -> {
-                    MediaArtist res = new MediaArtist(key, name);
-                    if (artist.getImages() != null) {
-                        res.setArtUri(artist.getImages()[0].getUrl());
-                    }
-                    return res;
-                });
-
+            RegisterCollections(mediaEntry, artists, MediaArtist.class);
+        } else if ("TopTracks".equals(mediaEntry.getKey())) {
+            List<Track> tracks = spotifyApi.getTopTracks(start, size);
+            RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+        } else if ("TopArtists".equals(mediaEntry.getKey())) {
+            List<Artist> artists = spotifyApi.getTopArtists(start, size);
+            RegisterCollections(mediaEntry, artists, MediaArtist.class);
+        } else if ("Podcasts".equals(mediaEntry.getKey())) {
+            List<AddedShow> addedShows = spotifyApi.getShows(start, size);
+            List<Show> shows = new ArrayList<Show>();
+            for (AddedShow addedShow : addedShows) {
+                shows.add(addedShow.show);
             }
+            RegisterCollections(mediaEntry, shows, MediaPodcast.class);
+        } else if ("Tracks".equals(mediaEntry.getKey())) {
+            List<UserTrackEntry> userTracks = spotifyApi.getTracks(start, size);
+            List<Track> tracks = new ArrayList<Track>();
+            for (UserTrackEntry userTrack : userTracks) {
+                tracks.add(userTrack.track);
+            }
+
+            RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+        } else if ("NewReleases".equals(mediaEntry.getKey())) {
+            List<Album> albums = spotifyApi.getNewReleases(start, size);
+            RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+        } else if ("RecentlyPlayed".equals(mediaEntry.getKey())) {
+            List<UserTrackEntry> userTracks = spotifyApi.getRecentlyPlayedTracks(start, size);
+            List<Track> tracks = new ArrayList<Track>();
+            for (UserTrackEntry userTrack : userTracks) {
+                tracks.add(userTrack.track);
+            }
+
+            RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+        } else if ("Categories".equals(mediaEntry.getKey())) {
+            List<Categorie> categories = spotifyApi.getCategories(start, size);
+            RegisterCollections(mediaEntry, categories, MediaPlayList.class);
         } else if (mediaEntry instanceof MediaArtist) {
             MediaArtist mediaArtist = (MediaArtist) mediaEntry;
-
             List<Album> albumList = spotifyApi.getArtistAlbums(mediaArtist.getKey().replace("spotify:artist:", ""));
-
-            for (Album album : albumList) {
-                String name = album.getName();
-                String uri = album.getUri();
-                String artUri = album.getImages().getFirst().getUrl();
-
-                MediaAlbum mediaAlbum = mediaEntry.registerEntry(uri, () -> {
-                    MediaAlbum res = new MediaAlbum(uri, name);
-                    res.setArtUri(artUri);
-                    return res;
-
-                });
-
-            }
-
+            RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
         } else if (mediaEntry instanceof MediaAlbum) {
             MediaAlbum mediaAlbum = (MediaAlbum) mediaEntry;
-            List<SavedAlbum> albums = spotifyApi.getSavedAlbums(start, size);
+            List<Album> albums = spotifyApi.getAlbums(start, size);
 
-            Optional<SavedAlbum> optSavedAlbum = albums.stream()
-                    .filter(x -> x.album.getUri().equals(mediaAlbum.getKey())).findFirst();
+            Optional<Album> optAlbum = albums.stream().filter(x -> x.getUri().equals(mediaAlbum.getKey())).findFirst();
 
-            if (optSavedAlbum.isPresent()) {
-
-                SavedAlbum savedAlbum = optSavedAlbum.get();
-                Tracks tracks = savedAlbum.album.getTracks();
-                for (Track track : tracks.getItems()) {
-                    String name = track.getName();
-                    String uri = track.getUri();
-
-                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
-                        return new MediaTrack(uri, name);
-                    });
-
-                }
-            } else {
-                Album album = spotifyApi.getAlbum(mediaAlbum.getKey().replace("spotify:album:", ""));
-
+            if (optAlbum.isPresent()) {
+                Album album = optAlbum.get();
                 Tracks tracks = album.getTracks();
                 for (Track track : tracks.getItems()) {
                     String name = track.getName();
@@ -517,9 +486,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                     MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
                         return new MediaTrack(uri, name);
                     });
-
                 }
-
+            } else {
+                Album album = spotifyApi.getAlbum(mediaAlbum.getKey().replace("spotify:album:", ""));
+                Tracks tracks = album.getTracks();
+                RegisterCollections(mediaEntry, tracks.getItems(), MediaTrack.class);
             }
 
         } else if (mediaEntry instanceof MediaPlayList) {
@@ -527,136 +498,15 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
             if (pl != null) {
                 PlayListTracks tracks = pl.getTracks();
-                List<PlaylistTrack> playlistTrack = tracks.getPlaylistTrack();
-
-                for (PlaylistTrack plTrack : playlistTrack) {
-
-                    String uri = plTrack.track.getUri();
-                    String name = plTrack.track.getName();
-                    String artUri = plTrack.track.getAlbum().getImages().getFirst().getUrl();
-
-                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
-                        MediaTrack res = new MediaTrack(uri, name);
-                        res.setArtUri(artUri);
-                        return res;
-                    });
-
+                List<PlaylistTrack> playlistTracks = tracks.getPlaylistTrack();
+                List<Track> trackList = new ArrayList<Track>();
+                for (PlaylistTrack playListTrack : playlistTracks) {
+                    trackList.add(playListTrack.track);
                 }
+
+                RegisterCollections(mediaEntry, trackList, MediaTrack.class);
             }
-        } else if (mediaEntry.getKey().equals("TopTracks")) {
-            List<Track> tracks = spotifyApi.getTopTracks(start, size);
-
-            for (Track track : tracks) {
-                String key = track.getUri();
-                String name = track.getName();
-
-                MediaTrack mediaTrack = mediaEntry.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    if (track.getImages() != null) {
-                        res.setArtUri(track.getImages().getFirst().getUrl());
-                    }
-                    return res;
-                });
-
-            }
-
-        } else if (mediaEntry.getKey().equals("TopArtists")) {
-            List<Artist> artists = spotifyApi.getTopArtists(start, size);
-
-            for (Artist artist : artists) {
-                String key = artist.getUri();
-                String name = artist.getName();
-
-                MediaArtist mediaArtist = mediaEntry.registerEntry(key, () -> {
-                    MediaArtist res = new MediaArtist(key, name);
-                    if (artist.getImages() != null) {
-                        res.setArtUri(artist.getImages()[0].getUrl());
-                    }
-                    return res;
-                });
-
-            }
-        } else if (mediaEntry.getKey().equals("Podcasts")) {
-            List<AddedShow> shows = spotifyApi.getShows(start, size);
-
-            for (AddedShow addedShow : shows) {
-                String key = addedShow.show.getUri();
-                String name = addedShow.show.getName();
-
-                MediaPostcast mediaPostcast = mediaEntry.registerEntry(key, () -> {
-                    MediaPostcast res = new MediaPostcast(key, name);
-                    if (addedShow.show.getImages() != null) {
-                        res.setArtUri(addedShow.show.getImages().getFirst().getUrl());
-                    }
-                    return res;
-                });
-
-            }
-
-        } else if (mediaEntry.getKey().equals("Tracks")) {
-            List<UserTrackEntry> tracks = spotifyApi.getTracks(start, size);
-
-            for (UserTrackEntry userTrack : tracks) {
-                String key = userTrack.track.getUri();
-                String name = userTrack.track.getName();
-
-                MediaTrack mediaTrack = mediaEntry.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    if (userTrack.track.getImages() != null) {
-                        res.setArtUri(userTrack.track.getImages().getFirst().getUrl());
-                    }
-                    return res;
-                });
-
-            }
-
-        } else if (mediaEntry.getKey().equals("NewReleases")) {
-            List<Album> albums = spotifyApi.getNewReleases(start, size);
-
-            for (Album album : albums) {
-                String key = album.getUri();
-                String name = album.getName();
-                String uri = album.getImages().getFirst().getUrl();
-
-                MediaAlbum mediaAlbum = mediaEntry.registerEntry(key, () -> {
-                    MediaAlbum res = new MediaAlbum(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-
-            }
-        } else if (mediaEntry.getKey().equals("RecentlyPlayed")) {
-            List<UserTrackEntry> tracks = spotifyApi.getRecentlyPlayedTracks(start, size);
-
-            for (UserTrackEntry userTrack : tracks) {
-                String key = userTrack.track.getUri();
-                String name = userTrack.track.getName();
-
-                MediaTrack mediaTrack = mediaEntry.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    if (userTrack.track.getImages() != null) {
-                        res.setArtUri(userTrack.track.getImages().getFirst().getUrl());
-                    }
-                    return res;
-                });
-
-            }
-
-        } else if (mediaEntry.getKey().equals("Categories")) {
-            List<Categorie> categories = spotifyApi.getCategories(start, size);
-
-            for (Categorie categorie : categories) {
-                String key = categorie.getUri();
-
-                MediaPlayList mediaPlayList = mediaEntry.registerEntry(key, () -> {
-                    MediaPlayList res = new MediaPlayList(key, categorie.getName());
-                    if (categorie.getImages() != null) {
-                        res.setArtUri(categorie.getImages()[0].getUrl());
-                    }
-                    return res;
-                });
-            }
-        } else if (mediaEntry.getKey().equals("Search")) {
+        } else if ("Search".equals(mediaEntry.getKey())) {
             ApiSearchResult searchResult = spotifyApi.search(0, 30);
             MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");
@@ -686,111 +536,43 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 return new MediaCollection("Audiobook", "Audiobook", "/static/Audiobook.png");
             });
 
-            for (Album album : searchResult.albums.getItems()) {
-                String key = album.getUri();
-                String name = album.getName();
-                String uri = album.getImages().getFirst().getUrl();
+            RegisterCollections(mediaAlbums, searchResult.albums.getItems(), MediaAlbum.class);
+            RegisterCollections(mediaArtists, searchResult.artists.getItems(), MediaArtist.class);
+            RegisterCollections(mediaPlaylists, searchResult.playlists.getItems(), MediaPlayList.class);
+            RegisterCollections(mediaTracks, searchResult.tracks.getItems(), MediaTrack.class);
+            RegisterCollections(mediaShows, searchResult.shows.getItems(), MediaTrack.class);
+            RegisterCollections(mediaEpisodes, searchResult.episodes.getItems(), MediaTrack.class);
+            RegisterCollections(mediaAudiobooks, searchResult.audiobooks.getItems(), MediaTrack.class);
 
-                MediaAlbum mediaAlbum = mediaAlbums.registerEntry(key, () -> {
-                    MediaAlbum res = new MediaAlbum(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-            }
-
-            for (Artist artist : searchResult.artists.getItems()) {
-                if (artist == null) {
-                    continue;
-                }
-                String key = artist.getUri();
-                String name = artist.getName();
-
-                MediaArtist mediaArtist = mediaArtists.registerEntry(key, () -> {
-                    MediaArtist res = new MediaArtist(key, name);
-                    if (artist.getImages() != null && artist.getImages().length > 0) {
-                        res.setArtUri(artist.getImages()[0].getUrl());
-                    }
-                    return res;
-                });
-            }
-
-            for (Playlist playlist : searchResult.playlists.getItems()) {
-                if (playlist == null) {
-                    continue;
-                }
-                String key = playlist.getUri();
-                String name = playlist.getName();
-
-                MediaPlayList mediaPlaylist = mediaPlaylists.registerEntry(key, () -> {
-                    MediaPlayList res = new MediaPlayList(key, name);
-                    if (playlist.getImages() != null && playlist.getImages().length > 0) {
-                        res.setArtUri(playlist.getImages()[0].getUrl());
-                    }
-                    return res;
-                });
-            }
-
-            for (Track track : searchResult.tracks.getItems()) {
-                if (track == null) {
-                    continue;
-                }
-                String key = track.getUri();
-                String name = track.getName();
-                String uri = track.getImages().getFirst().getUrl();
-
-                MediaTrack mediaTrack = mediaTracks.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-            }
-
-            for (Show show : searchResult.shows.getItems()) {
-                if (show == null) {
-                    continue;
-                }
-                String key = show.getUri();
-                String name = show.getName();
-                String uri = show.getImages().getFirst().getUrl();
-
-                MediaTrack mediaShow = mediaShows.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-            }
-
-            for (Episode episode : searchResult.episodes.getItems()) {
-                if (episode == null) {
-                    continue;
-                }
-                String key = episode.getUri();
-                String name = episode.getName();
-                String uri = episode.getImages().getFirst().getUrl();
-
-                MediaTrack mediaEpisode = mediaEpisodes.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-            }
-
-            for (Audiobook audioBook : searchResult.audiobooks.getItems()) {
-                if (audioBook == null) {
-                    continue;
-                }
-                String key = audioBook.getUri();
-                String name = audioBook.getName();
-                String uri = audioBook.getImages().getFirst().getUrl();
-
-                MediaTrack mediaAudiobook = mediaAudiobooks.registerEntry(key, () -> {
-                    MediaTrack res = new MediaTrack(key, name);
-                    res.setArtUri(uri);
-                    return res;
-                });
-            }
         }
 
+    }
+
+    private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
+            List<T> collection, Class<R> allocator) {
+        for (T entry : collection) {
+            if (entry == null) {
+                continue;
+            }
+            String key = entry.getUri();
+            String name = entry.getName();
+            String uri = entry.getImagesUrl();
+
+            parentEntry.registerEntry(key, () -> {
+                try {
+                    MediaEntry res = allocator.getDeclaredConstructor().newInstance();
+                    res.setName(name);
+                    res.setKey(key);
+
+                    if (res instanceof MediaCollection) {
+                        ((MediaCollection) res).setArtUri(uri);
+                    }
+                    return res;
+                } catch (Exception ex) {
+                    return null;
+                }
+            });
+        }
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {

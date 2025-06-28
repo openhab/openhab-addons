@@ -266,10 +266,14 @@ public class SpotifyApi {
     /**
      * @return Returns the albums of the user.
      */
-    public List<SavedAlbum> getSavedAlbums(long offset, long limit) {
-        final SavedAlbums albums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit, "",
-                SavedAlbums.class);
+    public List<Album> getAlbums(long offset, long limit) {
+        final SavedAlbums savedAlbums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit,
+                "", SavedAlbums.class);
 
+        Albums albums = new Albums();
+        for (SavedAlbum savedAlbum : savedAlbums.getItems()) {
+            albums.getItems().add(savedAlbum.album);
+        }
         return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
     }
 
