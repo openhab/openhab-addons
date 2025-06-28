@@ -21,6 +21,8 @@
 			<channel-group id="dc-output" typeId="delta-dc-output"/>
 		</channel-groups>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description-ref uri="thing-type:ecoflow:device"/>
 	</thing-type>
 
@@ -40,6 +42,8 @@
 			<channel-group id="ac-output" typeId="delta-ac-output"/>
 			<channel-group id="dc-output" typeId="delta-dc-output"/>
 		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="thing-type:ecoflow:device"/>
 	</thing-type>

@@ -19,6 +19,8 @@
 			<channel-group id="pv2-input" typeId="ps-pv2-input"/>
 		</channel-groups>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description-ref uri="thing-type:ecoflow:device"/>
 	</thing-type>
 
