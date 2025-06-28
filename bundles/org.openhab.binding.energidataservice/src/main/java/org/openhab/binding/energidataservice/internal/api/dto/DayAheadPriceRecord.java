@@ -21,27 +21,22 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Record as part of {@link ElspotpriceRecords} from Energi Data Service.
+ * Record as part of {@link DayAheadPriceRecords} from Energi Data Service.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public record ElspotpriceRecord(@SerializedName("HourUTC") Instant hour,
-        @Nullable @SerializedName("SpotPriceDKK") BigDecimal spotPriceDKK,
-        @Nullable @SerializedName("SpotPriceEUR") BigDecimal spotPriceEUR) implements SpotPriceRecord {
-
-    @Override
-    public Instant time() {
-        return hour;
-    }
+public record DayAheadPriceRecord(@SerializedName("TimeUTC") Instant time,
+        @Nullable @SerializedName("DayAheadPriceDKK") BigDecimal dayAheadPriceDKK,
+        @Nullable @SerializedName("DayAheadPriceEUR") BigDecimal dayAheadPriceEUR) implements SpotPriceRecord {
 
     @Override
     public @Nullable BigDecimal priceDKK() {
-        return spotPriceDKK;
+        return dayAheadPriceDKK;
     }
 
     @Override
     public @Nullable BigDecimal priceEUR() {
-        return spotPriceEUR;
+        return dayAheadPriceEUR;
     }
 }

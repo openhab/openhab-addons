@@ -21,9 +21,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum Dataset {
+    /**
+     * <a href="https://www.energidataservice.dk/tso-electricity/Elspotprices">Elspot Prices</a>
+     */
     SpotPrices("Elspotprices"),
+    /**
+     * <a href="https://energidataservice.dk/tso-electricity/DayAheadPrices">Day-Ahead Prices</a>
+     */
+    DayAheadPrices("DayAheadPrices"),
+    /**
+     * <a href="https://energidataservice.dk/tso-electricity/DatahubPricelist">Datahub Price List</a>
+     */
     DatahubPricelist("DatahubPricelist"),
+    /**
+     * <a href="https://energidataservice.dk/tso-electricity/CO2Emis">CO2 Emission</a>
+     */
     CO2Emission("CO2Emis"),
+    /**
+     * <a href="https://energidataservice.dk/tso-electricity/CO2EmisProg">CO2 Emission Prognosis</a>
+     */
     CO2EmissionPrognosis("CO2EmisProg");
 
     private final String name;

@@ -8,4 +8,15 @@
 	<description>This is the binding for Energi Data Service providing open energy data from Energinet.</description>
 	<connection>cloud</connection>
 	<countries>dk,no,se</countries>
+
+	<config-description>
+		<parameter name="dayAheadTransitionDate" type="text">
+			<context>date</context>
+			<label>Day-ahead Transition Date</label>
+			<description>The date when the addon switches to using the Day-Ahead Prices dataset</description>
+			<advanced>true</advanced>
+			<default>2025-09-30</default>
+		</parameter>
+	</config-description>
+
 </addon:addon>

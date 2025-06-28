@@ -92,5 +92,6 @@ public class EnergiDataServiceBindingConstants {
     // Other
     public static final LocalTime DAILY_REFRESH_TIME_CET = LocalTime.of(13, 0);
     public static final LocalDate ENERGINET_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
+    public static final LocalDate DAY_AHEAD_TRANSITION_DATE = LocalDate.of(2025, 9, 30);
     public static final String PROPERTY_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }
