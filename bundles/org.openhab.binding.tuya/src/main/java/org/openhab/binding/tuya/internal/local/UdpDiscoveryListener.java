@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.tuya.internal.local;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tuya.internal.local.dto.DeviceInfo;
@@ -52,8 +52,8 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
 
     private final Gson gson = new Gson();
 
-    private final Map<String, DeviceInfo> deviceInfos = new HashMap<>();
-    private final Map<String, DeviceInfoSubscriber> deviceListeners = new HashMap<>();
+    private final Map<String, DeviceInfo> deviceInfos = new ConcurrentHashMap<>();
+    private final Map<String, DeviceInfoSubscriber> deviceListeners = new ConcurrentHashMap<>();
 
     private @NonNullByDefault({}) Channel encryptedChannel;
     private @NonNullByDefault({}) Channel encryptedChannel35;
@@ -101,16 +101,9 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
 
     public void deactivate() {
         deactivate = true;
-        encryptedChannel.pipeline().fireUserEventTriggered(new UserEventHandler.DisposeEvent());
-        encryptedChannel35.pipeline().fireUserEventTriggered(new UserEventHandler.DisposeEvent());
-        rawChannel.pipeline().fireUserEventTriggered(new UserEventHandler.DisposeEvent());
-        try {
-            encryptedChannel.closeFuture().sync();
-            encryptedChannel35.closeFuture().sync();
-            rawChannel.closeFuture().sync();
-        } catch (InterruptedException e) {
-            // do nothing
-        }
+        encryptedChannel.close();
+        encryptedChannel35.close();
+        rawChannel.close();
     }
 
     public void registerListener(String deviceId, DeviceInfoSubscriber subscriber) {
@@ -124,9 +117,7 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
     }
 
     public void unregisterListener(DeviceInfoSubscriber deviceInfoSubscriber) {
-        if (!deviceListeners.entrySet().removeIf(e -> deviceInfoSubscriber.equals(e.getValue()))) {
-            logger.warn("Tried to unregister a listener for '{}' but no registration found.", deviceInfoSubscriber);
-        }
+        deviceListeners.entrySet().removeIf(e -> deviceInfoSubscriber.equals(e.getValue()));
     }
 
     @Override
