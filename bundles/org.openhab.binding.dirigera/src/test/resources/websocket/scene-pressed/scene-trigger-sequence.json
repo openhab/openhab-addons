@@ -1,0 +1,98 @@
+[
+	{
+		"data": {
+			"createdAt": "2024-10-27T19:47:59.155Z",
+			"undoAllowedDuration": 30,
+			"id": "3090ba82-aaaa-442f-8e49-f3eac9b7b0eb",
+			"type": "userScene",
+			"triggers": [
+				{
+					"disabled": false,
+					"id": "5ec0d314-bbbb-470e-a92c-93beb7fbe09e",
+					"trigger": {
+						"controllerType": "shortcutController",
+						"buttonIndex": 0,
+						"days": [
+							"Mon",
+							"Tue",
+							"Wed",
+							"Thu",
+							"Fri",
+							"Sat",
+							"Sun"
+						],
+						"clickPattern": "singlePress",
+						"deviceId": "854bdf30-86b8-48f5-b070-16ff5ab12be4_1"
+					},
+					"type": "controller"
+				},
+				{
+					"disabled": false,
+					"id": "e615f61f-cccc-490c-98cf-1ad804f6b52d",
+					"triggeredAt": "2024-10-27T19:48:21.063Z",
+					"type": "app"
+				}
+			],
+			"actions": [],
+			"commands": [],
+			"info": {
+				"name": "OHButtonConnector",
+				"icon": "scenes_disco_ball"
+			}
+		},
+		"specversion": "3.163.0",
+		"id": "24c50fa3-035e-4d77-a9d4-b121c17e08a0",
+		"time": "2024-10-27T19:48:21.063Z",
+		"source": "urn:com:ikea:homesmart:iotc:rulesengine",
+		"type": "sceneUpdated"
+	},
+	{
+		"data": {
+			"createdAt": "2024-10-27T19:47:59.155Z",
+			"lastTriggered": "2024-10-27T19:48:21.075Z",
+			"undoAllowedDuration": 30,
+			"lastCompleted": "2024-10-27T19:48:21.075Z",
+			"id": "3090ba82-aaaa-442f-8e49-f3eac9b7b0eb",
+			"type": "userScene",
+			"triggers": [
+				{
+					"disabled": false,
+					"id": "5ec0d314-bbbb-470e-a92c-93beb7fbe09e",
+					"trigger": {
+						"controllerType": "shortcutController",
+						"buttonIndex": 0,
+						"days": [
+							"Mon",
+							"Tue",
+							"Wed",
+							"Thu",
+							"Fri",
+							"Sat",
+							"Sun"
+						],
+						"clickPattern": "singlePress",
+						"deviceId": "854bdf30-86b8-48f5-b070-16ff5ab12be4_1"
+					},
+					"type": "controller"
+				},
+				{
+					"disabled": false,
+					"id": "e615f61f-cccc-490c-98cf-1ad804f6b52d",
+					"triggeredAt": "2024-10-27T19:48:21.063Z",
+					"type": "app"
+				}
+			],
+			"actions": [],
+			"commands": [],
+			"info": {
+				"name": "OHButtonConnector",
+				"icon": "scenes_disco_ball"
+			}
+		},
+		"specversion": "3.163.0",
+		"id": "d4843df1-8c69-4c82-8a15-f611361455e4",
+		"time": "2024-10-27T19:48:21.084Z",
+		"source": "urn:com:ikea:homesmart:iotc:rulesengine",
+		"type": "sceneUpdated"
+	}
+]

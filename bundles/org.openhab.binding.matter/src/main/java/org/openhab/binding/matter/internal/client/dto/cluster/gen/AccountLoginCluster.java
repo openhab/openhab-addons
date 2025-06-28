@@ -35,8 +35,8 @@ public class AccountLoginCluster extends BaseCluster {
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
     public Integer clusterRevision; // 65533 ClusterRevision
-    // Structs
 
+    // Structs
     /**
      * This event can be used by the Content App to indicate that the current user has logged out. In response to this
      * event, the Fabric Admin shall remove access to this Content App by the specified Node. If no Node is provided,

@@ -27,7 +27,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -128,13 +127,9 @@ public class PythonScriptEngine
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("raw_item"),
                     v -> v.getMember("raw_item").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
 
-            // Translate python GraalWrapperSet to java.util.Set
-            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("isSetType"),
-                    PythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
-
-            // Translate python list to java.util.Collection
-            .targetTypeMapping(Value.class, Collection.class, (v) -> v.hasArrayElements(),
-                    (v) -> v.as(Collection.class), HostAccess.TargetMappingPrecedence.LOW)
+            // Translate python array to java.util.Set
+            .targetTypeMapping(Value.class, Set.class, v -> v.hasArrayElements(),
+                    PythonScriptEngine::transformArrayToSet, HostAccess.TargetMappingPrecedence.LOW)
 
             .build();
 
@@ -483,7 +478,7 @@ public class PythonScriptEngine
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
     }
 
-    private static Set<String> transformGraalWrapperSet(Value value) {
+    private static Set<String> transformArrayToSet(Value value) {
         Set<String> set = new HashSet<>();
         for (int i = 0; i < value.getArraySize(); ++i) {
             Value element = value.getArrayElement(i);

@@ -111,4 +111,8 @@ public class SomfyTahomaConfig {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public void setDevMode(boolean devMode) {
+        this.devMode = devMode;
+    }
 }

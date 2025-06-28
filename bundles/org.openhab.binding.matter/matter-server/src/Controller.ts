@@ -44,21 +44,20 @@ export abstract class Controller {
         try {
             const result = this.executeCommand(namespace, functionName, args || []);
             if (result instanceof Promise) {
-                result
-                    .then(asyncResult => {
-                        this.ws.sendResponse(MessageType.ResultSuccess, id, asyncResult);
-                    })
-                    .catch(error => {
-                        printError(logger, error, functionName);
-                        this.ws.sendResponse(MessageType.ResultError, id, undefined, error.message);
-                    });
+                const asyncResult = await result;
+                this.ws.sendResponse(MessageType.ResultSuccess, id, asyncResult);
             } else {
                 this.ws.sendResponse(MessageType.ResultSuccess, id, result);
             }
         } catch (error) {
             if (error instanceof Error) {
                 printError(logger, error, functionName);
-                this.ws.sendResponse(MessageType.ResultError, id, undefined, error.message);
+                let errorId: string | undefined;
+                // instances of a MatterError has an id property
+                if ("id" in error) {
+                    errorId = (error as any).id;
+                }
+                this.ws.sendResponse(MessageType.ResultError, id, undefined, error.message, errorId);
             } else {
                 logger.error(`Unexpected error executing function ${functionName}: ${error}`);
                 this.ws.sendResponse(MessageType.ResultError, id, undefined, String(error));

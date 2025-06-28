@@ -32,7 +32,7 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 | refreshInterval     | Refresh interval                                                    | 5           |
 | videoStoragePath    | Video Download Path                                                 | N/A         |
 | videoRetentionCount | Number of videos to keep                                            | 10          |
-
+| limitToOwner        | Limit discovery to devices you own                                  | false       |
 ## Channels
 
 ### Control group (all things):

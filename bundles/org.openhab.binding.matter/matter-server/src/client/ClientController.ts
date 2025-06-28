@@ -1,6 +1,7 @@
 import { Logger } from "@matter/general";
 import { WebSocketSession } from "../app";
 import { Controller } from "../Controller";
+import { toJSON } from "../util/Json";
 import { ControllerNode } from "./ControllerNode";
 import { Clusters } from "./namespaces/Clusters";
 import { Nodes } from "./namespaces/Nodes";
@@ -53,7 +54,7 @@ export class ClientController extends Controller {
     }
 
     executeCommand(namespace: string, functionName: string, args: any[]): any | Promise<any> {
-        logger.debug(`Executing function ${namespace}.${functionName}(${Logger.toJSON(args)})`);
+        logger.debug(`Executing function ${namespace}.${functionName}(${toJSON(args)})`);
 
         const controllerAny: any = this;
 

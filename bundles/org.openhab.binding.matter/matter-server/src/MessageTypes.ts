@@ -31,7 +31,6 @@ export interface Message {
 }
 
 export enum MessageType {
-    Result = "result",
     ResultError = "resultError",
     ResultSuccess = "resultSuccess",
 }
