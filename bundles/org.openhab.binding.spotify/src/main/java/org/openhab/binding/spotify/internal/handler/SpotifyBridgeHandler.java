@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -38,7 +37,6 @@ import org.openhab.binding.spotify.internal.actions.SpotifyActions;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
-import org.openhab.binding.spotify.internal.api.model.AddedShow;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
 import org.openhab.binding.spotify.internal.api.model.Artist;
@@ -52,11 +50,9 @@ import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
-import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
 import org.openhab.binding.spotify.internal.api.model.Show;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
-import org.openhab.binding.spotify.internal.api.model.UserTrackEntry;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -357,7 +353,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
         }
 
-        MediaSource mediaSource = mediaRegistry.registerEntry("Spotify", () -> {
+        mediaRegistry.registerEntry("Spotify", () -> {
             return new MediaSource("Spotify", "Spotify", "/static/Spotify.png");
         });
 
@@ -438,30 +434,16 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             List<Artist> artists = spotifyApi.getTopArtists(start, size);
             RegisterCollections(mediaEntry, artists, MediaArtist.class);
         } else if ("Podcasts".equals(mediaEntry.getKey())) {
-            List<AddedShow> addedShows = spotifyApi.getShows(start, size);
-            List<Show> shows = new ArrayList<Show>();
-            for (AddedShow addedShow : addedShows) {
-                shows.add(addedShow.show);
-            }
+            List<Show> shows = spotifyApi.getShows(start, size);
             RegisterCollections(mediaEntry, shows, MediaPodcast.class);
         } else if ("Tracks".equals(mediaEntry.getKey())) {
-            List<UserTrackEntry> userTracks = spotifyApi.getTracks(start, size);
-            List<Track> tracks = new ArrayList<Track>();
-            for (UserTrackEntry userTrack : userTracks) {
-                tracks.add(userTrack.track);
-            }
-
+            List<Track> tracks = spotifyApi.getTracks(start, size);
             RegisterCollections(mediaEntry, tracks, MediaTrack.class);
         } else if ("NewReleases".equals(mediaEntry.getKey())) {
             List<Album> albums = spotifyApi.getNewReleases(start, size);
             RegisterCollections(mediaEntry, albums, MediaAlbum.class);
         } else if ("RecentlyPlayed".equals(mediaEntry.getKey())) {
-            List<UserTrackEntry> userTracks = spotifyApi.getRecentlyPlayedTracks(start, size);
-            List<Track> tracks = new ArrayList<Track>();
-            for (UserTrackEntry userTrack : userTracks) {
-                tracks.add(userTrack.track);
-            }
-
+            List<Track> tracks = spotifyApi.getRecentlyPlayedTracks(start, size);
             RegisterCollections(mediaEntry, tracks, MediaTrack.class);
         } else if ("Categories".equals(mediaEntry.getKey())) {
             List<Categorie> categories = spotifyApi.getCategories(start, size);
@@ -479,32 +461,19 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             if (optAlbum.isPresent()) {
                 Album album = optAlbum.get();
                 Tracks tracks = album.getTracks();
-                for (Track track : tracks.getItems()) {
-                    String name = track.getName();
-                    String uri = track.getUri();
-
-                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
-                        return new MediaTrack(uri, name);
-                    });
-                }
+                RegisterCollections(mediaAlbum, tracks.getItems(), MediaTrack.class);
             } else {
                 Album album = spotifyApi.getAlbum(mediaAlbum.getKey().replace("spotify:album:", ""));
                 Tracks tracks = album.getTracks();
                 RegisterCollections(mediaEntry, tracks.getItems(), MediaTrack.class);
             }
-
         } else if (mediaEntry instanceof MediaPlayList) {
             Playlist pl = spotifyApi.getPlaylist(mediaEntry.getKey());
 
             if (pl != null) {
-                PlayListTracks tracks = pl.getTracks();
-                List<PlaylistTrack> playlistTracks = tracks.getPlaylistTrack();
-                List<Track> trackList = new ArrayList<Track>();
-                for (PlaylistTrack playListTrack : playlistTracks) {
-                    trackList.add(playListTrack.track);
-                }
-
-                RegisterCollections(mediaEntry, trackList, MediaTrack.class);
+                PlayListTracks playListTracks = pl.getTracks();
+                List<Track> tracks = playListTracks.getTrack();
+                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
         } else if ("Search".equals(mediaEntry.getKey())) {
             ApiSearchResult searchResult = spotifyApi.search(0, 30);
