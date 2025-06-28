@@ -53,8 +53,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
      * shall be used to indicate there is no current in-focus application.
      */
     public ApplicationEPStruct currentApp; // 1 ApplicationEPStruct R V
-    // Structs
 
+    // Structs
     /**
      * This indicates a global identifier for an Application given a catalog.
      */

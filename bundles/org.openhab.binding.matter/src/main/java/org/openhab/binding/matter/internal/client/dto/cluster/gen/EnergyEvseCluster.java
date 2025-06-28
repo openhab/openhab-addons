@@ -227,8 +227,8 @@ public class EnergyEvseCluster extends BaseCluster {
     public Integer sessionDuration; // 65 elapsed-s R V
     public BigInteger sessionEnergyCharged; // 66 energy-mWh R V
     public BigInteger sessionEnergyDischarged; // 67 energy-mWh R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the EV is plugged in.
      */

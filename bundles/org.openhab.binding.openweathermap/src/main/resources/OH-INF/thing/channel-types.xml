@@ -812,6 +812,7 @@
 		<category>Snow</category>
 		<tags>
 			<tag>Measurement</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -823,6 +824,7 @@
 		<category>Snow</category>
 		<tags>
 			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
