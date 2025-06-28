@@ -35,8 +35,10 @@ import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationEx
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyTokenExpiredException;
 import org.openhab.binding.spotify.internal.api.model.AddedShow;
+import org.openhab.binding.spotify.internal.api.model.AddedShows;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.Albums;
+import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
 import org.openhab.binding.spotify.internal.api.model.Artist;
 import org.openhab.binding.spotify.internal.api.model.Artists;
 import org.openhab.binding.spotify.internal.api.model.Categorie;
@@ -52,7 +54,6 @@ import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbums;
-import org.openhab.binding.spotify.internal.api.model.Shows;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.api.model.UserTrackEntries;
@@ -340,8 +341,8 @@ public class SpotifyApi {
      * @return Returns the artists of the user.
      */
     public List<AddedShow> getShows(long offset, long limit) {
-        final Shows shows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
-                Shows.class);
+        final AddedShows shows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
+                AddedShows.class);
 
         return shows == null || shows.getItems() == null ? Collections.emptyList() : shows.getItems();
     }
@@ -384,6 +385,19 @@ public class SpotifyApi {
         final Playlist playlist = request(GET,
                 SPOTIFY_API_BASE_URL + "/playlists/" + uri.replace("spotify:playlist:", ""), "", Playlist.class);
         return playlist;
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public @Nullable ApiSearchResult search(long offset, long limit) {
+        final ApiSearchResult searchResult = request(GET,
+                SPOTIFY_API_BASE_URL + "/search?q=cure"
+                        + "&type=show%2Cepisode%2Caudiobook%2Calbum%2Cartist%2Cplaylist%2Ctrack" + "&offset=" + offset
+                        + "&limit=" + limit,
+                "", ApiSearchResult.class);
+
+        return searchResult;
     }
 
     /**

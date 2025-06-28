@@ -13,9 +13,17 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Shows data class : a collection of Podcast
+ * Spotify Web Api SavedAlbums data class : The list of Albums save in current Spotify account
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Shows extends Paging<Show> {
+public class ApiSearchResult {
+    public Tracks tracks;
+    public Artists artists;
+    public Albums albums;
+    public Playlists playlists;
+
+    public Shows shows;
+    public Audiobooks audiobooks;
+    public Episodes episodes;
 }

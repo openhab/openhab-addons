@@ -39,11 +39,14 @@ import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationEx
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.AddedShow;
 import org.openhab.binding.spotify.internal.api.model.Album;
+import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
 import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Audiobook;
 import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.Context;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
+import org.openhab.binding.spotify.internal.api.model.Episode;
 import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
@@ -51,6 +54,7 @@ import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
 import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
+import org.openhab.binding.spotify.internal.api.model.Show;
 import org.openhab.binding.spotify.internal.api.model.Track;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.api.model.UserTrackEntry;
@@ -375,45 +379,48 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
         if (mediaEntry.getKey().equals("Spotify")) {
 
-            MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
+            mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");
             });
 
-            MediaCollection mediaArtists = mediaEntry.registerEntry("Artists", () -> {
+            mediaEntry.registerEntry("Artists", () -> {
                 return new MediaCollection("Artists", "Artists", "/static/Artists.png");
             });
 
-            @SuppressWarnings("unused")
-            MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
+            mediaEntry.registerEntry("Playlists", () -> {
                 return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
             });
 
-            MediaCollection mediaTracks = mediaEntry.registerEntry("Tracks", () -> {
+            mediaEntry.registerEntry("Tracks", () -> {
                 return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
             });
 
-            MediaCollection mediaRecent = mediaEntry.registerEntry("RecentlyPlayed", () -> {
+            mediaEntry.registerEntry("RecentlyPlayed", () -> {
                 return new MediaCollection("RecentlyPlayed", "Recently Played", "/static/RecentlyPlayed.png");
             });
 
-            MediaCollection mediaPodcasts = mediaEntry.registerEntry("Podcasts", () -> {
+            mediaEntry.registerEntry("Podcasts", () -> {
                 return new MediaCollection("Podcasts", "Podcasts", "/static/PodCasts.png");
             });
 
-            MediaCollection mediaTopTracks = mediaEntry.registerEntry("TopTracks", () -> {
+            mediaEntry.registerEntry("TopTracks", () -> {
                 return new MediaCollection("TopTracks", "TopTracks", "/static/TopTracks.png");
             });
 
-            MediaCollection mediaTopArtists = mediaEntry.registerEntry("TopArtists", () -> {
+            mediaEntry.registerEntry("TopArtists", () -> {
                 return new MediaCollection("TopArtists", "TopArtists", "/static/TopArtists.png");
             });
 
-            MediaCollection mediaNewReleases = mediaEntry.registerEntry("NewReleases", () -> {
+            mediaEntry.registerEntry("NewReleases", () -> {
                 return new MediaCollection("NewReleases", "New Releases", "/static/NewReleases.png");
             });
 
-            MediaCollection categories = mediaEntry.registerEntry("Categories", () -> {
+            mediaEntry.registerEntry("Categories", () -> {
                 return new MediaCollection("Categories", "Categories", "/static/Categories.png");
+            });
+
+            mediaEntry.registerEntry("Search", () -> {
+                return new MediaCollection("Search", "Search", "/static/Search.png");
             });
 
         } else if (mediaEntry.getKey().equals("Playlists")) {
@@ -460,7 +467,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 });
 
             }
-
         } else if (mediaEntry instanceof MediaArtist) {
             MediaArtist mediaArtist = (MediaArtist) mediaEntry;
 
@@ -650,7 +656,141 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                     return res;
                 });
             }
+        } else if (mediaEntry.getKey().equals("Search")) {
+            ApiSearchResult searchResult = spotifyApi.search(0, 30);
+            MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            MediaCollection mediaArtists = mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            MediaCollection mediaPlaylists = mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+            MediaCollection mediaTracks = mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+
+            MediaCollection mediaShows = mediaEntry.registerEntry("Shows", () -> {
+                return new MediaCollection("Shows", "Shows", "/static/Shows.png");
+            });
+
+            MediaCollection mediaEpisodes = mediaEntry.registerEntry("Episode", () -> {
+                return new MediaCollection("Episode", "Episode", "/static/Episode.png");
+            });
+
+            MediaCollection mediaAudiobooks = mediaEntry.registerEntry("Audiobook", () -> {
+                return new MediaCollection("Audiobook", "Audiobook", "/static/Audiobook.png");
+            });
+
+            for (Album album : searchResult.albums.getItems()) {
+                String key = album.getUri();
+                String name = album.getName();
+                String uri = album.getImages().getFirst().getUrl();
+
+                MediaAlbum mediaAlbum = mediaAlbums.registerEntry(key, () -> {
+                    MediaAlbum res = new MediaAlbum(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+            }
+
+            for (Artist artist : searchResult.artists.getItems()) {
+                if (artist == null) {
+                    continue;
+                }
+                String key = artist.getUri();
+                String name = artist.getName();
+
+                MediaArtist mediaArtist = mediaArtists.registerEntry(key, () -> {
+                    MediaArtist res = new MediaArtist(key, name);
+                    if (artist.getImages() != null && artist.getImages().length > 0) {
+                        res.setArtUri(artist.getImages()[0].getUrl());
+                    }
+                    return res;
+                });
+            }
+
+            for (Playlist playlist : searchResult.playlists.getItems()) {
+                if (playlist == null) {
+                    continue;
+                }
+                String key = playlist.getUri();
+                String name = playlist.getName();
+
+                MediaPlayList mediaPlaylist = mediaPlaylists.registerEntry(key, () -> {
+                    MediaPlayList res = new MediaPlayList(key, name);
+                    if (playlist.getImages() != null && playlist.getImages().length > 0) {
+                        res.setArtUri(playlist.getImages()[0].getUrl());
+                    }
+                    return res;
+                });
+            }
+
+            for (Track track : searchResult.tracks.getItems()) {
+                if (track == null) {
+                    continue;
+                }
+                String key = track.getUri();
+                String name = track.getName();
+                String uri = track.getImages().getFirst().getUrl();
+
+                MediaTrack mediaTrack = mediaTracks.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+            }
+
+            for (Show show : searchResult.shows.getItems()) {
+                if (show == null) {
+                    continue;
+                }
+                String key = show.getUri();
+                String name = show.getName();
+                String uri = show.getImages().getFirst().getUrl();
+
+                MediaTrack mediaShow = mediaShows.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+            }
+
+            for (Episode episode : searchResult.episodes.getItems()) {
+                if (episode == null) {
+                    continue;
+                }
+                String key = episode.getUri();
+                String name = episode.getName();
+                String uri = episode.getImages().getFirst().getUrl();
+
+                MediaTrack mediaEpisode = mediaEpisodes.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+            }
+
+            for (Audiobook audioBook : searchResult.audiobooks.getItems()) {
+                if (audioBook == null) {
+                    continue;
+                }
+                String key = audioBook.getUri();
+                String name = audioBook.getName();
+                String uri = audioBook.getImages().getFirst().getUrl();
+
+                MediaTrack mediaAudiobook = mediaAudiobooks.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+            }
         }
+
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {
