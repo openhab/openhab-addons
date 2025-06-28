@@ -971,12 +971,21 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         Random random = new Random();
         int id = random.nextInt(22767 + 1) + 10000;
 
-        byte[] nonce = new byte[16];
-        new java.security.SecureRandom().nextBytes(nonce);
+        byte[] nonceBytes = new byte[16];
+        new java.security.SecureRandom().nextBytes(nonceBytes);
+        String nonce = new String(nonceBytes, StandardCharsets.UTF_8);
+        StringBuffer sb = new StringBuffer();
+        // Converting string to character array
+        char ch[] = nonce.toCharArray();
+        for (int i = 0; i < ch.length; i++) {
+            String hexString = Integer.toHexString(ch[i]);
+            sb.append(hexString);
+        }
+        String nonceHex = sb.toString();
 
         Map<String, Object> security = new HashMap<>();
         security.put("endpoint", getEndpoint());
-        security.put("nonce", new String(nonce, StandardCharsets.UTF_8));
+        security.put("nonce", nonceHex.toLowerCase());
 
         Map<String, Object> inner = new HashMap<>();
         inner.put("id", id);
