@@ -46,7 +46,7 @@
 		<label>Valve Position</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Position</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -63,7 +63,7 @@
 		<label>Filter Speed</label>
 		<description>Filter speed in percentage</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state min="0" max="100" step="5" pattern="%d %%" readOnly="false"/>
@@ -73,6 +73,10 @@
 		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Filter Speed</label>
 		<description>Filter speed in rpm</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
 
@@ -119,10 +123,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
 		<description>Last filter speed in percentage</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 

@@ -43,7 +43,7 @@
 		<label>OASIS PGX Status</label>
 		<description>Status of the PGX switch of your OASIS alarm</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
 		</tags>
 	</channel-type>
 
@@ -53,7 +53,7 @@
 		<label>OASIS PGY Status</label>
 		<description>Status of the PGY switch of your OASIS alarm</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
 		</tags>
 	</channel-type>
 
@@ -70,7 +70,7 @@
 		<label>JA-100 PGM Status</label>
 		<description>Status of the PGM switch of your JA-100 alarm</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
 		</tags>
 	</channel-type>
 
@@ -79,6 +79,9 @@
 		<kind>trigger</kind>
 		<label>Alarm</label>
 		<description>Status of the alarm of your alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 		<event>
 			<options>
@@ -93,9 +96,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Command</label>
 		<description>Channel for sending commands to your alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 	</channel-type>
 
 	<!-- LastEvent -->
@@ -103,9 +103,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Last Event Text Description</label>
 		<description>Text description of the last event of your alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -114,9 +111,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Last Event Class</label>
 		<description>Class of the last event of your alarm (arm, disarm, ...)</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -125,9 +119,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Last Event Section</label>
 		<description>The last event section of your alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -136,9 +127,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Last Event Invoker</label>
 		<description>The last event invoker</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -147,10 +135,6 @@
 		<item-type>DateTime</item-type>
 		<label>Alarm Last Event Time</label>
 		<description>Date and time of the last event of your alarm</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -159,10 +143,6 @@
 		<item-type>DateTime</item-type>
 		<label>Alarm Last Check Time</label>
 		<description>Date and time of last status check of your alarm</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -171,10 +151,6 @@
 		<item-type>Switch</item-type>
 		<label>Programmable Gate State</label>
 		<description>A channel used for controlling the PGM state</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<!-- alarm_state -->
@@ -183,7 +159,8 @@
 		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -200,7 +177,8 @@
 		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>

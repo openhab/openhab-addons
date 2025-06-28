@@ -178,6 +178,10 @@
 		<label>Current</label>
 		<description>Electrical current</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -187,7 +191,7 @@
 		<description>Voltage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -199,7 +203,7 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -209,10 +213,6 @@
 		<item-type>Contact</item-type>
 		<label>Daytime</label>
 		<description>Enabled if it is daytime</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="doorLock">
@@ -220,10 +220,6 @@
 		<label>Door Lock</label>
 		<description>Door lock state</description>
 		<category>Door</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Unlocked">Unlocked</option>
@@ -246,7 +242,7 @@
 		<category>Door</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Opening</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 
@@ -282,7 +278,7 @@
 		<label>Speed</label>
 		<description>Current speed</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -317,10 +313,6 @@
 		<item-type>String</item-type>
 		<label>Position Type</label>
 		<description>Position acquisition type</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Position</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Estimate">Estimate</option>
@@ -334,10 +326,6 @@
 		<label>Time of Last Update</label>
 		<description>Last time the results were updated on the server</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="privacy">
@@ -369,6 +357,9 @@
 		<item-type>String</item-type>
 		<label>Emergency Call</label>
 		<description>Emergency call status</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NoRequest">None</option>
@@ -395,10 +386,6 @@
 		<item-type>String</item-type>
 		<label>Air Conditioning</label>
 		<description>Air conditioning status</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Enabled">Enabled</option>
@@ -413,10 +400,6 @@
 		<item-type>String</item-type>
 		<label>Air Conditioning Failure</label>
 		<description>Air conditioning failure cause</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Defect">Defect</option>
@@ -469,7 +452,7 @@
 		<label>Fuel Level</label>
 		<description>Fuel level</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Level</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -494,6 +477,10 @@
 		<label>Remaining Charge</label>
 		<description>Remaining battery charge</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -509,10 +496,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Health - Capacity</label>
 		<description>Health of the battery capacity</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -520,10 +503,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Health - Resistance</label>
 		<description>Health of the battery resistance</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -574,10 +553,6 @@
 		<label>Charging Rate</label>
 		<description>Battery Charging Rate</description>
 		<category>BatteryLevel</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -587,7 +562,7 @@
 		<description>Time remaining till charged</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%tT"/>
@@ -599,7 +574,7 @@
 		<description>Time till the next charging starts</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%tT"/>

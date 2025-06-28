@@ -45,10 +45,6 @@
 		<label>Output Port</label>
 		<description>The port channel allows to set or read the number of the input port that is connected to the output port.
 			Valid values are 1 to 8 depending on the nature of the Matrix, e.g 4x4 8x8 etc</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

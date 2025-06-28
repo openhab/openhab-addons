@@ -63,7 +63,7 @@
 		<label>@text/icloud.device-thing.channel.battery-status.label</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -77,10 +77,6 @@
 	<channel-type id="FindMyPhone">
 		<item-type>Switch</item-type>
 		<label>@text/icloud.device-thing.channel.find-my-phone.label</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="Location">
 		<item-type>Location</item-type>

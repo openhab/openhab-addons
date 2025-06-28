@@ -125,7 +125,7 @@
 		<label>Enabled</label>
 		<description>Shows whether Hyperion is currently enabled or not and allows enabling or disabling of Hyperion</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>

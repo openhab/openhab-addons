@@ -10,30 +10,18 @@
 		<item-type>String</item-type>
 		<label>Infrared</label>
 		<description>Transmits infrared command on module:connector</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="channel-type-cc">
 		<item-type>Switch</item-type>
 		<label>Contact Closure</label>
 		<description>Transmits contact closure command on module:connector</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="channel-type-sl">
 		<item-type>String</item-type>
 		<label>Serial</label>
 		<description>Transmits serial command on module:connector</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="channel-type-sl-direct" advanced="false">

@@ -84,9 +84,6 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.errorCode.label</label>
 		<description>@text/channel-type.intesis.errorCode.description</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -94,9 +91,6 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.errorStatus.label</label>
 		<description>@text/channel-type.intesis.errorStatus.description</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 

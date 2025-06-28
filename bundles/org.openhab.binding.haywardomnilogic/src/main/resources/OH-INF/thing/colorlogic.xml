@@ -28,10 +28,6 @@
 	<channel-type id="lightState">
 		<item-type>String</item-type>
 		<label>Light State</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -45,10 +41,6 @@
 	<channel-type id="lightBrightness">
 		<item-type>String</item-type>
 		<label>Light Brightness</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">20%</option>
@@ -63,10 +55,6 @@
 	<channel-type id="lightSpeed">
 		<item-type>String</item-type>
 		<label>Light Speed</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">1/16x</option>

@@ -56,10 +56,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Factor</label>
 		<description>The current power factor.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparent-power">

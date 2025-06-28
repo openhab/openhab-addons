@@ -59,10 +59,6 @@
 	<channel-type id="scMode">
 		<item-type>String</item-type>
 		<label>scMode</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>

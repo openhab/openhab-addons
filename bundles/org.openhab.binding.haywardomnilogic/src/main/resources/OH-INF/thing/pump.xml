@@ -54,6 +54,10 @@
 		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Pump Speed</label>
 		<description>Pump speed in rpm</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
 
@@ -100,10 +104,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
 		<description>Last pump speed in percentage</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 

@@ -117,10 +117,6 @@
 		<item-type>String</item-type>
 		<label>Next Cleaning Window</label>
 		<description>Provides a time forecast in hours:minutes when the stove need to be cleaned next as String</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

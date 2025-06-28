@@ -145,6 +145,10 @@
 		<item-type>Switch</item-type>
 		<label>Auxiliary Switch</label>
 		<description>The current state of auxiliary channel</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="aux-dimmer">
@@ -163,8 +167,8 @@
 		<label>Jandy Color Lighting</label>
 		<description>Jandy Color Lighting Channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 		<state>
 			<options>
@@ -190,7 +194,7 @@
 		<label>Pentair SAm/SAL Lighting</label>
 		<description>Pentair SAm/SAL Lighting Channel</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Light</tag>
 		</tags>
 		<state>
@@ -216,8 +220,8 @@
 		<label>Jandy Led Water Colors Lighting</label>
 		<description>Jandy Led Water Colors Lighting Channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 		<state>
 			<options>
@@ -246,7 +250,7 @@
 		<label>Pentair intelliBrite Lighting</label>
 		<description>Pentair intelliBrite Lighting Channel</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Light</tag>
 		</tags>
 		<state>
@@ -276,7 +280,7 @@
 		<label>Hayward Universal Lighting</label>
 		<description>Hayward Universal Lighting Channel</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Light</tag>
 		</tags>
 		<state>
@@ -303,10 +307,6 @@
 		<item-type>Switch</item-type>
 		<label>OneTouch</label>
 		<description>OneTouch commands</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="equipment-switch">

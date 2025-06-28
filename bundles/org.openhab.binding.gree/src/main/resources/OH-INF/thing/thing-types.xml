@@ -120,7 +120,7 @@
 		<description>@text/channel-type.gree.turbo.description</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Speed</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="windspeed">
@@ -146,6 +146,10 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.gree.quiet.label</label>
 		<description>@text/channel-type.gree.quiet.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">@text/channel-type.gree.quiet.state.option.off</option>
@@ -158,6 +162,10 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.gree.swingupdown.label</label>
 		<description>@text/channel-type.gree.swingupdown.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.gree.swingupdown.option.0</option>
@@ -174,6 +182,10 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.gree.swingleftright.label</label>
 		<description>@text/channel-type.gree.swingleftright.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.gree.swingleftright.option.0</option>
@@ -192,17 +204,13 @@
 		<description>@text/channel-type.gree.powersave.description</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="light">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.gree.light.label</label>
 		<description>@text/channel-type.gree.light.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="health">
 		<item-type>Switch</item-type>

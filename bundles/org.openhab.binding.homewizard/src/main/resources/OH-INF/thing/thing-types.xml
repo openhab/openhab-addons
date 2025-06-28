@@ -137,10 +137,6 @@
 		<item-type>Number</item-type>
 		<label>Power Failures</label>
 		<description>This channel provides the count of any type of power failure.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_import_t1">
@@ -148,6 +144,10 @@
 		<label>Total Imported Energy Counter 1</label>
 		<description>This channel provides the most recently reported total imported energy in kWh by counter 1, most commonly
 			used for import during the night or weekend.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_import_t2">
@@ -157,6 +157,10 @@
 			This channel provides the most recently reported total imported energy in kWh by counter 2, most commonly
 			used for import during the day.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_export_t1">
@@ -166,6 +170,10 @@
 			This channel provides the most recently reported total exported energy in kWh by counter 1, most commonly
 			used for export during the night or weekend.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_export_t2">
@@ -175,6 +183,10 @@
 			This channel provides the most recently reported total exported energy in kWh by counter 2, most commonly
 			used for export during the day.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_voltage">
@@ -184,7 +196,7 @@
 			This channel provides the current grid voltage.
 		</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
 	</channel-type>
@@ -211,7 +223,7 @@
 			exported.
 		</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
@@ -224,7 +236,7 @@
 			exported. It will be 0 for single phase systems.
 		</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
@@ -237,7 +249,7 @@
 			exported. It will be 0 for single phase systems.
 		</description>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
@@ -250,6 +262,10 @@
 			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
 			update.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="gas_timestamp">
@@ -258,10 +274,6 @@
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
 		</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="total_water">
@@ -283,10 +295,6 @@
 		<description>
 			This channel provides the most recently reported current water usage in liters per minute.
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -297,6 +305,10 @@
 		<description>
 			This channel provides access to the power switch of the Energysocket
 		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power_lock">
@@ -305,10 +317,6 @@
 		<description>
 			This channel provides access to the power lock of the Energysocket
 		</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ring_brightness">
@@ -317,10 +325,6 @@
 		<description>
 			This channel provides access to the brightness of the ring of the Energysocket
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

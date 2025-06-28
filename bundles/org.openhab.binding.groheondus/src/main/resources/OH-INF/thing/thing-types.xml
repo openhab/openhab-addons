@@ -128,7 +128,7 @@
 		<description>Valve switch</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Opening</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="humidity">

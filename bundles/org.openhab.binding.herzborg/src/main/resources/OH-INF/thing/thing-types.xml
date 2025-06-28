@@ -62,10 +62,6 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Motor mode</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Stop</option>

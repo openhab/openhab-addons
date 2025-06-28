@@ -37,10 +37,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Last report timestamp</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 	<channel-type id="regionTrigger">

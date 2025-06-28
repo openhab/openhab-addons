@@ -82,10 +82,6 @@
 		<label>Last Mode</label>
 		<description>Last sync mode used for this channel</description>
 		<category>text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"></state>
 		<command>
 			<options>

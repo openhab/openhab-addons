@@ -130,7 +130,7 @@
 		<label>Next Run Time</label>
 		<description>The next time this zone is scheduled to run</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Forecast</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"></state>
@@ -141,7 +141,8 @@
 		<label>Run Zones</label>
 		<description>Run or stop zones for the default time.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Switch</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 

@@ -126,10 +126,6 @@
 		<item-type>Number</item-type>
 		<label>Power Failures</label>
 		<description>This channel provides the number of power failures detected by meter.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="p1-total-gas">
@@ -140,6 +136,10 @@
 			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
 			update.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="p1-gas-timestamp">
@@ -148,10 +148,6 @@
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
 		</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 

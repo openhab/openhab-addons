@@ -66,6 +66,10 @@
 		<item-type>String</item-type>
 		<label>Status Text</label>
 		<description>The longer description of the current status.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="heroImageUrl">
@@ -78,10 +82,6 @@
 		<item-type>DateTime</item-type>
 		<label>Activation Date</label>
 		<description>The activation date of the generator.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deviceSsid">
@@ -106,9 +106,6 @@
 		<item-type>Switch</item-type>
 		<label>Show Warning</label>
 		<description>Should a user interface show a warning symbol due to the current status.</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hasMaintenanceAlert">
@@ -121,20 +118,12 @@
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>The date that the unit was last connected to the cloud service.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="connectionTime">
 		<item-type>DateTime</item-type>
 		<label>Connection Time</label>
 		<description>The date that the unit has been connected from.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="runHours">
