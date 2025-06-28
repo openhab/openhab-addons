@@ -27,10 +27,6 @@
 		<item-type>String</item-type>
 		<label>Adapter Location</label>
 		<description>Location of the nearest adapter to this device</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

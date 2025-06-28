@@ -109,7 +109,7 @@
 		<label>TX Power</label>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>SignalStrength</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

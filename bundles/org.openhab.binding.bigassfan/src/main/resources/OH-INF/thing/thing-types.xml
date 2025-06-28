@@ -94,7 +94,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Speed</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
@@ -112,7 +112,7 @@
 		<description>Forward or reverse</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Speed</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -147,7 +147,7 @@
 		<description>Set Smartmode to OFF, COOLING, or HEATING</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Speed</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -161,37 +161,21 @@
 		<item-type>Dimmer</item-type>
 		<label>Minimum Fan Speed</label>
 		<description>Set the minimum fan speed when in Smart Cooling mode</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="fan-learn-speed-max">
 		<item-type>Dimmer</item-type>
 		<label>Maximum Fan Speed</label>
 		<description>Set the maximum fan speed when in Smart Cooling mode</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="fan-speed-min">
 		<item-type>Dimmer</item-type>
 		<label>Minimum Fan Speed</label>
 		<description>Set the minimum fan speed</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="fan-speed-max">
 		<item-type>Dimmer</item-type>
 		<label>Maximum Fan Speed</label>
 		<description>Set the maximum fan speed</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="fan-wintermode">
 		<item-type>Switch</item-type>
@@ -218,76 +202,44 @@
 		<label>Light Power</label>
 		<description>Turn the fan's light on and off</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Speed</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-level">
 		<item-type>Dimmer</item-type>
 		<label>Light Brightness</label>
 		<description>The brightness level of the fan's light</description>
 		<category>Light</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-auto">
 		<item-type>Switch</item-type>
 		<label>Light Auto Mode</label>
 		<description>Enable or disable light auto mode</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-smarter">
 		<item-type>Switch</item-type>
 		<label>Smarter Lighting</label>
 		<description>Enable or disable Smarter Lighting</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-level-min">
 		<item-type>Dimmer</item-type>
 		<label>Minimum Brightness</label>
 		<description>Set the minimum brightness level when using Smarter Lighting</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-level-max">
 		<item-type>Dimmer</item-type>
 		<label>Maximum Brightness</label>
 		<description>Set the maximum brightness level when using Smarter Lighting</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-hue">
 		<item-type>Dimmer</item-type>
 		<label>Hue</label>
 		<description>Set the hue of the light</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light-present">
 		<item-type>String</item-type>
 		<label>Light Present</label>
 		<description>Fan has the integrated light installed</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="PRESENT">Present</option>
@@ -299,10 +251,6 @@
 		<item-type>String</item-type>
 		<label>Light Color</label>
 		<description>Light allows hue to be adjusted</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="COLOR">Color</option>
@@ -316,7 +264,7 @@
 		<description>The fan's motion sensor has detected motion</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Speed</tag>
+			<tag>Motion</tag>
 		</tags>
 		<state readOnly="true">
 			<options>

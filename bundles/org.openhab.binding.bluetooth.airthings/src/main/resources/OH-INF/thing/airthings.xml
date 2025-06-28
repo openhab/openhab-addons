@@ -190,7 +190,7 @@
 		<description>Radon gas level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<tag>Radon</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -200,7 +200,7 @@
 		<description>Radon gas level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<tag>Radon</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

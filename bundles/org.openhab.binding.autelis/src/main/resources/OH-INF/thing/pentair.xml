@@ -231,10 +231,6 @@
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
 		<description>The current state of the Intellitouch® controller</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Auto</option>
@@ -257,10 +253,6 @@
 		<item-type>Number</item-type>
 		<label>Sensor</label>
 		<description>The state of a sensor (water sensor)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">OK</option>
@@ -285,10 +277,6 @@
 		<item-type>Switch</item-type>
 		<label>Circuit 1</label>
 		<description>The current state of a circuit (Spa or Lo-Temp)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="equipment-feature">
 		<item-type>Number</item-type>
@@ -506,10 +494,6 @@
 		<label>Lighting Cmd</label>
 		<description>Send A lighting command</description>
 		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="alloff">All Off</option>

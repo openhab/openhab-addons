@@ -55,10 +55,6 @@
 	<channel-type id="updated">
 		<item-type>DateTime</item-type>
 		<label>Updated</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -131,7 +131,7 @@
 		<description>The audio source that is played</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<tag>Channel</tag>
 		</tags>
 		<state>
 			<options>

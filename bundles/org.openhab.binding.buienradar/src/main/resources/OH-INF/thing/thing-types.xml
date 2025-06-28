@@ -75,10 +75,6 @@
 		<item-type>DateTime</item-type>
 		<label>Actual Date/Time</label>
 		<description>The actual date and time when the prediction was made."</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -87,8 +83,8 @@
 		<label>Current Rainfall</label>
 		<description>Current rainfall</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -99,7 +95,7 @@
 		<description>Rainfall in 5 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -110,7 +106,7 @@
 		<description>Rainfall in 10 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -121,7 +117,7 @@
 		<description>Rainfall in 15 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -132,7 +128,7 @@
 		<description>Rainfall in 20 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -143,7 +139,7 @@
 		<description>Rainfall in 25 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -154,7 +150,7 @@
 		<description>Rainfall in 30 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -165,7 +161,7 @@
 		<description>Rainfall in 35 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -176,7 +172,7 @@
 		<description>Rainfall in 40 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -187,7 +183,7 @@
 		<description>Rainfall in 45 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -198,7 +194,7 @@
 		<description>Rainfall in 50 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -209,7 +205,7 @@
 		<description>Rainfall in 55 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -220,7 +216,7 @@
 		<description>Rainfall in 60 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -231,7 +227,7 @@
 		<description>Rainfall in 65 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -242,7 +238,7 @@
 		<description>Rainfall in 70 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -253,7 +249,7 @@
 		<description>Rainfall in 75 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -264,7 +260,7 @@
 		<description>Rainfall in 80 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -275,7 +271,7 @@
 		<description>Rainfall in 85 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -286,7 +282,7 @@
 		<description>Rainfall in 90 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -297,7 +293,7 @@
 		<description>Rainfall in 95 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -308,7 +304,7 @@
 		<description>Rainfall in 100 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -319,7 +315,7 @@
 		<description>Rainfall in 105 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -330,7 +326,7 @@
 		<description>Rainfall in 110 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>
@@ -341,7 +337,7 @@
 		<description>Rainfall in 115 minutes</description>
 		<tags>
 			<tag>Forecast</tag>
-			<tag>Speed</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.10f %unit%"/>
 	</channel-type>

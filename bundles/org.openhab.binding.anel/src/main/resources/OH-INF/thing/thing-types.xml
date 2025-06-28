@@ -149,10 +149,6 @@
 		<item-type>String</item-type>
 		<label>Relay Name</label>
 		<description>The name of the relay / socket</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="relayLocked-channel" advanced="true">
@@ -166,8 +162,8 @@
 		<label>Relay State</label>
 		<description>The state of the relay / socket (read-only if locked!)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Switch</tag>
+			<tag>Power</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy><!-- updates are only sent in non-locked mode -->
 	</channel-type>
@@ -217,7 +213,7 @@
 		<description>The brightness value of the optional sensor</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Brightness</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

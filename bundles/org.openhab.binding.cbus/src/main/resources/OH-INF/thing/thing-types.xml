@@ -118,6 +118,10 @@
 		<label>Level Channel</label>
 		<description>Group channel for CBus variable value lighting groups</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Temperature Group Channel Type -->
@@ -138,10 +142,6 @@
 		<item-type>Number</item-type>
 		<label>Trigger Channel</label>
 		<description>Group channel for CBus trigger groups</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<!-- DALI Group Channel Type -->
@@ -151,7 +151,7 @@
 		<description>Group channel for CBus DALI groups</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Channel</tag>
+			<tag>Brightness</tag>
 		</tags>
 	</channel-type>
 

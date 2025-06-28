@@ -273,7 +273,7 @@
 		<description>The voltage of the Aqualink® controller's battery</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Voltage</tag>
 		</tags>
 		<state readOnly="true">
 		</state>

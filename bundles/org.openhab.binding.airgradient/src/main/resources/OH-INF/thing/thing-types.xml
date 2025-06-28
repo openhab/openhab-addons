@@ -225,10 +225,6 @@
 		<item-type>String</item-type>
 		<label>LEDs Mode</label>
 		<description>Mode for the LEDs</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="default">default</option>
@@ -303,10 +299,6 @@
 		<item-type>String</item-type>
 		<label>Temperature Unit</label>
 		<description>Temperature unit used on the display</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="c">Celsius</option>
@@ -332,10 +324,6 @@
 		<item-type>Switch</item-type>
 		<label>Send to cloud</label>
 		<description>Send data to the AirGradient cloud</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -372,10 +360,6 @@
 		<item-type>String</item-type>
 		<label>LED Bar test</label>
 		<description>Test LED bar</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 

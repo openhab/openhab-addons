@@ -70,7 +70,7 @@
 		<category>CarbonDioxide</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<tag>CO2</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -147,10 +147,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Status timestamp</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

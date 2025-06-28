@@ -121,10 +121,6 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current operational mode set on the module</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
