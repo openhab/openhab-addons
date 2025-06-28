@@ -91,7 +91,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
             deviceName = "";
         } else {
-            commandHandler = new SpotifyHandleCommands(spotifyApi);
+            commandHandler = new SpotifyHandleCommands(bridgeHandler, spotifyApi);
             updateStatus(ThingStatus.UNKNOWN);
         }
     }

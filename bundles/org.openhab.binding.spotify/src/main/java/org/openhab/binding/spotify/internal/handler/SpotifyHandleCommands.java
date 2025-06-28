@@ -46,6 +46,7 @@ class SpotifyHandleCommands {
     private final Logger logger = LoggerFactory.getLogger(SpotifyHandleCommands.class);
 
     private final SpotifyApi spotifyApi;
+    private final SpotifyBridgeHandler bridgeHandler;
 
     private List<Device> devices = Collections.emptyList();
     private List<Playlist> playlists = Collections.emptyList();
@@ -55,8 +56,9 @@ class SpotifyHandleCommands {
      *
      * @param spotifyApi The api class to use to call the spotify api
      */
-    public SpotifyHandleCommands(SpotifyApi spotifyApi) {
+    public SpotifyHandleCommands(SpotifyBridgeHandler bridgeHandler, SpotifyApi spotifyApi) {
         this.spotifyApi = spotifyApi;
+        this.bridgeHandler = bridgeHandler;
     }
 
     public void setDevices(final List<Device> devices) {
@@ -191,7 +193,12 @@ class SpotifyHandleCommands {
                 param = param.substring(px + 1);
             }
 
-            if (mediaTypeCommand == MediaCommandType.DEVICE) {
+            if (mediaTypeCommand == MediaCommandType.SEARCH) {
+                String searchQuery = mediaType.getParam().toFullString();
+                logger.info("Search Query:" + searchQuery);
+                bridgeHandler.Search(searchQuery);
+
+            } else if (mediaTypeCommand == MediaCommandType.DEVICE) {
                 final boolean play = true;
 
                 if (!active || targetDevice.isEmpty()) {

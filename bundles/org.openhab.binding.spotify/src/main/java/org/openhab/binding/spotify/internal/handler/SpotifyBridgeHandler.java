@@ -82,6 +82,7 @@ import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaPodcast;
 import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSearchResult;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
@@ -334,7 +335,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SpotifyBridgeHandler.this);
         spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
-        handleCommand = new SpotifyHandleCommands(spotifyApi);
+        handleCommand = new SpotifyHandleCommands(this, spotifyApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);
 
         playingContextCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getPlayerInfo);
@@ -415,7 +416,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             });
 
             mediaEntry.registerEntry("Search", () -> {
-                return new MediaCollection("Search", "Search", "/static/Search.png");
+                MediaSearchResult searchResult = new MediaSearchResult("Search", "Search");
+                return searchResult;
             });
 
         } else if ("Playlists".equals(mediaEntry.getKey())) {
@@ -475,8 +477,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 List<Track> tracks = playListTracks.getTrack();
                 RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
-        } else if ("Search".equals(mediaEntry.getKey())) {
-            ApiSearchResult searchResult = spotifyApi.search(0, 30);
+        } else if (mediaEntry instanceof MediaSearchResult) {
+            MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
+
+            ApiSearchResult apiSearchResult = spotifyApi.search(searchQuery, 0, 30);
+
             MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");
             });
@@ -505,16 +510,28 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 return new MediaCollection("Audiobook", "Audiobook", "/static/Audiobook.png");
             });
 
-            RegisterCollections(mediaAlbums, searchResult.albums.getItems(), MediaAlbum.class);
-            RegisterCollections(mediaArtists, searchResult.artists.getItems(), MediaArtist.class);
-            RegisterCollections(mediaPlaylists, searchResult.playlists.getItems(), MediaPlayList.class);
-            RegisterCollections(mediaTracks, searchResult.tracks.getItems(), MediaTrack.class);
-            RegisterCollections(mediaShows, searchResult.shows.getItems(), MediaTrack.class);
-            RegisterCollections(mediaEpisodes, searchResult.episodes.getItems(), MediaTrack.class);
-            RegisterCollections(mediaAudiobooks, searchResult.audiobooks.getItems(), MediaTrack.class);
+            mediaAlbums.Clear();
+            mediaArtists.Clear();
+            mediaPlaylists.Clear();
+            mediaTracks.Clear();
+            mediaShows.Clear();
+            mediaEpisodes.Clear();
+            mediaAudiobooks.Clear();
 
+            RegisterCollections(mediaAlbums, apiSearchResult.albums.getItems(), MediaAlbum.class);
+            RegisterCollections(mediaArtists, apiSearchResult.artists.getItems(), MediaArtist.class);
+            RegisterCollections(mediaPlaylists, apiSearchResult.playlists.getItems(), MediaPlayList.class);
+            RegisterCollections(mediaTracks, apiSearchResult.tracks.getItems(), MediaTrack.class);
+            RegisterCollections(mediaShows, apiSearchResult.shows.getItems(), MediaTrack.class);
+            RegisterCollections(mediaEpisodes, apiSearchResult.episodes.getItems(), MediaTrack.class);
+            RegisterCollections(mediaAudiobooks, apiSearchResult.audiobooks.getItems(), MediaTrack.class);
         }
+    }
 
+    private String searchQuery = "aa";
+
+    public void Search(String searchQuery) {
+        this.searchQuery = searchQuery;
     }
 
     private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
