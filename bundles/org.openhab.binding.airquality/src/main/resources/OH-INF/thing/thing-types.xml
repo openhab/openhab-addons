@@ -121,10 +121,6 @@
 	<channel-type id="density-value">
 		<item-type>Number:Density</item-type>
 		<label>Measure</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

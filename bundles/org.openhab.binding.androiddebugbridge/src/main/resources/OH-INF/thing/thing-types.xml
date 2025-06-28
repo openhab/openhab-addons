@@ -100,10 +100,6 @@
 		<item-type>String</item-type>
 		<label>Send Key Event</label>
 		<description>Send key event to android device</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="7">KEYCODE_0</option>
@@ -403,30 +399,18 @@
 		<item-type>String</item-type>
 		<label>Send Text</label>
 		<description>Send text to android device</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="tap-channel">
 		<item-type>String</item-type>
 		<label>Send Tap</label>
 		<description>Send tap event to android device</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="url-channel">
 		<item-type>String</item-type>
 		<label>Open Url</label>
 		<description>Open url in the browser</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="record-input-channel">
@@ -439,40 +423,24 @@
 		<item-type>String</item-type>
 		<label>Recorded Input</label>
 		<description>Send previous recorded input events by name</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="start-package-channel">
 		<item-type>String</item-type>
 		<label>Start Package</label>
 		<description>Run application by package name</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="stop-package-channel">
 		<item-type>String</item-type>
 		<label>Stop Package</label>
 		<description>Stop application by package name</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="stop-current-package-channel">
 		<item-type>Switch</item-type>
 		<label>Stop Current Package</label>
 		<description>Stops the top application in screen when receives an OFF command</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="current-package-channel">

@@ -68,10 +68,6 @@
 		<label>CO₂ Level</label>
 		<description>CO&#8322; level, ppm</description>
 		<category>CarbonDioxide</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -80,10 +76,6 @@
 		<label>Humidity</label>
 		<description>Humidity, %</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -91,10 +83,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>AQI</label>
 		<description>Air Quality Index (US)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>AQI</tag>
-		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -102,10 +90,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM2.5 level, µg/m&#179;</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -113,10 +97,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM10</label>
 		<description>PM10 level, µg/m&#179;(Only in Pro version)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -124,10 +104,6 @@
 		<item-type>Number:Density</item-type>
 		<label>PM0.1</label>
 		<description>PM0.1 level, µg/m&#179;(Only in Pro version)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -136,10 +112,6 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -147,10 +119,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Status timestamp</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

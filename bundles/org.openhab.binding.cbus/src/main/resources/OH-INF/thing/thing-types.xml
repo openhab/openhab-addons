@@ -107,10 +107,6 @@
 		<label>Light Channel</label>
 		<description>Group channel for CBus on/off lighting groups</description>
 		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="level-channel">
@@ -126,10 +122,6 @@
 		<label>Temperature</label>
 		<description>Group channel for CBus temperature groups</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -138,10 +130,6 @@
 		<item-type>Number</item-type>
 		<label>Trigger Channel</label>
 		<description>Group channel for CBus trigger groups</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<!-- DALI Group Channel Type -->
@@ -149,10 +137,6 @@
 		<item-type>Dimmer</item-type>
 		<label>DALI Channel</label>
 		<description>Group channel for CBus DALI groups</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

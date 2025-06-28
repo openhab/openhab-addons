@@ -28,10 +28,6 @@
 		<item-type>Switch</item-type>
 		<label>Light Switch</label>
 		<description>Switching lights on and off</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="hint">
@@ -44,10 +40,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Time stamp of latest device communication</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

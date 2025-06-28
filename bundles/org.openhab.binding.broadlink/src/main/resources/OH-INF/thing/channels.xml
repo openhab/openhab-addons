@@ -46,39 +46,23 @@
 		<item-type>Switch</item-type>
 		<label>Night Light</label>
 		<category>Lightbulb</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="light">
 		<item-type>String</item-type>
 		<label>Illumination</label>
 		<description>Light conditions</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="noise">
 		<item-type>String</item-type>
 		<label>Background Noise</label>
 		<description>Noise conditions</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Noise</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="air">
 		<item-type>String</item-type>
 		<label>Air Quality</label>
 		<description>Air quality conditions</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

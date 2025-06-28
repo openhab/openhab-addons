@@ -242,10 +242,6 @@
 		<item-type>String</item-type>
 		<label>Automower Name</label>
 		<description>The channel providing the automower name</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -253,10 +249,6 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>The current mode</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="MAIN_AREA">Main Area</option>
@@ -347,10 +339,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>The time when the mower sent the last update</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -371,10 +359,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery</label>
 		<description>The battery level of the mower at the time of last update</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -388,19 +372,12 @@
 		<item-type>String</item-type>
 		<label>Error Message</label>
 		<description>The error message at the time of last update</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="errorTimestampType">
 		<item-type>DateTime</item-type>
 		<label>Error Time</label>
 		<description>The time when the error occurred</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -416,10 +393,6 @@
 		<label>Next Auto Start</label>
 		<description>The channel providing the time for the next auto start. If the mower is charging then the value is the
 			estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -466,20 +439,12 @@
 		<item-type>String</item-type>
 		<label>Headlight Mode</label>
 		<description>Information about headlights</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="statCuttingBladeUsageTimeType">
 		<item-type>Number:Time</item-type>
 		<label>Cutting Blade Usage Time</label>
 		<description>The time since the last reset of the cutting blade usage counter</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%.1f h"/>
 	</channel-type>
 
@@ -508,10 +473,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Charging Time</label>
 		<description>Total charging time</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
@@ -519,10 +480,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Cutting Time</label>
 		<description>Total cutting time</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
@@ -544,10 +501,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Running Time</label>
 		<description>The total running time (the wheel motors have been running)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
@@ -555,10 +508,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Searching Time</label>
 		<description>The total searching time</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
@@ -757,10 +706,6 @@
 		<item-type>Number</item-type>
 		<label>Start with Duration</label>
 		<description>Start for a duration in minutes</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
@@ -768,30 +713,18 @@
 		<item-type>Switch</item-type>
 		<label>Resume Schedule</label>
 		<description>Resume schedule</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="pause">
 		<item-type>Switch</item-type>
 		<label>Pause</label>
 		<description>Pause the mower now until manual resume</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="park">
 		<item-type>Number</item-type>
 		<label>Park with Duration</label>
 		<description>Park for a duration in minutes</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
@@ -799,19 +732,11 @@
 		<item-type>Switch</item-type>
 		<label>Park Until Next Schedule</label>
 		<description>Park until next schedule</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="parkUntilFurtherNotice">
 		<item-type>Switch</item-type>
 		<label>Park and Pause the Schedule</label>
 		<description>Park and pause the mower schedule until manual resume</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>
