@@ -416,9 +416,9 @@ public class SpotifyApi {
     /**
      * @return Returns the artists of the user.
      */
-    public @Nullable ApiSearchResult search(long offset, long limit) {
+    public @Nullable ApiSearchResult search(String searchQuery, long offset, long limit) {
         final ApiSearchResult searchResult = request(GET,
-                SPOTIFY_API_BASE_URL + "/search?q=cure"
+                SPOTIFY_API_BASE_URL + "/search?q=" + searchQuery
                         + "&type=show%2Cepisode%2Caudiobook%2Calbum%2Cartist%2Cplaylist%2Ctrack" + "&offset=" + offset
                         + "&limit=" + limit,
                 "", ApiSearchResult.class);
