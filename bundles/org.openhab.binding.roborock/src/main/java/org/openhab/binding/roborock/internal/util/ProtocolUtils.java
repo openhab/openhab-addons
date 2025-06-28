@@ -15,6 +15,8 @@ package org.openhab.binding.roborock.internal.util;
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -141,6 +143,19 @@ public class ProtocolUtils {
         int protocol = readInt16BE(message, 15);
         if (protocol == 301) {
             logger.debug("we don't handle images yet");
+            byte[] payload = Arrays.copyOfRange(message, 0, 24);
+            ByteBuffer buffer = ByteBuffer.wrap(payload);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+            byte[] firstString = new byte[8];
+            buffer.get(firstString);
+            byte[] secondString = new byte[8];
+            buffer.get(secondString);
+            short shortValue = buffer.getShort();
+            byte[] lastString = new byte[6];
+            buffer.get(lastString);
+            String newContent = new String(buffer.array(), StandardCharsets.UTF_8);
+            logger.trace("newContent = {}", newContent);
             return "";
         } else if (protocol == 102) {
             int payloadLen = readInt16BE(message, 17);

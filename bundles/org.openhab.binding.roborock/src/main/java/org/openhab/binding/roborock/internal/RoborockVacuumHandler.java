@@ -838,10 +838,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void handleGetCustomizeCleanMode(String response) {
         logger.trace("handleGetCustomizeCleanMode, response = {}", response);
-        JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
-                .getAsJsonArray();
-        updateState(RobotCapabilities.CUSTOMIZE_CLEAN_MODE.getChannel(),
-                new StringType(getCustomizeCleanMode.toString()));
+        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()) {
+            JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
+                    .getAsJsonArray();
+            updateState(RobotCapabilities.CUSTOMIZE_CLEAN_MODE.getChannel(),
+                    new StringType(getCustomizeCleanMode.toString()));
+        }
     }
 
     private void handleGetMap(String response) {
@@ -960,6 +962,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             getMultiMapsListID = id;
                         } else if (COMMAND_GET_CUSTOMIZE_CLEAN_MODE.equals(method)) {
                             getCustomizeCleanModeID = id;
+                        } else if (COMMAND_GET_MAP.equals(method)) {
+                            getMapID = id;
                         }
                     }
                 });
