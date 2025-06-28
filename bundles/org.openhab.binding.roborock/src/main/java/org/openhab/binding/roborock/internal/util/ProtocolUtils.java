@@ -139,21 +139,26 @@ public class ProtocolUtils {
         int random = readInt32BE(message, 7);
         int timestamp = readInt32BE(message, 11);
         int protocol = readInt16BE(message, 15);
-        if (protocol != 102) {
+        if (protocol == 301) {
             logger.debug("we don't handle images yet");
-        }
-        int payloadLen = readInt16BE(message, 17);
-        byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen);
-        logger.trace(
-                "parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
-                version, sequence, random, timestamp, protocol, payloadLen);
-        String key = encodeTimestamp(timestamp) + localKey + SALT;
-        try {
-            byte[] result = decrypt(payload, key);
-            String stringResult = new String(result, StandardCharsets.UTF_8);
-            return stringResult;
-        } catch (Exception e) {
-            logger.debug("Exception decrypting payload, {}", e.getMessage());
+            return "";
+        } else if (protocol == 102) {
+            int payloadLen = readInt16BE(message, 17);
+            byte[] payload = Arrays.copyOfRange(message, 19, 19 + payloadLen);
+            logger.trace(
+                    "parsed message version: {}, sequence: {}, random: {}, timestamp: {}, protocol: {}, payloadLen: {}",
+                    version, sequence, random, timestamp, protocol, payloadLen);
+            String key = encodeTimestamp(timestamp) + localKey + SALT;
+            try {
+                byte[] result = decrypt(payload, key);
+                String stringResult = new String(result, StandardCharsets.UTF_8);
+                return stringResult;
+            } catch (Exception e) {
+                logger.debug("Exception decrypting payload, {}", e.getMessage());
+                return "";
+            }
+        } else {
+            logger.debug("Unknown protocol {}", protocol);
             return "";
         }
     }

@@ -134,6 +134,21 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    @Nullable
+    public String getRoutines(String rrHomeID, @Nullable Rriot rriot) {
+        try {
+            return webTargets.getRoutines(rrHomeID, rriot);
+        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication error " + e.getMessage());
+            return new String();
+        } catch (RoborockCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error " + e.getMessage());
+            return new String();
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // we do not have any channels -> nothing to do here

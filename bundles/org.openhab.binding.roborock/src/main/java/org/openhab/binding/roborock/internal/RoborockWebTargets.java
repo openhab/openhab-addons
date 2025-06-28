@@ -58,6 +58,7 @@ public class RoborockWebTargets {
     private static final String getTokenUri = BASE_URI + "/api/v1/login";
     private static final String getHomeDetailUri = BASE_URI + "/api/v1/getHomeDetail";
     private static final String getHomeDatapath = "/user/homes/";
+    private static final String getRoutines = "/user/scene/device/";
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(RoborockWebTargets.class);
     private HttpClient httpClient;
@@ -121,6 +122,15 @@ public class RoborockWebTargets {
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
         String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
         return gson.fromJson(response, HomeData.class);
+    }
+
+    @Nullable
+    public String getRoutines(String rrHomeID, @Nullable Rriot rriot) throws RoborockCommunicationException,
+            RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
+        String path = getRoutines + rrHomeID;
+        String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
+        String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
+        return response;
     }
 
     private String invoke(String uri, HttpMethod method, @Nullable String headerKey, @Nullable String headerValue,
