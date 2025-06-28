@@ -17,26 +17,6 @@ package org.openhab.binding.spotify.internal.api.model;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Categorie {
+public class Categorie extends BaseEntry {
 
-    private String name;
-    private String id;
-    private String href;
-    private Image[] icons;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getUri() {
-        return href;
-    }
-
-    public Image[] getImages() {
-        return icons;
-    }
 }
