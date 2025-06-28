@@ -43,8 +43,9 @@ public class BaseEntry {
 
     public String getImagesUrl() {
         try {
-            if (images != null && images.getFirst() != null) {
-                return images.getFirst().getUrl();
+            List<Image> imagesList = getImages();
+            if (imagesList != null && imagesList.getFirst() != null) {
+                return imagesList.getFirst().getUrl();
             }
             return "";
         } catch (Exception ex) {

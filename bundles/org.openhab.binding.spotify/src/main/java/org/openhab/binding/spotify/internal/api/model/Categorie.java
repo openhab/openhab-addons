@@ -12,11 +12,24 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.List;
+
 /**
  * Spotify Web Api Categorie data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
 public class Categorie extends BaseEntry {
+    private String href;
+    private List<Image> icons;
 
+    @Override
+    public String getUri() {
+        return href;
+    }
+
+    @Override
+    public List<Image> getImages() {
+        return icons;
+    }
 }

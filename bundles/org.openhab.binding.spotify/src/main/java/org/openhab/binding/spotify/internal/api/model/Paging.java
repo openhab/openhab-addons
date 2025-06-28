@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +22,13 @@ import java.util.List;
  */
 public class Paging<T> {
     List<T> items;
+
+    public void addItems(T item) {
+        if (items == null) {
+            items = new ArrayList<T>();
+        }
+        items.add(item);
+    }
 
     public List<T> getItems() {
         return items;
