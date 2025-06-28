@@ -45,6 +45,7 @@ import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.HomeData.Rooms;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
+import org.openhab.binding.roborock.internal.api.enums.ConsumablesType;
 import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
 import org.openhab.binding.roborock.internal.api.enums.FanModeType;
 import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
@@ -127,6 +128,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private int getCleanRecordID = 0;
     private int getCleanSummaryID = 0;
     private int getDndTimerID = 0;
+    private int getSegmentStatusID = 0;
+    private int getMapStatusID = 0;
+    private int getLedStatusID = 0;
+    private int getCarpetModeID = 0;
+    private int getFwFeaturesID = 0;
+    private int getMultiMapsListID = 0;
+    private int getCustomizeCleanModeID = 0;
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
             RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -405,6 +413,27 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else if (messageId == getDndTimerID) {
                     logger.debug("Received getDndTimer response, parse it");
                     handleGetDndTimer(jsonString);
+                } else if (messageId == getSegmentStatusID) {
+                    logger.debug("Received getSegmentStatus response, parse it");
+                    handleGetSegmentStatus(jsonString);
+                } else if (messageId == getMapStatusID) {
+                    logger.debug("Received getMapStatus response, parse it");
+                    handleGetMapStatus(jsonString);
+                } else if (messageId == getLedStatusID) {
+                    logger.debug("Received getLedStatus response, parse it");
+                    handleGetLedStatus(jsonString);
+                } else if (messageId == getCarpetModeID) {
+                    logger.debug("Received getCarpetMode response, parse it");
+                    handleGetCarpetMode(jsonString);
+                } else if (messageId == getFwFeaturesID) {
+                    logger.debug("Received getFwFeatures response, parse it");
+                    handleGetFwFeatures(jsonString);
+                } else if (messageId == getMultiMapsListID) {
+                    logger.debug("Received MultiMapsList response, parse it");
+                    handleGetMultiMapsList(jsonString);
+                } else if (messageId == getCustomizeCleanModeID) {
+                    logger.debug("Received getCustomizeCleanMode response, parse it");
+                    handleGetCustomizeCleanMode(jsonString);
                 }
 
                 // } catch (DataParsingException e) {
@@ -459,13 +488,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
             try {
-                logger.debug("Sending command: {}", COMMAND_GET_STATUS);
                 sendCommand(COMMAND_GET_STATUS);
                 sendCommand(COMMAND_GET_CONSUMABLE);
                 sendCommand(COMMAND_GET_ROOM_MAPPING);
                 sendCommand(COMMAND_GET_NETWORK_INFO);
                 sendCommand(COMMAND_GET_CLEAN_SUMMARY);
                 sendCommand(COMMAND_GET_DND_TIMER);
+                sendCommand(COMMAND_GET_SEGMENT_STATUS);
+                sendCommand(COMMAND_GET_MAP_STATUS);
+                sendCommand(COMMAND_GET_LED_STATUS);
+                sendCommand(COMMAND_GET_CARPET_MODE);
+                sendCommand(COMMAND_GET_FW_FEATURES);
+                sendCommand(COMMAND_GET_MULTI_MAPS_LIST);
+                sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
             } catch (UnsupportedEncodingException e) {
                 // Shouldn't occur
             }
@@ -549,7 +584,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 updateState(CHANNEL_DOCK_STATE, new StringType(dockState.getDescription()));
                 updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(dockState.getId()));
             }
-            // miio checks for vac capabilities before populating these channels
+
             if (deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_MODE)) {
                 updateState(RobotCapabilities.WATERBOX_MODE.getChannel(),
                         new DecimalType(getStatus.result[0].waterBoxMode));
@@ -594,10 +629,26 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void handleGetConsumables(String response) {
         GetConsumables getConsumables = gson.fromJson(response, GetConsumables.class);
         if (getConsumables != null) {
-            updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new DecimalType(getConsumables.result[0].mainBrushWorkTime));
-            updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new DecimalType(getConsumables.result[0].sideBrushWorkTime));
-            updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new DecimalType(getConsumables.result[0].filterWorkTime));
-            updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new DecimalType(getConsumables.result[0].sensorDirtyTime));
+            int mainBrush = getConsumables.result[0].mainBrushWorkTime;
+            int sideBrush = getConsumables.result[0].sideBrushWorkTime;
+            int filter = getConsumables.result[0].filterWorkTime;
+            int sensor = getConsumables.result[0].sensorDirtyTime;
+            updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(mainBrush, ConsumablesType.MAIN_BRUSH)));
+            updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(sideBrush, ConsumablesType.SIDE_BRUSH)));
+            updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(filter, ConsumablesType.FILTER)));
+            updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(sensor, ConsumablesType.SENSOR)));
         }
     }
 
@@ -702,6 +753,55 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String.format("%02d:%02d", getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
     }
 
+    public void handleGetSegmentStatus(String response) {
+        logger.trace("handleGetSegmentStatus, response = {}", response);
+        JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        Integer stat = getSegmentStatus.get(0).getAsInt();
+        updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), new DecimalType(stat));
+    }
+
+    public void handleGetMapStatus(String response) {
+        logger.trace("handleGetMapStatus, response = {}", response);
+        JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        Integer stat = getSegmentStatus.get(0).getAsInt();
+        updateState(RobotCapabilities.MAP_STATUS.getChannel(), new DecimalType(stat));
+    }
+
+    public void handleGetLedStatus(String response) {
+        logger.trace("handleGetLedStatus, response = {}", response);
+        JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        Integer stat = getSegmentStatus.get(0).getAsInt();
+        updateState(RobotCapabilities.LED_STATUS.getChannel(), new DecimalType(stat));
+    }
+
+    public void handleGetCarpetMode(String response) {
+        logger.trace("handleGetCarpetMode, response = {}", response);
+        JsonArray getCarpetMode = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        updateState(RobotCapabilities.CARPET_MODE.getChannel(),
+                new StringType(getCarpetMode.get(0).getAsJsonObject().toString()));
+    }
+
+    public void handleGetFwFeatures(String response) {
+        logger.trace("handleGetFwFeatures, response = {}", response);
+        JsonArray getFwFeatures = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        updateState(RobotCapabilities.FW_FEATURES.getChannel(), new StringType(getFwFeatures.toString()));
+    }
+
+    public void handleGetMultiMapsList(String response) {
+        logger.trace("handleGetMultiMapsList, response = {}", response);
+        JsonArray getMultiMapsList = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        updateState(RobotCapabilities.MULTI_MAP_LIST.getChannel(),
+                new StringType(getMultiMapsList.get(0).getAsJsonObject().toString()));
+    }
+
+    public void handleGetCustomizeCleanMode(String response) {
+        logger.trace("handleGetCustomizeCleanMode, response = {}", response);
+        JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
+                .getAsJsonArray();
+        updateState(RobotCapabilities.CUSTOMIZE_CLEAN_MODE.getChannel(),
+                new StringType(getCustomizeCleanMode.toString()));
+    }
+
     private void setCapabilities(JsonObject statusResponse) {
         for (RobotCapabilities capability : RobotCapabilities.values()) {
             if (statusResponse.has(capability.getStatusFieldName())) {
@@ -801,6 +901,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             getCleanSummaryID = id;
                         } else if (COMMAND_GET_DND_TIMER.equals(method)) {
                             getDndTimerID = id;
+                        } else if (COMMAND_GET_SEGMENT_STATUS.equals(method)) {
+                            getSegmentStatusID = id;
+                        } else if (COMMAND_GET_MAP_STATUS.equals(method)) {
+                            getMapStatusID = id;
+                        } else if (COMMAND_GET_LED_STATUS.equals(method)) {
+                            getLedStatusID = id;
+                        } else if (COMMAND_GET_CARPET_MODE.equals(method)) {
+                            getCarpetModeID = id;
+                        } else if (COMMAND_GET_FW_FEATURES.equals(method)) {
+                            getFwFeaturesID = id;
+                        } else if (COMMAND_GET_MULTI_MAPS_LIST.equals(method)) {
+                            getMultiMapsListID = id;
+                        } else if (COMMAND_GET_CUSTOMIZE_CLEAN_MODE.equals(method)) {
+                            getCustomizeCleanModeID = id;
                         }
                     }
                 });

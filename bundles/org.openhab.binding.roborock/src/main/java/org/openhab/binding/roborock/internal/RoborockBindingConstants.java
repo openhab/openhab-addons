@@ -132,6 +132,13 @@ public class RoborockBindingConstants {
     public static final String COMMAND_GET_CLEAN_RECORD = "get_clean_record";
     public static final String COMMAND_GET_CLEAN_SUMMARY = "get_clean_summary";
     public static final String COMMAND_GET_DND_TIMER = "get_dnd_timer";
+    public static final String COMMAND_GET_SEGMENT_STATUS = "get_segment_status";
+    public static final String COMMAND_GET_MAP_STATUS = "get_map_status";
+    public static final String COMMAND_GET_LED_STATUS = "get_led_status";
+    public static final String COMMAND_GET_CARPET_MODE = "get_carpet_mode";
+    public static final String COMMAND_GET_FW_FEATURES = "get_fw_features";
+    public static final String COMMAND_GET_MULTI_MAPS_LIST = "get_multi_maps_list";
+    public static final String COMMAND_GET_CUSTOMIZE_CLEAN_MODE = "get_customize_clean_mode";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT, ROBOROCK_VACUUM);
