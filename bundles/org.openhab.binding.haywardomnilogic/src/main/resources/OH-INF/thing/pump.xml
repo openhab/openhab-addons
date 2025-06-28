@@ -43,10 +43,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Pump Speed</label>
 		<description>Pump speed in percentage</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
@@ -60,10 +56,6 @@
 	<channel-type id="pumpSpeedSelect">
 		<item-type>String</item-type>
 		<label>Pump Speed States</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -100,10 +92,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
 		<description>Last pump speed in percentage</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 

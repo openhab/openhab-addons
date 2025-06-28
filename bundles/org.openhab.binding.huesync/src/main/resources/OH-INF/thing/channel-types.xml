@@ -82,10 +82,6 @@
 		<label>Last Mode</label>
 		<description>Last sync mode used for this channel</description>
 		<category>text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -130,10 +126,6 @@
 			]]>
 		</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="powersave">Powersave</option>
@@ -160,10 +152,6 @@
 			]]>
 		</description>
 		<category>switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="execution-hdmi-active">
@@ -181,10 +169,6 @@
 			]]>
 		</description>
 		<category>switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="execution-hdmi-source">
@@ -203,10 +187,6 @@
 			]]>
 		</description>
 		<category>receiver</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="input1"></option>
@@ -239,10 +219,6 @@
 			]]>
 		</description>
 		<category>slider</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<state min="0" max="200" step="1" pattern="%d"/>
 	</channel-type>
 

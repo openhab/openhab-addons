@@ -40,10 +40,6 @@
 	<channel-type id="enable">
 		<item-type>Switch</item-type>
 		<label>Heater Enable</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

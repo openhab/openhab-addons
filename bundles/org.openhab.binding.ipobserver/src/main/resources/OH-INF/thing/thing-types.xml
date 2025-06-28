@@ -173,10 +173,6 @@
 		<label>Wind Average Speed</label>
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windSpeed" advanced="true">
@@ -220,10 +216,6 @@
 		<label>Rain Today</label>
 		<description>Rain since Midnight</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForWeek" advanced="true">
@@ -245,20 +237,12 @@
 		<label>Rain for Year</label>
 		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainTotal">
 		<item-type>Number:Length</item-type>
 		<label>Total Rain</label>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastUpdatedTime" advanced="true">

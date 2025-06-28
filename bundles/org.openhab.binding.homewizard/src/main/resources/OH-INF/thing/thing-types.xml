@@ -137,10 +137,6 @@
 		<item-type>Number</item-type>
 		<label>Power Failures</label>
 		<description>This channel provides the count of any type of power failure.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_import_t1">
@@ -183,10 +179,6 @@
 		<description>
 			This channel provides the current grid voltage.
 		</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Voltage</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="active_power">
@@ -196,10 +188,6 @@
 			This channel provides the current net total power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -210,10 +198,6 @@
 			This channel provides the current net phase 1 power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="active_power_l2">
@@ -223,10 +207,6 @@
 			This channel provides the current net phase 2 power in W. It will be below 0 if power is currently being
 			exported. It will be 0 for single phase systems.
 		</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="active_power_l3">
@@ -236,10 +216,6 @@
 			This channel provides the current net phase 3 power in W. It will be below 0 if power is currently being
 			exported. It will be 0 for single phase systems.
 		</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="total_gas">
@@ -258,10 +234,6 @@
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
 		</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="total_water">
@@ -270,10 +242,6 @@
 		<description>
 			This channel provides the most recently reported total imported water in m^3.
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -283,10 +251,6 @@
 		<description>
 			This channel provides the most recently reported current water usage in liters per minute.
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -305,10 +269,6 @@
 		<description>
 			This channel provides access to the power lock of the Energysocket
 		</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ring_brightness">
@@ -317,10 +277,6 @@
 		<description>
 			This channel provides access to the brightness of the ring of the Energysocket
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

@@ -89,10 +89,6 @@
 		<item-type>String</item-type>
 		<label>Send Notification</label>
 		<description>Send notification to the client</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="playing-item-id-channel">
 		<item-type>String</item-type>
@@ -146,19 +142,11 @@
 		<item-type>Dimmer</item-type>
 		<label>Playing Item Percentage</label>
 		<description>Played percentage for the item currently playing, allow seek</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="playing-item-second-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Second</label>
 		<description>Current second for the item currently playing, allow seek</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="playing-item-total-seconds-channel">
 		<item-type>Number</item-type>
@@ -170,10 +158,6 @@
 		<item-type>String</item-type>
 		<label>Play By Terms</label>
 		<description>Play media by terms, works for series, episodes and movies</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="play-next-by-terms-channel">
 		<item-type>String</item-type>
@@ -189,19 +173,11 @@
 		<item-type>String</item-type>
 		<label>Browse By Terms</label>
 		<description>Browse media by terms, works for series, episodes and movies</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="play-by-id-channel">
 		<item-type>String</item-type>
 		<label>Play By Id</label>
 		<description>Play media by id</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="play-next-by-id-channel">
 		<item-type>String</item-type>
@@ -217,9 +193,5 @@
 		<item-type>String</item-type>
 		<label>Browse By Id</label>
 		<description>Browse media by id</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

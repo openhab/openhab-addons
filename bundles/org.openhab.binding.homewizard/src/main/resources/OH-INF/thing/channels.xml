@@ -11,10 +11,6 @@
 			This channel provides the active usage in Watt.
 		</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="hw-power-advanced" advanced="true">
@@ -33,10 +29,6 @@
 			This channel provides the active voltage in Volt.
 		</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Voltage</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="hw-voltage-advanced" advanced="true">
@@ -55,10 +47,6 @@
 			This channel provides the active current in Ampere.
 		</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

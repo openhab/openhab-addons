@@ -48,10 +48,6 @@
 		<description>
 			This channel provides access to the number of battery cycles.
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
