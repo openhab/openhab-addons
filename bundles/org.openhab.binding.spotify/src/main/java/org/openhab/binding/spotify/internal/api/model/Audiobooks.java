@@ -13,9 +13,9 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Shows data class : a collection of Podcast
+ * Spotify Web Api Albums data class : collection of Album
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Shows extends Paging<Show> {
+public class Audiobooks extends Paging<Audiobook> {
 }

@@ -17,5 +17,5 @@ package org.openhab.binding.spotify.internal.api.model;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Shows extends Paging<Show> {
+public class AddedShows extends Paging<AddedShow> {
 }
