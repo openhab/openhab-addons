@@ -98,6 +98,7 @@
 /bundles/org.openhab.binding.easee/ @alexf2015
 /bundles/org.openhab.binding.echonetlite/ @mikeb01
 /bundles/org.openhab.binding.ecobee/ @mhilbush
+/bundles/org.openhab.binding.ecoflow/ @maniac103
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
 /bundles/org.openhab.binding.ecovacs/ @maniac103
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
