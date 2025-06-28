@@ -13,18 +13,10 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Categories data class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
-
-    private String description;
-    private PlayListTracks tracks;
-    private String href;
-
-    public PlayListTracks getTracks() {
-        return tracks;
-    }
-
+public class CategoriesResult {
+    public Categories categories;
 }

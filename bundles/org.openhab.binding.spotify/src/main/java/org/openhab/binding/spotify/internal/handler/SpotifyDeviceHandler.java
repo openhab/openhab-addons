@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.Device;
+import org.openhab.core.library.types.MediaCommandType;
+import org.openhab.core.library.types.MediaType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -89,7 +91,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
             deviceName = "";
         } else {
-            commandHandler = new SpotifyHandleCommands(spotifyApi);
+            commandHandler = new SpotifyHandleCommands(bridgeHandler, spotifyApi);
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
@@ -123,8 +125,13 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
             active = device.isActive();
             updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(active));
+
+            // updateChannelState(CHANNEL_DEVICEPLAYER,
+            // online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+
             updateChannelState(CHANNEL_DEVICEPLAYER,
-                    online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+                    new MediaType(online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE,
+                            MediaCommandType.NONE, "param", new StringType(deviceId), new StringType("Spotify")));
             return true;
         } else {
             return false;
