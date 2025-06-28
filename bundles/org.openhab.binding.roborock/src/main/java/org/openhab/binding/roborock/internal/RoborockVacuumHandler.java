@@ -18,8 +18,12 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -946,6 +950,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = true;
     }
 
+    private String getEndpoint() {
+        try {
+            byte[] md5Bytes = MessageDigest.getInstance("MD5").digest(rriot.k.getBytes());
+            byte[] subArray = new byte[6];
+            System.arraycopy(md5Bytes, 8, subArray, 0, 6);
+            return Base64.getEncoder().encodeToString(subArray);
+        } catch (NoSuchAlgorithmException e) {
+            return "";
+        }
+    }
+
     private void sendCommand(String method) throws UnsupportedEncodingException {
         sendCommand(method, "[]");
     }
@@ -956,10 +971,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         Random random = new Random();
         int id = random.nextInt(22767 + 1) + 10000;
 
+        byte[] nonce = new byte[16];
+        new java.security.SecureRandom().nextBytes(nonce);
+
+        Map<String, Object> security = new HashMap<>();
+        security.put("endpoint", getEndpoint());
+        security.put("nonce", new String(nonce, StandardCharsets.UTF_8));
+
         Map<String, Object> inner = new HashMap<>();
         inner.put("id", id);
         inner.put("method", method);
         inner.put("params", params);
+        inner.put("security", security);
 
         Map<String, Object> dps = new HashMap<>();
         dps.put(Integer.toString(protocol), gson.toJson(inner));
