@@ -12,7 +12,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>

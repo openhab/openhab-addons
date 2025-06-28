@@ -32,10 +32,6 @@
 		<item-type>String</item-type>
 		<label>Version</label>
 		<description>Version information for the device output (This mostly refers to the DSMR specification level).</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="p1TimestampType">

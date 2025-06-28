@@ -58,10 +58,6 @@
 		<item-type>Number</item-type>
 		<label>Gas Valve Position</label>
 		<description>The gas valve switch position.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

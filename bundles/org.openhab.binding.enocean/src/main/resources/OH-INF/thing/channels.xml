@@ -32,7 +32,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -44,7 +44,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -56,7 +56,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -162,7 +162,7 @@
 		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<tag>VOC</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -172,10 +172,6 @@
 		<label>VOC ID</label>
 		<description>Volatile organic compounds identification</description>
 		<category>Gas</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
-		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -186,7 +182,7 @@
 		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<tag>VOC</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -201,10 +197,6 @@
 	<channel-type id="fanSpeedStage">
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="-1">Auto</option>
@@ -235,6 +227,10 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<config-description>
 			<parameter name="inverted" type="boolean">
 				<label>Invert Open/Closed</label>
@@ -248,10 +244,6 @@
 		<item-type>String</item-type>
 		<label>Window Handle State</label>
 		<description>Describes the window handle state</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OPEN">Open</option>
@@ -269,10 +261,6 @@
 		<item-type>String</item-type>
 		<label>Window Sash State</label>
 		<description>Describes the window sash state</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OPEN">Open</option>
@@ -287,10 +275,6 @@
 		<item-type>String</item-type>
 		<label>Window Calibration State</label>
 		<description>Describes the window calibration state</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OK">Ok</option>
@@ -304,10 +288,6 @@
 		<item-type>String</item-type>
 		<label>Window Calibration Step</label>
 		<description>Calibration step that should be performed next</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NONE">None</option>
@@ -452,6 +432,10 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<description>Received Signal Strength Indication</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -563,10 +547,6 @@
 		<item-type>Switch</item-type>
 		<label>Eco Mode</label>
 		<description>Activates eco mode (disables certain messages)</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<!-- Angle Channel -->
@@ -575,6 +555,10 @@
 		<label>Angle</label>
 		<description>Blind Angle</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
@@ -649,10 +633,6 @@
 		<label>Valve Position</label>
 		<description>Indicates the actual percent position of the valve.</description>
 		<category>thermostat</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Position</tag>
-		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
 
@@ -661,10 +641,6 @@
 		<label>Button Lock</label>
 		<description>Enables or disables buttons on the device.</description>
 		<category>thermostat</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="measurementControl" advanced="true">
@@ -754,7 +730,7 @@
 		<label>Smoke Detected</label>
 		<description>Smoke detection sensor state.</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Smoke</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -781,10 +757,6 @@
 		<item-type>Switch</item-type>
 		<label>Out of Humidity Range</label>
 		<description>Sensor analysis status: humidity out of range</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -792,10 +764,6 @@
 		<item-type>Switch</item-type>
 		<label>Out of Temperature Range</label>
 		<description>Sensor analysis status: temperature out of range</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -803,10 +771,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Time Since Last Maintenance</label>
 		<description>Time since last maintenance was done.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -814,10 +778,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Remaining Product Life Time</label>
 		<description>Countdown time until product end of life.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -825,10 +785,6 @@
 		<item-type>String</item-type>
 		<label>Hygrothermal Comfort Index</label>
 		<description>Comfort index based on temperature and humidity</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="GOOD">Good</option>
@@ -844,7 +800,7 @@
 		<label>Indoor Air Analysis</label>
 		<description>Indoor air quality analysis based on temperature and humidity</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>AirQuality</tag>
 		</tags>
 		<state>
@@ -865,10 +821,6 @@
 		<item-type>String</item-type>
 		<label>Direct Operation Mode Control</label>
 		<description>Sets the ventilation mode/level.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Ventilation</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">Off</option>
@@ -895,10 +847,6 @@
 		<item-type>Switch</item-type>
 		<label>Fireplace Safety Mode</label>
 		<description>Indicates if device is running in fireplace safety mode</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -913,10 +861,6 @@
 		<item-type>Contact</item-type>
 		<label>Supply Air Flap Position</label>
 		<description>Indicates if supply air flap is open or closed</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -924,10 +868,6 @@
 		<item-type>Contact</item-type>
 		<label>Exhaust Air Flap Position</label>
 		<description>Indicates if exhaust air flap is open or closed</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -935,10 +875,6 @@
 		<item-type>Switch</item-type>
 		<label>Defrost Mode</label>
 		<description>Indicates if defrosting of heat exchanger is active or not</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -946,10 +882,6 @@
 		<item-type>Switch</item-type>
 		<label>Cooling Protection Mode</label>
 		<description>Indicates if device is running in cooling protection mode</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -978,10 +910,6 @@
 		<item-type>Switch</item-type>
 		<label>Timer Operation Mode</label>
 		<description>Indicates if timer operation mode is active or not</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="weeklyTimerProgramStatus">
@@ -995,10 +923,6 @@
 		<item-type>Switch</item-type>
 		<label>Room Temperature Control Status</label>
 		<description>Indicates if room temperature control is active or not</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1139,10 +1063,6 @@
 		<item-type>Number</item-type>
 		<label>Day/Night Mode</label>
 		<description>Day (1) or Night (0) mode activated.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Night</option>

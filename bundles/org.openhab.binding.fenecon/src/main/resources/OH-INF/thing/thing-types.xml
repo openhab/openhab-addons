@@ -108,10 +108,6 @@
 		<label>Last Update</label>
 		<description>Last successful update via REST-API from the FENECON system.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ess-soc">
@@ -128,7 +124,7 @@
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -159,10 +155,6 @@
 		<label>Emergency Power Mode</label>
 		<description>Indicates if there is no power from the grid and the emergency power mode is on.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="production-active-power">
@@ -269,6 +261,10 @@
 		<label>Inverter Air Temperature</label>
 		<description>Air temperature at the inverter.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-radiator-temperature">
@@ -276,6 +272,10 @@
 		<label>Inverter Radiator Temperature</label>
 		<description>Radiator temperature at the inverter.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="bms-pack-temperature">
@@ -283,6 +283,10 @@
 		<label>BMS Pack Temperature</label>
 		<description>Temperature in the battery management system (BMS) box.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-voltage">
@@ -290,6 +294,10 @@
 		<label>FEMS Battery Voltage</label>
 		<description>Battery voltage of the FENECON energy management system (FEMS).</description>
 		<category>Voltage</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-current">
@@ -297,6 +305,10 @@
 		<label>FEMS Battery Current</label>
 		<description>Battery current of the FENECON energy management system (FEMS).</description>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-actual-power">
@@ -304,6 +316,10 @@
 		<label>Charger Actual Power</label>
 		<description>Charger actual power on the corresponding charger.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-voltage">
@@ -311,6 +327,10 @@
 		<label>Charger Voltage</label>
 		<description>Charger voltage on the corresponding charger.</description>
 		<category>Voltage</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-current">
@@ -318,6 +338,10 @@
 		<label>Charger Current</label>
 		<description>Charger current on the corresponding charger.</description>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

@@ -59,7 +59,7 @@
 		<description>The virtual rocker switch channel allows to send rocker msg.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Light</tag>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:virtualRockerChannel"/>
 	</channel-type>
@@ -98,10 +98,6 @@
 	<channel-type id="rockerswitchListenerSwitch">
 		<item-type>Switch</item-type>
 		<label>Rocker Switch Listener (Switch)</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description-ref uri="channel-type:enocean:listeningRockerChannel"/>
 	</channel-type>
 
@@ -109,10 +105,6 @@
 	<channel-type id="rockerswitchListenerRollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rocker Switch Listener (Rollershutter)</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<config-description-ref uri="channel-type:enocean:listeningRockerChannel"/>
 	</channel-type>
 

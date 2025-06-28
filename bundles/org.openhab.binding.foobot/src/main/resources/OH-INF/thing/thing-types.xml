@@ -68,10 +68,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Readout</label>
 		<description>The last time the sensor data was uploaded to Foobot</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm">
@@ -131,10 +127,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Pollution Index</label>
 		<description>Global Pollution Index Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="api-key-limit-remaining" advanced="true">

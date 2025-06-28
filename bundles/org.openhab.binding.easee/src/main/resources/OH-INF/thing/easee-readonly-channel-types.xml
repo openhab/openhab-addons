@@ -47,6 +47,10 @@
 	<channel-type id="type-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="type-volt">
@@ -83,10 +87,6 @@
 	<channel-type id="type-date">
 		<item-type>DateTime</item-type>
 		<label>DateTime</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

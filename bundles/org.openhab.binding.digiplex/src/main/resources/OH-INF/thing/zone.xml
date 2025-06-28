@@ -27,7 +27,7 @@
 		<label>Zone Status</label>
 		<description>Zone Status (Open/Closed)</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true">
@@ -58,6 +58,7 @@
 		<description>Indicates if zone is in alarm</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -87,6 +88,10 @@
 		<item-type>Contact</item-type>
 		<label>Supervision Lost</label>
 		<description>Indicates if zone has lost a supervision</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -115,10 +120,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Triggered Time</label>
 		<description>Indicates when the zone has been triggered for the last time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

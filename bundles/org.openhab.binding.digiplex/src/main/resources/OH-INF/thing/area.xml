@@ -85,10 +85,6 @@
 		<item-type>Contact</item-type>
 		<label>Area Ready</label>
 		<description>Indicates if area is ready (no open zones)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Not ready</option>
@@ -101,10 +97,6 @@
 		<item-type>Contact</item-type>
 		<label>Area in Programming Mode</label>
 		<description>Indicates if area is in the programming mode</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Ok</option>
@@ -119,6 +111,7 @@
 		<description>Indicates if area is in alarm</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -144,9 +137,6 @@
 		<label>Control Alarm System</label>
 		<description>Used to control area status. By reading its state one can check result of the last command sent to the
 			alarm system.</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="OK">Ok</option>

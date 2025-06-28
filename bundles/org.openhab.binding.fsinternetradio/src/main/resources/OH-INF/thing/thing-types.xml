@@ -69,6 +69,10 @@
 		<label>Volume</label>
 		<description>Volume (min=0, max=32).</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="32" step="1"/>
 	</channel-type>
 	<channel-type id="volume-percent">

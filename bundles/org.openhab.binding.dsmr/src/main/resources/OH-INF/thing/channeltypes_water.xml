@@ -18,10 +18,6 @@
 		<item-type>Number</item-type>
 		<label>Water Valve Position</label>
 		<description>The water valve switch position.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Position</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

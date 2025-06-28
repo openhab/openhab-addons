@@ -102,10 +102,6 @@
 		<label>Command Status</label>
 		<description>Status of the last command given to the Etherrain</description>
 		<category>Water</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -115,8 +111,8 @@
 		<description>Current operating status of the Etherrain</description>
 		<category>Water</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<tag>Status</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -126,10 +122,6 @@
 		<label>Operating Result</label>
 		<description>Result of operating status</description>
 		<category>Water</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -150,10 +142,6 @@
 		<label>Runtime</label>
 		<description>How long a zone will run in seconds</description>
 		<category>Number</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="relayindex">
@@ -161,10 +149,6 @@
 		<label>Relay Index</label>
 		<description>Number of the last zone that was operating</description>
 		<category>Number</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -173,10 +157,6 @@
 		<label>Execute</label>
 		<description>Send a command to the EtherRain Controller</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

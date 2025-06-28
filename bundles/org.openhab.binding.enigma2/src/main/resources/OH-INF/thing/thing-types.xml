@@ -60,7 +60,7 @@
 		<description>Current Mute Setting</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Switch</tag>
 			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>

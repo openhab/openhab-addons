@@ -11,7 +11,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -20,10 +20,6 @@
 		<label>Installation Location</label>
 		<description>Installation Location</description>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="Not specified">Not specified</option>
@@ -178,9 +174,6 @@
 		<label>Manufacturer Fault Code</label>
 		<description>Manufacturer Fault Code</description>
 		<category>Text</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -200,9 +193,6 @@
 		<label>Fault Description</label>
 		<description>Fault Description</description>
 		<category>Text</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -229,7 +219,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -238,10 +228,6 @@
 		<label>Cumulative Operating Time</label>
 		<description>Cumulative time the unit has been operating in seconds</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="airFlowRate">
@@ -250,7 +236,7 @@
 		<description>Air Flow Rate</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Airflow</tag>
 		</tags>
 		<state>
@@ -291,8 +277,8 @@
 		<label>Automatic Swing Of Air Flow</label>
 		<description>Automatic Swing Of Air Flow</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state>
 			<options>
@@ -309,7 +295,7 @@
 		<label>Air Flow Direction Vertical</label>
 		<description>Air Flow Direction Vertical</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Airflow</tag>
 		</tags>
 		<state>
@@ -328,7 +314,7 @@
 		<label>Air Flow Direction Horizontal</label>
 		<description>Air Flow Direction Horizontal</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Airflow</tag>
 		</tags>
 		<state>
@@ -373,7 +359,7 @@
 		<label>Operation Mode</label>
 		<description>The current mode for the Home AC unit (heating, cooling, etc.)</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>

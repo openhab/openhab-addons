@@ -321,6 +321,10 @@
 		<label>Average Temperature 1h</label>
 		<description>The outside temperature averaged over one hour</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_outside_24h">
@@ -329,7 +333,7 @@
 		<description>The outside temperature averaged over one day</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -376,7 +380,7 @@
 		<label>Temperature Return Set</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -433,7 +437,7 @@
 		<label>Avg. Room Temp 1h</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -506,10 +510,6 @@
 	<channel-type id="cop_cooling">
 		<item-type>Number:Dimensionless</item-type>
 		<label>COP Cooling</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Airconditioning</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_heating_return">
@@ -529,7 +529,7 @@
 		<description>Temperature Heating Setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -916,10 +916,6 @@
 		<label>Adapt Heating</label>
 		<description>Adjust the Heating Temperature by an Offset</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state min="-2" max="2" step="0.5" readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_heatingpump" advanced="true">

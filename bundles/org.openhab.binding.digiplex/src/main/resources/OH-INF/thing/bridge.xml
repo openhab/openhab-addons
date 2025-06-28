@@ -91,6 +91,7 @@
 		<description>Reports telephone line failure</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Tampered</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -106,8 +107,8 @@
 		<description>Reports power line failure</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<tag>Alarm</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -123,7 +124,7 @@
 		<description>Reports battery failure</description>
 		<category>LowBattery</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>LowBattery</tag>
 		</tags>
 		<state readOnly="true">
@@ -139,10 +140,6 @@
 		<label>AUX Current Limit</label>
 		<description>Auxiliary Outputs have exceeded their current limits</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Exceeded</option>
@@ -156,10 +153,6 @@
 		<label>Bell Current Limit</label>
 		<description>Bell Output has exceeded its current limit</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Exceeded</option>
@@ -172,6 +165,10 @@
 		<item-type>Switch</item-type>
 		<label>Bell Status</label>
 		<description>Reports if bell is absent</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Absent</option>
@@ -185,9 +182,6 @@
 		<label>Clock</label>
 		<description>Reports if clock is not malfunctioning</description>
 		<category>Time</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -202,7 +196,7 @@
 		<description>Reports if fire loop has been triggered</description>
 		<category>Smoke</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Smoke</tag>
 		</tags>
 		<state readOnly="true">

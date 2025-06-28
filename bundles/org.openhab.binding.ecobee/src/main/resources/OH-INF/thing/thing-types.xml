@@ -151,10 +151,6 @@
 	<channel-type id="thermostatTime">
 		<item-type>DateTime</item-type>
 		<label>Thermostat Time</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -249,10 +245,6 @@
 	<channel-type id="lastStatusModified">
 		<item-type>DateTime</item-type>
 		<label>Last Status Modified</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="runtimeDate" advanced="true">
@@ -297,7 +289,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -306,7 +298,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -314,11 +306,19 @@
 	<channel-type id="desiredHumidity" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Desired Humidity</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredDehumidity" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Desired Dehumidity</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredFanMode" advanced="true">
@@ -354,16 +354,28 @@
 	<channel-type id="actualAQScore" advanced="true">
 		<item-type>Number</item-type>
 		<label>Actual Air Quality Score</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="actualCO2" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual CO2</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="actualVOC" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual VOC</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -538,37 +550,21 @@
 	<channel-type id="coldTempAlert">
 		<item-type>Number:Temperature</item-type>
 		<label>Cold Temp Alert</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coldTempAlertEnabled">
 		<item-type>Switch</item-type>
 		<label>Cold Temp Alert Enabled</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hotTempAlert">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Temp Alert</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hotTempAlertEnabled">
 		<item-type>Switch</item-type>
 		<label>Hot Temp Alert Enabled</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="coolStages" advanced="true">
@@ -664,19 +660,11 @@
 	<channel-type id="humidity">
 		<item-type>String</item-type>
 		<label>Humidity</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="humidifierMode">
 		<item-type>String</item-type>
 		<label>Humidifier Mode</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="backlightOnIntensity" advanced="true">
@@ -927,19 +915,11 @@
 	<channel-type id="humidityHighAlert">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity High Alert</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="humidityLowAlert">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity Low Alert</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="disableHeatPumpAlerts" advanced="true">
@@ -955,10 +935,6 @@
 	<channel-type id="humidityAlertNotify">
 		<item-type>Switch</item-type>
 		<label>Humidity Alert Notify</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="humidityAlertNotifyTechnician" advanced="true">
@@ -969,10 +945,6 @@
 	<channel-type id="tempAlertNotify">
 		<item-type>Switch</item-type>
 		<label>Temp Alert Notify</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="tempAlertNotifyTechnician" advanced="true">
@@ -1038,10 +1010,6 @@
 	<channel-type id="followMeComfort">
 		<item-type>Switch</item-type>
 		<label>Follow Me Comfort</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="ventilatorType" advanced="true">
@@ -1299,19 +1267,11 @@
 	<channel-type id="eventCoolHoldTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Hold Temp</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventHeatHoldTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Hold Temp</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventFan" advanced="true">
@@ -1438,10 +1398,6 @@
 	<channel-type id="weatherTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherWeatherStation">
@@ -1462,10 +1418,6 @@
 	<channel-type id="weatherDateTime">
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherCondition">
@@ -1503,6 +1455,10 @@
 	<channel-type id="weatherDewpoint" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherVisibility" advanced="true">
@@ -1522,13 +1478,17 @@
 	<channel-type id="weatherWindGust" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>
 	<channel-type id="weatherWindDirection">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
@@ -1536,6 +1496,10 @@
 	<channel-type id="weatherWindBearing" advanced="true">
 		<item-type>Number:Angle</item-type>
 		<label>Wind Bearing</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherPop" advanced="true">
@@ -1547,7 +1511,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>High Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Forecast</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -1556,7 +1520,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Low Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Forecast</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -1606,19 +1570,11 @@
 	<channel-type id="locationStreetAddress">
 		<item-type>String</item-type>
 		<label>Street Address</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationCity">
 		<item-type>String</item-type>
 		<label>City</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="locationProvinceState" advanced="true">
@@ -1683,10 +1639,6 @@
 	<channel-type id="housedetailsNumberOfOccupants">
 		<item-type>Number</item-type>
 		<label>Number of Occupants</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
-		</tags>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="housedetailsAge">
