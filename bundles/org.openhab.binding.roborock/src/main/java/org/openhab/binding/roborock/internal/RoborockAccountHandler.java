@@ -60,7 +60,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollFuture;
     private final RoborockWebTargets webTargets;
     private String token = "";
-    private @Nullable Rriot rriot;
+    private Rriot rriot = new Login().new Rriot();
 
     /** The file we store definitions in */
     private final File loginFile = new File(RoborockBindingConstants.FILENAME_LOGINDATA);
@@ -80,28 +80,27 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         return thing.getUID();
     }
 
-    @Nullable
     public Rriot getRriot() {
         return rriot;
     }
 
-    @Nullable
     public Login doLogin() {
         try {
-            return webTargets.doLogin(config.email, config.password);
+            Login login = webTargets.doLogin(config.email, config.password);
+            if (login != null) {
+                return login;
+            }
         } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
-            return new Login();
         } catch (NoSuchAlgorithmException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "NoSuchAlgorithmException error " + e.getMessage());
-            return new Login();
         } catch (RoborockCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error " + e.getMessage());
-            return new Login();
         }
+        return new Login();
     }
 
     @Nullable
@@ -120,7 +119,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public HomeData getHomeData(String rrHomeID, @Nullable Rriot rriot) {
+    public HomeData getHomeData(String rrHomeID, Rriot rriot) {
         try {
             return webTargets.getHomeData(rrHomeID, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
@@ -135,7 +134,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public String getRoutines(String rrHomeID, @Nullable Rriot rriot) {
+    public String getRoutines(String rrHomeID, Rriot rriot) {
         try {
             return webTargets.getRoutines(rrHomeID, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {

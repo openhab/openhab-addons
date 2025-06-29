@@ -116,7 +116,7 @@ public class RoborockWebTargets {
     }
 
     @Nullable
-    public HomeData getHomeData(String rrHomeID, @Nullable Rriot rriot) throws RoborockCommunicationException,
+    public HomeData getHomeData(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
         String path = getHomeDatapath + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
@@ -125,7 +125,7 @@ public class RoborockWebTargets {
     }
 
     @Nullable
-    public String getRoutines(String rrHomeID, @Nullable Rriot rriot) throws RoborockCommunicationException,
+    public String getRoutines(String rrHomeID, Rriot rriot) throws RoborockCommunicationException,
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
         String path = getRoutines + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);

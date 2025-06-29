@@ -49,6 +49,7 @@ import org.openhab.binding.roborock.internal.api.GetStatus;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.HomeData.Rooms;
+import org.openhab.binding.roborock.internal.api.Login;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.api.enums.ConsumablesType;
 import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
@@ -115,7 +116,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final SchedulerTask reconnectTask;
     private final SchedulerTask pollTask;
     private String token = "";
-    private @Nullable Rriot rriot;
+    private Rriot rriot = new Login().new Rriot();
     private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
     private String rrHomeId = "";
     private String localKey = "";
@@ -338,10 +339,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     public void connect(ScheduledExecutorService scheduler)
             throws RoborockCommunicationException, InterruptedException {
-        if (rriot == null) {
-            throw new RoborockCommunicationException("Can't connect when not logged in");
-        }
-
         String mqttHost = "";
         int mqttPort = 1883;
         String mqttUser = "";

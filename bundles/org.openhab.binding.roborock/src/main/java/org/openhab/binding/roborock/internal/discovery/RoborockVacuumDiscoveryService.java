@@ -53,11 +53,10 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     @Nullable
-    protected HomeData getHomeData(String rrHomeID, @Nullable Rriot rriot) {
+    protected HomeData getHomeData(String rrHomeID, Rriot rriot) {
         return thingHandler.getHomeData(rrHomeID, rriot);
     }
 
-    @Nullable
     protected Rriot getRriot() {
         return thingHandler.getRriot();
     }
