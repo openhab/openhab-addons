@@ -97,10 +97,6 @@
 		<label>Setpoint Mode</label>
 		<description>Thermostat setpoint mode</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%s" readOnly="false">
 			<options>
 				<option value="0">Off</option>

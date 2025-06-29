@@ -30,7 +30,7 @@
 		<description>Command channel</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -38,10 +38,6 @@
 		<item-type>Number</item-type>
 		<label>Command ID</label>
 		<description>Command channel, ID of the command</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
 	</channel-type>
 
@@ -49,26 +45,22 @@
 		<item-type>String</item-type>
 		<label>Command String</label>
 		<description>Command channel, Name of the command</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>DateTime</label>
 		<description>DateTime channel</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="dimminglevel">
@@ -97,10 +89,6 @@
 		<item-type>Rollershutter</item-type>
 		<label>Global Speed Control</label>
 		<description>Requested speed setting, UP, DOWN</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="fanspeedstring">
@@ -127,7 +115,7 @@
 		<description>Reverse direction of the Fan</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Speed</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
@@ -135,10 +123,6 @@
 		<item-type>Number</item-type>
 		<label>Mood</label>
 		<description>Mood channel</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state min="1" max="5" step="1" readOnly="false"></state>
 	</channel-type>
 
@@ -146,6 +130,10 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 
@@ -164,10 +152,6 @@
 		<item-type>Rollershutter</item-type>
 		<label>Global Temperature Control</label>
 		<description>Requested temperature setting, UP, DOWN, STOP</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="motion">
@@ -175,7 +159,7 @@
 		<label>Motion</label>
 		<description>Motion detection sensor state</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Motion</tag>
 		</tags>
 		<state readOnly="false"></state>
@@ -219,7 +203,7 @@
 		<description>Open/close and adjust angle of venetian blind</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Opening</tag>
+			<tag>Tilt</tag>
 		</tags>
 	</channel-type>
 
@@ -260,6 +244,10 @@
 		<item-type>Number</item-type>
 		<label>Instant Amp</label>
 		<description>Instant current in Amperes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
@@ -333,6 +321,10 @@
 		<item-type>String</item-type>
 		<label>Humidity Status</label>
 		<description>Current humidity status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NORMAL">Normal</option>
@@ -359,6 +351,9 @@
 		<item-type>String</item-type>
 		<label>Forecast</label>
 		<description>Weather forecast from device</description>
+		<tags>
+			<tag>Forecast</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NO_INFO_AVAILABLE">No information available</option>
@@ -396,10 +391,6 @@
 		<item-type>Number</item-type>
 		<label>Chime Sound</label>
 		<description>Chime Sound (not all devices support multiple sounds)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

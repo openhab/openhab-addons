@@ -53,6 +53,10 @@
 		<item-type>Switch</item-type>
 		<label>Violation</label>
 		<description>Active when violation is detected in the zone</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -61,8 +65,8 @@
 		<label>Tamper</label>
 		<description>Active when detector in the zone is tampered</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Current</tag>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -73,6 +77,7 @@
 		<description>Active when violation is detected in the zone and zone is armed</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -83,7 +88,7 @@
 		<description>Active when detector in the zone is tampered and zone is armed</description>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Current</tag>
+			<tag>Tampered</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

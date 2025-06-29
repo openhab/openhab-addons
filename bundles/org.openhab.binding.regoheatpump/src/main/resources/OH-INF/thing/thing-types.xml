@@ -262,6 +262,10 @@
 		<label>Hot Water</label>
 		<description>Temperature in the hot water cylinder</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -270,6 +274,10 @@
 		<label>Radiator Forward</label>
 		<description>Temperature on the flow water in the circuit</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -278,6 +286,10 @@
 		<label>Indoor</label>
 		<description>Present temperature in the room where the sensor is fitted</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -346,6 +358,10 @@
 		<label>External Hot Water</label>
 		<description>Temperature in the external hot water cylinder</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -356,6 +372,7 @@
 		<category>Error</category>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -391,10 +408,6 @@
 		<label>Last Error Date</label>
 		<description>Information about when last alarm occurred</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -435,9 +448,6 @@
 		<label>Alarm Lamp</label>
 		<description>Lamp indicates that a fault has occurred in the heat pump</description>
 		<category>Siren</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -495,6 +505,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<category>Siren</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -503,6 +516,10 @@
 		<label>Radiator Return Target</label>
 		<description>Calculated desired radiator return temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -527,6 +544,10 @@
 		<label>Hot Water Target</label>
 		<description>Desired radiator return temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="35" max="54" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -559,6 +580,10 @@
 		<label>Radiator Forward Target</label>
 		<description>Calculated desired radiator forward temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -597,6 +622,10 @@
 		<label>Indoor Target</label>
 		<description>Desired temperature in the room where the sensor is fitted</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -734,6 +763,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Pool</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

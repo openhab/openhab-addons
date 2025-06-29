@@ -53,7 +53,7 @@
 		<description>Indicates the % the cistern is filled with water</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -81,8 +81,8 @@
 		<label>Water Source</label>
 		<description>Indicates water source used to supply water, e.g cistern or city</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true">
 			<options>

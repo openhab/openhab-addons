@@ -29,17 +29,13 @@
 		<label>Master Switch</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="timer">
 		<item-type>Number</item-type>
 		<label>Off Timer</label>
 		<description>Number of seconds until turning off</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

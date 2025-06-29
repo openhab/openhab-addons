@@ -131,20 +131,12 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Limitation</label>
 		<category>Number</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="powerLimitationState">
 		<item-type>Switch</item-type>
 		<label>Limitation State</label>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentMpp1">
@@ -295,7 +287,7 @@
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -707,30 +699,18 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="caseTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Case Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="mcuTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>MCU Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -739,38 +719,42 @@
 		<item-type>String</item-type>
 		<label>Wallbox 1 State</label>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="wallbox1StateValue">
 		<item-type>Number</item-type>
 		<label>Wallbox 1 State Value</label>
 		<category>Number</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase1" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Wallbox 1 charging Current Phase 1</label>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase2" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Wallbox 1 charging Current Phase 2</label>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase3" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Wallbox 1 charging Current Phase 3</label>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingPower">

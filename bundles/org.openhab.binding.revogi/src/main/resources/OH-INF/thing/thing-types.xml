@@ -84,12 +84,20 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Contains the current watt value for the given plug</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
 	<channel-type id="amps" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Contains the current Amp value for the given plug</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f A"/>
 	</channel-type>
 

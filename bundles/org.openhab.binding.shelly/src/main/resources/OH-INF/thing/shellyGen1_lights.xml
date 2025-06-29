@@ -191,7 +191,7 @@
 		<label>@text/channel-type.shelly.colorFull.label</label>
 		<description>@text/channel-type.shelly.colorFull.description</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Color</tag>
 		</tags>
 		<state>
@@ -241,10 +241,6 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.colorGain.label</label>
 		<description>@text/channel-type.shelly.colorGain.description</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
 		<state min="0" max="100" step="1" readOnly="false"></state>
 	</channel-type>
 
@@ -254,7 +250,7 @@
 		<description>@text/channel-type.shelly.whiteTemp.description</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Temperature</tag>
+			<tag>ColorTemperature</tag>
 		</tags>
 		<state min="3000" max="6500" step="10" readOnly="false"></state>
 	</channel-type>
@@ -275,10 +271,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.colorEffectBulb.label</label>
 		<description>@text/channel-type.shelly.colorEffectBulb.description</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.shelly.colorEffectBulb.option.0</option>
@@ -296,10 +288,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.colorEffectRGBW2.label</label>
 		<description>@text/channel-type.shelly.colorEffectRGBW2.description</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.shelly.colorEffectRGBW2.option.0</option>

@@ -170,7 +170,7 @@
 		<label>Sleep Goal</label>
 		<description>The goal for the amount of sleep per night (in minutes)</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>

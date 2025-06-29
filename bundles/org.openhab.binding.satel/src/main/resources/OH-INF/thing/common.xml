@@ -8,9 +8,6 @@
 		<item-type>Switch</item-type>
 		<label>No Communication</label>
 		<description>Indicates communication troubles with the wireless device</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -122,10 +122,6 @@
 		<label>Battery Status Updated</label>
 		<description>Timestamp of the last battery status update</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
@@ -149,6 +145,10 @@
 	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
 		<label>Charging Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NOT_IN_CHARGE">Not charging</option>
@@ -192,10 +192,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Charging Time Remaining</label>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedrange">
@@ -215,7 +211,7 @@
 		<label>HVAC Status (ON | OFF | PENDING)</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Airconditioning</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -230,6 +226,10 @@
 		<label>HVAC Target Temperature</label>
 		<description>HVAC target temperature (19 to 21)</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="externaltemperature" advanced="true">
@@ -237,6 +237,10 @@
 		<label>External Temperature</label>
 		<description>Temperature outside of the car</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="image">
@@ -250,10 +254,6 @@
 		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="locked">
@@ -263,7 +263,7 @@
 		<category>Lock</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

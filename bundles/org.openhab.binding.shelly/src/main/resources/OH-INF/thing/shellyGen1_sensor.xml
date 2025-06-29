@@ -204,10 +204,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.boostControl.label</label>
 		<description>@text/channel-type.shelly.boostControl.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="boostTimer">
@@ -215,10 +211,6 @@
 		<label>@text/channel-type.shelly.boostTimer.label</label>
 		<description>@text/channel-type.shelly.boostTimer.description</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
 
@@ -254,6 +246,10 @@
 		<item-type>Contact</item-type>
 		<label>@text/channel-type.shelly.sensorContact.label</label>
 		<description>@text/channel-type.shelly.sensorContact.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="OPEN">@text/channel-type.shelly.sensorContact.state.option.OPEN</option>
@@ -349,7 +345,7 @@
 		<description>@text/channel-type.shelly.sensorFlood.description</description>
 		<category>Water</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Water</tag>
 		</tags>
 		<state readOnly="true">
@@ -362,7 +358,7 @@
 		<description>@text/channel-type.shelly.sensorSmoke.description</description>
 		<category>Smoke</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Smoke</tag>
 		</tags>
 		<state readOnly="true">
@@ -373,10 +369,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorMute.label</label>
 		<description>@text/channel-type.shelly.sensorMute.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="sensorLux">
@@ -410,9 +402,6 @@
 		<label>@text/channel-type.shelly.motionTimestamp.label</label>
 		<description>@text/channel-type.shelly.motionTimestamp.description</description>
 		<category>Time</category>
-		<tags>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -433,7 +422,7 @@
 		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Presence</tag>
+			<tag>Motion</tag>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -445,7 +434,7 @@
 		<description>@text/channel-type.shelly.sensorVibration.description</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Vibration</tag>
 		</tags>
 		<state readOnly="true">
@@ -472,7 +461,7 @@
 		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<tag>ParticulateMatter</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f ppm">
 		</state>
@@ -497,7 +486,7 @@
 		<category>RadiatorControl</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Position</tag>
+			<tag>Level</tag>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -507,10 +496,6 @@
 		<label>@text/channel-type.shelly.sensorValve.label</label>
 		<description>@text/channel-type.shelly.sensorValve.description</description>
 		<category>Pressure</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="closed">@text/channel-type.shelly.sensorValve.state.option.closed</option>
@@ -577,9 +562,6 @@
 		<label>@text/channel-type.shelly.sensorExtAnalogInput.label</label>
 		<description>@text/channel-type.shelly.sensorExtAnalogInput.description</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -588,9 +570,6 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorError.label</label>
 		<description>@text/channel-type.shelly.sensorError.description</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

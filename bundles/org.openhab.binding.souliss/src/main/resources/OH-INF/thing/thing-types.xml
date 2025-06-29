@@ -1054,10 +1054,6 @@
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="buttonReadOnly">
@@ -1073,10 +1069,6 @@
 		<label>Pulse</label>
 		<description>Set</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="onoff">
@@ -1093,10 +1085,6 @@
 		<item-type>Switch</item-type>
 		<label>Set Timer</label>
 		<description>The output will be timed for nCYCLES of the Node associated timer</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="autoMode">
@@ -1149,8 +1137,8 @@
 		<label>State</label>
 		<description>State of rollershutter/windows</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Status</tag>
+			<tag>Opening</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1201,10 +1189,6 @@
 		<label>Setpoint</label>
 		<description>Floating Point Input</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f"/>
 	</channel-type>
 
@@ -1251,7 +1235,7 @@
 		<description>Lux</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f kLux"/>
 	</channel-type>
@@ -1286,7 +1270,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
@@ -1344,7 +1328,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

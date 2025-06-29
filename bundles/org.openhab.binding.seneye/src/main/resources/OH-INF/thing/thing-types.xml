@@ -67,7 +67,6 @@
 		<description>The PH Level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -77,7 +76,6 @@
 		<description>The NH3 Level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -87,7 +85,6 @@
 		<description>The NH4 Level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -97,7 +94,6 @@
 		<description>The O2 Level</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -115,10 +111,6 @@
 		<item-type>Number</item-type>
 		<label>PAR</label>
 		<description>The PAR Light Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="kelvin">
@@ -135,20 +127,12 @@
 		<item-type>DateTime</item-type>
 		<label>Last Reading</label>
 		<description>The last time your seneye is checked</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="slideexpires">
 		<item-type>DateTime</item-type>
 		<label>Slide Expiration</label>
 		<description>The time your slide expires</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wrongslide">
@@ -168,8 +152,8 @@
 		<label>Out of Water</label>
 		<description>The Sensor is reporting being out of the water</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<tag>Alarm</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

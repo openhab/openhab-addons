@@ -86,10 +86,6 @@
 		<label>Scene button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

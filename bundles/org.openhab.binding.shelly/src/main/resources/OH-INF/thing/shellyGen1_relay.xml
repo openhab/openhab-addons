@@ -400,8 +400,8 @@
 		<label>@text/channel-type.shelly.rollerPosition.label</label>
 		<description>@text/channel-type.shelly.rollerPosition.description</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -641,10 +641,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
 		<description>@text/channel-type.shelly.meterPowerFactor.description</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
@@ -653,10 +649,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.meterResetTotals.label</label>
 		<description>@text/channel-type.shelly.meterResetTotals.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ncurrent">
@@ -666,7 +658,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -679,7 +671,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -692,7 +684,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -702,10 +694,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.nmismatch.label</label>
 		<description>@text/channel-type.shelly.nmismatch.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="timestamp">
@@ -713,9 +701,6 @@
 		<label>@text/channel-type.shelly.timestamp.label</label>
 		<description>@text/channel-type.shelly.timestamp.description</description>
 		<category>Time</category>
-		<tags>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -724,20 +709,12 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.ledStatusDisable.label</label>
 		<description>@text/channel-type.shelly.ledStatusDisable.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ledPowerDisable">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.ledPowerDisable.label</label>
 		<description>@text/channel-type.shelly.ledPowerDisable.description</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="lastUpdate" advanced="true">
@@ -745,9 +722,6 @@
 		<label>@text/channel-type.shelly.lastUpdate.label</label>
 		<description>@text/channel-type.shelly.lastUpdate.description</description>
 		<category>Time</category>
-		<tags>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

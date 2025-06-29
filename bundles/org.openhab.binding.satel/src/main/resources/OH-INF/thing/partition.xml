@@ -54,20 +54,12 @@ access to some portion of the premises to selected users.]]>
 		<item-type>Switch</item-type>
 		<label>Armed</label>
 		<description>Active when the partion is armed in any mode or arming is in progress</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="really_armed">
 		<item-type>Switch</item-type>
 		<label>Really Armed</label>
 		<description>Active when the partion is armed in any mode</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="armed_mode_1" advanced="true">
@@ -143,9 +135,6 @@ access to some portion of the premises to selected users.]]>
 		<item-type>Switch</item-type>
 		<label>Alarm Memory</label>
 		<description>Active when there had been an alarm in the patition</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="fire_alarm">
@@ -162,10 +151,6 @@ access to some portion of the premises to selected users.]]>
 		<item-type>Switch</item-type>
 		<label>Fire Alarm Memory</label>
 		<description>Active when there had been a fire alarm in the patition</description>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="verified_alarms" advanced="true">
