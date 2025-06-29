@@ -162,7 +162,6 @@ public class RoborockWebTargets {
             } catch (TimeoutException ex) {
                 throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
             } catch (ExecutionException ex) {
-                logger.info("cause = {}", ex.getCause(), ex);
                 throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
             } catch (InterruptedException ex) {
                 throw new RoborockCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));

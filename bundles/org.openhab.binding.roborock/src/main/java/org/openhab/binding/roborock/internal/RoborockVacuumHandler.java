@@ -350,7 +350,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
             mqttPassword = ProtocolUtils.md5Hex(rriot.s + ':' + rriot.k).substring(16);
         } catch (URISyntaxException e) {
-            logger.info("Malformed mqtt URL");
+            logger.error("Malformed mqtt URL");
         }
 
         Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
