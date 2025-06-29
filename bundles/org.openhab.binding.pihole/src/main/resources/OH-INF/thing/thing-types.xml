@@ -149,19 +149,11 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>The current status of blocking</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="disable-enable-channel">
 		<item-type>String</item-type>
 		<label>Disable Blocking</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="DISABLE">Disable Blocking Indefinitely</option>
@@ -181,10 +173,6 @@
 		<item-type>DateTime</item-type>
 		<label>Gravity Last Update</label>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

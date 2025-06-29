@@ -126,10 +126,6 @@
 		<item-type>Switch</item-type>
 		<label>Is Scheduled Enabled</label>
 		<description>True or False value if the vacuum cleaner is scheduled for cleaning.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -144,9 +140,6 @@
 		<item-type>String</item-type>
 		<label>Error</label>
 		<description>Last error message in system.</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -184,10 +177,6 @@
 		<item-type>String</item-type>
 		<label>Cleaning Mode</label>
 		<description>Current or last cleaning mode.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="ECO">Eco</option>

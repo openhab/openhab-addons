@@ -28,10 +28,6 @@
 		<item-type>DateTime</item-type>
 		<label>Real Time Clock</label>
 		<description>The value of Siemens LOGO! real time clock</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -50,10 +46,6 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Digital Output</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<!--Siemens LOGO! analog channels -->
@@ -64,9 +56,5 @@
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Analog Date/Time</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

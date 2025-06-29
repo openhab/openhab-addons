@@ -120,10 +120,6 @@
 		<label>Rain Sensor</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -132,10 +128,6 @@
 		<label>Sensor 2</label>
 		<description>Sensor 2 can be setup as a rain, flow or soil moisture sensor.</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Moisture</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -144,10 +136,6 @@
 		<label>Cloud Connected</label>
 		<description>If the device is fully connected to the OpenSprinkler cloud this will show as 'ON'.</description>
 		<category>Sensor</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -155,10 +143,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Water Level</label>
 		<description>The current watering level in percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -167,10 +151,6 @@
 		<label>Flow Sensor Count</label>
 		<description>A count of how many pulses the water flow sensor has given.</description>
 		<category>Flow</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -186,10 +166,6 @@
 		<label>Current Draw</label>
 		<description>The current draw in mA</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -198,10 +174,6 @@
 		<label>Station State</label>
 		<description>Controls a station on the OpenSprinkler device.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -217,10 +189,6 @@
 		<label>Reset Stations</label>
 		<description>Resets all stations back to CLOSED.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Opening</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="enablePrograms">
@@ -228,10 +196,6 @@
 		<label>Enable Programs</label>
 		<description>Allow programs to auto run, when OFF, manually started stations still work.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="queued">
@@ -247,10 +211,6 @@
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
@@ -259,10 +219,6 @@
 		<label>Pause Programs</label>
 		<description>The duration that all zones will be paused for before resuming the watering.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0s">Not Paused</option>
@@ -283,10 +239,6 @@
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="15s">15 Seconds</option>
@@ -313,10 +265,6 @@
 		<label>Rain Delay</label>
 		<description>The amount of time in hours to delay the running of any program.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="false" pattern="%.0f h">
 			<options>
 				<option value="0s">Off</option>
@@ -339,10 +287,6 @@
 		<item-type>String</item-type>
 		<label>Run Program</label>
 		<description>Run a program that is saved inside the OpenSprinkler Device.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="false">
 		</state>
 	</channel-type>
@@ -351,10 +295,6 @@
 		<item-type>String</item-type>
 		<label>Open Station</label>
 		<description>Opens the solenoid of a single station.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="false">
 		</state>
 	</channel-type>

@@ -173,10 +173,6 @@
 		<label>Scene</label>
 		<description>Scene Control for Qbus</description>
 		<category>Scene</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="measured">
@@ -231,10 +227,6 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter Control for Qbus</description>
 		<category>Blinds</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="slats">
@@ -242,10 +234,6 @@
 		<label>Slatcontrol</label>
 		<description>Slatcontrol for Qbus</description>
 		<category>Blinds</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

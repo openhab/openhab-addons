@@ -59,10 +59,6 @@
 		<item-type>Switch</item-type>
 		<label>Output</label>
 		<description>Switch Module's Output</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

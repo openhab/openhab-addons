@@ -21,10 +21,6 @@
 		<label>Thermostat Temperature Offset</label>
 		<description>Gets or sets the temperature offset for this thermostat</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -33,10 +29,6 @@
 		<label>Preheat</label>
 		<description>Switch the preheating of a zone ON or OFF</description>
 		<category>switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="coolingAllowed">
@@ -44,10 +36,6 @@
 		<label>Cooling Allowed</label>
 		<description>Switch the cooling allowed of a zone ON or OFF</description>
 		<category>switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="regulationControl">
@@ -55,10 +43,6 @@
 		<label>Regulation Control</label>
 		<description>Switch the regulation control of a zone to Active, Passive or Off</description>
 		<category>switch</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="active">Active</option>
@@ -73,10 +57,6 @@
 		<label>Lock</label>
 		<description>Locks the switch state of the Plugwise Smart plug</description>
 		<category>switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="chState">
@@ -92,10 +72,6 @@
 		<label>Domestic Hot Water Active</label>
 		<description>Is the boiler active for domestic hot water, On or OFF</description>
 		<category>switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -104,10 +80,6 @@
 		<label>Cooling State</label>
 		<description>Is the boiler active for cooling, On or OFF</description>
 		<category>switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -116,10 +88,6 @@
 		<label>Flame State</label>
 		<description>Is the boiler's flame active, On or OFF</description>
 		<category>switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -179,10 +147,6 @@
 		<label>Domestic Hot Water Comfort Mode</label>
 		<description>Is the boiler's domestic hot water mode set to comfort, On or OFF</description>
 		<category>switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -191,16 +155,12 @@
 		<label>Intended Boiler Temperature</label>
 		<description>Gets the intended temperature of this boiler</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="modulationLevel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Modulation Level</label>
+		<label>Modulelation Level</label>
 		<description>Gets the modulation level of this boiler</description>
 		<category>heating</category>
 		<state readOnly="true" pattern="%.0f %%"/>
@@ -263,10 +223,6 @@
 		<label>Domestic Hot Water Setpoint Temperature</label>
 		<description>Gets the temperature of the domestic hot water setpoint</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -275,10 +231,6 @@
 		<label>Max Boiler Temperature</label>
 		<description>Gets the maximum temperature of this boiler</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

@@ -149,10 +149,6 @@
 		<description>Use this channel with a Switch Item to unlock and lock the door. Configure "Unlatch" to true if your Nuki
 			Smart Lock is mounted on a door lock with a knob on the outside.</description>
 		<category>Door</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="OFF">Unlocks the door</option>
@@ -167,10 +163,6 @@
 		<description>Use this channel if you want to execute other supported lock actions or to display the current lock
 			state.</description>
 		<category>Door</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">Uncalibrated</option>
@@ -204,10 +196,6 @@
 		<label>Battery Charging</label>
 		<description>Use this channel to display the current state of charging</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">Battery is not charging</option>
@@ -221,10 +209,6 @@
 		<label>Door State</label>
 		<description>Use this channel to display the current state of the door sensor</description>
 		<category>Door</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="1">Deactivated</option>
@@ -246,10 +230,6 @@
 		<description>Use this channel if you want to execute other supported opener actions or to display the current opener
 			state.</description>
 		<category>FrontDoor</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">Untrained</option>
@@ -278,10 +258,6 @@
 		<label>Opener Mode</label>
 		<description>Use this channel to display/set current mode of the opener</description>
 		<category>FrontDoor</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="2">Door mode</option>
@@ -308,10 +284,6 @@
 		<label>Ring Action Timestamp</label>
 		<description>Time of last ring action</description>
 		<category>Siren</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

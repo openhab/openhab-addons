@@ -141,10 +141,6 @@
 		<item-type>Switch</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>Send ON to execute the recipe</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-group-type id="room-scenario">
 		<label>Scenarios</label>
@@ -171,10 +167,6 @@
 		<item-type>Switch</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>Whether the scenario is running or not (send ON to turn on the scenario, OFF to turn off the scenario)</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 	<channel-group-type id="device-macros">
 		<label>Macros</label>
@@ -187,9 +179,5 @@
 		<item-type>Switch</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>Send ON to trigger the macro</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

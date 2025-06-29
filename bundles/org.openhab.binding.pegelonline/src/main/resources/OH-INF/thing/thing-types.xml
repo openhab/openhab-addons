@@ -59,28 +59,16 @@
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Last Measurement</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="level">
 		<item-type>Number:Length</item-type>
 		<label>Water Level</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="trend">
 		<item-type>Number</item-type>
 		<label>Water Level Trend</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="-1">Lowering</option>
@@ -92,10 +80,6 @@
 	<channel-type id="warning">
 		<item-type>Number</item-type>
 		<label>Warning Level</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No warning</option>
