@@ -54,10 +54,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text">
@@ -93,10 +89,6 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
@@ -118,10 +110,6 @@
 		<item-type>Switch</item-type>
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
@@ -200,10 +188,6 @@
 		<item-type>Switch</item-type>
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
@@ -250,10 +234,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text">
@@ -290,10 +270,6 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text" required="true">

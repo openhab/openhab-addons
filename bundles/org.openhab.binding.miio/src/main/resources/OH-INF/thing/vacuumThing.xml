@@ -127,17 +127,10 @@
 	<channel-type id="dnd_enabled">
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="error_code">
 		<item-type>String</item-type>
 		<label>Error Code</label>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="error_id">
@@ -148,10 +141,6 @@
 	<channel-type id="fan_power">
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="in_cleaning" advanced="true">
@@ -216,37 +205,21 @@
 	<channel-type id="water_box_status">
 		<item-type>Switch</item-type>
 		<label>Water Box State</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="water_box_carriage_status">
 		<item-type>Switch</item-type>
 		<label>Water Box Carriage State</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lock_status">
 		<item-type>Switch</item-type>
 		<label>Lock Status</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mop_forbidden_enable">
 		<item-type>Switch</item-type>
 		<label>Mop Forbidden</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is_locating">
@@ -267,10 +240,6 @@
 	<channel-type id="mop_drying_time">
 		<item-type>Number:Time</item-type>
 		<label>Mop Drying Time</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="is_mop_drying">
@@ -287,18 +256,10 @@
 		<item-type>Switch</item-type>
 		<label>Start Mop Wash</label>
 		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="clean_mop_stop">
 		<item-type>Switch</item-type>
 		<label>Stop Mop Wash</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<!-- Consumables channels -->
@@ -359,10 +320,6 @@
 	<channel-type id="fan">
 		<item-type>Number</item-type>
 		<label>Control Fan Level</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state min="-1" max="105" step="1" readOnly="false">
 			<options>
 				<option value="38">Silent</option>
@@ -406,10 +363,6 @@
 	<channel-type id="dnd_function">
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb Functionality</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="dnd_start">
 		<item-type>String</item-type>
@@ -424,10 +377,6 @@
 	<channel-type id="total_clean_time">
 		<item-type>Number:Time</item-type>
 		<label>Total Cleaning Time</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="total_clean_area">
@@ -447,10 +396,6 @@
 		<label>Cleaning Start</label>
 		<description>Last Cleaning Start Time</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_end_time">
@@ -458,19 +403,11 @@
 		<label>Cleaning End</label>
 		<description>Last Cleaning End Time</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_duration">
 		<item-type>Number:Time</item-type>
 		<label>Cleaning Duration</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_area">
@@ -496,10 +433,6 @@
 	<channel-type id="last_clean_dustcollection_status">
 		<item-type>Number</item-type>
 		<label>Dust Collection Status</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_record" advanced="true">

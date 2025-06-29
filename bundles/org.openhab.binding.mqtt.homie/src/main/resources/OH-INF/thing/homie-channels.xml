@@ -7,29 +7,17 @@
 	<channel-type id="homie-boolean">
 		<item-type>Switch</item-type>
 		<label>Boolean</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="homie-color">
 		<item-type>Color</item-type>
 		<label>Color Value (Red,Green,Blue)</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="homie-datetime">
 		<item-type>DateTime</item-type>
 		<label>Date/Time Value</label>
 		<description>Current date and/or time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="homie-enum">

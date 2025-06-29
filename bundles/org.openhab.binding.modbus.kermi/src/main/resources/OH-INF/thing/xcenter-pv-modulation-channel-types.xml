@@ -7,36 +7,20 @@
 		<item-type>Switch</item-type>
 		<label>PV Modulation Active</label>
 		<description>State of PV-Modulation</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="pv-power-channel">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pv-target-temperature-heating-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>PV Temp Heating</label>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pv-target-temperature-drinkingwater-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>PV Temp Drinkingwater</label>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

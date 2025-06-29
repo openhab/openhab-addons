@@ -233,10 +233,6 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Reflects enabled or disabled state</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -258,10 +254,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Link Down</label>
 		<description>Last time when link went down</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -269,10 +261,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Link Up</label>
 		<description>Last time when link went up</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -406,10 +394,6 @@
 		<item-type>DateTime</item-type>
 		<label>Up since</label>
 		<description>Time when thing got up</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -417,10 +401,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Time of when the client was last seen connected</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

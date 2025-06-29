@@ -31,10 +31,6 @@
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>Player control</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

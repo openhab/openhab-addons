@@ -92,10 +92,6 @@
 		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>Send channel number to switch program</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<state min="1" max="999" step="1"></state>
 	</channel-type>
 	<channel-type id="channelCode" advanced="true">
@@ -116,10 +112,6 @@
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>Play Mode for running program</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -141,10 +133,6 @@
 		<item-type>DateTime</item-type>
 		<label>Start</label>
 		<description>Program start time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -152,10 +140,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration of the program</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -163,10 +147,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Play Position</label>
 		<description>Play Position since program started</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -174,10 +154,6 @@
 		<item-type>String</item-type>
 		<label>Key</label>
 		<description>Send Key to the Media Receive (POWER/MENU/INFO... - see documentation)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="POWER">POWER</option>

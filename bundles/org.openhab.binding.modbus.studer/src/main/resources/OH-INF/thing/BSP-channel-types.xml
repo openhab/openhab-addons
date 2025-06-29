@@ -7,10 +7,6 @@
 	<channel-type id="Pbat">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- State of charge Channel Type -->
@@ -23,10 +19,6 @@
 	<channel-type id="Tbat">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

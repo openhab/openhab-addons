@@ -48,10 +48,6 @@
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_ts">
@@ -59,10 +55,6 @@
 		<label>Timestamp</label>
 		<description>Timestamp when the message from Bluetooth sensor was received by Gateway (ts)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="ruuvitag_gwts" advanced="true">
@@ -97,10 +89,6 @@
 	<channel-type id="ruuvitag_batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_dataFormat" advanced="true">
@@ -111,10 +99,6 @@
 	<channel-type id="ruuvitag_humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_measurementSequenceNumber" advanced="true">
@@ -130,28 +114,16 @@
 	<channel-type id="ruuvitag_pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_txPower">
 		<item-type>Number:Power</item-type>
 		<label>TX Power</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

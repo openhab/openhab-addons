@@ -7,30 +7,18 @@
 	<channel-type id="ha-color">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
 	<channel-type id="ha-dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
 	<channel-type id="ha-humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -43,10 +31,6 @@
 	<channel-type id="ha-location">
 		<item-type>Location</item-type>
 		<label>Location</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -67,10 +51,6 @@
 	<channel-type id="ha-rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
@@ -83,20 +63,12 @@
 	<channel-type id="ha-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
 	<channel-type id="ha-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 

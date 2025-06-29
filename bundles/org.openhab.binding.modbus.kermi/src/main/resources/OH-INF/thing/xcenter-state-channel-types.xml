@@ -25,8 +25,5 @@
 		<item-type>Contact</item-type>
 		<label>Global Alarm State</label>
 		<description>If there's a global alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>
