@@ -16,7 +16,6 @@ import static org.openhab.transform.rollershutterposition.internal.RollerShutter
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +53,7 @@ public class RollerShutterPositionProfile implements StateProfile {
     RollerShutterPositionConfig configuration;
 
     private int position = 0; // current position of the roller shutter (assumes 0 when system starts)
-    private int targetPosition;
+    private int targetPosition = -1;
     private boolean isValidConfiguration = false;
     private Instant movingSince = Instant.MIN;
     private UpDownType direction = UpDownType.DOWN;
@@ -68,18 +67,12 @@ public class RollerShutterPositionProfile implements StateProfile {
         this.configuration = context.getConfiguration().as(RollerShutterPositionConfig.class);
 
         if (configuration.uptime == 0) {
-            logger.info("Profile paramater {} must not be 0", UPTIME_PARAM);
+            logger.info("Profile parameter {} must not be 0", UPTIME_PARAM);
             return;
         }
 
-        if (configuration.downtime == 0) {
-            configuration.downtime = configuration.uptime;
-        }
-
-        if (configuration.precision == 0) {
-            configuration.precision = DEFAULT_PRECISION;
-        }
-
+        configuration.downtime = configuration.downtime == 0 ? configuration.uptime : configuration.downtime;
+        configuration.precision = configuration.precision == 0 ? DEFAULT_PRECISION : configuration.precision;
         this.isValidConfiguration = true;
 
         logger.debug("Profile configured with '{}'='{}' ms, '{}'={} ms, '{}'={}", UPTIME_PARAM, configuration.uptime,
@@ -108,7 +101,7 @@ public class RollerShutterPositionProfile implements StateProfile {
                 moveTo(100);
             }
         } else if (command instanceof StopMoveType) {
-            stop();
+            stop(true);
         } else {
             moveTo(((PercentType) command).intValue());
         }
@@ -119,8 +112,6 @@ public class RollerShutterPositionProfile implements StateProfile {
     }
 
     private void moveTo(int targetPos) {
-        boolean alreadyMoving = false;
-
         if (targetPos < 0 || targetPos > 100) {
             logger.debug("moveTo() position is invalid: {}", targetPos);
             return;
@@ -157,11 +148,12 @@ public class RollerShutterPositionProfile implements StateProfile {
                 * (posOffset > 0 ? (double) configuration.downtime * 1000 : (double) configuration.uptime * 1000));
         logger.debug("moveTo() computed movement offset: {} / {} / {} ms", posOffset, newCmd, time);
 
+        boolean alreadyMovingRightDirection = false;
         if (isMoving()) {
             position = curPos; // Update "starting" position if already in motion since the last move did not finish
 
             if (direction == newCmd) {
-                alreadyMoving = true;
+                alreadyMovingRightDirection = true;
             }
         }
 
@@ -169,42 +161,48 @@ public class RollerShutterPositionProfile implements StateProfile {
         this.direction = newCmd;
         this.movingSince = Instant.now();
 
-        if (stopTimer != null) {
-            Objects.requireNonNull(stopTimer).cancel(true);
-        }
+        stopTimers();
         this.stopTimer = scheduler.schedule(stopTimeoutTask, time, TimeUnit.MILLISECONDS);
-
-        if (updateTimer != null) {
-            Objects.requireNonNull(updateTimer).cancel(true);
-        }
         this.updateTimer = scheduler.scheduleWithFixedDelay(updateTimeoutTask, 0, POSITION_UPDATE_PERIOD_MILLISECONDS,
                 TimeUnit.MILLISECONDS);
 
-        if (!alreadyMoving) {
+        if (!alreadyMovingRightDirection) {
             logger.debug("moveTo() sending command for movement: {}, timer set in {} ms", direction, time);
             callback.handleCommand(direction);
         } else {
-            logger.debug("moveTo() updating timing but already moving in right directio: {}, timer set in {} ms",
+            logger.debug("moveTo() updating timing but already moving in right direction: {}, timer set in {} ms",
                     direction, time);
         }
     }
 
-    private void stop() {
-        callback.handleCommand(StopMoveType.STOP);
-
-        this.position = currentPosition();
-        this.movingSince = Instant.MIN;
-
-        if (stopTimer != null) {
-            Objects.requireNonNull(stopTimer).cancel(true);
+    private void stopTimers() {
+        ScheduledFuture<?> lStopTimer = stopTimer;
+        if (lStopTimer != null) {
+            lStopTimer.cancel(true);
             this.stopTimer = null;
         }
-        if (updateTimer != null) {
-            Objects.requireNonNull(updateTimer).cancel(true);
+
+        ScheduledFuture<?> lUpdateTimer = updateTimer;
+        if (lUpdateTimer != null) {
+            lUpdateTimer.cancel(true);
             this.updateTimer = null;
         }
+    }
 
-        callback.sendUpdate(new PercentType(position));
+    private void stop(boolean updatePosition) {
+        callback.handleCommand(StopMoveType.STOP);
+
+        if(updatePosition) {
+            this.position = currentPosition();
+        }
+        this.movingSince = Instant.MIN;
+        this.targetPosition = -1; // reset target position
+
+        stopTimers();
+
+        if(updatePosition) {
+            callback.sendUpdate(new PercentType(position));
+        }
     }
 
     private int currentPosition() {
@@ -231,6 +229,7 @@ public class RollerShutterPositionProfile implements StateProfile {
     private Runnable stopTimeoutTask = new Runnable() {
         @Override
         public void run() {
+
             if (targetPosition == 0 || targetPosition == 100) {
                 // Don't send stop command to re-sync position using the motor end stop
                 logger.debug("arrived at end position, not stopping for calibration");
@@ -240,11 +239,7 @@ public class RollerShutterPositionProfile implements StateProfile {
             }
 
             logger.trace("stopTimeoutTask() position: {}", targetPosition);
-
-            if (updateTimer != null) {
-                Objects.requireNonNull(updateTimer).cancel(true);
-                updateTimer = null;
-            }
+            stopTimers();
 
             movingSince = Instant.MIN;
             position = targetPosition;
@@ -268,15 +263,47 @@ public class RollerShutterPositionProfile implements StateProfile {
         }
     };
 
+    // Handle restoreOnStartup update of the item position
     @Override
     public void onStateUpdateFromItem(State state) {
+        logger.debug("onStateUpdateFromItem() called with state: {}", state);
+        if (state instanceof PercentType) {
+            int pos = ((PercentType) state).intValue();
+            if (pos < 0 || pos > 100) {
+                logger.warn("onStateUpdateFromItem() position is invalid: {}", pos);
+                return;
+            }
+            this.position = pos;
+        } else {
+            logger.warn("onStateUpdateFromItem() received unexpected state type: {}", state.getClass());
+        }
     }
 
     @Override
     public void onCommandFromHandler(Command command) {
+        logger.debug("onCommandFromHandler() called with command: {}", command);
     }
 
     @Override
     public void onStateUpdateFromHandler(State state) {
+        logger.debug("onStateUpdateFromHandler() called with state: {}", state);
+        if (state instanceof PercentType) {
+            int pos = ((PercentType) state).intValue();
+            if (pos < 0 || pos > 100) {
+                logger.warn("onStateUpdateFromHandler() position is invalid: {}", pos);
+                return;
+            }
+            this.position = pos;
+            callback.sendUpdate(new PercentType(position));
+
+            if(isMoving()) {
+                if(this.direction == UpDownType.UP && position <= targetPosition ||
+                        this.direction == UpDownType.DOWN && position >= targetPosition) {
+                    stop(false);
+                } 
+            }
+        } else {
+            logger.warn("onStateUpdateFromHandler() received unexpected state type: {}", state.getClass());
+        }
     }
 }
