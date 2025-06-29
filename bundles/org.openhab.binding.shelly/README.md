@@ -86,7 +86,8 @@ See section [Discovery](#discovery) for details.
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU                |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU                |
-| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                                |
+| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | SNPL-00112EU                                |
+| shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                |
@@ -99,7 +100,7 @@ See section [Discovery](#discovery) for details.
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                 |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                               |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                             |
-| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                                   |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                   |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
