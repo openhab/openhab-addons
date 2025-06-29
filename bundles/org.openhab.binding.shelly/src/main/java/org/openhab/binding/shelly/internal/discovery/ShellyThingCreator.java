@@ -81,10 +81,12 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PLUS2PMUL_ROLLER = "SNSW-002P15UL-roller";
     public static final String SHELLYDT_PLUSPLUGS = "SNPL-00112EU";
     public static final String SHELLYDT_PLUSPLUGS_2 = "SNPL-10112EU";
+    public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU"; // Shelly Plug-S G3, Shelly AZ Plug
+    public static final String SHELLYDT_PLUSPLUGOUTDOORSG3 = "S3PL-20112EU";
+
     public static final String SHELLYDT_PLUSPLUGIT = "SNPL-00110IT";
     public static final String SHELLYDT_PLUSPLUGUK = "SNPL-00112UK";
     public static final String SHELLYDT_PLUSPLUGUS = "SNPL-00116US";
-    public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU";
     public static final String SHELLYDT_PLUSI4 = "SNSN-0024X";
     public static final String SHELLYDT_PLUSI4G3 = "S3SN-0024X";
     public static final String SHELLYDT_PLUSI4DC = "SNSN-0D24X";
@@ -158,7 +160,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLY4PRO_STR = "shelly4pro";
     public static final String THING_TYPE_SHELLYPLUG_STR = "shellyplug";
     public static final String THING_TYPE_SHELLYPLUGS_STR = "shellyplugs";
-    public static final String THING_TYPE_SHELLYPLUGU1_STR = "shellyplugu1"; // Shely Plug US
+    public static final String THING_TYPE_SHELLYPLUGU1_STR = "shellyplugu1"; // Shelly Plug US
     public static final String THING_TYPE_SHELLYDIMMER_STR = "shellydimmer";
     public static final String THING_TYPE_SHELLYDIMMER2_STR = "shellydimmer2";
     public static final String THING_TYPE_SHELLYIX3_STR = "shellyix3";
@@ -184,7 +186,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYBUTTON2_STR = "shellybutton2";
     public static final String THING_TYPE_SHELLYUNI_STR = "shellyuni";
 
-    // Shelly Plus Seriens
+    // Shelly Plus Series
     public static final String THING_TYPE_SHELLYPLUS1_STR = "shellyplus1";
     public static final String THING_TYPE_SHELLYPLUS1G3_STR = "shelly1g3";
     public static final String THING_TYPE_SHELLYPLUS1G4_STR = "shelly1g4";
@@ -419,10 +421,11 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUS2PMG3_ROLLER, THING_TYPE_SHELLYPLUS2PM_ROLLER_STR),
             Map.entry(SHELLYDT_PLUSPLUGS, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSPLUGS_2, THING_TYPE_SHELLYPLUSPLUGS_STR),
+            Map.entry(SHELLYDT_PLUSPLUGSG3, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSPLUGIT, THING_TYPE_SHELLYPLUSPLUGS_STR),
+            Map.entry(SHELLYDT_PLUSPLUGOUTDOORSG3, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSPLUGUK, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSPLUGUS, THING_TYPE_SHELLYPLUSPLUGUS_STR),
-            Map.entry(SHELLYDT_PLUSPLUGSG3, THING_TYPE_SHELLYPLUSPLUGS_STR),
             Map.entry(SHELLYDT_PLUSI4, THING_TYPE_SHELLYPLUSI4_STR),
             Map.entry(SHELLYDT_PLUSI4G3, THING_TYPE_SHELLYPLUSI4_STR),
             Map.entry(SHELLYDT_PLUSI4DC, THING_TYPE_SHELLYPLUSI4DC_STR),
@@ -606,7 +609,8 @@ public class ShellyThingCreator {
         if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
             return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY_STR, THING_TYPE_SHELLY2_ROLLER_STR, mode);
         }
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR) && !serviceNameLowerCase.contains("plugus")) {
+        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR) && !serviceNameLowerCase.contains("plugus")
+                && !serviceNameLowerCase.contains("plugsg3")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
             if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGS_STR) || serviceNameLowerCase.contains("-s")) {
