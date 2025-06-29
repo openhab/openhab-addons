@@ -59,6 +59,10 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.gree.mode.label</label>
 		<description>@text/channel-type.gree.mode.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">@text/channel-type.gree.mode.state.option.auto</option>
@@ -76,33 +80,57 @@
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.gree.targettemperature.label</label>
 		<description>@text/channel-type.gree.targettemperature.description</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="86" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="currentTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.gree.currenttemperature.label</label>
 		<description>@text/channel-type.gree.currenttemperature.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="air">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.gree.air.label</label>
 		<description>@text/channel-type.gree.air.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="dry">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.gree.dry.label</label>
 		<description>@text/channel-type.gree.dry.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="turbo">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.gree.turbo.label</label>
 		<description>@text/channel-type.gree.turbo.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="windspeed">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.gree.windspeed.label</label>
 		<description>@text/channel-type.gree.windspeed.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.gree.windspeed.state.option.0</option>
@@ -118,6 +146,10 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.gree.quiet.label</label>
 		<description>@text/channel-type.gree.quiet.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">@text/channel-type.gree.quiet.state.option.off</option>
@@ -130,6 +162,10 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.gree.swingupdown.label</label>
 		<description>@text/channel-type.gree.swingupdown.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.gree.swingupdown.option.0</option>
@@ -146,6 +182,10 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.gree.swingleftright.label</label>
 		<description>@text/channel-type.gree.swingleftright.description</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">@text/channel-type.gree.swingleftright.option.0</option>
@@ -162,6 +202,10 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.gree.powersave.label</label>
 		<description>@text/channel-type.gree.powersave.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="light">
 		<item-type>Switch</item-type>
@@ -172,6 +216,10 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.gree.health.label</label>
 		<description>@text/channel-type.gree.health.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
