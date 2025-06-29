@@ -840,11 +840,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void handleGetDndTimer(String response) {
         logger.trace("handleGetDndTimer, response = {}", response);
         GetDndTimer getDndTimer = gson.fromJson(response, GetDndTimer.class);
-        updateState(CHANNEL_DND_FUNCTION, new DecimalType(getDndTimer.result[0].enabled));
-        updateState(CHANNEL_DND_START, new StringType(
-                String.format("%02d:%02d", getDndTimer.result[0].startHour, getDndTimer.result[0].startMinute)));
-        updateState(CHANNEL_DND_END, new StringType(
-                String.format("%02d:%02d", getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
+        if (getDndTimer != null) {
+            updateState(CHANNEL_DND_FUNCTION, new DecimalType(getDndTimer.result[0].enabled));
+            updateState(CHANNEL_DND_START, new StringType(
+                    String.format("%02d:%02d", getDndTimer.result[0].startHour, getDndTimer.result[0].startMinute)));
+            updateState(CHANNEL_DND_END, new StringType(
+                    String.format("%02d:%02d", getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
+        }
     }
 
     private void handleGetSegmentStatus(String response) {
