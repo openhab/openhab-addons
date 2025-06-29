@@ -202,7 +202,7 @@
 		<description>Start or stop Super Cooling</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
