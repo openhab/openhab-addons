@@ -23,16 +23,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jellyfin.sdk.Jellyfin;
-import org.jellyfin.sdk.JellyfinOptions;
-import org.jellyfin.sdk.api.client.exception.ApiClientException;
-import org.jellyfin.sdk.api.operations.SystemApi;
-import org.jellyfin.sdk.compatibility.JavaFlow;
-import org.jellyfin.sdk.compatibility.JavaFlow.FlowJob;
-import org.jellyfin.sdk.model.ClientInfo;
-import org.jellyfin.sdk.model.DeviceInfo;
-import org.jellyfin.sdk.model.api.PublicSystemInfo;
-import org.jellyfin.sdk.model.api.ServerDiscoveryInfo;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
 import org.openhab.binding.jellyfin.internal.util.SyncResponse;
 import org.openhab.core.OpenHAB;
