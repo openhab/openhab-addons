@@ -497,20 +497,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String response = bridgeHandler.getRoutines(rrHomeId, rriot);
                 logger.trace("Response from getRoutines = {}", response);
 
-                sendCommand(COMMAND_GET_STATUS);
-                sendCommand(COMMAND_GET_CONSUMABLE);
-                sendCommand(COMMAND_GET_ROOM_MAPPING);
-                sendCommand(COMMAND_GET_NETWORK_INFO);
-                sendCommand(COMMAND_GET_CLEAN_SUMMARY);
-                sendCommand(COMMAND_GET_DND_TIMER);
-                sendCommand(COMMAND_GET_SEGMENT_STATUS);
-                sendCommand(COMMAND_GET_MAP_STATUS);
-                sendCommand(COMMAND_GET_LED_STATUS);
-                sendCommand(COMMAND_GET_CARPET_MODE);
-                sendCommand(COMMAND_GET_FW_FEATURES);
-                sendCommand(COMMAND_GET_MULTI_MAPS_LIST);
-                sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
-                sendCommand(COMMAND_GET_MAP);
+                getStatusID = sendCommand(COMMAND_GET_STATUS);
+                getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
+                getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
+                getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
+                getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
+                getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
+                getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
+                getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
+                getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
+                getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
+                getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
+                getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAPS_LIST);
+                getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
+                getMapID = sendCommand(COMMAND_GET_MAP);
             } catch (UnsupportedEncodingException e) {
                 // Shouldn't occur
             }
@@ -960,11 +960,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void sendCommand(String method) throws UnsupportedEncodingException {
-        sendCommand(method, "[]");
+    private int sendCommand(String method) throws UnsupportedEncodingException {
+        return sendCommand(method, "[]");
     }
 
-    private void sendCommand(String method, String params) throws UnsupportedEncodingException {
+    private int sendCommand(String method, String params) throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         Random random = new Random();
@@ -1012,38 +1012,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 .whenComplete((mqtt3Publish, throwable) -> {
                     if (throwable != null) {
                         logger.debug("mqtt publish failed");
-                    } else {
-                        if (COMMAND_GET_STATUS.equals(method)) {
-                            getStatusID = id;
-                        } else if (COMMAND_GET_CONSUMABLE.equals(method)) {
-                            getConsumableID = id;
-                        } else if (COMMAND_GET_ROOM_MAPPING.equals(method)) {
-                            getRoomMappingID = id;
-                        } else if (COMMAND_GET_NETWORK_INFO.equals(method)) {
-                            getNetworkInfoID = id;
-                        } else if (COMMAND_GET_CLEAN_RECORD.equals(method)) {
-                            getCleanRecordID = id;
-                        } else if (COMMAND_GET_CLEAN_SUMMARY.equals(method)) {
-                            getCleanSummaryID = id;
-                        } else if (COMMAND_GET_DND_TIMER.equals(method)) {
-                            getDndTimerID = id;
-                        } else if (COMMAND_GET_SEGMENT_STATUS.equals(method)) {
-                            getSegmentStatusID = id;
-                        } else if (COMMAND_GET_MAP_STATUS.equals(method)) {
-                            getMapStatusID = id;
-                        } else if (COMMAND_GET_LED_STATUS.equals(method)) {
-                            getLedStatusID = id;
-                        } else if (COMMAND_GET_CARPET_MODE.equals(method)) {
-                            getCarpetModeID = id;
-                        } else if (COMMAND_GET_FW_FEATURES.equals(method)) {
-                            getFwFeaturesID = id;
-                        } else if (COMMAND_GET_MULTI_MAPS_LIST.equals(method)) {
-                            getMultiMapsListID = id;
-                        } else if (COMMAND_GET_CUSTOMIZE_CLEAN_MODE.equals(method)) {
-                            getCustomizeCleanModeID = id;
-                        } else if (COMMAND_GET_MAP.equals(method)) {
-                            getMapID = id;
-                        }
                     }
                 });
 
@@ -1051,6 +1019,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         // mqttClient.publish(publishMessage);
         // handleMessage(message); // helps confirm we have encoded it correctly
+        return id;
     }
 
     byte[] build(String deviceId, int protocol, int timestamp, byte[] payload) {
