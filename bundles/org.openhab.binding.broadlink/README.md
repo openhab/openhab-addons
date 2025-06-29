@@ -3,6 +3,7 @@
 This binding supports sending infrared (IR) and radio frequency (RF) commands using a range of devices for made by (and occasionally OEM licensed from) [Broadlink](https://www.ibroadlink.com/). 
 
 The highlevel overview is:
+
 1. learn codes from your existing IR (and RF) remote controls, associating each of them with a command that you choose such as `AC_OFF`;
 2. making openHAB rules that send the command e.g. `AC_OFF` to the device;
 3. the binding will look up the learned code associated with your command and then send it.
