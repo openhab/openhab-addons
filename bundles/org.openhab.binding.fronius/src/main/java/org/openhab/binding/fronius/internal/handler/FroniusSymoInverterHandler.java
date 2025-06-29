@@ -92,9 +92,25 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     }
 
     private void initializeBatteryControl(String hostname, String username, String password) {
+        String apiPrefix = "";
+
+        InverterInfo localInverterInfo = inverterInfo;
+        if (localInverterInfo != null) {
+            String firmwareVersion = localInverterInfo.firmware();
+            int lastDotIndex = firmwareVersion.lastIndexOf('.');
+            float version = Float.parseFloat(firmwareVersion.substring(0, lastDotIndex));
+            if (version >= 1.36) {
+                apiPrefix = "/api";
+            } else {
+                logger.warn("Fronius Symo Inverter firmware version {} is not supported for battery control.",
+                        firmwareVersion);
+                return;
+            }
+        }
+
         if (hostname != null && username != null && password != null) {
-            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + "/"), username,
-                    password);
+            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + apiPrefix),
+                    username, password);
         } else {
             batteryControl = null;
         }
