@@ -149,10 +149,6 @@
 		<label>Time</label>
 		<description>Time and day of week.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -168,10 +164,6 @@
 		<label>Time</label>
 		<description>Time and date.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

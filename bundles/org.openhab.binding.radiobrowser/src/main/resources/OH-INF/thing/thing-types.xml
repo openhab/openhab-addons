@@ -126,10 +126,6 @@
 		<item-type>String</item-type>
 		<label>Stream</label>
 		<description>The stations URI that can be sent to a openHAB audio sink</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="name">

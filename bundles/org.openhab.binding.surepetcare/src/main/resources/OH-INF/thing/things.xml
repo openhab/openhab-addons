@@ -42,10 +42,6 @@
 		<item-type>Switch</item-type>
 		<label>Refresh</label>
 		<description>Triggers a cache refresh of everything (devices, pets etc.).</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -392,10 +388,6 @@
 		<item-type>String</item-type>
 		<label>Location</label>
 		<description>The current location of the pet</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Unknown</option>
@@ -409,10 +401,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Location Change Time</label>
 		<description>The time when the pet location has last changed</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -420,10 +408,6 @@
 		<item-type>String</item-type>
 		<label>Location Update with Time Offset</label>
 		<description>The location update of the pet with time offset (10, 30, 60 minutes ago.)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="10">10 mins ago</option>
@@ -437,10 +421,6 @@
 		<item-type>String</item-type>
 		<label>Pet Location Changed Through</label>
 		<description>Shows the device name or username of the last location change.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -480,10 +460,6 @@
 		<item-type>Switch</item-type>
 		<label>Curfew Enabled</label>
 		<description>Indicator if the curfew is enabled</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -498,10 +474,6 @@
 		<item-type>String</item-type>
 		<label>Curfew Unlock Time</label>
 		<description>The time when the curfew finishes</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
@@ -510,10 +482,6 @@
 		<label>Pet Date of Birth</label>
 		<description>The pet's date of birth.</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -535,10 +503,6 @@
 		<item-type>DateTime</item-type>
 		<label>Pet Last Feeding</label>
 		<description>The last pet feeding</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -582,10 +546,6 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>The current battery voltage</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -680,10 +640,6 @@
 		<item-type>String</item-type>
 		<label>Feeder Lid Close Delay</label>
 		<description>The feeder lid close delay</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Fast</option>
@@ -697,10 +653,6 @@
 		<item-type>String</item-type>
 		<label>Feeder Training Mode</label>
 		<description>The feeder training mode.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>

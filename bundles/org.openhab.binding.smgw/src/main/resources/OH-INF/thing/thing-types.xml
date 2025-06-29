@@ -39,10 +39,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>The timestamp of the meter reading.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

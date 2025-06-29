@@ -238,10 +238,6 @@
 		<label>Radiator Return</label>
 		<description>Temperature of the water that returns to the heat pump from the radiators</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -250,10 +246,6 @@
 		<label>Outdoor</label>
 		<description>The outdoor temperature. Determines how much heating the heat pump should produce</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -286,10 +278,6 @@
 		<label>Compressor</label>
 		<description>Compressor’s working temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -298,10 +286,6 @@
 		<label>Heat Fluid Out</label>
 		<description>Temperature of the radiator water as it leaves the heat pump</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -310,10 +294,6 @@
 		<label>Heat Fluid In</label>
 		<description>Temperature of the water that is led into the heat pump</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -322,10 +302,6 @@
 		<label>Cold Fluid In</label>
 		<description>Temperature of the heat transfer fluid that is led into the heat pump from the bore hole or the ground</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -334,10 +310,6 @@
 		<label>Cold Fluid Out</label>
 		<description>Temperature of the heat transfer fluid that is led out of the heat pump to the bore hole or the ground</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -354,9 +326,6 @@
 		<label>Last Error Type</label>
 		<description>Information about the alarm type that occurred last</description>
 		<category>Error</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="0">Sensor radiator return (GT1)</option>
@@ -391,10 +360,6 @@
 		<label>Last Error Date</label>
 		<description>Information about when last alarm occurred</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -435,9 +400,6 @@
 		<label>Alarm Lamp</label>
 		<description>Lamp indicates that a fault has occurred in the heat pump</description>
 		<category>Siren</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

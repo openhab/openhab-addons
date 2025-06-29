@@ -59,19 +59,11 @@
 		<label>Last Update</label>
 		<description>Timestamp that the last information was received from the station. This is not the same as the last time
 			that was checked: the station goes offline at night.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="currentOutput">
 		<item-type>Number:Power</item-type>
 		<label>Current Output</label>
 		<description>Current output in Watts</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="todayTotal">
 		<item-type>Number:Energy</item-type>

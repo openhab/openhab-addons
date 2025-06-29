@@ -71,10 +71,6 @@
 			The channel is write-only and its state is represented as a
 			boolean.
 		</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<!-- Generic Number -->
 	<channel-type id="generic-output-number-channel">
@@ -106,10 +102,6 @@
 			temperature (numeric).
 		</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-input-channel">
@@ -121,10 +113,6 @@
 			temperature (numeric).
 		</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

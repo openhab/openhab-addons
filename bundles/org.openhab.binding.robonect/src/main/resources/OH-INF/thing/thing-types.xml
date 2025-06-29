@@ -130,10 +130,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Status Duration</label>
 		<description>The number of seconds the mower is in the current status.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -141,10 +137,6 @@
 		<item-type>Number:Length</item-type>
 		<label>Status Distance</label>
 		<description>The distance the mower is away from the charging station when searching the remote start.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -152,10 +144,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Mowing Hours</label>
 		<description>The number of total mowing hours</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -163,10 +151,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature inside the mower</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -174,10 +158,6 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The relative humidity in the mower in percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -185,10 +165,6 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Blade Quality</label>
 		<description>The quality of the blades</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>QualityOfService</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
@@ -196,10 +172,6 @@
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Blade Usage Hours</label>
 		<description>The usage time in hours of the blades</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -207,10 +179,6 @@
 		<item-type unitHint="d">Number:Time</item-type>
 		<label>Blade In Use Days</label>
 		<description>The number of days since the blades have been replaced</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -218,10 +186,6 @@
 		<item-type>String</item-type>
 		<label>Mower Mode</label>
 		<description>The mower mode</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">Auto</option>
@@ -236,10 +200,6 @@
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
 		<description>Starts a mowing job</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
@@ -281,10 +241,6 @@
 		<item-type>Switch</item-type>
 		<label>Start</label>
 		<description>On if started, Off if stopped</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -302,10 +258,6 @@
 		<item-type>DateTime</item-type>
 		<label>Next Timer Date</label>
 		<description>The next date the timer starts</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -320,9 +272,6 @@
 		<item-type>String</item-type>
 		<label>Error Message</label>
 		<description>The error message</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -330,10 +279,6 @@
 		<item-type>DateTime</item-type>
 		<label>Error Date</label>
 		<description>The date and time the error occurred</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

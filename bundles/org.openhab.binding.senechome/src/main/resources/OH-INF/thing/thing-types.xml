@@ -131,110 +131,66 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Limitation</label>
 		<category>Number</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="powerLimitationState">
 		<item-type>Switch</item-type>
 		<label>Limitation State</label>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentMpp1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current MPP1</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentMpp2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current MPP2</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentMpp3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current MPP3</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="powerMpp1">
 		<item-type>Number:Power</item-type>
 		<label>Power MPP1</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="powerMpp2">
 		<item-type>Number:Power</item-type>
 		<label>Power MPP2</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="powerMpp3">
 		<item-type>Number:Power</item-type>
 		<label>Power MPP3</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageMpp1">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage MPP1</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageMpp2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage MPP2</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageMpp3">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage MPP3</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -243,60 +199,36 @@
 		<item-type>Number:Power</item-type>
 		<label>House Power Consumption</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="energyProduction">
 		<item-type>Number:Power</item-type>
 		<label>Solar Production</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryPower">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Battery Current</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryFuelCharge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Fuel</label>
 		<category>BatteryLevel</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="systemState">
@@ -315,10 +247,6 @@
 		<item-type>String</item-type>
 		<label>Safe Charge Mode</label>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="OFF">Off</option>
@@ -333,130 +261,78 @@
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridPowerSupply">
 		<item-type>Number:Power</item-type>
 		<label>Grid Supply</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridPowerDraw">
 		<item-type>Number:Power</item-type>
 		<label>Grid Draw</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridPowerPhase1">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Phase 1</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridPowerPhase2">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Phase 2</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridPowerPhase3">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Phase 3</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridCurrentPhase1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Grid Current Phase 1</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridCurrentPhase2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Grid Current Phase 2</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridCurrentPhase3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Grid Current Phase 3</label>
 		<category>Current</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridVoltagePhase1">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Grid Voltage Phase 1</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridVoltagePhase2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Grid Voltage Phase 2</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridVoltagePhase3">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Grid Voltage Phase 3</label>
 		<category>Voltage</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridFrequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Grid Frequency</label>
 		<category>Frequency</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -465,70 +341,42 @@
 		<item-type>Number:Energy</item-type>
 		<label>Live Bat Charge</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveBatDischarge">
 		<item-type>Number:Energy</item-type>
 		<label>Live Bat Discharge</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveGridImport">
 		<item-type>Number:Energy</item-type>
 		<label>Live Grid Import</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveGridExport">
 		<item-type>Number:Energy</item-type>
 		<label>Live Grid Export</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveHouseConsumption">
 		<item-type>Number:Energy</item-type>
 		<label>Live House Consumption</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="livePowerGenerator">
 		<item-type>Number:Energy</item-type>
 		<label>Live Power Generator</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveEnergyWallbox1">
 		<item-type>Number:Energy</item-type>
 		<label>Live Wallbox 1 charged Energy</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -707,30 +555,18 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="caseTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Case Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="mcuTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>MCU Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -739,20 +575,12 @@
 		<item-type>String</item-type>
 		<label>Wallbox 1 State</label>
 		<category>Text</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="wallbox1StateValue">
 		<item-type>Number</item-type>
 		<label>Wallbox 1 State Value</label>
 		<category>Number</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase1" advanced="true">
@@ -777,10 +605,6 @@
 		<item-type>Number:Energy</item-type>
 		<label>Wallbox 1 charging Power</label>
 		<category>Power</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -47,10 +47,6 @@
 		<item-type>Switch</item-type>
 		<label>Output State</label>
 		<description>Represents state of the output</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

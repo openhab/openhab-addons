@@ -55,100 +55,60 @@
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>The water temperature</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="ph">
 		<item-type>Number</item-type>
 		<label>PH</label>
 		<description>The PH Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nh3">
 		<item-type>Number</item-type>
 		<label>NH3</label>
 		<description>The NH3 Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nh4">
 		<item-type>Number</item-type>
 		<label>NH4</label>
 		<description>The NH4 Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="o2">
 		<item-type>Number</item-type>
 		<label>O2</label>
 		<description>The O2 Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lux">
 		<item-type>Number</item-type>
 		<label>LUX</label>
 		<description>The LUX Light Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="par">
 		<item-type>Number</item-type>
 		<label>PAR</label>
 		<description>The PAR Light Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="kelvin">
 		<item-type>Number</item-type>
 		<label>Kelvin</label>
 		<description>The Kelvin Light Level</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastreading">
 		<item-type>DateTime</item-type>
 		<label>Last Reading</label>
 		<description>The last time your seneye is checked</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="slideexpires">
 		<item-type>DateTime</item-type>
 		<label>Slide Expiration</label>
 		<description>The time your slide expires</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wrongslide">
@@ -167,10 +127,6 @@
 		<item-type>String</item-type>
 		<label>Out of Water</label>
 		<description>The Sensor is reporting being out of the water</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="disconnected">

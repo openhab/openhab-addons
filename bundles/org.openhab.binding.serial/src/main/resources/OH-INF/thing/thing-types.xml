@@ -105,30 +105,18 @@
 		<item-type>String</item-type>
 		<label>String Data</label>
 		<description>Channel for sending/receiving data as a string to/from the serial port</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="binaryData">
 		<item-type>String</item-type>
 		<label>Binary Data</label>
 		<description>Channel for sending/receiving data encoded as Base64 to/from the serial port</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>String</label>
 		<description>Channel to receive commands as a string</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -155,10 +143,6 @@
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<description>Channel to receive commands as a number</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -185,10 +169,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Channel to receive commands from a Dimmer</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -231,10 +211,6 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Channel to receive commands from a Switch</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -265,10 +241,6 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>Channel to receive commands from a Rollershutter</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>

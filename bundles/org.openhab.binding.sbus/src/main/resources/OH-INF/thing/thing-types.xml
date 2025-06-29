@@ -135,10 +135,6 @@
 		<label>Switch State</label>
 		<description>Switch state (ON/OFF)</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
@@ -152,10 +148,6 @@
 		<label>Dimmer State</label>
 		<description>Dimmer state (0-100%)</description>
 		<category>DimmableLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
@@ -176,10 +168,6 @@
 		<label>Rollershutter Control</label>
 		<description>Rollershutter control (UP/DOWN) - controls two opposite channels</description>
 		<category>Blinds</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
@@ -197,10 +185,6 @@
 		<label>Temperature</label>
 		<description>Temperature reading from the device</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
@@ -224,10 +208,6 @@
 		<label>Color</label>
 		<description>Color control</description>
 		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
