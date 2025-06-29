@@ -199,7 +199,7 @@ public class FroniusConfigAuthUtil {
      * request.
      *
      * @param httpClient the {@link HttpClient} to use for the request
-     * @param baseUri the base URI of the Fronius inverter
+     * @param baseUri the base URI of the Fronius inverter, MUST NOT end with a slash
      * @param username the username to use for the login
      * @param password the password to use for the login
      * @param method the {@link HttpMethod} to be used by the next request
@@ -214,8 +214,8 @@ public class FroniusConfigAuthUtil {
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Perform request to get authentication parameters
         LOGGER.debug("Getting authentication parameters");
-        URI loginUri = baseUri.resolve(URI.create(LOGIN_ENDPOINT + "?user=" + username));
-        String relativeLoginUrl = LOGIN_ENDPOINT + "?user=" + username;
+        URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
+        String relativeLoginUrl = loginUri.getPath();
         Map<String, String> authDetails;
 
         int attemptCount = 1;

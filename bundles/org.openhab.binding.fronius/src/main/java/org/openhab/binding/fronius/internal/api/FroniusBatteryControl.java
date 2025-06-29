@@ -69,13 +69,21 @@ public class FroniusBatteryControl {
     private final URI timeOfUseUri;
     private final URI batteriesUri;
 
+    /**
+     * Creates a new instance of {@link FroniusBatteryControl}.
+     * 
+     * @param httpClient the HTTP client to use
+     * @param baseUri the base URI of the Fronius hybrid inverter, MUST NOT end with a slash
+     * @param username the username for the inverter Web UI
+     * @param password the password for the inverter Web UI
+     */
     public FroniusBatteryControl(HttpClient httpClient, URI baseUri, String username, String password) {
         this.httpClient = httpClient;
         this.baseUri = baseUri;
         this.username = username;
         this.password = password;
-        this.timeOfUseUri = baseUri.resolve(URI.create(TIME_OF_USE_ENDPOINT));
-        this.batteriesUri = baseUri.resolve(URI.create(BATTERIES_ENDPOINT));
+        this.timeOfUseUri = URI.create(baseUri + TIME_OF_USE_ENDPOINT);
+        this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
     }
 
     /**
