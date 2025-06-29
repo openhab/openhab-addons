@@ -476,7 +476,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String modPayload = payload.replace(":\\\"[", ":[").replace("]\\\"}", "]}");
         logger.trace("Modified payload = {}", modPayload);
 
-        byte[] message = build(getThing().getUID().getId(), protocol, timestamp, modPayload.getBytes("UTF-8"));
+        byte[] message = build(thingID, protocol, timestamp, modPayload.getBytes("UTF-8"));
         // now send message via mqtt
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
@@ -496,13 +496,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         return id;
     }
 
-    byte[] build(String deviceId, int protocol, int timestamp, byte[] payload) {
+    byte[] build(String thingID, int protocol, int timestamp, byte[] payload) {
         try {
             HomeData homeData = getHomeData(rrHomeId, rriot);
             String localKey = "";
             if (homeData != null) {
                 for (int i = 0; i < homeData.result.devices.length; i++) {
-                    if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
+                    if (thingID.equals(homeData.result.devices[i].duid)) {
                         localKey = homeData.result.devices[i].localKey;
                     }
                 }
