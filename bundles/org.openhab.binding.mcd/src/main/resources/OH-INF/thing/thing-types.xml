@@ -51,10 +51,6 @@
 		<item-type>String</item-type>
 		<label>Send Event</label>
 		<description>A stateless channel for sending sensor events.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="BEDEXIT">Bed Exit</option>

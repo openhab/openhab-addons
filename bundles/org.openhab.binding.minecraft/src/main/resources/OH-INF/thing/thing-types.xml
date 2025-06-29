@@ -84,10 +84,6 @@
 		<item-type>Number</item-type>
 		<label>Players</label>
 		<description>The number of players on the server.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -95,10 +91,6 @@
 		<item-type>Number</item-type>
 		<label>Max Players</label>
 		<description>The maxumum number of players on the server.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>MediaControl</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -119,20 +111,12 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>The location of the player.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="playerLevel">
 		<item-type>Number</item-type>
 		<label>Level</label>
 		<description>The players current level.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="playerTotalExperience" advanced="true">
@@ -153,10 +137,6 @@
 		<item-type>Number</item-type>
 		<label>Health</label>
 		<description>The health of player.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="playerWalkSpeed" advanced="true">
@@ -185,10 +165,6 @@
 		<label>Online</label>
 		<description>Shows if the sign has powered redstone below it.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

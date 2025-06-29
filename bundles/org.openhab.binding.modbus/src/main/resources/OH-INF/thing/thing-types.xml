@@ -9,13 +9,17 @@
 		<description>Switch item channel</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="contact-type">
 		<item-type>Contact</item-type>
 		<label>Value as Contact</label>
 		<description>Contact item channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="datetime-type">
 		<item-type>DateTime</item-type>
@@ -48,55 +52,39 @@
 		<item-type>String</item-type>
 		<label>Value as String</label>
 		<description>String item channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="number-type">
 		<item-type>Number</item-type>
 		<label>Value as Number</label>
 		<description>Number item channel</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-successful-read-type">
 		<item-type>DateTime</item-type>
 		<label>Last Successful Read</label>
 		<description>Date of last read</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-erroring-read-type">
 		<item-type>DateTime</item-type>
 		<label>Last Erroring Read</label>
 		<description>Date of last read error</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-successful-write-type">
 		<item-type>DateTime</item-type>
 		<label>Last Successful Write</label>
 		<description>Date of last write</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-erroring-write-type">
 		<item-type>DateTime</item-type>
 		<label>Last Erroring Write</label>
 		<description>Date of last write error</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<config-description></config-description>
 	</channel-type>
 </thing:thing-descriptions>

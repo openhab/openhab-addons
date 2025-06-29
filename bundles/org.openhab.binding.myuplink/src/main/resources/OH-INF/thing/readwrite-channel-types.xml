@@ -9,7 +9,7 @@
 		<label>Generic Switch</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -21,6 +21,10 @@
 	<channel-type id="rwtype-mode">
 		<item-type>String</item-type>
 		<label>Generic Command</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="Default">Default</option>

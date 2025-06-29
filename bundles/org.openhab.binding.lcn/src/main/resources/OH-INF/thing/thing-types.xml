@@ -85,12 +85,20 @@
 	<channel-type id="output">
 		<item-type>Dimmer</item-type>
 		<label>Output</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="color" advanced="true">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -98,8 +106,8 @@
 		<item-type>String</item-type>
 		<label>Tunable White Mode</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 		<state>
 			<options>

@@ -17,6 +17,10 @@
 	<channel-type id="SOC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Battery temperature Channel Type -->

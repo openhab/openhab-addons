@@ -31,7 +31,7 @@
 		<label>Return Temp. Target Heating Circuit</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -41,6 +41,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temp. in Buffer Tank</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -67,7 +71,7 @@
 		<label>Avg. 24h-Temp. Outside (Limiting)</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -320,10 +324,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Compressor 1</label>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -371,10 +371,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Heat Pump</label>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -382,10 +378,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Heating</label>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -393,10 +385,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Hot Water</label>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -404,10 +392,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time Cooling</label>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -521,10 +505,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp Error 0</label>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="errorTime1" advanced="true">
@@ -1129,10 +1109,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp Shutdown 0</label>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="shutdownTime1" advanced="true">
@@ -2133,10 +2109,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Heating Temp. (Offset)</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
 	</channel-type>
 
@@ -2145,7 +2117,7 @@
 		<label>Coverage Hot Water Temp.</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
@@ -2240,10 +2212,6 @@
 	<channel-type id="comfortCoolingMode">
 		<item-type>Number</item-type>
 		<label>Comfort Cooling Mode</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Airconditioning</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">Off</option>
@@ -2257,7 +2225,7 @@
 		<label>Comfort Cooling AT Release</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%"></state>
@@ -2278,10 +2246,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Heating Limit</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -2289,10 +2253,6 @@
 		<item-type>Number:Time</item-type>
 		<label>AT Excess</label>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" step="0.5" min="0" max="12"></state>
 	</channel-type>
 
@@ -2300,10 +2260,6 @@
 		<item-type>Number:Time</item-type>
 		<label>AT Undercut</label>
 		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.1f %unit%" step="0.5" min="0" max="12"></state>
 	</channel-type>
 

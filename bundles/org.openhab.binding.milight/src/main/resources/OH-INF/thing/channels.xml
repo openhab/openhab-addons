@@ -55,7 +55,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -66,7 +66,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
@@ -108,10 +108,6 @@
 		<description>Switch to the next/previous animation mode of your RGBW or white LED. Bind this to a Next/Previous
 			channel type.
 		</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="animation_mode">
@@ -121,7 +117,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>

@@ -92,10 +92,6 @@
 		<item-type>Switch</item-type>
 		<label>Measure</label>
 		<description>Triggers a measurement</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="pump-runs-channel">
 		<item-type>Number</item-type>
@@ -107,10 +103,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Pump Total Runtime</label>
 		<description>Seconds the pump has run since manufacturing</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 </thing:thing-descriptions>

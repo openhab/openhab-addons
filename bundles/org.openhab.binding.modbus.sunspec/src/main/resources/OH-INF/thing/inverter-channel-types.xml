@@ -172,6 +172,10 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Device status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">Off</option>

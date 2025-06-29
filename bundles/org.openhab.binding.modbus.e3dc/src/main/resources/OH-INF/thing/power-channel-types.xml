@@ -97,20 +97,12 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky</label>
 		<description>Your current Autarky Level in Percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="self-consumption-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumtion</label>
 		<description>Your current Photovoltaic Self Consumption Level in Percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-soc-channel">
@@ -119,7 +111,7 @@
 		<description>Charge Level of your attached Battery in Percent</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>

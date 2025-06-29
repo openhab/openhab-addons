@@ -11,7 +11,7 @@
 		<description>Switches the current on/off</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Switch</tag>
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
@@ -150,7 +150,7 @@
 		<description>Shows if smoke was detected</description>
 		<category>Smoke</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Smoke</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -162,10 +162,6 @@
 		<label>Alarm</label>
 		<description>Switches the alarm on/off</description>
 		<category>Alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<!-- SirenActuator Channel (Alarm) -->
@@ -174,10 +170,6 @@
 		<label>Alarm</label>
 		<description>Switches the alarm of the siren on/off</description>
 		<category>Siren</category>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<!-- SirenActuator Channel (Notification) -->
@@ -186,10 +178,6 @@
 		<label>Notification</label>
 		<description>Switches the notification sound of the siren on/off</description>
 		<category>Siren</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<!-- SirenActuator Channel (Feedback) -->
@@ -198,10 +186,6 @@
 		<label>Feedback</label>
 		<description>Switches the feedback sound of the siren on/off</description>
 		<category>Siren</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<!-- MotionDetectionSensor Channel -->
@@ -223,6 +207,10 @@
 		<label>Luminance</label>
 		<description>Shows the detected luminance in percent</description>
 		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
 
@@ -241,6 +229,10 @@
 		<label>Consumption (month)</label>
 		<description>The energy consumption per month in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -272,10 +264,6 @@
 		<label>Consumption Costs (day)</label>
 		<description>The energy consumption per day in Euro</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -311,6 +299,10 @@
 		<label>Generation (month)</label>
 		<description>The energy generation per month in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -342,10 +334,6 @@
 		<label>Generation Value (day)</label>
 		<description>The energy generation per day in Euro</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -394,6 +382,10 @@
 		<label>Feed (month)</label>
 		<description>The energy feed per month in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

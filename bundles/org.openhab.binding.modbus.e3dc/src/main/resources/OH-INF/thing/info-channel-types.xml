@@ -17,10 +17,6 @@
 		<item-type>Number</item-type>
 		<label>Supported Registers</label>
 		<description>Number of registers supported by Modbus</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="manufacturer-name-channel">
 		<item-type>String</item-type>
@@ -36,18 +32,10 @@
 		<item-type>String</item-type>
 		<label>Firmware Release</label>
 		<description>Firmware installed on this particular E3DC Device</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="serial-number-channel">
 		<item-type>String</item-type>
 		<label>Serial Number</label>
 		<description>Serial Number of this particular E3DC Device</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

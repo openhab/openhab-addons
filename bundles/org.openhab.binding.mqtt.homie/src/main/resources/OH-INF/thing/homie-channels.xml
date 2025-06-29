@@ -9,7 +9,7 @@
 		<label>Boolean</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -26,10 +26,6 @@
 		<item-type>DateTime</item-type>
 		<label>Date/Time Value</label>
 		<description>Current date and/or time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="homie-enum">

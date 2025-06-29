@@ -59,7 +59,7 @@
 		<category>Contact</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="false"/>
 		<config-description-ref uri="channel-type:mcp23017:input_pin"/>
@@ -72,7 +72,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:mcp23017:output_pin"/>

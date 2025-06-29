@@ -191,10 +191,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Ramp</label>
 		<description>Transition time from the light’s current state to the new state.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
@@ -204,7 +200,7 @@
 		<description>The color mode we want the Bulb to set to</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Color</tag>
+			<tag>Mode</tag>
 		</tags>
 		<command>
 			<options>

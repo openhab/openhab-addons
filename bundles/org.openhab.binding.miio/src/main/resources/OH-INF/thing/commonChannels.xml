@@ -26,6 +26,10 @@
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Generic Contact Channel</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
@@ -60,7 +64,6 @@
 		<label>Generic Number Channel</label>
 		<tags>
 			<tag>Control</tag>
-			<tag>Channel</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="player">
@@ -88,7 +91,7 @@
 		<label>Generic Switch Channel</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -106,6 +109,10 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="life" advanced="true">

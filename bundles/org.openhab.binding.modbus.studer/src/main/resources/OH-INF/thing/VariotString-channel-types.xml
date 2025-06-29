@@ -167,6 +167,10 @@
 	<channel-type id="Mod2">
 		<item-type>String</item-type>
 		<label>PV2 Operating State</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>

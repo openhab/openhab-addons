@@ -20,10 +20,6 @@
 		<label>Remaining Filter</label>
 		<description>Remaining filter without need to be replaced.</description>
 		<category>Battery</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %%"/>
 	</channel-type>
 
@@ -31,10 +27,6 @@
 		<item-type>Number</item-type>
 		<label>Air/Water</label>
 		<description>Define the temperature selector based on water or air.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0.0">Air Temperature</option>
@@ -47,10 +39,6 @@
 		<item-type>String</item-type>
 		<label>Water Filter</label>
 		<description>Months passed since filter has been changed.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -66,10 +54,6 @@
 		<label>Info Collector</label>
 		<description>This switch enable collector for energy and filter consumption (if presents)</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="cool-jet">
@@ -106,6 +90,10 @@
 		<item-type>Switch</item-type>
 		<label>Energy Saving</label>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="fan-step-up-down">
@@ -115,7 +103,7 @@
 		<category>wind</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Speed</tag>
+			<tag>Airflow</tag>
 		</tags>
 	</channel-type>
 
@@ -126,7 +114,7 @@
 		<category>wind</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Speed</tag>
+			<tag>Airflow</tag>
 		</tags>
 	</channel-type>
 
@@ -147,10 +135,6 @@
 		<label>Minimum Temp.</label>
 		<description>Minimum temperature for this mode.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -159,10 +143,6 @@
 		<label>Maximum Temp.</label>
 		<description>Maximum Temperature for this mode.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -184,7 +164,7 @@
 		<description>AC Wind Strength</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
 	</channel-type>
@@ -318,7 +298,7 @@
 		<description>Target Temperature Level</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -329,7 +309,7 @@
 		<description>Target Temperature Level</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 	</channel-type>
@@ -339,7 +319,7 @@
 		<description>Door Lock</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -381,10 +361,6 @@
 		<item-type>String</item-type>
 		<label>Dry Level</label>
 		<description>Dryer Dry</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -394,7 +370,7 @@
 		<description>Dryer Child Lock</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -410,7 +386,7 @@
 		<description>Dryer Remaining Time</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<tag>Progress</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -419,9 +395,6 @@
 		<item-type>String</item-type>
 		<label>Error</label>
 		<description>Dryer Error</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ERROR_TE4">ERROR_TE4</option>
@@ -450,10 +423,6 @@
 		<item-type>String</item-type>
 		<label>Temp. Unit</label>
 		<description>Temperature Unit</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CELSIUS">C</option>

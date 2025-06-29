@@ -23,6 +23,10 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>This zone is a read only switch type zone</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
@@ -120,7 +124,7 @@
 		<description>This zone is an actuator</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
@@ -164,6 +168,10 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>This zone is a read only switch type zone</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
@@ -202,7 +210,7 @@
 		<description>This zone is an actuator</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">

@@ -38,7 +38,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -51,7 +51,7 @@
 		</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Brightness</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -63,7 +63,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -81,10 +81,6 @@
 	<channel-type id="sound">
 		<item-type>Number</item-type>
 		<label>Sound Selector</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="volume">
@@ -104,7 +100,7 @@
 		<label>Switch to Turn Sound Off When Playing</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>
 
@@ -139,7 +135,7 @@
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Water</tag>
 		</tags>
 		<state readOnly="true"></state>
@@ -213,10 +209,6 @@
 		<item-type>Number</item-type>
 		<label>Alarm Timer</label>
 		<description>Time in seconds, after which ALARM event is triggered, when open (Default 300 sec, Min 30 sec)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="false" min="30" pattern="%d s" step="1"></state>
 	</channel-type>
 
@@ -224,10 +216,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Time Opened (Date/Time)</label>
 		<description>Date/time when last opened</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -247,10 +235,6 @@
 		<label>Motion Off Timer</label>
 		<description>Time in seconds, after which the Motion Switch is set to "OFF" (Default 120 sec, Min 5 sec)</description>
 		<category>Motion</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Motion</tag>
-		</tags>
 		<state readOnly="false" min="5" pattern="%d s" step="1"></state>
 	</channel-type>
 
@@ -258,10 +242,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Activity (Date/Time)</label>
 		<description>Date/time when last motion was detected</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -269,10 +249,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Activity (Date/Time)</label>
 		<description>Date/time when last action was detected</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -307,7 +283,7 @@
 		<label>Power Consumed</label>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.3f kWh" readOnly="true"></state>
 	</channel-type>

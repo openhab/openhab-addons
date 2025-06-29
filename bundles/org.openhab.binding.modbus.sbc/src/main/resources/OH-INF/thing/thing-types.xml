@@ -123,10 +123,6 @@
 	<channel-type id="power_factor">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Factor</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

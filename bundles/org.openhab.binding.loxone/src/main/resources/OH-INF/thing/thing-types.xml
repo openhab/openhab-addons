@@ -141,7 +141,7 @@
 		<description>Loxone's virtual input of switch type and push button controls.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -244,10 +244,6 @@
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
 		<description>Date and time of an event</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -298,10 +294,6 @@
 		<item-type>Number</item-type>
 		<label>Comfort Tolerance Temperature</label>
 		<description>Loxone Intelligent Room Controller V2 Comfort Tolerance.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state min="0.5" max="3"/>
 	</channel-type>
 

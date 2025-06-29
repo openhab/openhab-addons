@@ -27,6 +27,7 @@
 		<description>If there's a global alarm</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

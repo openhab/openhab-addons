@@ -41,7 +41,7 @@
 		<description>Fan on/off.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Speed</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
@@ -49,7 +49,7 @@
 		<label>Fan Speed</label>
 		<description>The fan's rotational rate.</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state readOnly="false" pattern="Fan %s">
@@ -68,8 +68,8 @@
 		<label>Fan Direction</label>
 		<description>The fan's direction of rotation: Forward (Summer), Reverse (Winter).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false" pattern="Direction %s">
 			<options>
@@ -84,7 +84,7 @@
 		<description>Wind (sometimes referred to as "Breeze Mode") on/off.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="wind-level">
@@ -92,8 +92,8 @@
 		<label>Wind Level</label>
 		<description>The amount of the wind being produced.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false" pattern="Wind %s">
 			<options>
@@ -118,7 +118,7 @@
 		<description>The light intensity.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state readOnly="false" min="1" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>

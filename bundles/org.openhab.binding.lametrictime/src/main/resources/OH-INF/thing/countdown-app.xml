@@ -38,10 +38,6 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>Send a command to the timer app</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="start">Start</option>

@@ -1313,7 +1313,7 @@
 		<category>Rollershutter</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<tag>Tilt</tag>
 		</tags>
 		<state min="0" max="50" pattern="%d %%"/>
 	</channel-type>
@@ -1336,7 +1336,7 @@
 		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Motion</tag>
+			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1365,7 +1365,7 @@
 		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Motion</tag>
+			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1381,10 +1381,6 @@
 		<label>Keypad Button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="buttonAdvanced" advanced="true">
@@ -1399,10 +1395,6 @@
 		<label>Keypad Button LED Indicator</label>
 		<description>LED indicator for the associated button</description>
 		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="ledIndicatorAdvanced" advanced="true">
@@ -1431,10 +1423,6 @@
 		<label>Time Clock</label>
 		<description>Current time on the PRG</description>
 		<category>Schedule</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="schedule">
@@ -1451,7 +1439,7 @@
 		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -1502,10 +1490,6 @@
 		<label>Superschedule</label>
 		<description>superschedule</description>
 		<category>Super Schedule</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="superschedulestatus">
@@ -1537,10 +1521,6 @@
 		<label>Scene Lock</label>
 		<description>Locks/Unlocks the scene</description>
 		<category>Scene</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="sceneseq">
@@ -1548,10 +1528,6 @@
 		<label>Sequence Scenes</label>
 		<description>Adds/Removes sequencing of scenes</description>
 		<category>Scene</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="zonelock">
@@ -1559,10 +1535,6 @@
 		<label>Zone Lockout</label>
 		<description>Locks/Unlocks the zone</description>
 		<category>Zone</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="zonerampdown">
@@ -1570,10 +1542,6 @@
 		<label>Ramps Down the Zone</label>
 		<description>Starts ramping down the zone</description>
 		<category>Zone</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="zonerampup">
@@ -1581,10 +1549,6 @@
 		<label>Ramps up the Zone</label>
 		<description>Starts ramping up the zone</description>
 		<category>Zone</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="zonefade">
@@ -1601,6 +1565,10 @@
 		<label>Zone Intensity</label>
 		<description>Specifies the intensity of the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
 
@@ -1609,10 +1577,6 @@
 		<label>Zone Shade</label>
 		<description>Specifies the QED shade for the zone</description>
 		<category>Zone</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<state min="0" max="5"/>
 	</channel-type>
 

@@ -30,7 +30,7 @@
 		<label>Set Alarm</label>
 		<description>Set the alarm to a specific time (date is ignored)</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Timestamp</tag>
 		</tags>
 	</channel-type>
@@ -38,10 +38,6 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>Send a command to the clock app</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="disableAlarm">Disable Alarm</option>

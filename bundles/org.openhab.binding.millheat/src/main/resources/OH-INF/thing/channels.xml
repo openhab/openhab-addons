@@ -19,7 +19,7 @@
 		<label>Temperature Comfort Mode</label>
 		<category>Heating</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
@@ -29,7 +29,7 @@
 		<label>Temperature Sleep Mode</label>
 		<category>Heating</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
@@ -40,7 +40,7 @@
 		<description>Set temperature away mode</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
@@ -60,7 +60,7 @@
 		<label>Target Temperature</label>
 		<category>Heating</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true" min="5" max="35" step="1"/>
@@ -72,7 +72,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Energy</tag>
+			<tag>Heating</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,7 +88,7 @@
 		<description>Master ON/OFF switch for independent heater</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="fanActive">
@@ -97,8 +97,8 @@
 		<description>Current state of heater fan (if available, OFF if not found)</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<tag>Switch</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="window">
@@ -107,7 +107,7 @@
 		<description>Open window/cold air flow detection</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Airflow</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -177,17 +177,9 @@
 	<channel-type id="vacationModeStart">
 		<item-type>DateTime</item-type>
 		<label>Start of Vacation</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="vacationModeEnd">
 		<item-type>DateTime</item-type>
 		<label>End of Vacation</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

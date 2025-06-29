@@ -18,7 +18,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>FEK Temperature Set Point</label>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -202,10 +202,6 @@
 	<channel-type id="is-cooling-type">
 		<item-type>Contact</item-type>
 		<label>Currently Cooling</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-pumping-type">
@@ -216,10 +212,6 @@
 	<channel-type id="is-summer-type">
 		<item-type>Contact</item-type>
 		<label>Summer Operation Mode</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="operation-mode-type">
@@ -240,7 +232,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Temperature Heating</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -249,7 +241,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Eco Temperature Heating</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -258,7 +250,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Temperature Water</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
@@ -267,7 +259,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Eco Temperature Water</label>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
