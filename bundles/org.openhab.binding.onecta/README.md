@@ -36,12 +36,7 @@ Things that can be discovered are:
 
 | Name             | Type    | Description                                                    | Default | Required | Advanced |
 |------------------|---------|----------------------------------------------------------------|---------|----------|----------|
-| `UserId`           | text    | UserId / Emailadress Onecta account                            | N/A     | yes      | no       |
-| `Password`         | text    | Password to access Onecta account                              | N/A     | yes      | no       |
-| `refreshInterval`  | integer | Interval the device is polled in sec.                          | 60      | yes      | no       |
-| `refreshToken`  | text    | Is filled automaticly with Refresh token to speedup connection | N/A      | No       | no       |
-| `rawdataLogging`    | boolean | If true raw JSon Data is dropt in log file                     | false   | yes      | no       |
-| `stubdataFile`  | text    | Path to JSon stubdata file only for debugging                  | N/A     | no       | no       |
+| `refreshInterval`  | integer | Interval the device is polled in sec.                          | 600     | yes      | no       |
 
 
 ## Discovered Things Configuration
@@ -73,7 +68,7 @@ Other items will be updated during this time with a data refresh
 ### Thing Configuration
 
 ```java
-Bridge onecta:account:bridge "Onecta Bridge" [userId="aaaaa@bbbbbbb.xx",password="***************", refreshInterval=5, rawdataLogging=false] {
+Bridge onecta:account:bridge "Daikin Onecta Bridge" [refreshInterval=600] {
         Thing climate-control livingRoom "Onecta living room Unit" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
         Thing gateway livingRoom "Onecta living room Gateway" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
         Thing domesticHotWaterTank livingRoom "Onecta living room Watertank" [unitID="80100dc5-a289-47c1-bbdb-****************", refreshDelay=15]
@@ -84,173 +79,178 @@ Bridge onecta:account:bridge "Onecta Bridge" [userId="aaaaa@bbbbbbb.xx",password
 ### Item Configuration device
 
 ```java
-Switch               Power              "Power for the AC unit"      <switch>      ["Point"] {channel="onecta:device:bridge:livingroom:basic#power"}
-Number:Temperature   SetPoint           "SetTemp [%.1f °C]"          <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#settemp"}
-Number:Temperature   SetPointMin        "SetTempMin [%.1f °C]"       <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#settempmin", readOnly="true"}
-Number:Temperature   SetPointMax        "SetTempMax [%.1f °C]"       <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#settempmax", readOnly="true"}
-Number:Temperature   SetPointStep       "SetTempStep [%.1f °C]"      <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#settempstep", readOnly="true"}
-Number:Temperature   IndoorTemp         "Indoor temp [%.1f °C]"      <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#indoortemp", readOnly="true"}
-Number:Temperature   OutdoorTemp        "Outdoor temp [%.1f °C]"     <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#outdoortemp"  , readOnly="true"}
-Number:Temperature   LeavingWaterTemp   "LeavingWaterTemp [%.1f °C]" <Temperature> ["Point"] {channel="onecta:device:bridge:livingroom:basic#leavingwatertemp"}
-Number:Dimensionless Humidity           "The indoor humidity"        <Humidity>    ["Point"] {channel="onecta:device:bridge:livingroom:basic#humidity"}
+Switch               Power              "Power for the AC unit"      <switch>      ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#power"}
+Number:Temperature   SetPoint           "SetTemp [%.1f °C]"          <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#settemp"}
+Number:Temperature   SetPointMin        "SetTempMin [%.1f °C]"       <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#settemp-min", readOnly="true"}
+Number:Temperature   SetPointMax        "SetTempMax [%.1f °C]"       <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#settemp-max", readOnly="true"}
+Number:Temperature   SetPointStep       "SetTempStep [%.1f °C]"      <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#settemp-step", readOnly="true"}
+Number:Temperature   IndoorTemp         "Indoor temp [%.1f °C]"      <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#indoor-temp", readOnly="true"}
+Number:Temperature   OutdoorTemp        "Outdoor temp [%.1f °C]"     <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#outdoor-temp"  , readOnly="true"}
+Number:Temperature   LeavingWaterTemp   "LeavingWaterTemp [%.1f °C]" <Temperature> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#leaving-water-temp"}
+Number:Dimensionless Humidity           "The indoor humidity"        <Humidity>    ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#humidity"}
 
-String               OperationMode      "Operation mode"                           ["Point"] {channel="onecta:device:bridge:livingroom:basic#operationmode"}
-String               FanSpeed           "Fan Speed"                  <fan>         ["Point"] {channel="onecta:device:bridge:livingroom:basic#fanspeed"}
-String               FanDirHor          "Fan Swing Horizontal"       <f7:arrow_right_arrow_left_circle>["Point"] {channel="onecta:device:bridge:livingroom:basic#fandirhor"}
-String               FanDirVer          "Fan Swing Vertical"         <f7:arrow_up_arrow_down_circle>   ["Point"] {channel="onecta:device:bridge:livingroom:basic#fandirver"}
-String               FanDir             "Fan Direction"              <f7:view_3d>  ["Point"] {channel="onecta:device:bridge:livingroom:basic#fandir"}
+String               OperationMode      "Operation mode"                           ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#operation-mode"}
+String               FanSpeed           "Fan Speed"                  <fan>         ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#fan-speed"}
+String               FanDirHor          "Fan Swing Horizontal"       <f7:arrow_right_arrow_left_circle>["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#fan-dir-hor"}
+String               FanDirVer          "Fan Swing Vertical"         <f7:arrow_up_arrow_down_circle>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#fan-dir-ver"}
+String               FanDir             "Fan Direction"              <f7:view_3d>  ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#fan-dir"}
 
-Switch               Ecomode            "Ecomode"                  <switch>        ["Point"] {channel="onecta:device:bridge:livingroom:basic#economode"}
-Switch               Streamer           "Streamer mode"            <switch>        ["Point"] {channel="onecta:device:bridge:livingroom:basic#streamer"}
-Switch               Powerful           "Powerful mode"            <switch>        ["Point"] {channel="onecta:device:bridge:livingroom:basic#powerfulmode"}
-Switch               Holiday            "Holiday mode"             <switch>        ["Point"] {channel="onecta:device:bridge:livingroom:basic#holidaymode", readOnly="true"}
+Switch               Ecomode            "Ecomode"                  <switch>        ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#econo-mode"}
+Switch               Streamer           "Streamer mode"            <switch>        ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#streamer"}
+Switch               Powerful           "Powerful mode"            <switch>        ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#powerful-mode"}
+Switch               Holiday            "Holiday mode"             <switch>        ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#holiday-mode", readOnly="true"}
 
-Number:Temperature   TargetTemp         "TargetTemp [%.1f °C]"     <Temperature>   ["Point"] {channel="onecta:device:bridge:livingroom:basic#targettemp"}
-Number:Temperature   TargetTempMin      "TargetTempMin [%.1f °C]"  <Temperature>   ["Point"] {channel="onecta:device:bridge:livingroom:basic#targettempmin", readOnly="true"}
-Number:Temperature   TargetTempMax      "TargetTempMax [%.1f °C]"  <Temperature>   ["Point"] {channel="onecta:device:bridge:livingroom:basic#targettempmax", readOnly="true"}
-Number:Temperature   TargetTempStep     "TargetTempStep [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:device:bridge:livingroom:basic#targettempstep", readOnly="true"}
+Number:Temperature   TargetTemp         "TargetTemp [%.1f °C]"     <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp"}
+Number:Temperature   TargetTempMin      "TargetTempMin [%.1f °C]"  <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-min", readOnly="true"}
+Number:Temperature   TargetTempMax      "TargetTempMax [%.1f °C]"  <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-max", readOnly="true"}
+Number:Temperature   TargetTempStep     "TargetTempStep [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-step", readOnly="true"}
 
-String      DemandControl               "Demand Controle"                          ["Point"] {channel="onecta:device:bridge:livingroom:demandcontrol#demandcontrol"}
-Number      DemandControlFixedValue     "Demand Control (fixed)"                   ["Point"] {channel="onecta:device:bridge:livingroom:demandcontrol#demandcontrolfixedvalue"}
-Number      DemandControlFixedMinValue  "Demand Control fixed Min value"           ["Point"] {channel="onecta:device:bridge:livingroom:demandcontrol#demandcontrolfixedminvalue"}
-Number      DemandControlFixedMaxValue  "Demand Control fixed Max value"           ["Point"] {channel="onecta:device:bridge:livingroom:demandcontrol#demandcontrolfixedmaxvalue"}
-Number      DemandControlFixedStepValue "Demand Control fixed step value"          ["Point"] {channel="onecta:device:bridge:livingroom:demandcontrol#demandcontrolfixedstepvalue"}
+Number:Temperature   SetPointLeavingWaterOffset     "SetPointLeavingWaterOffset [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#set-leaving-water-offset", readOnly="true"}
+Number:Temperature   SetPointLeavingWaterTemp     "SetPointLeavingWaterTemp [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#set-leaving-water-temp", readOnly="true"}
 
-Number:Energy   EnergyCoolingCurrentYear "The energy usage for cooling current year total" <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingcurrentyear"}
-Number:Energy   EnergyCoolingCurrentDay  "The energy usage for cooling current day total"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingcurrentday"}
-Number:Energy   EnergyHeatingCurrentYear "The energy usage for heating current year total" <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energyheatingcurrentyear"}
-Number:Energy   EnergyHeatingCurrentDay  "The energy usage for heating current day total"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energyheatingcurrentday"}
+Number:Temperature   TargetTempStep     "TargetTempStep [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-step", readOnly="true"}
+DateTime    TimeStamp "Time stamp"          ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#timestamp"}
 
-Number:Energy   EnergyCoolingDay0 "Energy Cooling yesterday (00:00 - 02:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-0"}
-Number:Energy   EnergyCoolingDay1 "Energy Cooling yesterday (02:00 - 04:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-1"}
-Number:Energy   EnergyCoolingDay2 "Energy Cooling yesterday (04:00 - 06:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-2"}
-Number:Energy   EnergyCoolingDay3 "Energy Cooling yesterday (06:00 - 08:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-3"}
-Number:Energy   EnergyCoolingDay4 "Energy Cooling yesterday (08:00 - 10:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-4"}
-Number:Energy   EnergyCoolingDay5 "Energy Cooling yesterday (10:00 - 12:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-5"}
-Number:Energy   EnergyCoolingDay6 "Energy Cooling yesterday (12:00 - 14:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-6"}
-Number:Energy   EnergyCoolingDay7 "Energy Cooling yesterday (14:00 - 16:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-7"}
-Number:Energy   EnergyCoolingDay8 "Energy Cooling yesterday (16:00 - 18:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-8"}
-Number:Energy   EnergyCoolingDay9 "Energy Cooling yesterday (18:00 - 20:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-9"}
-Number:Energy   EnergyCoolingDay10 "Energy Cooling yesterday (20:00 - 22:00)" <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-10"}
-Number:Energy   EnergyCoolingDay11 "Energy Cooling yesterday (22:00 - 24:00)" <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-11"}
-Number:Energy   EnergyCoolingDay12 "Energy Cooling today (00:00 - 02:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-12"}
-Number:Energy   EnergyCoolingDay13 "Energy Cooling today (02:00 - 04:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-13"}
-Number:Energy   EnergyCoolingDay14 "Energy Cooling today (04:00 - 06:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-14"}
-Number:Energy   EnergyCoolingDay15 "Energy Cooling today (06:00 - 08:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-15"}
-Number:Energy   EnergyCoolingDay16 "Energy Cooling today (08:00 - 10:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-16"}
-Number:Energy   EnergyCoolingDay17 "Energy Cooling today (10:00 - 12:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-17"}
-Number:Energy   EnergyCoolingDay18 "Energy Cooling today (12:00 - 14:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-18"}
-Number:Energy   EnergyCoolingDay19 "Energy Cooling today (14:00 - 16:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-19"}
-Number:Energy   EnergyCoolingDay20 "Energy Cooling today (16:00 - 18:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-20"}
-Number:Energy   EnergyCoolingDay21 "Energy Cooling today (18:00 - 20:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-21"}
-Number:Energy   EnergyCoolingDay22 "Energy Cooling today (20:00 - 22:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-22"}
-Number:Energy   EnergyCoolingDay23 "Energy Cooling today (22:00 - 24:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingday-23"}
+String      DemandControl               "Demand Controle"                          ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control"}
+Number      DemandControlFixedValue     "Demand Control (fixed)"                   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-value"}
+Number      DemandControlFixedMinValue  "Demand Control fixed Min value"           ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-min-value"}
+Number      DemandControlFixedMaxValue  "Demand Control fixed Max value"           ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-max-value"}
+Number      DemandControlFixedStepValue "Demand Control fixed step value"          ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-step-value"}
 
-Number:Energy   EnergyCoolingWeek0 "Energy Cooling last week Monday"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-0"}
-Number:Energy   EnergyCoolingWeek1 "Energy Cooling last week Tuesday"         <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-1"}
-Number:Energy   EnergyCoolingWeek2 "Energy Cooling last week Wednesday"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-2"}
-Number:Energy   EnergyCoolingWeek3 "Energy Cooling last week Thursday"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-3"}
-Number:Energy   EnergyCoolingWeek4 "Energy Cooling last week Friday"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-4"}
-Number:Energy   EnergyCoolingWeek5 "Energy Cooling last week Saturday"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-5"}
-Number:Energy   EnergyCoolingWeek6 "Energy Cooling last week Sunday"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-6"}
-Number:Energy   EnergyCoolingWeek7 "Energy Cooling current week Monday"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-7"}
-Number:Energy   EnergyCoolingWeek8 "Energy Cooling current week Tuesday"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-8"}
-Number:Energy   EnergyCoolingWeek9 "Energy Cooling current week Wednesday"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-9"}
-Number:Energy   EnergyCoolingWeek10 "Energy Cooling current week Thursday"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-10"}
-Number:Energy   EnergyCoolingWeek11 "Energy Cooling current week Friday"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-11"}
-Number:Energy   EnergyCoolingWeek12 "Energy Cooling current week Saturday"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-12"}
-Number:Energy   EnergyCoolingWeek13 "Energy Cooling current week Sunday"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingweek-13"}
+Number:Energy   EnergyCoolingCurrentYear "The energy usage for cooling current year total" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-current-year"}
+Number:Energy   EnergyCoolingCurrentDay  "The energy usage for cooling current day total"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-current-day"}
+Number:Energy   EnergyHeatingCurrentYear "The energy usage for heating current year total" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-current-year"}
+Number:Energy   EnergyHeatingCurrentDay  "The energy usage for heating current day total"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-current-day"}
 
-Number:Energy   EnergyCoolingMonth0 "Energy Cooling last year January"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-0"}
-Number:Energy   EnergyCoolingMonth1 "Energy Cooling last year February"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-1"}
-Number:Energy   EnergyCoolingMonth2 "Energy Cooling last year March"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-2"}
-Number:Energy   EnergyCoolingMonth3 "Energy Cooling last year April"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-3"}
-Number:Energy   EnergyCoolingMonth4 "Energy Cooling last year May"            <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-4"}
-Number:Energy   EnergyCoolingMonth5 "Energy Cooling last year June"           <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-5"}
-Number:Energy   EnergyCoolingMonth6 "Energy Cooling last year July"           <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-6"}
-Number:Energy   EnergyCoolingMonth7 "Energy Cooling last year August"         <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-7"}
-Number:Energy   EnergyCoolingMonth8 "Energy Cooling last year September"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-8"}
-Number:Energy   EnergyCoolingMonth9 "Energy Cooling last year October"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-9"}
-Number:Energy   EnergyCoolingMonth10 "Energy Cooling last year November"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-10"}
-Number:Energy   EnergyCoolingMonth11 "Energy Cooling last year December"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-11"}
-Number:Energy   EnergyCoolingMonth12 "Energy Cooling current year January"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-12"}
-Number:Energy   EnergyCoolingMonth13 "Energy Cooling current year February"   <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-13"}
-Number:Energy   EnergyCoolingMonth14 "Energy Cooling current year March"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-14"}
-Number:Energy   EnergyCoolingMonth15 "Energy Cooling current year April"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-15"}
-Number:Energy   EnergyCoolingMonth16 "Energy Cooling current year May"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-16"}
-Number:Energy   EnergyCoolingMonth17 "Energy Cooling current year June"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-17"}
-Number:Energy   EnergyCoolingMonth18 "Energy Cooling current year July"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-18"}
-Number:Energy   EnergyCoolingMonth19 "Energy Cooling current year August"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-19"}
-Number:Energy   EnergyCoolingMonth20 "Energy Cooling current year September"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-20"}
-Number:Energy   EnergyCoolingMonth21 "Energy Cooling current year October"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-21"}
-Number:Energy   EnergyCoolingMonth22 "Energy Cooling current year November"   <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-22"}
-Number:Energy   EnergyCoolingMonth23 "Energy Cooling current year December"   <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-cooling#energycoolingmonth-23"}
+Number:Energy   EnergyCoolingDay0 "Energy Cooling yesterday (00:00 - 02:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-0"}
+Number:Energy   EnergyCoolingDay1 "Energy Cooling yesterday (02:00 - 04:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-1"}
+Number:Energy   EnergyCoolingDay2 "Energy Cooling yesterday (04:00 - 06:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-2"}
+Number:Energy   EnergyCoolingDay3 "Energy Cooling yesterday (06:00 - 08:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-3"}
+Number:Energy   EnergyCoolingDay4 "Energy Cooling yesterday (08:00 - 10:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-4"}
+Number:Energy   EnergyCoolingDay5 "Energy Cooling yesterday (10:00 - 12:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-5"}
+Number:Energy   EnergyCoolingDay6 "Energy Cooling yesterday (12:00 - 14:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-6"}
+Number:Energy   EnergyCoolingDay7 "Energy Cooling yesterday (14:00 - 16:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-7"}
+Number:Energy   EnergyCoolingDay8 "Energy Cooling yesterday (16:00 - 18:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-8"}
+Number:Energy   EnergyCoolingDay9 "Energy Cooling yesterday (18:00 - 20:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-9"}
+Number:Energy   EnergyCoolingDay10 "Energy Cooling yesterday (20:00 - 22:00)" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-10"}
+Number:Energy   EnergyCoolingDay11 "Energy Cooling yesterday (22:00 - 24:00)" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-11"}
+Number:Energy   EnergyCoolingDay12 "Energy Cooling today (00:00 - 02:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-12"}
+Number:Energy   EnergyCoolingDay13 "Energy Cooling today (02:00 - 04:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-13"}
+Number:Energy   EnergyCoolingDay14 "Energy Cooling today (04:00 - 06:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-14"}
+Number:Energy   EnergyCoolingDay15 "Energy Cooling today (06:00 - 08:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-15"}
+Number:Energy   EnergyCoolingDay16 "Energy Cooling today (08:00 - 10:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-16"}
+Number:Energy   EnergyCoolingDay17 "Energy Cooling today (10:00 - 12:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-17"}
+Number:Energy   EnergyCoolingDay18 "Energy Cooling today (12:00 - 14:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-18"}
+Number:Energy   EnergyCoolingDay19 "Energy Cooling today (14:00 - 16:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-19"}
+Number:Energy   EnergyCoolingDay20 "Energy Cooling today (16:00 - 18:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-20"}
+Number:Energy   EnergyCoolingDay21 "Energy Cooling today (18:00 - 20:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-21"}
+Number:Energy   EnergyCoolingDay22 "Energy Cooling today (20:00 - 22:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-22"}
+Number:Energy   EnergyCoolingDay23 "Energy Cooling today (22:00 - 24:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-day-23"}
 
-Number:Energy   EnergyHeatingDay0 "Energy Heating yesterday (00:00 - 02:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-0"}
-Number:Energy   EnergyHeatingDay1 "Energy Heating yesterday (02:00 - 04:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-1"}
-Number:Energy   EnergyHeatingDay2 "Energy Heating yesterday (04:00 - 06:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-2"}
-Number:Energy   EnergyHeatingDay3 "Energy Heating yesterday (06:00 - 08:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-3"}
-Number:Energy   EnergyHeatingDay4 "Energy Heating yesterday (08:00 - 10:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-4"}
-Number:Energy   EnergyHeatingDay5 "Energy Heating yesterday (10:00 - 12:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-5"}
-Number:Energy   EnergyHeatingDay6 "Energy Heating yesterday (12:00 - 14:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-6"}
-Number:Energy   EnergyHeatingDay7 "Energy Heating yesterday (14:00 - 16:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-7"}
-Number:Energy   EnergyHeatingDay8 "Energy Heating yesterday (16:00 - 18:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-8"}
-Number:Energy   EnergyHeatingDay9 "Energy Heating yesterday (18:00 - 20:00)"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-9"}
-Number:Energy   EnergyHeatingDay10 "Energy Heating yesterday (20:00 - 22:00)" <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-10"}
-Number:Energy   EnergyHeatingDay11 "Energy Heating yesterday (22:00 - 24:00)" <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-11"}
-Number:Energy   EnergyHeatingDay12 "Energy Heating today (00:00 - 02:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-12"}
-Number:Energy   EnergyHeatingDay13 "Energy Heating today (02:00 - 04:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-13"}
-Number:Energy   EnergyHeatingDay14 "Energy Heating today (04:00 - 06:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-14"}
-Number:Energy   EnergyHeatingDay15 "Energy Heating today (06:00 - 08:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-15"}
-Number:Energy   EnergyHeatingDay16 "Energy Heating today (08:00 - 10:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-16"}
-Number:Energy   EnergyHeatingDay17 "Energy Heating today (10:00 - 12:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-17"}
-Number:Energy   EnergyHeatingDay18 "Energy Heating today (12:00 - 14:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-18"}
-Number:Energy   EnergyHeatingDay19 "Energy Heating today (14:00 - 16:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-19"}
-Number:Energy   EnergyHeatingDay20 "Energy Heating today (16:00 - 18:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-20"}
-Number:Energy   EnergyHeatingDay21 "Energy Heating today (18:00 - 20:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-21"}
-Number:Energy   EnergyHeatingDay22 "Energy Heating today (20:00 - 22:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-22"}
-Number:Energy   EnergyHeatingDay23 "Energy Heating today (22:00 - 24:00)"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingday-23"}
+Number:Energy   EnergyCoolingWeek0 "Energy Cooling last week Monday"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-0"}
+Number:Energy   EnergyCoolingWeek1 "Energy Cooling last week Tuesday"         <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-1"}
+Number:Energy   EnergyCoolingWeek2 "Energy Cooling last week Wednesday"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-2"}
+Number:Energy   EnergyCoolingWeek3 "Energy Cooling last week Thursday"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-3"}
+Number:Energy   EnergyCoolingWeek4 "Energy Cooling last week Friday"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-4"}
+Number:Energy   EnergyCoolingWeek5 "Energy Cooling last week Saturday"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-5"}
+Number:Energy   EnergyCoolingWeek6 "Energy Cooling last week Sunday"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-6"}
+Number:Energy   EnergyCoolingWeek7 "Energy Cooling current week Monday"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-7"}
+Number:Energy   EnergyCoolingWeek8 "Energy Cooling current week Tuesday"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-8"}
+Number:Energy   EnergyCoolingWeek9 "Energy Cooling current week Wednesday"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-9"}
+Number:Energy   EnergyCoolingWeek10 "Energy Cooling current week Thursday"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-10"}
+Number:Energy   EnergyCoolingWeek11 "Energy Cooling current week Friday"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-11"}
+Number:Energy   EnergyCoolingWeek12 "Energy Cooling current week Saturday"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-12"}
+Number:Energy   EnergyCoolingWeek13 "Energy Cooling current week Sunday"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-week-13"}
 
-Number:Energy   EnergyHeatingWeek0 "Energy Heating last week Monday"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-0"}
-Number:Energy   EnergyHeatingWeek1 "Energy Heating last week Tuesday"         <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-1"}
-Number:Energy   EnergyHeatingWeek2 "Energy Heating last week Wednesday"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-2"}
-Number:Energy   EnergyHeatingWeek3 "Energy Heating last week Thursday"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-3"}
-Number:Energy   EnergyHeatingWeek4 "Energy Heating last week Friday"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-4"}
-Number:Energy   EnergyHeatingWeek5 "Energy Heating last week Saturday"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-5"}
-Number:Energy   EnergyHeatingWeek6 "Energy Heating last week Sunday"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-6"}
-Number:Energy   EnergyHeatingWeek7 "Energy Heating current week Monday"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-7"}
-Number:Energy   EnergyHeatingWeek8 "Energy Heating current week Tuesday"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-8"}
-Number:Energy   EnergyHeatingWeek9 "Energy Heating current week Wednesday"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-9"}
-Number:Energy   EnergyHeatingWeek10 "Energy Heating current week Thursday"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-10"}
-Number:Energy   EnergyHeatingWeek11 "Energy Heating current week Friday"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-11"}
-Number:Energy   EnergyHeatingWeek12 "Energy Heating current week Saturday"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-12"}
-Number:Energy   EnergyHeatingWeek13 "Energy Heating current week Sunday"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingweek-13"}
+Number:Energy   EnergyCoolingMonth0 "Energy Cooling last year January"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-0"}
+Number:Energy   EnergyCoolingMonth1 "Energy Cooling last year February"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-1"}
+Number:Energy   EnergyCoolingMonth2 "Energy Cooling last year March"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-2"}
+Number:Energy   EnergyCoolingMonth3 "Energy Cooling last year April"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-3"}
+Number:Energy   EnergyCoolingMonth4 "Energy Cooling last year May"            <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-4"}
+Number:Energy   EnergyCoolingMonth5 "Energy Cooling last year June"           <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-5"}
+Number:Energy   EnergyCoolingMonth6 "Energy Cooling last year July"           <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-6"}
+Number:Energy   EnergyCoolingMonth7 "Energy Cooling last year August"         <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-7"}
+Number:Energy   EnergyCoolingMonth8 "Energy Cooling last year September"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-8"}
+Number:Energy   EnergyCoolingMonth9 "Energy Cooling last year October"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-9"}
+Number:Energy   EnergyCoolingMonth10 "Energy Cooling last year November"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-10"}
+Number:Energy   EnergyCoolingMonth11 "Energy Cooling last year December"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-11"}
+Number:Energy   EnergyCoolingMonth12 "Energy Cooling current year January"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-12"}
+Number:Energy   EnergyCoolingMonth13 "Energy Cooling current year February"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-13"}
+Number:Energy   EnergyCoolingMonth14 "Energy Cooling current year March"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-14"}
+Number:Energy   EnergyCoolingMonth15 "Energy Cooling current year April"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-15"}
+Number:Energy   EnergyCoolingMonth16 "Energy Cooling current year May"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-16"}
+Number:Energy   EnergyCoolingMonth17 "Energy Cooling current year June"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-17"}
+Number:Energy   EnergyCoolingMonth18 "Energy Cooling current year July"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-18"}
+Number:Energy   EnergyCoolingMonth19 "Energy Cooling current year August"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-19"}
+Number:Energy   EnergyCoolingMonth20 "Energy Cooling current year September"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-20"}
+Number:Energy   EnergyCoolingMonth21 "Energy Cooling current year October"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-21"}
+Number:Energy   EnergyCoolingMonth22 "Energy Cooling current year November"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-22"}
+Number:Energy   EnergyCoolingMonth23 "Energy Cooling current year December"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-month-23"}
 
-Number:Energy   EnergyHeatingMonth0 "Energy Heating last year January"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-0"}
-Number:Energy   EnergyHeatingMonth1 "Energy Heating last year February"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-1"}
-Number:Energy   EnergyHeatingMonth2 "Energy Heating last year March"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-2"}
-Number:Energy   EnergyHeatingMonth3 "Energy Heating last year April"          <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-3"}
-Number:Energy   EnergyHeatingMonth4 "Energy Heating last year May"            <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-4"}
-Number:Energy   EnergyHeatingMonth5 "Energy Heating last year June"           <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-5"}
-Number:Energy   EnergyHeatingMonth6 "Energy Heating last year July"           <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-6"}
-Number:Energy   EnergyHeatingMonth7 "Energy Heating last year August"         <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-7"}
-Number:Energy   EnergyHeatingMonth8 "Energy Heating last year September"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-8"}
-Number:Energy   EnergyHeatingMonth9 "Energy Heating last year October"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-9"}
-Number:Energy   EnergyHeatingMonth10 "Energy Heating last year November"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-10"}
-Number:Energy   EnergyHeatingMonth11 "Energy Heating last year December"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-11"}
-Number:Energy   EnergyHeatingMonth12 "Energy Heating current year January"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-12"}
-Number:Energy   EnergyHeatingMonth13 "Energy Heating current year February"   <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-13"}
-Number:Energy   EnergyHeatingMonth14 "Energy Heating current year March"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-14"}
-Number:Energy   EnergyHeatingMonth15 "Energy Heating current year April"      <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-15"}
-Number:Energy   EnergyHeatingMonth16 "Energy Heating current year May"        <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-16"}
-Number:Energy   EnergyHeatingMonth17 "Energy Heating current year June"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-17"}
-Number:Energy   EnergyHeatingMonth18 "Energy Heating current year July"       <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-18"}
-Number:Energy   EnergyHeatingMonth19 "Energy Heating current year August"     <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-19"}
-Number:Energy   EnergyHeatingMonth20 "Energy Heating current year September"  <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-20"}
-Number:Energy   EnergyHeatingMonth21 "Energy Heating current year October"    <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-21"}
-Number:Energy   EnergyHeatingMonth22 "Energy Heating current year November"   <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-22"}
-Number:Energy   EnergyHeatingMonth23 "Energy Heating current year December"   <Energy> ["Point"] {channel="onecta:device:bridge:livingroom:consumption-data-heating#energyheatingmonth-23"}
+Number:Energy   EnergyHeatingDay0 "Energy Heating yesterday (00:00 - 02:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-0"}
+Number:Energy   EnergyHeatingDay1 "Energy Heating yesterday (02:00 - 04:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-1"}
+Number:Energy   EnergyHeatingDay2 "Energy Heating yesterday (04:00 - 06:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-2"}
+Number:Energy   EnergyHeatingDay3 "Energy Heating yesterday (06:00 - 08:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-3"}
+Number:Energy   EnergyHeatingDay4 "Energy Heating yesterday (08:00 - 10:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-4"}
+Number:Energy   EnergyHeatingDay5 "Energy Heating yesterday (10:00 - 12:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-5"}
+Number:Energy   EnergyHeatingDay6 "Energy Heating yesterday (12:00 - 14:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-6"}
+Number:Energy   EnergyHeatingDay7 "Energy Heating yesterday (14:00 - 16:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-7"}
+Number:Energy   EnergyHeatingDay8 "Energy Heating yesterday (16:00 - 18:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-8"}
+Number:Energy   EnergyHeatingDay9 "Energy Heating yesterday (18:00 - 20:00)"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-9"}
+Number:Energy   EnergyHeatingDay10 "Energy Heating yesterday (20:00 - 22:00)" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-10"}
+Number:Energy   EnergyHeatingDay11 "Energy Heating yesterday (22:00 - 24:00)" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-11"}
+Number:Energy   EnergyHeatingDay12 "Energy Heating today (00:00 - 02:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-12"}
+Number:Energy   EnergyHeatingDay13 "Energy Heating today (02:00 - 04:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-13"}
+Number:Energy   EnergyHeatingDay14 "Energy Heating today (04:00 - 06:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-14"}
+Number:Energy   EnergyHeatingDay15 "Energy Heating today (06:00 - 08:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-15"}
+Number:Energy   EnergyHeatingDay16 "Energy Heating today (08:00 - 10:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-16"}
+Number:Energy   EnergyHeatingDay17 "Energy Heating today (10:00 - 12:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-17"}
+Number:Energy   EnergyHeatingDay18 "Energy Heating today (12:00 - 14:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-18"}
+Number:Energy   EnergyHeatingDay19 "Energy Heating today (14:00 - 16:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-19"}
+Number:Energy   EnergyHeatingDay20 "Energy Heating today (16:00 - 18:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-20"}
+Number:Energy   EnergyHeatingDay21 "Energy Heating today (18:00 - 20:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-21"}
+Number:Energy   EnergyHeatingDay22 "Energy Heating today (20:00 - 22:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-22"}
+Number:Energy   EnergyHeatingDay23 "Energy Heating today (22:00 - 24:00)"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-day-23"}
 
+Number:Energy   EnergyHeatingWeek0 "Energy Heating last week Monday"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-0"}
+Number:Energy   EnergyHeatingWeek1 "Energy Heating last week Tuesday"         <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-1"}
+Number:Energy   EnergyHeatingWeek2 "Energy Heating last week Wednesday"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-2"}
+Number:Energy   EnergyHeatingWeek3 "Energy Heating last week Thursday"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-3"}
+Number:Energy   EnergyHeatingWeek4 "Energy Heating last week Friday"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-4"}
+Number:Energy   EnergyHeatingWeek5 "Energy Heating last week Saturday"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-5"}
+Number:Energy   EnergyHeatingWeek6 "Energy Heating last week Sunday"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-6"}
+Number:Energy   EnergyHeatingWeek7 "Energy Heating current week Monday"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-7"}
+Number:Energy   EnergyHeatingWeek8 "Energy Heating current week Tuesday"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-8"}
+Number:Energy   EnergyHeatingWeek9 "Energy Heating current week Wednesday"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-9"}
+Number:Energy   EnergyHeatingWeek10 "Energy Heating current week Thursday"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-10"}
+Number:Energy   EnergyHeatingWeek11 "Energy Heating current week Friday"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-11"}
+Number:Energy   EnergyHeatingWeek12 "Energy Heating current week Saturday"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-12"}
+Number:Energy   EnergyHeatingWeek13 "Energy Heating current week Sunday"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-week-13"}
+
+Number:Energy   EnergyHeatingMonth0 "Energy Heating last year January"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-0"}
+Number:Energy   EnergyHeatingMonth1 "Energy Heating last year February"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-1"}
+Number:Energy   EnergyHeatingMonth2 "Energy Heating last year March"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-2"}
+Number:Energy   EnergyHeatingMonth3 "Energy Heating last year April"          <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-3"}
+Number:Energy   EnergyHeatingMonth4 "Energy Heating last year May"            <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-4"}
+Number:Energy   EnergyHeatingMonth5 "Energy Heating last year June"           <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-5"}
+Number:Energy   EnergyHeatingMonth6 "Energy Heating last year July"           <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-6"}
+Number:Energy   EnergyHeatingMonth7 "Energy Heating last year August"         <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-7"}
+Number:Energy   EnergyHeatingMonth8 "Energy Heating last year September"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-8"}
+Number:Energy   EnergyHeatingMonth9 "Energy Heating last year October"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-9"}
+Number:Energy   EnergyHeatingMonth10 "Energy Heating last year November"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-10"}
+Number:Energy   EnergyHeatingMonth11 "Energy Heating last year December"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-11"}
+Number:Energy   EnergyHeatingMonth12 "Energy Heating current year January"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-12"}
+Number:Energy   EnergyHeatingMonth13 "Energy Heating current year February"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-13"}
+Number:Energy   EnergyHeatingMonth14 "Energy Heating current year March"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-14"}
+Number:Energy   EnergyHeatingMonth15 "Energy Heating current year April"      <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-15"}
+Number:Energy   EnergyHeatingMonth16 "Energy Heating current year May"        <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-16"}
+Number:Energy   EnergyHeatingMonth17 "Energy Heating current year June"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-17"}
+Number:Energy   EnergyHeatingMonth18 "Energy Heating current year July"       <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-18"}
+Number:Energy   EnergyHeatingMonth19 "Energy Heating current year August"     <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-19"}
+Number:Energy   EnergyHeatingMonth20 "Energy Heating current year September"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-20"}
+Number:Energy   EnergyHeatingMonth21 "Energy Heating current year October"    <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-21"}
+Number:Energy   EnergyHeatingMonth22 "Energy Heating current year November"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-22"}
+Number:Energy   EnergyHeatingMonth23 "Energy Heating current year December"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-23"}
 ```
 
 ### Item Configuration gateway

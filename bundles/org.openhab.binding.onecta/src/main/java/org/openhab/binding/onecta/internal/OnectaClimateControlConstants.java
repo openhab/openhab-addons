@@ -52,7 +52,7 @@ public class OnectaClimateControlConstants {
     public static final String CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP = "basic#set-leaving-water-temp";
     public static final String CHANNEL_AC_TIMESTAMP = "basic#timestamp";
     public static final String CHANNEL_AC_DEMANDCONTROL = "demandcontrol#demand-control";
-    public static final String CHANNEL_AC_DEMANDCONTROLFIXEDVALUE = "demandcontrol#demand-controlfixedvalue";
+    public static final String CHANNEL_AC_DEMANDCONTROLFIXEDVALUE = "demandcontrol#demand-control-fixed-value";
     public static final String CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE = "demandcontrol#demand-control-fixed-step-value";
     public static final String CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE = "demandcontrol#demand-control-fixed-min-value";
     public static final String CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE = "demandcontrol#demand-control-fixed-max-value";

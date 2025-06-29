@@ -77,7 +77,7 @@
 		<description>Demandcontrol related information</description>
 		<channels>
 			<channel id="demand-control" typeId="acunit-demand-control"/>
-			<channel id="demand-controlfixedvalue" typeId="acunit-demand-controlfixedvalue"/>
+			<channel id="demand-control-fixed-value" typeId="acunit-demand-control-fixed-value"/>
 			<channel id="demand-control-fixed-step-value" typeId="acunit-demand-control-fixed-step-value"/>
 			<channel id="demand-control-fixed-min-value" typeId="acunit-demand-control-fixed-min-value"/>
 			<channel id="demand-control-fixed-max-value" typeId="acunit-demand-control-fixed-max-value"/>
@@ -1775,7 +1775,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="acunit-demand-controlfixedvalue">
+	<channel-type id="acunit-demand-control-fixed-value">
 		<item-type>Number</item-type>
 		<label>Demand Control fixed Value</label>
 		<description>Value of fixed demand control. Only available when Demand Control is set to FIXED</description>

@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
-import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
@@ -49,6 +48,8 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     private static final int REFRESH_MINUTES = 5;
 
+    private Map<ManagementPoint, ThingTypeUID> discoveryMap = new HashMap<>();
+
     @Nullable
     private final OnectaConnectionClient onectaConnectionClient = OnectaConfiguration.getOnectaConnectionClient();;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
@@ -56,6 +57,10 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
     @Activate
     public DeviceDiscoveryService() {
         super(OnectaBridgeHandler.class, SUPPORTED_THING_TYPES, 10);
+        discoveryMap.put(ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
+        discoveryMap.put(ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
+        discoveryMap.put(ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
+        discoveryMap.put(ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
     }
 
     @Override
@@ -102,32 +107,39 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
         List<Unit> units = onectaConnectionClient.getUnits().getAll();
 
         for (Unit unit : units) {
-            thingDiscover(unit, ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
-            thingDiscover(unit, ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
-            thingDiscover(unit, ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
-            thingDiscover(unit, ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
+            thingDiscover(unit);
         }
     }
 
-    protected void thingDiscover(Unit unit, Enums.ManagementPoint onectaManagementPoint, ThingTypeUID thingTypeUID) {
-        if (unit.findManagementPointsByType(onectaManagementPoint.getValue()) != null) {
-            ThingUID bridgeUID = this.thingHandler.getThing().getUID();
-            String unitId = unit.getId();
-            String unitName = unit.findManagementPointsByType(ManagementPoint.CLIMATECONTROL.getValue()).getNameValue();
-            unitName = !unitName.isEmpty() ? unitName : unitId;
-            Map<String, Object> properties = new LinkedHashMap<>();
-            properties.put("unitID", unitId);
+    protected void thingDiscover(Unit unit) {
+        List<String> discoveredThings = new ArrayList<>();
+        String unitId = unit.getId();
+        String unitName = unit.findManagementPointsByType(ManagementPoint.CLIMATECONTROL.getValue()).getNameValue();
+        unitName = !unitName.isEmpty() ? unitName : unitId;
 
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel(OnectaConfiguration.getTranslation()
-                            .getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
-                    .build();
+        for (Map.Entry<ManagementPoint, ThingTypeUID> entry : discoveryMap.entrySet()) {
+            ManagementPoint onectaManagementPoint = entry.getKey();
+            ThingTypeUID thingTypeUID = entry.getValue();
 
-            thingDiscovered(discoveryResult);
-            logger.debug("Discovered a onecta {} unit '{}' with ID '{}'", onectaManagementPoint.getValue(), unitName,
-                    unitId);
+            if (unit.findManagementPointsByType(onectaManagementPoint.getValue()) != null) {
+                discoveredThings.add(thingTypeUID.getId());
+                ThingUID bridgeUID = this.thingHandler.getThing().getUID();
+                Map<String, Object> properties = new LinkedHashMap<>();
+                properties.put("unitID", unitId);
+
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(bridgeUID).withLabel(OnectaConfiguration.getTranslation()
+                                .getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
+                        .build();
+
+                thingDiscovered(discoveryResult);
+                logger.debug("Discovered a onecta {} unit '{}' with ID '{}'", onectaManagementPoint.getValue(),
+                        unitName, unitId);
+            }
         }
+
+        thingHandler.getThing().setProperty(unitName + " (" + String.join(", ", discoveredThings) + ")", unitId);
     }
 
     @Override
