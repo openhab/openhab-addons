@@ -105,6 +105,10 @@
 	<channel-type id="heating">
 		<item-type>Contact</item-type>
 		<label>Heating</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomTemperature">
@@ -154,18 +158,10 @@
 	<channel-type id="comfortEndTime">
 		<item-type>DateTime</item-type>
 		<label>End Time of Comfort Mode</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="boostEndTime">
 		<item-type>DateTime</item-type>
 		<label>End Time of Boost Mode</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="manualSetpoint">
 		<item-type>Number:Temperature</item-type>
@@ -189,17 +185,9 @@
 	<channel-type id="vacationBeginDay">
 		<item-type>Switch</item-type>
 		<label>Vacation Begin Day</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="vacationEndDay">
 		<item-type>Switch</item-type>
 		<label>Vacation End Day</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

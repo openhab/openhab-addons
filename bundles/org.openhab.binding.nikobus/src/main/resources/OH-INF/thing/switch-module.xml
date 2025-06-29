@@ -61,7 +61,7 @@
 		<description>Switch Module's Output</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 

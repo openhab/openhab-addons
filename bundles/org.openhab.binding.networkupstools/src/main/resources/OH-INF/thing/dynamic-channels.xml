@@ -8,6 +8,10 @@
 		<item-type>String</item-type>
 		<label>String</label>
 		<description>String channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config"/>
 	</channel-type>
@@ -66,10 +70,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Time</label>
 		<description>Time channel</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>

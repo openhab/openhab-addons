@@ -21,10 +21,6 @@
 		<label>Thermostat Temperature Offset</label>
 		<description>Gets or sets the temperature offset for this thermostat</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -35,7 +31,7 @@
 		<category>switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Heating</tag>
 		</tags>
 	</channel-type>
 
@@ -46,7 +42,7 @@
 		<category>switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Airconditioning</tag>
 		</tags>
 	</channel-type>
 
@@ -73,10 +69,6 @@
 		<label>Lock</label>
 		<description>Locks the switch state of the Plugwise Smart plug</description>
 		<category>switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="chState">
@@ -84,6 +76,10 @@
 		<label>Central Heating Active</label>
 		<description>Is the boiler active for central heating, On or OFF</description>
 		<category>switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -94,7 +90,7 @@
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Heating</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -106,7 +102,7 @@
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Airconditioning</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -118,7 +114,7 @@
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Heating</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -148,10 +144,6 @@
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Total operation time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -159,10 +151,6 @@
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>DHW Operation Time</label>
 		<description>Total operation time for domestic hot water</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -275,10 +263,6 @@
 		<label>Max Boiler Temperature</label>
 		<description>Gets the maximum temperature of this boiler</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -299,6 +283,10 @@
 		<label>Preset Scene</label>
 		<description>Gets or sets the preset scene of the zone</description>
 		<category>heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="home">Home</option>

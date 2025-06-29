@@ -12,6 +12,7 @@
 		<description>Current alarm description, if any</description>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -19,6 +20,10 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<description>Current alert description, if any, to notify a shortage of salt</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="flow" advanced="true">
@@ -37,6 +42,10 @@
 		<item-type>String</item-type>
 		<label>Cycle</label>
 		<description>Indicates the stage of the regeneration cycle</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="time" advanced="true">
@@ -55,6 +64,10 @@
 		<item-type>Number</item-type>
 		<label>Water Hardness</label>
 		<description>Water hardness expressed using the chosen hardness unit</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cylinderstate">
@@ -75,7 +88,7 @@
 		<description>Start immediate regeneration</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="regeneratelater">
@@ -100,6 +113,10 @@
 		<item-type>Number</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption, in l</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state pattern="%d l" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pressure">

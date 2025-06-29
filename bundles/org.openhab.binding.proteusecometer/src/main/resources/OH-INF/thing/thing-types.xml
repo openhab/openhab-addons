@@ -55,7 +55,7 @@
 		<description>The usable level in litre</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -66,7 +66,7 @@
 		<description>The usable level in percent</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

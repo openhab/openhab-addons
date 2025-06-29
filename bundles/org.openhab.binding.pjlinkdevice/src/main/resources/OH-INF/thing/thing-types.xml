@@ -117,7 +117,7 @@
 		<description>Select the video mute status</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<tag>Brightness</tag>
 		</tags>
 	</channel-type>
 
@@ -127,7 +127,7 @@
 		<description>Select the audio and video mute status</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<tag>MediaControl</tag>
 		</tags>
 	</channel-type>
 
@@ -135,10 +135,6 @@
 		<item-type>Number</item-type>
 		<label>Lamp Hours</label>
 		<description>How long the lamp has been in use (in hours)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%d h"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
@@ -153,10 +149,6 @@
 		<item-type>Switch</item-type>
 		<label>Lamp Active</label>
 		<description>Is the lamp in use?</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">

@@ -9,7 +9,7 @@
 		<label>Arrival Time</label>
 		<description>The arrival time</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Forecast</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -21,7 +21,7 @@
 		<label>Departure Time</label>
 		<description>The departure time</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Forecast</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
@@ -45,10 +45,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update Time</label>
 		<description>The last time information was updated</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 </thing:thing-descriptions>

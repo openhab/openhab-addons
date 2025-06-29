@@ -82,6 +82,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Frequency of PWM output in Hz</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<config-description>
 			<parameter name="prescaler" type="integer">
 				<label>Range</label>
@@ -117,7 +121,7 @@
 		<description>Programmable I/O channel</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
@@ -146,15 +150,15 @@
 		<label>Digital Out</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="bae-di">
 		<item-type>Switch</item-type>
 		<label>Digital In</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Status</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<!-- Analog In (ADC) -->

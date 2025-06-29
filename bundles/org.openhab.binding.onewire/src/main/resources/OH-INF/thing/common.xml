@@ -118,7 +118,7 @@
 		<description>absolute humidity (calculated from temperature and relative humidity)</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<tag>Moisture</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -172,7 +172,7 @@
 		<label>Digital I/O</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
@@ -211,10 +211,6 @@
 		<item-type>Number</item-type>
 		<label>Counter</label>
 		<description>A single counter (reset on power loss)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>

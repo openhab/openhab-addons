@@ -208,20 +208,12 @@
 		<item-type>Number:Time</item-type>
 		<label>Running Hours</label>
 		<description>The total amount of running hours</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 	<channel-type id="hoursTotal">
 		<item-type>Number:Time</item-type>
 		<label>Running Hours</label>
 		<description>The total amount of running hours</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

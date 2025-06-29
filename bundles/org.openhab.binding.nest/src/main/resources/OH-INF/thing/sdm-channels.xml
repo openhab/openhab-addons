@@ -77,10 +77,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>The time that the event occurred</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -106,10 +102,6 @@
 		<item-type>DateTime</item-type>
 		<label>Live Stream Expiration Timestamp</label>
 		<description>Live stream token expiration time</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -201,16 +193,16 @@
 		<item-type>DateTime</item-type>
 		<label>Fan Timer Timeout</label>
 		<description>Timestamp at which timer mode turns OFF</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="SDMHVACStatus">
 		<item-type>String</item-type>
 		<label>HVAC Status</label>
 		<description>Provides the thermostat HVAC Status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">off</option>
@@ -225,10 +217,6 @@
 		<label>Maximum Temperature Setting</label>
 		<description>Lists the maximum temperature setting from the thermostat</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -237,10 +225,6 @@
 		<label>Minimum Temperature Setting</label>
 		<description>Lists the minimum temperature setting from the thermostat</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -262,7 +246,7 @@
 		<description>Lists the cool temperature setting from the thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -274,7 +258,7 @@
 		<description>Lists the heat temperature setting from the thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
