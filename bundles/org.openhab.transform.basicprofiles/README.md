@@ -13,6 +13,7 @@ This bundle provides a list of useful Profiles:
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
+| [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
 
 ## Generic Command Profile
 
@@ -332,5 +333,29 @@ Number:Power MaximumPowerLimit { unit="W" }
 
 Number:Power PowerUsage {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= MinimumPowerLimit", "< MaximumPowerLimit" ]
+}
+```
+
+## Inactivity Profile
+
+This profile sets the state of the item to `ON` if the binding has not provided any new data values within a given timeout period.
+The purpose is to indicate an alarm condition if the binding is no longer providing values for the given channel.
+
+### Inactivity Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                                                                                                                                                                                                      |
+|-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `timeout`               | text    | The time out after which the profile will set the state of the item if the binding provides no updates. It uses the same format as the [expire` parameter]( https://www.openhab.org/docs/configuration/items)                                                                    |
+| `inverted`              | boolean | Optional. When `false` (the default), the item's state is initially set to `OFF`, and when the binding provided no data within the timeout period, the item's state is updated to `ON`. When `inverted` is set to `true`, the initial state and the timeout states are inverted. |
+
+### Inactivity Profile Example
+
+```java
+Switch myChannelInactivityStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="60 min" ]
+}
+
+Switch myChannelActivityStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1 d", inverted=true ]
 }
 ```
