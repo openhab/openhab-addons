@@ -21,11 +21,12 @@
 				<label>Verification Code</label>
 				<description>Verification Code provided to authentication Roborock account</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refresh" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the account is polled in sec.</description>
-				<default>60</default>
 				<advanced>true</advanced>
+				<description>Specifies the refresh interval in minutes.</description>
+				<unitLabel>Minutes</unitLabel>
+				<default>5</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

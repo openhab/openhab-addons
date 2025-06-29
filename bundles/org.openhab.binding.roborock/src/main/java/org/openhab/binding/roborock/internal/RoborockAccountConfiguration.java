@@ -28,4 +28,5 @@ public class RoborockAccountConfiguration {
     public String email = "";
     public String password = "";
     public String verificationCode = "";
+    public int refresh = 5; // in minutes
 }

@@ -16,28 +16,16 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,7 +45,6 @@ import org.openhab.binding.roborock.internal.api.enums.FanModeType;
 import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
-import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -89,15 +76,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
-import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
-import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
-import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 /**
  * The {@link RoborockHandler} is responsible for handling commands, which are
@@ -271,8 +250,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (home != null) {
                 rrHomeId = Integer.toString(home.data.rrHomeId);
             }
-            initTask.setNamePrefix(getThing().getUID().getId());
-            reconnectTask.setNamePrefix(getThing().getUID().getId());
             pollTask.setNamePrefix(getThing().getUID().getId());
             initTask.submit();
         } else {
@@ -306,8 +283,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private synchronized void teardown(boolean scheduleReconnection) {
-        disconnect(scheduler);
-
         pollTask.cancel();
 
         reconnectTask.cancel();
@@ -320,152 +295,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void connectToDevice() {
-        try {
-            connect(scheduler);
-            scheduleNextPoll(-1);
-            logger.debug("Device connected");
-            updateStatus(ThingStatus.ONLINE);
-        } catch (InterruptedException | RoborockCommunicationException e) {
-            logger.debug("Failed to connect to device");
-            updateStatus(ThingStatus.OFFLINE);
-        }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void dispose() {
         super.dispose();
         teardown(false);
-    }
-
-    public void connect(ScheduledExecutorService scheduler)
-            throws RoborockCommunicationException, InterruptedException {
-        String mqttHost = "";
-        int mqttPort = 1883;
-        String mqttUser = "";
-        String mqttPassword = "";
-        try {
-            URI mqttURL = new URI(rriot.r.m);
-            mqttHost = mqttURL.getHost();
-            mqttPort = mqttURL.getPort();
-            mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-            mqttPassword = ProtocolUtils.md5Hex(rriot.s + ':' + rriot.k).substring(16);
-        } catch (URISyntaxException e) {
-            logger.error("Malformed mqtt URL");
-        }
-
-        Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
-
-        final MqttClientDisconnectedListener disconnectListener = ctx -> {
-            boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
-                    && ctx.getCause() instanceof Mqtt3DisconnectException;
-            // As the client already was disconnected, there's no need to do it again in disconnect() later
-            this.mqttClient = null;
-            if (!expectedShutdown) {
-                logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
-                        ctx.getCause().getMessage());
-                // listener.onEventStreamFailure(EcovacsIotMqDevice.this, ctx.getCause());
-            }
-        };
-
-        final Mqtt3AsyncClient client = MqttClient.builder() //
-                .useMqttVersion3() //
-                .identifier(mqttUser) //
-                .simpleAuth(auth) //
-                .serverHost(mqttHost) //
-                .serverPort(mqttPort) //
-                .sslWithDefaultConfig() //
-                .addDisconnectedListener(disconnectListener) //
-                .buildAsync();
-
-        try {
-            this.mqttClient = client;
-            client.connect().get();
-
-            final Consumer<@Nullable Mqtt3Publish> eventCallback = publish -> {
-                if (publish == null) {
-                    return;
-                }
-                String receivedTopic = publish.getTopic().toString();
-                // try {
-                logger.debug("{}: Got MQTT message on topic {}", getThing().getUID().getId(), receivedTopic);
-                String response = ProtocolUtils.handleMessage(publish.getPayloadAsBytes(), localKey);
-                logger.trace("MQTT message output: {}", response);
-
-                String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
-                        .get("102").getAsString();
-                int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-
-                if (messageId == getStatusID) {
-                    logger.debug("Received getStatus response, parse it");
-                    handleGetStatus(jsonString);
-                } else if (messageId == getConsumableID) {
-                    logger.debug("Received getConsumable response, parse it");
-                    handleGetConsumables(jsonString);
-                } else if (messageId == getRoomMappingID) {
-                    logger.debug("Received getRoomMapping response, parse it");
-                    handleGetRoomMapping(jsonString);
-                } else if (messageId == getNetworkInfoID) {
-                    logger.debug("Received getNetworkInfo response, parse it");
-                    handleGetNetworkInfo(jsonString);
-                } else if (messageId == getCleanRecordID) {
-                    logger.debug("Received getCleanRecord response, parse it");
-                    handleGetCleanRecord(jsonString);
-                } else if (messageId == getCleanSummaryID) {
-                    logger.debug("Received getCleanSummary response, parse it");
-                    handleGetCleanSummary(jsonString);
-                } else if (messageId == getDndTimerID) {
-                    logger.debug("Received getDndTimer response, parse it");
-                    handleGetDndTimer(jsonString);
-                } else if (messageId == getSegmentStatusID) {
-                    logger.debug("Received getSegmentStatus response, parse it");
-                    handleGetSegmentStatus(jsonString);
-                } else if (messageId == getMapStatusID) {
-                    logger.debug("Received getMapStatus response, parse it");
-                    handleGetMapStatus(jsonString);
-                } else if (messageId == getLedStatusID) {
-                    logger.debug("Received getLedStatus response, parse it");
-                    handleGetLedStatus(jsonString);
-                } else if (messageId == getCarpetModeID) {
-                    logger.debug("Received getCarpetMode response, parse it");
-                    handleGetCarpetMode(jsonString);
-                } else if (messageId == getFwFeaturesID) {
-                    logger.debug("Received getFwFeatures response, parse it");
-                    handleGetFwFeatures(jsonString);
-                } else if (messageId == getMultiMapsListID) {
-                    logger.debug("Received MultiMapsList response, parse it");
-                    handleGetMultiMapsList(jsonString);
-                } else if (messageId == getCustomizeCleanModeID) {
-                    logger.debug("Received getCustomizeCleanMode response, parse it");
-                    handleGetCustomizeCleanMode(jsonString);
-                } else if (messageId == getMapID) {
-                    logger.debug("Received getMap response, parse it");
-                    handleGetMap(jsonString);
-                }
-
-                // } catch (DataParsingException e) {
-                // listener.onEventStreamFailure(this, e);
-                // }
-            };
-
-            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/" + getThing().getUID().getId();
-
-            client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
-            logger.debug("Established MQTT connection to device {}", getThing().getUID().getId());
-        } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
-                    && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
-            teardownAndScheduleReconnection();
-            throw new RoborockCommunicationException(e);
-        }
-    }
-
-    public void disconnect(ScheduledExecutorService scheduler) {
-        Mqtt3AsyncClient client = this.mqttClient;
-        if (client != null) {
-            client.disconnect();
-        }
-        this.mqttClient = null;
     }
 
     private void pollData() {
@@ -519,6 +355,56 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void handleMessage(int messageId, String jsonString) {
+        logger.info("handleMessage");
+        if (messageId == getStatusID) {
+            logger.debug("Received getStatus response, parse it");
+            handleGetStatus(jsonString);
+        } else if (messageId == getConsumableID) {
+            logger.debug("Received getConsumable response, parse it");
+            handleGetConsumables(jsonString);
+        } else if (messageId == getRoomMappingID) {
+            logger.debug("Received getRoomMapping response, parse it");
+            handleGetRoomMapping(jsonString);
+        } else if (messageId == getNetworkInfoID) {
+            logger.debug("Received getNetworkInfo response, parse it");
+            handleGetNetworkInfo(jsonString);
+        } else if (messageId == getCleanRecordID) {
+            logger.debug("Received getCleanRecord response, parse it");
+            handleGetCleanRecord(jsonString);
+        } else if (messageId == getCleanSummaryID) {
+            logger.debug("Received getCleanSummary response, parse it");
+            handleGetCleanSummary(jsonString);
+        } else if (messageId == getDndTimerID) {
+            logger.debug("Received getDndTimer response, parse it");
+            handleGetDndTimer(jsonString);
+        } else if (messageId == getSegmentStatusID) {
+            logger.debug("Received getSegmentStatus response, parse it");
+            handleGetSegmentStatus(jsonString);
+        } else if (messageId == getMapStatusID) {
+            logger.debug("Received getMapStatus response, parse it");
+            handleGetMapStatus(jsonString);
+        } else if (messageId == getLedStatusID) {
+            logger.debug("Received getLedStatus response, parse it");
+            handleGetLedStatus(jsonString);
+        } else if (messageId == getCarpetModeID) {
+            logger.debug("Received getCarpetMode response, parse it");
+            handleGetCarpetMode(jsonString);
+        } else if (messageId == getFwFeaturesID) {
+            logger.debug("Received getFwFeatures response, parse it");
+            handleGetFwFeatures(jsonString);
+        } else if (messageId == getMultiMapsListID) {
+            logger.debug("Received MultiMapsList response, parse it");
+            handleGetMultiMapsList(jsonString);
+        } else if (messageId == getCustomizeCleanModeID) {
+            logger.debug("Received getCustomizeCleanMode response, parse it");
+            handleGetCustomizeCleanMode(jsonString);
+        } else if (messageId == getMapID) {
+            logger.debug("Received getMap response, parse it");
+            handleGetMap(jsonString);
+        }
     }
 
     private void handleGetStatus(String response) {
@@ -949,111 +835,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = true;
     }
 
-    private String getEndpoint() {
-        try {
-            byte[] md5Bytes = MessageDigest.getInstance("MD5").digest(rriot.k.getBytes());
-            byte[] subArray = new byte[6];
-            System.arraycopy(md5Bytes, 8, subArray, 0, 6);
-            return Base64.getEncoder().encodeToString(subArray);
-        } catch (NoSuchAlgorithmException e) {
-            return "";
-        }
-    }
-
     private int sendCommand(String method) throws UnsupportedEncodingException {
         return sendCommand(method, "[]");
     }
 
     private int sendCommand(String method, String params) throws UnsupportedEncodingException {
-        int timestamp = (int) Instant.now().getEpochSecond();
-        int protocol = 101;
-        Random random = new Random();
-        int id = random.nextInt(22767 + 1) + 10000;
-
-        byte[] nonceBytes = new byte[16];
-        new java.security.SecureRandom().nextBytes(nonceBytes);
-        String nonce = new String(nonceBytes, StandardCharsets.UTF_8);
-        StringBuffer sb = new StringBuffer();
-        // Converting string to character array
-        char ch[] = nonce.toCharArray();
-        for (int i = 0; i < ch.length; i++) {
-            String hexString = Integer.toHexString(ch[i]);
-            sb.append(hexString);
+        RoborockAccountHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
+            return 0;
         }
-        String nonceHex = sb.toString();
-
-        Map<String, Object> security = new HashMap<>();
-        security.put("endpoint", getEndpoint());
-        security.put("nonce", nonceHex.toLowerCase());
-
-        Map<String, Object> inner = new HashMap<>();
-        inner.put("id", id);
-        inner.put("method", method);
-        inner.put("params", params);
-        inner.put("security", security);
-
-        Map<String, Object> dps = new HashMap<>();
-        dps.put(Integer.toString(protocol), gson.toJson(inner));
-
-        Map<String, Object> payloadMap = new HashMap<>();
-        payloadMap.put("t", timestamp);
-        payloadMap.put("dps", dps);
-
-        String payload = gson.toJson(payloadMap);
-        String modPayload = payload.replace(":\\\"[", ":[").replace("]\\\"}", "]}");
-        logger.trace("Modified payload = {}", modPayload);
-
-        byte[] message = build(getThing().getUID().getId(), protocol, timestamp, modPayload.getBytes("UTF-8"));
-        // now send message via mqtt
-        String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-
-        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + getThing().getUID().getId();
-        mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
-                .whenComplete((mqtt3Publish, throwable) -> {
-                    if (throwable != null) {
-                        logger.debug("mqtt publish failed");
-                    }
-                });
-
-        // Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).payload(message).retain(false).build();
-
-        // mqttClient.publish(publishMessage);
-        // handleMessage(message); // helps confirm we have encoded it correctly
-        return id;
-    }
-
-    byte[] build(String deviceId, int protocol, int timestamp, byte[] payload) {
         try {
-            String key = ProtocolUtils.encodeTimestamp(timestamp) + localKey + SALT;
-            byte[] encrypted = ProtocolUtils.encrypt(payload, key);
-
-            Random random = new Random();
-            int randomInt = random.nextInt(90000) + 10000;
-            int seq = random.nextInt(900000) + 100000;
-
-            int totalLength = 23 + encrypted.length;
-            byte[] msg = new byte[totalLength];
-            // Writing fixed string '1.0'
-            msg[0] = 49; // ASCII for '1'
-            msg[1] = 46; // ASCII for '.'
-            msg[2] = 48; // ASCII for '0'
-            ProtocolUtils.writeInt32BE(msg, (int) (seq & 0xFFFFFFFF), 3);
-            ProtocolUtils.writeInt32BE(msg, (int) (randomInt & 0xFFFFFFFF), 7);
-            ProtocolUtils.writeInt32BE(msg, timestamp, 11);
-            ProtocolUtils.writeInt16BE(msg, protocol, 15);
-            ProtocolUtils.writeInt16BE(msg, encrypted.length, 17);
-            // Manually copying encrypted data into msg
-            for (int i = 0; i < encrypted.length; i++) {
-                msg[19 + i] = encrypted[i];
-            }
-            byte[] buf = Arrays.copyOfRange(msg, 0, msg.length - 4);
-            CRC32 crc32 = new CRC32();
-            crc32.update(buf);
-            ProtocolUtils.writeInt32BE(msg, (int) crc32.getValue(), msg.length - 4);
-            return msg;
-        } catch (Exception e) {
-            logger.debug("Exception encrypting payload, {}", e.getMessage());
-            return new byte[0];
+            return localBridge.sendCommand(method, params);
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            return 0;
         }
     }
 }
