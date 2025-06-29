@@ -249,6 +249,38 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private void initDevice() {
+        Login loginResponse;
+        try {
+            if (loginFile.exists()) {
+                // read date from loginFile
+                final byte[] contents = Files.readAllBytes(loginFile.toPath());
+                final String json = new String(contents, StandardCharsets.UTF_8);
+                loginResponse = gson.fromJson(json, Login.class);
+            } else {
+                loginResponse = doLogin();
+                if ((loginResponse != null) && loginResponse.code.equals("200")) {
+                    // save data to loginFile if call is successful
+                    loginFile.getParentFile().mkdirs();
+                    final String json = gson.toJson(loginResponse);
+                    final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
+                    Files.write(loginFile.toPath(), contents);
+                }
+            }
+            if (loginResponse.code.equals("200")) {
+                token = loginResponse.data.token;
+                rriot = loginResponse.data.rriot;
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error code " + loginResponse.code + " reported");
+            }
+        } catch (IOException e) {
+            logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
+        }
+        Home home = getHomeDetail();
+        if (home != null) {
+            rrHomeId = Integer.toString(home.data.rrHomeId);
+        }
         connectToDevice();
     }
 
@@ -337,30 +369,32 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                     return;
                 }
                 String receivedTopic = publish.getTopic().toString();
-                // try {
-                logger.debug("{}: Got MQTT message on topic {}", getThing().getUID().getId(), receivedTopic);
-                HomeData homeData = getHomeData(rrHomeId, rriot);
                 String localKey = "";
-                if (homeData != null) {
-                    for (int i = 0; i < homeData.result.devices.length; i++) {
-                        if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
-                            localKey = homeData.result.devices[i].localKey;
-                        }
-                    }
-                }
+                // try {
 
-                String response = ProtocolUtils.handleMessage(publish.getPayloadAsBytes(), localKey);
-                logger.trace("MQTT message output: {}", response);
-
-                String destination = receivedTopic.substring(0, receivedTopic.lastIndexOf('/'));
-                String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
-                        .get("102").getAsString();
-                int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
+                String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
+                logger.debug("Got MQTT message for device {}", destination);
 
                 // check list of child handlers and send message to the right one
                 for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
                     if (entry.getKey().getUID().getAsString().contains(destination)) {
                         logger.trace("Submit response to to child {} -> {}", destination, entry.getKey().getUID());
+                        HomeData homeData = getHomeData(rrHomeId, rriot);
+                        if (homeData != null) {
+                            for (int i = 0; i < homeData.result.devices.length; i++) {
+                                if (destination.equals(homeData.result.devices[i].duid)) {
+                                    localKey = homeData.result.devices[i].localKey;
+                                }
+                            }
+                        }
+
+                        String response = ProtocolUtils.handleMessage(publish.getPayloadAsBytes(), localKey);
+                        logger.trace("MQTT message output: {}", response);
+
+                        String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps")
+                                .getAsJsonObject().get("102").getAsString();
+                        int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
+
                         entry.getValue().handleMessage(messageId, response);
                         return;
                     }
@@ -374,7 +408,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
 
             client.subscribeWith().topicFilter(topic).callback(eventCallback).send().get();
-            logger.debug("Established MQTT connection to device {}", getThing().getUID().getId());
+            logger.debug("Established MQTT connection, subscribed to topic {}", topic);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
@@ -403,7 +437,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public int sendCommand(String method, String params) throws UnsupportedEncodingException {
+    public int sendCommand(String method, String params, String thingID) throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         Random random = new Random();
@@ -429,7 +463,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         inner.put("id", id);
         inner.put("method", method);
         inner.put("params", params);
-        inner.put("security", security);
+        // inner.put("security", security);
 
         Map<String, Object> dps = new HashMap<>();
         dps.put(Integer.toString(protocol), gson.toJson(inner));
@@ -446,7 +480,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         // now send message via mqtt
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
-        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + getThing().getUID().getId();
+        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
+        logger.debug("Publishing message to {}", topic);
         mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
                 .whenComplete((mqtt3Publish, throwable) -> {
                     if (throwable != null) {
@@ -506,38 +541,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private void pollStatus() {
-        Login loginResponse;
-        try {
-            if (loginFile.exists()) {
-                // read date from loginFile
-                final byte[] contents = Files.readAllBytes(loginFile.toPath());
-                final String json = new String(contents, StandardCharsets.UTF_8);
-                loginResponse = gson.fromJson(json, Login.class);
-            } else {
-                loginResponse = doLogin();
-                if ((loginResponse != null) && loginResponse.code.equals("200")) {
-                    // save data to loginFile if call is successful
-                    loginFile.getParentFile().mkdirs();
-                    final String json = gson.toJson(loginResponse);
-                    final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
-                    Files.write(loginFile.toPath(), contents);
-                }
-            }
-            if (loginResponse.code.equals("200")) {
-                token = loginResponse.data.token;
-                rriot = loginResponse.data.rriot;
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error code " + loginResponse.code + " reported");
-            }
-        } catch (IOException e) {
-            logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
-        }
-        Home home = getHomeDetail();
-        if (home != null) {
-            rrHomeId = Integer.toString(home.data.rrHomeId);
-        }
+        // nothing to poll
     }
 
     private void stopPoll() {

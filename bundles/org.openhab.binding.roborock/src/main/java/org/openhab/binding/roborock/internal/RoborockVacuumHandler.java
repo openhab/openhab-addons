@@ -845,7 +845,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return 0;
         }
         try {
-            return localBridge.sendCommand(method, params);
+            return localBridge.sendCommand(method, params, getThing().getUID().getId());
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;
