@@ -82,6 +82,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
     public static final String SHELLY_EVENT_SHORT_LONGTPUSH = "shortpush_longpush";
     public static final String SHELLY_EVENT_LONG_SHORTPUSH = "longpush_shortpush";
+    public static final String SHELLY_EVENT_HOLD = "hold";
 
     // Dimmer
     public static final String SHELLY_EVENT_BTN1_ON = "btn1_on";
@@ -241,6 +242,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_BTNEVENT_2SHORTPUSH = "SS";
     public static final String SHELLY_BTNEVENT_3SHORTPUSH = "SSS";
     public static final String SHELLY_BTNEVENT_LONGPUSH = "L";
+    public static final String SHELLY_BTNEVENT_HOLD = "H";
     public static final String SHELLY_BTNEVENT_SHORTLONGPUSH = "SL";
     public static final String SHELLY_BTNEVENT_LONGSHORTPUSH = "LS";
 
@@ -1329,6 +1331,8 @@ public class Shelly1ApiJsonDTO {
             case SHELLY_BTNEVENT_LONGSHORTPUSH:
             case SHELLY_EVENT_LONG_SHORTPUSH:
                 return "LONG_SHORT_PRESSED";
+            case SHELLY_EVENT_HOLD:
+                return "HOLDING";
             default:
                 return "";
         }
