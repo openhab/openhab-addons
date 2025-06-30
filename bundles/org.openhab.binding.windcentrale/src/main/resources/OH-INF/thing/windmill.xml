@@ -76,10 +76,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Power</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-shares">
@@ -106,10 +102,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Run Time</label>
 		<description>Run time this year</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="run-percentage">
@@ -117,19 +109,11 @@
 		<label>Run Percentage</label>
 		<description>Run percentage this year</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wind-direction">

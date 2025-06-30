@@ -111,7 +111,7 @@
 		<description>Enable or disable monitor</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -163,9 +163,6 @@
 		<item-type>Switch</item-type>
 		<label>Trigger Alarm</label>
 		<description>Triggers an alarm</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="events">
@@ -208,20 +205,12 @@
 		<item-type>DateTime</item-type>
 		<label>Event Start</label>
 		<description>Start date/time of the event</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"></state>
 	</channel-type>
 	<channel-type id="eventEnd">
 		<item-type>DateTime</item-type>
 		<label>Event End</label>
 		<description>End date/time of the event</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"></state>
 	</channel-type>
 	<channel-type id="eventFrames">
@@ -240,10 +229,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Event Length</label>
 		<description>Length of the event in seconds</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="runState">

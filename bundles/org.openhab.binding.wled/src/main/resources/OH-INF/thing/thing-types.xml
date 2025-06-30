@@ -112,7 +112,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -173,10 +173,6 @@
 		<item-type>String</item-type>
 		<label>Palettes</label>
 		<description>Change the colours used by the FX</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="fx">

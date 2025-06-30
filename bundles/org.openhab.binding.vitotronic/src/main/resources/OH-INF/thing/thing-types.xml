@@ -316,10 +316,6 @@
 		<item-type>DateTime</item-type>
 		<label>DateTime Heating System</label>
 		<description>Date and time of the Heating System</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -342,7 +338,7 @@
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Smoke</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -603,10 +599,6 @@
 		<item-type>Switch</item-type>
 		<label>Party Mode</label>
 		<description>Party mode on/off</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -614,10 +606,6 @@
 		<item-type>Switch</item-type>
 		<label>Save Mode</label>
 		<description>Save mode on/off</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -642,6 +630,10 @@
 		<label>Room Temperature</label>
 		<description>Temperature of rooms</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -708,10 +700,6 @@
 		<item-type>Switch</item-type>
 		<label>Buffer Load Pump</label>
 		<description>State of the pump (on/off)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -726,6 +714,10 @@
 		<item-type>Number</item-type>
 		<label>Produced Heat</label>
 		<description>Produced heat since starting solar system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
 

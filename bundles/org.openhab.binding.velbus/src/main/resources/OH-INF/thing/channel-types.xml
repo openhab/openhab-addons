@@ -42,10 +42,6 @@
 		<item-type>String</item-type>
 		<label>Feedback LED</label>
 		<description>Feedback LED for the push button in Velbus</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="CLEAR_LED">Off</option>
@@ -61,9 +57,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Type</label>
 		<description>Type (local/global) of the alarm clock in Velbus</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="LOCAL">Local</option>
@@ -82,10 +75,6 @@
 		<label>Switch</label>
 		<description>Switch control for action in Velbus</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="button-channel">
@@ -276,10 +265,6 @@
 		<item-type>Number</item-type>
 		<label>Scene</label>
 		<description>Scene options for DALI network</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="false" min="0" max="15" step="1">
 		</state>
 	</channel-type>
@@ -288,10 +273,6 @@
 		<item-type>String</item-type>
 		<label>Fade Mode</label>
 		<description>Fade mode for dimmer module</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<command>
 			<options>
 				<option value="DIRECT">direct</option>

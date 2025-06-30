@@ -284,6 +284,10 @@
 		<label>Home Target Temperature</label>
 		<description>Target temperature in home state</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -292,6 +296,10 @@
 		<label>Away Target Temperature</label>
 		<description>Target temperature in away state</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 

@@ -97,10 +97,6 @@
 		<label>Override Remaining</label>
 		<description>How long until the override deactivates</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -132,9 +128,5 @@
 	<channel-type id="frostProtectionMode">
 		<item-type>Switch</item-type>
 		<label>Frost Protection Mode</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

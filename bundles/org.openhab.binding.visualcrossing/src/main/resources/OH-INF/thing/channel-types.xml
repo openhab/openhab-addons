@@ -1787,10 +1787,6 @@
 		<item-type>Number</item-type>
 		<label>Current Cost</label>
 		<description>How much API tokens thing used since start</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="description-channel">
 		<item-type>String</item-type>
@@ -1803,10 +1799,6 @@
 			a seven day outlook
 			description is provided at the root response level.
 		</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="time-channel">
@@ -1820,10 +1812,6 @@
 		<item-type>DateTime</item-type>
 		<label>Time Stamp</label>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperature-channel">
@@ -1845,7 +1833,7 @@
 		</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1855,7 +1843,7 @@
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -1866,20 +1854,12 @@
 			An comma separated array indicating the type(s) of precipitation expected or that occurred. Possible
 			values include `rain`, `snow`, `freezingrain` and `ice`.
 		</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="precip-cover-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precip Cover</label>
 		<description>The proportion of hours where there was non-zero precipitation</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="snow-channel">
@@ -1921,8 +1901,8 @@
 			pages.
 		</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1940,7 +1920,7 @@
 		</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f MJ/m²"/>
 	</channel-type>
@@ -2010,8 +1990,8 @@
 			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>

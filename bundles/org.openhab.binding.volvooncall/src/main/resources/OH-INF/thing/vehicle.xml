@@ -232,7 +232,7 @@
 		<description>Indicates if the door is opened</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Opening</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -254,7 +254,7 @@
 		<description>Indicates if the window is opened</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Opening</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -333,10 +333,6 @@
 		<label>Timestamp</label>
 		<description>Data timestamp</description>
 		<category>time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -346,7 +342,7 @@
 		<description>Starts the vehicle engine</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -357,7 +353,7 @@
 		<category>lock</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 
@@ -366,8 +362,8 @@
 		<label>Engine Started</label>
 		<description>Engine status (running or not)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Status</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 
@@ -378,7 +374,7 @@
 		<category>heating</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Heating</tag>
 		</tags>
 	</channel-type>
 
@@ -389,7 +385,7 @@
 		<category>heating</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Heating</tag>
 		</tags>
 	</channel-type>
 
@@ -428,7 +424,7 @@
 		<label>Tyre Pressure</label>
 		<category>alarm</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 			<tag>Pressure</tag>
 		</tags>
 		<state readOnly="true">
@@ -444,9 +440,6 @@
 		<label>Service Warning</label>
 		<description>Is a car service needed?</description>
 		<category>alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -458,7 +451,7 @@
 		<category>batterylevel</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<tag>Energy</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -469,10 +462,6 @@
 		<description>Indicates the level of power in the battery taken straight from the API, which can be misleading (in case
 			of PHEV / Twin Engine)</description>
 		<category>batterylevel</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -508,10 +497,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Remaining Charging Time</label>
 		<description>Time in seconds until the battery is fully charged (in case of PHEV / Twin Engine)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 

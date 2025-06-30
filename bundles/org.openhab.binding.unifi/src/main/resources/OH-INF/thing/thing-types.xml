@@ -257,10 +257,6 @@
 		<item-type>Switch</item-type>
 		<label>Enable</label>
 		<description>Enable status of the wLAN</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="wlanEssid">
@@ -359,10 +355,6 @@
 		<label>Uptime</label>
 		<description>Uptime of the client (in seconds)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -371,10 +363,6 @@
 		<label>Last Seen</label>
 		<description>Timestamp of when the client was last seen</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -408,20 +396,12 @@
 		<item-type>Switch</item-type>
 		<label>Blocked</label>
 		<description>Is device blocked</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="guest">
 		<item-type>Switch</item-type>
 		<label>Guest</label>
 		<description>Is the client connected a guest</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="experience">
@@ -459,10 +439,6 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If PoE is enabled</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<config-description-ref uri="channel-type:unifi:poeEnable"/>
 	</channel-type>
 
@@ -470,10 +446,6 @@
 		<item-type>String</item-type>
 		<label>PoE Mode</label>
 		<description>The PoE mode the port is in</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -561,10 +533,6 @@
 		<item-type>Switch</item-type>
 		<label>Enable</label>
 		<description>Enable status of the network</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

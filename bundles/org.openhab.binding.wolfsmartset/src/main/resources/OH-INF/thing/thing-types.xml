@@ -65,10 +65,6 @@
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

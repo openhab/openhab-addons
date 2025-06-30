@@ -62,10 +62,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Activity</label>
 		<description>The date and time of the person's last activity within Webex</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
