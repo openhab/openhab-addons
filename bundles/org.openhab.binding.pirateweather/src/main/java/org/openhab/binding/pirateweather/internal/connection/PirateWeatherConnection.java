@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.connection;
+package org.openhab.binding.pirateweather.internal.connection;
 
 import static java.util.stream.Collectors.joining;
 import static org.eclipse.jetty.http.HttpMethod.GET;
@@ -35,10 +35,10 @@ import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.darksky.internal.config.DarkSkyAPIConfiguration;
-import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
-import org.openhab.binding.darksky.internal.model.DarkSkyJsonWeatherData;
-import org.openhab.binding.darksky.internal.utils.ByteArrayFileCache;
+import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
+import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
+import org.openhab.binding.pirateweather.internal.utils.ByteArrayFileCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +46,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link DarkSkyConnection} is responsible for handling the connections to Dark Sky API.
+ * The {@link PirateWeatherConnection} is responsible for handling the connections to Pirate Weather API.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyConnection {
+public class PirateWeatherConnection {
 
-    private final Logger logger = LoggerFactory.getLogger(DarkSkyConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(PirateWeatherConnection.class);
 
     private static final String PNG_CONTENT_TYPE = "image/png";
 
@@ -61,57 +62,57 @@ public class DarkSkyConnection {
     private static final String PARAM_UNITS = "units";
     private static final String PARAM_LANG = "lang";
 
-    // Current weather data (see https://darksky.net/dev/docs#forecast-request)
-    private static final String WEATHER_URL = "https://api.darksky.net/forecast/%s/%f,%f";
-    // Weather icons (see https://darksky.net/dev/docs/faq#icons)
-    private static final String ICON_URL = "https://darksky.net/images/weather-icons/%s.png";
+    // Current weather data (see https://pirateweather.net/dev/docs#forecast-request)
+    private static final String WEATHER_URL = "https://api.pirateweather.net/forecast/%s/%f,%f";
+    // Weather icons (see https://pirateweather.net/dev/docs/faq#icons)
+    private static final String ICON_URL = "https://pirateweather.net/images/weather-icons/%s.png";
 
-    private final DarkSkyAPIHandler handler;
+    private final PirateWeatherAPIHandler handler;
     private final HttpClient httpClient;
 
-    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.darksky");
+    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.pirateweather");
     private final ExpiringCacheMap<String, String> cache;
 
     private final Gson gson = new Gson();
 
-    public DarkSkyConnection(DarkSkyAPIHandler handler, HttpClient httpClient) {
+    public PirateWeatherConnection(PirateWeatherAPIHandler handler, HttpClient httpClient) {
         this.handler = handler;
         this.httpClient = httpClient;
 
-        DarkSkyAPIConfiguration config = handler.getDarkSkyAPIConfig();
+        PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
         cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.refreshInterval));
     }
 
     /**
-     * Requests the current weather data for the given location (see https://darksky.net/dev/docs#forecast-request).
+     * Requests the current weather data for the given location (see https://pirateweather.net/dev/docs#forecast-request).
      *
      * @param location location represented as {@link PointType}
      * @return the current weather data
      * @throws JsonSyntaxException
-     * @throws DarkSkyCommunicationException
-     * @throws DarkSkyConfigurationException
+     * @throws PirateWeatherCommunicationException
+     * @throws PirateWeatherConfigurationException
      */
-    public synchronized @Nullable DarkSkyJsonWeatherData getWeatherData(@Nullable PointType location)
-            throws JsonSyntaxException, DarkSkyCommunicationException, DarkSkyConfigurationException {
+    public synchronized @Nullable PirateWeatherJsonWeatherData getWeatherData(@Nullable PointType location)
+            throws JsonSyntaxException, PirateWeatherCommunicationException, PirateWeatherConfigurationException {
         if (location == null) {
-            throw new DarkSkyConfigurationException("@text/offline.conf-error-missing-location");
+            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-location");
         }
 
-        DarkSkyAPIConfiguration config = handler.getDarkSkyAPIConfig();
+        PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
         String apikey = config.apikey;
         if (apikey == null || (apikey = apikey.trim()).isEmpty()) {
-            throw new DarkSkyConfigurationException("@text/offline.conf-error-missing-apikey");
+            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
         }
 
         String url = String.format(Locale.ROOT, WEATHER_URL, apikey, location.getLatitude().doubleValue(),
                 location.getLongitude().doubleValue());
 
         return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
-                DarkSkyJsonWeatherData.class);
+                PirateWeatherJsonWeatherData.class);
     }
 
     /**
-     * Downloads the icon for the given icon id (see https://darksky.net/dev/docs/faq#icons).
+     * Downloads the icon for the given icon id (see https://pirateweather.net/dev/docs/faq#icons).
      *
      * @param iconId the id of the icon
      * @return the weather icon as {@link RawType}
@@ -141,7 +142,7 @@ public class DarkSkyConnection {
         return HttpUtil.downloadImage(url);
     }
 
-    private Map<String, String> getRequestParams(DarkSkyAPIConfiguration config) {
+    private Map<String, String> getRequestParams(PirateWeatherAPIConfiguration config) {
         Map<String, String> params = new HashMap<>();
         params.put(PARAM_EXCLUDE, "minutely,flags");
 
@@ -177,37 +178,37 @@ public class DarkSkyConnection {
     private String getResponse(String url) {
         try {
             if (logger.isTraceEnabled()) {
-                logger.trace("Dark Sky request: URL = '{}'", uglifyApikey(url));
+                logger.trace("Pirate Weather request: URL = '{}'", uglifyApikey(url));
             }
             ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
                     .send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
-            logger.trace("Dark Sky response: status = {}, content = '{}'", httpStatus, content);
+            logger.trace("Pirate Weather response: status = {}, content = '{}'", httpStatus, content);
             switch (httpStatus) {
                 case OK_200:
                     return content;
                 case BAD_REQUEST_400:
                 case UNAUTHORIZED_401:
                 case NOT_FOUND_404:
-                    logger.debug("Dark Sky server responded with status code {}: {}", httpStatus, content);
-                    throw new DarkSkyConfigurationException(content);
+                    logger.debug("Pirate Weather server responded with status code {}: {}", httpStatus, content);
+                    throw new PirateWeatherConfigurationException(content);
                 default:
-                    logger.debug("Dark Sky server responded with status code {}: {}", httpStatus, content);
-                    throw new DarkSkyCommunicationException(content);
+                    logger.debug("Pirate Weather server responded with status code {}: {}", httpStatus, content);
+                    throw new PirateWeatherCommunicationException(content);
             }
         } catch (ExecutionException e) {
             String errorMessage = e.getLocalizedMessage();
             logger.trace("Exception occurred during execution: {}", errorMessage, e);
             if (e.getCause() instanceof HttpResponseException) {
-                logger.debug("Dark Sky server responded with status code {}: Invalid API key.", UNAUTHORIZED_401);
-                throw new DarkSkyConfigurationException("@text/offline.conf-error-invalid-apikey", e.getCause());
+                logger.debug("Pirate Weather server responded with status code {}: Invalid API key.", UNAUTHORIZED_401);
+                throw new PirateWeatherConfigurationException("@text/offline.conf-error-invalid-apikey", e.getCause());
             } else {
-                throw new DarkSkyCommunicationException(errorMessage, e.getCause());
+                throw new PirateWeatherCommunicationException(errorMessage, e.getCause());
             }
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new DarkSkyCommunicationException(e.getLocalizedMessage(), e.getCause());
+            throw new PirateWeatherCommunicationException(e.getLocalizedMessage(), e.getCause());
         }
     }
 

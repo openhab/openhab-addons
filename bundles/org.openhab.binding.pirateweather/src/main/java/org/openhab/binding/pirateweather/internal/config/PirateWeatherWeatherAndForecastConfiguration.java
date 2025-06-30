@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.config;
+package org.openhab.binding.pirateweather.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHandler;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAndForecastHandler;
 
 /**
- * The {@link DarkSkyWeatherAndForecastConfiguration} is the class used to match the
- * {@link DarkSkyWeatherAndForecastHandler}s configuration.
+ * The {@link PirateWeatherWeatherAndForecastConfiguration} is the class used to match the
+ * {@link PirateWeatherWeatherAndForecastHandler}s configuration.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyWeatherAndForecastConfiguration {
+public class PirateWeatherWeatherAndForecastConfiguration {
     public @NonNullByDefault({}) String location;
     public int forecastHours;
     public int forecastDays;

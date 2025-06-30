@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.handler;
+package org.openhab.binding.pirateweather.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
-import static org.openhab.binding.darksky.internal.DarkSkyBindingConstants.*;
+import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -61,31 +61,32 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.darksky.internal.config.DarkSkyChannelConfiguration;
-import org.openhab.binding.darksky.internal.config.DarkSkyWeatherAndForecastConfiguration;
-import org.openhab.binding.darksky.internal.connection.DarkSkyCommunicationException;
-import org.openhab.binding.darksky.internal.connection.DarkSkyConfigurationException;
-import org.openhab.binding.darksky.internal.connection.DarkSkyConnection;
-import org.openhab.binding.darksky.internal.model.DarkSkyCurrentlyData;
-import org.openhab.binding.darksky.internal.model.DarkSkyDailyData.DailyData;
-import org.openhab.binding.darksky.internal.model.DarkSkyHourlyData.HourlyData;
-import org.openhab.binding.darksky.internal.model.DarkSkyJsonWeatherData;
-import org.openhab.binding.darksky.internal.model.DarkSkyJsonWeatherData.AlertsData;
+import org.openhab.binding.pirateweather.internal.config.PirateWeatherChannelConfiguration;
+import org.openhab.binding.pirateweather.internal.config.PirateWeatherWeatherAndForecastConfiguration;
+import org.openhab.binding.pirateweather.internal.connection.PirateWeatherCommunicationException;
+import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConfigurationException;
+import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
+import org.openhab.binding.pirateweather.internal.model.PirateWeatherCurrentlyData;
+import org.openhab.binding.pirateweather.internal.model.PirateWeatherDailyData.DailyData;
+import org.openhab.binding.pirateweather.internal.model.PirateWeatherHourlyData.HourlyData;
+import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
+import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData.AlertsData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link DarkSkyWeatherAndForecastHandler} is responsible for handling commands, which are sent to one of the
+ * The {@link PirateWeatherWeatherAndForecastHandler} is responsible for handling commands, which are sent to one of the
  * channels.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
+public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(DarkSkyWeatherAndForecastHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PirateWeatherWeatherAndForecastHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .singleton(THING_TYPE_WEATHER_AND_FORECAST);
@@ -113,18 +114,18 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
     private int forecastDays = 8;
     private int numberOfAlerts = 0;
 
-    private @Nullable DarkSkyChannelConfiguration sunriseTriggerChannelConfig;
-    private @Nullable DarkSkyChannelConfiguration sunsetTriggerChannelConfig;
-    private @Nullable DarkSkyJsonWeatherData weatherData;
+    private @Nullable PirateWeatherChannelConfiguration sunriseTriggerChannelConfig;
+    private @Nullable PirateWeatherChannelConfiguration sunsetTriggerChannelConfig;
+    private @Nullable PirateWeatherJsonWeatherData weatherData;
 
-    public DarkSkyWeatherAndForecastHandler(Thing thing) {
+    public PirateWeatherWeatherAndForecastHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initialize DarkSkyWeatherAndForecastHandler handler '{}'.", getThing().getUID());
-        DarkSkyWeatherAndForecastConfiguration config = getConfigAs(DarkSkyWeatherAndForecastConfiguration.class);
+        logger.debug("Initialize PirateWeatherWeatherAndForecastHandler handler '{}'.", getThing().getUID());
+        PirateWeatherWeatherAndForecastConfiguration config = getConfigAs(PirateWeatherWeatherAndForecastConfiguration.class);
 
         boolean configValid = true;
         if (config.location == null || config.location.trim().isEmpty()) {
@@ -235,10 +236,10 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
 
             Channel sunriseTriggerChannel = getThing().getChannel(TRIGGER_SUNRISE);
             sunriseTriggerChannelConfig = (sunriseTriggerChannel == null) ? null
-                    : sunriseTriggerChannel.getConfiguration().as(DarkSkyChannelConfiguration.class);
+                    : sunriseTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
             Channel sunsetTriggerChannel = getThing().getChannel(TRIGGER_SUNSET);
             sunsetTriggerChannelConfig = (sunsetTriggerChannel == null) ? null
-                    : sunsetTriggerChannel.getConfiguration().as(DarkSkyChannelConfiguration.class);
+                    : sunsetTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
 
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -310,17 +311,17 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
     /**
      * Updates Dark Sky data for this location.
      *
-     * @param connection {@link DarkSkyConnection} instance
+     * @param connection {@link PirateWeatherConnection} instance
      */
-    public void updateData(DarkSkyConnection connection) {
+    public void updateData(PirateWeatherConnection connection) {
         try {
             if (requestData(connection)) {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (DarkSkyCommunicationException e) {
+        } catch (PirateWeatherCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } catch (DarkSkyConfigurationException e) {
+        } catch (PirateWeatherConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
         }
     }
@@ -328,13 +329,13 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
     /**
      * Requests the data from Dark Sky API.
      *
-     * @param connection {@link DarkSkyConnection} instance
+     * @param connection {@link PirateWeatherConnection} instance
      * @return true, if the request for the Dark Sky data was successful
-     * @throws DarkSkyCommunicationException
-     * @throws DarkSkyConfigurationException
+     * @throws PirateWeatherCommunicationException
+     * @throws PirateWeatherConfigurationException
      */
-    private boolean requestData(DarkSkyConnection connection)
-            throws DarkSkyCommunicationException, DarkSkyConfigurationException {
+    private boolean requestData(PirateWeatherConnection connection)
+            throws PirateWeatherCommunicationException, PirateWeatherConfigurationException {
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
         try {
             weatherData = connection.getWeatherData(location);
@@ -408,7 +409,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         if (weatherData != null && weatherData.getCurrently() != null) {
-            DarkSkyCurrentlyData currentData = weatherData.getCurrently();
+            PirateWeatherCurrentlyData currentData = weatherData.getCurrently();
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:
@@ -418,7 +419,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getStringTypeState(currentData.getSummary());
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(DarkSkyConnection.getWeatherIcon(currentData.getIcon()));
+                    state = getRawTypeState(PirateWeatherConnection.getWeatherIcon(currentData.getIcon()));
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
                     state = getStringTypeState(currentData.getIcon());
@@ -508,7 +509,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getStringTypeState(forecastData.getSummary());
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(DarkSkyConnection.getWeatherIcon(forecastData.getIcon()));
+                    state = getRawTypeState(PirateWeatherConnection.getWeatherIcon(forecastData.getIcon()));
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
                     state = getStringTypeState(forecastData.getIcon());
@@ -595,7 +596,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getStringTypeState(forecastData.getSummary());
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(DarkSkyConnection.getWeatherIcon(forecastData.getIcon()));
+                    state = getRawTypeState(PirateWeatherConnection.getWeatherIcon(forecastData.getIcon()));
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
                     state = getStringTypeState(forecastData.getIcon());
@@ -746,10 +747,10 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
      * Applies the given configuration to the given timestamp.
      *
      * @param dateTime timestamp represented as {@link ZonedDateTime}
-     * @param config {@link DarkSkyChannelConfiguration} instance
+     * @param config {@link PirateWeatherChannelConfiguration} instance
      * @return the modified timestamp
      */
-    private ZonedDateTime applyChannelConfig(ZonedDateTime dateTime, @Nullable DarkSkyChannelConfiguration config) {
+    private ZonedDateTime applyChannelConfig(ZonedDateTime dateTime, @Nullable PirateWeatherChannelConfiguration config) {
         ZonedDateTime modifiedDateTime = dateTime;
         if (config != null) {
             if (config.getOffset() != 0) {
