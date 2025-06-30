@@ -145,7 +145,6 @@ public class FroniusConfigAuthUtil {
      * @return the hashed data as a hex string
      * @throws NoSuchAlgorithmException if the MD5 algorithm is not available
      */
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static String md5Hex(String data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] array = md.digest(data.getBytes());
