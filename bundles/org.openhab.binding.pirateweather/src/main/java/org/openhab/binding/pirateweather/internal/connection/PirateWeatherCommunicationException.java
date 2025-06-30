@@ -10,24 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.connection;
+package org.openhab.binding.pirateweather.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DarkSkyCommunicationException} is a communication exception for the connections to Dark Sky API.
+ * The {@link PirateWeatherCommunicationException} is a communication exception for the connections to Pirate Weather API.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyCommunicationException extends RuntimeException {
+public class PirateWeatherCommunicationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new exception with null as its detail message.
      */
-    public DarkSkyCommunicationException() {
+    public PirateWeatherCommunicationException() {
         super();
     }
 
@@ -36,7 +37,7 @@ public class DarkSkyCommunicationException extends RuntimeException {
      *
      * @param message Detail message
      */
-    public DarkSkyCommunicationException(String message) {
+    public PirateWeatherCommunicationException(String message) {
         super(message);
     }
 
@@ -45,7 +46,7 @@ public class DarkSkyCommunicationException extends RuntimeException {
      *
      * @param cause The cause
      */
-    public DarkSkyCommunicationException(Throwable cause) {
+    public PirateWeatherCommunicationException(Throwable cause) {
         super(cause);
     }
 
@@ -55,7 +56,7 @@ public class DarkSkyCommunicationException extends RuntimeException {
      * @param message Detail message
      * @param cause The cause
      */
-    public DarkSkyCommunicationException(String message, Throwable cause) {
+    public PirateWeatherCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.discovery;
+package org.openhab.binding.pirateweather.internal.discovery;
 
-import static org.openhab.binding.darksky.internal.DarkSkyBindingConstants.*;
+import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.util.Date;
 import java.util.Map;
@@ -29,20 +29,21 @@ import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
-import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHandler;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAndForecastHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DarkSkyDiscoveryService} creates things based on the configured location.
+ * The {@link PirateWeatherDiscoveryService} creates things based on the configured location.
  *
- * @author Christoph Weitkamp - Initial Contribution
+ * @author Scott Hanson - Pirate Weather convertion
+ * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyDiscoveryService extends AbstractDiscoveryService {
+public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(DarkSkyDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(PirateWeatherDiscoveryService.class);
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 2;
     private static final int DISCOVERY_INTERVAL_SECONDS = 60;
@@ -50,14 +51,14 @@ public class DarkSkyDiscoveryService extends AbstractDiscoveryService {
     private final LocationProvider locationProvider;
     private @Nullable PointType previousLocation;
 
-    private final DarkSkyAPIHandler bridgeHandler;
+    private final PirateWeatherAPIHandler bridgeHandler;
 
     /**
-     * Creates an DarkSkyLocationDiscoveryService.
+     * Creates an PirateWeatherLocationDiscoveryService.
      */
-    public DarkSkyDiscoveryService(DarkSkyAPIHandler bridgeHandler, LocationProvider locationProvider,
+    public PirateWeatherDiscoveryService(PirateWeatherAPIHandler bridgeHandler, LocationProvider locationProvider,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {
-        super(DarkSkyWeatherAndForecastHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
+        super(PirateWeatherWeatherAndForecastHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
         this.bridgeHandler = bridgeHandler;
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
@@ -78,20 +79,20 @@ public class DarkSkyDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Start manual Dark Sky Location discovery scan.");
+        logger.debug("Start manual Pirate Weather Location discovery scan.");
         scanForNewLocation();
     }
 
     @Override
     protected synchronized void stopScan() {
-        logger.debug("Stop manual Dark Sky Location discovery scan.");
+        logger.debug("Stop manual Pirate Weather Location discovery scan.");
         super.stopScan();
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         if (discoveryJob == null || discoveryJob.isCancelled()) {
-            logger.debug("Start Dark Sky Location background discovery job at interval {} s.",
+            logger.debug("Start Pirate Weather Location background discovery job at interval {} s.",
                     DISCOVERY_INTERVAL_SECONDS);
             discoveryJob = scheduler.scheduleWithFixedDelay(this::scanForNewLocation, 0, DISCOVERY_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
@@ -101,7 +102,7 @@ public class DarkSkyDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            logger.debug("Stop Dark Sky Location background discovery job.");
+            logger.debug("Stop Pirate Weather Location background discovery job.");
             if (discoveryJob.cancel(true)) {
                 discoveryJob = null;
             }
