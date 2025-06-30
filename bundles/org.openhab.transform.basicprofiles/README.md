@@ -100,14 +100,16 @@ It requires no specific configuration.
 The values of `QuantityType`, `PercentType` and `DecimalTypes` are negated (multiplied by `-1`).
 Otherwise the following mapping is used:
 
-`IncreaseDecreaseType`: `INCREASE` <-> `DECREASE`
-`NextPreviousType`: `NEXT` <-> `PREVIOUS`
-`OnOffType`: `ON` <-> `OFF`
-`OpenClosedType`: `OPEN` <-> `CLOSED`
-`PlayPauseType`: `PLAY` <-> `PAUSE`
-`RewindFastforwardType`: `REWIND` <-> `FASTFORWARD`
-`StopMoveType`: `MOVE` <-> `STOP`
-`UpDownType`: `UP` <-> `DOWN`
+| Type                    | Inversion                  |
+|:------------------------|:---------------------------|
+| `IncreaseDecreaseType`  | `INCREASE` <-> `DECREASE`  |
+| `NextPreviousType`      | `NEXT` <-> `PREVIOUS`      |
+| `OnOffType`             | `ON` <-> `OFF`             |
+| `OpenClosedType`        | `OPEN` <-> `CLOSED`        |
+| `PlayPauseType`         | `PLAY` <-> `PAUSE`         |
+| `RewindFastforwardType` | `REWIND` <-> `FASTFORWARD` |
+| `StopMoveType`          | `MOVE` <-> `STOP`          |
+| `UpDownType`            | `UP` <-> `DOWN`            |
 
 ### Invert / Negate Profile Example
 
