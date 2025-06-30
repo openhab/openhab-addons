@@ -116,7 +116,7 @@
 		<label>System Mode</label>
 		<description>Current System Operating Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
@@ -164,7 +164,7 @@
 		<label>Fan Mode</label>
 		<description>Current Fan Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Airflow</tag>
 		</tags>
 		<state readOnly="false">
