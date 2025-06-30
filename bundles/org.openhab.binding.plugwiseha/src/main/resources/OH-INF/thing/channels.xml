@@ -144,6 +144,10 @@
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Total operation time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -151,6 +155,10 @@
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>DHW Operation Time</label>
 		<description>Total operation time for domestic hot water</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
