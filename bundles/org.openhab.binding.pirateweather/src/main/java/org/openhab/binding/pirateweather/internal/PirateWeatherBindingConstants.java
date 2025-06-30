@@ -13,8 +13,8 @@
 package org.openhab.binding.pirateweather.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 
 /**
  * The {@link PirateWeatherBindingConstants} class defines common constants, which are used across the whole binding.
