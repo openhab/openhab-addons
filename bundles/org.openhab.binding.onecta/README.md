@@ -256,17 +256,20 @@ Number:Energy   EnergyHeatingMonth23 "Energy Heating current year December"   <E
 ### Item Configuration gateway
 
 ```java
-Switch        DaylightSavingTime      "Daylight saving time enabled" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#daylight-savingtime-enabled", readOnly="true"}
-Switch        FirmwareUpdateSupported "Is firmware update supported" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#is-firmware-update-supported", readOnly="true"}
-String        FirmwaweVersion         "firmware version"                                 ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#firmware-version", readOnly="true"}
-Switch        IsInErrorState          "Is in error state"            <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#isinerrorstate", readOnly="true"}
-Switch        LedEnabled              "Led enabled      "            <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#ledenabled", readOnly="true"}
-String        RegionCode              "Region code"                                      ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#regioncode", readOnly="true"}
-String        Serialnumber            "Serialnumber"                                     ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#serialnumber"  , readOnly="true"}
-String        SSID                    "SSID  "                       <network>           ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#ssid", readOnly="true"}
-String        TimeZone                "Time zone"                                        ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#timezone", readOnly="true"}
-String        WiFiConnectionSSID      "WiFi Connection SSID"         <network>           ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#wificonnectionssid", readOnly="true"}
-Number        WifiConnectionStrength  "Wifi connection strength"     <QualityOfService>  ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#wificonnectionpower", readOnly="true"}
+Switch        DaylightSavingTime      "Daylight saving time enabled" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#daylight-savingtime-enabled", readOnly="true"}
+Switch        FirmwareUpdateSupported "Is firmware update supported" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#is-firmware-update-supported", readOnly="true"}
+String        FirmwaweVersion         "firmware version"                                 ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#firmware-version", readOnly="true"}
+Switch        IsInErrorState          "Is in error state"            <switch>            ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#is-in-error-state", readOnly="true"}
+Switch        LedEnabled              "Led enabled      "            <switch>            ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#led-enabled", readOnly="true"}
+String        RegionCode              "Region code"                                      ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#region-code", readOnly="true"}
+String        Serialnumber            "Serialnumber"                                     ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#serial-number"  , readOnly="true"}
+String        SSID                    "SSID  "                       <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#ssid", readOnly="true"}
+String        TimeZone                "Time zone"                                        ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#timezone", readOnly="true"}
+String        WiFiConnectionSSID      "WiFi Connection SSID"         <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#wifi-connection-ssid", readOnly="true"}
+Number        WifiConnectionStrength  "Wifi connection strength"     <QualityOfService>  ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#wifi-connection-power", readOnly="true"}
+String        ModelInfo               "Model info"                                       ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#model-info", readOnly="true"}
+String        IPAddress               "IP Address"                   <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#ip-address", readOnly="true"}
+String        MacAddress              "MAC Address"                  <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#mac-address", readOnly="true"}
 ```
 ### Item Configuration hotwatertank
 
