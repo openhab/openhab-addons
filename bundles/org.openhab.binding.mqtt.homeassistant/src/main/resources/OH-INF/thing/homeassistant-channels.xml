@@ -77,20 +77,12 @@
 	<channel-type id="ha-string">
 		<item-type>String</item-type>
 		<label>String</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
 	<channel-type id="ha-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
