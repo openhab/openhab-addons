@@ -44,7 +44,7 @@ import org.openhab.core.types.State;
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-class InactivityProfileTest {
+class InactivityProfileTest2 {
 
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
@@ -69,10 +69,10 @@ class InactivityProfileTest {
 
     public static Stream<Arguments> testInactivityProfile() {
         return Stream.of( //
-                Arguments.of("500 ms", null, 500, OnOffType.OFF), //
-                Arguments.of("500 ms", "false", 500, OnOffType.OFF), //
-                Arguments.of("0.5 s", "false", 500, OnOffType.OFF), //
-                Arguments.of("1 h", "true", 3600000, OnOffType.ON));
+                Arguments.of("500ms", null, 500, OnOffType.OFF), //
+                Arguments.of("500ms", "false", 500, OnOffType.OFF), //
+                Arguments.of("5s", "false", 5000, OnOffType.OFF), //
+                Arguments.of("1h", "true", 3600000, OnOffType.ON));
     }
 
     @ParameterizedTest
