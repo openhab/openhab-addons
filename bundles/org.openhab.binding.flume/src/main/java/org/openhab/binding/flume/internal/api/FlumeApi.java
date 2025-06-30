@@ -385,7 +385,7 @@ public class FlumeApi {
      * @throws ExecutionException
      * @throws IOException
      */
-    private JsonObject sendAndValidate(Request request, boolean verifyToken)
+    private synchronized JsonObject sendAndValidate(Request request, boolean verifyToken)
             throws FlumeApiException, InterruptedException, TimeoutException, ExecutionException, IOException {
         ContentResponse response;
 
