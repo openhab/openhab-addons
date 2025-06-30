@@ -63,8 +63,8 @@ These Channels are dynamically added to the Thing during node initialization and
 
 ```java
 Bridge zwavejs:gateway:myBridge "Z-Wave JS Bridge" [ hostname="localhost", port=3000 ] {
-    Thing zwavejs:node:myBridge:node1 "Z-Wave Node 1" [ id=1 ]
-    Thing zwavejs:node:myBridge:node2 "Z-Wave Node 2" [ id=2 ]
+    Thing node node1 "Z-Wave Node 1" [ id=1 ]
+    Thing node node2 "Z-Wave Node 2" [ id=2 ]
 }
 ```
 
