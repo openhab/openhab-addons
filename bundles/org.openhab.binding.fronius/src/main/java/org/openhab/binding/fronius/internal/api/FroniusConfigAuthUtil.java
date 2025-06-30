@@ -60,11 +60,11 @@ public class FroniusConfigAuthUtil {
      * @param httpClient the {@link HttpClient} to use for the request
      * @param loginUri the {@link URI} of the login endpoint
      * @return a {@link Map} containing the authentication parameters of the authentication challenge
-     * @throws IOException when the response does not contain the expected authentication header
+     * @throws FroniusCommunicationException when the authentication challenge request failed or the response does not
+     *             contain the expected authentication header
      */
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static Map<String, String> getAuthParams(HttpClient httpClient, URI loginUri, int timeout)
-            throws IOException {
+            throws FroniusCommunicationException {
         LOGGER.debug("Sending login request to get authentication challenge");
         CountDownLatch latch = new CountDownLatch(1);
         Request request = httpClient.newRequest(loginUri).timeout(timeout, TimeUnit.MILLISECONDS);
@@ -74,13 +74,13 @@ public class FroniusConfigAuthUtil {
         // Wait for the request to complete
         try {
             latch.await();
-        } catch (InterruptedException ie) {
-            throw new RuntimeException(ie);
+        } catch (InterruptedException e) {
+            throw new FroniusCommunicationException("Failed to sent authentication challenge request", e);
         }
 
         String authHeader = xWwwAuthenticateHeaderListener.getAuthHeader();
         if (authHeader == null) {
-            throw new IOException("No authentication header found in login response");
+            throw new FroniusCommunicationException("No authentication header found in login response");
         }
         LOGGER.debug("Parsing authentication challenge");
 
@@ -118,7 +118,8 @@ public class FroniusConfigAuthUtil {
             String uri, HttpMethod method, String username, String password, int nc, String cnonce)
             throws FroniusCommunicationException {
         if (nonce == null || realm == null || qop == null) {
-            throw new FroniusCommunicationException("Missing authentication parameter");
+            throw new FroniusCommunicationException("Failed to create digest header",
+                    new IllegalArgumentException("Missing authentication parameters"));
         }
         LOGGER.debug("Creating digest authentication header");
         String ha1 = md5Hex(username + ":" + realm + ":" + password);
@@ -158,13 +159,11 @@ public class FroniusConfigAuthUtil {
      * @param httpClient the {@link HttpClient} to use for the request
      * @param loginUri the {@link URI} of the login endpoint
      * @param authHeader the authentication header to use for the login request
-     * @throws InterruptedException when the request is interrupted
      * @throws FroniusCommunicationException when the login request failed
      * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static void performLoginRequest(HttpClient httpClient, URI loginUri, String authHeader, int timeout)
-            throws InterruptedException, FroniusCommunicationException, FroniusUnauthorizedException {
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         CountDownLatch latch = new CountDownLatch(1);
         Request request = httpClient.newRequest(loginUri).header(HttpHeader.AUTHORIZATION, authHeader).timeout(timeout,
                 TimeUnit.MILLISECONDS);
@@ -174,17 +173,13 @@ public class FroniusConfigAuthUtil {
         try {
             request.send(result -> latch.countDown());
             // Wait for the request to complete
-            try {
-                latch.await();
-            } catch (InterruptedException ie) {
-                throw new RuntimeException(ie);
-            }
+            latch.await();
 
             status = statusListener.getStatus();
             if (status == null) {
                 throw new FroniusCommunicationException("Failed to send login request: No status code received.");
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new FroniusCommunicationException("Failed to send login request", e);
         }
 
@@ -222,27 +217,26 @@ public class FroniusConfigAuthUtil {
         Map<String, String> authDetails;
 
         int attemptCount = 1;
-        try {
-            while (true) {
-                Throwable lastException;
+        while (true) {
+            Throwable lastException;
+            try {
+                authDetails = getAuthParams(httpClient, loginUri, timeout);
+                break;
+            } catch (IOException e) {
+                LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
                 try {
-                    authDetails = getAuthParams(httpClient, loginUri, timeout);
-                    break;
-                } catch (IOException e) {
-                    LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
                     Thread.sleep(500 * attemptCount);
-                    attemptCount++;
-                    lastException = e;
+                } catch (InterruptedException ie) {
+                    throw new FroniusCommunicationException("Failed to request authentication challenge", ie);
                 }
-
-                if (attemptCount >= 3) {
-                    LOGGER.debug("Failed connecting to {} after {} attempts.", loginUri, attemptCount, lastException);
-                    throw new FroniusCommunicationException("Unable to connect", lastException);
-                }
+                attemptCount++;
+                lastException = e;
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new FroniusCommunicationException("Interrupted", e);
+
+            if (attemptCount >= 3) {
+                LOGGER.debug("Failed connecting to {} after {} attempts.", loginUri, attemptCount, lastException);
+                throw new FroniusCommunicationException("Unable to connect", lastException);
+            }
         }
 
         // Create auth header for login request
@@ -260,11 +254,9 @@ public class FroniusConfigAuthUtil {
                 try {
                     performLoginRequest(httpClient, loginUri, authHeader, timeout);
                     break;
-                } catch (InterruptedException ie) {
-                    throw new FroniusCommunicationException("Failed to send login request", ie);
                 } catch (FroniusCommunicationException e) {
                     LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
-                    Thread.sleep(500 * attemptCount);
+                    Thread.sleep(500L * attemptCount);
                     attemptCount++;
                     lastException = e;
                 } catch (FroniusUnauthorizedException e) {
