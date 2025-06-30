@@ -18,10 +18,10 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -45,6 +45,7 @@ import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeS
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.State;
@@ -64,6 +65,7 @@ import com.google.gson.JsonParser;
  * @author Jimmy Tanagra - Add powerflow autonomy, self consumption channels
  * @author Florian Hotze - Add battery control actions
  */
+@NonNullByDefault
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterHandler.class);
@@ -71,7 +73,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     private @Nullable InverterRealtimeResponse inverterRealtimeResponse;
     private @Nullable PowerFlowRealtimeResponse powerFlowResponse;
-    private FroniusBaseDeviceConfiguration config;
+    private @Nullable FroniusBaseDeviceConfiguration config;
     private @Nullable InverterInfo inverterInfo;
     private @Nullable FroniusBatteryControl batteryControl;
 
@@ -87,11 +89,20 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     @Override
     protected void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration) throws FroniusCommunicationException {
+        FroniusBaseDeviceConfiguration config = this.config;
+        if (config == null) {
+            logger.warn("config is null in handleRefresh(), this is a bug, please report it.");
+            return;
+        }
         updateData(bridgeConfiguration, config);
         updateChannels();
     }
 
-    private void initializeBatteryControl(String hostname, String username, String password) {
+    private void initializeBatteryControl(String hostname, @Nullable String username, @Nullable String password) {
+        if (username == null || password == null) {
+            return;
+        }
+
         String apiPrefix = "";
 
         InverterInfo localInverterInfo = inverterInfo;
@@ -108,12 +119,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             }
         }
 
-        if (hostname != null && username != null && password != null) {
-            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + apiPrefix),
-                    username, password);
-        } else {
-            batteryControl = null;
-        }
+        batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + apiPrefix), username,
+                password);
     }
 
     private void updateProperties() {
@@ -123,18 +130,21 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         }
 
         Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, inverterInfo.serial());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, inverterInfo.firmware());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, localInverterInfo.serial());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, localInverterInfo.firmware());
         updateProperties(properties);
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(FroniusBaseDeviceConfiguration.class);
-        FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
-        inverterInfo = getInverterInfo(bridgeConfig.hostname);
-        updateProperties();
-        initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+            inverterInfo = getInverterInfo(bridgeConfig.hostname);
+            updateProperties();
+            initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+        }
         super.initialize();
     }
 
@@ -146,8 +156,13 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     @Override
     public void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleBridgeConfigurationUpdate(configurationParameters);
-        FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
-        initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+            inverterInfo = getInverterInfo(bridgeConfig.hostname);
+            updateProperties();
+            initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+        }
     }
 
     public @Nullable FroniusBatteryControl getBatteryControl() {
@@ -164,7 +179,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @return the last retrieved data
      */
     @Override
-    protected State getValue(String channelId) {
+    protected @Nullable State getValue(String channelId) {
         final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
@@ -173,6 +188,12 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
         InverterRealtimeBodyData inverterData = getInverterData();
         if (inverterData == null) {
+            return null;
+        }
+
+        FroniusBaseDeviceConfiguration config = this.config;
+        if (config == null) {
+            logger.warn("config is null in getValue(String channelId), this is a bug, please report it.");
             return null;
         }
 
@@ -321,9 +342,15 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param unit The default unit to use when value is null
      * @return a QuantityType from the given value
      */
-    private QuantityType<?> getQuantityOrZero(ValueUnit value, Unit unit) {
-        return Optional.ofNullable(value).map(val -> val.asQuantityType().toUnit(unit))
-                .orElse(new QuantityType<>(0, unit));
+    private QuantityType<?> getQuantityOrZero(@Nullable ValueUnit value, Unit unit) {
+        QuantityType<?> val = null;
+        if (value != null) {
+            val = value.asQuantityType().toUnit(unit);
+        }
+        if (val == null) {
+            return new QuantityType<>(0, unit);
+        }
+        return val;
     }
 
     /**
@@ -365,7 +392,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param current the current ValueUnit
      * @return {QuantityType<>} the power value calculated by multiplying voltage and current
      */
-    private QuantityType<?> calculatePower(ValueUnit voltage, ValueUnit current) {
+    private @Nullable QuantityType<?> calculatePower(ValueUnit voltage, ValueUnit current) {
         QuantityType<?> qtyVoltage = getQuantityOrZero(voltage, Units.VOLT);
         QuantityType<?> qtyCurrent = getQuantityOrZero(current, Units.AMPERE);
         return qtyVoltage.multiply(qtyCurrent).toUnit(Units.WATT);

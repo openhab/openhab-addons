@@ -24,6 +24,7 @@ import java.util.Properties;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -136,8 +137,9 @@ public class FroniusBatteryControl {
         String json = gson.toJson(records);
         String responseString = FroniusHttpUtil.executeUrl(HttpMethod.POST, timeOfUseUri.toString(), headers,
                 new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
+        @Nullable
         PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
-        if (!response.writeSuccess().contains("timeofuse")) {
+        if (response == null || !response.writeSuccess().contains("timeofuse")) {
             logger.debug("{}", responseString);
             throw new FroniusCommunicationException("Failed to write configuration to inverter");
         }
@@ -215,9 +217,12 @@ public class FroniusBatteryControl {
         TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
         System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
 
-        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, power.toUnit(Units.WATT).intValue(),
-                ScheduleType.CHARGE_MIN, new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)),
-                ALL_WEEKDAYS_RECORD);
+        QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
+        if (powerInWatts == null) {
+            throw new IllegalArgumentException("power must be convertible to Watt unit");
+        }
+        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, powerInWatts.intValue(), ScheduleType.CHARGE_MIN,
+                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
         timeOfUse[timeOfUse.length - 1] = holdCharge;
         setTimeOfUse(new TimeOfUseRecords(timeOfUse));
     }
@@ -277,8 +282,9 @@ public class FroniusBatteryControl {
         String json = gson.toJson(Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent));
         String responseString = FroniusHttpUtil.executeUrl(HttpMethod.POST, batteriesUri.toString(), headers,
                 new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
+        @Nullable
         PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
-        if (!response.writeSuccess().contains(BACKUP_RESERVED_CAPACITY_PARAMETER)) {
+        if (response == null || !response.writeSuccess().contains(BACKUP_RESERVED_CAPACITY_PARAMETER)) {
             logger.debug("{}", responseString);
             throw new FroniusCommunicationException("Failed to write configuration to inverter");
         }

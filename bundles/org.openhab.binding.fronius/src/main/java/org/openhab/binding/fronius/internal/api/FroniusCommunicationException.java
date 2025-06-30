@@ -13,6 +13,7 @@
 package org.openhab.binding.fronius.internal.api;
 
 import java.io.IOException;
+import java.io.Serial;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class FroniusCommunicationException extends IOException {
+    @Serial
     private static final long serialVersionUID = 619020705591964155L;
 
     public FroniusCommunicationException(String message) {

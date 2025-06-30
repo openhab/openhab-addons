@@ -62,6 +62,7 @@ public class FroniusConfigAuthUtil {
      * @return a {@link Map} containing the authentication parameters of the authentication challenge
      * @throws IOException when the response does not contain the expected authentication header
      */
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static Map<String, String> getAuthParams(HttpClient httpClient, URI loginUri, int timeout)
             throws IOException {
         LOGGER.debug("Sending login request to get authentication challenge");
@@ -134,6 +135,7 @@ public class FroniusConfigAuthUtil {
      * @param data the data to hash
      * @return the hashed data as a hex string
      */
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static String md5Hex(String data) {
         MessageDigest md;
         try {
@@ -160,6 +162,7 @@ public class FroniusConfigAuthUtil {
      * @throws FroniusCommunicationException when the login request failed
      * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static void performLoginRequest(HttpClient httpClient, URI loginUri, String authHeader, int timeout)
             throws InterruptedException, FroniusCommunicationException, FroniusUnauthorizedException {
         CountDownLatch latch = new CountDownLatch(1);
