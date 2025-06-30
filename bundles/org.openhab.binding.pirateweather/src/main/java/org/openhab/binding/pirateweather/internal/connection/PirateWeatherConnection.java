@@ -31,14 +31,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
-import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.library.types.RawType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
 import org.openhab.binding.pirateweather.internal.utils.ByteArrayFileCache;
+import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,8 @@ public class PirateWeatherConnection {
     }
 
     /**
-     * Requests the current weather data for the given location (see https://pirateweather.net/dev/docs#forecast-request).
+     * Requests the current weather data for the given location (see
+     * https://pirateweather.net/dev/docs#forecast-request).
      *
      * @param location location represented as {@link PointType}
      * @return the current weather data
