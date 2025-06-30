@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.config;
+package org.openhab.binding.pirateweather.internal.config;
 
 import java.time.Duration;
 import java.util.regex.Pattern;
@@ -21,14 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DarkSkyChannelConfiguration} is the class used to match the sunrise and sunset event configuration.
+ * The {@link PirateWeatherChannelConfiguration} is the class used to match the sunrise and sunset event configuration.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyChannelConfiguration {
+public class PirateWeatherChannelConfiguration {
 
-    private final Logger logger = LoggerFactory.getLogger(DarkSkyChannelConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(PirateWeatherChannelConfiguration.class);
 
     private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
     private static final String TIME_SEPARATOR = ":";

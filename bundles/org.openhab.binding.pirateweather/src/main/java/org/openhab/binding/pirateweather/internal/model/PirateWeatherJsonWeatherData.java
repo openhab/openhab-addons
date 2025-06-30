@@ -10,24 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.model;
+package org.openhab.binding.pirateweather.internal.model;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DarkSkyJsonWeatherData} is the Java class used to map the JSON response to an Dark Sky request.
+ * The {@link PirateWeatherJsonWeatherData} is the Java class used to map the JSON response to an Pirate Weather request.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
-public class DarkSkyJsonWeatherData {
+public class PirateWeatherJsonWeatherData {
     private double latitude;
     private double longitude;
     private String timezone;
-    private DarkSkyCurrentlyData currently;
-    private DarkSkyHourlyData hourly;
-    private DarkSkyDailyData daily;
+    private PirateWeatherCurrentlyData currently;
+    private PirateWeatherHourlyData hourly;
+    private PirateWeatherDailyData daily;
     private @Nullable List<AlertsData> alerts;
     private int offset;
 
@@ -55,27 +56,27 @@ public class DarkSkyJsonWeatherData {
         this.timezone = timezone;
     }
 
-    public DarkSkyCurrentlyData getCurrently() {
+    public PirateWeatherCurrentlyData getCurrently() {
         return currently;
     }
 
-    public void setCurrently(DarkSkyCurrentlyData currently) {
+    public void setCurrently(PirateWeatherCurrentlyData currently) {
         this.currently = currently;
     }
 
-    public DarkSkyHourlyData getHourly() {
+    public PirateWeatherHourlyData getHourly() {
         return hourly;
     }
 
-    public void setHourly(DarkSkyHourlyData hourly) {
+    public void setHourly(PirateWeatherHourlyData hourly) {
         this.hourly = hourly;
     }
 
-    public DarkSkyDailyData getDaily() {
+    public PirateWeatherDailyData getDaily() {
         return daily;
     }
 
-    public void setDaily(DarkSkyDailyData daily) {
+    public void setDaily(PirateWeatherDailyData daily) {
         this.daily = daily;
     }
 
