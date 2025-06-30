@@ -70,10 +70,6 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Timestamp for measurement/change</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="price">
 		<item-type>Number:Dimensionless</item-type>
@@ -85,10 +81,6 @@
 		<item-type>String</item-type>
 		<label>Price Level</label>
 		<description>Current price level</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="cost">
 		<item-type>Number:Dimensionless</item-type>
@@ -117,20 +109,12 @@
 		<item-type>Number:Power</item-type>
 		<label>Power consumption/production</label>
 		<description>Power consumption/production for given time interval</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage on given Phase</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="current">

@@ -8,10 +8,6 @@
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 
@@ -19,10 +15,6 @@
 		<item-type>Number</item-type>
 		<label>Luminiscence</label>
 		<category>Light</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f Lux"/>
 	</channel-type>
 
@@ -30,10 +22,6 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -41,10 +29,6 @@
 		<item-type>Number</item-type>
 		<label>Barometer</label>
 		<category>Pressure</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
@@ -52,10 +36,6 @@
 		<item-type>Number</item-type>
 		<label>Ultraviolet</label>
 		<category>Light</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f UV index"/>
 	</channel-type>
 
@@ -63,10 +43,6 @@
 		<item-type>Number</item-type>
 		<label>CO2</label>
 		<category>CarbonDioxide</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f ppm"/>
 	</channel-type>
 
@@ -74,10 +50,6 @@
 		<item-type>Number</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
 
@@ -85,10 +57,6 @@
 		<item-type>Number</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
 
@@ -96,10 +64,6 @@
 		<item-type>Number</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
 
@@ -107,10 +71,6 @@
 		<item-type>Switch</item-type>
 		<label>Smoke</label>
 		<category>Smoke</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Smoke</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -118,10 +78,6 @@
 		<item-type>Switch</item-type>
 		<label>Gas</label>
 		<category>Gas</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Gas</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -129,10 +85,6 @@
 		<item-type>Switch</item-type>
 		<label>Flood</label>
 		<category>Water</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -140,10 +92,6 @@
 		<item-type>Switch</item-type>
 		<label>Tamper</label>
 		<category>Alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -151,10 +99,6 @@
 		<item-type>Contact</item-type>
 		<label>DoorWindow</label>
 		<category>Contact</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -162,10 +106,6 @@
 		<item-type>Switch</item-type>
 		<label>Motion</label>
 		<category>Motion</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -173,10 +113,6 @@
 		<item-type>Switch</item-type>
 		<label>PowerOutlet</label>
 		<category>PowerOutlet</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -184,10 +120,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Color Temperature</label>
 		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -195,10 +127,6 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollshutter</label>
 		<category>Blinds</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -208,10 +136,6 @@
 		<item-type>Number</item-type>
 		<label>Battery</label>
 		<category>Battery</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -219,10 +143,6 @@
 		<item-type>Switch</item-type>
 		<label>Doorlock</label>
 		<category>Door</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -238,10 +158,6 @@
 		<item-type>Number</item-type>
 		<label>Sensor Multilevel</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -257,10 +173,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Switch Multilevel</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -269,10 +181,6 @@
 		<label>Switch Color</label>
 		<description>This channel represents the rgbw switch device type from Z-Way.</description>
 		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="thermostatMode">
@@ -281,10 +189,6 @@
 		<description>The channel allows the control or display of a thermostat (mode). A thermostat can have up to three
 			states (modes): off, heating and cooling. The state of heating and cooling is alternately set at the state on.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -292,10 +196,6 @@
 		<item-type>Number</item-type>
 		<label>Thermostat Set Point</label>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -323,10 +223,6 @@
 		<description>The channel allows the control or display of a thermostat (mode) from command class. The modes differ
 			from device to device.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -348,10 +244,6 @@
 		<label>Secure Inclusion</label>
 		<description>Change inclusion type for further inclusions.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -360,10 +252,6 @@
 		<label>Inclusion</label>
 		<description>Start inclusion mode (after a timeout the inclusion will be automatically finished).</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -372,10 +260,6 @@
 		<label>Exclusion</label>
 		<description>Start exclusion mode (after a timeout the exclusion will be automatically finished).</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 

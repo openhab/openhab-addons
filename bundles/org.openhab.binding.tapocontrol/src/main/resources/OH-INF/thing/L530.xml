@@ -42,10 +42,6 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of active lightning effect</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="false"/>
 		<command>
 			<options>

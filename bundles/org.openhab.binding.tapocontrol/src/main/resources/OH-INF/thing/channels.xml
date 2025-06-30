@@ -13,10 +13,6 @@
 		<label>Output Switch</label>
 		<description>Switches the power state on/off</description>
 		<category>PowerOutlet</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -26,10 +22,6 @@
 		<label>Light On</label>
 		<description>Switches the light on/off</description>
 		<category>LightBulb</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -39,10 +31,6 @@
 		<label>Brightness</label>
 		<description>Brightness</description>
 		<category>LightBulb</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -52,10 +40,6 @@
 		<label>Mode</label>
 		<description>Working mode of device</description>
 		<category>LightBulb</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 		<command>
 			<options>
@@ -72,10 +56,6 @@
 		<label>Color</label>
 		<description>Color</description>
 		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -86,10 +66,6 @@
 		<label>Is Open</label>
 		<description>Contact (Window/Door) is Open</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -99,10 +75,6 @@
 		<label>Temperature</label>
 		<description>Temperature as measured by the sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
@@ -112,10 +84,6 @@
 		<label>Humidity</label>
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -153,10 +121,6 @@
 		<label>Battery Low</label>
 		<description>Battery of device is low</description>
 		<category>LowBattery</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>LowBattery</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -167,10 +131,6 @@
 		<label>Power</label>
 		<description>Actual power usage</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -180,10 +140,6 @@
 		<label>Today Usage</label>
 		<description>Today energy usage</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -193,10 +149,6 @@
 		<label>Today Runtime</label>
 		<description>Today runtime (On-Time)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -206,10 +158,6 @@
 		<label>Month Usage</label>
 		<description>Energy usage last month</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -219,10 +167,6 @@
 		<label>Month Runtime</label>
 		<description>Runtime last month (On-Time)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -250,9 +194,6 @@
 		<label>Active Alarm</label>
 		<description>Device has an active alarm</description>
 		<category>Alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -262,9 +203,6 @@
 		<label>Alarm Source</label>
 		<description>Source of active alarm</description>
 		<category>Alarm</category>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

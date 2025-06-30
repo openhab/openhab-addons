@@ -90,10 +90,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Value</label>
 		<description>The channel to control the dimmer</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="state">
@@ -101,19 +97,11 @@
 		<label>Switch</label>
 		<description>Turns the power on or off</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Last Device Update</label>
 		<description>Last device update</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

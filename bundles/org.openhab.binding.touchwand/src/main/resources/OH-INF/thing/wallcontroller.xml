@@ -19,10 +19,6 @@
 	<channel-type id="wallaction">
 		<item-type>String</item-type>
 		<label>WallController action</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 		<event>
 			<options>
 				<option value="LONG">long</option>

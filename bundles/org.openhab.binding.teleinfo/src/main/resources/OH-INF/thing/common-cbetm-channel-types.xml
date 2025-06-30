@@ -22,10 +22,6 @@
 		<label>IINST1</label>
 		<description>Instantaneous electric current on phase 1</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -34,10 +30,6 @@
 		<label>IINST2</label>
 		<description>Instantaneous electric current on phase 2</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -46,10 +38,6 @@
 		<label>IINST3</label>
 		<description>Instantaneous electric current on phase 3</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -58,10 +46,6 @@
 		<label>IMAX1</label>
 		<description>Maximum consumed electric current on phase 1</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -70,10 +54,6 @@
 		<label>IMAX2</label>
 		<description>Maximum consumed electric current on phase 2</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -82,10 +62,6 @@
 		<label>IMAX3</label>
 		<description>Maximum consumed electric current on phase 3</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -94,10 +70,6 @@
 		<label>PMAX</label>
 		<description>Maximum consumed electric power on all phases</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -106,10 +78,6 @@
 		<label>PAPP</label>
 		<description>Instantaneous apparent power</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -118,10 +86,6 @@
 		<label>PPOT</label>
 		<description>Electrical potential presence</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -130,10 +94,6 @@
 		<label>ADIR1</label>
 		<description>Excess electric current on phase 1 warning</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -142,10 +102,6 @@
 		<label>ADIR2</label>
 		<description>Excess electric current on phase 2 warning</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -154,10 +110,6 @@
 		<label>ADIR3</label>
 		<description>Excess electric current on phase 3 warning</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

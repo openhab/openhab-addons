@@ -316,10 +316,6 @@
 		<item-type>DateTime</item-type>
 		<label>DateTime Heating System</label>
 		<description>Date and time of the Heating System</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -328,10 +324,6 @@
 		<label>Outside Temperature</label>
 		<description>Outside temperature sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -340,10 +332,6 @@
 		<label>Boiler</label>
 		<description>Temperature sensor of boiler (fireplace)</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Smoke</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -359,10 +347,6 @@
 	<channel-type id="powerlevel">
 		<item-type>Number</item-type>
 		<label>Power Level</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true" max="100" min="0"/>
 	</channel-type>
 
@@ -371,10 +355,6 @@
 		<label>Exhaust Temperature</label>
 		<description>Actual temperature of the exhaust</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -385,10 +365,6 @@
 		<label>Flame</label>
 		<description>Temperature of flame</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -424,10 +400,6 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed in rpm</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state pattern="%d rpm" readOnly="true"/>
 	</channel-type>
 
@@ -465,10 +437,6 @@
 		<item-type>Number</item-type>
 		<label>Actual Power Level</label>
 		<description>Actual power of the burner</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true" max="100" min="0"/>
 	</channel-type>
 
@@ -514,10 +482,6 @@
 		<label>Middle</label>
 		<description>Temperature sensor in the middle of the storage tank</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -526,10 +490,6 @@
 		<label>Bottom</label>
 		<description>Temperature sensor at the bottom of the storage tank</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -538,10 +498,6 @@
 		<label>Hot Water</label>
 		<description>Temperature sensor of the hot water</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -550,10 +506,6 @@
 		<label>Hot Water Set Point</label>
 		<description>Set the hot water temperature set point</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%d °C" readOnly="false" max="60" min="30" step="1"/>
 	</channel-type>
 
@@ -564,10 +516,6 @@
 		<label>Flow</label>
 		<description>Temperature sensor of the circuit flow</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -603,10 +551,6 @@
 		<item-type>Switch</item-type>
 		<label>Party Mode</label>
 		<description>Party mode on/off</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -614,10 +558,6 @@
 		<item-type>Switch</item-type>
 		<label>Save Mode</label>
 		<description>Save mode on/off</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -650,10 +590,6 @@
 		<label>Room Temperature Set Point</label>
 		<description>Target temperature of rooms</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
 	</channel-type>
 
@@ -685,10 +621,6 @@
 		<label>Collector</label>
 		<description>Actual temperature of the collector</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -697,10 +629,6 @@
 		<label>Storage Tank</label>
 		<description>Actual temperature of the storage tank (solar sensor)</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
@@ -708,10 +636,6 @@
 		<item-type>Switch</item-type>
 		<label>Buffer Load Pump</label>
 		<description>State of the pump (on/off)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -736,10 +660,6 @@
 		<label>Temperature</label>
 		<description>Generic temperature sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 

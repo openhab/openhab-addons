@@ -41,10 +41,6 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Control channel for Smarwi thing.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
-		</tags>
 	</channel-type>
 
 	<!-- Status Channel Type -->
@@ -52,10 +48,6 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status of the Smarwi device (Stopped, Moving, Not ready, Blocked).</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

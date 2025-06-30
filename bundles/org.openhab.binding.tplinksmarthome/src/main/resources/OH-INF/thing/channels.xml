@@ -25,10 +25,6 @@
 		<label>Power</label>
 		<description>Actual power usage.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy-usage">
@@ -36,10 +32,6 @@
 		<label>Energy Usage</label>
 		<description>Actual energy usage.</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">

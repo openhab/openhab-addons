@@ -65,20 +65,12 @@
 		<item-type>Switch</item-type>
 		<label>On</label>
 		<description>Power switch for ventilation unit</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="state">
 		<item-type>Number</item-type>
 		<label>State</label>
 		<description>Current state of ventilation unit</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Ventilation</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="1">Fireplace</option>
@@ -93,10 +85,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed in % (0-100)</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state readOnly="true" min="0" max="1" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -119,10 +107,6 @@
 		<label>Temperature Inside</label>
 		<description>Current temperature inside the building.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -131,10 +115,6 @@
 		<label>Temperature Outside</label>
 		<description>Current temperature outside the building.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -143,10 +123,6 @@
 		<label>Temperature Exhaust</label>
 		<description>Current temperature of the air flow exhausting the building.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -166,10 +142,6 @@
 		<label>Temperature Incoming</label>
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -177,10 +149,6 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity of the air flow exhausting the building.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -188,10 +156,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>CO2 measurement</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
-		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

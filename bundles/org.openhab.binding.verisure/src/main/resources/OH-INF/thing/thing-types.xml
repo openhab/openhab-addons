@@ -542,10 +542,6 @@
 		<item-type>String</item-type>
 		<label>User Location Status</label>
 		<description>Information on user location status (HOME/AWAY).</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -567,10 +563,6 @@
 		<item-type>DateTime</item-type>
 		<label>TimeStamp</label>
 		<description>Date and time of last event change.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -592,10 +584,6 @@
 		<item-type>Switch</item-type>
 		<label>SmartLock Motor Jam</label>
 		<description>Tells if the SmartLock motor has jammed.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -603,9 +591,6 @@
 		<item-type>String</item-type>
 		<label>Alarm Status</label>
 		<description>Verisure alarm status.</description>
-		<tags>
-			<tag>Alarm</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="DISARMED">DISARMED</option>
@@ -619,30 +604,18 @@
 		<item-type>Switch</item-type>
 		<label>SmartLock Status</label>
 		<description>Verisure smart lock status.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="autoRelock">
 		<item-type>Switch</item-type>
 		<label>SmartLock Auto Re-lock</label>
 		<description>Verisure smart lock auto re-lock status.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="smartLockVolume">
 		<item-type>String</item-type>
 		<label>SmartLock Volume</label>
 		<description>Verisure smart lock volume status.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="SILENCE">SILENCE</option>
@@ -656,10 +629,6 @@
 		<item-type>String</item-type>
 		<label>SmartLock Voice Level Setting</label>
 		<description>Verisure smart lock voice level status.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="ESSENTIAL">ESSENTIAL</option>
@@ -672,30 +641,18 @@
 		<item-type>Switch</item-type>
 		<label>SmartPlug Status</label>
 		<description>Verisure smart plug status.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="connected">
 		<item-type>Switch</item-type>
 		<label>Broadband Connection Status</label>
 		<description>Verisure broadband connection status.</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="state">
 		<item-type>Contact</item-type>
 		<label>Door/Window State</label>
 		<description>Is door/window opened or closed. (OPEN/CLOSED)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -704,10 +661,6 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 
@@ -716,10 +669,6 @@
 		<label>Humidity</label>
 		<description>Current humidity in %.</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -727,10 +676,6 @@
 		<item-type>Switch</item-type>
 		<label>Humidity Enabled</label>
 		<description>Is Climate device capable of reporting humidity.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -738,10 +683,6 @@
 		<item-type>String</item-type>
 		<label>Label</label>
 		<description>The name of the door/window.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -749,10 +690,6 @@
 		<item-type>String</item-type>
 		<label>Location</label>
 		<description>The location of the device.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
-		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -760,10 +697,6 @@
 		<item-type>Switch</item-type>
 		<label>Hazardous</label>
 		<description>Is Verisure smart plug configured as hazardous.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -799,10 +732,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration Last Detection</label>
 		<description>Duration last detection.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
@@ -810,10 +739,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration Last 24 Hours</label>
 		<description>Duration last 24 hours.</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 

@@ -42,19 +42,11 @@
 		<item-type>Switch</item-type>
 		<label>Receiver Switch</label>
 		<description>The switch to enable disable the IR receiving diode/function</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>The status of the YIO Dock. If the receiver is on than the recognized IR code will be displayed otherwise
 			the IR send status is displayed of the last IR code send.</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>

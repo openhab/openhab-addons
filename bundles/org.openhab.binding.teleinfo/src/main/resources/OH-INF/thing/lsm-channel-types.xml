@@ -8,10 +8,6 @@
 		<item-type>String</item-type>
 		<label>Teleinfo String Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -19,10 +15,6 @@
 		<item-type>Number:Energy</item-type>
 		<label>Teleinfo Energy Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -30,10 +22,6 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Teleinfo Current Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -41,10 +29,6 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Teleinfo Potential Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -52,10 +36,6 @@
 		<item-type>Number:Power</item-type>
 		<label>Teleinfo Power Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -63,10 +43,6 @@
 		<item-type>Switch</item-type>
 		<label>Teleinfo Switch Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -74,10 +50,6 @@
 		<item-type>DateTime</item-type>
 		<label>Teleinfo DateTime Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 

@@ -45,10 +45,6 @@
 		<label>Minutes To Arrival</label>
 		<description>Minutes to drive to the destination</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="trafficminutesdelay">
@@ -56,10 +52,6 @@
 		<label>Traffic Delay</label>
 		<description>Delay to arrive at the destination due to traffic</description>
 		<category>Time</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -67,10 +59,6 @@
 		<item-type>Switch</item-type>
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="autoparkstate" advanced="true">
 		<item-type>String</item-type>
@@ -106,10 +94,6 @@
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
 		<description>State of the battery in %</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryrange" advanced="true">
@@ -247,10 +231,6 @@
 		<item-type>String</item-type>
 		<label>Charging State</label>
 		<description>“Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Starting">Starting</option>
@@ -272,10 +252,6 @@
 		<item-type>Switch</item-type>
 		<label>Charge Port</label>
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="chargercurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -323,10 +299,6 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="driverreardoor" advanced="true">
 		<item-type>Contact</item-type>
@@ -418,10 +390,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="lefttempdirection" advanced="true">
@@ -678,10 +646,6 @@
 		<item-type>Number:Speed</item-type>
 		<label>Speed</label>
 		<description>Vehicle speed</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="state" advanced="true">
@@ -711,10 +675,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Sunroof</label>
 		<description>Indicates the opening state of the sunroof (0% closed, 100% fully open)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenState</tag>
-		</tags>
 		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="combinedtemp" advanced="true">
