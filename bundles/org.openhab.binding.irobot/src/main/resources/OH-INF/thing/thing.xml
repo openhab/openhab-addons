@@ -214,7 +214,7 @@
 		<description>Wi-Fi signal strength</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<tag>RSSI</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
