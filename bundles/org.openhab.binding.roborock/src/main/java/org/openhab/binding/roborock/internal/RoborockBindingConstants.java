@@ -106,6 +106,7 @@ public class RoborockBindingConstants {
 
     public static final String COMMAND_GET_STATUS = "get_status";
     public static final String COMMAND_GET_CONSUMABLE = "get_consumable";
+    public static final String COMMAND_APP_CHARGE = "app_charge";
     public static final String COMMAND_APP_PAUSE = "app_pause";
     public static final String COMMAND_APP_SPOT = "app_spot";
     public static final String COMMAND_APP_START = "app_start";

@@ -177,7 +177,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else if ("pause".equals(command.toString())) {
                     sendCommand(COMMAND_APP_PAUSE);
                 } else if ("dock".equals(command.toString())) {
-                    sendCommand(COMMAND_APP_STOP);
+                    sendCommand(COMMAND_APP_CHARGE);
                 } else {
                     logger.info("Command {} not recognised", command.toString());
                 }
