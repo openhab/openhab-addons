@@ -15,7 +15,8 @@ package org.openhab.binding.pirateweather.internal.connection;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PirateWeatherCommunicationException} is a communication exception for the connections to Pirate Weather API.
+ * The {@link PirateWeatherCommunicationException} is a communication exception for the connections to Pirate Weather
+ * API.
  *
  * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution

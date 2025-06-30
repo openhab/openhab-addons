@@ -26,20 +26,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.LocationProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.pirateweather.internal.discovery.PirateWeatherDiscoveryService;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAndForecastHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -89,8 +89,8 @@ public class PirateWeatherHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_WEATHER_API.equals(thingTypeUID)) {
             PirateWeatherAPIHandler handler = new PirateWeatherAPIHandler((Bridge) thing, httpClient, localeProvider);
             // register discovery service
-            PirateWeatherDiscoveryService discoveryService = new PirateWeatherDiscoveryService(handler, locationProvider,
-                    localeProvider, i18nProvider);
+            PirateWeatherDiscoveryService discoveryService = new PirateWeatherDiscoveryService(handler,
+                    locationProvider, localeProvider, i18nProvider);
             discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
             return handler;
