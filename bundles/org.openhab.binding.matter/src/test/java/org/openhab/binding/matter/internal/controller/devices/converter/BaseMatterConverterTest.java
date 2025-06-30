@@ -31,9 +31,8 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 @NonNullByDefault
 public abstract class BaseMatterConverterTest {
 
-    @Mock
     @NonNullByDefault({})
-    protected MatterBridgeClient mockBridgeClient;
+    protected MatterBridgeClient mockBridgeClient = new MatterBridgeClient();
     @Mock
     @NonNullByDefault({})
     protected BaseThingHandlerFactory mockThingHandlerFactory;
