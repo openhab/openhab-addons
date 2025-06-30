@@ -318,7 +318,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         localKey = homeData.result.devices[i].localKey;
                     }
                     updateState(CHANNEL_ERROR_ID, new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
-                    updateState(CHANNEL_STATE, new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
+                    updateState(CHANNEL_STATE_ID, new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
                     updateState(CHANNEL_BATTERY, new DecimalType(homeData.result.devices[i].deviceStatus.battery));
                     updateState(CHANNEL_FAN_POWER, new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
                     updateState(CHANNEL_MOP_DRYING,
