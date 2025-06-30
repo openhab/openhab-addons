@@ -112,7 +112,8 @@ public class FroniusConfigAuthUtil {
      * @param nc
      * @param cnonce
      * @return the digest authentication header
-     * @throws FroniusCommunicationException if an authentication parameter is missing
+     * @throws FroniusCommunicationException if an authentication parameter is missing or the digest header could not be
+     *             created
      */
     private static String createDigestHeader(@Nullable String nonce, @Nullable String realm, @Nullable String qop,
             String uri, HttpMethod method, String username, String password, int nc, String cnonce)
@@ -122,10 +123,17 @@ public class FroniusConfigAuthUtil {
                     new IllegalArgumentException("Missing authentication parameters"));
         }
         LOGGER.debug("Creating digest authentication header");
-        String ha1 = md5Hex(username + ":" + realm + ":" + password);
-        String ha2 = md5Hex(method.asString() + ":" + uri);
-        String response = md5Hex(
-                ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
+        String ha1;
+        String ha2;
+        String response;
+        try {
+            ha1 = md5Hex(username + ":" + realm + ":" + password);
+            ha2 = md5Hex(method.asString() + ":" + uri);
+            response = md5Hex(
+                    ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
+        } catch (NoSuchAlgorithmException e) {
+            throw new FroniusCommunicationException("Failed to create digest header", e);
+        }
 
         return String.format(DIGEST_AUTH_HEADER_FORMAT, username, realm, nonce, uri, response, qop, nc, cnonce);
     }
@@ -135,16 +143,11 @@ public class FroniusConfigAuthUtil {
      *
      * @param data the data to hash
      * @return the hashed data as a hex string
+     * @throws NoSuchAlgorithmException if the MD5 algorithm is not available
      */
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private static String md5Hex(String data) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            // should never occur
-            throw new RuntimeException(e);
-        }
+    private static String md5Hex(String data) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] array = md.digest(data.getBytes());
         StringBuilder sb = new StringBuilder();
         for (byte b : array) {
@@ -241,7 +244,12 @@ public class FroniusConfigAuthUtil {
 
         // Create auth header for login request
         int nc = 1;
-        String cnonce = md5Hex(String.valueOf(System.currentTimeMillis()));
+        String cnonce;
+        try {
+            cnonce = md5Hex(String.valueOf(System.currentTimeMillis()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new FroniusCommunicationException("Failed to create cnonce", e);
+        }
         String authHeader = createDigestHeader(authDetails.get("nonce"), authDetails.get("realm"),
                 authDetails.get("qop"), relativeLoginUrl, HttpMethod.GET, username, password, nc, cnonce);
 
