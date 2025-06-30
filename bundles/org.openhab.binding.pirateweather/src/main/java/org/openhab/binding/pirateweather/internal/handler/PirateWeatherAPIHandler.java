@@ -23,19 +23,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +165,8 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     private void updateThings() {
         ThingStatus status = ThingStatus.OFFLINE;
         for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE.equals(updateThing((PirateWeatherWeatherAndForecastHandler) thing.getHandler(), thing))) {
+            if (ThingStatus.ONLINE
+                    .equals(updateThing((PirateWeatherWeatherAndForecastHandler) thing.getHandler(), thing))) {
                 status = ThingStatus.ONLINE;
             }
         }

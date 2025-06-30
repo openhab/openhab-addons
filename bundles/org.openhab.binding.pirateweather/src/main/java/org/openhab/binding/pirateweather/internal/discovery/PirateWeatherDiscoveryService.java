@@ -24,13 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.LocationProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAndForecastHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

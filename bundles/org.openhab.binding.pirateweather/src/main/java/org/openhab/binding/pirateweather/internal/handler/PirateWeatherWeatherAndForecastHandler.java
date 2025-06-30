@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.pirateweather.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
-import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
-import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.*;
+import static org.openhab.core.library.unit.SIUnits.*;
+import static org.openhab.core.library.unit.SmartHomeUnits.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -37,30 +37,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.RawType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelGroupUID;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelKind;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherChannelConfiguration;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherWeatherAndForecastConfiguration;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherCommunicationException;
@@ -71,6 +47,30 @@ import org.openhab.binding.pirateweather.internal.model.PirateWeatherDailyData.D
 import org.openhab.binding.pirateweather.internal.model.PirateWeatherHourlyData.HourlyData;
 import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
 import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData.AlertsData;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +125,8 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initialize PirateWeatherWeatherAndForecastHandler handler '{}'.", getThing().getUID());
-        PirateWeatherWeatherAndForecastConfiguration config = getConfigAs(PirateWeatherWeatherAndForecastConfiguration.class);
+        PirateWeatherWeatherAndForecastConfiguration config = getConfigAs(
+                PirateWeatherWeatherAndForecastConfiguration.class);
 
         boolean configValid = true;
         if (config.location == null || config.location.trim().isEmpty()) {
@@ -750,7 +751,8 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
      * @param config {@link PirateWeatherChannelConfiguration} instance
      * @return the modified timestamp
      */
-    private ZonedDateTime applyChannelConfig(ZonedDateTime dateTime, @Nullable PirateWeatherChannelConfiguration config) {
+    private ZonedDateTime applyChannelConfig(ZonedDateTime dateTime,
+            @Nullable PirateWeatherChannelConfiguration config) {
         ZonedDateTime modifiedDateTime = dateTime;
         if (config != null) {
             if (config.getOffset() != 0) {
