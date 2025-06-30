@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,6 +27,21 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public record ElspotpriceRecord(@SerializedName("HourUTC") Instant hour,
-        @SerializedName("SpotPriceDKK") BigDecimal spotPriceDKK,
-        @SerializedName("SpotPriceEUR") BigDecimal spotPriceEUR) {
+        @Nullable @SerializedName("SpotPriceDKK") BigDecimal spotPriceDKK,
+        @Nullable @SerializedName("SpotPriceEUR") BigDecimal spotPriceEUR) implements SpotPriceRecord {
+
+    @Override
+    public Instant time() {
+        return hour;
+    }
+
+    @Override
+    public @Nullable BigDecimal priceDKK() {
+        return spotPriceDKK;
+    }
+
+    @Override
+    public @Nullable BigDecimal priceEUR() {
+        return spotPriceEUR;
+    }
 }
