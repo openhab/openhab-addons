@@ -45,6 +45,7 @@ import org.openhab.binding.roborock.internal.api.enums.FanModeType;
 import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
+import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -250,6 +251,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (home != null) {
                 rrHomeId = Integer.toString(home.data.rrHomeId);
             }
+            initTask.setNamePrefix(getThing().getUID().getId());
+            reconnectTask.setNamePrefix(getThing().getUID().getId());
             pollTask.setNamePrefix(getThing().getUID().getId());
             initTask.submit();
         } else {
@@ -295,6 +298,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void connectToDevice() {
+        scheduleNextPoll(-1);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -305,6 +309,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollData() {
+        logger.debug("Running pollData for: {}", getThing().getUID().getId());
         HomeData homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
         if (homeData != null) {
             for (int i = 0; i < homeData.result.devices.length; i++) {
@@ -329,36 +334,41 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     homeRooms = homeData.result.rooms;
                 }
             }
-            try {
-                String response = bridgeHandler.getRoutines(rrHomeId, rriot);
-                logger.trace("Response from getRoutines = {}", response);
-
-                getStatusID = sendCommand(COMMAND_GET_STATUS);
-                getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
-                getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
-                getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
-                getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
-                getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
-                getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
-                getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
-                getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
-                getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
-                getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
-                getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAPS_LIST);
-                getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
-                getMapID = sendCommand(COMMAND_GET_MAP);
-            } catch (UnsupportedEncodingException e) {
-                // Shouldn't occur
-            }
-            lastSuccessfulPollTimestamp = System.currentTimeMillis();
-            scheduleNextPoll(-1);
         }
+        try {
+            logger.debug("Running pollData - sending MQTT commands");
+            // String response = bridgeHandler.getRoutines(rrHomeId, rriot);
+            // logger.trace("Response from getRoutines = {}", response);
+
+            getStatusID = sendCommand(COMMAND_GET_STATUS);
+            getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
+            getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
+            getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
+            getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
+            getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
+            getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
+            getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
+            getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
+            getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
+            getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
+            getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAPS_LIST);
+            getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
+            getMapID = sendCommand(COMMAND_GET_MAP);
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("UnsupportedEncodingException");
+        }
+        lastSuccessfulPollTimestamp = System.currentTimeMillis();
+        scheduleNextPoll(-1);
 
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void handleMessage(int messageId, String jsonString) {
-        logger.info("handleMessage");
+    public void handleMessage(byte[] payload) {
+        String response = ProtocolUtils.handleMessage(payload, localKey);
+        logger.trace("MQTT message output: {}", response);
+        String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().get("102")
+                .getAsString();
+        int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
         if (messageId == getStatusID) {
             logger.debug("Received getStatus response, parse it");
             handleGetStatus(jsonString);
@@ -688,7 +698,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 if (!lastClean.equals(lastHistoryID)) {
                     lastHistoryID = lastClean;
                     try {
-                        sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
+                        getCleanRecordID = sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
                     } catch (UnsupportedEncodingException e) {
                         // Shouldn't occur
                     }
@@ -709,8 +719,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     if (!lastClean.equals(lastHistoryID)) {
                         lastHistoryID = lastClean;
                         try {
-                            logger.debug("sending command for getCleanRecord, id = {}", lastClean);
-                            sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
+                            getCleanRecordID = sendCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]");
                         } catch (UnsupportedEncodingException e) {
                             // Shouldn't occur
                         }
@@ -845,7 +854,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return 0;
         }
         try {
-            return localBridge.sendCommand(method, params, getThing().getUID().getId());
+            return localBridge.sendCommand(method, params, getThing().getUID().getId(), localKey);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;

@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
@@ -65,7 +64,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -160,9 +158,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public HomeData getHomeData(String rrHomeID, Rriot rriot) {
+    public HomeData getHomeData(String rrHomeId, Rriot rriot) {
         try {
-            return webTargets.getHomeData(rrHomeID, rriot);
+            return webTargets.getHomeData(rrHomeId, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
@@ -175,9 +173,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public String getRoutines(String rrHomeID, Rriot rriot) {
+    public String getRoutines(String rrHomeId, Rriot rriot) {
         try {
-            return webTargets.getRoutines(rrHomeID, rriot);
+            return webTargets.getRoutines(rrHomeId, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
@@ -213,7 +211,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        stopPoll();
+        teardown(false);
         super.handleRemoval();
     }
 
@@ -306,10 +304,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         try {
             connect(scheduler);
             scheduleNextPoll(-1);
-            logger.debug("Device connected");
+            logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
         } catch (InterruptedException | RoborockCommunicationException e) {
-            logger.debug("Failed to connect to device");
+            logger.debug("Failed to connect to MQTT");
             updateStatus(ThingStatus.OFFLINE);
         }
     }
@@ -373,29 +371,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 // try {
 
                 String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
-                logger.debug("Got MQTT message for device {}", destination);
+                logger.debug("Received MQTT message for device {}", destination);
 
                 // check list of child handlers and send message to the right one
                 for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
                     if (entry.getKey().getUID().getAsString().contains(destination)) {
-                        logger.trace("Submit response to to child {} -> {}", destination, entry.getKey().getUID());
-                        HomeData homeData = getHomeData(rrHomeId, rriot);
-                        if (homeData != null) {
-                            for (int i = 0; i < homeData.result.devices.length; i++) {
-                                if (destination.equals(homeData.result.devices[i].duid)) {
-                                    localKey = homeData.result.devices[i].localKey;
-                                }
-                            }
-                        }
+                        logger.trace("Submit response to child {} -> {}", destination, entry.getKey().getUID());
+                        byte[] payload = publish.getPayloadAsBytes();
 
-                        String response = ProtocolUtils.handleMessage(publish.getPayloadAsBytes(), localKey);
-                        logger.trace("MQTT message output: {}", response);
-
-                        String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps")
-                                .getAsJsonObject().get("102").getAsString();
-                        int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-
-                        entry.getValue().handleMessage(messageId, response);
+                        entry.getValue().handleMessage(payload);
                         return;
                     }
                 }
@@ -437,7 +421,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public int sendCommand(String method, String params, String thingID) throws UnsupportedEncodingException {
+    public int sendCommand(String method, String params, String thingID, String localKey)
+            throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         Random random = new Random();
@@ -476,7 +461,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String modPayload = payload.replace(":\\\"[", ":[").replace("]\\\"}", "]}");
         logger.trace("Modified payload = {}", modPayload);
 
-        byte[] message = build(thingID, protocol, timestamp, modPayload.getBytes("UTF-8"));
+        byte[] message = build(thingID, localKey, protocol, timestamp, modPayload.getBytes("UTF-8"));
         // now send message via mqtt
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
@@ -496,17 +481,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         return id;
     }
 
-    byte[] build(String thingID, int protocol, int timestamp, byte[] payload) {
+    byte[] build(String thingID, String localKey, int protocol, int timestamp, byte[] payload) {
         try {
-            HomeData homeData = getHomeData(rrHomeId, rriot);
-            String localKey = "";
-            if (homeData != null) {
-                for (int i = 0; i < homeData.result.devices.length; i++) {
-                    if (thingID.equals(homeData.result.devices[i].duid)) {
-                        localKey = homeData.result.devices[i].localKey;
-                    }
-                }
-            }
             String key = ProtocolUtils.encodeTimestamp(timestamp) + localKey + SALT;
             byte[] encrypted = ProtocolUtils.encrypt(payload, key);
 
@@ -542,14 +518,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     private void pollStatus() {
         // nothing to poll
-    }
-
-    private void stopPoll() {
-        final Future<?> future = pollFuture;
-        if (future != null) {
-            future.cancel(true);
-            pollFuture = null;
-        }
     }
 
     @Override
