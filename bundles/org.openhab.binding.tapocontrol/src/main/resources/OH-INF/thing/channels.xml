@@ -225,10 +225,10 @@
 		<label>Switch Led</label>
 		<description>Switch the Smart Home device led on or off.</description>
 		<category>Switch</category>
-        <tags>
-            <tag>Switch</tag>
-            <tag>Power</tag>
-        </tags>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- fade light -->

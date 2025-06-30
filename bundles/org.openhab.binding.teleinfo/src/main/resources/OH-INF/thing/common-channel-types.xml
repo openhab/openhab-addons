@@ -48,8 +48,8 @@
 		<description>Pricing schedule group</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Status</tag>
-            <tag>Info</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>

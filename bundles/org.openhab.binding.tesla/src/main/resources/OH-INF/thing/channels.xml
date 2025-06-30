@@ -32,14 +32,20 @@
 		<item-type>Location</item-type>
 		<label>Route Location</label>
 		<description>Location of the destination</description>
-		<tags><tag>Status</tag><tag>GeoLocation</tag></tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="distancetoarrival">
 		<item-type>Number:Length</item-type>
 		<label>Distance To Arrival</label>
 		<description>Distance to drive to the destination (in miles)</description>
-        <tags><tag>Status</tag><tag>Progress</tag></tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="minutestoarrival">
@@ -47,7 +53,10 @@
 		<label>Minutes To Arrival</label>
 		<description>Minutes to drive to the destination</description>
 		<category>Time</category>
-        <tags><tag>Status</tag><tag>Progress</tag></tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="trafficminutesdelay">
@@ -302,7 +311,10 @@
 		<item-type>Switch</item-type>
 		<label>Climate</label>
 		<description>Climate status indicator</description>
-        <tags><tag>Status</tag><tag>Airconditioning</tag></tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="driverfrontdoor" advanced="true">
@@ -432,7 +444,10 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>The actual position of the vehicle</description>
-        <tags><tag>Status</tag><tag>GeoLocation</tag></tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="leftseatheater" advanced="true">
@@ -517,7 +532,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Odometer</label>
 		<description>Odometer of the vehicle</description>
-        <tags><tag>Measurement</tag><tag>Progress</tag></tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="outsidetemp" advanced="true">
@@ -694,10 +712,10 @@
 		<item-type>String</item-type>
 		<label>Sunroof State</label>
 		<description>Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".</description>
-        <tags>
-            <tag>Status</tag>
-            <tag>Mode</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="close">close</option>

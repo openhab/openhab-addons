@@ -118,9 +118,9 @@
 		<description>Circuit 2 program</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Status</tag>
-            <tag>Info</tag>
-        </tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="P0">P0</option>

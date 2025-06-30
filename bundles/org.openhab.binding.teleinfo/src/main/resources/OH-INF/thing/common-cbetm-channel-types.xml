@@ -71,7 +71,7 @@
 		<description>Maximum consumed electric current on phase 2</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Calculation</tag>
+			<tag>Calculation</tag>
 			<tag>Current</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -83,7 +83,7 @@
 		<description>Maximum consumed electric current on phase 3</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Calculation</tag>
+			<tag>Calculation</tag>
 			<tag>Current</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -95,7 +95,7 @@
 		<description>Maximum consumed electric power on all phases</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Calculation</tag>
+			<tag>Calculation</tag>
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
