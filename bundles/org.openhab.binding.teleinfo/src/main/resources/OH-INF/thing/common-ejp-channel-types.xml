@@ -33,10 +33,6 @@
 		<label>PEJP</label>
 		<description>Prior notice to EJP start</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
-		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

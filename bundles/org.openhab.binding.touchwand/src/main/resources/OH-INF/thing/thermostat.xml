@@ -23,7 +23,7 @@
 		<label>AC On Off State</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<tag>Power</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="targetTemperature">
@@ -74,7 +74,7 @@
 		<description>Fan level (Low, Medium, High, Auto)</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Speed</tag>
 		</tags>
 		<state readOnly="false">
 			<options>

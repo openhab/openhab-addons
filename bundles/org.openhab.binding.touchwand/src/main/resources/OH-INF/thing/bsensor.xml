@@ -41,7 +41,7 @@
 		<label>Smoke Detected</label>
 		<category>Smoke</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Smoke</tag>
 		</tags>
 		<state readOnly="true"></state>

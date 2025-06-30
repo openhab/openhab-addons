@@ -39,7 +39,7 @@
 		<description>Name of lightning effect</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Light</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>

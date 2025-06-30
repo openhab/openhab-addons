@@ -23,7 +23,7 @@
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Alarm</tag>
 			<tag>Water</tag>
 		</tags>
 		<state readOnly="true"></state>

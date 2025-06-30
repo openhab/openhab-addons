@@ -129,7 +129,7 @@
 
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<config-description>
 			<parameter name="dp" type="integer" required="true">

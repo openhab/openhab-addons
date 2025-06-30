@@ -8,10 +8,6 @@
 		<item-type>String</item-type>
 		<label>Teleinfo String Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -63,10 +59,6 @@
 		<item-type>Switch</item-type>
 		<label>Teleinfo Switch Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -74,10 +66,6 @@
 		<item-type>DateTime</item-type>
 		<label>Teleinfo DateTime Type</label>
 		<category>Energy</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 

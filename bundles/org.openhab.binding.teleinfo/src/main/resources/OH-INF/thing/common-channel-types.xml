@@ -22,8 +22,8 @@
 		<description>Current pricing period</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -48,8 +48,8 @@
 		<description>Pricing schedule group</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+            <tag>Status</tag>
+            <tag>Info</tag>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -66,10 +66,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last received Teleinfo frame</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
