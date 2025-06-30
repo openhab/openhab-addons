@@ -10,14 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.model;
+package org.openhab.binding.pirateweather.internal.model;
 
 /**
- * The {@link DarkSkyCurrentlyData} is the Java class used to map the JSON response to an Dark Sky request.
+ * The {@link PirateWeatherCurrentlyData} is the Java class used to map the JSON response to an Pirate Weather request.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
-public class DarkSkyCurrentlyData {
+public class PirateWeatherCurrentlyData {
     private int time;
     private String summary;
     private String icon;

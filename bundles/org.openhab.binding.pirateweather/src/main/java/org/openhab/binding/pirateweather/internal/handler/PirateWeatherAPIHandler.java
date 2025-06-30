@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.handler;
+package org.openhab.binding.pirateweather.internal.handler;
 
-import static org.openhab.binding.darksky.internal.DarkSkyBindingConstants.*;
+import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,20 +34,21 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.darksky.internal.config.DarkSkyAPIConfiguration;
-import org.openhab.binding.darksky.internal.connection.DarkSkyConnection;
+import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
+import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DarkSkyAPIHandler} is responsible for accessing the Dark Sky API.
+ * The {@link PirateWeatherAPIHandler} is responsible for accessing the Pirate Weather API.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyAPIHandler extends BaseBridgeHandler {
+public class PirateWeatherAPIHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(DarkSkyAPIHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PirateWeatherAPIHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_WEATHER_API);
 
@@ -57,12 +58,12 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
 
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
-    private @NonNullByDefault({}) DarkSkyConnection connection;
+    private @NonNullByDefault({}) PirateWeatherConnection connection;
 
     // keeps track of the parsed config
-    private @NonNullByDefault({}) DarkSkyAPIConfiguration config;
+    private @NonNullByDefault({}) PirateWeatherAPIConfiguration config;
 
-    public DarkSkyAPIHandler(Bridge bridge, HttpClient httpClient, LocaleProvider localeProvider) {
+    public PirateWeatherAPIHandler(Bridge bridge, HttpClient httpClient, LocaleProvider localeProvider) {
         super(bridge);
         this.httpClient = httpClient;
         this.localeProvider = localeProvider;
@@ -70,8 +71,8 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize Dark Sky API handler '{}'.", getThing().getUID());
-        config = getConfigAs(DarkSkyAPIConfiguration.class);
+        logger.debug("Initialize Pirate Weather API handler '{}'.", getThing().getUID());
+        config = getConfigAs(PirateWeatherAPIConfiguration.class);
 
         boolean configValid = true;
         if (config.apikey == null || config.apikey.trim().isEmpty()) {
@@ -87,14 +88,14 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
         }
         String language = config.language;
         if (language != null && !(language = language.trim()).isEmpty()) {
-            if (!DarkSkyAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
+            if (!PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-not-supported-language");
                 configValid = false;
             }
         } else {
             language = localeProvider.getLocale().getLanguage();
-            if (DarkSkyAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
+            if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
                 logger.debug("Language set to '{}'.", language);
                 Configuration editConfig = editConfiguration();
                 editConfig.put(CONFIG_LANGUAGE, language);
@@ -103,7 +104,7 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
         }
 
         if (configValid) {
-            connection = new DarkSkyConnection(this, httpClient);
+            connection = new PirateWeatherConnection(this, httpClient);
 
             updateStatus(ThingStatus.UNKNOWN);
 
@@ -118,7 +119,7 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Dispose Dark Sky API handler '{}'.", getThing().getUID());
+        logger.debug("Dispose Pirate Weather API handler '{}'.", getThing().getUID());
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
             logger.debug("Stop refresh job.");
@@ -133,14 +134,14 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
         if (command instanceof RefreshType) {
             scheduler.schedule(this::updateThings, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
         } else {
-            logger.debug("The Dark Sky binding is a read-only binding and cannot handle command '{}'.", command);
+            logger.debug("The Pirate Weather binding is a read-only binding and cannot handle command '{}'.", command);
         }
     }
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         scheduler.schedule(() -> {
-            updateThing((DarkSkyWeatherAndForecastHandler) childHandler, childThing);
+            updateThing((PirateWeatherWeatherAndForecastHandler) childHandler, childThing);
             determineBridgeStatus();
         }, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
@@ -164,14 +165,14 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
     private void updateThings() {
         ThingStatus status = ThingStatus.OFFLINE;
         for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE.equals(updateThing((DarkSkyWeatherAndForecastHandler) thing.getHandler(), thing))) {
+            if (ThingStatus.ONLINE.equals(updateThing((PirateWeatherWeatherAndForecastHandler) thing.getHandler(), thing))) {
                 status = ThingStatus.ONLINE;
             }
         }
         updateStatus(status);
     }
 
-    private ThingStatus updateThing(@Nullable DarkSkyWeatherAndForecastHandler handler, Thing thing) {
+    private ThingStatus updateThing(@Nullable PirateWeatherWeatherAndForecastHandler handler, Thing thing) {
         if (handler != null && connection != null) {
             handler.updateData(connection);
             return thing.getStatus();
@@ -181,7 +182,7 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
         }
     }
 
-    public DarkSkyAPIConfiguration getDarkSkyAPIConfig() {
+    public PirateWeatherAPIConfiguration getPirateWeatherAPIConfig() {
         return config;
     }
 }

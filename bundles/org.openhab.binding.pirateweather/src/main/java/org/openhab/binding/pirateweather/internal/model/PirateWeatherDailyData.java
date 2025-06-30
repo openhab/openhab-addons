@@ -10,18 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.model;
+package org.openhab.binding.pirateweather.internal.model;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DarkSkyDailyData} is the Java class used to map the JSON response to an Dark Sky request.
+ * The {@link PirateWeatherDailyData} is the Java class used to map the JSON response to an Pirate Weather request.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
-public class DarkSkyDailyData {
+public class PirateWeatherDailyData {
     private String summary;
     private String icon;
     private @Nullable List<DailyData> data;

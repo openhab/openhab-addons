@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.factory;
+package org.openhab.binding.pirateweather.internal.factory;
 
-import static org.openhab.binding.darksky.internal.DarkSkyBindingConstants.*;
+import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,27 +37,28 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.darksky.internal.discovery.DarkSkyDiscoveryService;
-import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
-import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHandler;
+import org.openhab.binding.pirateweather.internal.discovery.PirateWeatherDiscoveryService;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAndForecastHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link DarkSkyHandlerFactory} is responsible for creating things and thing handlers.
+ * The {@link PirateWeatherHandlerFactory} is responsible for creating things and thing handlers.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.darksky")
-public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.pirateweather")
+public class PirateWeatherHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream
-                    .concat(DarkSkyAPIHandler.SUPPORTED_THING_TYPES.stream(),
-                            DarkSkyWeatherAndForecastHandler.SUPPORTED_THING_TYPES.stream())
+                    .concat(PirateWeatherAPIHandler.SUPPORTED_THING_TYPES.stream(),
+                            PirateWeatherWeatherAndForecastHandler.SUPPORTED_THING_TYPES.stream())
                     .collect(Collectors.toSet()));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -67,7 +68,7 @@ public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
     private final TranslationProvider i18nProvider;
 
     @Activate
-    public DarkSkyHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+    public PirateWeatherHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
             final @Reference TranslationProvider i18nProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
@@ -86,15 +87,15 @@ public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_WEATHER_API.equals(thingTypeUID)) {
-            DarkSkyAPIHandler handler = new DarkSkyAPIHandler((Bridge) thing, httpClient, localeProvider);
+            PirateWeatherAPIHandler handler = new PirateWeatherAPIHandler((Bridge) thing, httpClient, localeProvider);
             // register discovery service
-            DarkSkyDiscoveryService discoveryService = new DarkSkyDiscoveryService(handler, locationProvider,
+            PirateWeatherDiscoveryService discoveryService = new PirateWeatherDiscoveryService(handler, locationProvider,
                     localeProvider, i18nProvider);
             discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
             return handler;
         } else if (THING_TYPE_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
-            return new DarkSkyWeatherAndForecastHandler(thing);
+            return new PirateWeatherWeatherAndForecastHandler(thing);
         }
 
         return null;
@@ -102,11 +103,11 @@ public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof DarkSkyAPIHandler) {
+        if (thingHandler instanceof PirateWeatherAPIHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
-                DarkSkyDiscoveryService discoveryService = (DarkSkyDiscoveryService) bundleContext
+                PirateWeatherDiscoveryService discoveryService = (PirateWeatherDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
                 serviceReg.unregister();
                 if (discoveryService != null) {

@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 
 /**
- * The {@link DarkSkyBindingConstants} class defines common constants, which are used across the whole binding.
+ * The {@link PirateWeatherBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution

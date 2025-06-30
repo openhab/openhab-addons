@@ -10,24 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.darksky.internal.connection;
+package org.openhab.binding.pirateweather.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DarkSkyConfigurationException} is a configuration exception for the connections to Dark Sky API.
+ * The {@link PirateWeatherConfigurationException} is a configuration exception for the connections to Pirate Weather API.
  *
+ * @author Scott Hanson - Pirate Weather convertion
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyConfigurationException extends IllegalArgumentException {
+public class PirateWeatherConfigurationException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new exception with null as its detail message.
      */
-    public DarkSkyConfigurationException() {
+    public PirateWeatherConfigurationException() {
         super();
     }
 
@@ -36,7 +37,7 @@ public class DarkSkyConfigurationException extends IllegalArgumentException {
      *
      * @param message Detail message
      */
-    public DarkSkyConfigurationException(String message) {
+    public PirateWeatherConfigurationException(String message) {
         super(message);
     }
 
@@ -45,7 +46,7 @@ public class DarkSkyConfigurationException extends IllegalArgumentException {
      *
      * @param cause The cause
      */
-    public DarkSkyConfigurationException(Throwable cause) {
+    public PirateWeatherConfigurationException(Throwable cause) {
         super(cause);
     }
 
@@ -55,7 +56,7 @@ public class DarkSkyConfigurationException extends IllegalArgumentException {
      * @param message Detail message
      * @param cause The cause
      */
-    public DarkSkyConfigurationException(String message, Throwable cause) {
+    public PirateWeatherConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
 }
