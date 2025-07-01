@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class ByteArrayFileCache {
     public ByteArrayFileCache(String servicePID) {
         // TODO track and limit folder size
         // TODO support user specific folder
-        cacheFolder = new File(new File(ConfigConstants.getUserDataFolder(), CACHE_FOLDER_NAME), servicePID);
+        cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), CACHE_FOLDER_NAME), servicePID);
         if (!cacheFolder.exists()) {
             logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
             cacheFolder.mkdirs();
@@ -257,8 +257,9 @@ public class ByteArrayFileCache {
      */
     File getUniqueFile(String key) {
         String uniqueFileName = getUniqueFileName(key);
-        if (FILES_IN_CACHE.containsKey(uniqueFileName)) {
-            return FILES_IN_CACHE.get(uniqueFileName);
+        File cachedFile = FILES_IN_CACHE.get(uniqueFileName);
+        if (cachedFile != null && cachedFile.exists()) {
+            return cachedFile;
         } else {
             String fileExtension = getFileExtension(key);
             File fileInCache = new File(cacheFolder,

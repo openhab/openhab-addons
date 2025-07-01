@@ -15,17 +15,16 @@ package org.openhab.binding.pirateweather.internal.discovery;
 import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAndForecastHandler;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -64,11 +63,6 @@ public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
         activate(null);
-    }
-
-    @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
     }
 
     @Override
