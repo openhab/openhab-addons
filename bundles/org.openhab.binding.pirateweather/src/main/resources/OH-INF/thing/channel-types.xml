@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Channel groups for Dark Sky Binding -->
+	<!-- Channel groups for Pirate Weather Binding -->
 	<channel-group-type id="current">
 		<label>Current Weather</label>
 		<description>This is the current weather.</description>
@@ -107,7 +107,7 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- Channels for Dark Sky Binding -->
+	<!-- Channels for Pirate Weather Binding -->
 	<channel-type id="time-stamp">
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>

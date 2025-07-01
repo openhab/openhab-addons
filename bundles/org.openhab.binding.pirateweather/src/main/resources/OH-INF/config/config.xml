@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<!-- Config for Dark Sky Binding -->
+	<!-- Config for Pirate Weather Binding -->
 	<config-description uri="bridge-type:pirateweather:weather-api">
 		<parameter name="apikey" type="text" required="true">
 			<context>password</context>
@@ -18,7 +18,7 @@
 		</parameter>
 		<parameter name="language" type="text">
 			<label>Language</label>
-			<description>Language to be used by the Dark Sky API.</description>
+			<description>Language to be used by the Pirate Weather API.</description>
 			<options>
 				<option value="ar">Arabic</option>
 				<option value="az">Azerbaijani</option>
