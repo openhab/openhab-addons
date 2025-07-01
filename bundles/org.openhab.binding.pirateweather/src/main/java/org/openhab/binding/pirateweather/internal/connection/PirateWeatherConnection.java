@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,11 +34,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 import org.openhab.binding.pirateweather.internal.model.PirateWeatherJsonWeatherData;
-import org.openhab.binding.pirateweather.internal.utils.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.PointType;
-import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,21 +53,18 @@ public class PirateWeatherConnection {
 
     private final Logger logger = LoggerFactory.getLogger(PirateWeatherConnection.class);
 
-    private static final String PNG_CONTENT_TYPE = "image/png";
-
     private static final String PARAM_EXCLUDE = "exclude";
     private static final String PARAM_UNITS = "units";
     private static final String PARAM_LANG = "lang";
 
     // Current weather data (see https://pirateweather.net/dev/docs#forecast-request)
     private static final String WEATHER_URL = "https://api.pirateweather.net/forecast/%s/%f,%f";
-    // Weather icons (see https://pirateweather.net/dev/docs/faq#icons)
-    private static final String ICON_URL = "https://pirateweather.net/images/weather-icons/%s.png";
 
     private final PirateWeatherAPIHandler handler;
     private final HttpClient httpClient;
 
-    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.pirateweather");
+    // private static final ByteArrayFileCache IMAGE_CACHE = new
+    // ByteArrayFileCache("org.openhab.binding.pirateweather");
     private final ExpiringCacheMap<String, String> cache;
 
     private final Gson gson = new Gson();
@@ -110,37 +104,6 @@ public class PirateWeatherConnection {
 
         return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
                 PirateWeatherJsonWeatherData.class);
-    }
-
-    /**
-     * Downloads the icon for the given icon id (see https://pirateweather.net/dev/docs/faq#icons).
-     *
-     * @param iconId the id of the icon
-     * @return the weather icon as {@link RawType}
-     */
-    public static @Nullable RawType getWeatherIcon(String iconId) {
-        if (iconId.isEmpty()) {
-            throw new IllegalArgumentException("Cannot download weather icon as icon id is null.");
-        }
-
-        return downloadWeatherIconFromCache(String.format(ICON_URL, iconId));
-    }
-
-    private static @Nullable RawType downloadWeatherIconFromCache(String url) {
-        if (IMAGE_CACHE.containsKey(url)) {
-            return new RawType(IMAGE_CACHE.get(url), PNG_CONTENT_TYPE);
-        } else {
-            RawType image = downloadWeatherIcon(url);
-            if (image != null) {
-                IMAGE_CACHE.put(url, image.getBytes());
-                return image;
-            }
-        }
-        return null;
-    }
-
-    private static @Nullable RawType downloadWeatherIcon(String url) {
-        return HttpUtil.downloadImage(url);
     }
 
     private Map<String, String> getRequestParams(PirateWeatherAPIConfiguration config) {
