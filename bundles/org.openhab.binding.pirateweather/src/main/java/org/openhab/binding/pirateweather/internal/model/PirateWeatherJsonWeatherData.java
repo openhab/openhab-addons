@@ -32,6 +32,7 @@ public class PirateWeatherJsonWeatherData {
     private PirateWeatherDailyData daily;
     private @Nullable List<AlertsData> alerts;
     private int offset;
+    private int elevation;
 
     public double getLatitude() {
         return latitude;
@@ -95,6 +96,14 @@ public class PirateWeatherJsonWeatherData {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public int getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(int elevation) {
+        this.elevation = elevation;
     }
 
     public class AlertsData {
