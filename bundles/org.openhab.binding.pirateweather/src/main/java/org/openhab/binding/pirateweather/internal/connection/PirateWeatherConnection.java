@@ -159,7 +159,8 @@ public class PirateWeatherConnection {
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
-        return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
+        return requestParams.entrySet().stream().filter(entry -> entry.getValue() != null)
+                .map(entry -> entry.getKey() + "=" + encodeParam(entry.getValue()))
                 .collect(joining("&", url + "?", ""));
     }
 
@@ -203,13 +204,13 @@ public class PirateWeatherConnection {
             logger.trace("Exception occurred during execution: {}", errorMessage, e);
             if (e.getCause() instanceof HttpResponseException) {
                 logger.debug("Pirate Weather server responded with status code {}: Invalid API key.", UNAUTHORIZED_401);
-                throw new PirateWeatherConfigurationException("@text/offline.conf-error-invalid-apikey", e.getCause());
+                throw new PirateWeatherConfigurationException("@text/offline.conf-error-invalid-apikey");
             } else {
-                throw new PirateWeatherCommunicationException(errorMessage, e.getCause());
+                throw new PirateWeatherCommunicationException(e);
             }
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new PirateWeatherCommunicationException(e.getLocalizedMessage(), e.getCause());
+            throw new PirateWeatherCommunicationException(e);
         }
     }
 
