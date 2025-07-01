@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -419,9 +418,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_CONDITION:
                     state = getStringTypeState(currentData.getSummary());
                     break;
-                case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(PirateWeatherConnection.getWeatherIcon(currentData.getIcon()));
-                    break;
                 case CHANNEL_CONDITION_ICON_ID:
                     state = getStringTypeState(currentData.getIcon());
                     break;
@@ -509,9 +505,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_CONDITION:
                     state = getStringTypeState(forecastData.getSummary());
                     break;
-                case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(PirateWeatherConnection.getWeatherIcon(forecastData.getIcon()));
-                    break;
                 case CHANNEL_CONDITION_ICON_ID:
                     state = getStringTypeState(forecastData.getIcon());
                     break;
@@ -595,9 +588,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_CONDITION:
                     state = getStringTypeState(forecastData.getSummary());
-                    break;
-                case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(PirateWeatherConnection.getWeatherIcon(forecastData.getIcon()));
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
                     state = getStringTypeState(forecastData.getIcon());
@@ -732,10 +722,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
 
     private State getDecimalTypeState(int value) {
         return new DecimalType(value);
-    }
-
-    private State getRawTypeState(@Nullable RawType image) {
-        return (image == null) ? UnDefType.UNDEF : image;
     }
 
     private State getStringTypeState(@Nullable String value) {

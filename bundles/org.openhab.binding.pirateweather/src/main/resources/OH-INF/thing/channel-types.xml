@@ -148,13 +148,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="condition-icon">
-		<item-type>Image</item-type>
-		<label>Icon</label>
-		<description>Icon representing the weather condition.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="condition-icon-id" advanced="true">
 		<item-type>String</item-type>
 		<label>Icon Id</label>
