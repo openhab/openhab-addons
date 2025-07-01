@@ -79,7 +79,7 @@ public class PirateWeatherDailyData {
         private int windGustTime;
         private int windBearing;
         private double cloudCover;
-        private int uvIndex;
+        private double uvIndex;
         private int uvIndexTime;
         private double visibility;
         private double ozone;
@@ -309,11 +309,15 @@ public class PirateWeatherDailyData {
             this.cloudCover = cloudCover;
         }
 
-        public int getUvIndex() {
+        public double getUvIndex() {
             return uvIndex;
         }
 
-        public void setUvIndex(int uvIndex) {
+        public int getUvIndexInt() {
+            return (int) Math.round(uvIndex);
+        }
+
+        public void setUvIndex(double uvIndex) {
             this.uvIndex = uvIndex;
         }
 

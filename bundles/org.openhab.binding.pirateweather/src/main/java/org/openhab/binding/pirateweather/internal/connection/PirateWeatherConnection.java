@@ -179,9 +179,7 @@ public class PirateWeatherConnection {
 
     private String getResponse(String url) {
         try {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Pirate Weather request: URL = '{}'", uglifyApikey(url));
-            }
+            logger.trace("Pirate Weather request: URL = '{}'", uglifyApikey(url));
             ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
                     .send();
             int httpStatus = contentResponse.getStatus();

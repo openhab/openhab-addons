@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Dark Sky Binding -->
+	<!-- Pirate Weather Binding -->
 	<bridge-type id="weather-api">
-		<label>Dark Sky Account</label>
-		<description>Provides access to the Dark Sky API.</description>
+		<label>Pirate Weather Account</label>
+		<description>Provides access to the Pirate Weather API.</description>
 
 		<representation-property>apikey</representation-property>
 
