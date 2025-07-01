@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -58,7 +58,6 @@ public class PirateWeatherBindingConstants {
     // List of all channels
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
     public static final String CHANNEL_CONDITION = "condition";
-    public static final String CHANNEL_CONDITION_ICON = "icon";
     public static final String CHANNEL_CONDITION_ICON_ID = "icon-id";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_MIN_TEMPERATURE = "min-temperature";
