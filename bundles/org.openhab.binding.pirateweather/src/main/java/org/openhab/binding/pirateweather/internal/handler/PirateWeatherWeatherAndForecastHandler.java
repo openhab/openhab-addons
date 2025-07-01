@@ -15,7 +15,7 @@ package org.openhab.binding.pirateweather.internal.handler;
 import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
