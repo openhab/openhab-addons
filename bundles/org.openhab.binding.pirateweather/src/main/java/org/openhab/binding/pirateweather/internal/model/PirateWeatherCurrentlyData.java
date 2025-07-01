@@ -34,7 +34,7 @@ public class PirateWeatherCurrentlyData {
     private double windGust;
     private int windBearing;
     private double cloudCover;
-    private int uvIndex;
+    private double uvIndex;
     private double visibility;
     private double ozone;
 
@@ -158,11 +158,15 @@ public class PirateWeatherCurrentlyData {
         this.cloudCover = cloudCover;
     }
 
-    public int getUvIndex() {
+    public double getUvIndex() {
         return uvIndex;
     }
 
-    public void setUvIndex(int uvIndex) {
+    public int getUvIndexInt() {
+        return (int) Math.round(uvIndex);
+    }
+
+    public void setUvIndex(double uvIndex) {
         this.uvIndex = uvIndex;
     }
 
