@@ -178,7 +178,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             handler.updateData(connection);
             return thing.getStatus();
         } else {
-            logger.debug("Cannot update weather data of thing '{}' as location handler is null.", thing.getUID());
+            logger.warn("Cannot update weather data of thing '{}' as location handler is null.", thing.getUID());
             return ThingStatus.OFFLINE;
         }
     }

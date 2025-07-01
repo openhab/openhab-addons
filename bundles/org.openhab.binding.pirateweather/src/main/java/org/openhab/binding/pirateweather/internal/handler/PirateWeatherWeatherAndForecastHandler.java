@@ -256,7 +256,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             updateChannel(channelUID);
         } else {
-            logger.debug("The Dark Sky binding is a read-only binding and cannot handle command '{}'.", command);
+            logger.debug("The Pirate Weather binding is a read-only binding and cannot handle command '{}'.", command);
         }
     }
 
@@ -472,7 +472,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                     state = getStringTypeState(currentData.getPrecipType());
                     break;
                 case CHANNEL_UVINDEX:
-                    state = getDecimalTypeState(currentData.getUvIndex());
+                    state = getDecimalTypeState(currentData.getUvIndexInt());
                     break;
                 case CHANNEL_OZONE:
                     state = getQuantityTypeState(currentData.getOzone(), DOBSON_UNIT);
@@ -564,7 +564,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                     state = getStringTypeState(forecastData.getPrecipType());
                     break;
                 case CHANNEL_UVINDEX:
-                    state = getDecimalTypeState(forecastData.getUvIndex());
+                    state = getDecimalTypeState(forecastData.getUvIndexInt());
                     break;
                 case CHANNEL_OZONE:
                     state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
@@ -657,7 +657,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                     state = getStringTypeState(forecastData.getPrecipType());
                     break;
                 case CHANNEL_UVINDEX:
-                    state = getDecimalTypeState(forecastData.getUvIndex());
+                    state = getDecimalTypeState(forecastData.getUvIndexInt());
                     break;
                 case CHANNEL_OZONE:
                     state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
@@ -665,15 +665,17 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_SUNRISE:
                     state = getDateTimeTypeState(forecastData.getSunriseTime());
                     if (count == 0 && state instanceof DateTimeType) {
-                        scheduleJob(TRIGGER_SUNRISE, applyChannelConfig(((DateTimeType) state).getZonedDateTime(),
-                                sunriseTriggerChannelConfig));
+                        scheduleJob(TRIGGER_SUNRISE,
+                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(ZoneId.systemDefault()),
+                                        sunriseTriggerChannelConfig));
                     }
                     break;
                 case CHANNEL_SUNSET:
                     state = getDateTimeTypeState(forecastData.getSunsetTime());
                     if (count == 0 && state instanceof DateTimeType) {
-                        scheduleJob(TRIGGER_SUNSET, applyChannelConfig(((DateTimeType) state).getZonedDateTime(),
-                                sunsetTriggerChannelConfig));
+                        scheduleJob(TRIGGER_SUNSET,
+                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(ZoneId.systemDefault()),
+                                        sunsetTriggerChannelConfig));
                     }
                     break;
             }
