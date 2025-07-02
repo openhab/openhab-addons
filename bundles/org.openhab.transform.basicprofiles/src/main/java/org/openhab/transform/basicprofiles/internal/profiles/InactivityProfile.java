@@ -141,6 +141,7 @@ public class InactivityProfile implements StateProfile {
 
     @Override
     public void onCommandFromHandler(Command handlerCommand) {
+        cancelTimeoutTask();
         if (itemChannelLinked()) {
             Command itemCommand = OnOffType.from(inverted);
             logger.debug("onCommandFromHandler({}) => itemCommand:{}", handlerCommand, itemCommand);
@@ -151,12 +152,21 @@ public class InactivityProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromHandler(State handlerState) {
+        cancelTimeoutTask();
         if (itemChannelLinked()) {
             State itemState = OnOffType.from(inverted);
             logger.debug("onStateUpdateFromHandler({}) => itemCommand:{}", handlerState, itemState);
             callback.sendUpdate(itemState);
             rescheduleTimeoutTask();
         }
+    }
+
+    private synchronized void cancelTimeoutTask() {
+        cleanerTaskCanceller.setTask(null);
+        if (timeoutTask instanceof ScheduledFuture task) {
+            task.cancel(false);
+        }
+        timeoutTask = null;
     }
 
     private synchronized void rescheduleTimeoutTask() {
