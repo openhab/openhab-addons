@@ -93,7 +93,8 @@ public class InactivityProfile implements StateProfile {
         Duration timeout;
         try {
             timeout = parseDuration(config.timeout);
-            logger.debug("Profile created with timeout:{}, inverted:{}", timeout, inverted);
+            logger.debug("Profile created item:{}, timeout:{}, inverted:{}", itemChannelLink.getItemName(), timeout,
+                    inverted);
         } catch (IllegalArgumentException e) {
             timeout = DEFAULT_TIMEOUT;
             logger.warn("Profile configuration timeout value \"{}\" is invalid", config.timeout);
@@ -131,12 +132,12 @@ public class InactivityProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromItem(State itemState) {
-        logger.trace("onStateUpdateFromItem({})", itemState);
+        logger.trace("onStateUpdateFromItem() item:{}, state:{}", itemChannelLink.getItemName(), itemState);
     }
 
     @Override
     public void onCommandFromItem(Command itemCommand) {
-        logger.trace("onCommandFromItem({})", itemCommand);
+        logger.trace("onCommandFromItem() item:{}, command:{}", itemChannelLink.getItemName(), itemCommand);
     }
 
     @Override
@@ -144,7 +145,8 @@ public class InactivityProfile implements StateProfile {
         cancelTimeoutTask();
         if (itemChannelLinked()) {
             Command itemCommand = OnOffType.from(inverted);
-            logger.debug("onCommandFromHandler({}) => itemCommand:{}", handlerCommand, itemCommand);
+            logger.debug("onCommandFromHandler() item:{}, itemCommand:{}, handlerCommand:{}",
+                    itemChannelLink.getItemName(), handlerCommand, itemCommand);
             callback.sendCommand(itemCommand);
             rescheduleTimeoutTask();
         }
@@ -155,7 +157,8 @@ public class InactivityProfile implements StateProfile {
         cancelTimeoutTask();
         if (itemChannelLinked()) {
             State itemState = OnOffType.from(inverted);
-            logger.debug("onStateUpdateFromHandler({}) => itemCommand:{}", handlerState, itemState);
+            logger.debug("onStateUpdateFromHandler() item:{}, handlerState:{}, itemState:{}",
+                    itemChannelLink.getItemName(), handlerState, itemState);
             callback.sendUpdate(itemState);
             rescheduleTimeoutTask();
         }
