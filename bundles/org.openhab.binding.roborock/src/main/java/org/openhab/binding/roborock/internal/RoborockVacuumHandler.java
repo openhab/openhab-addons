@@ -16,6 +16,7 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,6 +101,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
     private String rrHomeId = "";
     private String localKey = "";
+    private String nonce = "";
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
@@ -311,7 +313,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void pollData() {
         logger.debug("Running pollData for: {}", getThing().getUID().getId());
         HomeData homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
-        if (homeData != null) {
+        if ((homeData != null && (homeData.result != null))) {
             for (int i = 0; i < homeData.result.devices.length; i++) {
                 if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
                     if (localKey.isEmpty()) {
@@ -337,8 +339,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         try {
             logger.debug("Running pollData - sending MQTT commands");
-            // String response = bridgeHandler.getRoutines(rrHomeId, rriot);
-            // logger.trace("Response from getRoutines = {}", response);
+            if (nonce.isEmpty()) {
+                byte[] nonceBytes = new byte[16];
+                new java.security.SecureRandom().nextBytes(nonceBytes);
+                nonce = new String(nonceBytes, StandardCharsets.UTF_8);
+            }
 
             getStatusID = sendCommand(COMMAND_GET_STATUS);
             getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
@@ -364,7 +369,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     public void handleMessage(byte[] payload) {
-        String response = ProtocolUtils.handleMessage(payload, localKey);
+        String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
         logger.trace("MQTT message output: {}", response);
         String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().get("102")
                 .getAsString();
@@ -854,7 +859,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return 0;
         }
         try {
-            return localBridge.sendCommand(method, params, getThing().getUID().getId(), localKey);
+            return localBridge.sendCommand(method, params, getThing().getUID().getId(), localKey, nonce);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;

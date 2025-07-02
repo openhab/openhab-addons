@@ -14,17 +14,28 @@ package org.openhab.binding.roborock.internal.util;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.CRC32;
+import java.util.zip.GZIPInputStream;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -121,7 +132,77 @@ public class ProtocolUtils {
         return result.toString();
     }
 
-    public static String handleMessage(byte[] message, String localKey) {
+    public static byte[] decryptCbc(byte[] ciphertext, byte[] nonce) {
+        // Equivalent of Python's `Utils.verify_token(token)`
+        // verifyToken(token); // todo
+
+        try {
+            // "AES/CBC/PKCS5Padding" specifies AES algorithm, CBC mode, and PKCS5 padding.
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Key secretKey = new SecretKeySpec(nonce, "AES");
+
+            // Python's `iv = bytes(AES.block_size)` creates an IV of all zeros.
+            // In Java, this is represented by a `new byte[AES_BLOCK_SIZE]` and wrapped in `IvParameterSpec`.
+            byte[] ivBytes = new byte[AES_BLOCK_SIZE]; // All zeros by default
+            IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+
+            // `doFinal` handles both decryption and unpadding automatically due to "PKCS5Padding".
+            return cipher.doFinal(ciphertext);
+
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            logger.error("Error initializing cipher. Check algorithm and padding.", e);
+        } catch (InvalidKeyException e) {
+            logger.error("Invalid decryption key (token).", e);
+        } catch (InvalidAlgorithmParameterException e) {
+            logger.error("Invalid algorithm parameter (IV).", e);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            // BadPaddingException often indicates incorrect key, IV, or corrupted ciphertext.
+            logger.error("Error during decryption or invalid ciphertext. Check key, IV, and data integrity.", e);
+        }
+        return new byte[0];
+    }
+
+    private static byte[] decompress(byte[] compressedData) throws IOException {
+        if (compressedData == null || compressedData.length == 0) {
+            return new byte[0]; // Return an empty array for null or empty input
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayInputStream bis = new ByteArrayInputStream(compressedData);
+        GZIPInputStream gis = null;
+        try {
+            gis = new GZIPInputStream(bis);
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = gis.read(buffer)) != -1) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } finally {
+            // Close streams to release resources
+            if (gis != null) {
+                try {
+                    gis.close();
+                } catch (IOException e) {
+                    // Log or handle the exception if closing fails
+                }
+            }
+            try {
+                bis.close();
+            } catch (IOException e) {
+                // Log or handle the exception if closing fails
+            }
+            try {
+                bos.close();
+            } catch (IOException e) {
+                // Log or handle the exception if closing fails
+            }
+        }
+    }
+
+    public static String handleMessage(byte[] message, String localKey, String nonce) {
         String version = bytesToString(message, 0, 3);
         // Do some checks
         if (!"1.0".equals(version)) {// && version!="A01") {
@@ -147,6 +228,16 @@ public class ProtocolUtils {
             String unusedString = new String(Arrays.copyOfRange(payload, 8, 16)).trim();
             int requestId = ByteBuffer.wrap(Arrays.copyOfRange(payload, 16, 22)).getShort();
             String anotherUnusedString = new String(Arrays.copyOfRange(payload, 22, 24)).trim();
+            byte[] decrypted;
+            /*
+             * decrypted = decryptCbc(Arrays.copyOfRange(payload, 24, payload.length), nonce.getBytes());
+             * byte[] decompressed;
+             * try {
+             * decompressed = decompress(decrypted);
+             * } catch (IOException e) {
+             * logger.debug("Exception decompressing payload, {}", e.getMessage());
+             * }
+             */
             return "";
         } else if (protocol == 102) {
             int payloadLen = readInt16BE(message, 17);

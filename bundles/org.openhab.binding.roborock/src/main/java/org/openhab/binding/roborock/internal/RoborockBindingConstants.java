@@ -41,6 +41,7 @@ public class RoborockBindingConstants {
             + File.separator + "homedetail.json";
 
     public static final String SALT = "TXdfu$jyZ#TZHsg4";
+    public static final int AES_BLOCK_SIZE = 16;
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";

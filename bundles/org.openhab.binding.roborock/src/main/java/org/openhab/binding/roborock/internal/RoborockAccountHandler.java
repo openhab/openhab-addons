@@ -421,16 +421,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public int sendCommand(String method, String params, String thingID, String localKey)
+    public int sendCommand(String method, String params, String thingID, String localKey, String nonce)
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         Random random = new Random();
         int id = random.nextInt(22767 + 1) + 10000;
 
-        byte[] nonceBytes = new byte[16];
-        new java.security.SecureRandom().nextBytes(nonceBytes);
-        String nonce = new String(nonceBytes, StandardCharsets.UTF_8);
         StringBuffer sb = new StringBuffer();
         // Converting string to character array
         char ch[] = nonce.toCharArray();
@@ -448,7 +445,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         inner.put("id", id);
         inner.put("method", method);
         inner.put("params", params);
-        // inner.put("security", security);
+        inner.put("security", security);
 
         Map<String, Object> dps = new HashMap<>();
         dps.put(Integer.toString(protocol), gson.toJson(inner));
@@ -466,18 +463,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
-        logger.debug("Publishing message to {}", topic);
+        logger.debug("Publishing {} message to {}", method, topic);
         mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
                 .whenComplete((mqtt3Publish, throwable) -> {
                     if (throwable != null) {
                         logger.debug("mqtt publish failed");
                     }
                 });
-
-        // Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).payload(message).retain(false).build();
-
-        // mqttClient.publish(publishMessage);
-        // handleMessage(message); // helps confirm we have encoded it correctly
         return id;
     }
 
