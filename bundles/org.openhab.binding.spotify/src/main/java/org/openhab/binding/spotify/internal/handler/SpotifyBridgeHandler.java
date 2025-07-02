@@ -174,6 +174,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         this.mediaService = mediaService;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
+        lp = null;
     }
 
     @Override
@@ -610,6 +611,9 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         devicesCache.invalidateValue();
     }
 
+    @Nullable
+    List<Playlist> lp;
+
     /**
      * Calls the Spotify API and collects user data. Returns true if method completed without errors.
      *
@@ -640,7 +644,9 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 if (hasPlayData || getThing().getStatus() == ThingStatus.UNKNOWN) {
 
                     // @todo : need review
-                    final List<Playlist> lp = spotifyApi.getPlaylists(0, 30);
+                    if (lp == null) {
+                        lp = spotifyApi.getPlaylists(0, 30);
+                    }
                     final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
                     handleCommand.setPlaylists(playlists);
                     updatePlayerInfo(playingContext, playlists);
