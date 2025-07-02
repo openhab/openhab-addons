@@ -193,7 +193,11 @@ class SpotifyHandleCommands {
                 param = param.substring(px + 1);
             }
 
-            if (mediaTypeCommand == MediaCommandType.SEARCH) {
+            if (mediaTypeCommand == MediaCommandType.VOLUME) {
+                String newVolume = mediaType.getParam().toFullString();
+                logger.info("newVolume:" + newVolume);
+                spotifyApi.setVolume(deviceId, Integer.parseInt(newVolume));
+            } else if (mediaTypeCommand == MediaCommandType.SEARCH) {
                 String searchQuery = mediaType.getParam().toFullString();
                 logger.info("Search Query:" + searchQuery);
                 bridgeHandler.Search(searchQuery);
