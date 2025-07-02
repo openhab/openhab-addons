@@ -47,7 +47,8 @@ public class SpotifyBindingConstants {
     public static final String SPOTIFY_IMG_ALIAS = "/img";
 
     // List of all Thing Type UIDs
-    private static final String BINDING_ID = "spotify";
+    public static final String BINDING_ID = "spotify";
+    public static final String BINDING_LABEL = "Spotify";
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 

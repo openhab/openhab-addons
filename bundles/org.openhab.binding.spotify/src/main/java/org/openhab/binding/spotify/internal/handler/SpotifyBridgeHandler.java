@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.spotify.internal.SpotifyAccountHandler;
+import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.SpotifyBridgeConfiguration;
 import org.openhab.binding.spotify.internal.actions.SpotifyActions;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
@@ -88,6 +89,7 @@ import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -343,19 +345,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         final int limit = 30;
         // getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 100);
 
-        mediaService.addMediaListenner("Spotify", this);
+        mediaService.addMediaListenner(SpotifyBindingConstants.BINDING_ID, this);
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
 
-        List<Device> devices = spotifyApi.getDevices();
-        for (Device device : devices) {
-            logger.debug("devices:" + device.getName());
-            mediaService.registerDevice(new MediaDevice(device.getId(), device.getName(), device.getType(), "Spotify"));
-
-        }
-
-        mediaRegistry.registerEntry("Spotify", () -> {
-            return new MediaSource("Spotify", "Spotify", "/static/Spotify.png");
+        mediaRegistry.registerEntry(SpotifyBindingConstants.BINDING_ID, () -> {
+            return new MediaSource(SpotifyBindingConstants.BINDING_ID, SpotifyBindingConstants.BINDING_LABEL,
+                    "/static/Spotify.png");
         });
 
         devicesCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getDevices);
@@ -373,7 +369,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
-        if (mediaEntry.getKey().equals("Spotify")) {
+        if (mediaEntry.getKey().equals(SpotifyBindingConstants.BINDING_ID)) {
 
             mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");
@@ -642,13 +638,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
                 // Update play status information.
                 if (hasPlayData || getThing().getStatus() == ThingStatus.UNKNOWN) {
-                    /*
-                     * final List<Playlist> lp = playlistCache.getValue();
-                     * final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
-                     * handleCommand.setPlaylists(playlists);
-                     * updatePlayerInfo(playingContext, playlists);
-                     * spotifyDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
-                     */
+
+                    // @todo : need review
+                    final List<Playlist> lp = spotifyApi.getPlaylists(0, 30);
+                    final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
+                    handleCommand.setPlaylists(playlists);
+                    updatePlayerInfo(playingContext, playlists);
+                    spotifyDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
+
                 }
                 updateStatus(ThingStatus.ONLINE);
                 return true;
@@ -670,6 +667,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             }
         }
         return false;
+    }
+
+    public CurrentlyPlayingContext getCurrentlyPlayingContext() {
+        final CurrentlyPlayingContext pc = playingContextCache.getValue();
+        final CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLY_PLAYING_CONTEXT : pc;
+        return playingContext;
     }
 
     /**
@@ -700,6 +703,19 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 .filter(thing -> !spotifyDevices.stream()
                         .anyMatch(sd -> ((SpotifyDeviceHandler) thing.getHandler()).updateDeviceStatus(sd, playing)))
                 .forEach(thing -> ((SpotifyDeviceHandler) thing.getHandler()).setStatusGone());
+
+        List<Thing> playerThings = getThing().getThings().stream()
+                .filter(thing -> thing.getHandler() instanceof SpotifyDeviceHandler).toList();
+
+        // List<Device> devices = spotifyApi.getDevices();
+        for (Thing playerThing : playerThings) {
+            logger.debug("devices:" + playerThing.getLabel());
+            SpotifyDeviceHandler handler = (SpotifyDeviceHandler) playerThing.getHandler();
+            mediaService.registerDevice(new MediaDevice(playerThing.getUID().getId(), "" + playerThing.getLabel(),
+                    handler.getDeviceType(), SpotifyBindingConstants.BINDING_ID));
+
+        }
+
     }
 
     /**
@@ -723,9 +739,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(lastKnownDeviceActive));
         updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
 
-        updateChannelState(CHANNEL_TRACKPLAYER,
-                new MediaType(playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE, MediaCommandType.NONE,
-                        "param", new StringType(lastKnownDeviceId), new StringType("Spotify")));
+        MediaType mediaType = new MediaType(playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE,
+                MediaCommandType.NONE, "param", new StringType(lastKnownDeviceId),
+                new StringType(SpotifyBindingConstants.BINDING_ID));
+
+        mediaType.setCurrentPlayingPosition(playerInfo.getProgressMs());
+
+        updateChannelState(CHANNEL_TRACKPLAYER, mediaType);
 
         updateChannelState(CHANNEL_DEVICESHUFFLE, OnOffType.from(playerInfo.isShuffleState()));
         updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
