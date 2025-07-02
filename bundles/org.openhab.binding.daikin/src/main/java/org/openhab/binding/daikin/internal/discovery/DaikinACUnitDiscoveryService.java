@@ -94,7 +94,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void scanner() {
-        long timestampOfLastScan = getTimestampOfLastScan();
+        var timestampOfLastScan = getTimestampOfLastScan();
         for (InetAddress broadcastAddress : getBroadcastAddresses()) {
             logger.trace("Starting broadcast for {}", broadcastAddress.toString());
 
