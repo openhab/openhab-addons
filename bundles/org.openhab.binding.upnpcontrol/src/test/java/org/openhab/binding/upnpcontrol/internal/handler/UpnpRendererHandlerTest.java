@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlRendererConfiguration;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntryQueue;
@@ -160,7 +160,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     private Channel relTrackPositionChannel = ChannelBuilder.create(relTrackPositionChannelUID, "Dimmer").build();
 
     @Mock
-    private @Nullable UpnpAudioSinkReg audioSinkReg;
+    private @Nullable UpnpControlHandlerFactory controlHandlerFactory;
 
     @Override
     @BeforeEach
@@ -205,13 +205,8 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
         upnpEntryQueue = new UpnpEntryQueue(entries, "54321");
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
-<<<<<<< HEAD
                 requireNonNull(upnpService), requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
                 requireNonNull(upnpCommandDescriptionProvider), configuration));
-=======
-                requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
-                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(mediaService)));
->>>>>>> 3f902bb547 (feature-media-spotify : divide branch feature-media to separate branches)
 
         initHandler(requireNonNull(handler));
 

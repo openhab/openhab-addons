@@ -164,8 +164,9 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         }
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
-        MediaCollection mediaCollection = mediaRegistry.registerEntry("Upnp", () -> {
-            return new MediaCollection("Upnp", "Upnp", "/static/Upnp.png");
+        MediaCollection mediaCollection = mediaRegistry.registerEntry(UpnpControlBindingConstants.BINDING_ID, () -> {
+            return new MediaCollection(UpnpControlBindingConstants.BINDING_ID, UpnpControlBindingConstants.BINDING_ID,
+                    "/static/Upnp.png");
         });
 
         String key = this.thing.getUID().getId();
@@ -407,6 +408,36 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         }
     }
 
+    public void setUpnpRenderer(UpnpRendererHandler renderer) {
+        UpnpRendererHandler previousRenderer = currentRendererHandler;
+        currentRendererHandler = renderer;
+        if (config.filter) {
+            // only refresh title list if filtering by renderer capabilities
+            browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
+        } else {
+            serveMedia();
+        }
+
+        if ((renderer != null) && !renderer.equals(previousRenderer)) {
+            if (previousRenderer != null) {
+                previousRenderer.unsetServerHandler();
+            }
+            renderer.setServerHandler(this);
+
+            Channel channel;
+            if ((channel = thing.getChannel(VOLUME)) != null) {
+                handleCommand(channel.getUID(), RefreshType.REFRESH);
+            }
+            if ((channel = thing.getChannel(MUTE)) != null) {
+                handleCommand(channel.getUID(), RefreshType.REFRESH);
+            }
+            if ((channel = thing.getChannel(CONTROL)) != null) {
+                handleCommand(channel.getUID(), RefreshType.REFRESH);
+            }
+        }
+
+    }
+
     private void handleCommandUpnpRenderer(ChannelUID channelUID, Command command) {
         UpnpRendererHandler renderer = null;
         UpnpRendererHandler previousRenderer = currentRendererHandler;
@@ -444,7 +475,8 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         } else {
             updateState(channelUID, UnDefType.UNDEF);
 
-            // new MediaType(PlayPauseType.NONE, MediaCommandType.NONE, "", new StringType(""), new StringType("Upnp"))
+            // new MediaType(PlayPauseType.NONE, MediaCommandType.NONE, "", new StringType(""), new
+            // StringType(UpnpControlBindingConstants.BINDING_ID))
         }
     }
 
@@ -628,7 +660,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         if ((handler != null) && (channel = handler.getThing().getChannel(channelId)) != null) {
         } else if (channelId.equals(CONTROL)) {
             updateState(channelId, new MediaType(PlayPauseType.NONE, MediaCommandType.NONE, "", new StringType(""),
-                    new StringType("Upnp")));
+                    new StringType(UpnpControlBindingConstants.BINDING_ID)));
         } else if (!STOP.equals(channelId)) {
             updateState(channelId, UnDefType.UNDEF);
         }
