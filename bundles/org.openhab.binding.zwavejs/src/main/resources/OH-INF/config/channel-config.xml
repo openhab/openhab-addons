@@ -9,10 +9,6 @@
 			<label>Incoming Unit</label>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="itemType" type="text">
-			<label>Item Type</label>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="commandClassId" type="integer">
 			<label>Command Class Id</label>
 			<advanced>true</advanced>
@@ -56,10 +52,6 @@
 	<config-description uri="channel-type:zwavejs:invertible-channel">
 		<parameter name="incomingUnit" type="text">
 			<label>Incoming Unit</label>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="itemType" type="text">
-			<label>Item Type</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassId" type="integer">

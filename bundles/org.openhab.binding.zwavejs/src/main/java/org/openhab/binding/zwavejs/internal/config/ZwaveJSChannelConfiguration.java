@@ -14,7 +14,6 @@ package org.openhab.binding.zwavejs.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.CoreItemFactory;
 
 /**
  * The {@link ZwaveJSChannelConfiguration} class contains fields mapping channel configuration parameters.
@@ -24,7 +23,6 @@ import org.openhab.core.library.CoreItemFactory;
 @NonNullByDefault
 public class ZwaveJSChannelConfiguration {
     public @Nullable String incomingUnit;
-    public String itemType = CoreItemFactory.STRING;
     public int commandClassId = 0;
     public String commandClassName = "";
     public int endpoint = 0;

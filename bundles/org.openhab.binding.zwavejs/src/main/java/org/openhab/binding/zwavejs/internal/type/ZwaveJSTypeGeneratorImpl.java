@@ -214,14 +214,17 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         ChannelType channelType = getOrGenerate(channelTypeUID, details);
 
         String label = details.label;
+        String itemType = details.itemType;
         if (existingChannel != null) {
             // Update configuration and label if needed
             Configuration existingConfig = existingChannel.getConfiguration();
             updateReadWriteProperties(existingConfig, details);
 
             if (details.writable) {
-                existingConfig.put(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE, details.itemType);
                 label = existingChannel.getLabel() != null ? existingChannel.getLabel() : label;
+            } else {
+                // If the channel is not writable, we keep the existing item type
+                itemType = existingChannel.getAcceptedItemType();
             }
             // If the channel type UID has changed and the channel is not writable, keep the old type UID
             if (!channelTypeUID.equals(existingChannel.getChannelTypeUID()) && !details.writable) {
@@ -231,7 +234,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             logger.debug("Node {}. Channel {}: existing channel updated", details.nodeId, details.id);
         }
 
-        String itemType = (String) channelConfiguration.get(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE);
         if (label == null || label.isBlank()) {
             label = "Unknown Channel";
         }
@@ -264,7 +266,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     private Configuration buildChannelConfiguration(ChannelMetadata details) {
         Configuration config = new Configuration();
         config.put(BindingConstants.CONFIG_CHANNEL_INCOMING_UNIT, details.unitSymbol);
-        config.put(BindingConstants.CONFIG_CHANNEL_ITEM_TYPE, details.itemType);
         config.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_ID, details.commandClassId);
         config.put(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_NAME, details.commandClassName);
         config.put(BindingConstants.CONFIG_CHANNEL_ENDPOINT, details.endpoint);

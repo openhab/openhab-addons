@@ -239,7 +239,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         // For dimmer channels, ON is mapped to 255, as that means restore to last brightness
-        if (CoreItemFactory.DIMMER.equals(channelConfig.itemType)) {
+        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())) {
             return (OnOffType.ON == onOffCommand) ? 255 : 0;
         }
 
@@ -276,7 +276,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         // For dimmers, 100% is often represented as 99
-        if (CoreItemFactory.DIMMER.equals(channelConfig.itemType) && value == 100) {
+        if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType()) && value == 100) {
             value = 99;
         }
         return value;
@@ -438,8 +438,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration().as(ZwaveJSChannelConfiguration.class);
 
-        State state = metadata.setState(event.args.newValue, channelConfig.itemType, channelConfig.incomingUnit,
-                channelConfig.inverted);
+        State state = metadata.setState(event.args.newValue, Objects.requireNonNull(channel.getAcceptedItemType()),
+                channelConfig.incomingUnit, channelConfig.inverted);
 
         if (state == null) {
             return true;
@@ -649,7 +649,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration()
                         .as(ZwaveJSChannelConfiguration.class);
                 State state = dummy.setState(Objects.requireNonNull(result.values.get(channel.getUID().getId())),
-                        channelConfig.itemType, channelConfig.incomingUnit, channelConfig.inverted);
+                        Objects.requireNonNull(channel.getAcceptedItemType()), channelConfig.incomingUnit,
+                        channelConfig.inverted);
                 if (state != null) {
                     // Initialize color and color temperature channels
                     ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);

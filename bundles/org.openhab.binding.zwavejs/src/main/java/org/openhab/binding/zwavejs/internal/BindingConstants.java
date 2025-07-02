@@ -44,7 +44,6 @@ public class BindingConstants {
 
     // List of all Channel Configuration Parameters
     public static final String CONFIG_CHANNEL_INCOMING_UNIT = "incomingUnit";
-    public static final String CONFIG_CHANNEL_ITEM_TYPE = "itemType";
     public static final String CONFIG_CHANNEL_COMMANDCLASS_NAME = "commandClassName";
     public static final String CONFIG_CHANNEL_COMMANDCLASS_ID = "commandClassId";
     public static final String CONFIG_CHANNEL_ENDPOINT = "endpoint";
