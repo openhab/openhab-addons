@@ -371,54 +371,56 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void handleMessage(byte[] payload) {
         String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
         logger.trace("MQTT message output: {}", response);
-        String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().get("102")
-                .getAsString();
-        int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-        if (messageId == getStatusID) {
-            logger.debug("Received getStatus response, parse it");
-            handleGetStatus(jsonString);
-        } else if (messageId == getConsumableID) {
-            logger.debug("Received getConsumable response, parse it");
-            handleGetConsumables(jsonString);
-        } else if (messageId == getRoomMappingID) {
-            logger.debug("Received getRoomMapping response, parse it");
-            handleGetRoomMapping(jsonString);
-        } else if (messageId == getNetworkInfoID) {
-            logger.debug("Received getNetworkInfo response, parse it");
-            handleGetNetworkInfo(jsonString);
-        } else if (messageId == getCleanRecordID) {
-            logger.debug("Received getCleanRecord response, parse it");
-            handleGetCleanRecord(jsonString);
-        } else if (messageId == getCleanSummaryID) {
-            logger.debug("Received getCleanSummary response, parse it");
-            handleGetCleanSummary(jsonString);
-        } else if (messageId == getDndTimerID) {
-            logger.debug("Received getDndTimer response, parse it");
-            handleGetDndTimer(jsonString);
-        } else if (messageId == getSegmentStatusID) {
-            logger.debug("Received getSegmentStatus response, parse it");
-            handleGetSegmentStatus(jsonString);
-        } else if (messageId == getMapStatusID) {
-            logger.debug("Received getMapStatus response, parse it");
-            handleGetMapStatus(jsonString);
-        } else if (messageId == getLedStatusID) {
-            logger.debug("Received getLedStatus response, parse it");
-            handleGetLedStatus(jsonString);
-        } else if (messageId == getCarpetModeID) {
-            logger.debug("Received getCarpetMode response, parse it");
-            handleGetCarpetMode(jsonString);
-        } else if (messageId == getFwFeaturesID) {
-            logger.debug("Received getFwFeatures response, parse it");
-            handleGetFwFeatures(jsonString);
-        } else if (messageId == getMultiMapsListID) {
-            logger.debug("Received MultiMapsList response, parse it");
-            handleGetMultiMapsList(jsonString);
-        } else if (messageId == getCustomizeCleanModeID) {
-            logger.debug("Received getCustomizeCleanMode response, parse it");
-            handleGetCustomizeCleanMode(jsonString);
-        } else if (messageId == getMapID) {
-            logger.debug("Received getMap response, parse it");
-            handleGetMap(jsonString);
+        if (JsonParser.parseString(response).isJsonArray()) {
+            String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
+                    .get("102").getAsString();
+            int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
+            if (messageId == getStatusID) {
+                logger.debug("Received getStatus response, parse it");
+                handleGetStatus(jsonString);
+            } else if (messageId == getConsumableID) {
+                logger.debug("Received getConsumable response, parse it");
+                handleGetConsumables(jsonString);
+            } else if (messageId == getRoomMappingID) {
+                logger.debug("Received getRoomMapping response, parse it");
+                handleGetRoomMapping(jsonString);
+            } else if (messageId == getNetworkInfoID) {
+                logger.debug("Received getNetworkInfo response, parse it");
+                handleGetNetworkInfo(jsonString);
+            } else if (messageId == getCleanRecordID) {
+                logger.debug("Received getCleanRecord response, parse it");
+                handleGetCleanRecord(jsonString);
+            } else if (messageId == getCleanSummaryID) {
+                logger.debug("Received getCleanSummary response, parse it");
+                handleGetCleanSummary(jsonString);
+            } else if (messageId == getDndTimerID) {
+                logger.debug("Received getDndTimer response, parse it");
+                handleGetDndTimer(jsonString);
+            } else if (messageId == getSegmentStatusID) {
+                logger.debug("Received getSegmentStatus response, parse it");
+                handleGetSegmentStatus(jsonString);
+            } else if (messageId == getMapStatusID) {
+                logger.debug("Received getMapStatus response, parse it");
+                handleGetMapStatus(jsonString);
+            } else if (messageId == getLedStatusID) {
+                logger.debug("Received getLedStatus response, parse it");
+                handleGetLedStatus(jsonString);
+            } else if (messageId == getCarpetModeID) {
+                logger.debug("Received getCarpetMode response, parse it");
+                handleGetCarpetMode(jsonString);
+            } else if (messageId == getFwFeaturesID) {
+                logger.debug("Received getFwFeatures response, parse it");
+                handleGetFwFeatures(jsonString);
+            } else if (messageId == getMultiMapsListID) {
+                logger.debug("Received MultiMapsList response, parse it");
+                handleGetMultiMapsList(jsonString);
+            } else if (messageId == getCustomizeCleanModeID) {
+                logger.debug("Received getCustomizeCleanMode response, parse it");
+                handleGetCustomizeCleanMode(jsonString);
+            } else if (messageId == getMapID) {
+                logger.debug("Received getMap response, parse it");
+                handleGetMap(jsonString);
+            }
         }
     }
 
