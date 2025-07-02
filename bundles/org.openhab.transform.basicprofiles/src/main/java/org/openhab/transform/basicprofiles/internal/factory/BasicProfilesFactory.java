@@ -28,6 +28,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.profiles.Profile;
 import org.openhab.core.thing.profiles.ProfileAdvisor;
 import org.openhab.core.thing.profiles.ProfileCallback;
@@ -127,15 +128,17 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     @Nullable
     private final Bundle bundle;
     private final ItemRegistry itemRegistry;
+    private final ThingRegistry thingRegistry;
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public BasicProfilesFactory(final @Reference ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService,
             final @Reference BundleResolver bundleResolver, @Reference ItemRegistry itemRegistry,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference ThingRegistry thingRegistry, @Reference TimeZoneProvider timeZoneProvider) {
         this.profileTypeI18nLocalizationService = profileTypeI18nLocalizationService;
         this.bundle = bundleResolver.resolveBundle(BasicProfilesFactory.class);
         this.itemRegistry = itemRegistry;
+        this.thingRegistry = thingRegistry;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -161,7 +164,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
             return new StateFilterProfile(callback, context, itemRegistry);
         } else if (INACTIVITY_UID.equals(profileTypeUID)) {
-            return new InactivityProfile(callback, context);
+            return new InactivityProfile(callback, context, itemRegistry, thingRegistry);
         }
         return null;
     }

@@ -31,8 +31,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
@@ -49,6 +56,13 @@ class InactivityProfileTest {
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
     private @NonNullByDefault({}) @Mock ScheduledExecutorService mockScheduler;
+    private @NonNullByDefault({}) @Mock ItemRegistry mockItemRegistry;
+    private @NonNullByDefault({}) @Mock ThingRegistry mockThingRegistry;
+
+    private final String testItemName = "dummyItem";
+    private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
+    private final StringItem testItem = new StringItem(testItemName);
+    private final Channel testChannel = ChannelBuilder.create(testChannelUID).build();
 
     private InactivityProfile initInactivityProfile(String timeout, @Nullable Boolean inverted) {
         Configuration config = new Configuration();
@@ -60,11 +74,16 @@ class InactivityProfileTest {
         reset(mockContext);
         reset(mockCallback);
         reset(mockScheduler);
+        reset(mockItemRegistry);
+        reset(mockThingRegistry);
 
+        when(mockCallback.getItemChannelLink()).thenReturn(new ItemChannelLink(testItemName, testChannelUID));
         when(mockContext.getExecutorService()).thenReturn(mockScheduler);
         when(mockContext.getConfiguration()).thenReturn(config);
+        when(mockItemRegistry.get(any(String.class))).thenReturn(testItem);
+        when(mockThingRegistry.getChannel(any(ChannelUID.class))).thenReturn(testChannel);
 
-        return new InactivityProfile(mockCallback, mockContext);
+        return new InactivityProfile(mockCallback, mockContext, mockItemRegistry, mockThingRegistry);
     }
 
     public static Stream<Arguments> testInactivityProfile() {
@@ -85,26 +104,36 @@ class InactivityProfileTest {
             State expectedState) {
         InactivityProfile profile = initInactivityProfile(timeout, inverted);
 
+        /*
+         * test that that initial task scheduled
+         */
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
 
-        reset(mockScheduler);
-
-        profile.onStateUpdateFromHandler(DecimalType.ZERO);
-
-        verify(mockCallback, times(1)).sendUpdate(expectedState);
-        verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
-                eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
-
+        /*
+         * test that if item and channel are linked the update is received and task is re-scheduled
+         */
         reset(mockCallback);
         reset(mockScheduler);
 
-        assertDoesNotThrow(() -> profile.close());
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
         verify(mockCallback, times(1)).sendUpdate(expectedState);
-        verify(mockScheduler, never()).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
+        verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
+
+        /*
+         * test that if item and channel are not linked the update is not received and task is not re-scheduled
+         */
+        reset(mockCallback);
+        reset(mockScheduler);
+        when(mockItemRegistry.get(any(String.class))).thenReturn(null);
+
+        profile.onStateUpdateFromHandler(DecimalType.ZERO);
+
+        verify(mockCallback, never()).sendUpdate(any(State.class));
+        verify(mockScheduler, never()).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
+                any(TimeUnit.class));
 
         assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
     }
@@ -113,9 +142,6 @@ class InactivityProfileTest {
     @Order(9999)
     public void testGarbageCleanerCleanup() {
         assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
-        @SuppressWarnings("unused")
-        InactivityProfile profile = initInactivityProfile("1h", false);
-        profile = null;
         System.gc();
         try {
             Thread.sleep(1000);

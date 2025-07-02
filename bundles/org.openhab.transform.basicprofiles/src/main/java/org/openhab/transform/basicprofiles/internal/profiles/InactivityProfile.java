@@ -23,7 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
@@ -41,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class InactivityProfile implements StateProfile, AutoCloseable {
+public class InactivityProfile implements StateProfile {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofHours(1);
     private static final Cleaner CLEANER = Cleaner.create();
@@ -70,17 +73,25 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
     private final ScheduledExecutorService scheduler;
     private final Duration timeout;
     private final boolean inverted;
+    private final ItemRegistry itemRegistry;
+    private final ThingRegistry thingRegistry;
+    private final String itemName;
+    private final ChannelUID channelUID;
     private final CleanerTaskCanceller cleanerTaskCanceller;
-    private boolean closed;
 
     private @Nullable ScheduledFuture<?> timeoutTask;
 
-    public InactivityProfile(ProfileCallback callback, ProfileContext context) {
+    public InactivityProfile(ProfileCallback callback, ProfileContext context, ItemRegistry itemRegistry,
+            ThingRegistry thingRegistry) {
         InactivityProfileConfig config = context.getConfiguration().as(InactivityProfileConfig.class);
 
         this.callback = callback;
         this.scheduler = context.getExecutorService();
         this.inverted = config.inverted != null ? config.inverted : false;
+        this.itemRegistry = itemRegistry;
+        this.thingRegistry = thingRegistry;
+        this.itemName = callback.getItemChannelLink().getItemName();
+        this.channelUID = callback.getItemChannelLink().getLinkedUID();
 
         this.cleanerTaskCanceller = new CleanerTaskCanceller();
         CLEANER.register(this, cleanerTaskCanceller);
@@ -111,9 +122,13 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
     }
 
     private void onTimeout() {
-        State itemState = OnOffType.from(!inverted);
-        logger.debug("timeout:{} => itemState:{}", timeout, itemState);
-        this.callback.sendUpdate(itemState);
+        if (itemChannelLinked()) {
+            State itemState = OnOffType.from(!inverted);
+            logger.debug("timeout:{} => itemState:{}", timeout, itemState);
+            callback.sendUpdate(itemState);
+        } else {
+            cancelTimeoutTask();
+        }
     }
 
     @Override
@@ -133,24 +148,24 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
 
     @Override
     public void onCommandFromHandler(Command handlerCommand) {
-        Command itemCommand = OnOffType.from(inverted);
-        logger.debug("onCommandFromHandler({}) => itemCommand:{}", handlerCommand, itemCommand);
-        callback.sendCommand(itemCommand);
-        rescheduleTimeoutTask();
+        cancelTimeoutTask();
+        if (itemChannelLinked()) {
+            Command itemCommand = OnOffType.from(inverted);
+            logger.debug("onCommandFromHandler({}) => itemCommand:{}", handlerCommand, itemCommand);
+            callback.sendCommand(itemCommand);
+            rescheduleTimeoutTask();
+        }
     }
 
     @Override
     public void onStateUpdateFromHandler(State handlerState) {
-        State itemState = OnOffType.from(inverted);
-        logger.debug("onStateUpdateFromHandler({}) => itemCommand:{}", handlerState, itemState);
-        callback.sendUpdate(itemState);
-        rescheduleTimeoutTask();
-    }
-
-    @Override
-    public void close() throws Exception {
         cancelTimeoutTask();
-        closed = true;
+        if (itemChannelLinked()) {
+            State itemState = OnOffType.from(inverted);
+            logger.debug("onStateUpdateFromHandler({}) => itemCommand:{}", handlerState, itemState);
+            callback.sendUpdate(itemState);
+            rescheduleTimeoutTask();
+        }
     }
 
     private synchronized void cancelTimeoutTask() {
@@ -163,12 +178,14 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
 
     private synchronized void rescheduleTimeoutTask() {
         cancelTimeoutTask();
-        if (!closed) {
-            long mSec = timeout.toMillis();
-            timeoutTask = scheduler.scheduleWithFixedDelay(() -> onTimeout(), mSec, mSec, TimeUnit.MILLISECONDS);
-            if (timeoutTask instanceof ScheduledFuture task) {
-                cleanerTaskCanceller.setTask(task);
-            }
+        long mSec = timeout.toMillis();
+        timeoutTask = scheduler.scheduleWithFixedDelay(() -> onTimeout(), mSec, mSec, TimeUnit.MILLISECONDS);
+        if (timeoutTask instanceof ScheduledFuture task) {
+            cleanerTaskCanceller.setTask(task);
         }
+    }
+
+    private boolean itemChannelLinked() {
+        return itemRegistry.get(itemName) != null && thingRegistry.getChannel(channelUID) != null;
     }
 }
