@@ -108,9 +108,9 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PRO1PM_2 = "SPSW-101PE16EU";
     public static final String SHELLYDT_PRO1PM_3 = "SPSW-201PE16EU";
     public static final String SHELLYDT_PRO1CB = "SPCB-01VENEU";
-    public static final String SHELLYDT_PRO2_RELAY = "SPSW-002XE16EU-relay";
-    public static final String SHELLYDT_PRO2_RELAY_2 = "SPSW-102XE16EU-relay";
-    public static final String SHELLYDT_PRO2_RELAY_3 = "SPSW-202XE16EU-relay";
+    public static final String SHELLYDT_PRO2 = "SPSW-002XE16EU";
+    public static final String SHELLYDT_PRO2_2 = "SPSW-102XE16EU";
+    public static final String SHELLYDT_PRO2_3 = "SPSW-202XE16EU";
     public static final String SHELLYDT_PRO2PM_RELAY = "SPSW-002PE16EU-relay";
     public static final String SHELLYDT_PRO2PM_ROLLER = "SPSW-002PE16EU-roller";
     public static final String SHELLYDT_PRO2PM_RELAY_2 = "SPSW-102PE16EU-relay";
@@ -457,10 +457,9 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO1PM, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
-            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB),
-            Map.entry(SHELLYDT_PRO2_RELAY, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2_RELAY_2, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2_RELAY_3, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2_RELAY),
             Map.entry(SHELLYDT_PRO2PM_RELAY, THING_TYPE_SHELLYPRO2PM_RELAY),
             Map.entry(SHELLYDT_PRO2PM_RELAY_2, THING_TYPE_SHELLYPRO2PM_RELAY),
             Map.entry(SHELLYDT_PRO2PM_RELAY_3, THING_TYPE_SHELLYPRO2PM_RELAY),
