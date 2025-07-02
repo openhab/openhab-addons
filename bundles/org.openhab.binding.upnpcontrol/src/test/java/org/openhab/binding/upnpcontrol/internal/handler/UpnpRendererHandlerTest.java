@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlRendererConfiguration;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntryQueue;
@@ -160,7 +160,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     private Channel relTrackPositionChannel = ChannelBuilder.create(relTrackPositionChannelUID, "Dimmer").build();
 
     @Mock
-    private @Nullable UpnpAudioSinkReg audioSinkReg;
+    private @Nullable UpnpControlHandlerFactory controlHandlerFactory;
 
     @Override
     @BeforeEach

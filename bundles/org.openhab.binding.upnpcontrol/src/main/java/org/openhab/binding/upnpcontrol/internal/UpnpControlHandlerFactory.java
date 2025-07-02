@@ -163,6 +163,13 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         return handler;
     }
 
+    public @Nullable UpnpServerHandler getUpnpServer(String key) {
+        if (upnpServers.containsKey(key)) {
+            return upnpServers.get(key);
+        }
+        return null;
+    }
+
     private UpnpRendererHandler addRenderer(Thing thing) {
         callbackUrl = createCallbackUrl();
         UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService, this, upnpStateDescriptionProvider,
