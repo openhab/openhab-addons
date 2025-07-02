@@ -119,7 +119,8 @@ public class InactivityProfile implements StateProfile {
     private void onTimeout() {
         if (itemChannelLinked()) {
             State itemState = OnOffType.from(!inverted);
-            logger.debug("timeout:{} => itemState:{}", timeout, itemState);
+            logger.debug("onTimeout() item:{}, timeout:{}, itemState:{}", itemChannelLink.getItemName(), timeout,
+                    itemState);
             callback.sendUpdate(itemState);
             rescheduleTimeoutTask();
         }
