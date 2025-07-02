@@ -443,6 +443,9 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
+            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2_RELAY), //
             Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
             Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
             Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
@@ -467,9 +470,6 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_RELAY),
             // Pro Series
-            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2_RELAY),
             Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_RELAY),
             Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_RELAY),
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_RELAY));
@@ -628,19 +628,13 @@ public class ShellyThingCreator {
         }
 
         if (!deviceType.isEmpty()) {
-            ThingTypeUID res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType);
-            if (res != null) {
-                return res;
-            }
-
             Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
                 case SHELLY_MODE_RELAY -> RELAY_THING_TYPE_BY_DEVICE_TYPE;
                 case SHELLY_MODE_ROLLER -> ROLLER_THING_TYPE_BY_DEVICE_TYPE;
                 default -> THING_TYPE_BY_DEVICE_TYPE;
             };
 
-            res = deviceTypeMap.get(deviceType);
-
+            ThingTypeUID res = deviceTypeMap.get(deviceType);
             if (res != null) {
                 return res;
             }
