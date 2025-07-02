@@ -107,8 +107,8 @@ class InactivityProfileTest {
         /*
          * test that that initial task scheduled
          */
-        verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
-                eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
+        verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedMilliSeconds),
+                eq(TimeUnit.MILLISECONDS));
 
         /*
          * test that if item and channel are linked the update is received and task is re-scheduled
@@ -119,8 +119,8 @@ class InactivityProfileTest {
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
         verify(mockCallback, times(1)).sendUpdate(expectedState);
-        verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
-                eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
+        verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedMilliSeconds),
+                eq(TimeUnit.MILLISECONDS));
 
         /*
          * test that if item and channel are not linked the update is not received and task is not re-scheduled
@@ -132,8 +132,7 @@ class InactivityProfileTest {
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
         verify(mockCallback, never()).sendUpdate(any(State.class));
-        verify(mockScheduler, never()).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
-                any(TimeUnit.class));
+        verify(mockScheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
 
         assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
     }
