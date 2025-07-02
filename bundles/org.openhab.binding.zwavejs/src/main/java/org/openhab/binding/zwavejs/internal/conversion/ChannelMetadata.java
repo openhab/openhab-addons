@@ -102,7 +102,7 @@ public class ChannelMetadata extends BaseMetadata {
      *
      * @param value the raw value to convert to a State
      * @param itemType the openHAB item type (e.g., "Switch", "Number", "Color")
-     * @param incomingUnit the unit of the incoming value, or {@code null} if not applicable
+     * @param unitSymbol the unit symbol of the incoming value, or {@code null} if not applicable
      * @param inverted {@code true} if the value should be logically inverted, {@code false} otherwise
      * @return the corresponding {@link State} for the given value and configuration, or {@code null} if conversion is
      *         not possible
