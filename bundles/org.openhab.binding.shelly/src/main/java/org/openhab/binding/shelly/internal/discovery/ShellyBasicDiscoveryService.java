@@ -64,7 +64,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ServiceRegistration<?> discoveryService;
 
     public ShellyBasicDiscoveryService(BundleContext bundleContext, ShellyThingTable thingTable) {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+        super(SUPPORTED_THING_TYPES, TIMEOUT);
         this.bundleContext = bundleContext;
         this.thingTable = thingTable;
     }

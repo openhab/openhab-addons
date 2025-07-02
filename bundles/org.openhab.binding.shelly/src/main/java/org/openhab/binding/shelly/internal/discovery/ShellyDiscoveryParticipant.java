@@ -71,7 +71,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_THING_TYPES;
     }
 
     @Override
