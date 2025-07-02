@@ -202,7 +202,7 @@ public class ProtocolUtils {
         }
     }
 
-    public static String handleMessage(byte[] message, String localKey, String nonce) {
+    public static String handleMessage(byte[] message, String localKey, byte[] nonce) {
         String version = bytesToString(message, 0, 3);
         // Do some checks
         if (!"1.0".equals(version)) {// && version!="A01") {
@@ -230,7 +230,7 @@ public class ProtocolUtils {
             String anotherUnusedString = new String(Arrays.copyOfRange(payload, 22, 24)).trim();
             byte[] decrypted;
             /*
-             * decrypted = decryptCbc(Arrays.copyOfRange(payload, 24, payload.length), nonce.getBytes());
+             * decrypted = decryptCbc(Arrays.copyOfRange(payload, 24, payload.length), nonce);
              * byte[] decompressed;
              * try {
              * decompressed = decompress(decrypted);

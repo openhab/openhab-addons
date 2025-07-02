@@ -421,21 +421,25 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public int sendCommand(String method, String params, String thingID, String localKey, String nonce)
+    private String byteToHex(byte num) {
+        char[] hexDigits = new char[2];
+        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((num & 0xF), 16);
+        return new String(hexDigits);
+    }
+
+    public int sendCommand(String method, String params, String thingID, String localKey, byte[] nonce)
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         Random random = new Random();
         int id = random.nextInt(22767 + 1) + 10000;
 
-        StringBuffer sb = new StringBuffer();
-        // Converting string to character array
-        char ch[] = nonce.toCharArray();
-        for (int i = 0; i < ch.length; i++) {
-            String hexString = Integer.toHexString(ch[i]);
-            sb.append(hexString);
+        StringBuffer hexStringBuffer = new StringBuffer();
+        for (int i = 0; i < nonce.length; i++) {
+            hexStringBuffer.append(byteToHex(nonce[i]));
         }
-        String nonceHex = sb.toString();
+        String nonceHex = hexStringBuffer.toString();
 
         Map<String, Object> security = new HashMap<>();
         security.put("endpoint", getEndpoint());

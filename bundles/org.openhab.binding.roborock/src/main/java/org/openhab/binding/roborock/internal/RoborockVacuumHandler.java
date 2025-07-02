@@ -16,7 +16,6 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,7 +100,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
     private String rrHomeId = "";
     private String localKey = "";
-    private String nonce = "";
+    private byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
@@ -301,6 +300,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void connectToDevice() {
         scheduleNextPoll(-1);
+        boolean empty_byte_array = true;
+        for (byte b : nonce) {
+            if (b != 0) {
+                empty_byte_array = false;
+                break;
+            }
+        }
+        if (empty_byte_array) {
+            new java.security.SecureRandom().nextBytes(nonce);
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -339,12 +348,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         try {
             logger.debug("Running pollData - sending MQTT commands");
-            if (nonce.isEmpty()) {
-                byte[] nonceBytes = new byte[16];
-                new java.security.SecureRandom().nextBytes(nonceBytes);
-                nonce = new String(nonceBytes, StandardCharsets.UTF_8);
-            }
-
             getStatusID = sendCommand(COMMAND_GET_STATUS);
             getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
             getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
