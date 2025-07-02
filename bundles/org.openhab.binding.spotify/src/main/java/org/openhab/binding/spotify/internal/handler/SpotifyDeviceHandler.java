@@ -15,8 +15,10 @@ package org.openhab.binding.spotify.internal.handler;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
+import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.core.library.types.MediaCommandType;
 import org.openhab.core.library.types.MediaType;
@@ -51,6 +53,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
     private String deviceName = "";
     private String deviceId = "";
+    private String deviceType = "";
 
     private boolean active;
 
@@ -115,6 +118,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     public boolean updateDeviceStatus(Device device, boolean playing) {
         if (deviceName.equals(device.getName())) {
             deviceId = device.getId() == null ? "" : device.getId();
+            deviceType = device.getType();
             logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), deviceId,
                     device.getName(), device.getType());
             final boolean online = setOnlineStatus(device.isRestricted());
@@ -129,9 +133,21 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
             // updateChannelState(CHANNEL_DEVICEPLAYER,
             // online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
-            updateChannelState(CHANNEL_DEVICEPLAYER,
-                    new MediaType(online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE,
-                            MediaCommandType.NONE, "param", new StringType(deviceId), new StringType("Spotify")));
+            MediaType mediaType = new MediaType(online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE,
+                    MediaCommandType.NONE, "param", new StringType(deviceId),
+                    new StringType(SpotifyBindingConstants.BINDING_ID));
+
+            final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
+            final CurrentlyPlayingContext playingContext = bridgeHandler.getCurrentlyPlayingContext();
+
+            mediaType.setCurrentPlayingPosition(playingContext.getProgressMs());
+            mediaType.setCurrentPlayingTrackDuration(0);
+            mediaType.setCurrentPlayingTrackName(playingContext.getItem().getName());
+            mediaType.setCurrentPlayingArtistName(playingContext.getItem().getArtists().getFirst().getName());
+            mediaType.setCurrentPlayingArtUri(deviceId);
+            mediaType.setCurrentPlayingVolume(0);
+
+            updateChannelState(CHANNEL_DEVICEPLAYER, mediaType);
             return true;
         } else {
             return false;
@@ -188,5 +204,9 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
         }
+    }
+
+    public String getDeviceType() {
+        return deviceType;
     }
 }
