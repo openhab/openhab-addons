@@ -46,6 +46,7 @@ public class ShellyDeviceProfileTest {
                 // Shelly BLU
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON_STR, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4_STR, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4_STR, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW_STR, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION_STR, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT_STR, true, true), //

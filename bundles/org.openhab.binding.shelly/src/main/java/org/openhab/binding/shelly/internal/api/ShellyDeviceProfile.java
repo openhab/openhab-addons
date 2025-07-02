@@ -98,7 +98,7 @@ public class ShellyDeviceProfile {
     public boolean isHT = false; // true for H&T
     public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
-    public boolean isMultiButton = false; // true for a Shelly BLU Wall Switch 4
+    public boolean isMultiButton = false; // true for a Shelly BLU Wall Switch 4 or RC Button 4
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
     public boolean isSmoke = false; // true for Shelly Smoke
@@ -232,14 +232,15 @@ public class ShellyDeviceProfile {
                 || thingType.equals(THING_TYPE_SHELLYPLUSI4DC_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR) || thingType.equals(THING_TYPE_SHELLYBUTTON2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUBUTTON_STR);
-        isMultiButton = thingType.equals(THING_TYPE_SHELLYBLUWALLSWITCH4_STR);
+        isMultiButton = thingType.equals(THING_TYPE_SHELLYBLUWALLSWITCH4_STR)
+                || thingType.equals(THING_TYPE_SHELLYBLURCBUTTON4_STR);
         isTRV = thingType.equals(THING_TYPE_SHELLYTRV_STR);
         isWall = thingType.equals(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
         is3EM = thingType.equals(THING_TYPE_SHELLY3EM_STR) || thingType.startsWith(THING_TYPE_SHELLYPRO3EM_STR);
         isEM50 = thingType.startsWith(THING_TYPE_SHELLYPROEM50_STR);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
-                || isWall;
+                || isWall || isMultiButton;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
@@ -436,10 +437,16 @@ public class ShellyDeviceProfile {
     public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
         String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
         switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUWALLSWITCH4:
-                return (THING_TYPE_SHELLYBLUWALLSWITCH4_STR + "-" + mac).toLowerCase();
+            case "SBBT":
+                switch (getString(name)) {
+                    default:
+                    case SHELLYDT_BLUBUTTON:
+                        return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
+                    case SHELLYDT_BLUWALLSWITCH4:
+                        return (THING_TYPE_SHELLYBLUWALLSWITCH4_STR + "-" + mac).toLowerCase();
+                    case SHELLYDT_BLURCBUTTON4:
+                        return (THING_TYPE_SHELLYBLURCBUTTON4_STR + "-" + mac).toLowerCase();
+                }
             case SHELLYDT_BLUDW:
                 return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
             case SHELLYDT_BLUMOTION:

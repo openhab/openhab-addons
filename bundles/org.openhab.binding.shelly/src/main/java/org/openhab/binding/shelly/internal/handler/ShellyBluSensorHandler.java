@@ -61,13 +61,22 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
         LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
         ThingTypeUID tuid;
         switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                ttype = THING_TYPE_SHELLYBLUBUTTON_STR;
-                tuid = THING_TYPE_SHELLYBLUBUTTON;
-                break;
-            case SHELLYDT_BLUWALLSWITCH4:
-                ttype = THING_TYPE_SHELLYBLUWALLSWITCH4_STR;
-                tuid = THING_TYPE_SHELLYBLUWALLSWITCH4;
+            case "SBBT":
+                switch (getString(e.data.name)) {
+                    default:
+                    case SHELLYDT_BLUBUTTON:
+                        ttype = THING_TYPE_SHELLYBLUBUTTON_STR;
+                        tuid = THING_TYPE_SHELLYBLUBUTTON;
+                        break;
+                    case SHELLYDT_BLUWALLSWITCH4:
+                        ttype = THING_TYPE_SHELLYBLUWALLSWITCH4_STR;
+                        tuid = THING_TYPE_SHELLYBLUWALLSWITCH4;
+                        break;
+                    case SHELLYDT_BLURCBUTTON4:
+                        ttype = THING_TYPE_SHELLYBLURCBUTTON4_STR;
+                        tuid = THING_TYPE_SHELLYBLURCBUTTON4;
+                        break;
+                }
                 break;
             case SHELLYDT_BLUDW:
                 ttype = THING_TYPE_SHELLYBLUDW_STR;

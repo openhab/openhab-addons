@@ -95,7 +95,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
 
         // TODO clarify: get number of XML entries of type "button" resp "buttonState" from somewhere in the thing stuff
         // ?
-        int numInputs = thing.getThingType().equals(THING_TYPE_SHELLYBLUWALLSWITCH4_STR) ? 4 : 1;
+        int numInputs = thing.getThingType().equals(THING_TYPE_SHELLYBLUWALLSWITCH4_STR)
+                || thing.getThingType().equals(THING_TYPE_SHELLYBLURCBUTTON4_STR) ? 4 : 1;
         for (int i = 0; i < numInputs; i++) {
             deviceStatus.inputs.add(createShellyInputState());
         }

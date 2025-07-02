@@ -138,6 +138,7 @@ public class ShellyThingCreator {
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT-002C";
     public static final String SHELLYDT_BLUWALLSWITCH4 = "SBBT-EU3870";
+    public static final String SHELLYDT_BLURCBUTTON4 = "SBBT-004CUS";
     public static final String SHELLYDT_BLUDW = "SBDW";
     public static final String SHELLYDT_BLUMOTION = "SBMO";
     public static final String SHELLYDT_BLUHT = "SBHT";
@@ -238,6 +239,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYBLU_PREFIX = "shellyblu";
     public static final String THING_TYPE_SHELLYBLUBUTTON_STR = THING_TYPE_SHELLYBLU_PREFIX + "button";
     public static final String THING_TYPE_SHELLYBLUWALLSWITCH4_STR = THING_TYPE_SHELLYBLU_PREFIX + "wallswitch4";
+    public static final String THING_TYPE_SHELLYBLURCBUTTON4_STR = THING_TYPE_SHELLYBLU_PREFIX + "rcbutton4";
     public static final String THING_TYPE_SHELLYBLUDW_STR = THING_TYPE_SHELLYBLU_PREFIX + "dw";
     public static final String THING_TYPE_SHELLYBLUMOTION_STR = THING_TYPE_SHELLYBLU_PREFIX + "motion";
     public static final String THING_TYPE_SHELLYBLUHT_STR = THING_TYPE_SHELLYBLU_PREFIX + "ht";
@@ -371,6 +373,8 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYBLUBUTTON_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUWALLSWITCH4 = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYBLUWALLSWITCH4_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYBLURCBUTTON4 = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYBLURCBUTTON4_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUDW_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYBLUMOTION_STR);
@@ -476,6 +480,7 @@ public class ShellyThingCreator {
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON_STR),
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4_STR),
+            Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4_STR),
             Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW_STR),
             Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION_STR),
             Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT_STR),
@@ -560,6 +565,7 @@ public class ShellyThingCreator {
 
             Map.entry(THING_TYPE_SHELLYBLUBUTTON_STR, THING_TYPE_SHELLYBLUBUTTON_STR),
             Map.entry(THING_TYPE_SHELLYBLUWALLSWITCH4_STR, THING_TYPE_SHELLYBLUWALLSWITCH4_STR),
+            Map.entry(THING_TYPE_SHELLYBLURCBUTTON4_STR, THING_TYPE_SHELLYBLURCBUTTON4_STR),
             Map.entry(THING_TYPE_SHELLYBLUDW_STR, THING_TYPE_SHELLYBLUDW_STR),
             Map.entry(THING_TYPE_SHELLYBLUMOTION_STR, THING_TYPE_SHELLYBLUMOTION_STR),
             Map.entry(THING_TYPE_SHELLYBLUHT_STR, THING_TYPE_SHELLYBLUHT_STR),
