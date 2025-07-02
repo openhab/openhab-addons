@@ -141,11 +141,11 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
             final CurrentlyPlayingContext playingContext = bridgeHandler.getCurrentlyPlayingContext();
 
             mediaType.setCurrentPlayingPosition(playingContext.getProgressMs());
-            mediaType.setCurrentPlayingTrackDuration(0);
+            mediaType.setCurrentPlayingTrackDuration(playingContext.getItem().getDurationMs());
             mediaType.setCurrentPlayingTrackName(playingContext.getItem().getName());
             mediaType.setCurrentPlayingArtistName(playingContext.getItem().getArtists().getFirst().getName());
-            mediaType.setCurrentPlayingArtUri(deviceId);
-            mediaType.setCurrentPlayingVolume(0);
+            mediaType.setCurrentPlayingArtUri(playingContext.getItem().getAlbum().getImages().getFirst().getUrl());
+            mediaType.setCurrentPlayingVolume(device.getVolumePercent());
 
             updateChannelState(CHANNEL_DEVICEPLAYER, mediaType);
             return true;
