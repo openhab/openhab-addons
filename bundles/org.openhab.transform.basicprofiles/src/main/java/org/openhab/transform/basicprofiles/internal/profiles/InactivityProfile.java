@@ -123,18 +123,18 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
 
     @Override
     public void onStateUpdateFromItem(State itemState) {
-        // do nothing
+        logger.trace("onStateUpdateFromItem({})", itemState);
     }
 
     @Override
     public void onCommandFromItem(Command itemCommand) {
-        // do nothing
+        logger.trace("onCommandFromItem({})", itemCommand);
     }
 
     @Override
     public void onCommandFromHandler(Command handlerCommand) {
         Command itemCommand = OnOffType.from(inverted);
-        logger.debug("handlerCommand:{} => itemCommand:{}", handlerCommand, itemCommand);
+        logger.debug("onCommandFromHandler({}) => itemCommand:{}", handlerCommand, itemCommand);
         callback.sendCommand(itemCommand);
         rescheduleTimeoutTask();
     }
@@ -142,7 +142,7 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
     @Override
     public void onStateUpdateFromHandler(State handlerState) {
         State itemState = OnOffType.from(inverted);
-        logger.debug("handlerState:{} => itemState:{}", handlerState, itemState);
+        logger.debug("onStateUpdateFromHandler({}) => itemCommand:{}", handlerState, itemState);
         callback.sendUpdate(itemState);
         rescheduleTimeoutTask();
     }

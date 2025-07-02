@@ -7,8 +7,8 @@
 	<config-description uri="profile:basic-profiles:inactivity">
 		<parameter name="timeout" type="text">
 			<label>Timeout</label>
-			<description>Time with no input channel activity until the linked item is switched. Default is "1 h".</description>
-			<default>1 h</default>
+			<description>Time with no input channel activity until the linked item is switched. Default is "1h".</description>
+			<default>1h</default>
 		</parameter>
 		<parameter name="inverted" type="boolean" required="false">
 			<label>Inverted</label>
