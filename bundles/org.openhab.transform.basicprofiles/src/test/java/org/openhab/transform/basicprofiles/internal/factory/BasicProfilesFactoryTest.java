@@ -34,8 +34,8 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileType;
@@ -72,21 +72,22 @@ public class BasicProfilesFactoryTest {
     private @Mock @NonNullByDefault({}) ProfileContext mockContext;
     private @Mock @NonNullByDefault({}) ItemRegistry mockItemRegistry;
     private @Mock @NonNullByDefault({}) ScheduledExecutorService mockScheduler;
-    private @NonNullByDefault({}) @Mock ThingRegistry mockThingRegistry;
+    private @Mock @NonNullByDefault({}) ItemChannelLinkRegistry mockLinkRegistry;
 
     private @NonNullByDefault({}) BasicProfilesFactory profileFactory;
 
-    private final String testItemName = "dummyItem";
+    private final String testItemName = "testItem";
     private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
+    private final ItemChannelLink testLink = new ItemChannelLink(testItemName, testChannelUID);
 
     @BeforeEach
     public void setup() {
         profileFactory = new BasicProfilesFactory(mockLocalizationService, mockBundleResolver, mockItemRegistry,
-                mockThingRegistry, mockTimeZoneProvider);
+                mockLinkRegistry, mockTimeZoneProvider);
 
         when(mockContext.getConfiguration()).thenReturn(CONFIG);
         when(mockContext.getExecutorService()).thenReturn(mockScheduler);
-        when(mockCallback.getItemChannelLink()).thenReturn(new ItemChannelLink(testItemName, testChannelUID));
+        when(mockCallback.getItemChannelLink()).thenReturn(testLink);
     }
 
     @Test

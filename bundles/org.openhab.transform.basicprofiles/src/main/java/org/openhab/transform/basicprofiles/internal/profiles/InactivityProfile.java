@@ -23,10 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
@@ -73,22 +72,19 @@ public class InactivityProfile implements StateProfile {
     private final ScheduledExecutorService scheduler;
     private final Duration timeout;
     private final boolean inverted;
-    private final ItemRegistry itemRegistry;
-    private final ThingRegistry thingRegistry;
+    private final ItemChannelLinkRegistry linkRegistry;
     private final ItemChannelLink itemChannelLink;
     private final CleanerTaskCanceller cleanerTaskCanceller;
 
     private @Nullable ScheduledFuture<?> timeoutTask;
 
-    public InactivityProfile(ProfileCallback callback, ProfileContext context, ItemRegistry itemRegistry,
-            ThingRegistry thingRegistry) {
+    public InactivityProfile(ProfileCallback callback, ProfileContext context, ItemChannelLinkRegistry linkRegistry) {
         InactivityProfileConfig config = context.getConfiguration().as(InactivityProfileConfig.class);
 
         this.callback = callback;
         this.scheduler = context.getExecutorService();
         this.inverted = config.inverted != null ? config.inverted : false;
-        this.itemRegistry = itemRegistry;
-        this.thingRegistry = thingRegistry;
+        this.linkRegistry = linkRegistry;
         this.itemChannelLink = callback.getItemChannelLink();
 
         this.cleanerTaskCanceller = new CleanerTaskCanceller();
@@ -171,7 +167,6 @@ public class InactivityProfile implements StateProfile {
     }
 
     private boolean itemChannelLinked() {
-        return itemRegistry.get(itemChannelLink.getItemName()) != null
-                && thingRegistry.getChannel(itemChannelLink.getLinkedUID()) != null;
+        return linkRegistry.getLinks(itemChannelLink.getItemName()).contains(itemChannelLink);
     }
 }

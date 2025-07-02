@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -31,15 +32,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
@@ -56,13 +53,11 @@ class InactivityProfileTest {
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
     private @NonNullByDefault({}) @Mock ScheduledExecutorService mockScheduler;
-    private @NonNullByDefault({}) @Mock ItemRegistry mockItemRegistry;
-    private @NonNullByDefault({}) @Mock ThingRegistry mockThingRegistry;
+    private @NonNullByDefault({}) @Mock ItemChannelLinkRegistry mockLinkRegistry;
 
-    private final String testItemName = "dummyItem";
+    private final String testItemName = "testItem";
     private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
-    private final StringItem testItem = new StringItem(testItemName);
-    private final Channel testChannel = ChannelBuilder.create(testChannelUID).build();
+    private final ItemChannelLink testLink = new ItemChannelLink(testItemName, testChannelUID);
 
     private InactivityProfile initInactivityProfile(String timeout, @Nullable Boolean inverted) {
         Configuration config = new Configuration();
@@ -74,16 +69,14 @@ class InactivityProfileTest {
         reset(mockContext);
         reset(mockCallback);
         reset(mockScheduler);
-        reset(mockItemRegistry);
-        reset(mockThingRegistry);
+        reset(mockLinkRegistry);
 
         when(mockCallback.getItemChannelLink()).thenReturn(new ItemChannelLink(testItemName, testChannelUID));
         when(mockContext.getExecutorService()).thenReturn(mockScheduler);
         when(mockContext.getConfiguration()).thenReturn(config);
-        when(mockItemRegistry.get(any(String.class))).thenReturn(testItem);
-        when(mockThingRegistry.getChannel(any(ChannelUID.class))).thenReturn(testChannel);
+        when(mockLinkRegistry.getLinks(any(String.class))).thenReturn(Set.of(testLink));
 
-        return new InactivityProfile(mockCallback, mockContext, mockItemRegistry, mockThingRegistry);
+        return new InactivityProfile(mockCallback, mockContext, mockLinkRegistry);
     }
 
     public static Stream<Arguments> testInactivityProfile() {
@@ -127,7 +120,7 @@ class InactivityProfileTest {
          */
         reset(mockCallback);
         reset(mockScheduler);
-        when(mockItemRegistry.get(any(String.class))).thenReturn(null);
+        when(mockLinkRegistry.getLinks(any(String.class))).thenReturn(Set.of());
 
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
