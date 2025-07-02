@@ -44,13 +44,13 @@ import org.openhab.core.types.State;
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-class InactivityProfileTest2 {
+class InactivityProfileTest {
 
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
     private @NonNullByDefault({}) @Mock ScheduledExecutorService mockScheduler;
 
-    private InactivityProfile initInactivityProfile(String timeout, @Nullable String inverted) {
+    private InactivityProfile initInactivityProfile(String timeout, @Nullable Boolean inverted) {
         Configuration config = new Configuration();
         config.put("timeout", timeout);
         if (inverted != null) {
@@ -69,16 +69,20 @@ class InactivityProfileTest2 {
 
     public static Stream<Arguments> testInactivityProfile() {
         return Stream.of( //
+                Arguments.of(null, null, 3600000, OnOffType.OFF), //
+                Arguments.of("", null, 3600000, OnOffType.OFF), //
+                Arguments.of("5", null, 5000, OnOffType.OFF), //
                 Arguments.of("500ms", null, 500, OnOffType.OFF), //
-                Arguments.of("500ms", "false", 500, OnOffType.OFF), //
-                Arguments.of("5s", "false", 5000, OnOffType.OFF), //
-                Arguments.of("1h", "true", 3600000, OnOffType.ON));
+                Arguments.of("500ms", false, 500, OnOffType.OFF), //
+                Arguments.of("5s", false, 5000, OnOffType.OFF), //
+                Arguments.of("1h", true, 3600000, OnOffType.ON));
     }
 
     @ParameterizedTest
     @MethodSource
     @Order(1)
-    public void testInactivityProfile(String timeout, String inverted, long expectedMilliSeconds, State expectedState) {
+    public void testInactivityProfile(String timeout, Boolean inverted, long expectedMilliSeconds,
+            State expectedState) {
         InactivityProfile profile = initInactivityProfile(timeout, inverted);
 
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
@@ -88,7 +92,7 @@ class InactivityProfileTest2 {
 
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
-        verify(mockCallback, times(2)).sendUpdate(expectedState);
+        verify(mockCallback, times(1)).sendUpdate(expectedState);
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
 
@@ -110,7 +114,7 @@ class InactivityProfileTest2 {
     public void testGarbageCleanerCleanup() {
         assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
         @SuppressWarnings("unused")
-        InactivityProfile profile = initInactivityProfile("1 h", "false");
+        InactivityProfile profile = initInactivityProfile("1h", false);
         profile = null;
         System.gc();
         try {

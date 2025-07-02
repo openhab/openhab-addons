@@ -30,7 +30,6 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.openhab.transform.basicprofiles.internal.config.InactivityProfileConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +95,7 @@ public class InactivityProfile implements StateProfile, AutoCloseable {
         }
 
         this.timeout = timeout;
-        onStateUpdateFromHandler(UnDefType.NULL); // dummy to set initial item state
+        rescheduleTimeoutTask();
     }
 
     private Duration parseDuration(String timeOrDuration) throws IllegalArgumentException {

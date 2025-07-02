@@ -347,17 +347,17 @@ The purpose is to indicate an alarm condition if the binding is no longer provid
 
 | Configuration Parameter | Type    | Description                                                                                                                                                                                                                                                                      |
 |-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `timeout`               | text    | The time out after which the profile will set the state of the item if the binding provides no updates. It uses the same format as the [expire` parameter]( https://www.openhab.org/docs/configuration/items)                                                                    |
+| `timeout`               | text    | The time out after which the profile will set the state of the item if the binding provides no updates. It uses the same format as the [expire parameter]( https://www.openhab.org/docs/configuration/items)                                                                     |
 | `inverted`              | boolean | Optional. When `false` (the default), the item's state is initially set to `OFF`, and when the binding provided no data within the timeout period, the item's state is updated to `ON`. When `inverted` is set to `true`, the initial state and the timeout states are inverted. |
 
 ### Inactivity Profile Example
 
 ```java
 Switch myChannelInactivityStatus {
-  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="60 min" ]
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="60m" ]
 }
 
 Switch myChannelActivityStatus {
-  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1 d", inverted=true ]
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1d", inverted=true ]
 }
 ```
