@@ -411,12 +411,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             mediaEntry.registerEntry("Categories", () -> {
                 return new MediaCollection("Categories", "Categories", "/static/Categories.png");
             });
-
-            mediaEntry.registerEntry("Search", () -> {
-                MediaSearchResult searchResult = new MediaSearchResult("Search", "Search");
-                return searchResult;
-            });
-
         } else if ("Playlists".equals(mediaEntry.getKey())) {
             List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
             RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
@@ -477,7 +471,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         } else if (mediaEntry instanceof MediaSearchResult) {
             MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
 
-            ApiSearchResult apiSearchResult = spotifyApi.search(searchQuery, 0, 30);
+            ApiSearchResult apiSearchResult = spotifyApi.search(searchResult.getSearchQuery(), 0, 30);
 
             MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");
@@ -523,12 +517,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             RegisterCollections(mediaEpisodes, apiSearchResult.episodes.getItems(), MediaTrack.class);
             RegisterCollections(mediaAudiobooks, apiSearchResult.audiobooks.getItems(), MediaTrack.class);
         }
-    }
-
-    private String searchQuery = "aa";
-
-    public void Search(String searchQuery) {
-        this.searchQuery = searchQuery;
     }
 
     private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
