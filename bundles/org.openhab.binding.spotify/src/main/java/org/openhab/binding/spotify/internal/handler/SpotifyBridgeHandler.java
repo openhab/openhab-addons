@@ -64,8 +64,7 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.MediaCommandType;
-import org.openhab.core.library.types.MediaType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -733,13 +732,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(lastKnownDeviceActive));
         updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
 
-        MediaType mediaType = new MediaType(playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE,
-                MediaCommandType.NONE, "param", new StringType(lastKnownDeviceId),
+        MediaStateType mediaStateType = new MediaStateType(
+                playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE, new StringType(lastKnownDeviceId),
                 new StringType(SpotifyBindingConstants.BINDING_ID));
 
-        mediaType.setCurrentPlayingPosition(playerInfo.getProgressMs());
+        mediaStateType.setCurrentPlayingPosition(playerInfo.getProgressMs());
 
-        updateChannelState(CHANNEL_TRACKPLAYER, mediaType);
+        updateChannelState(CHANNEL_TRACKPLAYER, mediaStateType);
 
         updateChannelState(CHANNEL_DEVICESHUFFLE, OnOffType.from(playerInfo.isShuffleState()));
         updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
