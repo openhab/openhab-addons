@@ -54,6 +54,7 @@ import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSearchResult;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Channel;
@@ -234,10 +235,12 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         // TODO Auto-generated method stub
         boolean browse = true;
         currentMediaEntry = mediaEntry;
-        if (mediaEntry instanceof MediaSource) {
+        if (mediaEntry instanceof MediaSource || mediaEntry instanceof MediaSearchResult
+                || mediaEntry.getPath().indexOf("/Root/Search") >= 0) {
             browse = false;
 
         }
+
         if (browse) {
             String browseTarget = "";
 
