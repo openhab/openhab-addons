@@ -22,8 +22,8 @@ import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandEnumType;
 import org.openhab.core.library.types.MediaCommandType;
-import org.openhab.core.library.types.MediaType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -181,9 +181,9 @@ class SpotifyHandleCommands {
                 spotifyApi.previous(deviceId);
             }
             return true;
-        } else if (command instanceof MediaType) {
-            MediaType mediaType = (MediaType) command;
-            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+        } else if (command instanceof MediaCommandType) {
+            MediaCommandType mediaType = (MediaCommandType) command;
+            MediaCommandEnumType mediaTypeCommand = mediaType.getCommand();
             String param = mediaType.getParam().toFullString();
             String targetDevice = mediaType.getDevice().toFullString().isEmpty() ? deviceId
                     : mediaType.getDevice().toFullString();
@@ -193,16 +193,16 @@ class SpotifyHandleCommands {
                 param = param.substring(px + 1);
             }
 
-            if (mediaTypeCommand == MediaCommandType.VOLUME) {
+            if (mediaTypeCommand == MediaCommandEnumType.VOLUME) {
                 String newVolume = mediaType.getParam().toFullString();
                 logger.info("newVolume:" + newVolume);
                 spotifyApi.setVolume(deviceId, Integer.parseInt(newVolume));
-            } else if (mediaTypeCommand == MediaCommandType.SEARCH) {
+            } else if (mediaTypeCommand == MediaCommandEnumType.SEARCH) {
                 String searchQuery = mediaType.getParam().toFullString();
                 logger.info("Search Query:" + searchQuery);
                 // bridgeHandler.Search(searchQuery);
 
-            } else if (mediaTypeCommand == MediaCommandType.DEVICE) {
+            } else if (mediaTypeCommand == MediaCommandEnumType.DEVICE) {
                 final boolean play = true;
 
                 if (!active || targetDevice.isEmpty()) {
@@ -214,9 +214,9 @@ class SpotifyHandleCommands {
                 } else {
                     spotifyApi.transferPlay(targetDevice, play);
                 }
-            } else if (mediaTypeCommand == MediaCommandType.PLAY) {
+            } else if (mediaTypeCommand == MediaCommandEnumType.PLAY) {
                 spotifyApi.playTrack(targetDevice, param, 0, 0);
-            } else if (mediaTypeCommand == MediaCommandType.ENQUEUE) {
+            } else if (mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
                 spotifyApi.queueTrack(targetDevice, param, 0, 0);
             }
             return true;

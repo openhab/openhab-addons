@@ -20,8 +20,7 @@ import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
-import org.openhab.core.library.types.MediaCommandType;
-import org.openhab.core.library.types.MediaType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -133,21 +132,21 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
             // updateChannelState(CHANNEL_DEVICEPLAYER,
             // online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
-            MediaType mediaType = new MediaType(online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE,
-                    MediaCommandType.NONE, "param", new StringType(deviceId),
+            MediaStateType mediaStateType = new MediaStateType(
+                    online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE, new StringType(deviceId),
                     new StringType(SpotifyBindingConstants.BINDING_ID));
 
             final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
             final CurrentlyPlayingContext playingContext = bridgeHandler.getCurrentlyPlayingContext();
 
-            mediaType.setCurrentPlayingPosition(playingContext.getProgressMs());
-            mediaType.setCurrentPlayingTrackDuration(playingContext.getItem().getDurationMs());
-            mediaType.setCurrentPlayingTrackName(playingContext.getItem().getName());
-            mediaType.setCurrentPlayingArtistName(playingContext.getItem().getArtists().getFirst().getName());
-            mediaType.setCurrentPlayingArtUri(playingContext.getItem().getAlbum().getImages().getFirst().getUrl());
-            mediaType.setCurrentPlayingVolume(device.getVolumePercent());
+            mediaStateType.setCurrentPlayingPosition(playingContext.getProgressMs());
+            mediaStateType.setCurrentPlayingTrackDuration(playingContext.getItem().getDurationMs());
+            mediaStateType.setCurrentPlayingTrackName(playingContext.getItem().getName());
+            mediaStateType.setCurrentPlayingArtistName(playingContext.getItem().getArtists().getFirst().getName());
+            mediaStateType.setCurrentPlayingArtUri(playingContext.getItem().getAlbum().getImages().getFirst().getUrl());
+            mediaStateType.setCurrentPlayingVolume(device.getVolumePercent());
 
-            updateChannelState(CHANNEL_DEVICEPLAYER, mediaType);
+            updateChannelState(CHANNEL_DEVICEPLAYER, mediaStateType);
             return true;
         } else {
             return false;
