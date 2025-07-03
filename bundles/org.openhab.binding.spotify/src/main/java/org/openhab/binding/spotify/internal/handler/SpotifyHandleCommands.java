@@ -200,7 +200,7 @@ class SpotifyHandleCommands {
             } else if (mediaTypeCommand == MediaCommandType.SEARCH) {
                 String searchQuery = mediaType.getParam().toFullString();
                 logger.info("Search Query:" + searchQuery);
-                bridgeHandler.Search(searchQuery);
+                // bridgeHandler.Search(searchQuery);
 
             } else if (mediaTypeCommand == MediaCommandType.DEVICE) {
                 final boolean play = true;
