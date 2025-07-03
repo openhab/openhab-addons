@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.fronius.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FroniusBaseDeviceConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class FroniusBaseDeviceConfiguration {
-    public Integer deviceId;
+    public int deviceId = 1;
 }
