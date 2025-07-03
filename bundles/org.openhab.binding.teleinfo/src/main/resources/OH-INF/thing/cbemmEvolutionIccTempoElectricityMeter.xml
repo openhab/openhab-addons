@@ -15,23 +15,23 @@
 			Monophasé Multitarif Evolution ICC")</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
-			<channel id="isousc" typeId="isouscType"/>
-			<channel id="ptec" typeId="ptecType"/>
-			<channel id="imax" typeId="imaxType"/>
-			<channel id="adps" typeId="adpsType"/>
-			<channel id="papp" typeId="pappType"/>
-			<channel id="iinst" typeId="iinstType"/>
-			<channel id="bbrhpjr" typeId="bbrhpjrType"/>
-			<channel id="bbrhcjr" typeId="bbrhcjrType"/>
-			<channel id="bbrhpjw" typeId="bbrhpjwType"/>
-			<channel id="bbrhcjw" typeId="bbrhcjwType"/>
-			<channel id="bbrhpjb" typeId="bbrhpjbType"/>
-			<channel id="bbrhcjb" typeId="bbrhcjbType"/>
-			<channel id="demain" typeId="couleurDemainType"/>
-			<channel id="hhphc" typeId="hhphcType"/>
-			<channel id="programmeCircuit1" typeId="programmeCircuit1Type"/>
-			<channel id="programmeCircuit2" typeId="programmeCircuit2Type"/>
-			<channel id="lastUpdate" typeId="lastUpdateType"/>
+			<channel id="isousc" typeId="isousc"/>
+			<channel id="ptec" typeId="ptec"/>
+			<channel id="imax" typeId="imax"/>
+			<channel id="adps" typeId="adps"/>
+			<channel id="papp" typeId="papp"/>
+			<channel id="iinst" typeId="iinst"/>
+			<channel id="bbrhpjr" typeId="bbrhpjr"/>
+			<channel id="bbrhcjr" typeId="bbrhcjr"/>
+			<channel id="bbrhpjw" typeId="bbrhpjw"/>
+			<channel id="bbrhcjw" typeId="bbrhcjw"/>
+			<channel id="bbrhpjb" typeId="bbrhpjb"/>
+			<channel id="bbrhcjb" typeId="bbrhcjb"/>
+			<channel id="demain" typeId="couleurDemain"/>
+			<channel id="hhphc" typeId="hhphc"/>
+			<channel id="programmeCircuit1" typeId="programmeCircuit1"/>
+			<channel id="programmeCircuit2" typeId="programmeCircuit2"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>

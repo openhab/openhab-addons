@@ -15,16 +15,16 @@
 			Multitarif")</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
-			<channel id="isousc" typeId="isouscType"/>
-			<channel id="ptec" typeId="ptecType"/>
-			<channel id="imax" typeId="imaxType"/>
-			<channel id="adps" typeId="adpsType"/>
-			<channel id="papp" typeId="pappType"/>
-			<channel id="iinst" typeId="iinstType"/>
-			<channel id="pejp" typeId="pejpType"/>
-			<channel id="ejphpm" typeId="ejphpmType"/>
-			<channel id="ejphn" typeId="ejphnType"/>
-			<channel id="lastUpdate" typeId="lastUpdateType"/>
+			<channel id="isousc" typeId="isousc"/>
+			<channel id="ptec" typeId="ptec"/>
+			<channel id="imax" typeId="imax"/>
+			<channel id="adps" typeId="adps"/>
+			<channel id="papp" typeId="papp"/>
+			<channel id="iinst" typeId="iinst"/>
+			<channel id="pejp" typeId="pejp"/>
+			<channel id="ejphpm" typeId="ejphpm"/>
+			<channel id="ejphn" typeId="ejphn"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>
