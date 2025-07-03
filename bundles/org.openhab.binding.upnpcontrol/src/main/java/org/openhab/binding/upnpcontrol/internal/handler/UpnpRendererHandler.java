@@ -55,8 +55,9 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandEnumType;
 import org.openhab.core.library.types.MediaCommandType;
-import org.openhab.core.library.types.MediaType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -802,20 +803,21 @@ public class UpnpRendererHandler extends UpnpHandler {
                 pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
-        } else if (command instanceof MediaType) {
-            MediaType mediaType = (MediaType) command;
-            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+        } else if (command instanceof MediaCommandType) {
+            MediaCommandType mediaType = (MediaCommandType) command;
+            MediaCommandEnumType mediaTypeCommand = mediaType.getCommand();
             String val = mediaType.getParam().toFullString();
 
             logger.debug(val);
 
-            if (mediaTypeCommand == MediaCommandType.VOLUME) {
+            if (mediaTypeCommand == MediaCommandEnumType.VOLUME) {
 
                 soundVolume = new PercentType(val);
                 setVolume(soundVolume);
 
                 updateControlState();
-            } else if (mediaTypeCommand == MediaCommandType.PLAY || mediaTypeCommand == MediaCommandType.ENQUEUE) {
+            } else if (mediaTypeCommand == MediaCommandEnumType.PLAY
+                    || mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
                 int idx = val.indexOf("/l");
                 val = val.substring(idx);
 
@@ -1673,20 +1675,19 @@ public class UpnpRendererHandler extends UpnpHandler {
             state = PlayPauseType.PAUSE;
         }
 
-        MediaType mType = new MediaType(state, MediaCommandType.NONE, "param",
-                new StringType(this.getThing().getUID().getId()),
+        MediaStateType mediaStateType = new MediaStateType(state, new StringType(this.getThing().getUID().getId()),
                 new StringType(UpnpControlBindingConstants.BINDING_ID));
 
-        mType.setCurrentPlayingPosition(trackPosition * 1000.00);
-        mType.setCurrentPlayingTrackDuration(trackDuration * 1000.00);
-        mType.setCurrentPlayingArtistName(artistName);
-        mType.setCurrentPlayingTrackName(trackName);
-        mType.setCurrentPlayingArtUri(artUri);
-        mType.setCurrentPlayingVolume(getCurrentVolume().doubleValue());
-        updateState(CONTROL, mType);
+        mediaStateType.setCurrentPlayingPosition(trackPosition * 1000.00);
+        mediaStateType.setCurrentPlayingTrackDuration(trackDuration * 1000.00);
+        mediaStateType.setCurrentPlayingArtistName(artistName);
+        mediaStateType.setCurrentPlayingTrackName(trackName);
+        mediaStateType.setCurrentPlayingArtUri(artUri);
+        mediaStateType.setCurrentPlayingVolume(getCurrentVolume().doubleValue());
+        updateState(CONTROL, mediaStateType);
     }
 
-    private void MediaType(MediaType mediaType) {
+    private void MediaType(MediaCommandType mediaType) {
         // TODO Auto-generated method stub
 
     }

@@ -44,8 +44,9 @@ import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.library.types.MediaCommandEnumType;
 import org.openhab.core.library.types.MediaCommandType;
-import org.openhab.core.library.types.MediaType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.media.MediaListenner;
@@ -366,12 +367,12 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} for channel {} on server {}", command, channelUID, thing.getLabel());
 
-        if (command instanceof MediaType) {
-            MediaType mediaType = (MediaType) command;
-            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+        if (command instanceof MediaCommandType) {
+            MediaCommandType mediaType = (MediaCommandType) command;
+            MediaCommandEnumType mediaTypeCommand = mediaType.getCommand();
             String device = mediaType.getDevice().toFullString();
 
-            if (mediaTypeCommand == MediaCommandType.DEVICE) {
+            if (mediaTypeCommand == MediaCommandEnumType.DEVICE) {
                 StringType st = new StringType("upnpcontrol:upnprenderer:" + device);
                 Channel chan = this.thing.getChannel(UpnpControlBindingConstants.UPNPRENDERER);
 
@@ -662,7 +663,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         Channel channel;
         if ((handler != null) && (channel = handler.getThing().getChannel(channelId)) != null) {
         } else if (channelId.equals(CONTROL)) {
-            updateState(channelId, new MediaType(PlayPauseType.NONE, MediaCommandType.NONE, "", new StringType(""),
+            updateState(channelId, new MediaStateType(PlayPauseType.NONE, new StringType(""),
                     new StringType(UpnpControlBindingConstants.BINDING_ID)));
         } else if (!STOP.equals(channelId)) {
             updateState(channelId, UnDefType.UNDEF);
