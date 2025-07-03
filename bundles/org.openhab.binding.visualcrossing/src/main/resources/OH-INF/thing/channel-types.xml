@@ -1990,8 +1990,8 @@
 			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
