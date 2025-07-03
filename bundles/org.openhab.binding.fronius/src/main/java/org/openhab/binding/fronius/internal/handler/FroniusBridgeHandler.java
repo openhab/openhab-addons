@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
-    private static final int DEFAULT_REFRESH_PERIOD = 10;
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -70,12 +69,12 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         String errorMsg = null;
 
         String hostname = config.hostname;
-        if (hostname == null || hostname.isBlank()) {
+        if (hostname.isBlank()) {
             errorMsg = "Parameter 'hostname' is mandatory and must be configured";
             validConfig = false;
         }
 
-        if (config.refreshInterval != null && config.refreshInterval <= 0) {
+        if (config.refreshInterval <= 0) {
             errorMsg = "Parameter 'refresh' must be at least 1 second";
             validConfig = false;
         }
@@ -150,8 +149,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
                 }
             };
 
-            int delay = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, delay, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, config.refreshInterval, TimeUnit.SECONDS);
         }
     }
 
