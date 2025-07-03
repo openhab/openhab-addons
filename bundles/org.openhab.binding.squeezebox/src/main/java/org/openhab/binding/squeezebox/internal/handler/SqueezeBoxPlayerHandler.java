@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
@@ -164,8 +165,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             squeezeBoxServerHandler.requestPlayers();
         }
 
-        mediaService.registerDevice(
-                new MediaDevice("" + this.getThing().getLabel(), "" + this.getThing().getLabel(), "", "Squeezebox"));
+        mediaService.registerDevice(new MediaDevice("" + this.getThing().getLabel(), "" + this.getThing().getLabel(),
+                "", SqueezeBoxBindingConstants.BINDING_ID));
     }
 
     @Override
