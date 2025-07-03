@@ -15,7 +15,7 @@ package org.openhab.binding.teleinfo.internal.types;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Define the evolution option values
+ * Define the different possible meter types
  *
  * @author Laurent Arnal - Initial contribution
  *

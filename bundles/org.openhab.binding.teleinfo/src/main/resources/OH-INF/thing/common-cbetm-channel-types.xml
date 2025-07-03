@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="frameTypeType" advanced="true">
+	<channel-type id="frame" advanced="true">
 		<item-type>String</item-type>
 		<label>frameType</label>
 		<description>frameType</description>
@@ -17,7 +17,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="iinst1Type">
+	<channel-type id="iinst1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST1</label>
 		<description>Instantaneous electric current on phase 1</description>
@@ -29,7 +29,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="iinst2Type">
+	<channel-type id="iinst2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST2</label>
 		<description>Instantaneous electric current on phase 2</description>
@@ -41,7 +41,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="iinst3Type">
+	<channel-type id="iinst3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST3</label>
 		<description>Instantaneous electric current on phase 3</description>
@@ -53,7 +53,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="imax1Type">
+	<channel-type id="imax1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX1</label>
 		<description>Maximum consumed electric current on phase 1</description>
@@ -65,7 +65,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="imax2Type">
+	<channel-type id="imax2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX2</label>
 		<description>Maximum consumed electric current on phase 2</description>
@@ -77,7 +77,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="imax3Type">
+	<channel-type id="imax3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX3</label>
 		<description>Maximum consumed electric current on phase 3</description>
@@ -89,7 +89,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pmaxType">
+	<channel-type id="pmax">
 		<item-type>Number:Power</item-type>
 		<label>PMAX</label>
 		<description>Maximum consumed electric power on all phases</description>
@@ -101,7 +101,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pappType">
+	<channel-type id="papp">
 		<item-type>Number:Power</item-type>
 		<label>PAPP</label>
 		<description>Instantaneous apparent power</description>
@@ -113,7 +113,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ppotType">
+	<channel-type id="ppot">
 		<item-type>String</item-type>
 		<label>PPOT</label>
 		<description>Electrical potential presence</description>
@@ -121,7 +121,7 @@
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="adir1Type">
+	<channel-type id="adir1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADIR1</label>
 		<description>Excess electric current on phase 1 warning</description>
@@ -129,7 +129,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="adir2Type">
+	<channel-type id="adir2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADIR2</label>
 		<description>Excess electric current on phase 2 warning</description>
@@ -137,7 +137,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="adir3Type">
+	<channel-type id="adir3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADIR3</label>
 		<description>Excess electric current on phase 3 warning</description>
