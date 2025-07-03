@@ -433,12 +433,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
-        mediaService.addMediaListenner("Lyrion", this);
+        mediaService.addMediaListenner(SqueezeBoxBindingConstants.BINDING_ID, this);
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
 
-        MediaSource mediaSource = mediaRegistry.registerEntry("Lyrion", () -> {
-            return new MediaSource("Lyrion", "Lyrion", "/static/Lyrion.png");
+        MediaSource mediaSource = mediaRegistry.registerEntry(SqueezeBoxBindingConstants.BINDING_ID, () -> {
+            return new MediaSource(SqueezeBoxBindingConstants.BINDING_ID, SqueezeBoxBindingConstants.BINDING_LABEL,
+                    "/static/Lyrion.png");
         });
 
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
@@ -447,7 +448,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
     @Override
     public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
-        if (mediaEntry.getKey().equals("Lyrion")) {
+        if (mediaEntry.getKey().equals(SqueezeBoxBindingConstants.BINDING_ID)) {
             MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
                 return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
             });
