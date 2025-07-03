@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Define the evolution option values
+ * Define the different Meter manufacturer
  *
  * @author Laurent Arnal - Initial contribution
  *

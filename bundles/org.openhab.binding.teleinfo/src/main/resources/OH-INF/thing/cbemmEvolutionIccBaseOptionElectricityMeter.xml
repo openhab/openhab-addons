@@ -14,14 +14,14 @@
 			Monophasé Multitarif Evolution ICC")</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
-			<channel id="isousc" typeId="isouscType"/>
-			<channel id="ptec" typeId="ptecType"/>
-			<channel id="imax" typeId="imaxType"/>
-			<channel id="adps" typeId="adpsType"/>
-			<channel id="papp" typeId="pappType"/>
-			<channel id="iinst" typeId="iinstType"/>
-			<channel id="lastUpdate" typeId="lastUpdateType"/>
-			<channel id="base" typeId="baseType"/>
+			<channel id="isousc" typeId="isousc"/>
+			<channel id="ptec" typeId="ptec"/>
+			<channel id="imax" typeId="imax"/>
+			<channel id="adps" typeId="adps"/>
+			<channel id="papp" typeId="papp"/>
+			<channel id="iinst" typeId="iinst"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="base" typeId="base"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>

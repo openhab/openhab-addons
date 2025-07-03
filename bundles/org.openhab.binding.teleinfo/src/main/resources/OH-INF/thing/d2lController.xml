@@ -9,7 +9,7 @@
 		<description>Teleinfo D2L dongle with Wifi Interface</description>
 
 		<channels>
-			<channel id="invalidFrameCounter" typeId="invalidFrameCounterType"/>
+			<channel id="invalidFrameCounter" typeId="invalidFrameCounter"/>
 		</channels>
 
 		<config-description>
@@ -18,7 +18,7 @@
 				<description>The tcp port we receive data from d2l</description>
 			</parameter>
 			<parameter name="ticMode" type="text" required="true">
-				<label>TIC mode</label>
+				<label>TIC Mode</label>
 				<description>TIC Mode of the telemeter (Standard TIC mode is only available on Linky telemeters)</description>
 				<default>HISTORICAL</default>
 				<options>
@@ -44,11 +44,10 @@
 	</bridge-type>
 
 
-	<channel-type id="invalidFrameCounterType">
+	<channel-type id="invalidFrameCounter">
 		<item-type>Number</item-type>
 		<label>Frames Corrupted</label>
 		<description>Counter tracking the number of frames invalid/corrupted (checksum)</description>
-		<category></category>
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 
