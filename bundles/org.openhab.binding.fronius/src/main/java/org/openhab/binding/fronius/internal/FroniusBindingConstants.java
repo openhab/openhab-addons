@@ -104,6 +104,7 @@ public class FroniusBindingConstants {
     public static final String OHMPILOT_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
 
     public static final int API_TIMEOUT = 5000;
+    public static final int DEFAULT_REFRESH_PERIOD = 10;
 
     public static String getInverterDataUrl(String ip, int deviceId) {
         return parseUrl(INVERTER_REALTIME_DATA_URL, ip, deviceId);
