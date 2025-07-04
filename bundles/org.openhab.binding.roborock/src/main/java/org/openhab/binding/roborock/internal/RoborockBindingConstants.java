@@ -60,6 +60,8 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_MOP_DRYING = "status#is_mop_drying";
     public static final String CHANNEL_MOP_TOTAL_DRYTIME = "status#mop_drying_time";
 
+    public static final String CHANNEL_ROUTINES = "info#routine_mapping";
+
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
     public static final String CHANNEL_RPC = "actions#rpc";
@@ -68,6 +70,7 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
     public static final String CHANNEL_TESTMIOT = "actions#testmiot";
     public static final String CHANNEL_POWER = "actions#power";
+    public static final String CHANNEL_ROUTINE = "actions#routine";
 
     public static final String CHANNEL_SSID = "network#ssid";
     public static final String CHANNEL_BSSID = "network#bssid";
@@ -91,8 +94,6 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_HISTORY_TOTALTIME = "history#total_clean_time";
     public static final String CHANNEL_HISTORY_TOTALAREA = "history#total_clean_area";
     public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
-
-    public static final String CHANNEL_MOP_TOTALDRYTIME = "status#mop_drying_time";
 
     public static final String CHANNEL_HISTORY_START_TIME = "cleaning#last_clean_start_time";
     public static final String CHANNEL_HISTORY_END_TIME = "cleaning#last_clean_end_time";

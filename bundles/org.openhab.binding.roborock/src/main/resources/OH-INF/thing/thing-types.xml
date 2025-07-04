@@ -69,6 +69,7 @@
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
 			<channel id="segment" typeId="segment"/>
+			<channel id="routine" typeId="routine"/>
 		</channels>
 	</channel-group-type>
 
@@ -141,6 +142,7 @@
 		<channels>
 			<channel id="multi_maps_list" typeId="multi_maps_list"/>
 			<channel id="room_mapping" typeId="room_mapping"/>
+			<channel id="routine_mapping" typeId="routine_mapping"/>
 			<channel id="fw_features" typeId="fw_features"/>
 			<channel id="customize_clean_mode" typeId="customize_clean_mode"/>
 			<channel id="carpet_mode" typeId="carpet_mode"/>
@@ -152,7 +154,6 @@
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="bssid" typeId="bssid"/>
 			<channel id="rssi" typeId="rssi"/>
-			<channel id="life" typeId="life"/>
 		</channels>
 	</channel-group-type>
 
@@ -388,6 +389,10 @@
 		<item-type>String</item-type>
 		<label>Vacuum Room [room#]</label>
 	</channel-type>
+	<channel-type id="routine" advanced="true">
+		<item-type>String</item-type>
+		<label>Vacuum Routine [routine#]</label>
+	</channel-type>
 
 	<channel-type id="consumable_reset">
 		<item-type>String</item-type>
@@ -500,6 +505,11 @@
 		<label>Room Mapping</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="routine_mapping" advanced="true">
+		<item-type>String</item-type>
+		<label>Routine Mapping</label>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="multi_maps_list" advanced="true">
 		<item-type>String</item-type>
 		<label>Multi Map List</label>
@@ -528,11 +538,6 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="life" advanced="true">
-		<item-type>Number</item-type>
-		<label>Life</label>
 		<state readOnly="true"/>
 	</channel-type>
 

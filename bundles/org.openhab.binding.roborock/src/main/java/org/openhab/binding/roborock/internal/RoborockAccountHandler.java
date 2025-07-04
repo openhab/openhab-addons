@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
@@ -31,7 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -96,6 +96,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private String token = "";
     private String rrHomeId = "";
     private Rriot rriot = new Login().new Rriot();
+    private SecureRandom secureRandom = new SecureRandom();
 
     /** The file we store definitions in */
     private final File loginFile = new File(RoborockBindingConstants.FILENAME_LOGINDATA);
@@ -173,9 +174,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public String getRoutines(String rrHomeId, Rriot rriot) {
+    public String getRoutines(String deviceId, Rriot rriot) {
         try {
-            return webTargets.getRoutines(rrHomeId, rriot);
+            return webTargets.getRoutines(deviceId, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
@@ -184,6 +185,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error " + e.getMessage());
             return new String();
+        }
+    }
+
+    public void setRoutine(String sceneID, Rriot rriot) {
+        try {
+            webTargets.setRoutine(sceneID, rriot);
+        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Authentication error " + e.getMessage());
+        } catch (RoborockCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error " + e.getMessage());
         }
     }
 
@@ -432,8 +445,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
-        Random random = new Random();
-        int id = random.nextInt(22767 + 1) + 10000;
+        int id = secureRandom.nextInt(22767 + 1) + 10000;
 
         StringBuffer hexStringBuffer = new StringBuffer();
         for (int i = 0; i < nonce.length; i++) {
@@ -482,9 +494,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             String key = ProtocolUtils.encodeTimestamp(timestamp) + localKey + SALT;
             byte[] encrypted = ProtocolUtils.encrypt(payload, key);
 
-            Random random = new Random();
-            int randomInt = random.nextInt(90000) + 10000;
-            int seq = random.nextInt(900000) + 100000;
+            int randomInt = secureRandom.nextInt(90000) + 10000;
+            int seq = secureRandom.nextInt(900000) + 100000;
 
             int totalLength = 23 + encrypted.length;
             byte[] msg = new byte[totalLength];
