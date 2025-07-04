@@ -106,10 +106,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cos Phi</label>
 		<description>AC Power Factor</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="device-local-ac-frequency">
@@ -1063,10 +1059,6 @@
 		<label>Grid Cos Phi</label>
 		<description>Current power factor on grid</description>
 		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-home-consumption-day">

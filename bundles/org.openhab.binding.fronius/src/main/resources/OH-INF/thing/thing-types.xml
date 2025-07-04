@@ -459,10 +459,6 @@
 	<channel-type id="meter_powerfactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_energy">
