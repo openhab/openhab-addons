@@ -346,10 +346,11 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (dp != null && dp.getChannel().getDevice().isOffline()) {
                 logger.warn("Device '{}' is OFFLINE, can't send command '{}' for channel '{}'",
                         dp.getChannel().getDevice().getAddress(), command, channelUID);
-                logger.trace("{}", ex.getMessage(), ex);
             } else {
-                logger.error("{}", ex.getMessage(), ex);
+                logger.error("Sending command '{}' for channel '{}' to device '{}' failed: {}", command, channelUID,
+                        dp.getChannel().getDevice().getAddress(), ex.getMessage());
             }
+            logger.trace("{}", ex.getMessage(), ex);
         } catch (ConverterTypeException ex) {
             logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
         } catch (Exception ex) {
