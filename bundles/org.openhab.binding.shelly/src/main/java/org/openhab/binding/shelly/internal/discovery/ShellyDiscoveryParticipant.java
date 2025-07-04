@@ -97,10 +97,6 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (!name.startsWith("shelly")) {
             return null;
         }
-        if (name.contains(" ")) { // fw 1.6.x also announces the configured device name, which could include inv. chars
-            logger.debug("{}: serviceName contains invalid characters, ignore", name);
-            return null;
-        }
 
         try {
             String address = "";
