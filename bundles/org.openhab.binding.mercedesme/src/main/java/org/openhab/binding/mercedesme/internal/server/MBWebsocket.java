@@ -13,8 +13,6 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -70,7 +68,6 @@ public class MBWebsocket {
     private Instant runTill = Instant.now();
     private @Nullable Session session;
     private List<ClientMessage> commandQueue = new ArrayList<>();
-    private List<File> fileDumps = new ArrayList<>();
 
     private boolean keepAlive = false;
 
@@ -182,10 +179,6 @@ public class MBWebsocket {
      */
     public void dispose() {
         interrupt();
-        fileDumps.forEach(file -> {
-            file.delete();
-        });
-        fileDumps.clear();
     }
 
     public void keepAlive(boolean b) {
@@ -234,23 +227,6 @@ public class MBWebsocket {
              */
         } catch (IOException e) {
             logger.warn("IOException decoding message {}", e.getMessage());
-            try {
-                // write max 10 file dumps
-                if (fileDumps.size() >= 10) {
-                    logger.warn("MercedesMe Max File dump exceeded - please report files from {}",
-                            fileDumps.get(0).getCanonicalPath());
-                } else {
-                    String sizeInfo = blob.length + "-" + length + "-" + offset + "-";
-                    File outputFile = File.createTempFile("mercedesme-" + sizeInfo, null);
-                    FileOutputStream outputStream = new FileOutputStream(outputFile);
-                    outputStream.write(blob);
-                    outputStream.close();
-                    fileDumps.add(outputFile);
-                    logger.warn("MercedesMe File dump {}", outputFile.getCanonicalPath());
-                }
-            } catch (IOException e1) {
-                logger.warn("MercedesMe File dump error {}", e1.getMessage());
-            }
         } catch (Error err) {
             logger.warn("Error decoding message {}", err.getMessage());
         }
