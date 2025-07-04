@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link JellyfinClientDiscoveryService} discover Jellyfin clients connected to the server.
  *
- * @author Miguel Alvarez - Initial contribution
+ * @author Miguel Álvarez - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = JellyfinClientDiscoveryService.class)
 @NonNullByDefault
