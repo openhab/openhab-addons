@@ -73,6 +73,10 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -81,6 +85,10 @@
 		<label>Switch State</label>
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
