@@ -8,18 +8,18 @@
 			<property name="thingTypeVersion">2</property>
 		</properties>
 		<instruction-set targetVersion="1">
-			<update-channel id="percent_water_limit_min">
+			<add-channel id="percent_water_limit_min">
 				<type>ecotouch:percent_water_limit_min</type>
-			</update-channel>
-			<update-channel id="percent_water_limit_max">
+			</add-channel>
+			<add-channel id="percent_water_limit_max">
 				<type>ecotouch:percent_water_limit_max</type>
-			</update-channel>
-			<update-channel id="percent_heating_limit_min">
-				<type>ecotouch:percent_heating_limit_min</type>
-			</update-channel>
-			<update-channel id="percent_heating_limit_max">
-				<type>ecotouch:percent_heating_limit_max</type>
-			</update-channel>
+			</updaddate-channel>
+				<add-channel id="percent_heating_limit_min">
+					<type>ecotouch:percent_heating_limit_min</type>
+				</add-channel>
+				<add-channel id="percent_heating_limit_max">
+					<type>ecotouch:percent_heating_limit_max</type>
+				</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
 			<add-channel id="hysteresis_warmwater">
@@ -33,18 +33,18 @@
 			<property name="thingTypeVersion">2</property>
 		</properties>
 		<instruction-set targetVersion="1">
-			<update-channel id="percent_water_limit_min">
+			<add-channel id="percent_water_limit_min">
 				<type>ecotouch:percent_water_limit_min</type>
-			</update-channel>
-			<update-channel id="percent_water_limit_max">
+			</add-channel>
+			<add-channel id="percent_water_limit_max">
 				<type>ecotouch:percent_water_limit_max</type>
-			</update-channel>
-			<update-channel id="percent_heating_limit_min">
+			</add-channel>
+			<add-channel id="percent_heating_limit_min">
 				<type>ecotouch:percent_heating_limit_min</type>
-			</update-channel>
-			<update-channel id="percent_heating_limit_max">
+			</add-channel>
+			<add-channel id="percent_heating_limit_max">
 				<type>ecotouch:percent_heating_limit_max</type>
-			</update-channel>
+			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
 			<add-channel id="hysteresis_warmwater">
