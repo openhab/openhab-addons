@@ -92,7 +92,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
     Optional<AuthService> authService = Optional.empty();
-    final MBWebsocket ws;
+    final MBWebsocket mbWebsocket;
     AccountConfiguration config = new AccountConfiguration();
     @Nullable
     ClientMessage message;
@@ -102,7 +102,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         super(bridge);
         discoveryService = mmds;
         httpClient = hc;
-        ws = new MBWebsocket(this, hc);
+        mbWebsocket = new MBWebsocket(this, hc);
         localeProvider = lp;
         storage = store.getStorage(Constants.BINDING_ID);
     }
@@ -128,7 +128,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void refresh() {
         if (!Constants.NOT_SET.equals(authService.get().getToken())) {
-            ws.run();
+            mbWebsocket.run();
         } else {
             // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
@@ -160,7 +160,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 schedule.cancel(true);
             }
         });
-        ws.interrupt();
+        mbWebsocket.dispose();
         eventQueue.clear();
     }
 
@@ -281,7 +281,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
                         .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                ws.sendAcknowledgeMessage(cm);
+                mbWebsocket.sendAcknowledgeMessage(cm);
             }
         } else if (pm.hasAssignedVehicles()) {
             for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
@@ -290,14 +290,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
             AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
             ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
-            ws.sendAcknowledgeMessage(cm);
+            mbWebsocket.sendAcknowledgeMessage(cm);
         } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
             AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
             commandStatusUpdate(csubv.getUpdatesByVinMap());
             AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN.newBuilder()
                     .setSequenceNumber(csubv.getSequenceNumber()).build();
             ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack).build();
-            ws.sendAcknowledgeMessage(cm);
+            mbWebsocket.sendAcknowledgeMessage(cm);
         } else if (pm.hasApptwinPendingCommandRequest()) {
             AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
             if (!pending.getAllFields().isEmpty()) {
@@ -459,13 +459,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     public void sendCommand(@Nullable ClientMessage cm) {
         if (cm != null) {
-            ws.setCommand(cm);
+            mbWebsocket.setCommand(cm);
         }
         scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
     }
 
     public void keepAlive(boolean b) {
-        ws.keepAlive(b);
+        mbWebsocket.keepAlive(b);
     }
 
     @Override
