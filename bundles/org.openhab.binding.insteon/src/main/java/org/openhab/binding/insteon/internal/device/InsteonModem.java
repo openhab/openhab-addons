@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +61,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         this.modemDB = new ModemDB(this);
         this.dbm = new DatabaseManager(this, scheduler);
         this.linker = new LinkManager(this, scheduler);
-        this.poller = new PollManager(scheduler);
+        this.poller = new PollManager(config.getDevicePollInterval(), scheduler);
         this.requester = new RequestManager(scheduler);
     }
 
@@ -184,7 +183,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         return initialized;
     }
 
-    public void writeMessage(Msg msg) throws IOException {
+    public void writeMessage(Msg msg) {
         port.writeMessage(msg);
     }
 
@@ -196,9 +195,6 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
         port.registerListener(this);
 
-        poller.start();
-        requester.start();
-
         discover();
 
         return true;
@@ -206,20 +202,28 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
     public void disconnect() {
         logger.debug("disconnecting from modem");
-        if (linker.isRunning()) {
-            linker.stop();
-        }
-
-        dbm.stop();
-        port.stop();
         requester.stop();
         poller.stop();
+        linker.stop();
+        dbm.stop();
+        port.stop();
     }
 
     public boolean reconnect() {
         logger.debug("reconnecting to modem");
+        requester.stop();
+        poller.pause();
+        linker.stop();
+        dbm.stop();
         port.stop();
-        return port.start();
+
+        if (!port.start()) {
+            return false;
+        }
+
+        poller.resume();
+
+        return true;
     }
 
     private void discover() {
@@ -235,10 +239,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         try {
             Msg msg = Msg.makeMessage("GetIMInfo");
             writeMessage(msg);
-        } catch (IOException e) {
-            logger.warn("error sending modem info query ", e);
         } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+            logger.warn("error creating message", e);
         }
     }
 
@@ -275,10 +277,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         try {
             Msg msg = Msg.makeMessage("ResetIM");
             writeMessage(msg);
-        } catch (IOException e) {
-            logger.warn("error sending modem reset query", e);
         } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+            logger.warn("error creating message", e);
         }
     }
 
@@ -293,7 +293,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
     public void logDeviceStatistics() {
         logger.debug("devices: {} configured, {} polling, msgs received: {}", getDevices().size(),
-                getPollManager().getSizeOfQueue(), msgsReceived);
+                getPollManager().getPollCount(), msgsReceived);
         msgsReceived = 0;
     }
 
@@ -338,6 +338,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     public void databaseCompleted() {
         logger.debug("modem database completed");
 
+        poller.setDeviceCount(modemDB.getDevices().size());
+
         getDevices().forEach(Device::refresh);
         getScenes().forEach(Scene::refresh);
 
@@ -364,6 +366,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
             return;
         }
         logger.debug("modem database link updated for device {} group {} 2way {}", address, group, is2Way);
+
+        poller.setDeviceCount(modemDB.getDevices().size());
 
         InsteonDevice device = getInsteonDevice(address);
         if (device != null) {
@@ -505,7 +509,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     private void handleMessage(DeviceAddress address, Msg msg) throws FieldException {
         Device device = getDevice(address);
         if (device == null) {
-            logger.debug("unknown device with address {}, dropping message", address);
+            logger.trace("unknown device with address {}, dropping message", address);
         } else if (msg.isReply()) {
             device.requestReplied(msg);
         } else {

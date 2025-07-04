@@ -243,10 +243,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                     logger.debug("{}: sent {} {} request to {}", nm(), feature.getName(), HexUtils.getHexString(value),
                             address);
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -508,10 +506,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                         feature.adjustRelatedDevices(config, cmd);
                     }
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -781,10 +777,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 if (config.isOriginal() && getInsteonDevice().isDeviceSyncEnabled()) {
                     feature.adjustRelatedDevices(config, cmd);
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -1231,10 +1225,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                             HexUtils.getHexString(alwaysOnOffMask), address);
                 }
                 feature.sendRequest(alwaysOnOffMaskMsg);
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
     }
@@ -1302,10 +1294,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                                 HexUtils.getHexString(heartbeatInterval), address);
                     }
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
     }
@@ -1445,10 +1435,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 } else {
                     logger.warn("{}: no d2 parameter specified in command handler", nm());
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -1503,10 +1491,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 } else {
                     logger.warn("{}: no cmd1 field specified", nm());
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
     }
@@ -1541,10 +1527,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 } else {
                     logger.warn("{}: unable to determine op flags command, ignoring request", nm());
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -1594,10 +1578,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                     logger.debug("{}: sent op flag {} request to {}", nm(), entry.getValue(),
                             getInsteonDevice().getAddress());
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -1631,10 +1613,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 } else {
                     logger.warn("{}: got unexpected ramp rate command {}, ignoreing request", nm(), cmd);
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -1765,10 +1745,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                     logger.debug("{}: sent momentary duration multiplier {} request to {}", nm(),
                             HexUtils.getHexString(multiplier), address);
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -2150,10 +2128,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 Msg msg = Msg.makeExtendedMessageCRC2(address, (byte) 0x2E, (byte) 0x02, data);
                 feature.sendRequest(msg);
                 logger.debug("{}: sent set time data request to {}", nm(), address);
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
     }
@@ -2172,10 +2148,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 Msg msg = getIMMessage(cmd);
                 feature.sendRequest(msg);
                 logger.debug("{}: sent {} request to {}", nm(), cmd, getInsteonModem().getAddress());
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 
@@ -2255,10 +2229,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                     feature.sendRequest(msg);
                     logger.debug("{}: sent {} request to {}", nm(), cmd, getInsteonModem().getAddress());
                 }
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
     }
@@ -2281,10 +2253,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 Msg cmdMsg = Msg.makeX10CommandMessage((byte) cmdCode);
                 feature.sendRequest(cmdMsg);
                 logger.debug("{}: sent {} request to {}", nm(), cmd, address);
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("{}: invalid message: ", nm(), e);
-            } catch (FieldException e) {
-                logger.warn("{}: command send message creation error ", nm(), e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("{}: error creating message", nm(), e);
             }
         }
 

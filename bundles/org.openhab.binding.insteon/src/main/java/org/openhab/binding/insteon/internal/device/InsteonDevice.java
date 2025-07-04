@@ -255,14 +255,14 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * @param delay scheduling delay (in milliseconds)
      */
     @Override
-    public void doPoll(long delay) {
+    public void poll(long delay) {
         // process deferred queue
         processDeferredQueue(delay);
         // poll insteon engine if unknown or its feature never queried
         DeviceFeature engineFeature = getFeature(FEATURE_INSTEON_ENGINE);
         if (engineFeature != null
                 && (engine == InsteonEngine.UNKNOWN || engineFeature.getQueryStatus() == QueryStatus.NEVER_QUERIED)) {
-            engineFeature.doPoll(delay);
+            engineFeature.poll(delay);
             return; // insteon engine needs to be known before enqueueing more messages
         }
         // load this device link db if not complete or should be reloaded
@@ -275,7 +275,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             linkDB.update(delay);
         }
 
-        super.doPoll(delay);
+        super.poll(delay);
     }
 
     /**
@@ -460,7 +460,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 && !isDuplicateMsg(msg)) {
             // add poll delay for non-replayed all link broadcast allowing cleanup msg to be be processed beforehand
             long delay = msg.isAllLinkBroadcast() && !msg.isAllLinkSuccessReport() && !msg.isReplayed() ? 1500L : 0L;
-            doPoll(delay);
+            poll(delay);
         }
     }
 
@@ -474,12 +474,12 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     @Override
     public void sendMessage(Msg msg, DeviceFeature feature, long delay) {
         if (isAwake()) {
-            addDeviceRequest(msg, feature, delay);
+            addRequest(msg, feature, delay);
         } else {
             addDeferredRequest(msg, feature);
         }
         // mark feature query status as scheduled for non-broadcast request message
-        if (!msg.isAllLinkBroadcast()) {
+        if (!msg.isAllLinkBroadcast() && !isFeatureQueried(feature)) {
             feature.setQueryStatus(QueryStatus.QUERY_SCHEDULED);
         }
     }
@@ -497,9 +497,9 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                     Msg msg = request.getMessage();
                     DeviceFeature feature = request.getFeature();
                     deferredQueueHash.remove(msg);
-                    request.setExpirationTime(delay);
+                    request.setScheduledDelay(delay);
                     logger.trace("enqueuing deferred request for {}", feature.getName());
-                    addDeviceRequest(msg, feature, delay);
+                    addRequest(msg, feature, delay);
                 }
             }
         }
@@ -841,7 +841,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 // poll database delta feature
                 pollFeature(FEATURE_DATABASE_DELTA, 0L);
                 // poll remaining features for this device
-                doPoll(0L);
+                poll(500L);
             }
             // log missing links
             logMissingLinks();

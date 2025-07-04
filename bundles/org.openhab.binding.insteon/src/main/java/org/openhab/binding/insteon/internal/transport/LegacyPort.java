@@ -37,6 +37,7 @@ import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.transport.message.MsgFactory;
+import org.openhab.binding.insteon.internal.transport.stream.IOStream;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

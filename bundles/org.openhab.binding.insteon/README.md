@@ -16,7 +16,8 @@ Other tools can be used to managed Insteon devices, such as the [Insteon Termina
 
 At startup, the binding will download the modem database along with each configured device all-link database if not previously downloaded and currently awake.
 Therefore, the initialization on the first start may take some additional time to complete depending on the number of devices configured.
-The modem and device link databases are only downloaded once unless the binding receives an indication that a database was updated or marked to be refreshed via the [openHAB console](#console-commands).
+The modem and device link databases information is then cached and updated accordingly based on relevant messages the binding receives.
+To force a database redownload, use the [openHAB console](#console-commands).
 
 **Important note as of openHAB 4.3.0**
 
@@ -108,8 +109,8 @@ The default poll interval of 300 seconds has been tested and found to be a good 
 
 The device type is automatically determined by the binding using the device product data.
 For a [battery powered device](#battery-powered-devices) that was never configured previously, it may take until the next time that device sends a broadcast message to be modeled properly.
-To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online.
-Likewise, for a device that wasn't accessible during the binding initialization phase, press on its SET button once powered on to notify the binding that it is available.
+To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online by pressing on its SET button.
+Likewise, for a wired device that wasn't connected during the first binding initialization, press on its on/off button once powered on to notify the binding that it is available.
 
 ### `scene`
 
@@ -670,7 +671,7 @@ By default, the binding only sends direct messages to the intended device to upd
 Whenever the bridge related device synchronization parameter `deviceSyncEnabled` is set to `true`, broadcast messages for supported Insteon commands (e.g. on/off, bright/dim, manual change) are sent to all responders of a given group, updating all related devices in one request.
 If no broadcast group is determined or for Insteon commands that don't support broadcasting (e.g. percent), direct messages are sent to each related device instead, to adjust their level based on their all-link database.
 
-## Insteon Binding Process
+## Insteon Linking Process
 
 Before Insteon devices communicate with one another, they must be linked.
 During the linking process, one of the devices will be the "Controller", the other the "Responder".
@@ -1608,8 +1609,15 @@ This will automatically disable the legacy network bridge with the same configur
 - For battery powered devices, press on their SET button to speed up the discovery process.
 Otherwise you may have to wait until the next time these devices send a heartbeat message which can take up to 24 hours.
 
+- For wired devices that weren't available during the first binding initialization, once connected, press on their on/off button.
+This will notify the binding to retrieve the product information from these devices.
+
 - For scenes, you can either enable scene discovery and add the discovered things, or just manually add specific scene things based on your existing environment.
 Enabling scene discovery might generate a considerable amount of things in your inbox depending on the number of scenes configured in your modem.
+
+- If some unknown devices are showing in your inbox, it could be due corrupt messages the binding received during the modem database download phase.
+Since the modem database is cached after the first download, it will need to be reloaded using the `insteon modem reloadDatabase` console command.
+Otherwise, these devices will keep appearing in your inbox.
 
 - If you have rules to send commands to synchronize the state between related devices, you can enable the device synchronization feature on the bridge instead.
 This will synchronize related devices automatically based on their all-link database.

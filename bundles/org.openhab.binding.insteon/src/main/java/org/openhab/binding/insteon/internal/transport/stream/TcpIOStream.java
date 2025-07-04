@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.transport;
+package org.openhab.binding.insteon.internal.transport.stream;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TcpIOStream extends IOStream {
+    private static final int RATE_LIMIT_TIME = 800; // in milliseconds
+
     private String host;
     private int port;
     private @Nullable Socket socket;
@@ -40,6 +42,7 @@ public class TcpIOStream extends IOStream {
      * @param port port to connect to
      */
     public TcpIOStream(String host, int port) {
+        super(RATE_LIMIT_TIME);
         this.host = host;
         this.port = port;
     }

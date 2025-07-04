@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.transport;
+package org.openhab.binding.insteon.internal.transport.stream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,6 +46,7 @@ import org.openhab.binding.insteon.internal.utils.HexUtils;
 public class HubIOStream extends IOStream {
     private static final String BUFFER_TAG_START = "<BS>";
     private static final String BUFFER_TAG_END = "</BS>";
+    private static final int RATE_LIMIT_TIME = 500; // in milliseconds
     private static final int REQUEST_TIMEOUT = 30; // in seconds
 
     private String host;
@@ -71,6 +72,7 @@ public class HubIOStream extends IOStream {
      */
     public HubIOStream(String host, int port, String username, String password, int pollInterval, HttpClient httpClient,
             ScheduledExecutorService scheduler) {
+        super(RATE_LIMIT_TIME);
         this.host = host;
         this.port = port;
         this.auth = Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));

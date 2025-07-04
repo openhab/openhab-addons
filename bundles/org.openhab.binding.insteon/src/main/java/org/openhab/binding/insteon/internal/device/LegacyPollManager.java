@@ -269,7 +269,7 @@ public class LegacyPollManager {
 
         @Override
         public int compareTo(PQEntry pqe) {
-            return (int) (expirationTime - pqe.expirationTime);
+            return Long.compare(expirationTime, pqe.expirationTime);
         }
 
         @Override
