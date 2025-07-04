@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.transport;
+package org.openhab.binding.insteon.internal.transport.stream;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -44,6 +44,15 @@ public abstract class IOStream {
 
     protected @Nullable InputStream in;
     protected @Nullable OutputStream out;
+    private final int rateLimitTime;
+
+    protected IOStream(int rateLimitTime) {
+        this.rateLimitTime = rateLimitTime;
+    }
+
+    public int getRateLimitTime() {
+        return rateLimitTime;
+    }
 
     /**
      * Reads data from IOStream

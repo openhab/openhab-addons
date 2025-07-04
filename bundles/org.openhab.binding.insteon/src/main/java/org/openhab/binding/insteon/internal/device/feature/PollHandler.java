@@ -46,7 +46,7 @@ public abstract class PollHandler extends BaseFeatureHandler {
      *
      * @return Insteon query message or null if creation failed
      */
-    public abstract @Nullable Msg makeMsg();
+    public abstract @Nullable Msg getMessage();
 
     public static class FlexPollHandler extends PollHandler {
         FlexPollHandler(DeviceFeature feature) {
@@ -54,13 +54,12 @@ public abstract class PollHandler extends BaseFeatureHandler {
         }
 
         @Override
-        public @Nullable Msg makeMsg() {
+        public @Nullable Msg getMessage() {
             Msg msg = null;
             InsteonAddress address = getInsteonDevice().getAddress();
             int cmd1 = getParameterAsInteger("cmd1", 0);
             int cmd2 = getParameterAsInteger("cmd2", 0);
             int ext = getParameterAsInteger("ext", -1);
-            long quietTime = getParameterAsLong("quiet", -1);
             try {
                 // make message based on feature parameters
                 if (ext == 0) {
@@ -78,14 +77,15 @@ public abstract class PollHandler extends BaseFeatureHandler {
                 } else {
                     logger.warn("{}: handler misconfigured, no valid ext field specified", nm());
                 }
-                // override default message quiet time if parameter specified
-                if (msg != null && quietTime >= 0) {
-                    msg.setQuietTime(quietTime);
+                if (msg != null) {
+                    long quietTime = getParameterAsLong("quiet", -1);
+                    // override default message quiet time if parameter specified
+                    if (quietTime >= 0) {
+                        msg.setQuietTime(quietTime);
+                    }
                 }
-            } catch (FieldException e) {
-                logger.warn("error setting field in msg: ", e);
-            } catch (InvalidMessageTypeException e) {
-                logger.warn("invalid message ", e);
+            } catch (FieldException | InvalidMessageTypeException e) {
+                logger.warn("error creating message", e);
             }
             return msg;
         }
@@ -97,18 +97,13 @@ public abstract class PollHandler extends BaseFeatureHandler {
         }
 
         @Override
-        public @Nullable Msg makeMsg() {
+        public @Nullable Msg getMessage() {
             Msg msg = null;
             int cmd = getParameterAsInteger("cmd", 0);
             try {
                 msg = Msg.makeMessage((byte) cmd);
-                byte[] data = msg.getData();
-                int headerLength = msg.getHeaderLength();
-                for (int i = headerLength; i < data.length; i++) {
-                    data[i] = (byte) getParameterAsInteger("d" + (i - headerLength + 1), 0);
-                }
             } catch (InvalidMessageTypeException e) {
-                logger.warn("invalid message ", e);
+                logger.warn("error creating message", e);
             }
             return msg;
         }
@@ -120,7 +115,7 @@ public abstract class PollHandler extends BaseFeatureHandler {
         }
 
         @Override
-        public @Nullable Msg makeMsg() {
+        public @Nullable Msg getMessage() {
             return null;
         }
     }

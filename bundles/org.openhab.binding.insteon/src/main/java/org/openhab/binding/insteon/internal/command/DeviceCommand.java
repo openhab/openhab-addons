@@ -722,7 +722,7 @@ public class DeviceCommand extends InsteonCommand {
                         + (device.isBatteryPowered() ? "awake" : !device.isResponding() ? "online" : "polled") + ".");
             } else {
                 console.println("Refreshing device " + device.getAddress() + "...");
-                device.doPoll(0L);
+                device.poll(0L);
             }
         }
     }
