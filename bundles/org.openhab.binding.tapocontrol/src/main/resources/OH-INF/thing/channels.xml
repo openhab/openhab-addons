@@ -28,7 +28,7 @@
 		<category>LightBulb</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Light</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -227,7 +227,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 

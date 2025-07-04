@@ -76,7 +76,7 @@
 		<description>Power state</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="color">
