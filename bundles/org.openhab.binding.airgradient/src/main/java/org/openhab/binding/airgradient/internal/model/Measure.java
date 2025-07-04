@@ -72,6 +72,11 @@ public class Measure {
             return fw;
         }
 
+        fw = firmware;
+        if (fw != null) {
+            return fw;
+        }
+
         return "";
     }
 
@@ -176,6 +181,9 @@ public class Measure {
     public String timestamp; // Timestamp of the measures in ISO 8601 format with UTC offset, e.g. 2022-03-28T12:07:40Z
 
     @Nullable
+    public String firmware; // The firmware version running on the device, e.g. "9.2.6", not present for averages
+
+    @Nullable
     public String firmwareVersion; // The firmware version running on the device, e.g. "9.2.6", not present for averages
 
     @Nullable
@@ -201,4 +209,31 @@ public class Measure {
 
     @Nullable
     public String model; // Model of sensor from cloud API
+
+    @Nullable
+    public Double pm01Standard;
+
+    @Nullable
+    public Double pm02Standard;
+
+    @Nullable
+    public Double pm10Standard;
+
+    @Nullable
+    public Double pm005Count;
+
+    @Nullable
+    public Double pm01Count;
+
+    @Nullable
+    public Double pm02Count;
+
+    @Nullable
+    public Double pm50Count;
+
+    @Nullable
+    public Double pm10Count;
+
+    @Nullable
+    public Double pm02Compensated;
 }
