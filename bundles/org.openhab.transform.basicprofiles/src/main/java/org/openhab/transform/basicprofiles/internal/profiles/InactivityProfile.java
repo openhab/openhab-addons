@@ -14,15 +14,14 @@ package org.openhab.transform.basicprofiles.internal.profiles;
 
 import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.INACTIVITY_UID;
 
-import java.lang.ref.Cleaner;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -43,30 +42,11 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class InactivityProfile implements StateProfile {
+public class InactivityProfile implements StateProfile, RegistryChangeListener<ItemChannelLink> {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofHours(1);
-    private static final Cleaner CLEANER = Cleaner.create();
-
-    public static final AtomicBoolean DEBUG_CLEANER_TASK_CALLED = new AtomicBoolean();
 
     private final Logger logger = LoggerFactory.getLogger(InactivityProfile.class);
-
-    private static class CleanerTaskCanceller implements Runnable {
-        private @Nullable ScheduledFuture<?> task;
-
-        public void setTask(@Nullable ScheduledFuture<?> task) {
-            this.task = task;
-        }
-
-        @Override
-        public void run() {
-            DEBUG_CLEANER_TASK_CALLED.set(true);
-            if (task instanceof ScheduledFuture target) {
-                target.cancel(true);
-            }
-        }
-    }
 
     private final ProfileCallback callback;
     private final ScheduledExecutorService scheduler;
@@ -74,9 +54,10 @@ public class InactivityProfile implements StateProfile {
     private final boolean inverted;
     private final ItemChannelLinkRegistry linkRegistry;
     private final ItemChannelLink itemChannelLink;
-    private final CleanerTaskCanceller cleanerTaskCanceller;
 
-    private @Nullable ScheduledFuture<?> timeoutTask;
+    private @Nullable ScheduledFuture<?> timeoutTask = null;
+    private OnOffType targetState = OnOffType.OFF;
+    private boolean removed = false;
 
     public InactivityProfile(ProfileCallback callback, ProfileContext context, ItemChannelLinkRegistry linkRegistry) {
         InactivityProfileConfig config = context.getConfiguration().as(InactivityProfileConfig.class);
@@ -85,23 +66,21 @@ public class InactivityProfile implements StateProfile {
         this.scheduler = context.getExecutorService();
         this.inverted = config.inverted != null ? config.inverted : false;
         this.linkRegistry = linkRegistry;
-        this.itemChannelLink = callback.getItemChannelLink();
-
-        this.cleanerTaskCanceller = new CleanerTaskCanceller();
-        CLEANER.register(this, cleanerTaskCanceller);
+        this.linkRegistry.addRegistryChangeListener(this);
+        this.itemChannelLink = new ItemChannelLink(callback.getItemChannelLink().getItemName(),
+                callback.getItemChannelLink().getLinkedUID(), context.getConfiguration());
 
         Duration timeout;
         try {
             timeout = parseDuration(config.timeout);
-            logger.debug("Profile created item:{}, timeout:{}, inverted:{}", itemChannelLink.getItemName(), timeout,
-                    inverted);
         } catch (IllegalArgumentException e) {
             timeout = DEFAULT_TIMEOUT;
-            logger.warn("Profile configuration timeout value \"{}\" is invalid", config.timeout);
+            logger.warn("Exception: {}, invalid timeout:{}", itemChannelLink, config.timeout);
         }
-
         this.timeout = timeout;
+
         rescheduleTimeoutTask();
+        logger.debug("Created: {}, inverted:{}, timeout:{}", itemChannelLink, inverted, timeout);
     }
 
     private Duration parseDuration(String timeOrDuration) throws IllegalArgumentException {
@@ -117,13 +96,9 @@ public class InactivityProfile implements StateProfile {
     }
 
     private void onTimeout() {
-        if (itemChannelLinked()) {
-            State itemState = OnOffType.from(!inverted);
-            logger.debug("onTimeout() item:{}, timeout:{}, itemState:{}", itemChannelLink.getItemName(), timeout,
-                    itemState);
-            callback.sendUpdate(itemState);
-            rescheduleTimeoutTask();
-        }
+        logger.trace("onTimeout: {}", itemChannelLink);
+        targetState = OnOffType.from(!inverted);
+        callback.sendUpdate(targetState);
     }
 
     @Override
@@ -133,22 +108,29 @@ public class InactivityProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromItem(State itemState) {
-        logger.trace("onStateUpdateFromItem() item:{}, state:{}", itemChannelLink.getItemName(), itemState);
+        if (!itemState.equals(targetState)) {
+            logger.trace("onStateUpdateFromItem: {}", itemChannelLink);
+            cancelTimeoutTask();
+            rescheduleTimeoutTask();
+        }
     }
 
     @Override
     public void onCommandFromItem(Command itemCommand) {
-        logger.trace("onCommandFromItem() item:{}, command:{}", itemChannelLink.getItemName(), itemCommand);
+        if (!itemCommand.equals(targetState)) {
+            logger.trace("onCommandFromItem: {}", itemChannelLink);
+            cancelTimeoutTask();
+            rescheduleTimeoutTask();
+        }
     }
 
     @Override
     public void onCommandFromHandler(Command handlerCommand) {
         cancelTimeoutTask();
-        if (itemChannelLinked()) {
-            Command itemCommand = OnOffType.from(inverted);
-            logger.debug("onCommandFromHandler() item:{}, itemCommand:{}, handlerCommand:{}",
-                    itemChannelLink.getItemName(), handlerCommand, itemCommand);
-            callback.sendCommand(itemCommand);
+        if (!removed) {
+            logger.trace("onCommandFromHandler: {}", itemChannelLink);
+            targetState = OnOffType.from(inverted);
+            callback.sendCommand(targetState);
             rescheduleTimeoutTask();
         }
     }
@@ -156,31 +138,42 @@ public class InactivityProfile implements StateProfile {
     @Override
     public void onStateUpdateFromHandler(State handlerState) {
         cancelTimeoutTask();
-        if (itemChannelLinked()) {
-            State itemState = OnOffType.from(inverted);
-            logger.debug("onStateUpdateFromHandler() item:{}, handlerState:{}, itemState:{}",
-                    itemChannelLink.getItemName(), handlerState, itemState);
-            callback.sendUpdate(itemState);
+        if (!removed) {
+            logger.trace("onStateUpdateFromHandler: {}", itemChannelLink);
+            targetState = OnOffType.from(inverted);
+            callback.sendUpdate(targetState);
             rescheduleTimeoutTask();
         }
     }
 
     private synchronized void cancelTimeoutTask() {
-        cleanerTaskCanceller.setTask(null);
-        if (timeoutTask instanceof ScheduledFuture task) {
+        if (timeoutTask instanceof ScheduledFuture<?> task) {
             task.cancel(false);
         }
         timeoutTask = null;
     }
 
-    private synchronized void rescheduleTimeoutTask() {
+    private void rescheduleTimeoutTask() {
         timeoutTask = scheduler.schedule(() -> onTimeout(), timeout.toMillis(), TimeUnit.MILLISECONDS);
-        if (timeoutTask instanceof ScheduledFuture task) {
-            cleanerTaskCanceller.setTask(task);
+    }
+
+    @Override
+    public void added(ItemChannelLink addedLink) {
+        // do nothing
+    }
+
+    @Override
+    public void removed(ItemChannelLink removedLink) {
+        if (removedLink.equals(itemChannelLink)) {
+            logger.debug("Removed: {}", itemChannelLink);
+            removed = true;
+            cancelTimeoutTask();
+            linkRegistry.removeRegistryChangeListener(this);
         }
     }
 
-    private boolean itemChannelLinked() {
-        return linkRegistry.getLinks(itemChannelLink.getItemName()).contains(itemChannelLink);
+    @Override
+    public void updated(ItemChannelLink removedLink, ItemChannelLink addedLink) {
+        removed(removedLink);
     }
 }

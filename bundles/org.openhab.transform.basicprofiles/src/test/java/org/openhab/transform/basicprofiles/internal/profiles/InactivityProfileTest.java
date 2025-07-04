@@ -12,19 +12,15 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -57,7 +53,7 @@ class InactivityProfileTest {
 
     private final String testItemName = "testItem";
     private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
-    private final ItemChannelLink testLink = new ItemChannelLink(testItemName, testChannelUID);
+    private ItemChannelLink testLink = new ItemChannelLink(testItemName, testChannelUID);
 
     private InactivityProfile initInactivityProfile(String timeout, @Nullable Boolean inverted) {
         Configuration config = new Configuration();
@@ -65,16 +61,16 @@ class InactivityProfileTest {
         if (inverted != null) {
             config.put("inverted", inverted);
         }
+        testLink = new ItemChannelLink(testItemName, testChannelUID, config);
 
         reset(mockContext);
         reset(mockCallback);
         reset(mockScheduler);
         reset(mockLinkRegistry);
 
-        when(mockCallback.getItemChannelLink()).thenReturn(new ItemChannelLink(testItemName, testChannelUID));
+        when(mockCallback.getItemChannelLink()).thenReturn(testLink);
         when(mockContext.getExecutorService()).thenReturn(mockScheduler);
         when(mockContext.getConfiguration()).thenReturn(config);
-        when(mockLinkRegistry.getLinks(any(String.class))).thenReturn(Set.of(testLink));
 
         return new InactivityProfile(mockCallback, mockContext, mockLinkRegistry);
     }
@@ -92,19 +88,18 @@ class InactivityProfileTest {
 
     @ParameterizedTest
     @MethodSource
-    @Order(1)
     public void testInactivityProfile(String timeout, Boolean inverted, long expectedMilliSeconds,
             State expectedState) {
         InactivityProfile profile = initInactivityProfile(timeout, inverted);
 
         /*
-         * test that that initial task scheduled
+         * test that if item and channel are linked the initial task is scheduled
          */
         verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(TimeUnit.MILLISECONDS));
 
         /*
-         * test that if item and channel are linked the update is received and task is re-scheduled
+         * test that if item and channel are linked the update is received and the task is re-scheduled
          */
         reset(mockCallback);
         reset(mockScheduler);
@@ -116,29 +111,15 @@ class InactivityProfileTest {
                 eq(TimeUnit.MILLISECONDS));
 
         /*
-         * test that if item and channel are not linked the update is not received and task is not re-scheduled
+         * test that if item and channel are not linked the update is not received and the task is not re-scheduled
          */
         reset(mockCallback);
         reset(mockScheduler);
-        when(mockLinkRegistry.getLinks(any(String.class))).thenReturn(Set.of());
 
+        profile.removed(testLink);
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
         verify(mockCallback, never()).sendUpdate(any(State.class));
         verify(mockScheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
-
-        assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
-    }
-
-    @Test
-    @Order(9999)
-    public void testGarbageCleanerCleanup() {
-        assertFalse(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
-        System.gc();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-        assertTrue(InactivityProfile.DEBUG_CLEANER_TASK_CALLED.get());
     }
 }
