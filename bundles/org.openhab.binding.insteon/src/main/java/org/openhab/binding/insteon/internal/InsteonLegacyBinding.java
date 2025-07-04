@@ -440,7 +440,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
 
     @Override
     public void msg(Msg msg) {
-        if (msg.isEcho() || msg.isPureNack()) {
+        if (msg.isPureNack() || msg.isReply()) {
             return;
         }
         messagesReceived++;
