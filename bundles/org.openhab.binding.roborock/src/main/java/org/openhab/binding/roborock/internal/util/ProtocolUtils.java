@@ -16,10 +16,12 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -39,6 +41,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,12 +136,8 @@ public class ProtocolUtils {
     }
 
     public static byte[] decryptCbc(byte[] ciphertext, byte[] nonce) {
-        // Equivalent of Python's `Utils.verify_token(token)`
-        // verifyToken(token); // todo
-
         try {
-            // "AES/CBC/PKCS5Padding" specifies AES algorithm, CBC mode, and PKCS5 padding.
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
             Key secretKey = new SecretKeySpec(nonce, "AES");
 
             // Python's `iv = bytes(AES.block_size)` creates an IV of all zeros.
@@ -149,8 +148,9 @@ public class ProtocolUtils {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
 
             // `doFinal` handles both decryption and unpadding automatically due to "PKCS5Padding".
-            return cipher.doFinal(ciphertext);
-
+            byte[] decryptedBytes = cipher.doFinal(ciphertext);
+            // return pkcs7Unpad(decryptedBytes);
+            return decryptedBytes;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             logger.error("Error initializing cipher. Check algorithm and padding.", e);
         } catch (InvalidKeyException e) {
@@ -162,6 +162,41 @@ public class ProtocolUtils {
             logger.error("Error during decryption or invalid ciphertext. Check key, IV, and data integrity.", e);
         }
         return new byte[0];
+    }
+
+    private static byte[] pkcs7Unpad(byte[] paddedData) throws BadPaddingException {
+        if (paddedData == null || paddedData.length == 0) {
+            return new byte[0];
+        }
+
+        // The last byte indicates the number of padding bytes
+        int paddingValue = paddedData[paddedData.length - 1] & 0xFF; // Use & 0xFF to handle signed bytes
+
+        // Basic validation for padding value
+        if (paddingValue == 0 || paddingValue > AES_BLOCK_SIZE) {
+            throw new BadPaddingException("Invalid PKCS7 padding value: " + paddingValue);
+        }
+
+        // Check if the paddedData length is consistent with the padding
+        if (paddingValue > paddedData.length) {
+            throw new BadPaddingException("PKCS7 padding value (" + paddingValue + ") is greater than data length ("
+                    + paddedData.length + ")");
+        }
+
+        // Verify that all padding bytes have the expected value
+        for (int i = 0; i < paddingValue; i++) {
+            if ((paddedData[paddedData.length - 1 - i] & 0xFF) != paddingValue) {
+                throw new BadPaddingException(
+                        "Invalid PKCS7 padding block. Byte at index " + (paddedData.length - 1 - i) + " has value "
+                                + (paddedData[paddedData.length - 1 - i] & 0xFF) + ", expected " + paddingValue);
+            }
+        }
+
+        // Calculate the actual unpadded length
+        int unpaddedLength = paddedData.length - paddingValue;
+
+        // Return a copy of the array up to the unpadded length
+        return Arrays.copyOfRange(paddedData, 0, unpaddedLength);
     }
 
     private static byte[] decompress(byte[] compressedData) throws IOException {
@@ -223,21 +258,30 @@ public class ProtocolUtils {
         int protocol = readInt16BE(message, 15);
         if (protocol == 301) {
             logger.debug("we don't handle images yet");
-            byte[] payload = Arrays.copyOfRange(message, 0, 24);
-            String endpoint = new String(Arrays.copyOfRange(payload, 0, 8)).trim();
-            String unusedString = new String(Arrays.copyOfRange(payload, 8, 16)).trim();
-            int requestId = ByteBuffer.wrap(Arrays.copyOfRange(payload, 16, 22)).getShort();
-            String anotherUnusedString = new String(Arrays.copyOfRange(payload, 22, 24)).trim();
-            byte[] decrypted;
-            /*
-             * decrypted = decryptCbc(Arrays.copyOfRange(payload, 24, payload.length), nonce);
-             * byte[] decompressed;
-             * try {
-             * decompressed = decompress(decrypted);
-             * } catch (IOException e) {
-             * logger.debug("Exception decompressing payload, {}", e.getMessage());
-             * }
-             */
+            int images = 0;
+            if (images == 1) {
+                byte[] payload = Arrays.copyOfRange(message, 0, 24);
+                String endpoint = new String(Arrays.copyOfRange(payload, 0, 8)).trim();
+                String unusedString = new String(Arrays.copyOfRange(payload, 8, 16)).trim();
+                int requestId = ByteBuffer.wrap(Arrays.copyOfRange(payload, 16, 22)).getShort();
+                String anotherUnusedString = new String(Arrays.copyOfRange(payload, 22, 24)).trim();
+                byte[] decrypted;
+                decrypted = decryptCbc(Arrays.copyOfRange(message, 23, message.length), nonce);
+                logger.debug("decrypted.length = {}, message.length = {}", decrypted.length, message.length);
+                byte[] decompressed;
+                try {
+                    File mapFile = new File(OpenHAB.getUserDataFolder() + File.separator + "roborock" + File.separator
+                            + "decryptedmap.tmp");
+                    Files.write(mapFile.toPath(), decrypted);
+                    decompressed = decompress(decrypted);
+                    logger.debug("decompressed.length = {}", decompressed.length);
+                    File mapFile2 = new File(OpenHAB.getUserDataFolder() + File.separator + "roborock" + File.separator
+                            + "decompressedmap.tmp");
+                    Files.write(mapFile2.toPath(), decompressed);
+                } catch (IOException e) {
+                    logger.debug("Exception decompressing payload, {}", e.getMessage());
+                }
+            }
             return "";
         } else if (protocol == 102) {
             int payloadLen = readInt16BE(message, 17);
