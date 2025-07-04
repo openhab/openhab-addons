@@ -90,7 +90,7 @@ public class AccountHandlerMock extends AccountHandler {
     }
 
     public void connect() {
-        super.ws.onConnect(mock(Session.class));
+        super.mbWebsocket.onConnect(mock(Session.class));
     }
 
     @Override
