@@ -519,7 +519,7 @@ public class LegacyDevice {
 
         @Override
         public int compareTo(QEntry qe) {
-            return (int) (expirationTime - qe.expirationTime);
+            return Long.compare(expirationTime, qe.expirationTime);
         }
     }
 }
