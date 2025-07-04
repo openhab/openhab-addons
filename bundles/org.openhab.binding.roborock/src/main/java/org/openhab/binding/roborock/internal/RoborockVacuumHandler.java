@@ -152,6 +152,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    @Nullable
+    protected String setRoutine(String routine) {
+        RoborockAccountHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
+            return "";
+        }
+        return localBridge.setRoutine(routine);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -184,6 +193,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
                 return;
             }
+
+            if (channelUID.getId().equals(CHANNEL_ROUTINE)) {
+                logger.trace("Sending setRoutinge command");
+                setRoutine(command.toString());
+                return;
+            }
+
             if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
                 sendCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
                 return;
@@ -795,32 +811,50 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void handleGetSegmentStatus(String response) {
         logger.trace("handleGetSegmentStatus, response = {}", response);
-        JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-        Integer stat = getSegmentStatus.get(0).getAsInt();
-        updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), new DecimalType(stat));
+        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
+                .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
+            JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
+                    .getAsJsonArray();
+            String stat = getSegmentStatus.get(0).getAsString();
+            if (!"OK".equals(stat)) {
+                updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), new DecimalType(Integer.parseInt(stat)));
+            }
+        }
     }
 
     private void handleGetMapStatus(String response) {
         logger.trace("handleGetMapStatus, response = {}", response);
-        JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-        try {
-            Integer stat = getSegmentStatus.get(0).getAsInt();
-            updateState(RobotCapabilities.MAP_STATUS.getChannel(), new DecimalType(stat));
-        } catch (ClassCastException | IllegalStateException e) {
-            logger.debug("Could not update numeric channel {} with '{}': {}", RobotCapabilities.MAP_STATUS.getChannel(),
-                    response, e.getMessage());
+        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
+                .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
+            JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
+                    .getAsJsonArray();
+            try {
+                String stat = getSegmentStatus.get(0).getAsString();
+                if (!"OK".equals(stat)) {
+                    updateState(RobotCapabilities.MAP_STATUS.getChannel(), new DecimalType(Integer.parseInt(stat)));
+                }
+            } catch (ClassCastException | IllegalStateException e) {
+                logger.debug("Could not update numeric channel {} with '{}': {}",
+                        RobotCapabilities.MAP_STATUS.getChannel(), response, e.getMessage());
+            }
         }
     }
 
     private void handleGetLedStatus(String response) {
         logger.trace("handleGetLedStatus, response = {}", response);
-        JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-        try {
-            Integer stat = getSegmentStatus.get(0).getAsInt();
-            updateState(RobotCapabilities.LED_STATUS.getChannel(), new DecimalType(stat));
-        } catch (ClassCastException | IllegalStateException e) {
-            logger.debug("Could not update numeric channel {} with '{}': {}", RobotCapabilities.MAP_STATUS.getChannel(),
-                    response, e.getMessage());
+        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
+                .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
+            JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
+                    .getAsJsonArray();
+            try {
+                String stat = getSegmentStatus.get(0).getAsString();
+                if (!"OK".equals(stat)) {
+                    updateState(RobotCapabilities.LED_STATUS.getChannel(), new DecimalType(Integer.parseInt(stat)));
+                }
+            } catch (ClassCastException | IllegalStateException e) {
+                logger.debug("Could not update numeric channel {} with '{}': {}",
+                        RobotCapabilities.MAP_STATUS.getChannel(), response, e.getMessage());
+            }
         }
     }
 

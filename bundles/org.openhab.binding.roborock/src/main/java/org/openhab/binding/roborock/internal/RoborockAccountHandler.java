@@ -188,15 +188,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public void setRoutine(String sceneID, Rriot rriot) {
+    @Nullable
+    public String setRoutine(String sceneID) {
         try {
-            webTargets.setRoutine(sceneID, rriot);
+            return webTargets.setRoutine(sceneID, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
+            return "";
         } catch (RoborockCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error " + e.getMessage());
+            return "";
         }
     }
 

@@ -139,7 +139,7 @@ public class RoborockWebTargets {
             RoborockAuthenticationException, NoSuchAlgorithmException, InvalidKeyException {
         String path = setRoutine + sceneID + "/execute";
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
-        String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token, null);
+        String response = invoke(rriot.r.a + path, HttpMethod.POST, "Authorization", token, null);
         return response;
     }
 
