@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
-import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -53,12 +52,8 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     @Nullable
-    protected HomeData getHomeData(String rrHomeID, Rriot rriot) {
-        return thingHandler.getHomeData(rrHomeID, rriot);
-    }
-
-    protected Rriot getRriot() {
-        return thingHandler.getRriot();
+    protected HomeData getHomeData(String rrHomeID) {
+        return thingHandler.getHomeData(rrHomeID);
     }
 
     @Override
@@ -72,7 +67,7 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         home = getHomeDetail();
         if (home != null) {
             HomeData homeData;
-            homeData = getHomeData(Integer.toString(home.data.rrHomeId), getRriot());
+            homeData = getHomeData(Integer.toString(home.data.rrHomeId));
 
             HashMap<String, Object> properties = new HashMap<>();
             if (homeData != null) {

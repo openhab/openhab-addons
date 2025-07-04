@@ -37,8 +37,6 @@ import org.openhab.binding.roborock.internal.api.GetStatus;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.HomeData.Rooms;
-import org.openhab.binding.roborock.internal.api.Login;
-import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.api.enums.ConsumablesType;
 import org.openhab.binding.roborock.internal.api.enums.DockStatusType;
 import org.openhab.binding.roborock.internal.api.enums.FanModeType;
@@ -96,7 +94,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final SchedulerTask reconnectTask;
     private final SchedulerTask pollTask;
     private String token = "";
-    private Rriot rriot = new Login().new Rriot();
     private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
     private String rrHomeId = "";
     private String localKey = "";
@@ -195,7 +192,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
 
             if (channelUID.getId().equals(CHANNEL_ROUTINE)) {
-                logger.trace("Sending setRoutinge command");
                 setRoutine(command.toString());
                 return;
             }
@@ -263,7 +259,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = false;
         token = getToken();
         if (!token.isEmpty()) {
-            rriot = bridgeHandler.getRriot();
             Home home = bridgeHandler.getHomeDetail();
             if (home != null) {
                 rrHomeId = Integer.toString(home.data.rrHomeId);
@@ -337,7 +332,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void pollData() {
         logger.debug("Running pollData for: {}", getThing().getUID().getId());
-        HomeData homeData = bridgeHandler.getHomeData(rrHomeId, rriot);
+        HomeData homeData = bridgeHandler.getHomeData(rrHomeId);
         if ((homeData != null && (homeData.result != null))) {
             for (int i = 0; i < homeData.result.devices.length; i++) {
                 if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
@@ -362,7 +357,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
         }
-        String routinesResponse = bridgeHandler.getRoutines(getThing().getUID().getId(), rriot);
+        String routinesResponse = bridgeHandler.getRoutines(getThing().getUID().getId());
         if (!routinesResponse.isEmpty()
                 && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
                 && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray().size() > 0
@@ -468,7 +463,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     handleGetFwFeatures(jsonString);
                     getFwFeaturesID = 0;
                 } else if (messageId == getMultiMapsListID) {
-                    logger.debug("Received MultiMapsList response, parse it");
+                    logger.debug("Received getMultiMapsList response, parse it");
                     handleGetMultiMapsList(jsonString);
                     getMultiMapsListID = 0;
                 } else if (messageId == getCustomizeCleanModeID) {
@@ -601,6 +596,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetConsumables(String response) {
+        logger.trace("handleGetConsumable - response {}", response);
         GetConsumables getConsumables = gson.fromJson(response, GetConsumables.class);
         if (getConsumables != null) {
             int mainBrush = getConsumables.result[0].mainBrushWorkTime;
@@ -658,6 +654,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetNetworkInfo(String response) {
+        logger.trace("handleGetNetworkInfo - response {}", response);
         GetNetworkInfo getNetworkInfo = gson.fromJson(response, GetNetworkInfo.class);
         if (getNetworkInfo != null) {
             updateState(CHANNEL_SSID, new StringType(getNetworkInfo.result.ssid));

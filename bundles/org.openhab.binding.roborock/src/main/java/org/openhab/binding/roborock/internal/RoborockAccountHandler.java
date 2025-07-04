@@ -120,10 +120,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         return thing.getUID();
     }
 
-    public Rriot getRriot() {
-        return rriot;
-    }
-
     public Login doLogin() {
         try {
             Login login = webTargets.doLogin(config.email, config.password);
@@ -159,7 +155,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public HomeData getHomeData(String rrHomeId, Rriot rriot) {
+    public HomeData getHomeData(String rrHomeId) {
         try {
             return webTargets.getHomeData(rrHomeId, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
@@ -174,7 +170,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public String getRoutines(String deviceId, Rriot rriot) {
+    public String getRoutines(String deviceId) {
         try {
             return webTargets.getRoutines(deviceId, rriot);
         } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
