@@ -181,10 +181,10 @@ export class DeviceNode {
         await this.aggregator.add(device.endpoint);
     }
 
-    async setEndpointState(endpointId: string, clusterName: string, stateName: string, stateValue: any) {
+    async setEndpointStates(endpointId: string, states: { clusterName: string; attributeName: string; state: any }[]) {
         const device = this.devices.get(endpointId);
         if (device) {
-            void device.updateState(clusterName, stateName, stateValue);
+            void device.updateStates(states);
         }
     }
 
