@@ -71,14 +71,10 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PLUS1PMG4 = "S4SW-001P16EU";
     public static final String SHELLYDT_PLUS1UL = "SNSW-001X15UL";
     public static final String SHELLYDT_PLUS1PMUL = "SNSW-001P15UL";
-    public static final String SHELLYDT_PLUS2PM_RELAY = "SNSW-002P16EU-relay";
-    public static final String SHELLYDT_PLUS2PM_ROLLER = "SNSW-002P16EU-roller";
-    public static final String SHELLYDT_PLUS2PM_RELAY_2 = "SNSW-102P16EU-relay";
-    public static final String SHELLYDT_PLUS2PM_ROLLER_2 = "SNSW-102P16EU-roller";
-    public static final String SHELLYDT_PLUS2PMG3_RELAY = "S3SW-002P16EU-relay";
-    public static final String SHELLYDT_PLUS2PMG3_ROLLER = "S3SW-002P16EU-roller";
-    public static final String SHELLYDT_PLUS2PMUL_RELAY = "SNSW-002P15UL-relay";
-    public static final String SHELLYDT_PLUS2PMUL_ROLLER = "SNSW-002P15UL-roller";
+    public static final String SHELLYDT_PLUS2PM = "SNSW-002P16EU";
+    public static final String SHELLYDT_PLUS2PM_2 = "SNSW-102P16EU";
+    public static final String SHELLYDT_PLUS2PMG3 = "S3SW-002P16EU";
+    public static final String SHELLYDT_PLUS2PMUL = "SNSW-002P15UL";
     public static final String SHELLYDT_PLUSPLUGS = "SNPL-00112EU";
     public static final String SHELLYDT_PLUSPLUGS_2 = "SNPL-10112EU";
     public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU"; // Shelly Plug-S G3, Shelly AZ Plug
@@ -108,15 +104,12 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PRO1PM_2 = "SPSW-101PE16EU";
     public static final String SHELLYDT_PRO1PM_3 = "SPSW-201PE16EU";
     public static final String SHELLYDT_PRO1CB = "SPCB-01VENEU";
-    public static final String SHELLYDT_PRO2_RELAY = "SPSW-002XE16EU-relay";
-    public static final String SHELLYDT_PRO2_RELAY_2 = "SPSW-102XE16EU-relay";
-    public static final String SHELLYDT_PRO2_RELAY_3 = "SPSW-202XE16EU-relay";
-    public static final String SHELLYDT_PRO2PM_RELAY = "SPSW-002PE16EU-relay";
-    public static final String SHELLYDT_PRO2PM_ROLLER = "SPSW-002PE16EU-roller";
-    public static final String SHELLYDT_PRO2PM_RELAY_2 = "SPSW-102PE16EU-relay";
-    public static final String SHELLYDT_PRO2PM_ROLLER_2 = "SPSW-102PE16EU-roller";
-    public static final String SHELLYDT_PRO2PM_RELAY_3 = "SPSW-202PE16EU-relay";
-    public static final String SHELLYDT_PRO2PM_ROLLER_3 = "SPSW-202PE16EU-roller";
+    public static final String SHELLYDT_PRO2 = "SPSW-002XE16EU";
+    public static final String SHELLYDT_PRO2_2 = "SPSW-102XE16EU";
+    public static final String SHELLYDT_PRO2_3 = "SPSW-202XE16EU";
+    public static final String SHELLYDT_PRO2PM = "SPSW-002PE16EU";
+    public static final String SHELLYDT_PRO2PM_2 = "SPSW-102PE16EU";
+    public static final String SHELLYDT_PRO2PM_3 = "SPSW-202PE16EU";
     public static final String SHELLYDT_PRO3 = "SPSW-003XE16EU";
     public static final String SHELLYDT_PRO3EM = "SPEM-003CEBEU";
     public static final String SHELLYDT_PROEM50 = "SPEM-002CEBEU50";
@@ -412,14 +405,6 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUS1PMG3, THING_TYPE_SHELLYPLUS1PM),
             Map.entry(SHELLYDT_PLUS1PMG4, THING_TYPE_SHELLYPLUS1PM),
             Map.entry(SHELLYDT_PLUS1PMUL, THING_TYPE_SHELLYPLUS1PM),
-            Map.entry(SHELLYDT_PLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PM_ROLLER, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PM_RELAY_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PM_ROLLER_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PMUL_RELAY, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PMUL_ROLLER, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SHELLYDT_PLUS2PMG3_RELAY, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(SHELLYDT_PLUS2PMG3_ROLLER, THING_TYPE_SHELLYPLUS2PM_ROLLER),
             Map.entry(SHELLYDT_PLUSPLUGS, THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry(SHELLYDT_PLUSPLUGS_2, THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry(SHELLYDT_PLUSPLUGSG3, THING_TYPE_SHELLYPLUSPLUGS),
@@ -457,16 +442,10 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO1PM, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
-            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB),
-            Map.entry(SHELLYDT_PRO2_RELAY, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2_RELAY_2, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2_RELAY_3, THING_TYPE_SHELLYPRO2_RELAY),
-            Map.entry(SHELLYDT_PRO2PM_RELAY, THING_TYPE_SHELLYPRO2PM_RELAY),
-            Map.entry(SHELLYDT_PRO2PM_RELAY_2, THING_TYPE_SHELLYPRO2PM_RELAY),
-            Map.entry(SHELLYDT_PRO2PM_RELAY_3, THING_TYPE_SHELLYPRO2PM_RELAY),
-            Map.entry(SHELLYDT_PRO2PM_ROLLER, THING_TYPE_SHELLYPRO2PM_ROLLER),
-            Map.entry(SHELLYDT_PRO2PM_ROLLER_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
-            Map.entry(SHELLYDT_PRO2PM_ROLLER_3, THING_TYPE_SHELLYPRO2PM_ROLLER),
+            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
+            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2_RELAY),
+            Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2_RELAY), //
             Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
             Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
             Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
@@ -483,6 +462,28 @@ public class ShellyThingCreator {
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
+
+    private static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Plus Series
+            Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_RELAY),
+            // Pro Series
+            Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_RELAY),
+            Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_RELAY),
+            Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_RELAY));
+
+    private static final Map<String, ThingTypeUID> ROLLER_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
+            // Plus Series
+            Map.entry(SHELLYDT_PLUS2PM, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PM_2, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PMUL, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry(SHELLYDT_PLUS2PMG3, THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            // Pro Series
+            Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_ROLLER),
+            Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
+            Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
 
     private static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             Map.entry(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1),
@@ -627,17 +628,13 @@ public class ShellyThingCreator {
         }
 
         if (!deviceType.isEmpty()) {
-            ThingTypeUID res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType);
-            if (res != null) {
-                return res;
-            }
-
-            String key = switch (mode) {
-                // <DT>-relay / <DT>-roller
-                case SHELLY_MODE_RELAY, SHELLY_MODE_ROLLER -> deviceType + "-" + mode;
-                default -> deviceType;
+            Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
+                case SHELLY_MODE_RELAY -> RELAY_THING_TYPE_BY_DEVICE_TYPE;
+                case SHELLY_MODE_ROLLER -> ROLLER_THING_TYPE_BY_DEVICE_TYPE;
+                default -> THING_TYPE_BY_DEVICE_TYPE;
             };
-            res = THING_TYPE_BY_DEVICE_TYPE.get(key);
+
+            ThingTypeUID res = deviceTypeMap.get(deviceType);
             if (res != null) {
                 return res;
             }
