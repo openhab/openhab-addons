@@ -572,7 +572,7 @@
 		<description>The alarm state of the intrusion detection system. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON,
 			ALARM_MUTED and UNKNOWN.</description>
 		<tags>
-			<tag>Alarm</tag> 
+			<tag>Alarm</tag>
 			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true">
