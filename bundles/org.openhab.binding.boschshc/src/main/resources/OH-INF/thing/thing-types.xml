@@ -571,6 +571,10 @@
 		<label>Alarm State</label>
 		<description>The alarm state of the intrusion detection system. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON,
 			ALARM_MUTED and UNKNOWN.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ALARM_OFF">No alarm</option>
@@ -635,6 +639,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current measured temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="40" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -655,6 +663,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -675,6 +687,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -682,6 +698,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -689,6 +709,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Purity</label>
 		<description>Purity of the air. A higher value indicates a higher pollution.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state min="500" max="5500" pattern="%.1f ppm" readOnly="true"/>
 	</channel-type>
 
@@ -696,6 +720,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Overall description of the air quality.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -703,6 +731,10 @@
 		<item-type>String</item-type>
 		<label>Purity Rating</label>
 		<description>Rating of the air purity.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -710,6 +742,10 @@
 		<item-type>String</item-type>
 		<label>Combined Rating</label>
 		<description>Combined rating of the air quality.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GOOD">Good Quality</option>
@@ -737,6 +773,10 @@
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
 		<description>A window and door contact.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -751,6 +791,10 @@
 		<item-type>Number</item-type>
 		<label>Illuminance</label>
 		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state min="0" max="1000" step="1" readOnly="true"/>
 	</channel-type>
 
@@ -758,6 +802,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
 		<description>Current open ratio (0 to 100).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" step="0.5" readOnly="false"/>
 	</channel-type>
 
@@ -772,6 +820,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -876,6 +928,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Leakage</label>
 		<description>Indicates whether a water leakage was detected.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Leakage detected</option>
@@ -922,7 +978,7 @@
 		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Tilt</tag>
+			<tag>Motion</tag>
 		</tags>
 	</channel-type>
 
@@ -953,6 +1009,10 @@
 		<label>Alarm</label>
 		<description>Alarm state of the smoke detector.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="IDLE_OFF">Alarm off</option>
@@ -997,6 +1057,10 @@
 		<label>Vibration Sensor State</label>
 		<description>Indicates whether vibrations were detected by the sensor.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NO_VIBRATION">No vibration</option>
