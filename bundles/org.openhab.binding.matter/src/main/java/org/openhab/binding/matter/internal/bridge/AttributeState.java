@@ -53,7 +53,10 @@ public class AttributeState implements Comparable<AttributeState> {
     }
 
     @Override
-    public int compareTo(AttributeState other) {
+    public int compareTo(@Nullable AttributeState other) {
+        if (other == null) {
+            return 1;
+        }
         int clusterCmp = clusterName.compareTo(other.clusterName);
         if (clusterCmp != 0) {
             return clusterCmp;
@@ -61,15 +64,6 @@ public class AttributeState implements Comparable<AttributeState> {
         int attrCmp = attributeName.compareTo(other.attributeName);
         if (attrCmp != 0) {
             return attrCmp;
-        }
-        if (state == null && other.state == null) {
-            return 0;
-        }
-        if (state == null) {
-            return -1;
-        }
-        if (other.state == null) {
-            return 1;
         }
         return state.toString().compareTo(other.state.toString());
     }
