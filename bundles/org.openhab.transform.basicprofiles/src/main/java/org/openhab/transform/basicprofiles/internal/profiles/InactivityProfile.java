@@ -96,9 +96,11 @@ public class InactivityProfile implements StateProfile, RegistryChangeListener<I
     }
 
     private void onTimeout() {
-        logger.trace("onTimeout: {}", itemChannelLink);
-        targetState = OnOffType.from(!inverted);
-        callback.sendUpdate(targetState);
+        synchronized (this) {
+            logger.trace("onTimeout: {}", itemChannelLink);
+            targetState = OnOffType.from(!inverted);
+            callback.sendUpdate(targetState);
+        }
     }
 
     @Override
@@ -108,45 +110,53 @@ public class InactivityProfile implements StateProfile, RegistryChangeListener<I
 
     @Override
     public void onStateUpdateFromItem(State itemState) {
-        if (!itemState.equals(targetState)) {
-            logger.trace("onStateUpdateFromItem: {}", itemChannelLink);
-            cancelTimeoutTask();
-            rescheduleTimeoutTask();
+        synchronized (this) {
+            if (!itemState.equals(targetState)) {
+                logger.trace("onStateUpdateFromItem: {}", itemChannelLink);
+                cancelTimeoutTask();
+                rescheduleTimeoutTask();
+            }
         }
     }
 
     @Override
     public void onCommandFromItem(Command itemCommand) {
-        if (!itemCommand.equals(targetState)) {
-            logger.trace("onCommandFromItem: {}", itemChannelLink);
-            cancelTimeoutTask();
-            rescheduleTimeoutTask();
+        synchronized (this) {
+            if (!itemCommand.equals(targetState)) {
+                logger.trace("onCommandFromItem: {}", itemChannelLink);
+                cancelTimeoutTask();
+                rescheduleTimeoutTask();
+            }
         }
     }
 
     @Override
     public void onCommandFromHandler(Command handlerCommand) {
-        cancelTimeoutTask();
-        if (!removed) {
-            logger.trace("onCommandFromHandler: {}", itemChannelLink);
-            targetState = OnOffType.from(inverted);
-            callback.sendCommand(targetState);
-            rescheduleTimeoutTask();
+        synchronized (this) {
+            cancelTimeoutTask();
+            if (!removed) {
+                logger.trace("onCommandFromHandler: {}", itemChannelLink);
+                targetState = OnOffType.from(inverted);
+                callback.sendCommand(targetState);
+                rescheduleTimeoutTask();
+            }
         }
     }
 
     @Override
     public void onStateUpdateFromHandler(State handlerState) {
-        cancelTimeoutTask();
-        if (!removed) {
-            logger.trace("onStateUpdateFromHandler: {}", itemChannelLink);
-            targetState = OnOffType.from(inverted);
-            callback.sendUpdate(targetState);
-            rescheduleTimeoutTask();
+        synchronized (this) {
+            cancelTimeoutTask();
+            if (!removed) {
+                logger.trace("onStateUpdateFromHandler: {}", itemChannelLink);
+                targetState = OnOffType.from(inverted);
+                callback.sendUpdate(targetState);
+                rescheduleTimeoutTask();
+            }
         }
     }
 
-    private synchronized void cancelTimeoutTask() {
+    private void cancelTimeoutTask() {
         if (timeoutTask instanceof ScheduledFuture<?> task) {
             task.cancel(false);
         }
@@ -165,10 +175,12 @@ public class InactivityProfile implements StateProfile, RegistryChangeListener<I
     @Override
     public void removed(ItemChannelLink removedLink) {
         if (removedLink.equals(itemChannelLink)) {
-            logger.debug("Removed: {}", itemChannelLink);
-            removed = true;
-            cancelTimeoutTask();
-            linkRegistry.removeRegistryChangeListener(this);
+            synchronized (this) {
+                logger.debug("Removed: {}", itemChannelLink);
+                removed = true;
+                cancelTimeoutTask();
+                linkRegistry.removeRegistryChangeListener(this);
+            }
         }
     }
 
