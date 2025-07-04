@@ -76,7 +76,7 @@
 		<label>Air Quality</label>
 		<description>Air quality conditions</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true"></state>
