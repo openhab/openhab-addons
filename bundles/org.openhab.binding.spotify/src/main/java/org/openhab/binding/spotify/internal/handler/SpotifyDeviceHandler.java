@@ -15,9 +15,12 @@ package org.openhab.binding.spotify.internal.handler;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
+import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -49,6 +52,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
     private String deviceName = "";
     private String deviceId = "";
+    private String deviceType = "";
 
     private boolean active;
 
@@ -89,7 +93,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
             deviceName = "";
         } else {
-            commandHandler = new SpotifyHandleCommands(spotifyApi);
+            commandHandler = new SpotifyHandleCommands(bridgeHandler, spotifyApi);
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
@@ -113,6 +117,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     public boolean updateDeviceStatus(Device device, boolean playing) {
         if (deviceName.equals(device.getName())) {
             deviceId = device.getId() == null ? "" : device.getId();
+            deviceType = device.getType();
             logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), deviceId,
                     device.getName(), device.getType());
             final boolean online = setOnlineStatus(device.isRestricted());
@@ -123,8 +128,25 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
             active = device.isActive();
             updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(active));
-            updateChannelState(CHANNEL_DEVICEPLAYER,
-                    online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+
+            // updateChannelState(CHANNEL_DEVICEPLAYER,
+            // online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+
+            MediaStateType mediaStateType = new MediaStateType(
+                    online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE, new StringType(deviceId),
+                    new StringType(SpotifyBindingConstants.BINDING_ID));
+
+            final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
+            final CurrentlyPlayingContext playingContext = bridgeHandler.getCurrentlyPlayingContext();
+
+            mediaStateType.setCurrentPlayingPosition(playingContext.getProgressMs());
+            mediaStateType.setCurrentPlayingTrackDuration(playingContext.getItem().getDurationMs());
+            mediaStateType.setCurrentPlayingTrackName(playingContext.getItem().getName());
+            mediaStateType.setCurrentPlayingArtistName(playingContext.getItem().getArtists().getFirst().getName());
+            mediaStateType.setCurrentPlayingArtUri(playingContext.getItem().getAlbum().getImages().getFirst().getUrl());
+            mediaStateType.setCurrentPlayingVolume(device.getVolumePercent());
+
+            updateChannelState(CHANNEL_DEVICEPLAYER, mediaStateType);
             return true;
         } else {
             return false;
@@ -181,5 +203,9 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
         }
+    }
+
+    public String getDeviceType() {
+        return deviceType;
     }
 }
