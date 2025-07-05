@@ -13,6 +13,7 @@ This bundle provides a list of useful Profiles:
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
+| [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
 
 ## Generic Command Profile
 
@@ -334,5 +335,29 @@ Number:Power MaximumPowerLimit { unit="W" }
 
 Number:Power PowerUsage {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= MinimumPowerLimit", "< MaximumPowerLimit" ]
+}
+```
+
+## Inactivity Profile
+
+This profile sets the state of the item to `ON` if the binding has not provided any new data values within a given timeout period.
+The purpose is to indicate an alarm condition if the binding is no longer providing values for the given channel.
+
+### Inactivity Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                                                                                                                                              |
+|-------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `timeout`               | text    | Duration after which the item's state is updated if no data is received from the binding. The default is 1h. The format is the same as used in the [expire parameter](https://www.openhab.org/docs/configuration/items). |
+| `inverted`              | boolean | Optional. If false (default), the item's state is initially OFF, and changes to ON after the timeout. If true, the behavior is reversed: the initial state is ON, and it changes to OFF after the timeout.               |
+
+### Inactivity Profile Example
+
+```java
+Switch myChannelInactivityStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="60m" ]
+}
+
+Switch myChannelActivityStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1d", inverted=true ]
 }
 ```
