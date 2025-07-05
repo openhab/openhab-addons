@@ -19,8 +19,8 @@ export class WindowCoveringDeviceType extends GenericDeviceType {
                 ...clusterValues,
             },
         );
-        endpoint.events.windowCovering.operationalStatus$Changed.on(value => {
-            this.sendBridgeEvent("windowCovering", "operationalStatus", value);
+        endpoint.events.windowCovering.operationalStatus$Changed.on((value, oldValue, context) => {
+            this.attributeChanged("windowCovering", "operationalStatus", value, context);
         });
         return endpoint;
     }

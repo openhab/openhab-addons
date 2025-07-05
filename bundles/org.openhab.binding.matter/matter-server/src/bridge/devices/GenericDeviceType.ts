@@ -1,4 +1,4 @@
-import { Endpoint, Logger } from "@matter/main";
+import { ActionContext, Endpoint, Logger } from "@matter/main";
 import { FixedLabelServer, LevelControlServer, OnOffServer } from "@matter/main/behaviors";
 import { LevelControl, OnOff } from "@matter/main/clusters";
 import { TypeFromPartialBitSchema } from "@matter/main/types";
@@ -38,11 +38,29 @@ export abstract class GenericDeviceType {
     abstract defaultClusterValues(): Record<string, any>;
     abstract createEndpoint(clusterValues: Record<string, any>): Endpoint;
 
-    public async updateState(clusterName: string, attributeName: string, attributeValue: any) {
+    public async updateStates(states: { clusterName: string; attributeName: string; state: any }[]) {
         const args = {} as { [key: string]: any };
-        args[clusterName] = {} as { [key: string]: any };
-        args[clusterName][attributeName] = attributeValue;
+        states.forEach(state => {
+            if (args[state.clusterName] === undefined) {
+                args[state.clusterName] = {} as { [key: string]: any };
+            }
+            args[state.clusterName][state.attributeName] = state.state;
+        });
+        logger.debug(`Updating states: ${JSON.stringify(args)}`);
         await this.endpoint.set(args);
+    }
+
+    protected attributeChanged(
+        clusterName: string,
+        attributeName: string,
+        attributeValue: any,
+        context?: ActionContext,
+    ) {
+        // if the context is undefined or the context is offline, do not send the event as this was openHAB initiated (prevents loopback)
+        if (context === undefined || context.offline === true) {
+            return;
+        }
+        this.sendBridgeEvent(clusterName, attributeName, attributeValue);
     }
 
     protected sendBridgeEvent(clusterName: string, attributeName: string, attributeValue: any) {
