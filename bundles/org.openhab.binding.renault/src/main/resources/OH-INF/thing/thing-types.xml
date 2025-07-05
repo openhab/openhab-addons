@@ -263,7 +263,7 @@
 		<category>Lock</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
