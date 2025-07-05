@@ -97,7 +97,7 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     private void scanForDevices() {
         this.api.ifPresent(api -> {
-            long timestampOfLastScan = getTimestampOfLastScan();
+            var timestampOfLastScan = getTimestampOfLastScan();
             try {
                 List<DeviceListResponseEntry> devices = api.getDeviceList();
                 logger.debug("Ecoflow discovery found {} devices", devices.size());
