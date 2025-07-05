@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.roborock.internal;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -104,7 +105,8 @@ public class RoborockWebTargets {
     @Nullable
     public Login doLogin(String email, String password)
             throws RoborockCommunicationException, RoborockAuthenticationException, NoSuchAlgorithmException {
-        String payload = "?username=" + email + "&password=" + password + "&needtwostepauth=false";
+        String payload = "?username=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&password="
+                + URLEncoder.encode(password, StandardCharsets.UTF_8) + "&needtwostepauth=false";
         safeToken = generateSafeToken(email);
         String response = invoke(getTokenUri + payload, HttpMethod.POST, null, null, null);
         return gson.fromJson(response, Login.class);
