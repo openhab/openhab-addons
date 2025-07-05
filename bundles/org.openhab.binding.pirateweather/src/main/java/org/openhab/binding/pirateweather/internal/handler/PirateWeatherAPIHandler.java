@@ -42,8 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link PirateWeatherAPIHandler} is responsible for accessing the Pirate Weather API.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherAPIHandler extends BaseBridgeHandler {

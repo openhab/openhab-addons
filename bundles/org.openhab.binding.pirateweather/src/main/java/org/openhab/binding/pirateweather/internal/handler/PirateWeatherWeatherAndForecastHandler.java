@@ -79,8 +79,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link PirateWeatherWeatherAndForecastHandler} is responsible for handling commands, which are sent to one of the
  * channels.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {

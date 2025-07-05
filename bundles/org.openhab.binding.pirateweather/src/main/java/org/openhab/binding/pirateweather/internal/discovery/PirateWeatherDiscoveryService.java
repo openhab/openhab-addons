@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link PirateWeatherDiscoveryService} creates things based on the configured location.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
