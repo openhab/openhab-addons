@@ -14,6 +14,7 @@ package org.openhab.binding.homeconnect.internal.discovery;
 
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoverySe
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(System.currentTimeMillis(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
     }
 
     @Override

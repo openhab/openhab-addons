@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.powermax.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,7 +100,7 @@ public class PowermaxDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     private void updateFromSettings(@Nullable PowermaxPanelSettings settings) {
         if (settings != null) {
-            long beforeUpdate = new Date().getTime();
+            Instant beforeUpdate = Instant.now();
 
             for (int i = 1; i <= settings.getNbZones(); i++) {
                 PowermaxZoneSettings zoneSettings = settings.getZoneSettings(i);

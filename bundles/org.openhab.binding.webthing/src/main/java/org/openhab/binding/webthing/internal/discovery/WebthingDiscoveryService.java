@@ -141,7 +141,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
 
     @Override
     protected synchronized void stopScan() {
-        removeOlderResults(Instant.now().minus(Duration.ofMinutes(10)).toEpochMilli());
+        removeOlderResults(Instant.now().minus(Duration.ofMinutes(10)));
 
         // stop running discovery tasks
         for (var future : runningDiscoveryTasks) {

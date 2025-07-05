@@ -86,7 +86,7 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService impleme
     }
 
     public void onHandlerRemoved() {
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     @Override

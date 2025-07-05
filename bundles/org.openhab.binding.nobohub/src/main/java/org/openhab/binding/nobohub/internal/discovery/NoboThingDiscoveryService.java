@@ -71,7 +71,7 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     public void detectZones(Collection<Zone> zones) {

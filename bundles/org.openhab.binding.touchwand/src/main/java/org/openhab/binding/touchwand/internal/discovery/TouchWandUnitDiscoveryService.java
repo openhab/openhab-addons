@@ -137,14 +137,14 @@ public class TouchWandUnitDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
         super.initialize();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
     }
 
     @Override

@@ -81,7 +81,7 @@ public class MieleApplianceDiscoveryService extends AbstractThingHandlerDiscover
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
         thingHandler.unregisterDiscoveryListener(this);
     }
 

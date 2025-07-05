@@ -134,6 +134,6 @@ public class OwDiscoveryService extends AbstractThingHandlerDiscoveryService<Ows
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 }

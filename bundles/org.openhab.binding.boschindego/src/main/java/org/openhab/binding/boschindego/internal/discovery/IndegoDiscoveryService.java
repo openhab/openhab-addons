@@ -84,6 +84,6 @@ public class IndegoDiscoveryService extends AbstractThingHandlerDiscoveryService
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 }

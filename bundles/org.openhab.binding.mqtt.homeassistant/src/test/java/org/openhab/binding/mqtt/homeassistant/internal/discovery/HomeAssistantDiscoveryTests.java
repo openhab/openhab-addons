@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -202,6 +203,12 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
 
         @Override
         public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+        }
+
+        @Override
+        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+                @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+            return Collections.emptyList();
         }
 
         @Override

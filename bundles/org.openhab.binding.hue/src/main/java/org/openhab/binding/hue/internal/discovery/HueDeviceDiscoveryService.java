@@ -127,7 +127,7 @@ public class HueDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), bridgeUID);
+        removeOlderResults(Instant.now(), bridgeUID);
         thingHandler.unregisterDiscoveryListener();
     }
 

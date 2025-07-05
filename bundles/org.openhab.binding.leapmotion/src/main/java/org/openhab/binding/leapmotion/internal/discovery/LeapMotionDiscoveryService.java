@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.leapmotion.internal.discovery;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,6 +93,6 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void removeDiscoveryResult() {
-        removeOlderResults(System.currentTimeMillis());
+        removeOlderResults(Instant.now());
     }
 }

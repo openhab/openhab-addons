@@ -86,7 +86,7 @@ public class SmartherModuleDiscoveryService extends AbstractThingHandlerDiscover
     public void dispose() {
         super.dispose();
         logger.debug("Bridge[{}] Deactivating chronothermostat discovery service", this.bridgeUID);
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     @Override

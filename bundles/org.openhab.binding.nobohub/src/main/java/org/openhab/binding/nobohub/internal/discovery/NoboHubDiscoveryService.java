@@ -72,7 +72,7 @@ public class NoboHubDiscoveryService extends AbstractThingHandlerDiscoveryServic
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     private final Runnable scanner = new Runnable() {
