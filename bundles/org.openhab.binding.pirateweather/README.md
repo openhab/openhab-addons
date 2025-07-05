@@ -39,7 +39,7 @@ Once the system location will be changed, the background discovery updates the c
 | Parameter      | Description                                                                                                                    |
 |----------------|-------------------------------------------------------------------------------------------------------------------------------|
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                  |
-| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48", step="1").                         |
+| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="24", step="1").                         |
 | forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 8 (min="0", max="8", step="1"). |
 | numberOfAlerts | Number of alerts to be shown. Optional, the default value is 0 (min="0", step="1").                                           |
 
@@ -73,64 +73,64 @@ Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` w
 
 ### Hourly Forecast
 
-| Channel Group ID                                      | Channel ID           | Item Type            | Description                                          |
-|-------------------------------------------------------|----------------------|----------------------|------------------------------------------------------|
-| forecastHours01, forecastHours02, ... forecastHours48 | time-stamp           | DateTime             | Time of data forecasted.                             |
-| forecastHours01, forecastHours02, ... forecastHours48 | condition            | String               | Forecast weather condition.                          |
-| forecastHours01, forecastHours02, ... forecastHours48 | icon-id              | String               | Id of the forecasted weather condition. **Advanced** |
-| forecastHours01, forecastHours02, ... forecastHours48 | temperature          | Number:Temperature   | Forecasted temperature.                              |
-| forecastHours01, forecastHours02, ... forecastHours48 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                     |
-| forecastHours01, forecastHours02, ... forecastHours48 | pressure             | Number:Pressure      | Forecasted barometric pressure.                      |
-| forecastHours01, forecastHours02, ... forecastHours48 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                     |
-| forecastHours01, forecastHours02, ... forecastHours48 | wind-speed           | Number:Speed         | Forecasted wind speed.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | wind-direction       | Number:Angle         | Forecasted wind direction.                           |
-| forecastHours01, forecastHours02, ... forecastHours48 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                  |
-| forecastHours01, forecastHours02, ... forecastHours48 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | visibility           | Number:Length        | Forecasted visibility.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | rain                 | Number:Speed         | Forecasted rain intensity.                           |
-| forecastHours01, forecastHours02, ... forecastHours48 | snow                 | Number:Speed         | Forecasted snow intensity.                           |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-intensity     | Number:Speed         | Forecasted precipitation intensity.                  |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-probability   | Number:Dimensionless | Forecasted precipitation probability.                |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-type          | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
-| forecastHours01, forecastHours02, ... forecastHours48 | uvindex              | Number               | Forecasted UV index.                                 |
-| forecastHours01, forecastHours02, ... forecastHours48 | ozone                | Number:ArealDensity  | Forecasted ozone.                                    |
+| Channel Group ID                                            | Channel ID           | Item Type            | Description                                          |
+|-------------------------------------------------------------|----------------------|----------------------|------------------------------------------------------|
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | time-stamp           | DateTime             | Time of data forecasted.                             |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | condition            | String               | Forecast weather condition.                          |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | icon-id              | String               | Id of the forecasted weather condition. **Advanced** |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | temperature          | Number:Temperature   | Forecasted temperature.                              |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                     |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | pressure             | Number:Pressure      | Forecasted barometric pressure.                      |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                     |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | wind-speed           | Number:Speed         | Forecasted wind speed.                               |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | wind-direction       | Number:Angle         | Forecasted wind direction.                           |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                  |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                               |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | visibility           | Number:Length        | Forecasted visibility.                               |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | rain                 | Number:Speed         | Forecasted rain intensity.                           |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | snow                 | Number:Speed         | Forecasted snow intensity.                           |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | precip-intensity     | Number:Speed         | Forecasted precipitation intensity.                  |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | precip-probability   | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | precip-type          | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | uvindex              | Number               | Forecasted UV index.                                 |
+| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | ozone                | Number:ArealDensity  | Forecasted ozone.                                    |
 
 ### Daily Forecast
 
-| Channel Group ID                                                | Channel ID               | Item Type            | Description                                          |
-|-----------------------------------------------------------------|--------------------------|----------------------|------------------------------------------------------|
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp               | DateTime             | Time of data forecasted.                             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | condition                | String               | Forecast weather condition.                          |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | icon-id                  | String               | Id of the forecasted weather condition. **Advanced** |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | min-temperature          | Number:Temperature   | Minimum forecasted temperature of a day.             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | max-temperature          | Number:Temperature   | Maximum forecasted temperature of a day.             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | min-apparent-temperature | Number:Temperature   | Minimum forecasted apparent temperature of a day.    |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | max-apparent-temperature | Number:Temperature   | Maximum forecasted apparent temperature of a day.    |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | pressure                 | Number:Pressure      | Forecasted barometric pressure.                      |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | humidity                 | Number:Dimensionless | Forecasted atmospheric humidity.                     |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | wind-speed               | Number:Speed         | Forecasted wind speed.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | wind-direction           | Number:Angle         | Forecasted wind direction.                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | gust-speed               | Number:Speed         | Forecasted gust speed. **Advanced**                  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | cloudiness               | Number:Dimensionless | Forecasted cloudiness.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | visibility               | Number:Length        | Forecasted visibility.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | rain                     | Number:Speed         | Forecasted rain intensity.                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | snow                     | Number:Speed         | Forecasted snow intensity.                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-intensity         | Number:Speed         | Forecasted precipitation intensity.                  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-probability       | Number:Dimensionless | Forecasted precipitation probability.                |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-type              | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex                  | Number               | Forecasted UV index.                                 |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | ozone                    | Number:ArealDensity  | Forecasted ozone.                                    |
+| Channel Group ID                                                      | Channel ID               | Item Type            | Description                                          |
+|-----------------------------------------------------------------------|--------------------------|----------------------|------------------------------------------------------|
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | time-stamp               | DateTime             | Time of data forecasted.                             |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | condition                | String               | Forecast weather condition.                          |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | icon-id                  | String               | Id of the forecasted weather condition. **Advanced** |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | min-temperature          | Number:Temperature   | Minimum forecasted temperature of a day.             |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | max-temperature          | Number:Temperature   | Maximum forecasted temperature of a day.             |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | min-apparent-temperature | Number:Temperature   | Minimum forecasted apparent temperature of a day.    |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | max-apparent-temperature | Number:Temperature   | Maximum forecasted apparent temperature of a day.    |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | pressure                 | Number:Pressure      | Forecasted barometric pressure.                      |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | humidity                 | Number:Dimensionless | Forecasted atmospheric humidity.                     |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | wind-speed               | Number:Speed         | Forecasted wind speed.                               |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | wind-direction           | Number:Angle         | Forecasted wind direction.                           |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | gust-speed               | Number:Speed         | Forecasted gust speed. **Advanced**                  |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | cloudiness               | Number:Dimensionless | Forecasted cloudiness.                               |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | visibility               | Number:Length        | Forecasted visibility.                               |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | rain                     | Number:Speed         | Forecasted rain intensity.                           |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | snow                     | Number:Speed         | Forecasted snow intensity.                           |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | precip-intensity         | Number:Speed         | Forecasted precipitation intensity.                  |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | precip-probability       | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | precip-type              | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | uvindex                  | Number               | Forecasted UV index.                                 |
+| forecast-today, forecast-tomorrow, forecast-day-2, ... forecast-day-7 | ozone                    | Number:ArealDensity  | Forecasted ozone.                                    |
 
 ### Severe Weather Alerts
 
-| Channel Group ID      | Channel ID  | Item Type | Description                                                                                  |
-|-----------------------|-------------|-----------|----------------------------------------------------------------------------------------------|
-| alerts1, alerts2, ... | title       | String    | A brief description of the alert.                                                            |
-| alerts1, alerts2, ... | description | String    | A detailed description of the alert.                                                         |
-| alerts1, alerts2, ... | severity    | String    | The severity of the alert.                                                                   |
-| alerts1, alerts2, ... | issued      | DateTime  | The time at which the alert was issued.                                                      |
-| alerts1, alerts2, ... | expires     | DateTime  | The time at which the alert will expire.                                                     |
-| alerts1, alerts2, ... | uri         | String    | An external URI that one may refer to for detailed information about the alert. **Advanced** |
+| Channel Group ID        | Channel ID  | Item Type | Description                                                                                  |
+|-------------------------|-------------|-----------|----------------------------------------------------------------------------------------------|
+| alerts-1, alerts-2, ... | title       | String    | A brief description of the alert.                                                            |
+| alerts-1, alerts-2, ... | description | String    | A detailed description of the alert.                                                         |
+| alerts-1, alerts-2, ... | severity    | String    | The severity of the alert.                                                                   |
+| alerts-1, alerts-2, ... | issued      | DateTime  | The time at which the alert was issued.                                                      |
+| alerts-1, alerts-2, ... | expires     | DateTime  | The time at which the alert will expire.                                                     |
+| alerts-1, alerts-2, ... | uri         | String    | An external URI that one may refer to for detailed information about the alert. **Advanced** |
 
 ## Trigger Channels
 
@@ -201,47 +201,47 @@ Number:ArealDensity localCurrentOzone "Current ozone [%.1f %unit%]" <none> { cha
 DateTime localSunrise "Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <sun> { channel="pirateweather:weather-and-forecast:api:local:current#sunrise" }
 DateTime localSunset "Sunset [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <sun> { channel="pirateweather:weather-and-forecast:api:local:current#sunset" }
 
-DateTime localDailyForecastTodayTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#time-stamp" }
-String localDailyForecastTodayCondition "Condition for today [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#condition" }
-Number:Temperature localDailyForecastTodayMinTemperature "Minimum temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#min-temperature" }
-Number:Temperature localDailyForecastTodayMaxTemperature "Maximum temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#max-temperature" }
-Number:Temperature localDailyForecastTodayMinApparentTemperature "Minimum apparent temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#min-apparent-temperature" }
-Number:Temperature localDailyForecastTodayMaxApparentTemperature "Maximum apparent temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#max-apparent-temperature" }
-Number:Pressure localDailyForecastTodayPressure "Barometric pressure for today [%.1f %unit%]" <pressure> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#pressure" }
-Number:Dimensionless localDailyForecastTodayHumidity "Atmospheric humidity for today [%d %unit%]" <humidity> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#humidity" }
-Number:Speed localDailyForecastTodayWindSpeed "Wind speed for today [%.1f km/h]" <wind> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#wind-speed" }
-Number:Angle localDailyForecastTodayWindDirection "Wind direction for today [%d %unit%]" <wind> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#wind-direction" }
-Number:Dimensionless localDailyForecastTodayCloudiness "Cloudiness for today [%d %unit%]" <clouds> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#cloudiness" }
-Number:Speed localDailyForecastTodayRainIntensity "Rain intensity for today [%.2f mm/h]" <rain> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#rain" }
-Number:Speed localDailyForecastTodaySnowIntensity "Snow intensity for today [%.2f mm/h]" <snow> { channel="pirateweather:weather-and-forecast:api:local:forecastToday#snow" }
+DateTime localDailyForecastTodayTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#time-stamp" }
+String localDailyForecastTodayCondition "Condition for today [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#condition" }
+Number:Temperature localDailyForecastTodayMinTemperature "Minimum temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#min-temperature" }
+Number:Temperature localDailyForecastTodayMaxTemperature "Maximum temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#max-temperature" }
+Number:Temperature localDailyForecastTodayMinApparentTemperature "Minimum apparent temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#min-apparent-temperature" }
+Number:Temperature localDailyForecastTodayMaxApparentTemperature "Maximum apparent temperature for today [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#max-apparent-temperature" }
+Number:Pressure localDailyForecastTodayPressure "Barometric pressure for today [%.1f %unit%]" <pressure> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#pressure" }
+Number:Dimensionless localDailyForecastTodayHumidity "Atmospheric humidity for today [%d %unit%]" <humidity> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#humidity" }
+Number:Speed localDailyForecastTodayWindSpeed "Wind speed for today [%.1f km/h]" <wind> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#wind-speed" }
+Number:Angle localDailyForecastTodayWindDirection "Wind direction for today [%d %unit%]" <wind> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#wind-direction" }
+Number:Dimensionless localDailyForecastTodayCloudiness "Cloudiness for today [%d %unit%]" <clouds> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#cloudiness" }
+Number:Speed localDailyForecastTodayRainIntensity "Rain intensity for today [%.2f mm/h]" <rain> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#rain" }
+Number:Speed localDailyForecastTodaySnowIntensity "Snow intensity for today [%.2f mm/h]" <snow> { channel="pirateweather:weather-and-forecast:api:local:forecast-today#snow" }
 
-DateTime localDailyForecastTomorrowTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="pirateweather:weather-and-forecast:api:local:forecastTomorrow#time-stamp" }
-String localDailyForecastTomorrowCondition "Condition for tomorrow [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:local:forecastTomorrow#condition" }
-Number:Temperature localDailyForecastTomorrowMinTemperature "Minimum temperature for tomorrow [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastTomorrow#min-temperature" }
-Number:Temperature localDailyForecastTomorrowMaxTemperature "Maximum temperature for tomorrow [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastTomorrow#max-temperature" }
+DateTime localDailyForecastTomorrowTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="pirateweather:weather-and-forecast:api:local:forecast-tomorrow#time-stamp" }
+String localDailyForecastTomorrowCondition "Condition for tomorrow [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:local:forecast-tomorrow#condition" }
+Number:Temperature localDailyForecastTomorrowMinTemperature "Minimum temperature for tomorrow [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-tomorrow#min-temperature" }
+Number:Temperature localDailyForecastTomorrowMaxTemperature "Maximum temperature for tomorrow [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-tomorrow#max-temperature" }
 ...
 
-DateTime localDailyForecastDay2Timestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="pirateweather:weather-and-forecast:api:local:forecastDay2#time-stamp" }
-String localDailyForecastDay2Condition "Condition in 2 days [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:local:forecastDay2#condition" }
-Number:Temperature localDailyForecastDay2MinTemperature "Minimum temperature in 2 days [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastDay2#min-temperature" }
-Number:Temperature localDailyForecastDay2MaxTemperature "Maximum temperature in 2 days [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecastDay2#max-temperature" }
+DateTime localDailyForecastDay2Timestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="pirateweather:weather-and-forecast:api:local:forecast-day-2#time-stamp" }
+String localDailyForecastDay2Condition "Condition in 2 days [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:local:forecast-day-2#condition" }
+Number:Temperature localDailyForecastDay2MinTemperature "Minimum temperature in 2 days [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-day-2#min-temperature" }
+Number:Temperature localDailyForecastDay2MaxTemperature "Maximum temperature in 2 days [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:local:forecast-day-2#max-temperature" }
 ...
 
-String localAlert1Title "Weather warning! [%s]" <error> { channel="pirateweather:weather-and-forecast:api:local:alerts1#title" }
-String localAlert1Description "Description [%s]" <error> { channel="pirateweather:weather-and-forecast:api:local:alerts1#description" }
-String localAlert1Severity "Severity [%s]" <error> { channel="pirateweather:weather-and-forecast:api:local:alerts1#severity" }
-DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="pirateweather:weather-and-forecast:api:local:alerts1#issued" }
-DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="pirateweather:weather-and-forecast:api:local:alerts1#expires" }
+String localAlert1Title "Weather warning! [%s]" <error> { channel="pirateweather:weather-and-forecast:api:local:alerts-1#title" }
+String localAlert1Description "Description [%s]" <error> { channel="pirateweather:weather-and-forecast:api:local:alerts-1#description" }
+String localAlert1Severity "Severity [%s]" <error> { channel="pirateweather:weather-and-forecast:api:local:alerts-1#severity" }
+DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="pirateweather:weather-and-forecast:api:local:alerts-1#issued" }
+DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="pirateweather:weather-and-forecast:api:local:alerts-1#expires" }
 
 String miamiCurrentCondition "Current condition in Miami [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:miami:current#condition" }
 Number:Temperature miamiCurrentTemperature "Current temperature in Miami [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:miami:current#temperature" }
 ...
 
-String miamiHourlyForecast01Condition "Condition in Miami for the next hour [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:miami:forecastHours01#condition" }
-Number:Temperature miamiHourlyForecast01Temperature "Temperature in Miami for the next hour [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:miami:forecastHours01#temperature" }
+String miamiHourlyForecast01Condition "Condition in Miami for the next hour [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:miami:forecast-hours-01#condition" }
+Number:Temperature miamiHourlyForecast01Temperature "Temperature in Miami for the next hour [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:miami:forecast-hours-01#temperature" }
 ...
-String miamiHourlyForecast02Condition "Condition in Miami for hours 1 to 2 [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:miami:forecastHours02#condition" }
-Number:Temperature miamiHourlyForecast02Temperature "Temperature in Miami for hours 1 to 2 [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:miami:forecastHours02#temperature" }
+String miamiHourlyForecast02Condition "Condition in Miami for hours 1 to 2 [%s]" <sun_clouds> { channel="pirateweather:weather-and-forecast:api:miami:forecast-hours-02#condition" }
+Number:Temperature miamiHourlyForecast02Temperature "Temperature in Miami for hours 1 to 2 [%.1f %unit%]" <temperature> { channel="pirateweather:weather-and-forecast:api:miami:forecast-hours-02#temperature" }
 ...
 ```
 
@@ -250,7 +250,7 @@ Number:Temperature miamiHourlyForecast02Temperature "Temperature in Miami for ho
 demo.sitemap
 
 ```perl
-sitemap demo label="Dark Sky" {
+sitemap demo label="Pirate Weather" {
     Frame label="Local Weather Station" {
         Text item=localStationId
         Text item=localStationName

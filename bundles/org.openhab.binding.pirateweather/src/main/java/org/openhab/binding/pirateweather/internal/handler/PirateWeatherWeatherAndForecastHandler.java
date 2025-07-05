@@ -92,9 +92,9 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private static final String PRECIP_TYPE_SNOW = "snow";
     private static final String PRECIP_TYPE_RAIN = "rain";
 
-    private static final String CHANNEL_GROUP_HOURLY_FORECAST_PREFIX = "forecastHours";
-    private static final String CHANNEL_GROUP_DAILY_FORECAST_PREFIX = "forecastDay";
-    private static final String CHANNEL_GROUP_ALERTS_PREFIX = "alerts";
+    private static final String CHANNEL_GROUP_HOURLY_FORECAST_PREFIX = "forecast-hours-";
+    private static final String CHANNEL_GROUP_DAILY_FORECAST_PREFIX = "forecast-day-";
+    private static final String CHANNEL_GROUP_ALERTS_PREFIX = "alerts-";
     private static final Pattern CHANNEL_GROUP_HOURLY_FORECAST_PREFIX_PATTERN = Pattern
             .compile(CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + "([0-9]*)");
     private static final Pattern CHANNEL_GROUP_DAILY_FORECAST_PREFIX_PATTERN = Pattern
