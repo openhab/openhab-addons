@@ -7,12 +7,20 @@
 	<channel-type id="sw-btn">
 		<item-type>Switch</item-type>
 		<label>Button Switch</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="curtainControl">
 		<item-type>Rollershutter</item-type>
 		<label>Curtain</label>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
@@ -30,7 +38,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -41,6 +49,10 @@
 		<description>
 			This channel shows the brightness of the environment of the device.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -51,7 +63,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -76,12 +88,20 @@
 		<label>Sound Volume</label>
 		<description>This channel controls the volume of the gateway for playing sounds</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="enableSound">
 		<item-type>Switch</item-type>
 		<label>Switch to Turn Sound Off When Playing</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rotationAngle">
@@ -93,6 +113,10 @@
 	<channel-type id="rotationTime">
 		<item-type>Number:Time</item-type>
 		<label>Cube Rotation Time</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="false" pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -100,12 +124,20 @@
 		<item-type>Switch</item-type>
 		<label>Gas Detected</label>
 		<category>Gas</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="leak">
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -119,6 +151,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -127,6 +163,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -135,6 +175,10 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -143,6 +187,10 @@
 		<item-type>Contact</item-type>
 		<label>Open Status</label>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -175,6 +223,10 @@
 		<item-type>Switch</item-type>
 		<label>Motion Status</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -204,6 +256,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<category>PowerOutlet</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="inUse">
@@ -215,18 +271,30 @@
 	<channel-type id="loadPower">
 		<item-type>Number</item-type>
 		<label>Provided Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f W" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="powerConsumed">
 		<item-type>Number</item-type>
 		<label>Power Consumed</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f kWh" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="density">
 		<item-type>Number</item-type>
 		<label>Particle Density</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -234,6 +302,10 @@
 		<item-type>Switch</item-type>
 		<label>Smoke Detected</label>
 		<category>Smoke</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
