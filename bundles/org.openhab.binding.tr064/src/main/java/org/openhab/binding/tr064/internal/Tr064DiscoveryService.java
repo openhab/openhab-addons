@@ -52,7 +52,7 @@ public class Tr064DiscoveryService extends AbstractThingHandlerDiscoveryService<
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
     }
 
     @Override

@@ -20,6 +20,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -139,6 +140,12 @@ public class HueDeviceDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent
 
             @Override
             public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+            }
+
+            @Override
+            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+                    @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+                return null;
             }
 
             @Override

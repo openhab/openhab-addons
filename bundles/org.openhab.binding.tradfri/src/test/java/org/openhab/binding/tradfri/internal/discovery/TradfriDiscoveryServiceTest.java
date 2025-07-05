@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import org.junit.jupiter.api.AfterEach;
@@ -64,6 +65,12 @@ public class TradfriDiscoveryServiceTest {
         @Override
         public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
             discoveryResult = result;
+        }
+
+        @Override
+        public Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+                Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+            return null;
         }
 
         @Override
