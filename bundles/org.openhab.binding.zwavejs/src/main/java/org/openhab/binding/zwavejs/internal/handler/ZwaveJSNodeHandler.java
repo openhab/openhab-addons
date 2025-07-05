@@ -96,7 +96,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private boolean configurationAsChannels = false;
     protected ScheduledExecutorService executorService = scheduler;
 
-    // nodes may contain multiple lighting end points; this map has each one's ColorCapability
+    // Nodes may contain multiple lighting endpoints; this map holds each one's ColorCapability.
     private Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
 
     public ZwaveJSNodeHandler(final Thing thing, final ZwaveJSTypeGenerator typeGenerator) {
@@ -238,12 +238,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return handlePercentTypeCommand(channelConfig, channel, colorCap, true, false, percent);
         }
 
-        // For dimmer channels, ON is mapped to 255, as that means restore to last brightness
+        // For dimmer channels, ON is mapped to 255, which means restore to the last brightness.
         if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType())) {
             return (OnOffType.ON == onOffCommand) ? 255 : 0;
         }
 
-        // For other types, handle inversion if needed
+        // For other types, handle inversion if needed.
         return (onOffCommand == (channelConfig.inverted ? OnOffType.OFF : OnOffType.ON));
     }
 
@@ -269,13 +269,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             return null;
         }
 
-        // For non-color channels, handle inversion and dimmer 100% edge case
+        // For non-color channels, handle inversion and the dimmer 100% edge case.
         int value = percentTypeCommand.intValue();
         if (channelConfig.inverted) {
             value = 100 - value;
         }
 
-        // For dimmers, 100% is often represented as 99
+        // For dimmers, 100% is often represented as 99.
         if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType()) && value == 100) {
             value = 99;
         }
@@ -310,7 +310,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
             if (isColorChannelCommand && colorCap != null
                     && colorCap.dimmerChannel instanceof ChannelUID dimmerChannel) {
-                // schedule brightness command(s) for dimmer channel(s)
+                // Schedule brightness command(s) for dimmer channel(s)
                 scheduler.submit(() -> handleCommand(dimmerChannel, hsbTypeCommand.getBrightness()));
             }
             return colorMap;

@@ -2,18 +2,18 @@
 
 The `zwavejs` binding integrates Z-Wave JS with openHAB, allowing you to control and monitor Z-Wave devices using the Z-Wave JS Webservice (part of Z-Wave JS UI).
 This binding supports a wide range of Z-Wave devices, including sensors, switches, dimmers, and more.
-For documentation about Z-Wave JS UI please visit <https://zwave-js.github.io/zwave-js-ui/>
+For documentation about Z-Wave JS UI, please visit <https://zwave-js.github.io/zwave-js-ui/>.
 
 ## Prerequisites
 
 Before using the `zwavejs` binding, ensure the following prerequisites are met:
 
-- You have a running instance of the [Z-Wave JS](https://zwave-js.github.io/zwave-js-ui/).
-- Your Z-Wave controller is properly connected and recognized the Z-Wave JS.
-- The Z-wave JS instance has the Webservice enabled (Settings -> HomeAssistent -> WS Server).
+- You have a running instance of [Z-Wave JS](https://zwave-js.github.io/zwave-js-ui/).
+- Your Z-Wave controller is properly connected and recognized by Z-Wave JS.
+- The Z-Wave JS instance has the Webservice enabled (Settings -> Home Assistant -> WS Server).
 - Network connectivity exists between openHAB and the Z-Wave JS Webservice (the hostname and port must be reachable from openHAB).
 
-**Note**: If you are transitioning from the native Z-Wave binding to the `zwavejs` binding, you can safely test this binding without permanently affecting your setup. All node information will remain on your controller as usual. However, please avoid performing a manual reset unless absolutely necessary, as it may complicate reverting back to the native binding.
+**Note**: If you are transitioning from the native Z-Wave binding to the `zwavejs` binding, you can safely test this binding without permanently affecting your setup. All node information will remain on your controller as usual. However, please avoid performing a manual reset unless absolutely necessary, as it may complicate reverting to the native binding.
 
 ## Supported Things
 
@@ -22,7 +22,7 @@ This binding supports the following types of things:
 - `gateway`: Represents the Z-Wave JS Webservice bridge. This is required to communicate with the Z-Wave network.
 - `node`: Represents a Z-Wave device (node) in the network. Each node can have multiple channels corresponding to its capabilities.
 
- **Note**: This binding does not maintain a Z-Wave device database and relies on the external Z-Wave JS project for device compatibility and functionality.
+**Note**: This binding does not maintain a Z-Wave device database and relies on the external Z-Wave JS project for device compatibility and functionality.
 
 ## Discovery
 
@@ -43,7 +43,7 @@ The configuration options include:
 | hostname              | text    | Hostname or IP address of the server                | N/A     | yes      | no       |
 | port                  | number  | Port number to access the service                   | 3000    | yes      | no       |
 | maxMessageSize        | number  | Maximum size of messages in bytes                   | 2097152 | no       | yes      |
-| configurationChannels | boolean | Expose the commandclass 'configuration' as channels | false   | no       | yes      |
+| configurationChannels | boolean | Expose the command class 'configuration' as channels | false   | no       | yes      |
 
 ## Thing Configuration
 
@@ -55,7 +55,7 @@ Only the advanced parameter `nodeId` can (optionally) be set in the Thing config
 
 Z-Wave nodes can have multiple channels corresponding to their capabilities.
 The channels can be linked to items in openHAB to control and monitor the device.
-These Channels are dynamically added to the Thing during node initialization and therefore there is no list of possible channels in this documentation.
+These channels are dynamically added to the Thing during node initialization; therefore, there is no list of possible channels in this documentation.
 
 ## Full Example
 

@@ -23,7 +23,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * A class encapsulating the color capability of a light end point
+ * A class encapsulating the color capability of a light endpoint
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

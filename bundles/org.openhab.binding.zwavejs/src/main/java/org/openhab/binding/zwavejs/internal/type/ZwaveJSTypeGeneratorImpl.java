@@ -81,7 +81,7 @@ import org.slf4j.LoggerFactory;
 public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
     private static final Object CHANNEL_TYPE_VERSION = "5"; // when static configuration is changed, the version must be
-                                                            // changed as well to force a new channel type generation
+                                                            // changed as well to force new channel type generation
     private static final Map<String, SemanticTag> ITEM_TYPES_TO_PROPERTY_TAGS = new HashMap<>();
     static {
         ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:ElectricCurrent", Property.CURRENT);
@@ -114,8 +114,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
      * Retrieves a Thing by its UID.
      *
      * @param thingUID the UID of the Thing
-     *
-     * @return the Thing, or null if not found
+     * @return the Thing, or {@code null} if not found
      */
     public @Nullable Thing getThing(ThingUID thingUID) {
         return thingRegistry.get(thingUID);
@@ -127,7 +126,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
      * @param thingUID the ThingUID of the device
      * @param node the Node containing the values to be processed
      * @param configurationAsChannels flag indicating whether to treat configuration as channels
-     *
      * @return a ZwaveJSTypeGeneratorResult containing the generated channels and configuration descriptions
      */
     @Override
@@ -154,7 +152,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
 
-        // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same end point
+        // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same endpoint
         mapDimmerChannelsToColorCapabilities(result);
 
         // add a color temperature channel if necessary
@@ -262,6 +260,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
     /**
      * Builds the Configuration object for a channel based on ChannelMetadata.
+     *
+     * @param details the channel metadata
+     * @return the Configuration object for the channel
      */
     private Configuration buildChannelConfiguration(ChannelMetadata details) {
         Configuration config = new Configuration();
@@ -283,6 +284,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
     /**
      * Updates the read/write properties of an existing channel configuration.
+     *
+     * @param config the Configuration object to update
+     * @param details the channel metadata containing the new properties
      */
     private void updateReadWriteProperties(Configuration config, ChannelMetadata details) {
         if (details.writeProperty instanceof Number writePropertyInteger) {
@@ -390,6 +394,10 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     /**
      * Helper method for setSemanticTags(). Matches information in the {@link ChannelMetadata} against the given
      * keywords.
+     *
+     * @param keyWords the list of keywords to match
+     * @param details the channel metadata to check
+     * @return true if any keyword matches, false otherwise
      */
     private static boolean match(List<String> keyWords, ChannelMetadata details) {
         List<String> sourceTexts = details.description instanceof String description
@@ -414,7 +422,11 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     /**
-     * Set the channel's Point and Property tags
+     * Sets the channel's Point and Property tags.
+     *
+     * @param builder the StateChannelTypeBuilder to update
+     * @param details the channel metadata
+     * @return the updated StateChannelTypeBuilder
      */
     private StateChannelTypeBuilder setSemanticTags(StateChannelTypeBuilder builder, ChannelMetadata details) {
         SemanticTag point = null;
@@ -615,12 +627,12 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     /**
-     * Iterate over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link ColorCapability} to find end points which
-     * support color temperature, and if found then add a respective color temperature channel to the
-     * {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel}
+     * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link ColorCapability} to find endpoints which
+     * support color temperature, and if found, adds a respective color temperature channel to the
+     * {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel}.
      *
-     * @param thingUID
-     * @param node
+     * @param thingUID the ThingUID
+     * @param node the Node
      * @param result the ZwaveJSTypeGeneratorResult that provides the inputs and receives the results
      */
     private void addColorTemperatureChannel(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result) {
@@ -665,9 +677,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     /**
-     * Iterate over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel} to find ones with the accepted Item
-     * type 'Dimmer' and such channel's endpoint has an entry in the {@link ZwaveJSTypeGeneratorResult}'s map of
-     * {@link ColorCapability} then add that channel to the respective ColorCapability's set of dimmer channels.
+     * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel} to find ones with the accepted Item
+     * type 'Dimmer' and, if such a channel's endpoint has an entry in the {@link ZwaveJSTypeGeneratorResult}'s map of
+     * {@link ColorCapability}, adds that channel to the respective ColorCapability's set of dimmer channels.
      *
      * @param result ZwaveJSTypeGeneratorResult that provides the inputs and receives the results
      */
@@ -685,11 +697,11 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     /**
-     * Parse the {@link ChannelMetadata} to determine the {@link ColorCapability} if any, and update the given
+     * Parses the {@link ChannelMetadata} to determine the {@link ColorCapability}, if any, and updates the given
      * {@link ZwaveJSTypeGeneratorResult}'s colorCapabilities map accordingly.
      *
-     * @param thingUID
-     * @param details the channel creation meta data
+     * @param thingUID the ThingUID
+     * @param details the channel creation metadata
      * @param result the ZwaveJSTypeGeneratorResult that receives the results
      */
     private void updateColorCapabilities(ThingUID thingUID, ChannelMetadata details,
