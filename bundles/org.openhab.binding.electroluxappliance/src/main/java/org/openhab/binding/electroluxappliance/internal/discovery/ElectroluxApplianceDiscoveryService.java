@@ -19,6 +19,7 @@ import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfi
 import org.openhab.binding.electroluxappliance.internal.handler.ElectroluxApplianceBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -43,23 +44,35 @@ public class ElectroluxApplianceDiscoveryService
     protected void startScan() {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         thingHandler.getElectroluxApplianceThings().entrySet().stream().forEach(thing -> {
-            String applianceType = thing.getValue().getApplianceType();
+            final String deviceType = thing.getValue().getApplianceInfo().getApplianceInfo().getDeviceType();
 
-            if ("PUREA9".equalsIgnoreCase(applianceType)) {
-                thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(THING_TYPE_ELECTROLUX_AIR_PURIFIER, bridgeUID, thing.getKey()))
-                        .withLabel("Electrolux Pure A9").withBridge(bridgeUID)
-                        .withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, thing.getKey())
-                        .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL).build());
-            } else if ("WM".equalsIgnoreCase(applianceType)) {
-                thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(THING_TYPE_ELECTROLUX_WASHING_MACHINE, bridgeUID, thing.getKey()))
-                        .withLabel("Electrolux Washing Machine").withBridge(bridgeUID)
-                        .withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, thing.getKey())
-                        .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL).build());
+            switch (deviceType) {
+                case "PORTABLE_AIR_CONDITIONER":
+                    handleThingDiscovered("Electrolux Air Conditioner", bridgeUID,
+                            THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER, thing.getKey());
+                    break;
+                default:
+                    final String applianceType = thing.getValue().getApplianceType();
+                    // These two have not been modified as they are not updated to use DTO data validation for commands,
+                    // and I cannot confirm the deviceTypes reported by them.
+                    // Hence they fall-back to the traditional discovery methods here.
+                    if ("PUREA9".equalsIgnoreCase(applianceType)) {
+                        handleThingDiscovered("Electrolux Pure A9", bridgeUID, THING_TYPE_ELECTROLUX_AIR_PURIFIER,
+                                thing.getKey());
+                    } else if ("WM".equalsIgnoreCase(applianceType)) {
+                        handleThingDiscovered("Electrolux Washing Machine", bridgeUID,
+                                THING_TYPE_ELECTROLUX_WASHING_MACHINE, thing.getKey());
+                    }
             }
         });
 
         stopScan();
+    }
+
+    private void handleThingDiscovered(final String label, final ThingUID bridgeUID, final ThingTypeUID thingTypeUID,
+            final String serialNo) {
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(thingTypeUID, bridgeUID, serialNo)).withLabel(label)
+                .withBridge(bridgeUID).withProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL, serialNo)
+                .withRepresentationProperty(ElectroluxApplianceConfiguration.SERIAL_NUMBER_LABEL).build());
     }
 }

@@ -277,38 +277,38 @@ public class WashingMachineStateDTO extends ApplianceStateDTO {
     }
 
     public static class UserSelections {
-        private boolean EWX1493A_ultraMix;
-        private boolean EWX1493A_stain;
+        private boolean ewx1493aUltraMix;
+        private boolean ewx1493aStain;
         private String adTankBSel = "";
         private String adFineTuneSoftLevel = "";
-        private boolean EWX1493A_wetMode;
+        private boolean ewx1493aWetMode;
         private String analogSpinSpeed = "";
-        private boolean EWX1493A_easyIron;
-        private boolean EWX1493A_rinseHold;
-        private boolean EWX1493A_wmEconomy;
-        private boolean EWX1493A_tcSensor;
+        private boolean ewx1493aEasyIron;
+        private boolean ewx1493aRinseHold;
+        private boolean ewx1493aWmEconomy;
+        private boolean ewx1493aTcSensor;
         private String programUID = "";
-        private boolean EWX1493A_anticreaseNoSteam;
-        private boolean EWX1493A_anticreaseWSteam;
+        private boolean ewx1493aAnticreaseNoSteam;
+        private boolean ewx1493aAnticreaseWSteam;
         private String adTankASel = "";
         private String timeManagerLevel = "";
-        private boolean EWX1493A_dryMode;
-        private boolean EWX1493A_preWashPhase;
+        private boolean ewx1493aDryMode;
+        private boolean ewx1493aPreWashPhase;
         private String extraRinseNumber = "";
         private String adFineTuneDetLevel = "";
-        private boolean EWX1493A_steamMode;
+        private boolean ewx1493aSteamMode;
         private String analogTemperature = "";
-        private boolean EWX1493A_nightCycle;
+        private boolean ewx1493aNightCycle;
         private String steamValue = "";
-        private boolean EWX1493A_intensive;
-        private boolean EWX1493A_pod;
+        private boolean ewx1493aIntensive;
+        private boolean ewx1493aPod;
 
-        public boolean isEWX1493A_ultraMix() {
-            return EWX1493A_ultraMix;
+        public boolean isEwx1493aUltraMix() {
+            return ewx1493aUltraMix;
         }
 
-        public boolean isEWX1493A_stain() {
-            return EWX1493A_stain;
+        public boolean isEwx1493aStain() {
+            return ewx1493aStain;
         }
 
         public String getAdTankBSel() {
@@ -319,40 +319,40 @@ public class WashingMachineStateDTO extends ApplianceStateDTO {
             return adFineTuneSoftLevel;
         }
 
-        public boolean isEWX1493A_wetMode() {
-            return EWX1493A_wetMode;
+        public boolean isEwx1493aWetMode() {
+            return ewx1493aWetMode;
         }
 
         public String getAnalogSpinSpeed() {
             return analogSpinSpeed;
         }
 
-        public boolean isEWX1493A_easyIron() {
-            return EWX1493A_easyIron;
+        public boolean isEwx1493aEasyIron() {
+            return ewx1493aEasyIron;
         }
 
-        public boolean isEWX1493A_rinseHold() {
-            return EWX1493A_rinseHold;
+        public boolean isEwx1493aRinseHold() {
+            return ewx1493aRinseHold;
         }
 
-        public boolean isEWX1493A_wmEconomy() {
-            return EWX1493A_wmEconomy;
+        public boolean isEwx1493aWmEconomy() {
+            return ewx1493aWmEconomy;
         }
 
-        public boolean isEWX1493A_tcSensor() {
-            return EWX1493A_tcSensor;
+        public boolean isEwx1493aTcSensor() {
+            return ewx1493aTcSensor;
         }
 
         public String getProgramUID() {
             return programUID;
         }
 
-        public boolean isEWX1493A_anticreaseNoSteam() {
-            return EWX1493A_anticreaseNoSteam;
+        public boolean isEwx1493aAnticreaseNoSteam() {
+            return ewx1493aAnticreaseNoSteam;
         }
 
-        public boolean isEWX1493A_anticreaseWSteam() {
-            return EWX1493A_anticreaseWSteam;
+        public boolean isEwx1493aAnticreaseWSteam() {
+            return ewx1493aAnticreaseWSteam;
         }
 
         public String getAdTankASel() {
@@ -363,12 +363,12 @@ public class WashingMachineStateDTO extends ApplianceStateDTO {
             return timeManagerLevel;
         }
 
-        public boolean isEWX1493A_dryMode() {
-            return EWX1493A_dryMode;
+        public boolean isEwx1493aDryMode() {
+            return ewx1493aDryMode;
         }
 
-        public boolean isEWX1493A_preWashPhase() {
-            return EWX1493A_preWashPhase;
+        public boolean isEwx1493aPreWashPhase() {
+            return ewx1493aPreWashPhase;
         }
 
         public String getExtraRinseNumber() {
@@ -379,28 +379,28 @@ public class WashingMachineStateDTO extends ApplianceStateDTO {
             return adFineTuneDetLevel;
         }
 
-        public boolean isEWX1493A_steamMode() {
-            return EWX1493A_steamMode;
+        public boolean isEwx1493aSteamMode() {
+            return ewx1493aSteamMode;
         }
 
         public String getAnalogTemperature() {
             return analogTemperature;
         }
 
-        public boolean isEWX1493A_nightCycle() {
-            return EWX1493A_nightCycle;
+        public boolean isEwx1493aNightCycle() {
+            return ewx1493aNightCycle;
         }
 
         public String getSteamValue() {
             return steamValue;
         }
 
-        public boolean isEWX1493A_intensive() {
-            return EWX1493A_intensive;
+        public boolean isEwx1493aIntensive() {
+            return ewx1493aIntensive;
         }
 
-        public boolean isEWX1493A_pod() {
-            return EWX1493A_pod;
+        public boolean isEwx1493aPod() {
+            return ewx1493aPod;
         }
     }
 
