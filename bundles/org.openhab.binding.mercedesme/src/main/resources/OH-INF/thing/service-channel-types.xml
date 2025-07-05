@@ -6,6 +6,10 @@
 	<channel-type id="starter-battery">
 		<item-type>Number</item-type>
 		<label>Starter Battery Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/StarterBatteryState.swift -->
 			<options>
@@ -20,31 +24,51 @@
 	<channel-type id="brake-fluid">
 		<item-type>Switch</item-type>
 		<label>Brake Fluid</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="brake-lining-wear">
 		<item-type>Switch</item-type>
 		<label>Brake Lining Wear</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wash-water">
 		<item-type>Switch</item-type>
 		<label>Wash Water Low</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="coolant-fluid">
 		<item-type>Switch</item-type>
 		<label>Coolant Fluid Low</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="engine">
 		<item-type>Switch</item-type>
 		<label>Engine Warning</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tires-rdk">
 		<item-type>Number</item-type>
 		<label>Tire Pressure Warnings</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
