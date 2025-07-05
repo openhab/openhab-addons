@@ -254,8 +254,8 @@ public class Msg {
         this.replayed = replayed;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void resetTimestamp() {
+        this.timestamp = System.currentTimeMillis();
     }
 
     public boolean containsField(String key) {

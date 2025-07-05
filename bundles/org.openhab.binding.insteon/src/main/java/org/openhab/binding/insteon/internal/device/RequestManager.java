@@ -143,7 +143,7 @@ public class RequestManager {
 
         logger.trace("handling request for {}", device.getAddress());
 
-        long delay = device.handleNextRequest() - System.currentTimeMillis();
+        long delay = device.handleNextRequest();
         if (delay > 0) {
             addRequest(device, delay);
         } else {
