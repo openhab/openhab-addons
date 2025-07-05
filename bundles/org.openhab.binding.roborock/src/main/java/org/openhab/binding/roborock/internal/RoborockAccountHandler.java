@@ -95,6 +95,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private long lastSuccessfulPollTimestamp;
     private String token = "";
     private String rrHomeId = "";
+    private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
     private SecureRandom secureRandom = new SecureRandom();
 
@@ -122,7 +123,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     public Login doLogin() {
         try {
-            Login login = webTargets.doLogin(config.email, config.password);
+            Login login = webTargets.doLogin(baseUri, config.email, config.password);
             if (login != null) {
                 return login;
             }
@@ -142,7 +143,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     @Nullable
     public Home getHomeDetail() {
         try {
-            return webTargets.getHomeDetail(token);
+            return webTargets.getHomeDetail(baseUri, token, rriot);
         } catch (RoborockAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Authentication error " + e.getMessage());
@@ -211,6 +212,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing email address configuration");
             return;
+        }
+        if ("US".equals(config.region)) {
+            baseUri = "https://usiot.roborock.com";
+        } else if ("EU".equals(config.region)) {
+            baseUri = "https://euiot.roborock.com";
+        } else if ("RU".equals(config.region)) {
+            baseUri = "https://ruiot.roborock.com";
+        } else if ("CN".equals(config.region)) {
+            baseUri = "https://cniot.roborock.com";
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid region entered, must be US, EU, RU, CN");
         }
         updateStatus(ThingStatus.UNKNOWN);
         initTask.setNamePrefix(getThing().getUID().getId());

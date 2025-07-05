@@ -55,9 +55,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class RoborockWebTargets {
     private static final int TIMEOUT_MS = 30000;
-    private static final String BASE_URI = "https://usiot.roborock.com";
-    private static final String getTokenUri = BASE_URI + "/api/v1/login";
-    private static final String getHomeDetailUri = BASE_URI + "/api/v1/getHomeDetail";
+    private static final String getTokenPath = "/api/v1/login";
+    private static final String getHomeDetailPath = "/api/v1/getHomeDetail";
     private static final String getHomeDatapath = "/user/homes/";
     private static final String getRoutines = "/user/scene/device/";
     private static final String setRoutine = "/user/scene/";
@@ -103,18 +102,19 @@ public class RoborockWebTargets {
     }
 
     @Nullable
-    public Login doLogin(String email, String password)
+    public Login doLogin(String baseUri, String email, String password)
             throws RoborockCommunicationException, RoborockAuthenticationException, NoSuchAlgorithmException {
         String payload = "?username=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&password="
                 + URLEncoder.encode(password, StandardCharsets.UTF_8) + "&needtwostepauth=false";
         safeToken = generateSafeToken(email);
-        String response = invoke(getTokenUri + payload, HttpMethod.POST, null, null, null);
+        String response = invoke(baseUri + getTokenPath + payload, HttpMethod.POST, null, null, null);
         return gson.fromJson(response, Login.class);
     }
 
     @Nullable
-    public Home getHomeDetail(String token) throws RoborockCommunicationException, RoborockAuthenticationException {
-        String response = invoke(getHomeDetailUri, HttpMethod.GET, "Authorization", token, null);
+    public Home getHomeDetail(String baseUri, String token, Rriot rriot)
+            throws RoborockCommunicationException, RoborockAuthenticationException {
+        String response = invoke(baseUri + getHomeDetailPath, HttpMethod.GET, "Authorization", token, null);
         return gson.fromJson(response, Home.class);
     }
 
