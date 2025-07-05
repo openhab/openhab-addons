@@ -53,7 +53,7 @@
 		<description>Working mode of device</description>
 		<category>LightBulb</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>

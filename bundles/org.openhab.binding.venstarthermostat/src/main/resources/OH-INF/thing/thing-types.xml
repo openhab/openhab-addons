@@ -141,7 +141,7 @@
 		<label>Away Mode</label>
 		<description>Current Away Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
@@ -205,7 +205,7 @@
 		<label>Schedule Mode</label>
 		<description>Current Schedule Mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">

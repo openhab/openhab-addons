@@ -9,7 +9,7 @@
 		<label>Operating Mode</label>
 		<description>Operating mode (heating/cooling) for the thermostat in Velbus</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -25,7 +25,7 @@
 		<label>Mode</label>
 		<description>Mode (comfort/day/night/safe) for the thermostat in Velbus</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>

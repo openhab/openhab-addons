@@ -596,7 +596,7 @@
 		<label>Alarm Status</label>
 		<description>Verisure alarm status.</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>

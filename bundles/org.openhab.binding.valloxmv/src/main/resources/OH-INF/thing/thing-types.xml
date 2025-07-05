@@ -76,8 +76,8 @@
 		<label>State</label>
 		<description>Current state of ventilation unit</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Ventilation</tag>
+			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>

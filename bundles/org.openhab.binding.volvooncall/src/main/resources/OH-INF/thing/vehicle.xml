@@ -353,7 +353,7 @@
 		<category>lock</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 

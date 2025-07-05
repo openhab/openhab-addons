@@ -1842,7 +1842,7 @@
 		<label>Precip Prob</label>
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Forecast</tag>
 			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>

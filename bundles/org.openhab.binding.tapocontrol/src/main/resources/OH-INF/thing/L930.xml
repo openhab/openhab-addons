@@ -38,7 +38,7 @@
 		<label>Light Effect Theme</label>
 		<description>Name of lightning effect</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">

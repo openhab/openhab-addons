@@ -329,7 +329,7 @@
 		<description>Lock or unlock the car</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="driverreardoor" advanced="true">
