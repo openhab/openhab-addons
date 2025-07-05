@@ -345,10 +345,10 @@ The purpose is to indicate an alarm condition if the binding is no longer provid
 
 ### Inactivity Profile Configuration
 
-| Configuration Parameter | Type    | Description                                                                                                                                                                                                                                                                      |
-|-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `timeout`               | text    | The time out after which the profile will set the state of the item if the binding provides no updates. The default is 1h. It uses the same format as the [expire parameter]( https://www.openhab.org/docs/configuration/items)                                                  |
-| `inverted`              | boolean | Optional. When `false` (the default), the item's state is initially set to `OFF`, and when the binding provided no data within the timeout period, the item's state is updated to `ON`. When `inverted` is set to `true`, the initial state and the timeout states are inverted. |
+| Configuration Parameter | Type    | Description                                                                                                                                                                                                              |
+|-------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `timeout`               | text    | Duration after which the item's state is updated if no data is received from the binding. The default is 1h. The format is the same as used in the [expire parameter](https://www.openhab.org/docs/configuration/items). |
+| `inverted`              | boolean | Optional. If false (default), the item's state is initially OFF, and changes to ON after the timeout. If true, the behavior is reversed: the initial state is ON, and it changes to OFF after the timeout.               |
 
 ### Inactivity Profile Example
 

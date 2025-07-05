@@ -64,7 +64,7 @@ public class InactivityProfile implements StateProfile, RegistryChangeListener<I
 
         this.callback = callback;
         this.scheduler = context.getExecutorService();
-        this.inverted = config.inverted != null ? config.inverted : false;
+        this.inverted = config.inverted;
         this.linkRegistry = linkRegistry;
         this.linkRegistry.addRegistryChangeListener(this);
         this.itemChannelLink = callback.getItemChannelLink();
