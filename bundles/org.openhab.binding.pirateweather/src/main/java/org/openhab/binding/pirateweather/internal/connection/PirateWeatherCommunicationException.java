@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class PirateWeatherCommunicationException extends RuntimeException {
+public class PirateWeatherCommunicationException extends Exception {
 
     private static final long serialVersionUID = 1L;
 

@@ -19,8 +19,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 /**
  * The {@link PirateWeatherBindingConstants} class defines common constants, which are used across the whole binding.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherBindingConstants {
