@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -142,6 +143,12 @@ public class RuuviGatewayDiscoveryTests {
 
         @Override
         public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+        }
+
+        @Override
+        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+                @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+            return Collections.emptyList();
         }
 
         @Override

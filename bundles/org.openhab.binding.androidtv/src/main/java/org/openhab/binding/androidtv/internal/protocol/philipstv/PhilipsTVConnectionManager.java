@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -676,8 +677,14 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     }
 
     @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService discoveryService, long l,
-            @Nullable Collection<ThingTypeUID> collection, @Nullable ThingUID thingUID) {
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return Collections.emptyList();
     }
 

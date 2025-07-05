@@ -14,6 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +54,7 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
     private final Set<List<EnabledFeedTO>> discoveredFlashBriefings = new HashSet<>();
 
     private @Nullable ScheduledFuture<?> startScanStateJob;
-    private @Nullable Long activateTimeStamp;
+    private @Nullable Instant activateTimeStamp;
 
     public AmazonEchoDiscovery() {
         super(AccountHandler.class, SUPPORTED_ECHO_THING_TYPES_UIDS, 5);
@@ -62,7 +63,7 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
     @Override
     protected void startScan() {
         stopScanJob();
-        final Long activateTimeStamp = this.activateTimeStamp;
+        final Instant activateTimeStamp = this.activateTimeStamp;
         if (activateTimeStamp != null) {
             removeOlderResults(activateTimeStamp);
         }
@@ -111,7 +112,7 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
     @Override
     public void initialize() {
         if (activateTimeStamp == null) {
-            activateTimeStamp = new Date().getTime();
+            activateTimeStamp = Instant.now();
         }
         super.initialize();
     }
