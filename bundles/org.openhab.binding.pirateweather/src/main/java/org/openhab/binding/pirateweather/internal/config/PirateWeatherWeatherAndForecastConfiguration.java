@@ -19,8 +19,7 @@ import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAn
  * The {@link PirateWeatherWeatherAndForecastConfiguration} is the class used to match the
  * {@link PirateWeatherWeatherAndForecastHandler}s configuration.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherWeatherAndForecastConfiguration {

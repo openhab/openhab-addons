@@ -20,8 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link PirateWeatherJsonWeatherData} is the Java class used to map the JSON response to an Pirate Weather
  * request.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 public class PirateWeatherJsonWeatherData {
     private double latitude;
