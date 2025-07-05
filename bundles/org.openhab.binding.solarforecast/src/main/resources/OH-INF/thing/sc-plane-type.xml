@@ -17,11 +17,10 @@
 			<channel-group id="optimistic" typeId="optimistic-values"/>
 			<channel-group id="pessimistic" typeId="pessimistic-values"/>
 			<channel-group id="update" typeId="update-values"/>
-			<channel-group id="raw" typeId="raw-values"/>
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:solarforecast:sc-plane"/>
