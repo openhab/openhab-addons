@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.pirateweather</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: pirateweather Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Pirate Weather Binding</name>
 
 </project>
