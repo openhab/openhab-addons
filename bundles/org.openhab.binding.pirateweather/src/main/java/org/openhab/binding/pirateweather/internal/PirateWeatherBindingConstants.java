@@ -43,15 +43,15 @@ public class PirateWeatherBindingConstants {
 
     // Channel group types
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_HOURLY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
-            "hourlyForecast");
+            "hourly-forecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
-            "dailyForecast");
+            "daily-forecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ALERTS = new ChannelGroupTypeUID(BINDING_ID, "alerts");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_CURRENT_WEATHER = "current";
-    public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecastToday";
-    public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
+    public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecast-today";
+    public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecast-tomorrow";
     public static final String CHANNEL_GROUP_ALERTS = "alerts";
 
     // List of all channels
