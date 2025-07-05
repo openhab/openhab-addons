@@ -8,7 +8,7 @@
 		<label>Window Front Left</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -26,7 +26,7 @@
 		<label>Window Front Right </label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -44,7 +44,7 @@
 		<label>Window Rear Left</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -62,7 +62,7 @@
 		<label>Window Rear Right</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -80,7 +80,7 @@
 		<label>Window Blind Rear Right</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -89,7 +89,7 @@
 		<label>Window Blind Rear Left</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -98,7 +98,7 @@
 		<label>Window Blind Rear</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -107,7 +107,7 @@
 		<label>Flip Window</label>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

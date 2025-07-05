@@ -274,7 +274,7 @@
 		<description>The safety lock status.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 
@@ -284,7 +284,7 @@
 		<description>The door lock status Open/Closed.</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
