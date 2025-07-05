@@ -211,12 +211,6 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
             return Collections.emptyList();
         }
 
-        @Override
-        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-            return Collections.emptyList();
-        }
-
         public List<DiscoveryResult> getDiscoveryResults() {
             ArrayList<DiscoveryResult> localResults = new ArrayList<>(discoveryResults);
             discoveryResults.clear();

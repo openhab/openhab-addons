@@ -151,12 +151,6 @@ public class RuuviGatewayDiscoveryTests {
             return Collections.emptyList();
         }
 
-        @Override
-        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-            return Collections.emptyList();
-        }
-
         public CopyOnWriteArrayList<DiscoveryResult> getDiscoveryResults() {
             return discoveryResults;
         }
