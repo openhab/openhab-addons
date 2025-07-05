@@ -321,6 +321,10 @@
 		<item-type>Contact</item-type>
 		<label>Driver Front Door</label>
 		<description>Indicates if the front door at the driver's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="doorlock">
@@ -336,6 +340,10 @@
 		<item-type>Contact</item-type>
 		<label>Driver Rear Door</label>
 		<description>Indicates if the rear door at the driver's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="drivertemp" advanced="true">
@@ -383,6 +391,10 @@
 		<item-type>Switch</item-type>
 		<label>Front Trunk</label>
 		<description>Indicates if the front trunk is opened, or open the front trunk when ON is received</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="gpstimestamp" advanced="true">
 		<item-type>DateTime</item-type>
@@ -560,12 +572,20 @@
 		<item-type>Contact</item-type>
 		<label>Passenger Front Door</label>
 		<description>Indicates if the front door at the passenger's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="passengerreardoor" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Passenger Rear Door</label>
 		<description>Indicates if the rear door at the passenger's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power" advanced="true">
