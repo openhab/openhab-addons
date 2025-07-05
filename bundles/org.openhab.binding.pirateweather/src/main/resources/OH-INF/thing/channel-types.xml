@@ -11,7 +11,6 @@
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="condition" typeId="condition"/>
-			<channel id="icon" typeId="condition-icon"/>
 			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="apparent-temperature" typeId="apparent-temperature"/>
@@ -36,13 +35,12 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="hourlyForecast">
+	<channel-group-type id="hourly-forecast">
 		<label>3 Hour Forecast</label>
 		<description>This is the 5 day / 3 hour weather forecast.</description>
 		<channels>
 			<channel id="time-stamp" typeId="hourly-forecast-time-stamp"/>
 			<channel id="condition" typeId="forecasted-condition"/>
-			<channel id="icon" typeId="condition-icon"/>
 			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="temperature" typeId="forecasted-outdoor-temperature"/>
 			<channel id="apparent-temperature" typeId="forecasted-apparent-temperature"/>
@@ -63,13 +61,12 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="dailyForecast">
+	<channel-group-type id="daily-forecast">
 		<label>Daily Forecast</label>
 		<description>This is the 16 day / daily weather forecast.</description>
 		<channels>
 			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
 			<channel id="condition" typeId="forecasted-condition"/>
-			<channel id="icon" typeId="condition-icon"/>
 			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature"/>
 			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature"/>
