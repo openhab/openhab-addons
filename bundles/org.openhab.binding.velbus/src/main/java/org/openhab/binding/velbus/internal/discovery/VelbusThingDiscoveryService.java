@@ -62,7 +62,7 @@ public class VelbusThingDiscoveryService extends AbstractThingHandlerDiscoverySe
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
         thingHandler.clearDefaultPacketListener();
     }
 
