@@ -136,11 +136,14 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_HT, "", THING_TYPE_SHELLYHT), //
                 Arguments.of(SHELLYDT_TRV, "", THING_TYPE_SHELLYTRV), //
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION), //
+
                 // Plus Series
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1G3, "", THING_TYPE_SHELLYPLUS1), //
+                Arguments.of(SHELLYDT_PLUS1G4, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1PM, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of(SHELLYDT_PLUS1PMG3, "", THING_TYPE_SHELLYPLUS1PM), //
+                Arguments.of(SHELLYDT_PLUS1PMG4, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of("SNSW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
@@ -165,12 +168,16 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
 
                 // Plus Mini Series
-                Arguments.of(SHELLYDT_MINI1, "", THING_TYPE_SHELLY1MINI), //
-                Arguments.of(SHELLYDT_MINIPM, "", THING_TYPE_SHELLYPMMINI), //
-                Arguments.of(SHELLYDT_MINI1PM, "", THING_TYPE_SHELLY1PMMINI), //
-                Arguments.of(SHELLYDT_MINIG3_1, "", THING_TYPE_SHELLY1MINI), //
-                Arguments.of(SHELLYDT_MINIG3_PM, "", THING_TYPE_SHELLYPMMINI), //
-                Arguments.of(SHELLYDT_MINIG3_1PM, "", THING_TYPE_SHELLY1PMMINI), //
+                Arguments.of(SHELLYDT_MINI_1, "", THING_TYPE_SHELLYMINI_1), //
+                Arguments.of(SHELLYDT_MINI_1G3, "", THING_TYPE_SHELLYMINI_1), //
+                Arguments.of(SHELLYDT_MINI_1G4, "", THING_TYPE_SHELLYMINI_1), //
+                Arguments.of(SHELLYDT_MINI_PM, "", THING_TYPE_SHELLYMINI_PM), //
+                Arguments.of(SHELLYDT_MINI_PMG3, "", THING_TYPE_SHELLYMINI_PM), //
+                Arguments.of(SHELLYDT_MINI_EM, "", THING_TYPE_SHELLYMINI_PM), //
+                Arguments.of(SHELLYDT_MINI_1PM, "", THING_TYPE_SHELLYMINI_1PM), //
+                Arguments.of(SHELLYDT_MINI_1PMG3, "", THING_TYPE_SHELLYMINI_1PM), //
+                Arguments.of(SHELLYDT_MINI_1PMG3, "", THING_TYPE_SHELLYMINI_1PM), //
+
                 // Pro Series
                 Arguments.of(SHELLYDT_PRO1, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1_2, "", THING_TYPE_SHELLYPRO1), //
