@@ -48,8 +48,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * The {@link PirateWeatherHandlerFactory} is responsible for creating things and thing handlers.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.pirateweather")
