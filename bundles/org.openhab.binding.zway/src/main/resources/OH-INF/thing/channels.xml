@@ -221,7 +221,7 @@
 		<category>Door</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

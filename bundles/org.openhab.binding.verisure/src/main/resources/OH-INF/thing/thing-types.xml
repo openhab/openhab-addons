@@ -614,7 +614,7 @@
 		<description>Verisure smart lock status.</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 
