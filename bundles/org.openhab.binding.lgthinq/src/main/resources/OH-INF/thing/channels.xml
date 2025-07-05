@@ -319,7 +319,7 @@
 		<description>Door Lock</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -370,7 +370,7 @@
 		<description>Dryer Child Lock</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
