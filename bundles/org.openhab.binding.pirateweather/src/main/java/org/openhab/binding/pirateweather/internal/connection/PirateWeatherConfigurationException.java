@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class PirateWeatherConfigurationException extends IllegalArgumentException {
+public class PirateWeatherConfigurationException extends Exception{
 
     private static final long serialVersionUID = 1L;
 
