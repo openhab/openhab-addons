@@ -240,7 +240,7 @@
 		<category>Lock</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
