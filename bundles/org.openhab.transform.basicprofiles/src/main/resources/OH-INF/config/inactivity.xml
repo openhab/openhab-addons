@@ -7,12 +7,15 @@
 	<config-description uri="profile:basic-profiles:inactivity">
 		<parameter name="timeout" type="text">
 			<label>Timeout</label>
-			<description>The time out after which the profile will set the state of the item if the binding provides no updates. The default is 1h. It uses the same format as the expire parameter.</description>
+			<description>The time out after which the profile will set the state of the item if the binding provides no updates.
+				The default is 1h. It uses the same format as the expire parameter.</description>
 			<default>1h</default>
 		</parameter>
 		<parameter name="inverted" type="boolean" required="false">
 			<label>Inverted</label>
-			<description>Optional. When `false` (the default), the item's state is initially set to `OFF`, and when the binding provided no data within the timeout period, the item's state is updated to `ON`. When `inverted` is set to `true`, the initial state and the timeout states are inverted.</description>
+			<description>Optional. When `false` (the default), the item's state is initially set to `OFF`, and when the binding
+				provided no data within the timeout period, the item's state is updated to `ON`. When `inverted` is set to `true`,
+				the initial state and the timeout states are inverted.</description>
 		</parameter>
 	</config-description>
 
