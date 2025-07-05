@@ -18,8 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link PirateWeatherConfigurationException} is a configuration exception for the connections to Pirate Weather
  * API.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherConfigurationException extends Exception{

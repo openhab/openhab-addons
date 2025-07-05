@@ -45,8 +45,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link PirateWeatherConnection} is responsible for handling the connections to Pirate Weather API.
  *
- * @author Scott Hanson - Pirate Weather convertion
- * @author Christoph Weitkamp - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PirateWeatherConnection {
@@ -57,14 +56,11 @@ public class PirateWeatherConnection {
     private static final String PARAM_UNITS = "units";
     private static final String PARAM_LANG = "lang";
 
-    // Current weather data (see https://pirateweather.net/dev/docs#forecast-request)
     private static final String WEATHER_URL = "https://api.pirateweather.net/forecast/%s/%f,%f";
 
     private final PirateWeatherAPIHandler handler;
     private final HttpClient httpClient;
 
-    // private static final ByteArrayFileCache IMAGE_CACHE = new
-    // ByteArrayFileCache("org.openhab.binding.pirateweather");
     private final ExpiringCacheMap<String, String> cache;
 
     private final Gson gson = new Gson();
@@ -109,8 +105,6 @@ public class PirateWeatherConnection {
     private Map<String, String> getRequestParams(PirateWeatherAPIConfiguration config) {
         Map<String, String> params = new HashMap<>();
         params.put(PARAM_EXCLUDE, "minutely,flags");
-
-        // params.put(PARAM_EXTEND, "hourly");
 
         params.put(PARAM_UNITS, "si");
 
