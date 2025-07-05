@@ -105,21 +105,21 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private long lastSuccessfulPollTimestamp;
     private final Gson gson = new Gson();
     private String lastHistoryID = "";
-    private int getStatusID = 0;
-    private int getConsumableID = 0;
-    private int getRoomMappingID = 0;
-    private int getNetworkInfoID = 0;
-    private int getCleanRecordID = 0;
-    private int getCleanSummaryID = 0;
-    private int getDndTimerID = 0;
-    private int getSegmentStatusID = 0;
-    private int getMapStatusID = 0;
-    private int getLedStatusID = 0;
-    private int getCarpetModeID = 0;
-    private int getFwFeaturesID = 0;
-    private int getMultiMapsListID = 0;
-    private int getCustomizeCleanModeID = 0;
-    private int getMapID = 0;
+    private int getStatusID = -1;
+    private int getConsumableID = -1;
+    private int getRoomMappingID = -1;
+    private int getNetworkInfoID = -1;
+    private int getCleanRecordID = -1;
+    private int getCleanSummaryID = -1;
+    private int getDndTimerID = -1;
+    private int getSegmentStatusID = -1;
+    private int getMapStatusID = -1;
+    private int getLedStatusID = -1;
+    private int getCarpetModeID = -1;
+    private int getFwFeaturesID = -1;
+    private int getMultiMapsListID = -1;
+    private int getCustomizeCleanModeID = -1;
+    private int getMapID = -1;
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
             RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -411,69 +411,70 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
                     .get("102").getAsString();
             logger.trace("MQTT message processing, jsonString={}", jsonString);
-            if (JsonParser.parseString(jsonString).getAsJsonObject().has("id")) {
+            if (!response.endsWith("\"result\":[\"ok\"]}")
+                    && JsonParser.parseString(jsonString).getAsJsonObject().has("id")) {
                 int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
                 logger.trace("MQTT message processing, id={}", messageId);
                 if (messageId == getStatusID) {
                     logger.debug("Received getStatus response, parse it");
                     handleGetStatus(jsonString);
-                    getStatusID = 0;
+                    getStatusID = -1;
                 } else if (messageId == getConsumableID) {
                     logger.debug("Received getConsumable response, parse it");
                     handleGetConsumables(jsonString);
-                    getConsumableID = 0;
+                    getConsumableID = -1;
                 } else if (messageId == getRoomMappingID) {
                     logger.debug("Received getRoomMapping response, parse it");
                     handleGetRoomMapping(jsonString);
-                    getRoomMappingID = 0;
+                    getRoomMappingID = -1;
                 } else if (messageId == getNetworkInfoID) {
                     logger.debug("Received getNetworkInfo response, parse it");
                     handleGetNetworkInfo(jsonString);
-                    getNetworkInfoID = 0;
+                    getNetworkInfoID = -1;
                 } else if (messageId == getCleanRecordID) {
                     logger.debug("Received getCleanRecord response, parse it");
                     handleGetCleanRecord(jsonString);
-                    getCleanRecordID = 0;
+                    getCleanRecordID = -1;
                 } else if (messageId == getCleanSummaryID) {
                     logger.debug("Received getCleanSummary response, parse it");
                     handleGetCleanSummary(jsonString);
-                    getCleanSummaryID = 0;
+                    getCleanSummaryID = -1;
                 } else if (messageId == getDndTimerID) {
                     logger.debug("Received getDndTimer response, parse it");
                     handleGetDndTimer(jsonString);
-                    getDndTimerID = 0;
+                    getDndTimerID = -1;
                 } else if (messageId == getSegmentStatusID) {
                     logger.debug("Received getSegmentStatus response, parse it");
                     handleGetSegmentStatus(jsonString);
-                    getSegmentStatusID = 0;
+                    getSegmentStatusID = -1;
                 } else if (messageId == getMapStatusID) {
                     logger.debug("Received getMapStatus response, parse it");
                     handleGetMapStatus(jsonString);
-                    getMapStatusID = 0;
+                    getMapStatusID = -1;
                 } else if (messageId == getLedStatusID) {
                     logger.debug("Received getLedStatus response, parse it");
                     handleGetLedStatus(jsonString);
-                    getLedStatusID = 0;
+                    getLedStatusID = -1;
                 } else if (messageId == getCarpetModeID) {
                     logger.debug("Received getCarpetMode response, parse it");
                     handleGetCarpetMode(jsonString);
-                    getCarpetModeID = 0;
+                    getCarpetModeID = -1;
                 } else if (messageId == getFwFeaturesID) {
                     logger.debug("Received getFwFeatures response, parse it");
                     handleGetFwFeatures(jsonString);
-                    getFwFeaturesID = 0;
+                    getFwFeaturesID = -1;
                 } else if (messageId == getMultiMapsListID) {
                     logger.debug("Received getMultiMapsList response, parse it");
                     handleGetMultiMapsList(jsonString);
-                    getMultiMapsListID = 0;
+                    getMultiMapsListID = -1;
                 } else if (messageId == getCustomizeCleanModeID) {
                     logger.debug("Received getCustomizeCleanMode response, parse it");
                     handleGetCustomizeCleanMode(jsonString);
-                    getCustomizeCleanModeID = 0;
+                    getCustomizeCleanModeID = -1;
                 } else if (messageId == getMapID) {
                     logger.debug("Received getMap response, parse it");
                     handleGetMap(jsonString);
-                    getMapID = 0;
+                    getMapID = -1;
                 }
             }
         } else {
