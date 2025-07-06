@@ -55,6 +55,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
 
     private @Nullable InsteonDevice device;
     private @Nullable ScheduledFuture<?> heartbeatJob;
+    private @Nullable ScheduledFuture<?> responseJob;
     private InsteonStateDescriptionProvider stateDescriptionProvider;
 
     public InsteonDeviceHandler(Thing thing, InsteonStateDescriptionProvider stateDescriptionProvider) {
@@ -187,14 +188,16 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }
         this.device = null;
 
-        stopHeartbeatMonitor();
+        stopHeartbeatTimeout();
+        stopResponseTimeout();
 
         super.dispose();
     }
 
     @Override
     public void refresh() {
-        resetHeartbeatMonitor();
+        resetHeartbeatTimeout();
+        resetResponseTimeout();
 
         super.refresh();
     }
@@ -221,7 +224,8 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
 
     public void deviceLinkDBUpdated(InsteonDevice device) {
         if (device.getLinkDB().isComplete()) {
-            resetHeartbeatMonitor();
+            resetHeartbeatTimeout();
+            resetResponseTimeout();
 
             InsteonModem modem = getModem();
             if (modem != null) {
@@ -264,11 +268,6 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         if (!device.hasModemDBEntry()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Device not found in modem database.");
-            return;
-        }
-
-        if (!device.isResponding() && !device.isBatteryPowered()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
             return;
         }
 
@@ -316,8 +315,8 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }, RESET_DELAY, TimeUnit.MILLISECONDS);
     }
 
-    public void resetHeartbeatMonitor() {
-        if (stopHeartbeatMonitor()) {
+    public void resetHeartbeatTimeout() {
+        if (stopHeartbeatTimeout()) {
             updateStatus();
         }
 
@@ -327,13 +326,13 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }
 
         if (device.getMissingLinks().contains(FEATURE_HEARTBEAT)) {
-            logger.warn("heartbeat link missing, timeout monitor disabled for {}", getThing().getUID());
+            logger.warn("heartbeat link missing, timeout disabled for {}", getThing().getUID());
             return;
         }
 
         int timeout = device.getHeartbeatTimeout();
         if (timeout > 0) {
-            logger.debug("setting heartbeat timeout monitor to {} min for {}", timeout, getThing().getUID());
+            logger.debug("setting heartbeat timeout to {} min for {}", timeout, getThing().getUID());
 
             heartbeatJob = scheduler.schedule(() -> {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Heartbeat timed out.");
@@ -341,13 +340,40 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }
     }
 
-    private boolean stopHeartbeatMonitor() {
+    private boolean stopHeartbeatTimeout() {
         boolean hasTimedOut = false;
         ScheduledFuture<?> heartbeatJob = this.heartbeatJob;
         if (heartbeatJob != null) {
             hasTimedOut = heartbeatJob.isDone();
             heartbeatJob.cancel(true);
             this.heartbeatJob = null;
+        }
+        return hasTimedOut;
+    }
+
+    public void resetResponseTimeout() {
+        if (stopResponseTimeout()) {
+            updateStatus();
+        }
+
+        InsteonDevice device = getDevice();
+        InsteonBridgeHandler handler = getInsteonBridgeHandler();
+        if (device == null || !device.hasModemDBEntry() || device.isBatteryPowered() || handler == null) {
+            return;
+        }
+
+        responseJob = scheduler.schedule(() -> {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
+        }, handler.getDeviceResponseTimeout(), TimeUnit.MINUTES);
+    }
+
+    private boolean stopResponseTimeout() {
+        boolean hasTimedOut = false;
+        ScheduledFuture<?> responseJob = this.responseJob;
+        if (responseJob != null) {
+            hasTimedOut = responseJob.isDone();
+            responseJob.cancel(true);
+            this.responseJob = null;
         }
         return hasTimedOut;
     }
