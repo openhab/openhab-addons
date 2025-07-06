@@ -110,9 +110,6 @@ public class ApplianceInfoDTO {
         @SerializedName("step")
         private Integer step = Integer.MIN_VALUE;
 
-        @SerializedName("default")
-        private Integer defaultValue = Integer.MIN_VALUE;
-
         @SerializedName("values")
         private @Nullable Map<String, Object> values = null;
 
@@ -154,14 +151,6 @@ public class ApplianceInfoDTO {
 
         public int getStep() {
             return step;
-        }
-
-        public boolean getIsReadDefaultValue() {
-            return defaultValue != Integer.MIN_VALUE;
-        }
-
-        public int getDefaultValue() {
-            return defaultValue;
         }
 
         public boolean getValuesContains(final String value) {
