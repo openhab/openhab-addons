@@ -74,7 +74,7 @@
 	<channel-type id="actual_datetime">
 		<item-type>DateTime</item-type>
 		<label>Actual Date/Time</label>
-		<description>The actual date and time when the prediction was made."</description>
+		<description>The actual date and time when the prediction was made.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
