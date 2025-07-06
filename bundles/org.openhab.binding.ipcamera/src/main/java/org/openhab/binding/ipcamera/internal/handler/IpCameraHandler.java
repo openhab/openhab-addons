@@ -1219,6 +1219,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (localSnaps != null) {
                             localSnaps.stopConverting();
                             ffmpegSnapshotGeneration = false;
+                            updateState(CHANNEL_CREATE_SNAPSHOTS, OnOffType.OFF);
                         }
                     }
                     return;
