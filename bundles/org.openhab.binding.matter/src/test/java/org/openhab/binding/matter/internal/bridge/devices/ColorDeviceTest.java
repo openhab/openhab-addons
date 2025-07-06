@@ -16,19 +16,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
 import org.openhab.core.items.Metadata;
@@ -116,15 +119,38 @@ class ColorDeviceTest {
         HSBType hsb = new HSBType(new DecimalType(180), new PercentType(100), new PercentType(100));
         device.updateState(colorItem, hsb);
 
-        verify(client).setEndpointState(any(), eq("onOff"), eq("onOff"), eq(true));
-        verify(client).setEndpointState(any(), eq("levelControl"), eq("currentLevel"), eq(254));
-        verify(client).setEndpointState(any(), eq("colorControl"), eq("currentHue"), eq(127)); // 180 degrees -> ~127
-        verify(client).setEndpointState(any(), eq("colorControl"), eq("currentSaturation"), eq(254)); // 100% -> 254
-
-        // Test with brightness 0 (should turn off)
         hsb = new HSBType(new DecimalType(180), new PercentType(100), new PercentType(0));
         device.updateState(colorItem, hsb);
-        verify(client).setEndpointState(any(), eq("onOff"), eq("onOff"), eq(false));
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<AttributeState>> captor = ArgumentCaptor.forClass(List.class);
+        verify(client, times(2)).setEndpointStates(any(), captor.capture());
+
+        List<List<AttributeState>> capturedCalls = captor.getAllValues();
+
+        // First call assertions
+        List<AttributeState> firstStates = capturedCalls.get(0);
+        assertEquals(4, firstStates.size());
+
+        assertListContains(firstStates, "onOff", "onOff", true);
+        assertListContains(firstStates, "levelControl", "currentLevel", 254);
+        assertListContains(firstStates, "colorControl", "currentHue", 127);
+        assertListContains(firstStates, "colorControl", "currentSaturation", 254);
+
+        // Second call assertions
+        List<AttributeState> secondStates = capturedCalls.get(1);
+        assertEquals(3, secondStates.size());
+        assertListContains(secondStates, "onOff", "onOff", false);
+        assertListContains(secondStates, "colorControl", "currentHue", 127);
+        assertListContains(secondStates, "colorControl", "currentSaturation", 254);
+    }
+
+    private void assertListContains(List<AttributeState> list, String cluster, String attribute, Object value) {
+        AttributeState found = list.stream()
+                .filter(s -> cluster.equals(s.clusterName) && attribute.equals(s.attributeName)).findFirst()
+                .orElse(null);
+        assertNotNull(found, "Expected state not found: " + cluster + "." + attribute);
+        assertEquals(value, found.state);
     }
 
     @Test
