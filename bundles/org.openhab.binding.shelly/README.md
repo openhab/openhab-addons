@@ -82,20 +82,20 @@ See section [Discovery](#discovery) for details.
 
 | thing-type           | Model                                                    | Vendor ID                                                  |
 |----------------------|----------------------------------------------------------|------------------------------------------------------------|
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU                |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU, S4SW-001X16EU |
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU                |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL |
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                   |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                               |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                               |
+| shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                               |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                               |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                     |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                 |
 | shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                                  |
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                 |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                                                 |
-| shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                                                 |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                     |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                 |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                              |
@@ -117,7 +117,7 @@ See section [Discovery](#discovery) for details.
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
 | shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
-| shellypro2          | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
+| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
@@ -1438,7 +1438,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
 | meter | voltage      | Number   | yes       | RMS voltage, Volts                                                               |
 
-### Shelly Pro 2 (thing-type: shellypro2)
+### Shelly Pro 2 (thing-type: shellypro2-relay)
 
 | Group  | Channel     | Type    | read-only | Description                                                                       |
 | ------ | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
