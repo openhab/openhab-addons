@@ -94,6 +94,7 @@ export class ColorDeviceType extends GenericDeviceType {
             ) {
                 parent.sendBridgeEvent("colorControl", "currentHue", targetHue);
                 parent.sendBridgeEvent("colorControl", "currentSaturation", targetSaturation);
+                return super.moveToHueAndSaturationLogic(targetHue, targetSaturation, transitionTime);
             }
         };
     }

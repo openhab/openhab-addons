@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.matter.internal.bridge.devices;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatCluster;
@@ -137,9 +140,12 @@ public class ThermostatDevice extends GenericDevice {
                         break;
                     case ThermostatCluster.ATTRIBUTE_SYSTEM_MODE:
                         try {
+                            List<AttributeState> states = new ArrayList<>();
                             int mode = systemModeMapper.fromCustomValue(state.toString()).value;
-                            setEndpointState(clusterName, attributeName, mode);
-                            setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, mode > 0);
+                            states.add(new AttributeState(clusterName, attributeName, mode));
+                            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
+                                    mode > 0));
+                            setEndpointStates(states);
                         } catch (SystemModeMappingException e) {
                             logger.debug("Could not convert {} to matter value", state.toString());
                         }

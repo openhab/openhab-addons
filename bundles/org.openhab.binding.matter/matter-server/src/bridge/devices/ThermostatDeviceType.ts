@@ -38,14 +38,14 @@ export class ThermostatDeviceType extends GenericDeviceType {
                 ...clusterValues,
             },
         );
-        endpoint.events.thermostat.occupiedHeatingSetpoint$Changed?.on(value => {
-            this.sendBridgeEvent("thermostat", "occupiedHeatingSetpoint", value);
+        endpoint.events.thermostat.occupiedHeatingSetpoint$Changed?.on((value, oldValue, context) => {
+            this.attributeChanged("thermostat", "occupiedHeatingSetpoint", value, context);
         });
-        endpoint.events.thermostat.occupiedCoolingSetpoint$Changed?.on(value => {
-            this.sendBridgeEvent("thermostat", "occupiedCoolingSetpoint", value);
+        endpoint.events.thermostat.occupiedCoolingSetpoint$Changed?.on((value, oldValue, context) => {
+            this.attributeChanged("thermostat", "occupiedCoolingSetpoint", value, context);
         });
-        endpoint.events.thermostat.systemMode$Changed.on(value => {
-            this.sendBridgeEvent("thermostat", "systemMode", value);
+        endpoint.events.thermostat.systemMode$Changed.on((value, oldValue, context) => {
+            this.attributeChanged("thermostat", "systemMode", value, context);
         });
         return endpoint;
     }
