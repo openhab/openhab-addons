@@ -9,6 +9,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Zone A Status</label>
 		<description>Status of the A zone of your alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -17,6 +20,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm B Status</label>
 		<description>Status of the B zone of your alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -25,6 +31,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Zone ABC Status</label>
 		<description>Status of the ABC zone of your alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -33,6 +42,9 @@
 		<item-type>Switch</item-type>
 		<label>OASIS PGX Status</label>
 		<description>Status of the PGX switch of your OASIS alarm</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 
 	<!-- StatusPGY -->
@@ -40,6 +52,9 @@
 		<item-type>Switch</item-type>
 		<label>OASIS PGY Status</label>
 		<description>Status of the PGY switch of your OASIS alarm</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 
 	<!-- JA100 -->
@@ -54,6 +69,9 @@
 		<item-type>Switch</item-type>
 		<label>JA-100 PGM Status</label>
 		<description>Status of the PGM switch of your JA-100 alarm</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Alarm -->
@@ -61,6 +79,9 @@
 		<kind>trigger</kind>
 		<label>Alarm</label>
 		<description>Status of the alarm of your alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 		<event>
 			<options>
@@ -137,6 +158,10 @@
 		<item-type>String</item-type>
 		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="set">ARMED</option>
@@ -151,6 +176,10 @@
 		<item-type>String</item-type>
 		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ARM">ARMED</option>
@@ -165,6 +194,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Sensor Temperature</label>
 		<description>The current temperature reported by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -173,6 +206,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Thermostat Temperature</label>
 		<description>The current temperature reported by the thermostat</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

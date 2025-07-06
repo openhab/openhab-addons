@@ -39,6 +39,10 @@
 		<description>
 			This channel provides access to the current state of charge in percent.
 		</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
