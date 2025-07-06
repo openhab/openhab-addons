@@ -359,8 +359,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 .forEach(record -> getResponderFeatures().stream()
                         .filter(feature -> feature.getComponentId() == record.getComponentId()).findFirst()
                         .ifPresent(feature -> {
-                            InsteonChannelConfiguration adjustConfig = InsteonChannelConfiguration.copyOf(config,
-                                    record.getOnLevel(), record.getRampRate());
+                            InsteonChannelConfiguration adjustConfig = config.copy(record.getOnLevel(),
+                                    record.getRampRate());
                             feature.handleCommand(adjustConfig, cmd);
                         }));
     }
