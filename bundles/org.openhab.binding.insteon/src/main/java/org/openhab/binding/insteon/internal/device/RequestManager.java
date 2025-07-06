@@ -80,18 +80,15 @@ public class RequestManager {
      * @param time (in milliseconds) to delay handling
      */
     public void addRequest(Device device, long delay) {
-        long now = System.currentTimeMillis();
-        long scheduledTime = now + delay;
-
         requests.compute(device, (key, request) -> {
             if (request == null) {
                 logger.trace("scheduling request for {} in {} msec", device.getAddress(), delay);
-                request = new RequestEntry(device, scheduledTime);
+                request = new RequestEntry(device, delay);
                 scheduleRequest(request);
-            } else if (request.scheduledTime > scheduledTime) {
+            } else if (request.getScheduledDelay() > delay) {
                 logger.trace("rescheduling request for {} from {} to {} msec", device.getAddress(),
-                        request.scheduledTime - now, delay);
-                request.scheduledTime = scheduledTime;
+                        request.getScheduledDelay(), delay);
+                request.setScheduledDelay(delay);
                 cancelRequest(request);
                 scheduleRequest(request);
             }
@@ -123,7 +120,7 @@ public class RequestManager {
             return;
         }
 
-        long delay = Math.max(0, request.scheduledTime - System.currentTimeMillis());
+        long delay = request.getScheduledDelay();
         request.job = scheduler.schedule(() -> handleRequest(request.device), delay, TimeUnit.MILLISECONDS);
 
         logger.trace("request for {} scheduled in {} msec", request.device.getAddress(), delay);
@@ -143,7 +140,7 @@ public class RequestManager {
 
         logger.trace("handling request for {}", device.getAddress());
 
-        long delay = device.handleNextRequest() - System.currentTimeMillis();
+        long delay = device.handleNextRequest();
         if (delay > 0) {
             addRequest(device, delay);
         } else {
@@ -159,9 +156,17 @@ public class RequestManager {
         private volatile long scheduledTime;
         private volatile @Nullable ScheduledFuture<?> job;
 
-        RequestEntry(Device device, long scheduledTime) {
+        public RequestEntry(Device device, long delay) {
             this.device = device;
-            this.scheduledTime = scheduledTime;
+            setScheduledDelay(delay);
+        }
+
+        public long getScheduledDelay() {
+            return Math.max(0, scheduledTime - System.currentTimeMillis());
+        }
+
+        public void setScheduledDelay(long delay) {
+            this.scheduledTime = System.currentTimeMillis() + delay;
         }
     }
 }

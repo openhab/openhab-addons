@@ -471,7 +471,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      *
      * @param msg the message to be sent
      * @param feature device feature associated to the message
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     @Override
     public void sendMessage(Msg msg, DeviceFeature feature, long delay) {
@@ -489,7 +489,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     /**
      * Processes deferred queue
      *
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     private void processDeferredQueue(long delay) {
         synchronized (deferredQueue) {
