@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
   <Match>
-    <Source name="~.*\.generated_sources\..*\.java" />
+    <Source name="~.*generated\.*\.java" />
   </Match>
   <!-- Groovy files produce a lot of warnings and will be ignored -->
   <Match>
