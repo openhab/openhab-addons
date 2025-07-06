@@ -63,7 +63,7 @@
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -168,7 +168,7 @@
 	<channel-type id="rainTotal">
 		<item-type>Number:Length</item-type>
 		<label>Rain Fall Total</label>
-		<description>Rain fall total amount since factpry reset</description>
+		<description>Rain fall total amount since factory reset</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
