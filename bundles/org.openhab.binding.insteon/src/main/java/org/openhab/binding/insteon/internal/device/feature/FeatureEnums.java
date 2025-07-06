@@ -340,9 +340,9 @@ public class FeatureEnums {
 
     public static enum ThermostatSystemMode {
         OFF(0x09, 0x00),
-        AUTO(0x06, 0x01),
-        HEAT(0x04, 0x02),
-        COOL(0x05, 0x03),
+        HEAT(0x04, 0x01),
+        COOL(0x05, 0x02),
+        AUTO(0x06, 0x03),
         PROGRAM(0x0A, 0x04);
 
         private static final Map<Integer, ThermostatSystemMode> VALUE_MAP = Arrays.stream(values())
@@ -385,9 +385,9 @@ public class FeatureEnums {
 
     public static enum VenstarSystemMode {
         OFF(0x09, 0x00),
-        AUTO(0x06, 0x01),
-        HEAT(0x04, 0x02),
-        COOL(0x05, 0x03),
+        HEAT(0x04, 0x01),
+        COOL(0x05, 0x02),
+        AUTO(0x06, 0x03),
         PROGRAM_HEAT(0x0A, 0x04),
         PROGRAM_COOL(0x0B, 0x05),
         PROGRAM_AUTO(0x0C, 0x06);
