@@ -27,6 +27,5 @@ public class RoborockAccountConfiguration {
      */
     public String email = "";
     public String password = "";
-    public String region = "US";
     public int refresh = 5; // in minutes
 }

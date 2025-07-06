@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 
 /**
  * Handles performing the actual HTTP requests for communicating with the RoborockAPI.
@@ -55,6 +56,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class RoborockWebTargets {
     private static final int TIMEOUT_MS = 30000;
+    private static final String getUrlByEmailUri = "https://euiot.roborock.com/api/v1/getUrlByEmail";
     private static final String getTokenPath = "/api/v1/login";
     private static final String getHomeDetailPath = "/api/v1/getHomeDetail";
     private static final String getHomeDatapath = "/user/homes/";
@@ -99,6 +101,21 @@ public class RoborockWebTargets {
         String macString = new String(encoded);
         return "Hawk id=\"" + id + "\",s=\"" + secret + "\",ts=\"" + timestamp + "\",nonce=\"" + nonce + "\",mac=\""
                 + macString + "\"";
+    }
+
+    public String getUrlByEmail(String email)
+            throws RoborockCommunicationException, RoborockAuthenticationException, NoSuchAlgorithmException {
+        String payload = "?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&needtwostepauth=false";
+        String response = invoke(getUrlByEmailUri + payload, HttpMethod.POST, null, null, null);
+        String url = "https://euiot.roborock.com";
+        if (JsonParser.parseString(response).isJsonObject()
+                && JsonParser.parseString(response).getAsJsonObject().get("data").isJsonObject()
+                && JsonParser.parseString(response).getAsJsonObject().get("data").getAsJsonObject().has("url")) {
+            url = JsonParser.parseString(response).getAsJsonObject().get("data").getAsJsonObject().get("url")
+                    .getAsString();
+            logger.trace("getUrlByEmail, url = {}", url);
+        }
+        return url;
     }
 
     @Nullable
