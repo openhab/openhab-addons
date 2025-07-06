@@ -72,12 +72,6 @@ public class TradfriDiscoveryServiceTest {
                 Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
             return null;
         }
-
-        @Override
-        public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
-            return null;
-        }
     };
 
     private DiscoveryResult discoveryResult;

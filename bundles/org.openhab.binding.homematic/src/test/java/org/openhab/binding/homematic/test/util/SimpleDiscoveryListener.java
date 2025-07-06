@@ -50,10 +50,4 @@ public class SimpleDiscoveryListener implements DiscoveryListener {
             @Nullable Collection<@NonNull ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return null;
     }
-
-    @Override
-    public @Nullable Collection<@NonNull ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            @Nullable Collection<@NonNull ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return null;
-    }
 }

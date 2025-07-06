@@ -682,12 +682,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         return Collections.emptyList();
     }
 
-    @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return Collections.emptyList();
-    }
-
     public void dispose() {
         discoveryServiceRegistry.removeDiscoveryListener(this);
         ScheduledFuture<?> refreshScheduler = this.refreshScheduler;
