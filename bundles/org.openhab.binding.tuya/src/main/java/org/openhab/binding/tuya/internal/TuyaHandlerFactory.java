@@ -30,7 +30,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -61,7 +60,8 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
 
     public static final TuyaSchemaDB SCHEMAS = new TuyaSchemaDB();
 
-    private final BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
+    private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
+    private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private final UdpDiscoveryListener udpDiscoveryListener;
@@ -70,9 +70,11 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public TuyaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
+            @Reference TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
             @Reference StorageService storageService) throws InterruptedException {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
         this.eventLoopGroup = new NioEventLoopGroup();
         this.udpDiscoveryListener = new UdpDiscoveryListener(eventLoopGroup);
 
@@ -97,8 +99,8 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_PROJECT.equals(thingTypeUID)) {
             return new ProjectHandler(thing, httpClient, gson);
         } else if (THING_TYPE_TUYA_DEVICE.equals(thingTypeUID)) {
-            return new TuyaDeviceHandler(thing, gson, dynamicCommandDescriptionProvider, eventLoopGroup,
-                    udpDiscoveryListener);
+            return new TuyaDeviceHandler(thing, gson, dynamicCommandDescriptionProvider,
+                    dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener);
         }
 
         return null;

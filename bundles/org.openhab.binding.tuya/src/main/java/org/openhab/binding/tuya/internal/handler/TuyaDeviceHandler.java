@@ -42,6 +42,8 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
+import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaSchemaDB;
 import org.openhab.binding.tuya.internal.config.ChannelConfiguration;
 import org.openhab.binding.tuya.internal.config.DeviceConfiguration;
@@ -69,7 +71,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -99,7 +100,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
     private final Gson gson;
     private final UdpDiscoveryListener udpDiscoveryListener;
-    private final BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
+    private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
+    private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final EventLoopGroup eventLoopGroup;
     private DeviceConfiguration configuration = new DeviceConfiguration();
     private @Nullable TuyaDevice tuyaDevice;
@@ -119,7 +121,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     private final Map<String, State> channelStateCache = new HashMap<>();
 
     public TuyaDeviceHandler(Thing thing, Gson gson,
-            BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider, EventLoopGroup eventLoopGroup,
+            TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
+            TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, EventLoopGroup eventLoopGroup,
             UdpDiscoveryListener udpDiscoveryListener) {
         super(thing);
         this.schemaDps = Objects.requireNonNullElse(
@@ -129,6 +132,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
     }
 
     public @Nullable SchemaDp getSchemaForChannelId(String channelId) {
@@ -178,6 +182,11 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     updateState(channelId, ConversionUtil.hexColorDecode(stringValue));
                     return;
                 } else if (value instanceof String stringValue && STRING.equals(acceptedItemType)) {
+                    if (!channelConfiguration.range.isEmpty() && channel != null) {
+                        // The device schemas only seem to specify the commands that can be sent to
+                        // a device. We have to learn the states sent by a device as they are seen.
+                        dynamicStateDescriptionProvider.addStateOption(channel.getUID(), stringValue);
+                    }
                     updateState(channelId, new StringType(stringValue));
                     return;
                 } else if (Double.class.isAssignableFrom(value.getClass()) && DIMMER.equals(acceptedItemType)) {
