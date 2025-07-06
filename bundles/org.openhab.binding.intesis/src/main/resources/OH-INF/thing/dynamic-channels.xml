@@ -8,42 +8,70 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.mode.label</label>
 		<description>@text/channel-type.intesis.mode.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="fanSpeed">
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.fanSpeed.label</label>
 		<description>@text/channel-type.intesis.fanSpeed.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="vanesUpDown">
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.vanesUpDown.label</label>
 		<description>@text/channel-type.intesis.vanesUpDown.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="vanesLeftRight">
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.vanesLeftRight.label</label>
 		<description>@text/channel-type.intesis.vanesLeftRight.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.intesis.targetTemperature.label</label>
 		<description>@text/channel-type.intesis.targetTemperature.description</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="ambientTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.intesis.ambientTemperature.label</label>
 		<description>@text/channel-type.intesis.ambientTemperature.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="outdoorTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.intesis.outdoorTemperature.label</label>
 		<description>@text/channel-type.intesis.outdoorTemperature.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="errorCode">
