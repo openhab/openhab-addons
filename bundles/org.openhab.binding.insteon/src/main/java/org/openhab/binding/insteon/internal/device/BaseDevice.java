@@ -455,11 +455,15 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     @Override
     public long handleNextRequest() {
-        // wait for feature queried to be processed or next request to be scheduled
-        long delay = Optional.of(checkFeatureQueriedStatus()).filter(time -> time > 0)
-                .orElseGet(() -> checkNextRequestScheduledDelay());
-        if (delay > 0) {
-            return delay;
+        // wait for feature queried to be processed
+        long queryDelay = checkFeatureQueriedStatus();
+        if (queryDelay > 0) {
+            return queryDelay;
+        }
+        // wait for next request to be scheduled
+        long scheduledDelay = checkNextRequestScheduledDelay();
+        if (scheduledDelay > 0) {
+            return scheduledDelay;
         }
         // poll next request from queue
         DeviceRequest request = pollNextRequest();
@@ -490,13 +494,13 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         }
         // determine the delay for the next request
         DeviceRequest nextRequest = peekNextRequest();
-        delay = msg.getQuietTime();
+        long nextRequestDelay = msg.getQuietTime();
         if (nextRequest != null) {
-            delay = Math.max(delay, nextRequest.getScheduledDelay());
-            nextRequest.setScheduledDelay(delay);
+            nextRequestDelay = Math.max(nextRequestDelay, nextRequest.getScheduledDelay());
+            nextRequest.setScheduledDelay(nextRequestDelay);
         }
-        logger.trace("next request scheduled in {} msec", delay);
-        return delay;
+        logger.trace("next request scheduled in {} msec", nextRequestDelay);
+        return nextRequestDelay;
     }
 
     /**
