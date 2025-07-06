@@ -47,12 +47,6 @@
 				<label>NMI</label>
 				<description>NMI for your address (Optional)</description>
 			</parameter>
-			<parameter name="refresh" type="integer" min="60" unit="s">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds</description>
-				<default>60</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 
 	</thing-type>
