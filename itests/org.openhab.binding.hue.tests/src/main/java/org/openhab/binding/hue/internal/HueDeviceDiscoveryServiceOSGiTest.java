@@ -147,12 +147,6 @@ public class HueDeviceDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent
                     @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }
-
-            @Override
-            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                    @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-                return null;
-            }
         });
 
         discoveryService.addLightDiscovery(light);
