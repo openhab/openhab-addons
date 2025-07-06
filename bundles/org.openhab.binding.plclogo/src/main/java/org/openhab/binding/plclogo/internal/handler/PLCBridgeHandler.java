@@ -105,7 +105,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             if ((layout != null) && (client != null)) {
                 final int result;
                 try {
-                    result = client.readDBArea(1, 0, layout.length(), S7Client.S7WLByte, buffer);
+                    result = client.readBytes(0, layout.length(), buffer);
                 } catch (Exception exception) {
                     logger.error("Reader thread got exception: {}.", exception.getMessage());
                     return;
@@ -159,7 +159,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         if ((client != null) && (layout != null)) {
             var buffer = new byte[layout.length()];
             Arrays.fill(buffer, (byte) 0);
-            int result = client.readDBArea(1, layout.address(), buffer.length, S7Client.S7WLByte, buffer);
+            int result = client.readBytes(layout.address(), buffer.length, buffer);
             if (result == 0) {
                 switch (channelId) {
                     case RTC_CHANNEL -> {
@@ -227,25 +227,26 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
         config = getConfigAs(PLCLogoBridgeConfiguration.class);
 
-        final var localTSAP = config.getLocalTSAP();
-        final var remoteTSAP = config.getRemoteTSAP();
-        boolean configured = (localTSAP != null) && (remoteTSAP != null);
-        if (configured) {
-            var client = this.client;
-            if (client == null) {
-                client = new PLCLogoClient();
-                if (!client.isConnected()) {
-                    client.Connect(config.getAddress(), localTSAP, remoteTSAP);
+        var client = this.client;
+        if (client == null) {
+            client = new PLCLogoClient();
+            if (!client.isConnected()) {
+                final var localTSAP = config.getLocalTSAP();
+                final var remoteTSAP = config.getRemoteTSAP();
+                if ((localTSAP != null) && (remoteTSAP != null)) {
+                    final var result = client.Connect(config.getAddress(), localTSAP, remoteTSAP);
+                    if (result != 0) {
+                        String message = String.format("Can not initialize LOGO!. %s.", S7Client.ErrorText(result));
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                    }
+                } else {
+                    String message = "Can not initialize LOGO!. Please, check ip address / TSAP settings.";
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
                 }
-                this.client = client;
             }
-            configured = client.isConnected();
-        } else {
-            String message = "Can not initialize LOGO!. Please, check ip address / TSAP settings.";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
         }
 
-        if (configured) {
+        if (client.isConnected()) {
             final var host = config.getAddress();
 
             var readerJob = this.readerJob;
@@ -263,11 +264,14 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 this.rtcJob = rtcJob;
             }
 
+            this.client = client;
             updateStatus(ThingStatus.ONLINE);
         } else {
-            String message = "Can not initialize LOGO!. Please, check network connection.";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-            client = null;
+            if (ThingStatus.OFFLINE != getThing().getStatus()) {
+                String message = "Can not initialize LOGO!. Please, check network connection.";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
+            this.client = null;
         }
     }
 

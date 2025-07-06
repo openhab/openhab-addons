@@ -113,7 +113,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
             if (command instanceof RefreshType) {
                 final var base = getBase(name);
                 final var buffer = new byte[getBufferLength()];
-                final var result = client.readDBArea(1, base, buffer.length, S7Client.S7WLByte, buffer);
+                final var result = client.readBytes(base, buffer.length, buffer);
                 if (result == 0) {
                     updateChannel(channel, S7.GetShortAt(buffer, address - base));
                 } else {
@@ -127,7 +127,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
-                final var result = client.writeDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
+                final var result = client.writeBytes(address, buffer.length, buffer);
                 if (result != 0) {
                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
@@ -170,7 +170,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                     updateChannel(channel, value);
                 }
                 if (logger.isTraceEnabled()) {
-                    int index = address - getBase(name);
+                    final var index = address - getBase(name);
                     logger.trace("Channel {} received [{}, {}].", channelUID, data[index], data[index + 1]);
                 }
             } else {
@@ -257,7 +257,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
 
             final var type = config.getChannelType();
             for (int i = 0; i < getNumberOfChannels(); i++) {
-                final var name = kind + String.valueOf(i + 1);
+                final var name = String.format("%s%d", kind, i + 1);
                 final var uid = new ChannelUID(thing.getUID(), name);
                 final var cBuilder = ChannelBuilder.create(uid, type);
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));

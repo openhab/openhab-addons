@@ -118,7 +118,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
             if (command instanceof RefreshType) {
                 final var base = getBase(name);
                 final var buffer = new byte[getBufferLength()];
-                final var result = client.readDBArea(1, base, buffer.length, S7Client.S7WLByte, buffer);
+                final var result = client.readBytes(base, buffer.length, buffer);
                 if (result == 0) {
                     updateChannel(channel, S7.GetBitAt(buffer, address - base, bit));
                 } else {
@@ -134,7 +134,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
-                int result = client.writeDBArea(1, 8 * address + bit, buffer.length, S7Client.S7WLBit, buffer);
+                int result = client.writeBits(8 * address + bit, buffer.length, buffer);
                 if (result != 0) {
                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
@@ -269,7 +269,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
             tBuilder.withLabel(label);
 
             for (var i = 0; i < getNumberOfChannels(); i++) {
-                final var name = kind + String.valueOf(i + 1);
+                final var name = String.format("%s%d", kind, i + 1);
                 final var uid = new ChannelUID(thing.getUID(), name);
                 final var cBuilder = ChannelBuilder.create(uid, type);
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));

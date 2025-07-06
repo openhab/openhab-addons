@@ -81,7 +81,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
         if ((address != INVALID) && (client != null)) {
             if (command instanceof RefreshType) {
                 final var buffer = new byte[getBufferLength()];
-                final var result = client.readDBArea(1, 0, buffer.length, S7Client.S7WLByte, buffer);
+                final var result = client.readBytes(0, buffer.length, buffer);
                 if (result == 0) {
                     updateChannel(channel, S7.GetShortAt(buffer, address));
                 } else {
@@ -102,7 +102,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
-                final var result = client.writeDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
+                final var result = client.writeBytes(address, buffer.length, buffer);
                 if (result != 0) {
                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
@@ -141,9 +141,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                 if ((state == null) || (value != state.intValue()) || force) {
                     updateChannel(channel, value);
                 }
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Channel {} received [{}, {}].", channel.getUID(), data[address], data[address + 1]);
-                }
+                logger.trace("Channel {} received [{}, {}].", channel.getUID(), data[address], data[address + 1]);
             } else {
                 logger.info("Invalid channel {} found.", channel.getUID());
             }

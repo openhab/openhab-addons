@@ -92,7 +92,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
         if ((address != INVALID) && (bit != INVALID) && (client != null)) {
             final var buffer = new byte[1];
             if (command instanceof RefreshType) {
-                int result = client.readDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
+                int result = client.readBytes(address, buffer.length, buffer);
                 if (result == 0) {
                     updateChannel(channel, S7.GetBitAt(buffer, 0, bit));
                 } else {
@@ -111,7 +111,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
-                int result = client.writeDBArea(1, 8 * address + bit, buffer.length, S7Client.S7WLBit, buffer);
+                int result = client.writeBits(8 * address + bit, buffer.length, buffer);
                 if (result != 0) {
                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                 }
@@ -171,7 +171,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
                                 S7.SetBitAt(buffer, 0, 0, !received);
                                 final var block = config.getBlockName();
                                 final var bit1 = 8 * getAddress(block) + getBit(block);
-                                final var result = client.writeDBArea(1, bit1, buffer.length, S7Client.S7WLBit, buffer);
+                                final var result = client.writeBits(bit1, buffer.length, buffer);
                                 if (result != 0) {
                                     logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                                 }
