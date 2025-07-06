@@ -122,6 +122,10 @@
 		<label>Battery Health State</label>
 		<description>Battery state of health.</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-power">
@@ -129,6 +133,10 @@
 		<label>Charger Power</label>
 		<description>Current charger power of energy storage system.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="discharger-power">
@@ -136,6 +144,10 @@
 		<label>Discharger Power</label>
 		<description>Current discharger power of energy storage system.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="emergency-power-mode">
@@ -150,6 +162,10 @@
 		<label>Producer Power</label>
 		<description>Current active power producer load.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="export-to-grid-power">
@@ -157,6 +173,10 @@
 		<label>Export Grid Power</label>
 		<description>Current export power to grid.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="exported-to-grid-energy">
@@ -164,6 +184,10 @@
 		<label>Exported Grid Energy</label>
 		<description>Total energy exported to the grid.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-active-power">
@@ -171,6 +195,10 @@
 		<label>Consumer Power</label>
 		<description>Current active power consumer load.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-active-power-phase">
@@ -178,6 +206,10 @@
 		<label>Consumer Power Phase</label>
 		<description>Current active power consumer load on the corresponding phase.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption-max-active-power">
@@ -185,6 +217,10 @@
 		<label>Consumer Max Power</label>
 		<description>Maximum active consumption power that was measured.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-max-active-power">
@@ -192,6 +228,10 @@
 		<label>Producer Max Power</label>
 		<description>Maximum active production power that was measured.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="import-from-grid-power">
@@ -199,6 +239,10 @@
 		<label>Import Grid Power</label>
 		<description>Current import power from grid.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="imported-from-grid-energy">
@@ -206,6 +250,10 @@
 		<label>Imported Grid Energy</label>
 		<description>Total energy imported from the grid.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-air-temperature">
@@ -213,6 +261,10 @@
 		<label>Inverter Air Temperature</label>
 		<description>Air temperature at the inverter.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="inverter-radiator-temperature">
@@ -220,6 +272,10 @@
 		<label>Inverter Radiator Temperature</label>
 		<description>Radiator temperature at the inverter.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="bms-pack-temperature">
@@ -227,6 +283,10 @@
 		<label>BMS Pack Temperature</label>
 		<description>Temperature in the battery management system (BMS) box.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-voltage">
@@ -234,6 +294,10 @@
 		<label>FEMS Battery Voltage</label>
 		<description>Battery voltage of the FENECON energy management system (FEMS).</description>
 		<category>Voltage</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batt-tower-current">
@@ -241,6 +305,10 @@
 		<label>FEMS Battery Current</label>
 		<description>Battery current of the FENECON energy management system (FEMS).</description>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-actual-power">
@@ -248,6 +316,10 @@
 		<label>Charger Actual Power</label>
 		<description>Charger actual power on the corresponding charger.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-voltage">
@@ -255,6 +327,10 @@
 		<label>Charger Voltage</label>
 		<description>Charger voltage on the corresponding charger.</description>
 		<category>Voltage</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="charger-current">
@@ -262,6 +338,10 @@
 		<label>Charger Current</label>
 		<description>Charger current on the corresponding charger.</description>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

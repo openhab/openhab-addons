@@ -7,35 +7,59 @@
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ElectricCurrent</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="type-volt">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>ElectricPotential</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
