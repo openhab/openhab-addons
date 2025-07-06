@@ -213,18 +213,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                     "Missing email address configuration");
             return;
         }
-        if ("US".equals(config.region)) {
-            baseUri = "https://usiot.roborock.com";
-        } else if ("EU".equals(config.region)) {
-            baseUri = "https://euiot.roborock.com";
-        } else if ("RU".equals(config.region)) {
-            baseUri = "https://ruiot.roborock.com";
-        } else if ("CN".equals(config.region)) {
-            baseUri = "https://cniot.roborock.com";
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid region entered, must be US, EU, RU, CN");
-        }
         updateStatus(ThingStatus.UNKNOWN);
         initTask.setNamePrefix(getThing().getUID().getId());
         reconnectTask.setNamePrefix(getThing().getUID().getId());
@@ -272,6 +260,20 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private void initDevice() {
+        if ("".equals(baseUri)) {
+            try {
+                baseUri = webTargets.getUrlByEmail(config.email);
+            } catch (RoborockAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication error " + e.getMessage());
+            } catch (NoSuchAlgorithmException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "NoSuchAlgorithmException error " + e.getMessage());
+            } catch (RoborockCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication error " + e.getMessage());
+            }
+        }
         Login loginResponse;
         try {
             if (loginFile.exists()) {

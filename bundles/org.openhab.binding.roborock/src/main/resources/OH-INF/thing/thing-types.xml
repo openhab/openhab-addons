@@ -17,11 +17,6 @@
 				<label>Password</label>
 				<description>Password for Roborock account</description>
 			</parameter>
-			<parameter name="region" type="text">
-				<label>Region Code</label>
-				<description>Region Code, must match the region you use in the Roborock app. Must be EU US RU CN</description>
-				<default>"US"</default>
-			</parameter>
 			<parameter name="refresh" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<advanced>true</advanced>
