@@ -305,6 +305,10 @@
 		<label>Wind Chill Temperature</label>
 		<description>Wind chill temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -313,6 +317,10 @@
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -466,7 +474,7 @@
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
