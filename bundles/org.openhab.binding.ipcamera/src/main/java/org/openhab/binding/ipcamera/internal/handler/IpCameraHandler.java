@@ -1208,22 +1208,26 @@ public class IpCameraHandler extends BaseThingHandler {
                         onvifCamera.gotoPreset(Integer.valueOf(command.toString()));
                     }
                     return;
-                case CHANNEL_POLL_IMAGE:
+                case CHANNEL_CREATE_SNAPSHOTS:
                     if (OnOffType.ON.equals(command)) {
                         if (snapshotUri.isEmpty()) {
                             ffmpegSnapshotGeneration = true;
                             setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
-                            updateImageChannel = false;
-                        } else {
-                            updateImageChannel = true;
-                            updateSnapshot();// Allows this to change Image FPS on demand
                         }
                     } else {
                         Ffmpeg localSnaps = ffmpegSnapshot;
                         if (localSnaps != null) {
                             localSnaps.stopConverting();
                             ffmpegSnapshotGeneration = false;
+                            updateState(CHANNEL_CREATE_SNAPSHOTS, OnOffType.OFF);
                         }
+                    }
+                    return;
+                case CHANNEL_POLL_IMAGE:
+                    if (OnOffType.ON.equals(command)) {
+                        updateImageChannel = true;
+                        updateSnapshot();// Allows this to change Image FPS on demand
+                    } else {
                         updateImageChannel = false;
                     }
                     return;
@@ -1424,7 +1428,7 @@ public class IpCameraHandler extends BaseThingHandler {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
             setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
-            updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
+            updateState(CHANNEL_CREATE_SNAPSHOTS, OnOffType.ON);
         } else {
             cameraConfigError("Binding can not find a RTSP url for this camera, please provide a FFmpeg Input URL.");
         }
