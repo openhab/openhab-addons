@@ -298,8 +298,8 @@ public class LinkDB {
      */
     public void load(long delay) {
         DatabaseManager dbm = getDatabaseManager();
-        if (!device.isAwake() || !device.isResponding()) {
-            logger.debug("deferring load link db for {}, device is not awake or responding", device.getAddress());
+        if (!device.isAwake() || !device.isOnline()) {
+            logger.debug("deferring load link db for {}, device is not awake or online", device.getAddress());
             setReload(true);
         } else if (dbm == null) {
             logger.debug("unable to load link db for {}, database manager not available", device.getAddress());
@@ -326,8 +326,8 @@ public class LinkDB {
         if (getChanges().isEmpty()) {
             logger.debug("no changes to update link db for {}", device.getAddress());
             setUpdate(false);
-        } else if (!device.isAwake() || !device.isResponding()) {
-            logger.debug("deferring update link db for {}, device is not awake or responding", device.getAddress());
+        } else if (!device.isAwake() || !device.isOnline()) {
+            logger.debug("deferring update link db for {}, device is not awake or online", device.getAddress());
             setUpdate(true);
         } else if (dbm == null) {
             logger.debug("unable to update link db for {}, database manager not available", device.getAddress());
