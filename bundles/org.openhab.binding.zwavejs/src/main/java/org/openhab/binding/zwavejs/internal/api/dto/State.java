@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -20,5 +20,5 @@ import java.util.ArrayList;
 public class State {
     public Driver driver;
     public Controller controller;
-    public ArrayList<Node> nodes;
+    public List<Node> nodes;
 }

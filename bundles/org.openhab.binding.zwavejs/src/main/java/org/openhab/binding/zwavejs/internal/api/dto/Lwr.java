@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Leo Siepel - Initial contribution
  */
 public class Lwr {
     public int protocolDataRate;
-    public ArrayList<Object> repeaters;
+    public List<Object> repeaters;
     public int rssi;
-    public ArrayList<Object> repeaterRSSI;
+    public List<Object> repeaterRSSI;
 }

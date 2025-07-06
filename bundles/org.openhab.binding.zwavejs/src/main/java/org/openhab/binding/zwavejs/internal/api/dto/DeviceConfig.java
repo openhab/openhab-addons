@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -24,7 +24,7 @@ public class DeviceConfig {
     public int manufacturerId;
     public String label;
     public String description;
-    public ArrayList<Device> devices;
+    public List<Device> devices;
     public FirmwareVersion firmwareVersion;
     public boolean preferred;
     public Metadata metadata;

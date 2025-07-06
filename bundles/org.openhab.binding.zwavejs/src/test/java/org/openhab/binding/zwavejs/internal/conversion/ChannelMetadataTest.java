@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,7 +44,7 @@ import org.openhab.core.util.ColorUtil;
 @NonNullByDefault
 public class ChannelMetadataTest {
 
-    private ArrayList<Node> getNodesFromStore(String filename) throws IOException {
+    private List<Node> getNodesFromStore(String filename) throws IOException {
         ResultMessage resultMessage = DataUtil.fromJson(filename, ResultMessage.class);
         return resultMessage.result.state.nodes;
     }

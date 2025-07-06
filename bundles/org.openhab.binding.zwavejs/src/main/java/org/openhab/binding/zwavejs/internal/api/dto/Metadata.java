@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zwavejs.internal.api.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
@@ -26,7 +26,7 @@ public class Metadata {
     public boolean readable;
     public boolean writeable;
     public String label;
-    public ArrayList<String> valueChangeOptions;
+    public List<String> valueChangeOptions;
     public boolean stateful;
     public boolean secret;
     public CcSpecific ccSpecific;

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +33,7 @@ import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
 @NonNullByDefault
 public class ConfigMetadataTest {
 
-    private ArrayList<Node> getNodesFromStore(String filename) throws IOException {
+    private List<Node> getNodesFromStore(String filename) throws IOException {
         ResultMessage resultMessage = DataUtil.fromJson(filename, ResultMessage.class);
         return resultMessage.result.state.nodes;
     }

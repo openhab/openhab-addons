@@ -13,7 +13,7 @@
 package org.openhab.binding.zwavejs.internal.api.dto;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -32,11 +32,11 @@ public class Node {
     public DeviceConfig deviceConfig;
     public String label;
     public int interviewAttempts;
-    public ArrayList<Endpoint> endpoints;
-    public ArrayList<Value> values;
+    public List<Endpoint> endpoints;
+    public List<Value> values;
     public boolean isFrequentListening;
     public int maxDataRate;
-    public ArrayList<Integer> supportedDataRates;
+    public List<Integer> supportedDataRates;
     public int protocolVersion;
     public boolean supportsBeaming;
     public boolean supportsSecurity;

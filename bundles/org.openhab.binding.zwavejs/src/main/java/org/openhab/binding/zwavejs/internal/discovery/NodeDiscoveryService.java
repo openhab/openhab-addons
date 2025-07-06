@@ -81,7 +81,7 @@ public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<Z
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), getBridgeUID());
+        removeOlderResults(Instant.now(), getBridgeUID());
         thingHandler.unregisterDiscoveryListener();
     }
 
