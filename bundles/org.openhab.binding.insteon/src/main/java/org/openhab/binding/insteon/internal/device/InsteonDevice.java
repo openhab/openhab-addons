@@ -450,6 +450,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                         logger.trace("handled reply of direct for {}", feature.getName());
                         // notify feature queried was answered
                         featureQueriedAnswered(feature);
+                        // reset response timeout
+                        resetResponseTimeout();
                     });
             // update all status features (e.g. device last update time)
             getFeatures().stream().filter(DeviceFeature::isStatusFeature)
@@ -821,12 +823,22 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     /**
-     * Resets heartbeat monitor
+     * Resets heartbeat timeout
      */
-    public void resetHeartbeatMonitor() {
+    public void resetHeartbeatTimeout() {
         InsteonDeviceHandler handler = getHandler();
         if (handler != null) {
-            handler.resetHeartbeatMonitor();
+            handler.resetHeartbeatTimeout();
+        }
+    }
+
+    /**
+     * Resets response timeout
+     */
+    public void resetResponseTimeout() {
+        InsteonDeviceHandler handler = getHandler();
+        if (handler != null) {
+            handler.resetResponseTimeout();
         }
     }
 
