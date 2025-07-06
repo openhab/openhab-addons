@@ -22,6 +22,244 @@ const fs = require('fs');
 const schemas = require('../../../src/main/resources/schema.json');
 
 
+function optionToLabel(option) {
+    return option
+        .replaceAll(/_+/g, " ").trim()
+        .replaceAll(/\s+/g, " ")
+        .replaceAll(/(?<=[^\d ])(?=\d)/g, " ") // Space before digits
+        .replaceAll(/(?<=\d)(?=[^\d ])/g, " ") // Space after digits
+        .replaceAll(/(?<=[a-z])(?=[A-Z](?:[a-z]|$))/g, " ") // Undo camel casing
+
+        .replaceAll(/(?:^|(?<= ))0 X (\d+|[A-F]+)( \d+|[A-F]+)?(?= |$)/gi, "0x$1$2") // Put hex back together
+        .replaceAll(/(?:^|(?<= ))0 ([A-F])(?= |$)/gi, "0$1") // Put hex back together
+
+         // Space between
+        .replaceAll(/(?:^|(?<= ))batteryprotect(?= |$)/gi, "Battery Protect")
+        .replaceAll(/(?:^|(?<= ))heartrate(?= |$)/gi, "Heart Rate")
+        .replaceAll(/(?:^|(?<= ))heatfan(?= |$)/gi, "Heat Fan")
+        .replaceAll(/(?:^|(?<= ))lower(alarm|cancel)(?= |$)/gi, "Lower $1")
+        .replaceAll(/(?:^|(?<= ))motorfault(?= |$)/gi, "Motor Fault")
+        .replaceAll(/(?:^|(?<= ))(quick|quiet)(cool|heat)(?= |$)/gi, "$1 $2")
+        .replaceAll(/(?:^|(?<= ))reset(filter|mainbrush|sidebrush)(?= |$)/gi, "Reset $1")
+        .replaceAll(/(?:^|(?<= ))selectroom(?= |$)/gi, "Select Room")
+        .replaceAll(/(?:^|(?<= ))selflock(?= |$)/gi, "Self Lock")
+        .replaceAll(/(?:^|(?<= ))stopheating(?= |$)/gi, "Stop Heating")
+        .replaceAll(/(?:^|(?<= ))temp(fault|hold)(?= |$)/gi, "Temp $1")
+        .replaceAll(/(?:^|(?<= ))turn(left|off|right)(?= |$)/gi, "Turn $1")
+        .replaceAll(/(?:^|(?<= ))upper(alarm|cancel)(?= |$)/gi, "Upper $1")
+        .replaceAll(/(?:^|(?<= ))very(bad|low)(?= |$)/gi, "Very $1")
+        .replaceAll(/(?:^|(?<= ))veryverybad(?= |$)/gi, "Very Very Bad")
+        .replaceAll(/(?:^|(?<= ))wallfollow(?= |$)/gi, "Wall Follow")
+        .replaceAll(/(?:^|(?<= ))warmlight(?= |$)/gi, "Warm Light")
+        .replaceAll(/(?:^|(?<= ))waterlimit(?= |$)/gi, "Water Limit")
+
+        // No space after
+        .replaceAll(/(?:^|(?<= ))anti (\w+)(?= |$)/gi, "Anti$1")
+
+        .replaceAll(/(?:^|(?<=\W))(?:[a-z]+|[A-Z]{3,}|ON)(?=\W|$)/g, function (txt) { // Title case
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        })
+
+        .replaceAll(/(?:^|(?<= ))(\d+) (?:h|H)(?:|r|rs|our|ours)(?= |$)/g, "$1 Hours")
+        .replaceAll(/(?:^|(?<= ))(\d+) (?:m|M)(?:|in)(?= |$)/g, "$1 Minutes")
+        .replaceAll(/(?:^|(?<= ))(\d+) (?:s|S)(?:|ec|econds)(?= |$)/g, "$1 Seconds")
+
+        .replaceAll(/(?:^|(?<= ))(\d+) (\d+)(?= |$)/g, "$1.$2") // Fractions have "_" not "." (or ",")
+
+        .replaceAll(/(?:^|(?<= ))1 (\w+)s(?= |$)/g, "1 $1") // Plurals to singular
+        .replaceAll(/(?:^|(?<= ))([02-9]|\d{2,}) Inch(?= |$)/g, "$1 Inches") // and vice versa
+
+        .replaceAll(/(?:^|(?<= ))Func(?= )/g, "") // "Func" followed by anything is redundant
+
+        // Abbreviations
+        .replaceAll(/(?:^|(?<= ))Abs(?= |$)/g, "ABS")
+        .replaceAll(/(?:^|(?<= ))Aux(?= |$)/g, "AUX")
+        .replaceAll(/(?:^|(?<= ))Cd(?= |$)/g, "CD")
+        .replaceAll(/(?:^|(?<= ))Cmd(?= |$)/g, "Command")
+        .replaceAll(/(?:^|(?<= ))Crt(?= |$)/g, "CRT")
+        .replaceAll(/(?:^|(?<= ))Dc(?= |$)/g, "DC")
+        .replaceAll(/(?:^|(?<= ))Dhw(?= |$)/g, "DHW")
+        .replaceAll(/(?:^|(?<= ))Diy(?= |$)/g, "DIY")
+        .replaceAll(/(?:^|(?<= ))Dspm(?= |$)/g, "DSPM")
+        .replaceAll(/(?:^|(?<= ))Dssm(?= |$)/g, "DSSM")
+        .replaceAll(/(?:^|(?<= ))Eco(?= |$)/g, "ECO")
+        .replaceAll(/(?:^|(?<= ))Err(?= |$)/g, "Error")
+        .replaceAll(/(?:^|(?<= ))Fav(?= |$)/g, "Favourite")
+        .replaceAll(/(?:^|(?<= ))Fld(?= |$)/g, "FLD")
+        .replaceAll(/(?:^|(?<= ))Gbr(?= |$)/g, "GBR")
+        .replaceAll(/(?:^|(?<= ))Gbrw(?= |$)/g, "GBRW")
+        .replaceAll(/(?:^|(?<= ))Gnd(?= |$)/g, "GND")
+        .replaceAll(/(?:^|(?<= ))Gsa(?= |$)/g, "GSA")
+        .replaceAll(/(?:^|(?<= ))Gsd(?= |$)/g, "GSD")
+        .replaceAll(/(?:^|(?<= ))Gsm(?= |$)/g, "GSM")
+        .replaceAll(/(?:^|(?<= ))Hips(?= |$)/g, "HIPS")
+        .replaceAll(/(?:^|(?<= ))Lan(?= |$)/g, "LAN")
+        .replaceAll(/(?:^|(?<= ))Led(?= |$)/g, "LED")
+        .replaceAll(/(?:^|(?<= ))Pc(?= |$)/g, "PC")
+        .replaceAll(/(?:^|(?<= ))Petg(?= |$)/g, "PETG")
+        .replaceAll(/(?:^|(?<= ))Pir(?= |$)/g, "PIR")
+        .replaceAll(/(?:^|(?<= ))Pla(?= |$)/g, "PLA")
+        .replaceAll(/(?:^|(?<= ))Plc(?= |$)/g, "PLC")
+        .replaceAll(/(?:^|(?<= ))Rbg(?= |$)/g, "RBG")
+        .replaceAll(/(?:^|(?<= ))Rbgw(?= |$)/g, "RBGW")
+        .replaceAll(/(?:^|(?<= ))Rfid(?= |$)/g, "RFID")
+        .replaceAll(/(?:^|(?<= ))Rgb(?= |$)/g, "RGB")
+        .replaceAll(/(?:^|(?<= ))Rgbcct(?= |$)/g, "RGBCCT")
+        .replaceAll(/(?:^|(?<= ))Rgbw(?= |$)/g, "RGBW")
+        .replaceAll(/(?:^|(?<= ))Rmb(?= |$)/g, "RMB")
+        .replaceAll(/(?:^|(?<= ))Rmt(?= |$)/g, "RMT")
+        .replaceAll(/(?:^|(?<= ))Sa(?= |$)/g, "Saturday")
+        .replaceAll(/(?:^|(?<= ))Sim(?= |$)/g, "SIM")
+        .replaceAll(/(?:^|(?<= ))Sp(?= |$)/g, "SP")
+        .replaceAll(/(?:^|(?<= ))Su(?= |$)/g, "Sunday")
+        .replaceAll(/(?:^|(?<= ))Tpu(?= |$)/g, "TPU")
+        .replaceAll(/(?:^|(?<= ))Tv(?= |$)/g, "TV")
+        .replaceAll(/(?:^|(?<= ))Usa$/g, "USA")
+        .replaceAll(/(?:^|(?<= ))Usb(?= |$)/g, "USB")
+        .replaceAll(/(?:^|(?<= ))Usd$/g, "USD")
+        .replaceAll(/(?:^|(?<= ))Uv$/g, "UV")
+        .replaceAll(/(?:^|(?<= ))Wifi$/g, "WiFi")
+        .replaceAll(/(?:^|(?<= ))Xy$/g, "XY")
+
+        // Abbreviations (Country Codes)
+        .replaceAll(/(?:^|(?<= ))Au$/g, "AU")
+        .replaceAll(/(?:^|(?<= ))Ca$/g, "CA")
+        .replaceAll(/(?:^|(?<= ))Cz$/g, "CZ")
+        .replaceAll(/(?:^|(?<= ))De$/g, "DE")
+        .replaceAll(/(?:^|(?<= ))Es$/g, "ES")
+        .replaceAll(/(?:^|(?<= ))Eu$/g, "EU")
+        .replaceAll(/(?:^|(?<= ))Eur$/g, "EU")
+        .replaceAll(/(?:^|(?<= ))In$/g, "IN")
+        .replaceAll(/(?:^|(?<= ))Jp$/g, "JP")
+        .replaceAll(/(?:^|(?<= ))Mx$/g, "MX")
+        .replaceAll(/(?:^|(?<= ))Ru$/g, "RU")
+        .replaceAll(/(?:^|(?<= ))Uk$/g, "UK")
+        .replaceAll(/(?:^|(?<= ))Us$/g, "US")
+        .replaceAll(/(?:^|(?<= ))Zh$/g, "ZH")
+
+        // Standard units
+        .replaceAll(/(?:^|(?<= ))(Powerful|Silent) °C(?= |$)/g, "$1 C") // That's not °C! (I think)
+        .replaceAll(/(?:^|(?<= ))C(?:entigrade)?(?= |$)/g, "Celsius")
+        .replaceAll(/(?:^|(?<= ))Db(?= |$)/g, "dB")
+        .replaceAll(/(?:^|(?<= ))F(?= |$)/g, "Fahrenheit")
+        .replaceAll(/(?:^|(?<= ))(\d) G(?= |$)/g, "$1 GHz")
+        .replaceAll(/(?:^|(?<= ))Hpa| H Pa(?= |$)/g, "hPa")
+        .replaceAll(/(?:^|(?<= ))K(?= |$)/g, "k") // More likely a kilo- abbreviation than Kelvin?
+        .replaceAll(/(?:^|(?<= ))Kg(?= |$)/g, "kg")
+        .replaceAll(/(?:^|(?<= ))Khz(?= |$)/g, "kHz")
+        .replaceAll(/(?:^|(?<= ))Klux(?= |$)/g, "klux")
+        .replaceAll(/(?:^|(?<= ))Km(?:h|ph| H)(?= |$)/g, "km/h")
+        .replaceAll(/(?:^|(?<= ))Km(?= |$)/g, "km")
+        .replaceAll(/(?:^|(?<= ))Lb(?= |$)/g, "lb")
+        .replaceAll(/(?:^|(?<= ))L Min(?= |$)/g, "l/min")
+        .replaceAll(/(?:^|(?<= ))m3 H(?= |$)/g, "m³/h")
+        .replaceAll(/(?:^|(?<= ))Mbar(?= |$)/g, "mbar")
+        .replaceAll(/(?:^|(?<= ))Mm(?:hg| Hg)(?= |$)/g, "mmHg")
+        .replaceAll(/(?:^|(?<= ))Mm(?= |$)/g, "mm")
+        .replaceAll(/(?:^|(?<= ))Mph(?= |$)/g, "mph")
+        .replaceAll(/(?:^|(?<= ))M S(?= |$)/g, "m/s")
+        .replaceAll(/(?:^|(?<= ))Pct(?= |$)/g, "Percentage")
+        .replaceAll(/(?:^|(?<= ))RH(?= |$)/g, "%RH")
+
+        // Spelling and translation mistakes
+        .replaceAll(/(?:^|(?<= ))Alram(?= |$)/g, "Alarm")
+        .replaceAll(/(?:^|(?<= ))Apponitment(?= |$)/g, "Appointment")
+        .replaceAll(/(?:^|(?<= ))Ap(?= |$)/g, "App")
+        .replaceAll(/(?:^|(?<= ))(Anti)?([fF])orst(?= |$)/g, "$1$2rost")
+        .replaceAll(/(?:^|(?<= ))Antifrozen(?= |$)/g, "Antifrost")
+        .replaceAll(/(?:^|(?<= ))Backight(?= |$)/g, "Backlight")
+        .replaceAll(/(?:^|(?<= ))Bule(?= |$)/g, "Blue")
+        .replaceAll(/(?:^|(?<= ))Bsh(?= |$)/g, "Brush")
+        .replaceAll(/(?:^|(?<= ))Cancle(?= |$)/g, "Cancel")
+        .replaceAll(/(?:^|(?<= ))Channle(?= |$)/g, "Channel")
+        .replaceAll(/(?:^|(?<= ))Chargr(?= |$)/g, "Charger")
+        .replaceAll(/(?:^|(?<= ))Chargring(?= |$)/g, "Charging")
+        .replaceAll(/(?:^|(?<= ))Charing(?= |$)/g, "Charging")
+        .replaceAll(/(?:^|(?<= ))Chincken(?= |$)/g, "Chicken")
+        .replaceAll(/(?:^|(?<= ))Clean?n?l?ing(?= |$)/g, "Cleaning")
+        .replaceAll(/(?:^|(?<= ))Collectoring(?= |$)/g, "Collecting")
+        .replaceAll(/(?:^|(?<= ))Comm(?:unicate)? Fault(?= |$)/g, "Communication Fault")
+        .replaceAll(/(?:^|(?<= ))Contiuation(?= |$)/g, "Continuation")
+        .replaceAll(/(?:^|(?<= ))Defailt(?= |$)/g, "Default")
+        .replaceAll(/(?:^|(?<= ))Dehumi(?= |$)/g, "Dehumidify")
+        .replaceAll(/(?:^|(?<= ))Delet(?= |$)/g, "Delete")
+        .replaceAll(/(?:^|(?<= ))Doorbee(?= |$)/g, "Doorbell")
+        .replaceAll(/(?:^|(?<= ))Duoble(?= |$)/g, "Double")
+        .replaceAll(/(?:^|(?<= ))Failuer(?= |$)/g, "Failure")
+        .replaceAll(/(?:^|(?<= ))Flor(?= |$)/g, "Floor")
+        .replaceAll(/(?:^|(?<= ))Foward(?= |$)/g, "Forward")
+        .replaceAll(/(?:^|(?<= ))Heatign(?= |$)/g, "Heating")
+        .replaceAll(/(?:^|(?<= ))Hig(?= |$)/g, "High")
+        .replaceAll(/(?:^|(?<= ))Hotwater(?= |$)/g, "Hot Water")
+        .replaceAll(/(?:^|(?<= ))IDl E(?= |$)/g, "Idle")
+        .replaceAll(/(?:^|(?<= ))Intermittenc(?= |$)/g, "Intermittent")
+        .replaceAll(/(?:^|(?<= ))Interupt(?= |$)/g, "Interrupt")
+        .replaceAll(/(?:^|(?<= ))Irri(?= |$)/g, "Irrigation")
+        .replaceAll(/(?:^|(?<= ))Keepwarm(?= |$)/g, "Keep Warm")
+        .replaceAll(/(?:^|(?<= ))Lightgreen(?= |$)/g, "Light Green")
+        .replaceAll(/(?:^|(?<= ))Livingroom(?= |$)/g, "Living Room")
+        .replaceAll(/(?:^|(?<= ))Lowpower(?= |$)/g, "Low Power")
+        .replaceAll(/(?:^|(?<= ))Manu(?:el)?(?= |$)/g, "Manual")
+        .replaceAll(/(?:^|(?<= ))Mechina(?= |$)/g, "Mechanical")
+        .replaceAll(/(?:^|(?<= ))Mem(?= |$)/g, "Memory")
+        .replaceAll(/(?:^|(?<= ))Middly(?= |$)/g, "Middle")
+        .replaceAll(/(?:^|(?<= ))Mov(?= |$)/g, "Move")
+        .replaceAll(/(?:^|(?<= ))NO(?= |$)/g, "No")
+        .replaceAll(/(?:^|(?<= ))No Connec?t(?= |$)/g, "No Connection")
+        .replaceAll(/(?:^|(?<= ))No Esponse(?= |$)/g, "No Response")
+        .replaceAll(/(?:^|(?<= ))Nomal(?= |$)/g, "Normal")
+        .replaceAll(/(?:^|(?<= ))No Net(?: Work)?(?= |$)/g, "No Network")
+        .replaceAll(/(?:^|(?<= ))Nor(?= |$)/g, "Normal")
+        .replaceAll(/(?:^|(?<= ))Nosensor(?= |$)/g, "No Sensor")
+        .replaceAll(/(?:^|(?<= ))Nosweep(?= |$)/g, "No Sweep")
+        .replaceAll(/(?:^|(?<= ))Not Connect(?= |$)/g, "Not Connected")
+        .replaceAll(/(?:^|(?<= ))Openning(?= |$)/g, "Opening")
+        .replaceAll(/(?:^|(?<= ))Overcurrent(?= |$)/g, "Over Current")
+        .replaceAll(/(?:^|(?<= ))Overpower(?= |$)/g, "Over Power")
+        .replaceAll(/(?:^|(?<= ))Paletter Set(?= |$)/g, "Palette")
+        .replaceAll(/(?:^|(?<= ))Pre Set(?= |$)/g, "Preset")
+        .replaceAll(/(?:^|(?<= ))Repositing(?= |$)/g, "Repositioning")
+        .replaceAll(/(?:^|(?<= ))Seesa(?= |$)/g, "Seesaw")
+        .replaceAll(/(?:^|(?<= ))Secert(?= |$)/g, "Secret")
+        .replaceAll(/(?:^|(?<= ))Severre(?= |$)/g, "Severe")
+        .replaceAll(/(?:^|(?<= ))Shortring(?= |$)/g, "Short Ring")
+        .replaceAll(/(?:^|(?<= ))SLeeping(?= |$)/g, "Sleeping")
+        .replaceAll(/(?:^|(?<= ))Smk(?= |$)/g, "Smoke")
+        .replaceAll(/(?:^|(?<= ))Sos(?= |$)/g, "SOS")
+        .replaceAll(/(?:^|(?<= ))Spainish(?= |$)/g, "Spanish")
+        .replaceAll(/(?:^|(?<= ))Sprial(?= |$)/g, "Spiral")
+        .replaceAll(/(?:^|(?<= ))Stanby(?= |$)/g, "Standby")
+        .replaceAll(/(?:^|(?<= ))Stanby(?= |$)/g, "Stopping")
+        .replaceAll(/(?:^|(?<= ))Succ(?= |$)/g, "Success")
+        .replaceAll(/(?:^|(?<= ))Temprature(?= |$)/g, "Temperature")
+        .replaceAll(/(?:^|(?<= ))Totaling(?= |$)/g, "Totalling")
+        .replaceAll(/(?:^|(?<= ))Tradit(?= |$)/g, "Traditional")
+        .replaceAll(/(?:^|(?<= ))Unlegal(?= |$)/g, "Illegal")
+
+        // Default en is en_GB :-)
+        .replaceAll(/(?:^|(?<= ))Color(ful)?(?= |$)/g, "Colour$1")
+        .replaceAll(/(?:^|(?<= ))Multicolor(?= |$)/g, "Multicolour")
+
+        // Clean up
+        .replaceAll(/(?:^|(?<= ))Clockwise Rotation(?= |$)/g, "Clockwise")
+        .replaceAll(/(?:^|(?<= ))Fahrenheit Degree(?= |$)/g, "Fahrenheit")
+        .replaceAll(/(?:^|(?<= ))Minorin(?= |$)/g, "Minor In")
+        .replaceAll(/(?:^|(?<= ))Music (?=[^\d])/g, "")
+        .replaceAll(/(?:^|(?<= ))Nofault(?= |$)/g, "No Fault")
+        .replaceAll(/(?:^|(?<= ))Nognd(?= |$)/g, "No GND")
+        .replaceAll(/(?:^|(?<= ))Nopir(?= |$)/g, "No PIR")
+        .replaceAll(/(?:^|(?<= ))PM 25.10 /g, "PM25/10 ")
+        .replaceAll(/(?:^|(?<= ))Poweroff(?= |$)/g, "Power Off")
+        .replaceAll(/(?:^|(?<= ))PRITriggered(?= |$)/g, "PRI Triggered")
+        .replaceAll(/(?:^|(?<= ))ProbeOKState(?= |$)/g, "Probe OK State")
+        .replaceAll(/(?:^|(?<= ))PumpAB(?= |$)/g, "Pump AB")
+        .replaceAll(/(?:^|(?<= ))Ratio (\d+)\.(\d+)(?= |$)/g, "Ratio $1:$2")
+        .replaceAll(/(?:^|(?<= ))Remotectl(?= |$)/g, "Remote Control")
+        .replaceAll(/(?:^|(?<= ))Tem (?=°)/g, "Temp ")
+    ;
+}
+
+
 function codeToLabel(code) {
     let label = code
         .replaceAll(/(?:^|(?<= ))C_F|CF(?= |$)/g, "°C/°F")
@@ -545,9 +783,11 @@ let labels = new Map([
     [ "channel-type.tuya.va_humidity.label", "Humidity" ],
 ]);
 
+let commands = new Map();
+
 for (product in schemas) {
     for (code in schemas[product]) {
-        let key = "channel-type.tuya." + code.toLowerCase() + ".label";
+        var key = "channel-type.tuya." + code.toLowerCase() + ".label";
         let value = codeToLabel(code);
         if (key in labels) {
             if (value !== labels.get(key)) {
@@ -556,12 +796,51 @@ for (product in schemas) {
         } else {
             labels.set(key, value);
         }
+
+        let options = schemas[product][code]["range"];
+        if (typeof options !== 'undefined') {
+            for (option of options) {
+                let value = optionToLabel(option);
+                var key = "channel-type.tuya._.command.option." + option.toLowerCase();
+                if (key in commands && value !== commands.get(key)) {
+                    key = "channel-type.tuya." + code.toLowerCase() + ".command.option." + option.toLowerCase();
+                }
+                if (key in commands && value !== commands.get(key)) {
+                    key = "channel-type.tuya." + code + ".command.option." + option.toLowerCase();
+                }
+                if (key in commands && value !== commands.get(key)) {
+                    key = "channel-type.tuya." + code.toLowerCase() + ".command.option." + option;
+                }
+                if (key in commands && value !== commands.get(key)) {
+                    key = "channel-type.tuya." + code + ".command.option." + option;
+                }
+                if (key in commands && value !== commands.get(key)) {
+                    key = "channel-type.tuya." + product + "_" + code + ".command.option." + option;
+                }
+                if (!(key in commands)) {
+                    commands.set(key, value);
+                }
+            }
+        }
     }
 }
+
 
 process.stdout.write("# ------------------------------------------------------------------------\n");
 process.stdout.write("# Everything from here onwards is generated by src/main/tool/mki18n.js.\n");
 process.stdout.write("# You should make changes there as any changes here are likely to be lost.\n");
+
+
+process.stdout.write("\n");
+process.stdout.write("\n");
+process.stdout.write("# Channel type command options\n");
+process.stdout.write("\n");
+
+for (let key of Array.from(commands.keys()).sort()) {
+    process.stdout.write(key + " = " + commands.get(key) + "\n");
+}
+
+
 process.stdout.write("\n");
 process.stdout.write("\n");
 process.stdout.write("# Channel type labels\n");
