@@ -100,15 +100,15 @@ See section [Discovery](#discovery) for details.
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                              |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                            |
-| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                                                  |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
-| thing-type           | Model                                                    | Vendor ID                                       |
-| -------------------- | -------------------------------------------------------- | ----------------------------------------------- |
-| shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU, S4SW-001X8EU        |
-| shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU, S4SW-001P8EU        |
-| shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16, S4EM-001PXCEU16 |
+| thing-type           | Model                                                    | Vendor ID                                     |
+| -------------------- | -------------------------------------------------------- | --------------------------------------------- |
+| shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU, S4SW-001X8EU      |
+| shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU, S4SW-001P8EU      |
+| shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16                |
+| shellyemmini         | Shelly Plus EM Mini with 1x power meter                  | S4EM-001PXCEU16                               |
 
 ### Shelly Pro Series (Generation 2+3)
 
@@ -117,7 +117,7 @@ See section [Discovery](#discovery) for details.
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
 | shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
-| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
+| shellypro2          | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
@@ -1438,7 +1438,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
 | meter | voltage      | Number   | yes       | RMS voltage, Volts                                                               |
 
-### Shelly Pro 2 (thing-type: shellypro2-relay)
+### Shelly Pro 2 (thing-type: shellypro2)
 
 | Group  | Channel     | Type    | read-only | Description                                                                       |
 | ------ | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |

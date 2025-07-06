@@ -159,7 +159,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSI4, "", THING_TYPE_SHELLYPLUSI4), //
                 Arguments.of(SHELLYDT_PLUSI4G3, "", THING_TYPE_SHELLYPLUSI4), //
                 Arguments.of(SHELLYDT_PLUSHT, "", THING_TYPE_SHELLYPLUSHT), //
-                Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHTG3), //
+                Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHT), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
@@ -175,7 +175,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_MINI_EM, "", THING_TYPE_SHELLYMINI_PM), //
                 Arguments.of(SHELLYDT_MINI_1PM, "", THING_TYPE_SHELLYMINI_1PM), //
                 Arguments.of(SHELLYDT_MINI_1PMG3, "", THING_TYPE_SHELLYMINI_1PM), //
-                Arguments.of(SHELLYDT_MINI_1PMG3, "", THING_TYPE_SHELLYMINI_1PM), //
+                Arguments.of(SHELLYDT_MINI_1PMG4, "", THING_TYPE_SHELLYMINI_1PM), //
 
                 // Pro Series
                 Arguments.of(SHELLYDT_PRO1, "", THING_TYPE_SHELLYPRO1), //
