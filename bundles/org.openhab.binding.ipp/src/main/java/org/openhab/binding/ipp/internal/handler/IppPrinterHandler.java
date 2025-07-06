@@ -182,10 +182,4 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return Set.of();
     }
-
-    @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return Set.of();
-    }
 }
