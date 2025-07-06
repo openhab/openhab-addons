@@ -433,7 +433,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         SemanticTag property = null;
         switch (details.itemType) {
             case CoreItemFactory.COLOR:
-                point = details.writable ? Point.CONTROL : Point.MEASUREMENT;
+                point = details.writable ? Point.CONTROL : Point.STATUS;
                 property = Property.COLOR;
             case CoreItemFactory.DIMMER:
                 point = Point.CONTROL;
@@ -546,10 +546,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             } else if (match(List.of(" oil "), details)) {
                 property = Property.OIL;
             } else if (match(List.of("open", "close", " shut "), details)
-                    && match(List.of("state", "status"), details)) {
-                property = Property.OPEN_LEVEL;
-            } else if (match(List.of("open", "close", " shut "), details)
-                    && match(List.of("level", "position"), details)) {
+                    && (match(List.of("state", "status", "level", "position"), details))) {
                 property = Property.OPEN_LEVEL;
             } else if (match(List.of("open", "close", " shut "), details)) {
                 property = Property.OPENING;
