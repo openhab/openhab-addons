@@ -480,11 +480,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         } else {
             // handle battery updates (dps key is 122)
             if (JsonParser.parseString(response).isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("122")) {
-                int battery = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().get("122")
-                        .getAsInt();
-                updateState(CHANNEL_BATTERY, new DecimalType(battery));
+                    && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()) {
+                JsonObject dpsJsonObject = JsonParser.parseString(response).getAsJsonObject().get("dps")
+                        .getAsJsonObject();
+                if (dpsJsonObject.has("122")) {
+                    int battery = dpsJsonObject.get("122").getAsInt();
+                    updateState(CHANNEL_BATTERY, new DecimalType(battery));
+                } else if (dpsJsonObject.has("121")) {
+                    int stateInt = dpsJsonObject.get("121").getAsInt();
+                    StatusType state = StatusType.getType(stateInt);
+                    updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+                    updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
+                }
             }
         }
         logger.trace("MQTT message processed");
