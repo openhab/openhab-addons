@@ -7,7 +7,6 @@
 	<bridge-type id="account">
 		<label>Roborock Account Handler</label>
 		<description>Control Roborock devices</description>
-		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email Address</label>
@@ -32,7 +31,6 @@
 		</supported-bridge-type-refs>
 		<label>Robot Vacuum</label>
 		<description>Roborock Robot Vacuum Cleaner</description>
-		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
