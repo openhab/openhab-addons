@@ -146,8 +146,13 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     private void pollStatus() {
         String responseVehicleList = getVehicleList();
         JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
-        if (vehicleList == null) {
+        if (jsonArrayVehicleList.size() > 0) {
+            VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
+            if (vehicleList == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error.no-vehicles");
+            }
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.no-vehicles");
         }
