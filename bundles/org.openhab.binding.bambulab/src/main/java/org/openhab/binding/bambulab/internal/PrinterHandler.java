@@ -376,72 +376,55 @@ public class PrinterHandler extends BaseBridgeHandler
             // vtray
             case CHANNEL_VTRAY_TRAY_TYPE -> //
                 vtray.map(Report.Print.VtTray::trayType)//
-                        .flatMap(StateParserHelper::parseTrayType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTrayType);
             case CHANNEL_VTRAY_TRAY_COLOR -> //
                 vtray.map(Report.Print.VtTray::trayColor)//
-                        .map(StateParserHelper::parseColor)//
-                        .or(StateParserHelper::undef);
+                        .map(StateParserHelper::parseColor);
             case CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MAX -> //
                 vtray.map(Report.Print.VtTray::nozzleTempMax)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             case CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN -> //
                 vtray.map(Report.Print.VtTray::nozzleTempMin)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             case CHANNEL_VTRAY_REMAIN -> //
                 vtray.map(Report.Print.VtTray::remain)//
-                        .flatMap(StateParserHelper::parsePercentType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parsePercentType);
             case CHANNEL_VTRAY_K -> //
                 vtray.map(Report.Print.VtTray::k)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_N -> //
                 vtray.map(Report.Print.VtTray::n)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_TAG_UUID -> //
                 vtray.map(Report.Print.VtTray::trayUuid)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_ID_NAME -> //
                 vtray.map(Report.Print.VtTray::trayIdName)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_INFO_IDX -> //
                 vtray.map(Report.Print.VtTray::trayInfoIdx)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_SUB_BRANDS -> //
                 vtray.map(Report.Print.VtTray::traySubBrands)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_WEIGHT -> //
                 vtray.map(Report.Print.VtTray::trayWeight)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_TRAY_DIAMETER -> //
                 vtray.map(Report.Print.VtTray::trayDiameter)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_TRAY_TEMPERATURE -> //
                 vtray.map(Report.Print.VtTray::trayTemp)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             case CHANNEL_VTRAY_TRAY_TIME -> //
                 vtray.map(Report.Print.VtTray::trayTime)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_BED_TEMPERATURE_TYPE -> //
                 vtray.map(Report.Print.VtTray::bedTempType)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_BED_TEMPERATURE -> //
                 vtray.map(Report.Print.VtTray::bedTemp)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             // ams
             case CHANNEL_AMS_TRAY_NOW -> //
                 Optional.of(print)//
