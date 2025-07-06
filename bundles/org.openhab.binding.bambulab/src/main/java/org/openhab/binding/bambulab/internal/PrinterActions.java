@@ -24,6 +24,7 @@ import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
+
 /**
  * @author Martin Grzeslowski - Initial contribution
  */

@@ -133,7 +133,7 @@ public class AmsDeviceHandler extends BaseThingHandler {
         var state = switch (channel) {
             case CHANNEL_TRAY_TYPE -> //
                 key.flatMap(name -> {
-                    if(name.isBlank()) {
+                    if (name.isBlank()) {
                         logger.debug("Tray type is blank");
                         return Optional.empty();
                     }
