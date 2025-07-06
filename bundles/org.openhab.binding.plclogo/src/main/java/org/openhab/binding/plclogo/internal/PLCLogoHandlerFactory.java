@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.plclogo.internal;
 
-import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_ANALOG;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DATETIME;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DIGITAL;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_MEMORY;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_PULSE;
 
 import java.util.Collections;
 import java.util.HashSet;

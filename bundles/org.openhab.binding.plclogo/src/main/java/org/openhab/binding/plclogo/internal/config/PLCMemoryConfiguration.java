@@ -51,7 +51,7 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
      *
      * @return Configured Siemens LOGO! update threshold
      */
-    public Integer getThreshold() {
+    public int getThreshold() {
         return threshold;
     }
 
@@ -60,13 +60,13 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
      *
      * @param threshold
      */
-    public void setThreshold(final Integer threshold) {
+    public void setThreshold(final int threshold) {
         this.threshold = threshold;
     }
 
     @Override
     public String getChannelType() {
-        final String kind = getBlockKind();
+        final var kind = getBlockKind();
         return kind.equalsIgnoreCase(MEMORY_BYTE) && block.contains(".") ? DIGITAL_OUTPUT_ITEM : ANALOG_ITEM;
     }
 
@@ -76,7 +76,7 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
     }
 
     protected static String getBlockKind(final String name) {
-        String kind = "Unknown";
+        var kind = "Unknown";
         if (Character.isDigit(name.charAt(1))) {
             kind = name.substring(0, 1);
         } else if (Character.isDigit(name.charAt(2))) {
