@@ -450,11 +450,11 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 property = Property.OPEN_STATE;
                 break;
             case CoreItemFactory.DATETIME:
-                point = details.writable ? Point.CONTROL : Point.MEASUREMENT;
+                point = details.writable ? Point.CONTROL : Point.STATUS;
                 property = Property.TIMESTAMP;
                 break;
             case CoreItemFactory.LOCATION:
-                point = Point.MEASUREMENT;
+                point = details.writable ? Point.CONTROL : Point.STATUS;
                 property = Property.GEO_LOCATION;
                 break;
             case CoreItemFactory.PLAYER:
