@@ -109,7 +109,7 @@ public class AmberElectricHandler extends BaseThingHandler {
         ScheduledCompletableFuture<?> cronPollJob = this.cronPollJob;
         if (cronPollJob == null || cronPollJob.isDone()) {
             this.cronPollJob = cronScheduler.schedule(this::poll,
-                    "14,16,18,19,21,23,25,27,30,32,35,40,45,50,55,0 */5 * * * *");
+                    "1,14,16,18,19,21,23,25,27,30,32,35,40,45,50,55 */5 * * * *");
         }
         ScheduledCompletableFuture<?> cronResetEstimatesJob = this.cronResetEstimatesJob;
         if (cronResetEstimatesJob == null || cronResetEstimatesJob.isDone()) {
