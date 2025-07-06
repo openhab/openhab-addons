@@ -14,12 +14,11 @@ package org.openhab.binding.teslascope.internal;
 
 import static org.openhab.binding.teslascope.internal.TeslascopeBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -40,8 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.teslascope", service = ThingHandlerFactory.class)
 public class TeslascopeHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_THING);
-
     private final HttpClient httpClient;
 
     @Activate
@@ -59,10 +56,10 @@ public class TeslascopeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (TESLASCOPE_THING.equals(thingTypeUID)) {
-            return new TeslascopeHandler(thing, httpClient);
+        if (TESLASCOPE_ACCOUNT.equals(thingTypeUID)) {
+            return new TeslascopeAccountHandler((Bridge) thing, httpClient);
+        } else {
+            return new TeslascopeVehicleHandler(thing);
         }
-
-        return null;
     }
 }

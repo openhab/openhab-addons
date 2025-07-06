@@ -17,12 +17,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link TeslascopeConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Paul Smedley - Initial contribution
+ * @author paul@smedley.id.au - Initial contribution
  */
 @NonNullByDefault
-public class TeslascopeConfiguration {
-
+public class TeslascopeAccountConfiguration {
     public String apiKey = "";
-    public String publicID = "";
     public int refreshInterval = 60;
 }
