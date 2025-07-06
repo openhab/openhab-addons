@@ -414,7 +414,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      *
      * @param msg the message to be sent
      * @param feature device feature associated to the message
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     @Override
     public void sendMessage(Msg msg, DeviceFeature feature, long delay) {
@@ -426,7 +426,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      *
      * @param msg message to be sent
      * @param feature device feature that sent this message
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     protected void addRequest(Msg msg, DeviceFeature feature, long delay) {
         logger.trace("enqueuing request with delay {} msec", delay);

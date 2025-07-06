@@ -80,7 +80,7 @@ public interface Device {
      *
      * @param msg the message to be sent
      * @param feature device feature associated to the message
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     public void sendMessage(Msg msg, DeviceFeature feature, long delay);
 
