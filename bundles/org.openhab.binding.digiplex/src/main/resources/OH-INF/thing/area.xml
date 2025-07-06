@@ -111,7 +111,6 @@
 		<description>Indicates if area is in alarm</description>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Presence</tag>
 		</tags>
 		<state readOnly="true">
 			<options>

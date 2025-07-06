@@ -565,7 +565,7 @@
 		<label>Play Audio or Video URL</label>
 		<description>Play an audio or video media from the given URL</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>MediaControl</tag>
 		</tags>
 	</channel-type>

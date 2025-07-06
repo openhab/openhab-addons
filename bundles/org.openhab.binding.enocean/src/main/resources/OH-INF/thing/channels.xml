@@ -216,10 +216,6 @@
 		<label>Occupancy</label>
 		<description>Occupancy button pressed or released.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

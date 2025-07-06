@@ -131,7 +131,7 @@
 		<description>Provides feedback on whether the EtherRain device has detected rain or not</description>
 		<category>Sensor</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true"/>
