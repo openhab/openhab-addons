@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
@@ -108,8 +109,26 @@ public abstract class GenericDevice implements StateChangeListener {
         return primaryItem.getName();
     }
 
+    /**
+     * Set the state of an attribute of the endpoint.
+     * 
+     * @param clusterName the cluster name
+     * @param attributeName the attribute name
+     * @param state the state
+     * @return a future that completes when the state is set
+     */
     public CompletableFuture<Void> setEndpointState(String clusterName, String attributeName, Object state) {
         return client.setEndpointState(primaryItem.getName(), clusterName, attributeName, state);
+    }
+
+    /**
+     * Set the states of the endpoint in a single transaction.
+     * 
+     * @param states
+     * @return a future that completes when the states are set
+     */
+    public CompletableFuture<Void> setEndpointStates(List<AttributeState> states) {
+        return client.setEndpointStates(primaryItem.getName(), states);
     }
 
     protected MetaDataMapping metaDataMapping(GenericItem item) {
