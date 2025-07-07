@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.huesync.internal.exceptions;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncConnectionException extends HueSyncException {
@@ -35,5 +38,17 @@ public class HueSyncConnectionException extends HueSyncException {
 
     public @Nullable Exception getInnerException() {
         return this.innerException;
+    }
+
+    @Override
+    public @Nullable String getLocalizedMessage() {
+        var innerMessage = Optional.ofNullable(this.innerException.getLocalizedMessage());
+        var message = super.getLocalizedMessage();
+
+        if (innerMessage.isPresent()) {
+            message = message + " (" + innerMessage.get() + ")";
+        }
+
+        return message;
     }
 }
