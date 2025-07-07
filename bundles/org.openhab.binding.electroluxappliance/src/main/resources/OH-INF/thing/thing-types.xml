@@ -557,7 +557,7 @@
 		<category>Lock</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 
