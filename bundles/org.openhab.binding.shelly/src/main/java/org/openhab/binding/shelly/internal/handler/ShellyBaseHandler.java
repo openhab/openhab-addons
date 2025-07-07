@@ -194,7 +194,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             } catch (ShellyApiException e) {
                 start = handleApiException(e);
             } catch (IllegalArgumentException e) {
-                logger.debug("{}: Unable to initialize, retrying later", thingName, e);
+                logger.debug("{}: Unable to initialize", thingName, e);
             } finally {
                 // even this initialization failed we start the status update
                 // the updateJob will then try to auto-initialize the thing
