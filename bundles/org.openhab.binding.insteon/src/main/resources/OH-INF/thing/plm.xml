@@ -40,6 +40,13 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="deviceResponseTimeoutInMinutes" type="integer" min="30" max="360">
+				<label>Device Response Timeout</label>
+				<description>Device response timeout in minutes before a device is considered offline.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="deviceDiscoveryEnabled" type="boolean">
 				<label>Discover Devices</label>
 				<description>Discover Insteon devices found in the modem database.</description>

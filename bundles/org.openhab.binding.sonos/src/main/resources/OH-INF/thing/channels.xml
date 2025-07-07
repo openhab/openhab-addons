@@ -79,6 +79,10 @@
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -93,6 +97,10 @@
 		<item-type>String</item-type>
 		<label>Current Album Cover Art URL</label>
 		<description>Cover art URL of the album currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -100,6 +108,10 @@
 		<item-type>String</item-type>
 		<label>Current Track</label>
 		<description>Name of the current track or radio station currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

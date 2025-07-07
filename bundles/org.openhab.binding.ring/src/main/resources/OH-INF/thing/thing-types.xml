@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ring"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Account Bridge Type -->
+	<bridge-type id="account">
+		<label>Ring Account Bridge</label>
+		<description>Account with ring.com to access the devices</description>
+		<channel-groups>
+			<channel-group id="control" typeId="controlGroup"/>
+			<channel-group id="event" typeId="eventGroup"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="username" type="text" required="false">
+				<label>User Name</label>
+				<description>Enter the user name you used to subscribe to the Ring services. If using 2 factor authentication, leave
+					this blank and enter the refresh token instead.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Account's Password</label>
+				<description>Enter the password you used to subscribe to the Ring services. If using 2 factor authentication, leave
+					this blank and enter the refresh token instead.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="twofactorCode" type="text" required="false">
+				<context>password</context>
+				<label>2 factor authentication code</label>
+				<description>Enter the 2 factor authentication code, if enabled</description>
+			</parameter>
+			<parameter name="hardwareId" type="text">
+				<label>A unique hardware id</label>
+				<description>Enter a hardware id that is unique for all your devices connected to Ring (e.g. computer's MAC address)</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s">
+				<label>Refresh interval</label>
+				<description>How often to poll the Ring service for events in seconds</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="videoStoragePath" type="text">
+				<label>Video Download Path</label>
+				<description>The folder path to save video .mp4 files in when downloaded from ring.com. Note: the openhab user must
+					have rights to save to this location</description>
+			</parameter>
+			<parameter name="videoRetentionCount" type="integer">
+				<label>Number of videos to keep</label>
+				<description>The number of video files to keep when automatically downloading the latest event video, or 0 to
+					disable auto downloading</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="limitToOwner" type="boolean">
+				<label>Limit To Owner</label>
+				<description>By default all accessible devices are discovered. When enabled, disocovery is limited to devices you
+					own.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<!-- Other Device Thing Type -->
+	<thing-type id="otherdevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Other Device Binding Thing</label>
+		<description>A Ring Other Device device</description>
+		<channel-groups>
+			<channel-group id="control" typeId="controlGroup"/>
+			<channel-group id="status" typeId="deviceStatus"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
+			<parameter name="offOffset" type="decimal">
+				<label>Power-off Time</label>
+				<description>Offset in minutes to switch off</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>How often to poll the Ring service for events in seconds</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- Ring Chime Thing Type -->
+	<thing-type id="chime">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Chime Binding Thing</label>
+		<description>Ring Chime connected to the system</description>
+		<channel-groups>
+			<channel-group id="control" typeId="controlGroup"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
+			<parameter name="offOffset" type="decimal">
+				<label>Power-off Time</label>
+				<description>Offset in minutes to switch off</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>How often to poll the Ring service for events in seconds</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- Doorbell Thing Type -->
+	<thing-type id="doorbell">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Video Doorbell Binding Thing</label>
+		<description>A Ring Video Doorbell device</description>
+		<channel-groups>
+			<channel-group id="control" typeId="controlGroup"/>
+			<channel-group id="status" typeId="deviceStatus"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
+			<parameter name="offOffset" type="decimal">
+				<label>Power-off Time</label>
+				<description>Offset in minutes to switch off</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>How often to poll the Ring service for events in seconds</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- StickupCam Thing Type -->
+	<thing-type id="stickupcam">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Stickup Cam Binding Thing</label>
+		<description>A Ring Stickup Cam device</description>
+		<channel-groups>
+			<channel-group id="control" typeId="controlGroup"/>
+			<channel-group id="status" typeId="deviceStatus"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The internal ID of the device.</description>
+			</parameter>
+			<parameter name="offOffset" type="decimal">
+				<label>Power-off Time</label>
+				<description>Offset in minutes to switch off</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>How often to poll the Ring service for events in seconds</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Groups -->
+	<channel-group-type id="controlGroup">
+		<label>Control</label>
+		<description>Operational control and status information</description>
+		<channels>
+			<channel id="enabled" typeId="enabled"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="deviceStatus">
+		<label>Device Status</label>
+		<description>Device Status Information</description>
+		<channels>
+			<channel id="battery" typeId="battery"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="eventGroup">
+		<label>Events</label>
+		<description>Currently selected event information</description>
+		<channels>
+			<channel id="url" typeId="url"/>
+			<channel id="createdAt" typeId="createdAt"/>
+			<channel id="kind" typeId="kind"/>
+			<channel typeId="doorbotId" id="doorbotId"></channel>
+			<channel typeId="doorbotDescription" id="doorbotDescription"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+	<channel-type id="url">
+		<item-type>String</item-type>
+		<label>URL to recorded video</label>
+		<description>The URL to a recorded video (only when subscribed)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="doorbotId">
+		<item-type>String</item-type>
+		<label>Event Device ID</label>
+		<description>The id of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="doorbotDescription">
+		<item-type>String</item-type>
+		<label>Event Device Name</label>
+		<description>The description of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="createdAt">
+		<item-type>DateTime</item-type>
+		<label>Event DateTime</label>
+		<description>The date and time the event was created</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state pattern="%1$tF %1$tR" readOnly="true"/>
+	</channel-type>
+	<channel-type id="kind">
+		<item-type>String</item-type>
+		<label>Event Type</label>
+		<description>The kind of event, usually 'motion' or 'ding'</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="enabled">
+		<item-type>Switch</item-type>
+		<label>Enable Polling</label>
+		<description>Account Polling Enabled (on=yes, off=no)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="battery">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+		<description>Battery level in %</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

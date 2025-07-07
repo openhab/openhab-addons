@@ -100,7 +100,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                              |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                              |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                            |
-| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                                                  |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                  |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
@@ -1227,7 +1227,7 @@ If the Shelly Add-On is installed:
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
-### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug)
+### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug, shellyplusplugus)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |

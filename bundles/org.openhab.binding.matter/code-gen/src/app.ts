@@ -62,11 +62,17 @@ function toJSON(data: any, space = 2) {
 }
 
 handlebars.registerHelper("asUpperCase", function (str) {
-    return toUpperCase(str);
+    if (str == undefined) {
+        return "UNDEFINED";
+    }
+    return str.toUpperCase();
 });
 
 handlebars.registerHelper("asLowerCase", function (str) {
-    return toLowerCase(str);
+    if (str == undefined) {
+        return "undefined";
+    }
+    return str.toLowerCase();
 });
 
 handlebars.registerHelper("asUpperCamelCase", function (str) {
@@ -78,23 +84,68 @@ handlebars.registerHelper("asLowerCamelCase", function (str) {
 });
 
 handlebars.registerHelper("asTitleCase", function (str) {
-    return toTitleCase(str);
+    if (!str) {
+        return "Undefined";
+    }
+    return str
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // Add a space before uppercase letters that follow lowercase letters
+        .replace(/[_\s]+/g, " ") // Replace underscores or multiple spaces with a single space
+        .trim()
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
 });
 
 handlebars.registerHelper("asEnumField", function (str) {
-    return toEnumField(str);
+    // Check if the string starts with a number and prepend "V" if it does
+    if (/^\d/.test(str)) {
+        str = "V" + str;
+    }
+
+    // First split camelCase words by inserting underscores
+    str = str
+        // Split between lowercase and uppercase letters
+        .replace(/([a-z])([A-Z])/g, "$1_$2")
+        // Split between uppercase letters followed by lowercase
+        .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
+        // Replace any remaining spaces with underscores
+        .replace(/\s+/g, "_")
+        // Finally convert to uppercase
+        .toUpperCase();
+
+    return str;
 });
 
 handlebars.registerHelper("asUpperSnakeCase", function (str) {
-    return toUpperSnakeCase(str);
+    if (str == undefined) {
+        return "UNDEFINED";
+    }
+    return str
+        .replace(/([a-z])([A-Z])/g, "$1_$2") // Insert underscore between camelCase
+        .replace(/[\s-]+/g, "_") // Replace spaces and hyphens with underscore
+        .toUpperCase();
 });
 
 handlebars.registerHelper("asSpacedTitleCase", function (str) {
-    return toSpacedTitleCase(str);
+    if (!str) {
+        return "Undefined";
+    }
+    return str
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // Add a space before uppercase letters that follow lowercase letters
+        .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2") // Split between capital letters when followed by capital+lowercase
+        .replace(/([a-z])([A-Z][a-z])/g, "$1 $2") // Split between lowercase and camelCase word
+        .replace(/([a-zA-Z])(\d)/g, "$1 $2") // Split between letters and numbers
+        .replace(/(\d)([a-zA-Z])/g, "$1 $2") // Split between numbers and letters
+        .replace(/[_\s]+/g, " ") // Replace underscores or multiple spaces with a single space
+        .trim();
 });
 
 handlebars.registerHelper("asHex", function (decimal, length) {
-    return toHex(decimal, length);
+    let hex = decimal.toString(16).toUpperCase();
+    if (length > 0) {
+        hex = hex.padStart(length, "0");
+    }
+    return `0x${hex}`;
 });
 
 handlebars.registerHelper("isLastElement", function (index: number, count: number) {
@@ -126,27 +177,6 @@ handlebars.registerHelper("isNonNull", function (field) {
     return field.access?.indexOf("RW") > -1 || field.isNonNull;
 });
 
-function toUpperCase(str: string | undefined) {
-    if (str == undefined) {
-        return "UNDEFINED";
-    }
-    return str.toUpperCase();
-}
-
-function toLowerCase(str: string | undefined) {
-    if (str == undefined) {
-        return "undefined";
-    }
-    return str.toLowerCase();
-}
-
-function toUpperCamelCase(str: string | undefined) {
-    if (str == undefined) {
-        return "undefined";
-    }
-    return str.replace(/(^\w|[_\s]\w)/g, match => match.replace(/[_\s]/, "").toUpperCase());
-}
-
 function toLowerCamelCase(str: string): string {
     if (str == undefined) {
         return "undefined";
@@ -156,69 +186,11 @@ function toLowerCamelCase(str: string): string {
     });
 }
 
-function toTitleCase(str: string | undefined): string {
-    if (!str) {
-        return "Undefined";
-    }
-    return str
-        .replace(/([a-z])([A-Z])/g, "$1 $2") // Add a space before uppercase letters that follow lowercase letters
-        .replace(/[_\s]+/g, " ") // Replace underscores or multiple spaces with a single space
-        .trim()
-        .split(" ")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(" ");
-}
-
-function toEnumField(str: string): string {
-    // Check if the string starts with a number and prepend "V" if it does
-    if (/^\d/.test(str)) {
-        str = "V" + str;
-    }
-
-    // First split camelCase words by inserting underscores
-    str = str
-        // Split between lowercase and uppercase letters
-        .replace(/([a-z])([A-Z])/g, "$1_$2")
-        // Split between uppercase letters followed by lowercase
-        .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
-        // Replace any remaining spaces with underscores
-        .replace(/\s+/g, "_")
-        // Finally convert to uppercase
-        .toUpperCase();
-
-    return str;
-}
-
-function toUpperSnakeCase(str: string | undefined) {
+function toUpperCamelCase(str: string | undefined) {
     if (str == undefined) {
-        return "UNDEFINED";
+        return "undefined";
     }
-    return str
-        .replace(/([a-z])([A-Z])/g, "$1_$2") // Insert underscore between camelCase
-        .replace(/[\s-]+/g, "_") // Replace spaces and hyphens with underscore
-        .toUpperCase();
-}
-
-function toSpacedTitleCase(str: string | undefined): string {
-    if (!str) {
-        return "Undefined";
-    }
-    return str
-        .replace(/([a-z])([A-Z])/g, "$1 $2") // Add a space before uppercase letters that follow lowercase letters
-        .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2") // Split between capital letters when followed by capital+lowercase
-        .replace(/([a-z])([A-Z][a-z])/g, "$1 $2") // Split between lowercase and camelCase word
-        .replace(/([a-zA-Z])(\d)/g, "$1 $2") // Split between letters and numbers
-        .replace(/(\d)([a-zA-Z])/g, "$1 $2") // Split between numbers and letters
-        .replace(/[_\s]+/g, " ") // Replace underscores or multiple spaces with a single space
-        .trim();
-}
-
-function toHex(decimal: number, length = 0) {
-    let hex = decimal.toString(16).toUpperCase();
-    if (length > 0) {
-        hex = hex.padStart(length, "0");
-    }
-    return `0x${hex}`;
+    return str.replace(/(^\w|[_\s]\w)/g, match => match.replace(/[_\s]/, "").toUpperCase());
 }
 
 /**
@@ -257,7 +229,7 @@ function matterNativeTypeToJavaNativeType(field: AnyElement) {
             return "date";
         case "string":
         case "locationdesc":
-            return "String";
+            return "Locationdesc";
         case "octstr":
             return "OctetString";
         // this are semantic tag fields
@@ -566,13 +538,92 @@ const deviceTypeClass = deviceTypeTemplate({
 });
 fs.writeFileSync(`out/DeviceTypes.java`, deviceTypeClass);
 
-const clusterRegistryClass = clusterRegistryTemplate({ clusters: clusters });
+// We'll write ClusterRegistry and ClusterConstants after inheritance merging so they reflect the final definitions.
+//
+// After clusters array is initially built (`const clusters: ExtendedClusterElement[] = ...`) we need to merge any clusters
+// that specify a `type` (i.e. they inherit from another cluster) with their parent cluster.
+// The child cluster should override any definitions from the parent.  We also keep the parent
+// cluster in the array so that other children can still inherit from it if necessary, but we will skip emitting any
+// Java source for clusters that don't have a `CLUSTER_ID` (those are the abstract parent definitions).
+
+// Helper to merge two lists of schema objects (attributes, commands, etc.) where the child overrides the parent on
+// duplicate `name` values.
+function mergeLists<T extends { name: string }>(parentList: T[] | undefined, childList: T[] | undefined): T[] {
+    const merged: T[] = [];
+    const pushOrReplace = (item: T) => {
+        const idx = merged.findIndex(i => i.name === item.name);
+        if (idx >= 0) {
+            merged[idx] = item; // child overrides parent
+        } else {
+            merged.push(item);
+        }
+    };
+    parentList?.forEach(pushOrReplace);
+    childList?.forEach(pushOrReplace);
+    return merged;
+}
+
+// Build a quick lookup map from cluster name to instance for recursive merging.
+const clusterLookup = new Map<string, ExtendedClusterElement>();
+clusters.forEach(c => clusterLookup.set(c.name, c));
+
+// Recursively merge parent definitions into the child cluster.  The `type` property is cleared afterwards so the
+// templating logic always extends `BaseCluster`.
+function resolveInheritance(cluster: ExtendedClusterElement, seen: Set<string> = new Set()): void {
+    if (!cluster.type) {
+        return; // no parent
+    }
+    if (seen.has(cluster.name)) {
+        // circular reference guard (should never happen in the Matter model)
+        return;
+    }
+    seen.add(cluster.name);
+    const parent = clusterLookup.get(cluster.type);
+    if (!parent) {
+        return; // parent not found – leave as-is; the template will still extend BaseCluster
+    }
+
+    // Ensure parent is resolved first (support multi-level inheritance)
+    resolveInheritance(parent, seen);
+
+    // Merge lists – parent first, then child overrides duplicates
+    cluster.attributes = mergeLists(parent.attributes, cluster.attributes);
+    cluster.commands = mergeLists(parent.commands, cluster.commands);
+    cluster.enums = mergeLists(parent.enums, cluster.enums);
+    cluster.structs = mergeLists(parent.structs, cluster.structs);
+    cluster.maps = mergeLists(parent.maps, cluster.maps);
+    cluster.datatypes = mergeLists(parent.datatypes, cluster.datatypes);
+
+    // Merge low-level children array that some templates rely on
+    cluster.children = mergeLists(parent.children as any, cluster.children as any);
+
+    // Merge type mapping – child entries should override parent entries
+    cluster.typeMapping = new Map([...parent.typeMapping, ...cluster.typeMapping]);
+
+    // Clear the `type` so the template does not generate an "extends ParentCluster"
+    // and instead always extends BaseCluster.
+    delete (cluster as any).type;
+}
+
+// Apply the merge for every cluster that specifies a parent type.
+clusters.forEach(c => resolveInheritance(c));
+
+// Emit Java code for concrete clusters only (i.e. those that have a CLUSTER_ID).
+clusters
+    .filter(c => c.id !== undefined && c.id !== null)
+    .forEach(cluster => {
+        const javaCode = clusterTemplate(cluster);
+        fs.writeFileSync(`out/${cluster.name}Cluster.java`, javaCode);
+    });
+
+// Generate ClusterRegistry and ClusterConstants using the merged cluster data. Note that they can still reference
+// clusters without IDs (e.g. abstract definitions), but the templates themselves guard against missing IDs where
+// appropriate.
+
+const concreteClusters = clusters.filter(c => c.id !== undefined && c.id !== null);
+
+const clusterRegistryClass = clusterRegistryTemplate({ clusters: concreteClusters });
 fs.writeFileSync(`out/ClusterRegistry.java`, clusterRegistryClass);
 
-const clusterConstantsClass = clusterConstantsTemplate({ clusters: clusters });
+const clusterConstantsClass = clusterConstantsTemplate({ clusters: concreteClusters });
 fs.writeFileSync(`out/ClusterConstants.java`, clusterConstantsClass);
-
-clusters.forEach(cluster => {
-    const javaCode = clusterTemplate(cluster);
-    fs.writeFileSync(`out/${cluster.name}Cluster.java`, javaCode);
-});

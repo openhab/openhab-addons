@@ -39,7 +39,7 @@ export class Nodes {
      * @returns
      */
     async requestAllData(nodeId: string | number) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         if (node.initialized) {
             return this.controllerNode.sendSerializedNode(node);
         } else {
@@ -54,7 +54,7 @@ export class Nodes {
      * @returns
      */
     async requestEndpointData(nodeId: string | number, endpointId: number) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         if (node.initialized) {
             return this.controllerNode.sendSerializedNode(node, endpointId);
         } else {
@@ -79,7 +79,7 @@ export class Nodes {
         let ipPort: number | undefined;
         let ip: string | undefined;
         let instanceId: string | undefined;
-        let ble = false;
+        const ble = false;
 
         if (typeof pairingCode === "string" && pairingCode.trim().length > 0) {
             pairingCode = pairingCode.trim();
@@ -161,7 +161,7 @@ export class Nodes {
      * @param nodeId
      */
     async reconnectNode(nodeId: number | string) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         node.triggerReconnect();
     }
 
@@ -171,7 +171,7 @@ export class Nodes {
      * @returns
      */
     async getFabrics(nodeId: number | string) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         const operationalCredentialsCluster = node.getRootClusterClient(OperationalCredentialsCluster);
         if (operationalCredentialsCluster === undefined) {
             throw new Error(`OperationalCredentialsCluster for node ${nodeId} not found.`);
@@ -191,7 +191,7 @@ export class Nodes {
             return;
         }
 
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         if (node === undefined) {
             throw new Error(`Node ${nodeId} not found`);
         }
@@ -233,7 +233,7 @@ export class Nodes {
      * @param timeout
      */
     async basicCommissioningWindow(nodeId: number | string, timeout = 900) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         await node.openBasicCommissioningWindow(timeout);
         console.log(`Basic Commissioning Window for node ${nodeId} opened`);
     }
@@ -245,7 +245,7 @@ export class Nodes {
      * @returns
      */
     async enhancedCommissioningWindow(nodeId: number | string, timeout = 900) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         const data = await node.openEnhancedCommissioningWindow(timeout);
 
         console.log(`Enhanced Commissioning Window for node ${nodeId} opened`);
@@ -262,7 +262,7 @@ export class Nodes {
      * @param nodeId
      */
     async logNode(nodeId: number | string) {
-        const node = await this.controllerNode.getNode(nodeId);
+        const node = this.controllerNode.getNode(nodeId);
         console.log("Logging structure of Node ", node.nodeId.toString());
         node.logStructure();
     }

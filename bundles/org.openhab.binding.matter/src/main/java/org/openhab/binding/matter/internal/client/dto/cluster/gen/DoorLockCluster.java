@@ -346,8 +346,8 @@ public class DoorLockCluster extends BaseCluster {
      * server.
      */
     public Integer numberOfAliroEndpointKeysSupported; // 136 uint16 R V
-    // Structs
 
+    // Structs
     /**
      * The door lock server provides several alarms which can be sent when there is a critical state on the door lock.
      * The alarms available for the door lock server are listed in AlarmCodeEnum.

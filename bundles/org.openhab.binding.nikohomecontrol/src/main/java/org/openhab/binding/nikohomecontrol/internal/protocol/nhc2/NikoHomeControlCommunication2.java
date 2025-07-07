@@ -388,9 +388,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if ("alarms".equals(device.model) && (device.properties != null)
                 && (device.properties.stream().anyMatch(p -> (p.alarmActive != null)))) {
             addAlarmDevice(device, location);
-        } else if ("action".equals(device.type) || "virtual".equals(device.type)) {
+        } else if ("action".equals(device.type) || "relay".equals(device.type) || "virtual".equals(device.type)) {
             addActionDevice(device, location);
-        } else if ("thermostat".equals(device.type)) {
+        } else if ("thermostat".equals(device.type) || "hvac".equals(device.type)) {
             addThermostatDevice(device, location);
         } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)) {
             addMeterDevice(device, location);
@@ -411,6 +411,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             case "alloff":
             case "overallcomfort":
             case "garagedoor":
+            case "solarmode":
+            case "peakmode":
+            case "condition":
                 actionType = ActionType.TRIGGER;
                 break;
             case "light":

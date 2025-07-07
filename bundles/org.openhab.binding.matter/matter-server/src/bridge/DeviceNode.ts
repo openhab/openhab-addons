@@ -181,10 +181,10 @@ export class DeviceNode {
         await this.aggregator.add(device.endpoint);
     }
 
-    async setEndpointState(endpointId: string, clusterName: string, stateName: string, stateValue: any) {
+    async setEndpointStates(endpointId: string, states: { clusterName: string; attributeName: string; state: any }[]) {
         const device = this.devices.get(endpointId);
         if (device) {
-            device.updateState(clusterName, stateName, stateValue);
+            void device.updateStates(states);
         }
     }
 
@@ -299,10 +299,6 @@ export class DeviceNode {
 
     async #ohBridgeStorage() {
         return (await this.storageService.open(DeviceNode.DEFAULT_NODE_ID)).createContext("openhab");
-    }
-
-    async #rootStorage() {
-        return (await this.storageService.open(DeviceNode.DEFAULT_NODE_ID)).createContext("root");
     }
 
     async #uniqueIdForBridge() {

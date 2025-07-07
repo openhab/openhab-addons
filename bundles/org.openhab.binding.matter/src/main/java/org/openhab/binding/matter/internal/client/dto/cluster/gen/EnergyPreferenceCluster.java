@@ -93,8 +93,8 @@ public class EnergyPreferenceCluster extends BaseCluster {
      * value.
      */
     public Integer currentLowPowerModeSensitivity; // 4 uint8 RW VO
-    // Structs
 
+    // Structs
     /**
      * This represents a step along a scale of preferences.
      */
