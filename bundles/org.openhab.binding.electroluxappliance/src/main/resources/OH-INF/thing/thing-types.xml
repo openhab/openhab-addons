@@ -639,7 +639,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Mode</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
