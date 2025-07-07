@@ -92,7 +92,7 @@ public class AmberElectricHandler extends BaseThingHandler {
         }
 
         webTargets = new AmberElectricWebTargets();
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.ONLINE);
         nmi = config.nmi;
         apiKey = config.apiKey;
 
