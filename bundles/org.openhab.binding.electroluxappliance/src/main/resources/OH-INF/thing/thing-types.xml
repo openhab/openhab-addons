@@ -534,7 +534,7 @@
 		<description>Whether sleep mode is active.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
