@@ -329,7 +329,7 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYPLUSPLUGUS_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMERUS = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPLUSDIMMERUS_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMERG3 = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPLUSDIMMER_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER10V = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPLUSDIMMER10V_STR);
