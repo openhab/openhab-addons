@@ -625,6 +625,10 @@
 		<label>RSSI</label>
 		<description>WiFi Received Signal Strength Indicator.</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
