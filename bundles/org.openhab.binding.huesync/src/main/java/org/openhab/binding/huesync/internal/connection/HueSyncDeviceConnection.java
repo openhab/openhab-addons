@@ -50,6 +50,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Handles the connection to a Hue HDMI Sync Box using the official API.
  * 
  * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncDeviceConnection {
@@ -62,11 +63,15 @@ public class HueSyncDeviceConnection {
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration,
             HueSyncExceptionHandler exceptionHandler) throws CertificateException, IOException, URISyntaxException {
-
         this.exceptionHandler = exceptionHandler;
-        this.connection = new HueSyncConnection(httpClient, configuration.host, configuration.port);
+        try {
+            this.connection = new HueSyncConnection(httpClient, configuration);
 
-        registerCommandHandlers();
+            registerCommandHandlers();
+        } catch (IOException | URISyntaxException | CertificateException e) {
+            exceptionHandler.handle(e);
+            throw e;
+        }
     }
 
     // #region private
@@ -200,9 +205,9 @@ public class HueSyncDeviceConnection {
         this.connection.dispose();
     }
 
-    public void updateConfiguration(HueSyncConfiguration config) {
-        this.logger.debug("Connection configuration update for device {}:{} - Registration Id [{}]", config.host,
-                config.port, config.registrationId);
+    public void updateAuthentication(HueSyncConfiguration config) {
+        this.logger.debug("Configure authentication for device {}:{} - Registration Id [{}]", config.host, config.port,
+                config.registrationId);
 
         this.connection.updateAuthentication(config.registrationId, config.apiAccessToken);
     }
