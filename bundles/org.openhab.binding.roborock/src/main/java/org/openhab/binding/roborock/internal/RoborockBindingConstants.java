@@ -140,7 +140,7 @@ public class RoborockBindingConstants {
     public static final String COMMAND_GET_LED_STATUS = "get_led_status";
     public static final String COMMAND_GET_CARPET_MODE = "get_carpet_mode";
     public static final String COMMAND_GET_FW_FEATURES = "get_fw_features";
-    public static final String COMMAND_GET_MULTI_MAPS_LIST = "get_multi_maps_list";
+    public static final String COMMAND_GET_MULTI_MAP_LIST = "get_multi_maps_list";
     public static final String COMMAND_GET_CUSTOMIZE_CLEAN_MODE = "get_customize_clean_mode";
     public static final String COMMAND_GET_MAP = "get_map_v1";
 

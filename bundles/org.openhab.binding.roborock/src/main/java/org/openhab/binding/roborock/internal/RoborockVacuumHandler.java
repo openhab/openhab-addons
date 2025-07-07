@@ -377,16 +377,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Running pollData - sending MQTT commands");
             getStatusID = sendCommand(COMMAND_GET_STATUS);
             getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
-            getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
             getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
             getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
             getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
+            getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
             getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
             getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
             getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
             getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
             getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
-            getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAPS_LIST);
+            getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAP_LIST);
             getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
             getMapID = sendCommand(COMMAND_GET_MAP);
         } catch (UnsupportedEncodingException e) {
@@ -903,7 +903,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
                     .getAsJsonArray();
             updateState(RobotCapabilities.CUSTOMIZE_CLEAN_MODE.getChannel(),
-                    new StringType(getCustomizeCleanMode.toString()));
+                    new StringType(getCustomizeCleanMode.get(0).getAsJsonObject().toString()));
         }
     }
 
