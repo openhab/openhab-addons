@@ -415,7 +415,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
+                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")
+                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("result")) {
                 logger.trace("MQTT message processing");
                 String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
                         .get("102").getAsString();
