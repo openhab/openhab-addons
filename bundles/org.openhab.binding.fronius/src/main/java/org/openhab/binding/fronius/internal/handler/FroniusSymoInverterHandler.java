@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link FroniusSymoInverterHandler} is responsible for updating the data, which are
@@ -337,7 +338,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     /**
      * Return the value as QuantityType with the unit extracted from ValueUnit
      * or a zero QuantityType with the given unit argument when value is null
-     * 
+     *
      * @param value The ValueUnit data
      * @param unit The default unit to use when value is null
      * @return a QuantityType from the given value
@@ -387,7 +388,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     /**
      * Calculate the power value from the given voltage and current channels
-     * 
+     *
      * @param voltage the voltage ValueUnit
      * @param current the current ValueUnit
      * @return {QuantityType<>} the power value calculated by multiplying voltage and current
@@ -421,20 +422,28 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return null;
             }
         }
-        JsonElement jsonElement = JsonParser.parseString(response);
-        if (!jsonElement.isJsonObject()) {
-            logger.warn("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname, response);
-            return null;
-        }
         try {
-            String serial = jsonElement.getAsJsonObject().get("serialNumber").getAsString();
-            String firmware = jsonElement.getAsJsonObject().get("swrevisions").getAsJsonObject().get("GEN24")
-                    .getAsString();
-            return new InverterInfo(serial, firmware);
-        } catch (IllegalStateException | UnsupportedOperationException e) {
-            logger.warn("Failed to parse version info from Fronius inverter at {}: {}", hostname, e.getMessage());
-            return null;
+            JsonElement jsonElement = JsonParser.parseString(response);
+            if (!jsonElement.isJsonObject()) {
+                logger.warn("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname,
+                        response);
+                return null;
+            }
+            try {
+                String serial = jsonElement.getAsJsonObject().get("serialNumber").getAsString();
+                String firmware = jsonElement.getAsJsonObject().get("swrevisions").getAsJsonObject().get("GEN24")
+                        .getAsString();
+                return new InverterInfo(serial, firmware);
+            } catch (IllegalStateException | UnsupportedOperationException e) {
+                logger.warn("Failed to parse version info from Fronius inverter at {}: {}", hostname, e.getMessage());
+                return null;
+            }
+        } catch (JsonSyntaxException e) {
+            // 404 errors go here, as the response is not valid JSON
+            logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname, response,
+                    e);
         }
+        return null;
     }
 
     private record InverterInfo(String serial, String firmware) {
