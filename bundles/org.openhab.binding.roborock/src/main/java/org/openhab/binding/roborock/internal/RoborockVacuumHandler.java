@@ -75,7 +75,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 /**
  * The {@link RoborockHandler} is responsible for handling commands, which are
@@ -101,7 +100,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
-    private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
     private final Gson gson = new Gson();
     private String lastHistoryID = "";
@@ -291,10 +289,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void initDevice() {
         connectToDevice();
-    }
-
-    private void teardownAndScheduleReconnection() {
-        teardown(true);
     }
 
     private synchronized void teardown(boolean scheduleReconnection) {

@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.zip.CRC32;
 
@@ -86,7 +85,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(RoborockAccountHandler.class);
 
     private @Nullable RoborockAccountConfiguration config;
-    private @Nullable ScheduledFuture<?> pollFuture;
     private final SchedulerTask initTask;
     private final SchedulerTask reconnectTask;
     private final SchedulerTask pollTask;
@@ -94,7 +92,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private @Nullable Mqtt3AsyncClient mqttClient;
     private long lastSuccessfulPollTimestamp;
     private String token = "";
-    private String rrHomeId = "";
     private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
     private SecureRandom secureRandom = new SecureRandom();
@@ -281,7 +278,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 loginResponse = gson.fromJson(json, Login.class);
             } else {
                 loginResponse = doLogin();
-                if ((loginResponse != null) && loginResponse.code.equals("200")) {
+                if (loginResponse.code.equals("200")) {
                     // save data to loginFile if call is successful
                     loginFile.getParentFile().mkdirs();
                     final String json = gson.toJson(loginResponse);
@@ -301,10 +298,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
         }
         updateStatus(ThingStatus.ONLINE);
-        Home home = getHomeDetail();
-        if (home != null) {
-            rrHomeId = Integer.toString(home.data.rrHomeId);
-        }
         connectToDevice();
     }
 
@@ -393,7 +386,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                     return;
                 }
                 String receivedTopic = publish.getTopic().toString();
-                String localKey = "";
                 // try {
 
                 String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);

@@ -165,7 +165,7 @@ public class ProtocolUtils {
     }
 
     private static byte[] pkcs7Unpad(byte[] paddedData) throws BadPaddingException {
-        if (paddedData == null || paddedData.length == 0) {
+        if (paddedData.length == 0) {
             return new byte[0];
         }
 
@@ -200,7 +200,7 @@ public class ProtocolUtils {
     }
 
     private static byte[] decompress(byte[] compressedData) throws IOException {
-        if (compressedData == null || compressedData.length == 0) {
+        if (compressedData.length == 0) {
             return new byte[0]; // Return an empty array for null or empty input
         }
 
