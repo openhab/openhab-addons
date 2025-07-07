@@ -58,6 +58,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -75,6 +76,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RoborockHandler} is responsible for handling commands, which are
@@ -253,21 +255,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         bridgeHandler = accountHandler;
-        updateStatus(ThingStatus.UNKNOWN);
         hasChannelStructure = false;
-        token = getToken();
-        if (!token.isEmpty()) {
-            Home home = bridgeHandler.getHomeDetail();
-            if (home != null) {
-                rrHomeId = Integer.toString(home.data.rrHomeId);
-            }
-            initTask.setNamePrefix(getThing().getUID().getId());
-            reconnectTask.setNamePrefix(getThing().getUID().getId());
-            pollTask.setNamePrefix(getThing().getUID().getId());
-            initTask.submit();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
-        }
+        initTask.setNamePrefix(getThing().getUID().getId());
+        reconnectTask.setNamePrefix(getThing().getUID().getId());
+        pollTask.setNamePrefix(getThing().getUID().getId());
+        initTask.submit();
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -288,6 +281,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void initDevice() {
+        token = getToken();
+        if (!token.isEmpty()) {
+            Home home = bridgeHandler.getHomeDetail();
+            if (home != null) {
+                rrHomeId = Integer.toString(home.data.rrHomeId);
+            }
+            initTask.submit();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
+        }
         connectToDevice();
     }
 
@@ -322,6 +325,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
         teardown(false);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge status changed to {}", bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            initTask.submit();
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            teardown(false);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     private void pollData() {
@@ -398,95 +412,100 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         logger.trace("MQTT message output: {}", response);
-        if (JsonParser.parseString(response).isJsonObject()
-                && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
-                && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
-            logger.trace("MQTT message processing");
-            String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
-                    .get("102").getAsString();
-            logger.trace("MQTT message processing, jsonString={}", jsonString);
-            if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
-                    && JsonParser.parseString(jsonString).getAsJsonObject().has("id")) {
-                int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-                logger.trace("MQTT message processing, id={}", messageId);
-                if (messageId == getStatusID) {
-                    logger.debug("Received getStatus response, parse it");
-                    handleGetStatus(jsonString);
-                    getStatusID = -1;
-                } else if (messageId == getConsumableID) {
-                    logger.debug("Received getConsumable response, parse it");
-                    handleGetConsumables(jsonString);
-                    getConsumableID = -1;
-                } else if (messageId == getRoomMappingID) {
-                    logger.debug("Received getRoomMapping response, parse it");
-                    handleGetRoomMapping(jsonString);
-                    getRoomMappingID = -1;
-                } else if (messageId == getNetworkInfoID) {
-                    logger.debug("Received getNetworkInfo response, parse it");
-                    handleGetNetworkInfo(jsonString);
-                    getNetworkInfoID = -1;
-                } else if (messageId == getCleanRecordID) {
-                    logger.debug("Received getCleanRecord response, parse it");
-                    handleGetCleanRecord(jsonString);
-                    getCleanRecordID = -1;
-                } else if (messageId == getCleanSummaryID) {
-                    logger.debug("Received getCleanSummary response, parse it");
-                    handleGetCleanSummary(jsonString);
-                    getCleanSummaryID = -1;
-                } else if (messageId == getDndTimerID) {
-                    logger.debug("Received getDndTimer response, parse it");
-                    handleGetDndTimer(jsonString);
-                    getDndTimerID = -1;
-                } else if (messageId == getSegmentStatusID) {
-                    logger.debug("Received getSegmentStatus response, parse it");
-                    handleGetSegmentStatus(jsonString);
-                    getSegmentStatusID = -1;
-                } else if (messageId == getMapStatusID) {
-                    logger.debug("Received getMapStatus response, parse it");
-                    handleGetMapStatus(jsonString);
-                    getMapStatusID = -1;
-                } else if (messageId == getLedStatusID) {
-                    logger.debug("Received getLedStatus response, parse it");
-                    handleGetLedStatus(jsonString);
-                    getLedStatusID = -1;
-                } else if (messageId == getCarpetModeID) {
-                    logger.debug("Received getCarpetMode response, parse it");
-                    handleGetCarpetMode(jsonString);
-                    getCarpetModeID = -1;
-                } else if (messageId == getFwFeaturesID) {
-                    logger.debug("Received getFwFeatures response, parse it");
-                    handleGetFwFeatures(jsonString);
-                    getFwFeaturesID = -1;
-                } else if (messageId == getMultiMapsListID) {
-                    logger.debug("Received getMultiMapsList response, parse it");
-                    handleGetMultiMapsList(jsonString);
-                    getMultiMapsListID = -1;
-                } else if (messageId == getCustomizeCleanModeID) {
-                    logger.debug("Received getCustomizeCleanMode response, parse it");
-                    handleGetCustomizeCleanMode(jsonString);
-                    getCustomizeCleanModeID = -1;
-                } else if (messageId == getMapID) {
-                    logger.debug("Received getMap response, parse it");
-                    handleGetMap(jsonString);
-                    getMapID = -1;
-                }
-            }
-        } else {
-            // handle battery updates (dps key is 122)
+        try {
             if (JsonParser.parseString(response).isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()) {
-                JsonObject dpsJsonObject = JsonParser.parseString(response).getAsJsonObject().get("dps")
-                        .getAsJsonObject();
-                if (dpsJsonObject.has("122")) {
-                    int battery = dpsJsonObject.get("122").getAsInt();
-                    updateState(CHANNEL_BATTERY, new DecimalType(battery));
-                } else if (dpsJsonObject.has("121")) {
-                    int stateInt = dpsJsonObject.get("121").getAsInt();
-                    StatusType state = StatusType.getType(stateInt);
-                    updateState(CHANNEL_STATE, new StringType(state.getDescription()));
-                    updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
+                    && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
+                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
+                logger.trace("MQTT message processing");
+                String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
+                        .get("102").getAsString();
+                logger.trace("MQTT message processing, jsonString={}", jsonString);
+                if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
+                        && JsonParser.parseString(jsonString).getAsJsonObject().has("id")) {
+                    int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
+                    logger.trace("MQTT message processing, id={}", messageId);
+                    if (messageId == getStatusID) {
+                        logger.debug("Received getStatus response, parse it");
+                        handleGetStatus(jsonString);
+                        getStatusID = -1;
+                    } else if (messageId == getConsumableID) {
+                        logger.debug("Received getConsumable response, parse it");
+                        handleGetConsumables(jsonString);
+                        getConsumableID = -1;
+                    } else if (messageId == getRoomMappingID) {
+                        logger.debug("Received getRoomMapping response, parse it");
+                        handleGetRoomMapping(jsonString);
+                        getRoomMappingID = -1;
+                    } else if (messageId == getNetworkInfoID) {
+                        logger.debug("Received getNetworkInfo response, parse it");
+                        handleGetNetworkInfo(jsonString);
+                        getNetworkInfoID = -1;
+                    } else if (messageId == getCleanRecordID) {
+                        logger.debug("Received getCleanRecord response, parse it");
+                        handleGetCleanRecord(jsonString);
+                        getCleanRecordID = -1;
+                    } else if (messageId == getCleanSummaryID) {
+                        logger.debug("Received getCleanSummary response, parse it");
+                        handleGetCleanSummary(jsonString);
+                        getCleanSummaryID = -1;
+                    } else if (messageId == getDndTimerID) {
+                        logger.debug("Received getDndTimer response, parse it");
+                        handleGetDndTimer(jsonString);
+                        getDndTimerID = -1;
+                    } else if (messageId == getSegmentStatusID) {
+                        logger.debug("Received getSegmentStatus response, parse it");
+                        handleGetSegmentStatus(jsonString);
+                        getSegmentStatusID = -1;
+                    } else if (messageId == getMapStatusID) {
+                        logger.debug("Received getMapStatus response, parse it");
+                        handleGetMapStatus(jsonString);
+                        getMapStatusID = -1;
+                    } else if (messageId == getLedStatusID) {
+                        logger.debug("Received getLedStatus response, parse it");
+                        handleGetLedStatus(jsonString);
+                        getLedStatusID = -1;
+                    } else if (messageId == getCarpetModeID) {
+                        logger.debug("Received getCarpetMode response, parse it");
+                        handleGetCarpetMode(jsonString);
+                        getCarpetModeID = -1;
+                    } else if (messageId == getFwFeaturesID) {
+                        logger.debug("Received getFwFeatures response, parse it");
+                        handleGetFwFeatures(jsonString);
+                        getFwFeaturesID = -1;
+                    } else if (messageId == getMultiMapsListID) {
+                        logger.debug("Received getMultiMapsList response, parse it");
+                        handleGetMultiMapsList(jsonString);
+                        getMultiMapsListID = -1;
+                    } else if (messageId == getCustomizeCleanModeID) {
+                        logger.debug("Received getCustomizeCleanMode response, parse it");
+                        handleGetCustomizeCleanMode(jsonString);
+                        getCustomizeCleanModeID = -1;
+                    } else if (messageId == getMapID) {
+                        logger.debug("Received getMap response, parse it");
+                        handleGetMap(jsonString);
+                        getMapID = -1;
+                    }
+                }
+            } else {
+                // handle battery updates (dps key is 122)
+                if (JsonParser.parseString(response).isJsonObject()
+                        && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()) {
+                    JsonObject dpsJsonObject = JsonParser.parseString(response).getAsJsonObject().get("dps")
+                            .getAsJsonObject();
+                    if (dpsJsonObject.has("122")) {
+                        int battery = dpsJsonObject.get("122").getAsInt();
+                        updateState(CHANNEL_BATTERY, new DecimalType(battery));
+                    } else if (dpsJsonObject.has("121")) {
+                        int stateInt = dpsJsonObject.get("121").getAsInt();
+                        StatusType state = StatusType.getType(stateInt);
+                        updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+                        updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
+                    }
                 }
             }
+        } catch (JsonSyntaxException e) {
+            // Occasionally get non-JSON returned from the Roborock MQTT server
+            logger.debug("Invalid JSON response", e);
         }
         logger.trace("MQTT message processed");
     }
