@@ -92,28 +92,26 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(final ServiceInfo service) {
-        String name = service.getName().toLowerCase(); // Shelly Duo: Name starts with "Shelly" rather than "shelly"
-        if (!name.startsWith("shelly")) {
+        String serviceName = service.getName().toLowerCase(); // Shelly Duo: Name starts with "Shelly" rather than
+                                                              // "shelly"
+        if (!ShellyThingCreator.isValidShellyServiceName(serviceName)) {
             return null;
         }
 
-        try {
-            String address = "";
-            Inet4Address[] hostAddresses = service.getInet4Addresses();
-            if ((hostAddresses != null) && (hostAddresses.length > 0)) {
-                address = substringAfter(hostAddresses[0].toString(), "/");
-            }
-            if (address.isEmpty()) {
-                logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", name, service);
-                return null;
-            }
-            String thingType = service.getQualifiedName().contains(getServiceType()) && name.contains("-")
-                    ? substringBeforeLast(name, "-")
-                    : name;
-            logger.debug("{}: Shelly device discovered: IP address={}, type={}", name, address, thingType);
+        String address = "";
+        Inet4Address[] hostAddresses = service.getInet4Addresses();
+        if ((hostAddresses != null) && (hostAddresses.length > 0)) {
+            address = substringAfter(hostAddresses[0].toString(), "/");
+        }
+        if (address.isEmpty()) {
+            logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", serviceName, service);
+            return null;
+        }
+        logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
 
+        try {
             // Get device settings
-            Configuration serviceConfig = configurationAdmin.getConfiguration("binding.shelly");
+            Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
             if (serviceConfig.getProperties() != null) {
                 bindingConfig.updateFromProperties(serviceConfig.getProperties());
             }
@@ -124,12 +122,13 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.password = bindingConfig.defaultPassword;
 
             String gen = getString(service.getPropertyString("gen"));
-            boolean gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(name);
-            return ShellyBasicDiscoveryService.createResult(gen2, name, address, bindingConfig, httpClient, messages);
+            boolean gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(serviceName);
+            return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, bindingConfig, httpClient,
+                    messages);
         } catch (IOException e) {
-            logger.debug("{}: Exception on processing serviceInfo '{}'", name, service.getNiceTextString(), e);
+            logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
+            return null;
         }
-        return null;
     }
 
     @Override
