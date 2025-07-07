@@ -411,7 +411,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
                     .get("102").getAsString();
             logger.trace("MQTT message processing, jsonString={}", jsonString);
-            if (!jsonString.endsWith("\"result\":[\"ok\"]}")
+            if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
                     && JsonParser.parseString(jsonString).getAsJsonObject().has("id")) {
                 int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
                 logger.trace("MQTT message processing, id={}", messageId);
@@ -903,7 +903,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonArray getCustomizeCleanMode = JsonParser.parseString(response).getAsJsonObject().get("result")
                     .getAsJsonArray();
             updateState(RobotCapabilities.CUSTOMIZE_CLEAN_MODE.getChannel(),
-                    new StringType(getCustomizeCleanMode.get(0).getAsJsonObject().toString()));
+                    new StringType(getCustomizeCleanMode.toString()));
         }
     }
 

@@ -218,8 +218,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         reconnectTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
         initTask.submit();
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -302,6 +300,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
         }
+        updateStatus(ThingStatus.ONLINE);
         Home home = getHomeDetail();
         if (home != null) {
             rrHomeId = Integer.toString(home.data.rrHomeId);
@@ -371,7 +370,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             if (!expectedShutdown) {
                 logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
                         ctx.getCause().getMessage());
-                // listener.onEventStreamFailure(EcovacsIotMqDevice.this, ctx.getCause());
+                onEventStreamFailure(ctx.getCause());
             }
         };
 
@@ -539,6 +538,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     private void pollStatus() {
         // nothing to poll
+    }
+
+    public void onEventStreamFailure(Throwable error) {
+        logger.debug("Device connection failed, reconnecting", error);
+        teardownAndScheduleReconnection();
     }
 
     @Override
