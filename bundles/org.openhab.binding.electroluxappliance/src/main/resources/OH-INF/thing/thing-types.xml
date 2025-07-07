@@ -586,7 +586,7 @@
 		<description>The operating mode.</description>
 		<category>Settings</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
