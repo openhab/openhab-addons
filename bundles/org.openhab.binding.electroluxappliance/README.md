@@ -113,7 +113,7 @@ The following channels are supported:
 | network-quality-indicator | String             | Indicator for the network quality.                                                                  | No                                       |
 | network-rssi              | Number:Power       | WiFi Received Signal Strength Indicator.                                                            | No                                       |
 | compressor-state          | Switch             | Is the compressor running.                                                                          | No                                       |
-| fourway_valve-state       | Switch             | The state of the four way valve.                                                                    | No                                       |
+| fourway-valve-state       | Switch             | The state of the four way valve.                                                                    | No                                       |
 | evap-defrost-state        | Switch             | The state of the evap defrost.                                                                      | No                                       |
 | off-timer-active          | Switch             | Whether a timer is active to turn off the appliance.                                                | Yes - When on applies off-timer-duration |
 | off-timer-duration        | Number:Time        | Whether a timer is active to turn off the appliance. (Applied when off-timer-active is switched on) | Yes - to set time for off-timer-active   |

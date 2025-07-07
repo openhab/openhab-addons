@@ -86,7 +86,7 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_NETWORK_QUALITY_INDICATOR = "network-quality-indicator";
     public static final String CHANNEL_NETWORK_RSSI = "network-rssi";
     public static final String CHANNEL_COMPRESSOR_STATE = "compressor-state";
-    public static final String CHANNEL_FOURWAY_VALVE_STATE = "fourway_valve-state";
+    public static final String CHANNEL_FOURWAY_VALVE_STATE = "fourway-valve-state";
     public static final String CHANNEL_EVAP_DEFROST_STATE = "evap-defrost-state";
     public static final String CHANNEL_OFF_TIMER_ACTIVE = "off-timer-active";
     public static final String CHANNEL_OFF_TIMER_DURATION = "off-timer-duration";
