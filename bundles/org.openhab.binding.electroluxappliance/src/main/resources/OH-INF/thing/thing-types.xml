@@ -522,7 +522,7 @@
 		<description>The target set-point temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state min="16" max="32" step="1" pattern="%.0f %unit%"/>
