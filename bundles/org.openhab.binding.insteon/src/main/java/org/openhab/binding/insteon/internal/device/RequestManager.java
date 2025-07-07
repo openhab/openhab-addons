@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,15 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class that manages all the per-device request queues using a single thread.
- *
- * - Each device has its own request queue, and the RequestQueueManager keeps a
- * queue of queues.
- * - Each entry in requestQueues corresponds to a single device's request queue.
- * A device should never be more than once in requestQueues.
- * - A hash map (requestQueueHash) is kept in sync with requestQueues for
- * faster lookup in case a request queue is modified and needs to be
- * rescheduled.
+ * Class that manages per-device request scheduling
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
@@ -45,198 +35,138 @@ import org.slf4j.LoggerFactory;
 public class RequestManager {
     private final Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
-    private ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> job;
-    private Queue<RequestQueue> requestQueues = new PriorityQueue<>();
-    private Map<Device, RequestQueue> requestQueueHash = new HashMap<>();
-    private AtomicBoolean paused = new AtomicBoolean(false);
+    private final ScheduledExecutorService scheduler;
+    private final Map<Device, RequestEntry> requests = new ConcurrentHashMap<>();
+    private final AtomicBoolean paused = new AtomicBoolean(false);
 
-    /**
-     * Constructor
-     */
     public RequestManager(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
     }
 
     /**
-     * Returns if request manager is running
-     *
-     * @return true if request queue reader job is defined
-     */
-    private boolean isRunning() {
-        return job != null;
-    }
-
-    /**
-     * Adds device to global request queue.
-     *
-     * @param device the device to add
-     * @param time (in milliseconds) to delay queue processing
-     */
-    public void addQueue(Device device, long delay) {
-        synchronized (requestQueues) {
-            long now = System.currentTimeMillis();
-            long time = now + delay;
-            RequestQueue queue = requestQueueHash.get(device);
-            if (queue == null) {
-                logger.trace("scheduling request for device {} in {} msec", device.getAddress(), delay);
-                queue = new RequestQueue(device, time);
-                requestQueues.add(queue);
-                requestQueueHash.put(device, queue);
-                requestQueues.notify();
-            } else if (queue.getExpirationTime() > time) {
-                logger.trace("rescheduling request for device {} from {} to {} msec", device.getAddress(),
-                        queue.getExpirationTime() - now, delay);
-                queue.setExpirationTime(time);
-            }
-        }
-    }
-
-    /**
-     * Pauses request manager thread
+     * Pauses request manager
      */
     public void pause() {
-        if (isRunning() && !paused.getAndSet(true)) {
-            logger.debug("pausing request queue thread");
-
-            synchronized (requestQueues) {
-                requestQueues.notify();
-            }
+        if (!paused.getAndSet(true)) {
+            logger.debug("pausing request manager");
+            requests.values().forEach(this::cancelRequest);
         }
     }
 
     /**
-     * Resumes request queue thread
+     * Resumes request manager
      */
     public void resume() {
-        if (isRunning() && paused.getAndSet(false)) {
-            logger.debug("resuming request queue thread");
-
-            synchronized (paused) {
-                paused.notify();
-            }
+        if (paused.getAndSet(false)) {
+            logger.debug("resuming request manager");
+            requests.values().forEach(this::scheduleRequest);
         }
     }
 
     /**
-     * Starts request queue thread
-     */
-    public void start() {
-        if (isRunning()) {
-            logger.debug("request manager already running, not started again");
-            return;
-        }
-        job = scheduler.schedule(new RequestQueueReader(), 0, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Stops request queue thread
+     * Stops request manager
      */
     public void stop() {
-        ScheduledFuture<?> job = this.job;
-        if (job != null) {
-            job.cancel(true);
-            this.job = null;
+        logger.debug("stopping request manager");
+        paused.set(false);
+        requests.values().forEach(this::cancelRequest);
+        requests.clear();
+    }
+
+    /**
+     * Adds a request for a device
+     *
+     * @param device the device to add
+     * @param time (in milliseconds) to delay handling
+     */
+    public void addRequest(Device device, long delay) {
+        requests.compute(device, (key, request) -> {
+            if (request == null) {
+                logger.trace("scheduling request for {} in {} msec", device.getAddress(), delay);
+                request = new RequestEntry(device, delay);
+                scheduleRequest(request);
+            } else if (request.getScheduledDelay() > delay) {
+                logger.trace("rescheduling request for {} from {} to {} msec", device.getAddress(),
+                        request.getScheduledDelay(), delay);
+                request.setScheduledDelay(delay);
+                cancelRequest(request);
+                scheduleRequest(request);
+            }
+            return request;
+        });
+    }
+
+    /**
+     * Cancels a request
+     *
+     * @param request the request to cancel
+     */
+    private void cancelRequest(RequestEntry request) {
+        ScheduledFuture<?> job = request.job;
+        if (job != null && !job.isDone()) {
+            job.cancel(false);
+            request.job = null;
         }
     }
 
     /**
-     * Request queue reader class
+     * Schedules a request
+     *
+     * @param request the request to schedule
      */
-    private class RequestQueueReader implements Runnable {
-        @Override
-        public void run() {
-            logger.debug("starting request queue thread");
-            try {
-                while (!Thread.interrupted()) {
-                    synchronized (paused) {
-                        if (paused.get()) {
-                            logger.trace("waiting for request queue thread to resume");
-                            paused.wait();
-                            continue;
-                        }
-                    }
-                    synchronized (requestQueues) {
-                        if (requestQueues.isEmpty()) {
-                            logger.trace("waiting for request queues to fill");
-                            requestQueues.wait();
-                            continue;
-                        }
-                        RequestQueue queue = requestQueues.peek();
-                        if (queue != null) {
-                            long now = System.currentTimeMillis();
-                            long expTime = queue.getExpirationTime();
-                            long delay = expTime - now;
-                            Device device = queue.getDevice();
-                            if (delay > 0) {
-                                // The head of the queue is not up for processing yet, wait().
-                                logger.trace("request queue head: {} must wait for {} msec", device.getAddress(),
-                                        delay);
-                                requestQueues.wait(delay);
-                            } else {
-                                // The head of the queue has expired and can be processed!
-                                processRequestQueue(now);
-                            }
-                        }
-                    }
-                }
-            } catch (InterruptedException e) {
-                logger.trace("request queue thread interrupted!");
-            }
-            logger.debug("exiting request queue thread!");
+    private void scheduleRequest(RequestEntry request) {
+        if (paused.get()) {
+            logger.trace("request manager paused, request for {} to be scheduled later", request.device.getAddress());
+            return;
         }
 
-        /**
-         * Processes the head of the queue
-         *
-         * @param now the current time
-         */
-        private void processRequestQueue(long now) {
-            RequestQueue queue = requestQueues.poll(); // remove front element
-            if (queue != null) {
-                Device device = queue.getDevice();
-                requestQueueHash.remove(device); // and remove from hash map
-                long nextExp = device.handleNextRequest();
-                if (nextExp > 0) {
-                    queue = new RequestQueue(device, nextExp);
-                    requestQueues.add(queue);
-                    requestQueueHash.put(device, queue);
-                    logger.trace("device queue for {} rescheduled in {} msec", device.getAddress(), nextExp - now);
-                } else {
-                    // remove from hash since queue is no longer scheduled
-                    logger.trace("device queue for {} is empty!", device.getAddress());
-                }
-            }
+        long delay = request.getScheduledDelay();
+        request.job = scheduler.schedule(() -> handleRequest(request.device), delay, TimeUnit.MILLISECONDS);
+
+        logger.trace("request for {} scheduled in {} msec", request.device.getAddress(), delay);
+    }
+
+    /**
+     * Handles a request for a device
+     *
+     * @param device the device to handle the request for
+     */
+    private void handleRequest(Device device) {
+        RequestEntry request = requests.remove(device);
+        if (request == null) {
+            logger.trace("no request to handle for {}", device.getAddress());
+            return;
+        }
+
+        logger.trace("handling request for {}", device.getAddress());
+
+        long delay = device.handleNextRequest();
+        if (delay > 0) {
+            addRequest(device, delay);
+        } else {
+            logger.trace("no more pending requests for {}", device.getAddress());
         }
     }
 
     /**
-     * Class that represents a request queue
+     * Class that represents a request entry
      */
-    private static class RequestQueue implements Comparable<RequestQueue> {
-        private Device device;
-        private long expirationTime;
+    private static class RequestEntry {
+        private final Device device;
+        private volatile long scheduledTime;
+        private volatile @Nullable ScheduledFuture<?> job;
 
-        RequestQueue(Device device, long expirationTime) {
+        public RequestEntry(Device device, long delay) {
             this.device = device;
-            this.expirationTime = expirationTime;
+            setScheduledDelay(delay);
         }
 
-        public Device getDevice() {
-            return device;
+        public long getScheduledDelay() {
+            return Math.max(0, scheduledTime - System.currentTimeMillis());
         }
 
-        public long getExpirationTime() {
-            return expirationTime;
-        }
-
-        public void setExpirationTime(long expirationTime) {
-            this.expirationTime = expirationTime;
-        }
-
-        @Override
-        public int compareTo(RequestQueue other) {
-            return (int) (expirationTime - other.expirationTime);
+        public void setScheduledDelay(long delay) {
+            this.scheduledTime = System.currentTimeMillis() + delay;
         }
     }
 }

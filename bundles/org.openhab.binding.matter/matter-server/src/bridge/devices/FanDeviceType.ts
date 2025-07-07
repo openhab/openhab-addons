@@ -38,12 +38,12 @@ export class FanDeviceType extends GenericDeviceType {
                 ...clusterValues,
             },
         );
-        endpoint.events.fanControl.fanMode$Changed.on(value => {
-            this.sendBridgeEvent("fanControl", "fanMode", value);
+        endpoint.events.fanControl.fanMode$Changed.on((value, oldValue, context) => {
+            this.attributeChanged("fanControl", "fanMode", value, context);
         });
 
-        endpoint.events.fanControl.percentSetting$Changed.on(value => {
-            this.sendBridgeEvent("fanControl", "percentSetting", value);
+        endpoint.events.fanControl.percentSetting$Changed.on((value, oldValue, context) => {
+            this.attributeChanged("fanControl", "percentSetting", value, context);
         });
 
         return endpoint;

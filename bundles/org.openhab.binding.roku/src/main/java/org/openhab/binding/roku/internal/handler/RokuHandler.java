@@ -217,7 +217,7 @@ public class RokuHandler extends BaseThingHandler {
                         updateState(TIME_TOTAL, UnDefType.UNDEF);
                     }
 
-                    if (position >= 0 && duration > 0) {
+                    if (duration > 0 && position >= 0 && position <= duration) {
                         updateState(END_TIME, new DateTimeType(Instant.now().plusSeconds(duration - position)));
                         updateState(PROGRESS,
                                 new PercentType(BigDecimal.valueOf(Math.round(position / (double) duration * 100.0))));

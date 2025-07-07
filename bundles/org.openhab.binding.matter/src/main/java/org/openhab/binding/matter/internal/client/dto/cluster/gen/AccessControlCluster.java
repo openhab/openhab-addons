@@ -112,8 +112,8 @@ public class AccessControlCluster extends BaseCluster {
      * restrictions.
      */
     public List<AccessRestrictionEntryStruct> arl; // 6 list R F V
-    // Structs
 
+    // Structs
     /**
      * The cluster shall generate AccessControlEntryChanged events whenever its ACL attribute data is changed by an
      * Administrator.

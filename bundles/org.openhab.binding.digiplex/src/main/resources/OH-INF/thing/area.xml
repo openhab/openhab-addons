@@ -109,6 +109,9 @@
 		<item-type>Contact</item-type>
 		<label>Area in Alarm</label>
 		<description>Indicates if area is in alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Ok</option>

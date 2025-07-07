@@ -88,8 +88,8 @@ public class ModeSelectCluster extends BaseCluster {
      * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
      */
     public Integer onMode; // 5 uint8 RW VO
-    // Structs
 
+    // Structs
     /**
      * A Semantic Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */

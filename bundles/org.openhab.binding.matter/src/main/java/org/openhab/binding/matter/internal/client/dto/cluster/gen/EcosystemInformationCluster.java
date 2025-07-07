@@ -49,8 +49,8 @@ public class EcosystemInformationCluster extends BaseCluster {
      * LocationDirectory entries shall be removed if there is no DeviceDirectory that references it.
      */
     public List<EcosystemLocationStruct> locationDirectory; // 1 list R F M
-    // Structs
 
+    // Structs
     public class EcosystemDeviceStruct {
         /**
          * This field shall indicate the device’s name, which is provided externally if the user consents. (For example,
@@ -136,14 +136,14 @@ public class EcosystemInformationCluster extends BaseCluster {
          * &quot;Location&quot; in this context is typically used by the user’s grouping into rooms, areas or other
          * logical groupings of how devices are used. So a device might be part of multiple such &quot;Locations&quot;s.
          */
-        public String locationDescriptor; // locationdesc
+        public Locationdesc locationDescriptor; // locationdesc
         /**
          * This field shall indicate the timestamp of when the LocationDescriptor was last modified.
          */
         public BigInteger locationDescriptorLastEdit; // epoch-us
         public Integer fabricIndex; // FabricIndex
 
-        public EcosystemLocationStruct(String uniqueLocationId, String locationDescriptor,
+        public EcosystemLocationStruct(String uniqueLocationId, Locationdesc locationDescriptor,
                 BigInteger locationDescriptorLastEdit, Integer fabricIndex) {
             this.uniqueLocationId = uniqueLocationId;
             this.locationDescriptor = locationDescriptor;

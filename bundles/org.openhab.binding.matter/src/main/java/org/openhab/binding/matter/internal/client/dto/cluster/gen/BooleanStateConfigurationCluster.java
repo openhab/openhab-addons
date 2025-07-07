@@ -100,8 +100,8 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * Indicates any faults registered by the device.
      */
     public SensorFaultBitmap sensorFault; // 7 SensorFaultBitmap R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated after any bits in the AlarmsActive and/or AlarmsSuppressed attributes change. This
      * may occur in situations such as when internal processing by the server determines that an alarm mode becomes

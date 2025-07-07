@@ -14,6 +14,7 @@ package org.openhab.binding.ecovacs.internal.discovery;
 
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -94,7 +95,7 @@ public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     private void scanForDevices() {
         this.api.ifPresent(api -> {
-            long timestampOfLastScan = getTimestampOfLastScan();
+            Instant timestampOfLastScan = getTimestampOfLastScan();
             try {
                 List<EcovacsDevice> devices = api.getDevices();
                 logger.debug("Ecovacs discovery found {} devices", devices.size());

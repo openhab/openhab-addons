@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.goecharger.internal.api;
 
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.*;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,33 +23,35 @@ import com.google.gson.annotations.SerializedName;
  * @author Reinhard Plaim - Initial contribution
  */
 public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
+
+    @Deprecated
     @SerializedName("mod")
     public String version;
 
-    @SerializedName("psm")
+    @SerializedName(PSM)
     public Integer phases;
 
-    @SerializedName("trx")
+    @SerializedName(TRX)
     public Integer transaction;
 
-    @SerializedName("alw")
+    @SerializedName(ALW)
     public Boolean allowCharging;
 
-    @SerializedName("tma")
+    @SerializedName(TMA)
     public Double[] temperatures;
 
-    @SerializedName("wh")
+    @SerializedName(WH)
     public Double sessionChargeConsumption;
 
-    @SerializedName("dwo")
+    @SerializedName(DWO)
     public Double sessionChargeConsumptionLimit;
 
-    @SerializedName("frc")
+    @SerializedName(FRC)
     public Integer forceState;
 
-    @SerializedName("nrg")
+    @SerializedName(NRG)
     public Double[] energy;
 
-    @SerializedName("awp")
+    @SerializedName(AWP)
     public Double awattarMaxPrice;
 }

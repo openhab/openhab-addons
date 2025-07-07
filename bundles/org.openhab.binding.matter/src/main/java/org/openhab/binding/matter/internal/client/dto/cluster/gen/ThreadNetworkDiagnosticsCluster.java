@@ -455,8 +455,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public List<NetworkFaultEnum> activeNetworkFaultsList; // 62 list R V
     public BigInteger extAddress; // 63 uint64 R V
     public Integer rloc16; // 64 uint16 R V
-    // Structs
 
+    // Structs
     /**
      * The ConnectionStatus Event shall indicate that a Node’s connection status to a Thread network has changed.
      */
