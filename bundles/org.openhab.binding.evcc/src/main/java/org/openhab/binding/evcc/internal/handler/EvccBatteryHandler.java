@@ -3,14 +3,18 @@ package org.openhab.binding.evcc.internal.handler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 
 import com.google.gson.JsonObject;
 
 public class EvccBatteryHandler extends BaseThingHandler implements EvccJsonAwareHandler {
 
-    public EvccBatteryHandler(Thing thing) {
+    private final ChannelTypeRegistry channelTypeRegistry;
+
+    public EvccBatteryHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override

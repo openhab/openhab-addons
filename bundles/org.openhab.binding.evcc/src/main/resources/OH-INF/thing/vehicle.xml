@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="vehicle">
-		<label>evcc vehicle</label>
+		<label>Vehicle</label>
 		<description>This thing contains the vehicle data</description>
 	</thing-type>
 	<channel-type id="vehicleTitle">

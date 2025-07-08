@@ -17,6 +17,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -32,9 +33,11 @@ public class EvccVehicleHandler extends BaseThingHandler implements EvccJsonAwar
     private EvccBridgeHandler bridgeHandler;
     private Boolean isInitialized;
     private String vehicleId;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
-    public EvccVehicleHandler(Thing thing) {
+    public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
+        this.channelTypeRegistry = channelTypeRegistry;
         vehicleId = thing.getProperties().get("id");
     }
 
@@ -127,7 +130,8 @@ public class EvccVehicleHandler extends BaseThingHandler implements EvccJsonAwar
             String key = getEndpointKey(entry.getKey());
             JsonElement value = entry.getValue();
 
-            if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) {
+            // Skip non-primitive values
+            if (!value.isJsonPrimitive()) {
                 continue;
             }
 

@@ -29,6 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -43,6 +44,9 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     private HttpClientFactory httpClientFactory;
+
+    @Reference
+    private ChannelTypeRegistry channelTypeRegistry;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
             THING_TYPE_VEHICLE, THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV);
@@ -61,23 +65,23 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_SITE.equals(type)) {
-            return new EvccSiteHandler(thing);
+            return new EvccSiteHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_VEHICLE.equals(type)) {
-            return new EvccVehicleHandler(thing);
+            return new EvccVehicleHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_LOADPOINT.equals(type)) {
-            return new EvccLoadpointHandler(thing);
+            return new EvccLoadpointHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_BATTERY.equals(type)) {
-            return new EvccBatteryHandler(thing);
+            return new EvccBatteryHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_PV.equals(type)) {
-            return new EvccPvHandler(thing);
+            return new EvccPvHandler(thing, channelTypeRegistry);
         }
 
         return null;

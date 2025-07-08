@@ -5,16 +5,19 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 
 import com.google.gson.JsonObject;
 
 public class EvccLoadpointHandler extends BaseThingHandler implements EvccJsonAwareHandler {
 
+    private final ChannelTypeRegistry channelTypeRegistry;
     private EvccBridgeHandler bridgeHandler;
 
-    public EvccLoadpointHandler(Thing thing) {
+    public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override

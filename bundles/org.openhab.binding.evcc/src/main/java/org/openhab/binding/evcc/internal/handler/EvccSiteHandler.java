@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -20,6 +21,8 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -34,9 +37,11 @@ public class EvccSiteHandler extends BaseThingHandler implements EvccJsonAwareHa
 
     private EvccBridgeHandler bridgeHandler;
     private Boolean isInitialized = false;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
-    public EvccSiteHandler(Thing thing) {
+    public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override
@@ -61,15 +66,19 @@ public class EvccSiteHandler extends BaseThingHandler implements EvccJsonAwareHa
             String key = entry.getKey();
             JsonElement value = entry.getValue();
 
-            // Beispiel: Nur numerische Werte nehmen
-            if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) {
+            // Skip non-primitive values
+            if (!value.isJsonPrimitive()) {
                 continue;
             }
 
-            String itemType = guessAcceptedItemType(key); // z. B. "number:power" oder "number:dimensionless"
-            // String label = capitalizeWords(key); // z. B. "PV-Leistung"
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, key);
+            String itemType = getItemType(channelTypeUID);
+            if (itemType.equals("Unknown")) {
+                logger.debug("Unknown channel type for key '{}'. Skipping channel creation.", key);
+                continue;
+            }
 
-            Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), key)).withType(channelType(key))
+            Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), key)).withType(channelTypeUID)
                     .withAcceptedItemType(itemType).build();
 
             if (!thing.getChannels().stream().anyMatch(c -> c.getUID().equals(channel.getUID()))) {
@@ -84,19 +93,13 @@ public class EvccSiteHandler extends BaseThingHandler implements EvccJsonAwareHa
         bridgeHandler.register(this);
     }
 
-    private ChannelTypeUID channelType(String key) {
-        return new ChannelTypeUID(BINDING_ID, key);
-    }
-
-    private String guessAcceptedItemType(String key) {
-        key = key.toLowerCase();
-        if (key.contains("power"))
-            return "Number:Power";
-        if (key.contains("soc") || key.contains("percentage"))
-            return "Number:Dimensionless";
-        if (key.contains("capacity") || key.contains("energy"))
-            return "Number:Energy";
-        return "Number"; // Fallback
+    private String getItemType(ChannelTypeUID channelTypeUID) {
+        ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
+        if (channelType == null) {
+            return "Unknown";
+        } else {
+            return channelType.getItemType();
+        }
     }
 
     public static String capitalizeWords(String input) {
@@ -153,7 +156,7 @@ public class EvccSiteHandler extends BaseThingHandler implements EvccJsonAwareHa
             String key = entry.getKey();
             JsonElement value = entry.getValue();
 
-            if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) {
+            if (!value.isJsonPrimitive()) {
                 continue;
             }
 
@@ -163,7 +166,7 @@ public class EvccSiteHandler extends BaseThingHandler implements EvccJsonAwareHa
                 continue;
             }
 
-            switch (channel.getAcceptedItemType()) {
+            switch (getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId()))) {
                 case "Number:Energy":
                     updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.KILOWATT_HOUR));
                     break;
@@ -181,6 +184,9 @@ public class EvccSiteHandler extends BaseThingHandler implements EvccJsonAwareHa
                     break;
                 case "Number":
                     updateState(channelUID, new DecimalType(value.getAsDouble()));
+                    break;
+                case "Switch":
+                    updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
                     break;
                 default:
                     logger.warn("Unsupported channel type for channel {}: {}", channelUID,

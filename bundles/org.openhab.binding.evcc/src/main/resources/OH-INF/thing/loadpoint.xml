@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="loadpoint">
-		<label>evcc loadpoint</label>
+		<label>Loadpoint</label>
 		<description>Contains the loadpoint data</description>
 	</thing-type>
 	<channel-type id="activePhases">
