@@ -145,6 +145,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUS1PMG4, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM), //
+                Arguments.of(SHELLYDT_PLUS1L, "", THING_TYPE_SHELLYPLUS1L), //
                 Arguments.of("SNSW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of("SNSW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of("SNSW-102P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
@@ -153,6 +154,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of("S3SW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of("S4SW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of("S4SW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PLUS2L, "", THING_TYPE_SHELLYPLUS2L), //
+                Arguments.of(SHELLYDT_PLUSSHUTTER, "", THING_TYPE_SHELLYPLUSSHUTTER), //
                 Arguments.of(SHELLYDT_PLUSPLUGS, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGIT, "", THING_TYPE_SHELLYPLUSPLUGS), //

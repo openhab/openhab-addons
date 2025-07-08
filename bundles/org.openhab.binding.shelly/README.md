@@ -83,9 +83,12 @@ See section [Discovery](#discovery) for details.
 | thing-type           | Model                                                    | Vendor ID                                                                 |
 |----------------------|----------------------------------------------------------|---------------------------------------------------------------------------|
 | shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU, S4SW-001X16EU                |
+| shellyplus1l         | Shelly Plus 1L with 1x relay                             | S3SW-0A1X1EUL                                                             |
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU                               |
+| shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL                                                             |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
+| shellyplusshutter    | Shelly Plus Shutter for 1x roller                        | S3SH-0A2P4EU                                                              |
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                                  |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                                              |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                                              |
@@ -1131,7 +1134,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 
 ## Shelly Plus Series
 
-### Shelly Plus 1 (thing-type: shellyplus1)
+### Shelly Plus 1 (thing-type: shellyplus1, shellyplus1l)
 
 | Group | Channel     | Type    | read-only | Description                                                                       |
 | ----- | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
@@ -1214,7 +1217,42 @@ If the Shelly Add-On is installed:
 |        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Plus 2L (thing-type: shellyplus2l)
+
+| Group  | Channel      | Type     | read-only | Description                                                                       |
+| ------ | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay1 | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
+|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn       | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff      | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
+|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+
 ### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
+
+| Group  | Channel    | Type          | read-only | Description                                                                          |
+| ------ | ---------- | ------------- | --------- | ------------------------------------------------------------------------------------ |
+| roller | control    | Rollershutter | r/w       | can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
+|        | rollerPos  | Dimmer        | r/w       | Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
+|        | input      | Switch        | yes       | ON: Input/Button is powered, see General Notes on Channels                           |
+|        | state      | String        | yes       | Roller state: open/close/stop                                                        |
+|        | stopReason | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                 |
+|        | safety     | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off              |
+|        | event      | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
+| meter  |            |               |           | See group meter description                                                          |
+
+The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
+Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
+
+### Shelly Plus Shutter (thing-type: shellyplusshutter)
 
 | Group  | Channel    | Type          | read-only | Description                                                                          |
 | ------ | ---------- | ------------- | --------- | ------------------------------------------------------------------------------------ |
