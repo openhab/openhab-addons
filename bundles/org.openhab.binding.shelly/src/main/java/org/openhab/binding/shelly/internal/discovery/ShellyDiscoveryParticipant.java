@@ -52,6 +52,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class)
 public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
+
+    private static final String SERVICE_TYPE = "_shelly._tcp.local.";
+
     private final Logger logger = LoggerFactory.getLogger(ShellyDiscoveryParticipant.class);
     private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     private final ShellyTranslationProvider messages;
@@ -76,7 +79,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public String getServiceType() {
-        return "_shelly._tcp.local.";
+        return SERVICE_TYPE;
     }
 
     /**
