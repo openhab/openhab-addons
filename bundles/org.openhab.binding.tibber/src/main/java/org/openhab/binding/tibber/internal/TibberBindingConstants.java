@@ -56,7 +56,7 @@ public class TibberBindingConstants {
     // live channels
     public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_MIN_COSNUMPTION = "minimum-consumption";
-    public static final String CHANNEL_PEAK_CONSUMPTION = "peak-consumtion";
+    public static final String CHANNEL_PEAK_CONSUMPTION = "peak-consumption";
     public static final String CHANNEL_PRODUCTION = "production";
     public static final String CHANNEL_MIN_PRODUCTION = "minimum-production";
     public static final String CHANNEL_PEAK_PRODUCTION = "peak-production";

@@ -85,7 +85,7 @@ All values read-only.
 |-----------------------|---------------------------|-------------------------------------------------------|
 | consumption           | Number:Power              | Consumption at the moment in watts                    |
 | minimum-consumption   | Number:Power              | Minimum power consumption since midnight in watts     |
-| peak-consumtion       | Number:Power              | Peak power consumption since midnight in watts        |
+| peak-consumption      | Number:Power              | Peak power consumption since midnight in watts        |
 | production            | Number:Power              | Net power production at the moment in watts           |
 | minimum-production    | Number:Power              | Minimum net power production since midnight in watts  |
 | peak-production       | Number:Power              | Maximum net power production since midnight in watts  |
@@ -450,7 +450,7 @@ Number:EnergyPrice          Tibber_API_Average                  "Average Price" 
 
 Number:Power                Tibber_API_Live_Cosnumption         "Live Consumption"          {channel="tibber:tibberapi:xyz:live#consumption"}
 Number:Power                Tibber_API_Minimum_Cosnumption      "Minimum Consumption"       {channel="tibber:tibberapi:xyz:live#minimum-consumption"}
-Number:Power                Tibber_API_Peak_Cosnumption         "Peak Consumption"          {channel="tibber:tibberapi:xyz:live#peak-consumtion"}
+Number:Power                Tibber_API_Peak_Cosnumption         "Peak Consumption"          {channel="tibber:tibberapi:xyz:live#peak-consumption"}
 Number:Power                Tibber_API_Live_Production          "Live Production"           {channel="tibber:tibberapi:xyz:live#production"}
 Number:Power                Tibber_API_Minimum_Production       "Minimum Production"        {channel="tibber:tibberapi:xyz:live#minimum-production"}
 Number:Power                Tibber_API_Peak_Production          "Peak Production"           {channel="tibber:tibberapi:xyz:live#peak-production"}

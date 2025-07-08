@@ -82,7 +82,7 @@
 				<label>Minimum Consumption</label>
 				<description>Minimum power consumption since midnight in watts</description>
 			</add-channel>
-			<add-channel id="peak-consumtion" groupIds="live">
+			<add-channel id="peak-consumption" groupIds="live">
 				<type>tibber:power</type>
 				<label>Peak Consumption</label>
 				<description>Peak power consumption since midnight in watts</description>

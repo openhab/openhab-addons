@@ -15,7 +15,7 @@
 				<label>Minimum Consumption</label>
 				<description>Minimum power consumption since midnight in watts</description>
 			</channel>
-			<channel id="peak-consumtion" typeId="power">
+			<channel id="peak-consumption" typeId="power">
 				<label>Peak Consumption</label>
 				<description>Peak power consumption since midnight in watts</description>
 			</channel>
