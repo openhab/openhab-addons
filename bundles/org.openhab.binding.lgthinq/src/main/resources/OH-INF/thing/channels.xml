@@ -164,8 +164,8 @@
 		<description>AC Wind Strength</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
 	</channel-type>
 
