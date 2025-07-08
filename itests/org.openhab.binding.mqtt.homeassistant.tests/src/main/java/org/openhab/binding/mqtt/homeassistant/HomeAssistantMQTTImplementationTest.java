@@ -100,8 +100,8 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         haConnection.addConnectionObserver(failIfChange);
 
         // Create topic string and config for one example HA component (a Switch)
-        final String config = "{'name':'testname','state_topic':'" + testObjectTopic + "/state','command_topic':'"
-                + testObjectTopic + "/set'}";
+        final String config = "{\"name\":\"testname\",\"'state_topic\":\"" + testObjectTopic
+                + "/state\",\"command_topic\":\"" + testObjectTopic + "/set\"}";
 
         // Publish component configurations and component states to MQTT
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
