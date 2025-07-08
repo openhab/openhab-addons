@@ -99,6 +99,10 @@
 		<label>Global Brightness</label>
 		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="masterControls">
@@ -108,7 +112,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -117,6 +121,10 @@
 		<label>Segment Brightness</label>
 		<description>Changes the brightness of the whole segment</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="primaryColor" advanced="true">

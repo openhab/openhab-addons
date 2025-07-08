@@ -109,6 +109,10 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Enable or disable monitor</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="ON">Enable</option>
@@ -135,6 +139,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Monitor alarm status</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="state">
