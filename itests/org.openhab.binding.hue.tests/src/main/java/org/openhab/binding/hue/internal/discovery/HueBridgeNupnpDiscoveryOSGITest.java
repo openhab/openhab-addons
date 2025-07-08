@@ -217,12 +217,6 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
                     @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }
-
-            @Override
-            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                    @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-                return null;
-            }
         });
 
         // missing ip
