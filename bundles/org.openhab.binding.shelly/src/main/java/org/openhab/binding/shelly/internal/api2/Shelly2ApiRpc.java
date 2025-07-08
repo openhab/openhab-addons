@@ -1246,7 +1246,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
+    public void sendIRKey(String keyCode) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 
