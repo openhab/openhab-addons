@@ -37,7 +37,7 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="autoChannelCreation" type="boolean">
-				<label>Automatic channel creation</label>
+				<label>Automatic Channel Creation</label>
 				<description>Enable automatic channel creation from received
 					service and manufacturer data</description>
 				<default>false</default>
