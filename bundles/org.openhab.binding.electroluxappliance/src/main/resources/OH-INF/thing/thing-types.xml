@@ -556,8 +556,8 @@
 		<description>Whether child lock is active.</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 
