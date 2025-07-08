@@ -44,7 +44,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="dataTimeout" min="1" type="integer">
-				<label>Data timeout</label>
+				<label>Data Timeout</label>
 				<description>Maximum time in minutes before a communication error is raised</description>
 				<default>1</default>
 				<advanced>true</advanced>
