@@ -62,27 +62,25 @@ public class ListenerHandler extends BeaconBluetoothHandler {
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         super.initialize();
         config = getConfigAs(ListenerConfiguration.class);
         // is OFFLINE -> configuration error -> no heartbeat needed
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, 0, config.dataTimeout,
-                    TimeUnit.MINUTES);
+            heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, 0,
+                    config != null ? config.dataTimeout : 1, TimeUnit.MINUTES);
         }
     }
 
     /**
      * Check device connection timeout
      */
-    @SuppressWarnings("null")
     private void heartbeat() {
         synchronized (receivedStatus) {
             if (!receivedStatus.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("No data received for %d minute", config.dataTimeout));
+                        String.format("No data received for %d minute", config != null ? config.dataTimeout : "null"));
                 scanTime = 0;
             }
         }
@@ -102,7 +100,6 @@ public class ListenerHandler extends BeaconBluetoothHandler {
 
     long scanTime = 0;
 
-    @SuppressWarnings("null")
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
         synchronized (receivedStatus) {
@@ -160,7 +157,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
                             continue;
                         }
                         DecimalType value = getDecimalValue(data, indexInt, lengthInt, multiplicatorFloat,
-                                config.changeByteOrder);
+                                config != null ? config.changeByteOrder : false);
                         if (value != null) {
                             updateState(channel.getUID(), value);
                         }
@@ -247,7 +244,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
                             continue;
                         }
                         DecimalType value = getDecimalValue(data, indexInt, lengthInt, multiplicatorFloat,
-                                config.changeByteOrder);
+                                config != null ? config.changeByteOrder : false);
                         if (value != null) {
                             updateState(channel.getUID(), value);
                         }
