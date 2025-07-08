@@ -40,6 +40,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTest
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.i18n.UnitProvider;
@@ -54,8 +55,6 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-
-import com.hubspot.jinjava.Jinjava;
 
 /**
  * Abstract class for components tests.
@@ -88,7 +87,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
         thingHandler = new LatchThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry, unitProvider, SUBSCRIBE_TIMEOUT,
+                stateDescriptionProvider, channelTypeRegistry, python, unitProvider, SUBSCRIBE_TIMEOUT,
                 ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
@@ -367,9 +366,10 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         public LatchThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
                 MqttChannelTypeProvider channelTypeProvider,
                 MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-                UnitProvider unitProvider, int subscribeTimeout, int attributeReceiveTimeout) {
+                HomeAssistantPythonBridge python, UnitProvider unitProvider, int subscribeTimeout,
+                int attributeReceiveTimeout) {
             super(thing, thingHandlerFactory, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    new Jinjava(), unitProvider, subscribeTimeout, attributeReceiveTimeout);
+                    python, unitProvider, subscribeTimeout, attributeReceiveTimeout);
         }
 
         @Override

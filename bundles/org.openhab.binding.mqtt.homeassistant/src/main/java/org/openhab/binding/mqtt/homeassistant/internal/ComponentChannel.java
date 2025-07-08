@@ -136,6 +136,7 @@ public class ComponentChannel {
 
         private @Nullable String stateTopic;
         private @Nullable String commandTopic;
+        private boolean parseCommandValueAsInteger;
         private boolean retain;
         private boolean trigger;
         private boolean isAdvanced;
@@ -206,6 +207,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder parseCommandValueAsInteger(boolean parseCommandValueAsInteger) {
+            this.parseCommandValueAsInteger = parseCommandValueAsInteger;
+            return this;
+        }
+
         public Builder trigger(boolean trigger) {
             this.trigger = trigger;
             return this;
@@ -265,13 +271,13 @@ public class ComponentChannel {
 
             String localTemplateIn = templateIn;
             if (localTemplateIn != null) {
-                incomingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
-                        localTemplateIn);
+                incomingTransformation = new HomeAssistantChannelTransformation(component.getPython(), component,
+                        localTemplateIn, false);
             }
             String localTemplateOut = templateOut;
             if (localTemplateOut != null) {
-                outgoingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
-                        localTemplateOut);
+                outgoingTransformation = new HomeAssistantChannelTransformation(component.getPython(), component,
+                        localTemplateOut, true, parseCommandValueAsInteger);
             }
 
             channelState = new HomeAssistantChannelState(channelConfigBuilder.build(), channelUID, valueState,
