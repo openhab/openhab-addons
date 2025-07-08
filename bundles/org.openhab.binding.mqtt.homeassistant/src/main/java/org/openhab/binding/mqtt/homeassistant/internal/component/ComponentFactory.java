@@ -19,6 +19,7 @@ import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
@@ -26,7 +27,6 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.Gson;
-import com.hubspot.jinjava.Jinjava;
 
 /**
  * A factory to create HomeAssistant MQTT components. Those components are specified at:
@@ -49,10 +49,10 @@ public class ComponentFactory {
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
             ChannelStateUpdateListener updateListener, HomeAssistantChannelLinkageChecker linkageChecker,
-            AvailabilityTracker tracker, ScheduledExecutorService scheduler, Gson gson, Jinjava jinjava,
-            UnitProvider unitProvider) throws ConfigurationException {
+            AvailabilityTracker tracker, ScheduledExecutorService scheduler, Gson gson,
+            HomeAssistantPythonBridge python, UnitProvider unitProvider) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, jinjava, updateListener, linkageChecker, tracker, scheduler,
+                channelConfigurationJSON, gson, python, updateListener, linkageChecker, tracker, scheduler,
                 unitProvider);
         switch (haID.component) {
             case "alarm_control_panel":
@@ -116,7 +116,7 @@ public class ComponentFactory {
         private final HomeAssistantChannelLinkageChecker linkageChecker;
         private final AvailabilityTracker tracker;
         private final Gson gson;
-        private final Jinjava jinjava;
+        private final HomeAssistantPythonBridge python;
         private final ScheduledExecutorService scheduler;
         private final UnitProvider unitProvider;
 
@@ -128,14 +128,15 @@ public class ComponentFactory {
          * @param configJSON The configuration string
          * @param gson A Gson instance
          */
-        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson, Jinjava jinjava,
-                ChannelStateUpdateListener updateListener, HomeAssistantChannelLinkageChecker linkageChecker,
-                AvailabilityTracker tracker, ScheduledExecutorService scheduler, UnitProvider unitProvider) {
+        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
+                HomeAssistantPythonBridge python, ChannelStateUpdateListener updateListener,
+                HomeAssistantChannelLinkageChecker linkageChecker, AvailabilityTracker tracker,
+                ScheduledExecutorService scheduler, UnitProvider unitProvider) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
-            this.jinjava = jinjava;
+            this.python = python;
             this.updateListener = updateListener;
             this.linkageChecker = linkageChecker;
             this.tracker = tracker;
@@ -167,8 +168,8 @@ public class ComponentFactory {
             return gson;
         }
 
-        public Jinjava getJinjava() {
-            return jinjava;
+        public HomeAssistantPythonBridge getPython() {
+            return python;
         }
 
         public UnitProvider getUnitProvider() {
