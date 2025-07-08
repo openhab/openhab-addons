@@ -342,7 +342,7 @@
 		<description>Lock or unlock the car</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">
