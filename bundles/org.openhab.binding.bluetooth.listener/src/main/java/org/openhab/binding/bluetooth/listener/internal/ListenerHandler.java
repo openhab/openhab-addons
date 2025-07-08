@@ -56,7 +56,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
     private final Logger logger = LoggerFactory.getLogger(ListenerHandler.class);
     private @Nullable ListenerConfiguration config;
     private final AtomicBoolean receivedStatus = new AtomicBoolean();
-    private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
+    private @Nullable ScheduledFuture<?> heartbeatFuture;
 
     public ListenerHandler(Thing thing) {
         super(thing);
