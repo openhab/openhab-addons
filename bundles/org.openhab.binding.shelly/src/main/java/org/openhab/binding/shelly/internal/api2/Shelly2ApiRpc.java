@@ -241,13 +241,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.numMeters = 0;
-        if (profile.hasRelays) {
+        if (profile.isRoller) {
+            profile.status.rollers = new ArrayList<>();
+            for (int i = 0; i < profile.numRollers; i++) {
+                ShellyRollerStatus rs = new ShellyRollerStatus();
+                profile.status.rollers.add(rs);
+                rollerStatus.add(rs);
+            }
+            if (getString(profile.device.mode).isEmpty()) {
+                profile.device.mode = SHELLY_MODE_ROLLER; // single mode devices don't return mode
+            }
+        } else if (profile.hasRelays) {
             profile.status.relays = new ArrayList<>();
             relayStatus.relays = new ArrayList<>();
             profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
             for (int i = 0; i < profile.numRelays; i++) {
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
+            }
+            if (getString(profile.device.mode).isEmpty()) {
+                profile.device.mode = SHELLY_MODE_RELAY; // single mode devices don't return mode
             }
         }
 
@@ -289,15 +302,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 profile.status.meters.add(new ShellySettingsMeter());
                 profile.status.emeters.add(new ShellySettingsEMeter());
                 relayStatus.meters.add(new ShellySettingsMeter());
-            }
-        }
-
-        if (profile.isRoller) {
-            profile.status.rollers = new ArrayList<>();
-            for (int i = 0; i < profile.numRollers; i++) {
-                ShellyRollerStatus rs = new ShellyRollerStatus();
-                profile.status.rollers.add(rs);
-                rollerStatus.add(rs);
             }
         }
 
