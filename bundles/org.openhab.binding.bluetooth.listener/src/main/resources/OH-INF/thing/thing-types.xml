@@ -65,7 +65,7 @@
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="dataBegin" type="integer" min="0">
-				<label>Data begin</label>
+				<label>Data Begin</label>
 				<description>Data begin in the raw data byte array.</description>
 				<default>0</default>
 			</parameter>
