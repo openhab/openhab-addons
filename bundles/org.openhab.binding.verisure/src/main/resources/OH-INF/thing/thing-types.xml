@@ -542,6 +542,10 @@
 		<item-type>String</item-type>
 		<label>User Location Status</label>
 		<description>Information on user location status (HOME/AWAY).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -591,6 +595,10 @@
 		<item-type>String</item-type>
 		<label>Alarm Status</label>
 		<description>Verisure alarm status.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="DISARMED">DISARMED</option>
@@ -604,6 +612,10 @@
 		<item-type>Switch</item-type>
 		<label>SmartLock Status</label>
 		<description>Verisure smart lock status.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="autoRelock">
@@ -641,6 +653,10 @@
 		<item-type>Switch</item-type>
 		<label>SmartPlug Status</label>
 		<description>Verisure smart plug status.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="connected">
@@ -653,6 +669,10 @@
 		<item-type>Contact</item-type>
 		<label>Door/Window State</label>
 		<description>Is door/window opened or closed. (OPEN/CLOSED)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -661,6 +681,10 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 
@@ -669,6 +693,10 @@
 		<label>Humidity</label>
 		<description>Current humidity in %.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 

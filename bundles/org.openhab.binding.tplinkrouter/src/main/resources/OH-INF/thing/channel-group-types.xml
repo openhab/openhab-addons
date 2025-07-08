@@ -26,6 +26,10 @@
 	<channel-type id="status">
 		<item-type>Switch</item-type>
 		<label>Wifi Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="ssid">
 		<item-type>String</item-type>

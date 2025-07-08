@@ -75,12 +75,18 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Current Total Price</label>
 		<description>Total Price: Energy + Tax</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state pattern="%.3f"></state>
 	</channel-type>
 	<channel-type id="level">
 		<item-type>String</item-type>
 		<label>Price Level</label>
 		<description>Current price level</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="cost">
 		<item-type>Number:Dimensionless</item-type>
@@ -98,6 +104,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="currency">
@@ -109,24 +119,40 @@
 		<item-type>Number:Power</item-type>
 		<label>Power consumption/production</label>
 		<description>Power consumption/production for given time interval</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage on given Phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current on given Phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="production">
 		<item-type>Number:Energy</item-type>
 		<label>Total Production</label>
 		<description>Production at given time interval (e.g. last meter reading, accumulated since midnight)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="tomorrow_prices" advanced="true">

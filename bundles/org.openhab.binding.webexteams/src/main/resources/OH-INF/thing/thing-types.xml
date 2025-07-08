@@ -52,6 +52,10 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>The current presence status of the person</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastactivity">

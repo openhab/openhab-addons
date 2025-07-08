@@ -10,6 +10,10 @@
 		<label>Switch</label>
 		<description>Shows the switch state of the Smart Home device.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="led" advanced="true">
@@ -17,6 +21,10 @@
 		<label>Switch Led</label>
 		<description>Switch the Smart Home device led on or off.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Energy Channel types -->
@@ -25,6 +33,10 @@
 		<label>Power</label>
 		<description>Actual power usage.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy-usage">
@@ -32,6 +44,10 @@
 		<label>Energy Usage</label>
 		<description>Actual energy usage.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">
@@ -39,6 +55,10 @@
 		<label>Current</label>
 		<description>Actual current usage.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
@@ -46,6 +66,10 @@
 		<label>Voltage</label>
 		<description>Actual voltage usage.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -55,6 +79,10 @@
 		<label>Signal</label>
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
