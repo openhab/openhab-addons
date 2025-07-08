@@ -101,7 +101,7 @@
 				<default>0</default>
 			</parameter>
 			<parameter name="dataLength" type="integer" min="0">
-				<label>Data length</label>
+				<label>Data Length</label>
 				<description>Data length. If set to 0 the data will be loaded till the end.</description>
 				<default>2</default>
 			</parameter>
