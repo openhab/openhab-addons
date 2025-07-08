@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="vehicle">
+		<label>evcc vehicle</label>
+		<description>This thing contains the vehicle data</description>
+	</thing-type>
+	<channel-type id="vehicleTitle">
+		<item-type>String</item-type>
+		<label>Vehicle Title</label>
+		<description>Title of vehicle</description>
+		<category>GarageDoor</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehicleMinSoc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Vehicle Min SoC</label>
+		<description>Minimum state of charge (SoC) a vehicle should have</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleMinCurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Vehicle Min Current</label>
+		<description>Minimum current thats need to provided to charge the vehicle</description>
+		<category></category>
+		<state min="0" step="1" max="32" readOnly="false"/>
+	</channel-type>
+	<channel-type id="vehicleLimitSoc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Vehicle Charging Limit SoC</label>
+		<description>Until which state of charge (SoC) should the specific vehicle be charged</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Vehicle Capacity</label>
+		<description>Capacity of EV battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehiclePlanPrecondition">
+		<item-type>Number</item-type>
+		<label>Plan Precondition</label>
+	</channel-type>
+	<channel-type id="vehiclePlanSoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Planned SoC</label>
+	</channel-type>
+	<channel-type id="vehiclePlanTime">
+		<item-type>DateTime</item-type>
+		<label>Plan date</label>
+	</channel-type>
+</thing:thing-descriptions>

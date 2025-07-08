@@ -27,15 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.evcc.internal.api.EvccAPI;
-import org.openhab.binding.evcc.internal.api.EvccApiException;
-import org.openhab.binding.evcc.internal.api.dto.Battery;
-import org.openhab.binding.evcc.internal.api.dto.Grid;
-import org.openhab.binding.evcc.internal.api.dto.Loadpoint;
-import org.openhab.binding.evcc.internal.api.dto.PV;
-import org.openhab.binding.evcc.internal.api.dto.Plan;
-import org.openhab.binding.evcc.internal.api.dto.Result;
-import org.openhab.binding.evcc.internal.api.dto.Vehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="site">
+		<label>evcc Site</label>
+		<description>General evcc data</description>
+	</thing-type>
+	<channel-type id="batteryCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Capacity</label>
+		<description>Capacity of (home) battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryPower">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power</label>
+		<description>Current power from battery</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batterySoc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery SoC</label>
+		<description>Current State of Charge of battery</description>
+		<category>BatteryLevel</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Energy</label>
+		<description>Energy of (home) battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryDischargeControl">
+		<item-type>Switch</item-type>
+		<label>Battery Discharge Control</label>
+		<description>Enable or disable battery discharge control</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="batteryMode">
+		<item-type>String</item-type>
+		<label>Battery Mode</label>
+		<description>Current Battery Mode</description>
+		<category>Battery</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="prioritySoC">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Priority SoC</label>
+		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv"
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="bufferSoC">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Buffer SoC</label>
+		<description>Until this State of Charge the discharging of a house battery is allowed in "pv" mode, when there is
+			insufficient solar surplus (below the minimum charging power)
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="bufferStartSoC">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Buffer Start SoC</label>
+		<description>State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar
+			surplus
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="residualPower">
+		<item-type>Number:Power</item-type>
+		<label>Grid Residual Power</label>
+		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
+		</description>
+		<category>Energy</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="gridPower">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power</label>
+		<description>Current power from grid (negative means feed-in)</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="homePower">
+		<item-type>Number:Power</item-type>
+		<label>Home Power</label>
+		<description>Current power taken by home</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pvPower">
+		<item-type>Number:Power</item-type>
+		<label>PV Power</label>
+		<description>Current power from photovoltaik</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="version">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>Current evcc version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="availableVersion">
+		<item-type>String</item-type>
+		<label>Available Version</label>
+		<description>Available evcc update version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

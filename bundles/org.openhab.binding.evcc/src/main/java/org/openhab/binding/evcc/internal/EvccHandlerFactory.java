@@ -16,15 +16,19 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
+import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
+import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
+import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
+import org.openhab.binding.evcc.internal.handler.EvccVehicleHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -34,30 +38,46 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Florian Hotze - Initial contribution
  */
-@NonNullByDefault
 @Component(configurationPid = "binding.evcc", service = ThingHandlerFactory.class)
 public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE);
+    @Reference
+    private HttpClientFactory httpClientFactory;
 
-    private final TimeZoneProvider timeZoneProvider;
-
-    @Activate
-    public EvccHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
+            THING_TYPE_VEHICLE, THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    protected ThingHandler createHandler(Thing thing) {
+        ThingTypeUID type = thing.getThingTypeUID();
 
-        if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new EvccHandler(thing, timeZoneProvider);
+        if (THING_TYPE_BRIDGE.equals(type) && thing instanceof Bridge) {
+            return new EvccBridgeHandler((Bridge) thing, httpClientFactory);
+        }
+
+        if (THING_TYPE_SITE.equals(type)) {
+            return new EvccSiteHandler(thing);
+        }
+
+        if (THING_TYPE_VEHICLE.equals(type)) {
+            return new EvccVehicleHandler(thing);
+        }
+
+        if (THING_TYPE_LOADPOINT.equals(type)) {
+            return new EvccLoadpointHandler(thing);
+        }
+
+        if (THING_TYPE_BATTERY.equals(type)) {
+            return new EvccBatteryHandler(thing);
+        }
+
+        if (THING_TYPE_PV.equals(type)) {
+            return new EvccPvHandler(thing);
         }
 
         return null;
