@@ -21,5 +21,9 @@
 		<label>Shutter</label>
 		<description>The Shutter channel allows control shutters</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>
