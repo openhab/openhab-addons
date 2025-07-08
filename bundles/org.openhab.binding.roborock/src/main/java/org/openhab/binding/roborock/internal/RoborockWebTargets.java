@@ -113,7 +113,6 @@ public class RoborockWebTargets {
                 && JsonParser.parseString(response).getAsJsonObject().get("data").getAsJsonObject().has("url")) {
             url = JsonParser.parseString(response).getAsJsonObject().get("data").getAsJsonObject().get("url")
                     .getAsString();
-            logger.trace("getUrlByEmail, url = {}", url);
         }
         return url;
     }

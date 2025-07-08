@@ -66,12 +66,12 @@ import com.google.gson.Gson;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
-import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
-import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
+import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
+import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5DisconnectException;
+import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
+import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 
 /**
  * The {@link RoborockAccountHandler} is responsible for handling commands, which are
@@ -87,10 +87,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private @Nullable RoborockAccountConfiguration config;
     private final SchedulerTask initTask;
     private final SchedulerTask reconnectTask;
-    private final SchedulerTask pollTask;
     private final RoborockWebTargets webTargets;
-    private @Nullable Mqtt3AsyncClient mqttClient;
-    private long lastSuccessfulPollTimestamp;
+    private @Nullable Mqtt5AsyncClient mqttClient;
     private String token = "";
     private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
@@ -107,7 +105,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         webTargets = new RoborockWebTargets(httpClient);
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
         reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
-        pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollStatus);
     }
 
     public String getToken() {
@@ -169,15 +166,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     @Nullable
     public String getRoutines(String deviceId) {
-        try {
-            return webTargets.getRoutines(deviceId, rriot);
-        } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication error " + e.getMessage());
-            return new String();
-        } catch (RoborockCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error " + e.getMessage());
+        if (rriot != null) {
+            try {
+                return webTargets.getRoutines(deviceId, rriot);
+            } catch (RoborockAuthenticationException | NoSuchAlgorithmException | InvalidKeyException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication error " + e.getMessage());
+                return new String();
+            } catch (RoborockCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication error " + e.getMessage());
+                return new String();
+            }
+        } else {
             return new String();
         }
     }
@@ -213,7 +214,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         initTask.setNamePrefix(getThing().getUID().getId());
         reconnectTask.setNamePrefix(getThing().getUID().getId());
-        pollTask.setNamePrefix(getThing().getUID().getId());
         initTask.submit();
     }
 
@@ -237,25 +237,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         childDevices.remove(childThing);
     }
 
-    private synchronized void scheduleNextPoll(long initialDelaySeconds) {
-        final RoborockAccountConfiguration config = getConfigAs(RoborockAccountConfiguration.class);
-        final long delayUntilNextPoll;
-        if (initialDelaySeconds < 0) {
-            long intervalSeconds = config.refresh * 60;
-            long secondsSinceLastPoll = (System.currentTimeMillis() - lastSuccessfulPollTimestamp) / 1000;
-            long deltaRemaining = intervalSeconds - secondsSinceLastPoll;
-            delayUntilNextPoll = Math.max(0, deltaRemaining);
-        } else {
-            delayUntilNextPoll = initialDelaySeconds;
-        }
-        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", getThing().getUID().getId(),
-                delayUntilNextPoll, config.refresh);
-        pollTask.cancel();
-        pollTask.schedule(delayUntilNextPoll);
-    }
-
     private void initDevice() {
-        if ("".equals(baseUri)) {
+        if (baseUri.isEmpty()) {
             try {
                 baseUri = webTargets.getUrlByEmail(config.email);
             } catch (RoborockAuthenticationException e) {
@@ -287,6 +270,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 }
             }
             if (loginResponse.code.equals("200")) {
+                Map<String, String> properties = editProperties();
+                properties.put("token", loginResponse.data.token);
+                properties.put("rriot", gson.toJson(loginResponse.data.rriot));
+                updateProperties(properties);
                 token = loginResponse.data.token;
                 rriot = loginResponse.data.rriot;
                 updateStatus(ThingStatus.ONLINE);
@@ -308,8 +295,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private synchronized void teardown(boolean scheduleReconnection) {
         disconnect(scheduler);
 
-        pollTask.cancel();
-
         reconnectTask.cancel();
         initTask.cancel();
 
@@ -320,14 +305,17 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     }
 
     private void connectToDevice() {
-        try {
-            connect(scheduler);
-            scheduleNextPoll(-1);
-            logger.debug("Bridge connected to MQTT");
-            updateStatus(ThingStatus.ONLINE);
-        } catch (InterruptedException | RoborockCommunicationException e) {
-            logger.debug("Failed to connect to MQTT");
-            updateStatus(ThingStatus.OFFLINE);
+        if (!token.isEmpty()) {
+            try {
+                connect(scheduler);
+                logger.debug("Bridge connected to MQTT");
+                updateStatus(ThingStatus.ONLINE);
+            } catch (InterruptedException | RoborockCommunicationException e) {
+                logger.debug("Failed to connect to MQTT");
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        } else {
+            logger.debug("token is empty, can't login to MQTT yet");
         }
     }
 
@@ -339,6 +327,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     public void connect(ScheduledExecutorService scheduler)
             throws RoborockCommunicationException, InterruptedException {
+        if (rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty() || rriot.u.isEmpty()) {
+            logger.trace("rriot is empty, delay connection to MQTT server");
+            return;
+        }
         String mqttHost = "";
         int mqttPort = 1883;
         String mqttUser = "";
@@ -353,11 +345,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.error("Malformed mqtt URL");
         }
 
-        Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
+        Mqtt5SimpleAuth auth = Mqtt5SimpleAuth.builder().username(mqttUser).password(mqttPassword.getBytes()).build();
 
         final MqttClientDisconnectedListener disconnectListener = ctx -> {
             boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
-                    && ctx.getCause() instanceof Mqtt3DisconnectException;
+                    && ctx.getCause() instanceof Mqtt5DisconnectException;
             // As the client already was disconnected, there's no need to do it again in disconnect() later
             this.mqttClient = null;
             if (!expectedShutdown) {
@@ -367,21 +359,22 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             }
         };
 
-        final Mqtt3AsyncClient client = MqttClient.builder() //
-                .useMqttVersion3() //
+        final Mqtt5AsyncClient client = MqttClient.builder() //
+                .useMqttVersion5() //
                 .identifier(mqttUser) //
                 .simpleAuth(auth) //
                 .serverHost(mqttHost) //
                 .serverPort(mqttPort) //
                 .sslWithDefaultConfig() //
                 .addDisconnectedListener(disconnectListener) //
+                .automaticReconnectWithDefaultConfig() //
                 .buildAsync();
 
         try {
             this.mqttClient = client;
             client.connect().get();
 
-            final Consumer<@Nullable Mqtt3Publish> eventCallback = publish -> {
+            final Consumer<@Nullable Mqtt5Publish> eventCallback = publish -> {
                 if (publish == null) {
                     return;
                 }
@@ -403,7 +396,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 }
 
                 // } catch (DataParsingException e) {
-                // listener.onEventStreamFailure(this, e);
+                // onEventStreamFailure(e);
                 // }
             };
 
@@ -413,15 +406,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("Established MQTT connection, subscribed to topic {}", topic);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
-                    && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
+            boolean isAuthFailure = cause instanceof Mqtt5ConnAckException connAckException
+                    && connAckException.getMqttMessage().getReasonCode() == Mqtt5ConnAckReasonCode.NOT_AUTHORIZED;
             teardownAndScheduleReconnection();
             throw new RoborockCommunicationException(e);
         }
     }
 
     public void disconnect(ScheduledExecutorService scheduler) {
-        Mqtt3AsyncClient client = this.mqttClient;
+        Mqtt5AsyncClient client = this.mqttClient;
         if (client != null) {
             client.disconnect();
         }
@@ -486,7 +479,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
         logger.debug("Publishing {} message to {}", method, topic);
         mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
-                .whenComplete((mqtt3Publish, throwable) -> {
+                .whenComplete((mqtt5Publish, throwable) -> {
                     if (throwable != null) {
                         logger.debug("mqtt publish failed");
                     }
@@ -526,10 +519,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             logger.debug("Exception encrypting payload, {}", e.getMessage());
             return new byte[0];
         }
-    }
-
-    private void pollStatus() {
-        // nothing to poll
     }
 
     public void onEventStreamFailure(Throwable error) {

@@ -256,6 +256,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         hasChannelStructure = false;
+        token = getToken();
+        if (!token.isEmpty()) {
+            if (rrHomeId.isEmpty()) {
+                Home home = bridgeHandler.getHomeDetail();
+                if (home != null) {
+                    rrHomeId = Integer.toString(home.data.rrHomeId);
+                }
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
+        }
         initTask.setNamePrefix(getThing().getUID().getId());
         reconnectTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
@@ -281,16 +292,21 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void initDevice() {
-        token = getToken();
-        if (!token.isEmpty()) {
-            Home home = bridgeHandler.getHomeDetail();
-            if (home != null) {
-                rrHomeId = Integer.toString(home.data.rrHomeId);
+        if (token.isEmpty()) {
+            token = getToken();
+            if (!token.isEmpty()) {
+                if (rrHomeId.isEmpty()) {
+                    Home home = bridgeHandler.getHomeDetail();
+                    if (home != null) {
+                        rrHomeId = Integer.toString(home.data.rrHomeId);
+                    }
+                }
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
             }
-            initTask.submit();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
         }
+
         connectToDevice();
     }
 
@@ -340,28 +356,54 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void pollData() {
         logger.debug("Running pollData for: {}", getThing().getUID().getId());
-        HomeData homeData = bridgeHandler.getHomeData(rrHomeId);
-        if ((homeData != null && (homeData.result != null))) {
-            for (int i = 0; i < homeData.result.devices.length; i++) {
-                if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
-                    if (localKey.isEmpty()) {
-                        localKey = homeData.result.devices[i].localKey;
-                    }
-                    updateState(CHANNEL_ERROR_ID, new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
-                    updateState(CHANNEL_STATE_ID, new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
-                    updateState(CHANNEL_BATTERY, new DecimalType(homeData.result.devices[i].deviceStatus.battery));
-                    updateState(CHANNEL_FAN_POWER, new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
-                    updateState(CHANNEL_MOP_DRYING,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.dryingStatus));
+        if (!rrHomeId.isEmpty()) {
+            HomeData homeData = bridgeHandler.getHomeData(rrHomeId);
+            if ((homeData != null && (homeData.result != null))) {
+                for (int i = 0; i < homeData.result.devices.length; i++) {
+                    if (getThing().getUID().getId().equals(homeData.result.devices[i].duid)) {
+                        if (localKey.isEmpty()) {
+                            localKey = homeData.result.devices[i].localKey;
+                        }
+                        updateState(CHANNEL_ERROR_ID,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.errorCode));
+                        updateState(CHANNEL_STATE_ID,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.vacuumState));
+                        updateState(CHANNEL_BATTERY, new DecimalType(homeData.result.devices[i].deviceStatus.battery));
+                        updateState(CHANNEL_FAN_POWER,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.fanPower));
+                        updateState(CHANNEL_MOP_DRYING,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.dryingStatus));
 
-                    updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
-                    updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
-                    updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
-                            new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
-                    // also look at array size of homeData.result.rooms[i] and populate rooms list....
-                    homeRooms = homeData.result.rooms;
+                        updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.mainBrushWorkTime));
+                        updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.sideBrushWorkTime));
+                        updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
+                                new DecimalType(homeData.result.devices[i].deviceStatus.filterWorkTime));
+                        // also look at array size of homeData.result.rooms[i] and populate rooms list....
+                        homeRooms = homeData.result.rooms;
+                        if (homeData.result.devices[i].online == true) {
+                            try {
+                                logger.debug("Running pollData - sending MQTT commands");
+                                getStatusID = sendCommand(COMMAND_GET_STATUS);
+                                getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
+                                getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
+                                getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
+                                getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
+                                getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
+                                getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
+                                getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
+                                getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
+                                getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
+                                getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
+                                getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAP_LIST);
+                                getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
+                                // getMapID = sendCommand(COMMAND_GET_MAP);
+                            } catch (UnsupportedEncodingException e) {
+                                logger.debug("UnsupportedEncodingException");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -381,25 +423,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
         }
 
-        try {
-            logger.debug("Running pollData - sending MQTT commands");
-            getStatusID = sendCommand(COMMAND_GET_STATUS);
-            getConsumableID = sendCommand(COMMAND_GET_CONSUMABLE);
-            getNetworkInfoID = sendCommand(COMMAND_GET_NETWORK_INFO);
-            getCleanSummaryID = sendCommand(COMMAND_GET_CLEAN_SUMMARY);
-            getDndTimerID = sendCommand(COMMAND_GET_DND_TIMER);
-            getRoomMappingID = sendCommand(COMMAND_GET_ROOM_MAPPING);
-            getSegmentStatusID = sendCommand(COMMAND_GET_SEGMENT_STATUS);
-            getMapStatusID = sendCommand(COMMAND_GET_MAP_STATUS);
-            getLedStatusID = sendCommand(COMMAND_GET_LED_STATUS);
-            getCarpetModeID = sendCommand(COMMAND_GET_CARPET_MODE);
-            getFwFeaturesID = sendCommand(COMMAND_GET_FW_FEATURES);
-            getMultiMapsListID = sendCommand(COMMAND_GET_MULTI_MAP_LIST);
-            getCustomizeCleanModeID = sendCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE);
-            getMapID = sendCommand(COMMAND_GET_MAP);
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("UnsupportedEncodingException");
-        }
         lastSuccessfulPollTimestamp = System.currentTimeMillis();
         scheduleNextPoll(-1);
 
@@ -415,14 +438,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("result")) {
+                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
                 logger.trace("MQTT message processing");
                 String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
                         .get("102").getAsString();
                 logger.trace("MQTT message processing, jsonString={}", jsonString);
                 if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
-                        && JsonParser.parseString(jsonString).getAsJsonObject().has("id")) {
+                        && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
+                        && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
                     int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
                     logger.trace("MQTT message processing, id={}", messageId);
                     if (messageId == getStatusID) {
