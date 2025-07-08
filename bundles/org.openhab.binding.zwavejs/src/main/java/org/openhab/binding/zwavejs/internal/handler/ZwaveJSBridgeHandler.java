@@ -57,6 +57,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The {@link ZwaveJSBridgeHandler} is responsible for handling communication between the
+ * {@link ZwaveJSNodeHandler} 's and the {@link ZWaveJSClient} This handler also manages node discovery
+ * and provides controller-level operations like inclusion and exclusion.
  *
  * @author Leo Siepel - Initial contribution
  */
@@ -189,7 +192,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
     public @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
         // Example messageId: getvalue|0|51|Color Switch|2|currentColor|44|2466
         String[] parts = messageId.split("\\|");
-        if (parts.length < 6) {
+        if (parts.length < 7) {
             logger.warn("Invalid messageId format: {}", messageId);
             return null;
         }
@@ -203,7 +206,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             event.args.propertyKey = parts[4];
             event.args.propertyName = parts[5];
             event.nodeId = Integer.parseInt(parts[6]);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             logger.warn("Error parsing messageId '{}': {}", messageId, e.getMessage());
             return null;
         }
@@ -288,6 +291,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         return nodeListeners.remove(nodeListener.getId()) != null;
     }
 
+    @Override
     public boolean registerDiscoveryListener(NodeDiscoveryService listener) {
         logger.debug("Registering Z-Wave discovery listener");
         if (discoveryService == null) {
@@ -299,6 +303,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         return false;
     }
 
+    @Override
     public boolean unregisterDiscoveryListener() {
         logger.debug("Unregistering Z-Wave discovery listener");
         if (discoveryService != null) {
@@ -348,8 +353,16 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 convertValueType(value)));
     }
 
-    private static int[] parseNodeIDs(String nodeIDs) {
-        return Arrays.stream(nodeIDs.split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray();
+    private int[] parseNodeIDs(String nodeIDs) {
+        return Arrays.stream(nodeIDs.split(",")).map(String::trim).filter(s -> !s.isEmpty()).mapToInt(s -> {
+            try {
+                return Integer.parseInt(s);
+            } catch (NumberFormatException e) {
+                logger.warn("Invalid node ID '{}' - skipping", s);
+                return -1; // Use -1 as invalid marker
+            }
+        }).filter(id -> id > 0) // Filter out invalid IDs (-1 and 0)
+                .toArray();
     }
 
     private static Object convertValueType(String value) {
