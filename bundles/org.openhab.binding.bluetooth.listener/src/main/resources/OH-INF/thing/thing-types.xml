@@ -82,7 +82,7 @@
 				<default>1</default>
 			</parameter>
 			<parameter name="payloadLength" type="decimal">
-				<label>Expected payload length</label>
+				<label>Payload Length</label>
 				<description>Expected payload length. Default is 0 that means no payload length check is provided. Otherwise only
 					payload with specified length will be accepted.</description>
 				<default>0</default>
