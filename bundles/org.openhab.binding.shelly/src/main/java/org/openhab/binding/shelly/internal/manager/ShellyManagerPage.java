@@ -212,7 +212,7 @@ public class ShellyManagerPage {
         ShellyDeviceStats stats = th.getStats();
         properties.putAll(stats.asProperties());
 
-        for (Map.Entry<String, @Nullable Object> p : thing.getConfiguration().getProperties().entrySet()) {
+        for (Map.Entry<String, Object> p : thing.getConfiguration().getProperties().entrySet()) {
             String key = p.getKey();
             Object o = p.getValue();
             if (o != null) {

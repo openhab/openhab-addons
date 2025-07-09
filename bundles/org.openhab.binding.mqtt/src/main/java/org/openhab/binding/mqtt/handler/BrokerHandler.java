@@ -104,9 +104,11 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             return;
         }
 
-        Configuration thingConfig = editConfiguration();
-        thingConfig.put(configKey, hashDigest.getMethod() + ":" + HexUtils.bytesToHex(hash));
-        updateConfiguration(thingConfig);
+        if (configKey != null) {
+            Configuration thingConfig = editConfiguration();
+            thingConfig.put(configKey, hashDigest.getMethod() + ":" + HexUtils.bytesToHex(hash));
+            updateConfiguration(thingConfig);
+        }
     }
 
     @Override

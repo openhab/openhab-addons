@@ -88,13 +88,14 @@ public class FoobotDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Foobot handler.");
-        uuid = (String) getConfig().get(FoobotBindingConstants.CONFIG_UUID);
+        String tmpUuid = (String) getConfig().get(FoobotBindingConstants.CONFIG_UUID);
 
-        if (uuid.isBlank()) {
+        if ((tmpUuid == null) || tmpUuid.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'uuid' is mandatory and must be configured");
             return;
         }
+        uuid = tmpUuid;
         final FoobotAccountHandler bridgeHandler = getBridgeHandler();
         final int refreshInterval = bridgeHandler == null ? FoobotBindingConstants.DEFAULT_REFRESH_PERIOD_MINUTES
                 : bridgeHandler.getRefreshInterval();

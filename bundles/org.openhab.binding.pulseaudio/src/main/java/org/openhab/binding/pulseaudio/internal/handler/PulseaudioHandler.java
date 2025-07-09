@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,7 +105,8 @@ public class PulseaudioHandler extends BaseThingHandler {
     public void initialize() {
         Configuration config = getThing().getConfiguration();
         try {
-            deviceIdentifier = new DeviceIdentifier((String) config.get(DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
+            deviceIdentifier = new DeviceIdentifier(
+                    Objects.requireNonNullElse((String) config.get(DEVICE_PARAMETER_NAME_OR_DESCRIPTION), ""),
                     (String) config.get(DEVICE_PARAMETER_ADDITIONAL_FILTERS));
             simpleProtocolMinPort = (int) (config.containsKey(DEVICE_PARAMETER_MIN_PORT)
                     ? config.get(DEVICE_PARAMETER_MIN_PORT)
@@ -410,7 +412,12 @@ public class PulseaudioHandler extends BaseThingHandler {
     public String getHost() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            return (String) bridge.getConfiguration().get(PulseaudioBindingConstants.BRIDGE_PARAMETER_HOST);
+            String host = (String) bridge.getConfiguration().get(PulseaudioBindingConstants.BRIDGE_PARAMETER_HOST);
+            if (host == null || host.isEmpty()) {
+                logger.warn("No host configured for bridge {}", bridge.getUID());
+                return "null";
+            }
+            return host;
         } else {
             logger.warn("A bridge must be configured for this pulseaudio thing");
             return "null";

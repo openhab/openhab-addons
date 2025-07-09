@@ -92,6 +92,11 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     public void initialize() {
         String port = ((String) getConfig().get(PHCBindingConstants.PORT));
 
+        if (port == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not configured.");
+            return;
+        }
+
         // find the given port
         SerialPortIdentifier portId = serialPortManager.getIdentifier(port);
 

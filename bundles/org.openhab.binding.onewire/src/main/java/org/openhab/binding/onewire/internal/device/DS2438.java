@@ -77,8 +77,8 @@ public class DS2438 extends AbstractOwDevice {
         Channel humidityChannel = thing.getChannel(CHANNEL_HUMIDITY);
         if (humidityChannel != null) {
             Configuration channelConfiguration = humidityChannel.getConfiguration();
-            if (channelConfiguration.get(CONFIG_HUMIDITY) != null) {
-                humidityParameter = new OwserverDeviceParameter((String) channelConfiguration.get(CONFIG_HUMIDITY));
+            if (((String) channelConfiguration.get(CONFIG_HUMIDITY)) instanceof String s) {
+                humidityParameter = new OwserverDeviceParameter(s);
             } else {
                 humidityParameter = new OwserverDeviceParameter("/humidity");
             }

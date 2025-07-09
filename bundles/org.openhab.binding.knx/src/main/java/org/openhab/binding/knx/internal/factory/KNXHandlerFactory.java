@@ -16,6 +16,7 @@ import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -129,7 +130,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             return thingUID;
         }
         String ipAddress = (String) configuration.get(IP_ADDRESS);
-        return new ThingUID(thingTypeUID, ipAddress);
+        return new ThingUID(thingTypeUID, Objects.requireNonNullElse(ipAddress, ""));
     }
 
     private ThingUID getSerialBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
@@ -138,7 +139,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             return thingUID;
         }
         String serialPort = (String) configuration.get(SERIAL_PORT);
-        return new ThingUID(thingTypeUID, serialPort);
+        return new ThingUID(thingTypeUID, Objects.requireNonNullElse(serialPort, ""));
     }
 
     public Collection<KNXBridgeBaseThingHandler> getBridges() {

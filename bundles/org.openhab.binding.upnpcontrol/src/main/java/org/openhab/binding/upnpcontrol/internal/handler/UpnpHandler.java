@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -451,7 +452,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
         upnpScheduler.submit(() -> {
-            Map<String, @Nullable String> result;
+            Map<String, String> result;
             synchronized (invokeActionLock) {
                 if (logger.isDebugEnabled() && !"GetPositionInfo".equals(actionId)) {
                     // don't log position info refresh every second
@@ -489,13 +490,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * @param result
      * @return
      */
-    protected Map<String, @Nullable String> preProcessInvokeActionResult(Map<String, String> inputs,
-            @Nullable String service, @Nullable String action, Map<String, @Nullable String> result) {
-        Map<String, @Nullable String> newResult = new HashMap<>();
+    protected Map<String, String> preProcessInvokeActionResult(Map<String, String> inputs, @Nullable String service,
+            @Nullable String action, Map<String, String> result) {
+        Map<String, String> newResult = new HashMap<>();
         for (String variable : result.keySet()) {
             String newVariable = preProcessValueReceived(inputs, variable, result.get(variable), service, action);
             if (newVariable != null) {
-                newResult.put(newVariable, result.get(variable));
+                String value = result.get(variable);
+                if (value != null) {
+                    newResult.put(newVariable, value);
+                }
             }
         }
         return newResult;
@@ -511,8 +515,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * @param service
      * @return
      */
-    protected @Nullable String preProcessValueReceived(Map<String, String> inputs, @Nullable String variable,
-            @Nullable String value, @Nullable String service, @Nullable String action) {
+    protected String preProcessValueReceived(Map<String, String> inputs, String variable, @Nullable String value,
+            @Nullable String service, @Nullable String action) {
         return variable;
     }
 
@@ -579,8 +583,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
-    public @Nullable String getUDN() {
-        return config.udn;
+    public String getUDN() {
+        return Objects.requireNonNullElse(config.udn, "");
     }
 
     protected boolean checkForConnectionIds() {

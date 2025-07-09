@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -150,11 +151,10 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
         registerChannel(new UtteranceChannel(this));
 
         final Channel fullMessageChannel = getThing().getChannel(MycroftBindingConstants.FULL_MESSAGE_CHANNEL);
-        @SuppressWarnings("null") // cannot be null
         String messageTypesProperty = (String) fullMessageChannel.getConfiguration()
                 .get(MycroftBindingConstants.FULL_MESSAGE_CHANNEL_MESSAGE_TYPE_PROPERTY);
 
-        registerChannel(new FullMessageChannel(this, messageTypesProperty));
+        registerChannel(new FullMessageChannel(this, Objects.requireNonNull(messageTypesProperty)));
 
         checkLinkedChannelsAndRegisterMessageListeners();
     }

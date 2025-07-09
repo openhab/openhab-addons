@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -128,7 +129,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler sensorHandler, Thing sensorThing) {
-        String sensorId = (String) sensorThing.getConfiguration().get(CONFIG_SENSOR_ID);
+        String sensorId = Objects.requireNonNull((String) sensorThing.getConfiguration().get(CONFIG_SENSOR_ID));
         sensorHandlers.put(sensorId, (EcobeeSensorThingHandler) sensorHandler);
         logger.debug("ThermostatBridge: Saving sensor handler for {} with id {}", sensorThing.getUID(), sensorId);
     }

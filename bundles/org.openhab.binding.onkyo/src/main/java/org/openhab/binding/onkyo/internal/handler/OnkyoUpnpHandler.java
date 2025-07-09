@@ -14,7 +14,9 @@ package org.openhab.binding.onkyo.internal.handler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onkyo.internal.OnkyoBindingConstants;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -124,11 +126,11 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
 
     @Override
     public String getUDN() {
-        return (String) this.getConfig().get(OnkyoBindingConstants.UDN_PARAMETER);
+        return Objects.requireNonNullElse((String) this.getConfig().get(OnkyoBindingConstants.UDN_PARAMETER), "");
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(String variable, @Nullable String value, String service) {
         logger.debug("received variable {} with value {} from service {}", variable, value, service);
     }
 

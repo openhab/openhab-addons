@@ -240,6 +240,9 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
         boolean isCT80 = false;
 
         try {
+            if (url == null) {
+                throw new IOException("URL is not configured");
+            }
             // Run the HTTP request and get the JSON response from the thermostat
             sysinfo = HttpUtil.executeUrl("GET", url, 20000);
             content = JsonParser.parseString(sysinfo).getAsJsonObject();

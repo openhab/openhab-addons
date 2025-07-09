@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
@@ -91,16 +93,16 @@ final class ChannelSceneAction extends ChannelHandlerTemplate {
                 LOGGER.trace("handleCommand(): aborting processing as scene name is not set.");
                 break;
             }
-            String sceneName = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_SCENE_NAME);
+            String sceneName = Objects.requireNonNullElse((String) ThingConfiguration.getValue(thisBridgeHandler,
+                    channelUID, VeluxBindingProperties.PROPERTY_SCENE_NAME), "");
             if (!thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes
                     .isRegistered(new SceneName(sceneName))) {
                 LOGGER.info("handleCommand({},{}): cannot activate unknown scene: {}.", channelUID.getAsString(),
                         command, sceneName);
                 break;
             }
-            String velocityName = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_SCENE_VELOCITY);
+            String velocityName = Objects.requireNonNullElse((String) ThingConfiguration.getValue(thisBridgeHandler,
+                    channelUID, VeluxBindingProperties.PROPERTY_SCENE_VELOCITY), "");
             LOGGER.debug("handleCommand(): activating known scene {}.", sceneName);
             VeluxScene thisScene = thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes
                     .get(new SceneName(sceneName));

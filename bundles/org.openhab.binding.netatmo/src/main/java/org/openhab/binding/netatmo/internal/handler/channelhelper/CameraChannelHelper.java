@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,8 +57,9 @@ public class CameraChannelHelper extends ChannelHelper {
                 case CHANNEL_MONITORING -> camera.getMonitoring();
                 case CHANNEL_SD_CARD -> toStringType(camera.getSdStatus());
                 case CHANNEL_ALIM_STATUS -> toStringType(camera.getAlimStatus());
-                default -> liveChannels(channelId, (String) config.get(QUALITY_CONF_ENTRY), camera,
-                        OnOffType.ON.equals(camera.getMonitoring()), localUrl != null);
+                default ->
+                    liveChannels(channelId, Objects.requireNonNullElse((String) config.get(QUALITY_CONF_ENTRY), ""),
+                            camera, OnOffType.ON.equals(camera.getMonitoring()), localUrl != null);
             };
         }
         return null;
