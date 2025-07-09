@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
@@ -86,18 +87,18 @@ public class MSpaPool extends BaseThingHandler {
         if (command instanceof OnOffType onOff) {
             int on = OnOffType.ON.equals(onOff) ? 1 : 0;
             commandDetail = switch (channelId) {
-                case HEATER -> "\"heater_state\":" + on;
-                case JET_STREAM -> "\"jet_state\":" + on;
-                case BUBBLES -> "\"bubble_state\":" + on;
-                case CIRCULATE -> "\"filter_state\":" + on;
-                case UVC -> "\"uvc_state\":" + on;
-                case OZONE -> "\"ozone_state\":" + on;
-                case LOCK -> "\"safety_lock\":" + on;
+                case CHANNEL_HEATER -> "\"heater_state\":" + on;
+                case CHANNEL_JET_STREAM -> "\"jet_state\":" + on;
+                case CHANNEL_BUBBLES -> "\"bubble_state\":" + on;
+                case CHANNEL_CIRCULATE -> "\"filter_state\":" + on;
+                case CHANNEL_UVC -> "\"uvc_state\":" + on;
+                case CHANNEL_OZONE -> "\"ozone_state\":" + on;
+                case CHANNEL_LOCK -> "\"safety_lock\":" + on;
                 default -> UNKNOWN;
             };
         } else if (command instanceof DecimalType decimal) {
             commandDetail = switch (channelId) {
-                case BUBBLE_LEVEL -> "\"bubble_level\":" + Math.min(Math.max(1, decimal.intValue()), 3);
+                case CHANNEL_BUBBLE_LEVEL -> "\"bubble_level\":" + Math.min(Math.max(1, decimal.intValue()), 3);
                 default -> UNKNOWN;
             };
         } else if (command instanceof QuantityType qt) {
@@ -108,7 +109,7 @@ public class MSpaPool extends BaseThingHandler {
             QuantityType<?> temperature = qt.toUnit(SIUnits.CELSIUS);
             if (temperature != null) {
                 commandDetail = switch (channelId) {
-                    case WATER_TARGET_TEMPERATURE ->
+                    case CHANNEL_WATER_TARGET_TEMPERATURE ->
                         "\"temperature_setting\":" + Math.min(Math.max(20, temperature.intValue()), 40) * 2;
                     default -> UNKNOWN;
                 };
@@ -134,7 +135,7 @@ public class MSpaPool extends BaseThingHandler {
                 account.ifPresent(acc -> {
                     commandBody.put("device_id", config.deviceId);
                     commandBody.put("product_id", config.productId);
-                    Request commandRequest = acc.getRequest(POST, COMMAND_ENDPOINT);
+                    Request commandRequest = acc.getRequest(HttpMethod.POST, ENDPOINT_COMMAND);
                     commandRequest.content(new StringContentProvider(commandBody.toString(), "utf-8"));
                     try {
                         ContentResponse cr = commandRequest.timeout(10, TimeUnit.SECONDS).send();
@@ -157,7 +158,7 @@ public class MSpaPool extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(MSpaPoolConfiguration.class);
-        if (UNKNOWN.equals(config.deviceId) || UNKNOWN.equals(config.productId)) {
+        if (config.deviceId.isBlank() || config.productId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.mspa.pool.config-parameter-missing");
             return;
@@ -206,7 +207,7 @@ public class MSpaPool extends BaseThingHandler {
             if (!checkOnline()) {
                 return;
             }
-            Request dataRequest = account.get().getRequest(POST, DEVICE_SHADOW_ENDPOINT);
+            Request dataRequest = account.get().getRequest(HttpMethod.POST, ENDPOINT_DEVICE_SHADOW);
             JSONObject body = new JSONObject();
             body.put("device_id", config.deviceId);
             body.put("product_id", config.productId);
@@ -228,7 +229,7 @@ public class MSpaPool extends BaseThingHandler {
     }
 
     private boolean checkOnline() {
-        Request deviceListRequest = account.get().getRequest(GET, DEVICE_LIST_ENDPOINT);
+        Request deviceListRequest = account.get().getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
         try {
             ContentResponse cr = deviceListRequest.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();
@@ -287,40 +288,40 @@ public class MSpaPool extends BaseThingHandler {
         if (data.has("data")) {
             JSONObject rawData = data.getJSONObject("data");
             if (rawData.has("heater_state")) {
-                updateState(HEATER, OnOffType.from(rawData.getInt("heater_state") == 1));
+                updateState(CHANNEL_HEATER, OnOffType.from(rawData.getInt("heater_state") == 1));
             }
             /**
              * Water temperature handling by MSpa is proprietary. Values from / to device are based on °C but values
              * are times two! Conversion to °F for update handled by OH.
              */
             if (rawData.has("water_temperature")) {
-                updateState(WATER_CURRENT_TEMPERATURE,
+                updateState(CHANNEL_WATER_CURRENT_TEMPERATURE,
                         QuantityType.valueOf(rawData.getInt("water_temperature") / 2.0, SIUnits.CELSIUS));
             }
             if (rawData.has("temperature_setting")) {
-                updateState(WATER_TARGET_TEMPERATURE,
+                updateState(CHANNEL_WATER_TARGET_TEMPERATURE,
                         QuantityType.valueOf(rawData.getInt("temperature_setting") / 2.0, SIUnits.CELSIUS));
             }
             if (rawData.has("jet_state")) {
-                updateState(JET_STREAM, OnOffType.from(rawData.getInt("jet_state") == 1));
+                updateState(CHANNEL_JET_STREAM, OnOffType.from(rawData.getInt("jet_state") == 1));
             }
             if (rawData.has("bubble_state")) {
-                updateState(BUBBLES, OnOffType.from(rawData.getInt("bubble_state") == 1));
+                updateState(CHANNEL_BUBBLES, OnOffType.from(rawData.getInt("bubble_state") == 1));
             }
             if (rawData.has("bubble_level")) {
-                updateState(BUBBLE_LEVEL, new DecimalType(rawData.getInt("bubble_level")));
+                updateState(CHANNEL_BUBBLE_LEVEL, new DecimalType(rawData.getInt("bubble_level")));
             }
             if (rawData.has("filter_state")) {
-                updateState(CIRCULATE, OnOffType.from(rawData.getInt("filter_state") == 1));
+                updateState(CHANNEL_CIRCULATE, OnOffType.from(rawData.getInt("filter_state") == 1));
             }
             if (rawData.has("uvc_state")) {
-                updateState(UVC, OnOffType.from(rawData.getInt("uvc_state") == 1));
+                updateState(CHANNEL_UVC, OnOffType.from(rawData.getInt("uvc_state") == 1));
             }
             if (rawData.has("ozone_state")) {
-                updateState(OZONE, OnOffType.from(rawData.getInt("ozone_state") == 1));
+                updateState(CHANNEL_OZONE, OnOffType.from(rawData.getInt("ozone_state") == 1));
             }
             if (rawData.has("safety_lock")) {
-                updateState(LOCK, OnOffType.from(rawData.getInt("safety_lock") == 1));
+                updateState(CHANNEL_LOCK, OnOffType.from(rawData.getInt("safety_lock") == 1));
             }
         }
     }
@@ -338,7 +339,7 @@ public class MSpaPool extends BaseThingHandler {
                 commandOptions.add(new CommandOption(i + " °C", i + " °C"));
             }
         }
-        ChannelUID cuid = new ChannelUID(thing.getUID(), WATER_TARGET_TEMPERATURE);
+        ChannelUID cuid = new ChannelUID(thing.getUID(), CHANNEL_WATER_TARGET_TEMPERATURE);
         commandProvider.setCommandOptions(cuid, commandOptions);
     }
 

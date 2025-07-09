@@ -123,55 +123,55 @@ class TestMessages {
             pool.distributeData(content);
             assertEquals(10, callback.numberOfUpdates(), "Number of state updates");
 
-            State heater = callback.getState(HEATER);
+            State heater = callback.getState(CHANNEL_HEATER);
             assertNotNull(heater, "Heater available");
             assertTrue(heater instanceof OnOffType, "Heater OnOffType");
             assertTrue(OnOffType.ON.equals(heater), "Heater is ON");
 
-            State jetStream = callback.getState(JET_STREAM);
+            State jetStream = callback.getState(CHANNEL_JET_STREAM);
             assertNotNull(jetStream, "Jet-Stream available");
             assertTrue(jetStream instanceof OnOffType, "Jet-Stream OnOffType");
             assertTrue(OnOffType.OFF.equals(jetStream), "Jet-Stream is OFF");
 
-            State bubbles = callback.getState(BUBBLES);
+            State bubbles = callback.getState(CHANNEL_BUBBLES);
             assertNotNull(bubbles, "Bubbles available");
             assertTrue(bubbles instanceof OnOffType, "Bubbles OnOffType");
             assertTrue(OnOffType.OFF.equals(bubbles), "Bubbles are OFF");
 
-            State bubbleLevel = callback.getState(BUBBLE_LEVEL);
+            State bubbleLevel = callback.getState(CHANNEL_BUBBLE_LEVEL);
             assertNotNull(bubbleLevel, "Bubble level available");
             assertTrue(bubbleLevel instanceof DecimalType, "Bubble level DecimalType");
             DecimalType bubbleLevelDecimal = (DecimalType) bubbleLevel;
             assertEquals(1, bubbleLevelDecimal.intValue(), "Bubble level value");
 
-            State circulation = callback.getState(CIRCULATE);
+            State circulation = callback.getState(CHANNEL_CIRCULATE);
             assertNotNull(circulation, "Circulation available");
             assertTrue(circulation instanceof OnOffType, "Circulation OnOffType");
             assertTrue(OnOffType.ON.equals(circulation), "Circulation is ON");
 
-            State uvc = callback.getState(UVC);
+            State uvc = callback.getState(CHANNEL_UVC);
             assertNotNull(uvc, "UVC available");
             assertTrue(uvc instanceof OnOffType, "UVC OnOffType");
             assertTrue(OnOffType.OFF.equals(uvc), "UVC is OFF");
 
-            State ozone = callback.getState(OZONE);
+            State ozone = callback.getState(CHANNEL_OZONE);
             assertNotNull(ozone, "Ozone available");
             assertTrue(ozone instanceof OnOffType, "Ozone OnOffType");
             assertTrue(OnOffType.OFF.equals(ozone), "Ozone is OFF");
 
-            State lock = callback.getState(LOCK);
+            State lock = callback.getState(CHANNEL_LOCK);
             assertNotNull(lock, "Lock available");
             assertTrue(lock instanceof OnOffType, "Lock OnOffType");
             assertTrue(OnOffType.OFF.equals(lock), "Lock is OFF");
 
-            State temp = callback.getState(WATER_CURRENT_TEMPERATURE);
+            State temp = callback.getState(CHANNEL_WATER_CURRENT_TEMPERATURE);
             assertNotNull(temp, "Water temperature available");
             assertTrue(temp instanceof QuantityType, "Water temperature QuantityType");
             QuantityType<?> tempQuantity = (QuantityType<?>) temp;
             assertEquals(SIUnits.CELSIUS, tempQuantity.getUnit(), "Water temperature unit");
             assertEquals(41, tempQuantity.doubleValue(), 0.1, "Water temperature unit");
 
-            State targetTemp = callback.getState(WATER_TARGET_TEMPERATURE);
+            State targetTemp = callback.getState(CHANNEL_WATER_TARGET_TEMPERATURE);
             assertNotNull(targetTemp, "Target water temperature available");
             assertTrue(targetTemp instanceof QuantityType, "Target water temperature QuantityType");
             QuantityType<?> targetTempQuantity = (QuantityType<?>) targetTemp;

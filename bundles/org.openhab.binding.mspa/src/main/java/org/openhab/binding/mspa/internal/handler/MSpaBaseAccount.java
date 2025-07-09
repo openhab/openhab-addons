@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,7 +96,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
     }
 
     public void startDiscovery() {
-        Request discovery = getRequest(GET, DEVICE_LIST_ENDPOINT);
+        Request discovery = getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
         try {
             ContentResponse cr = discovery.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();
@@ -161,7 +162,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         return UNKNOWN;
     }
 
-    public Request getRequest(String method, String endPoint) {
+    public Request getRequest(HttpMethod method, String endPoint) {
         String region = "ROW";
         if (ownerConfig.isPresent()) {
             region = ownerConfig.get().region;
@@ -172,9 +173,9 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         String nonce = UUID.randomUUID().toString().replace("-", EMPTY);
 
         Request request;
-        if (GET.equals(method)) {
+        if (HttpMethod.GET.equals(method)) {
             request = httpClient.newRequest(HOSTS.get(region) + endPoint);
-        } else if (POST.equals(method)) {
+        } else if (HttpMethod.POST.equals(method)) {
             request = httpClient.POST(HOSTS.get(region) + endPoint);
         } else {
             return httpClient.newRequest(HOSTS.get(region) + endPoint);
@@ -187,7 +188,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         request.header("sign", MSpaUtils.getSignature(nonce, timestamp, region));
         request.header(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
         request.header(HttpHeader.USER_AGENT, "okhttp/4.9.0");
-        if (!TOKEN_ENDPOINT.equals(endPoint) && !VISITOR_ENDPOINT.equals(endPoint)) {
+        if (!ENDPOINT_TOKEN.equals(endPoint) && !ENDPOINT_VISITOR.equals(endPoint)) {
             // no authorization header if token shall be requested
             request.header(HttpHeader.AUTHORIZATION, "token " + getToken());
         }
@@ -208,7 +209,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
     }
 
     protected void persist(String id, JSONObject json) {
-        logger.trace("Persit {} : {}", id, json);
+        logger.trace("Persist {} : {}", id, json);
         store.put(id, json.toString());
     }
 

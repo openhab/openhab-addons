@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mspa.internal.config;
 
-import static org.openhab.binding.mspa.internal.MSpaConstants.UNKNOWN;
+import static org.openhab.binding.mspa.internal.MSpaConstants.EMPTY;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MSpaOwnerAccountConfiguration {
 
-    public String email = UNKNOWN;
-    public String password = UNKNOWN;
-    public String region = UNKNOWN;
+    public String email = EMPTY;
+    public String password = EMPTY;
+    public String region = EMPTY;
 }

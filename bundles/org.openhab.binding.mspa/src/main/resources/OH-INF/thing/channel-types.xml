@@ -17,7 +17,7 @@
 	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
-		<label>On Off Switch</label>
+		<label>Active</label>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>

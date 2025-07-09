@@ -2,8 +2,7 @@
 
 Connect your MSpa Pools with openHAB if you have them connected to your MSpa-Link IOS or Android app.
 
-Check in beforehand how your pool shall be connected to openHAB.
-You can have 
+Check which account type fits best to connect your pool:
 
 - one owner-account: you registered one account with MSpa-Link app. This will _steal_ your token and you're not able to operate openHAB and Smartphone MSpa-Link app in parallel.
 - two owner-account: you need to register two accounts with different email addresses to avoid stealing token - one used for Smartphone app and one for openHAB.
@@ -22,14 +21,13 @@ Your `pool` is automatically detected after the bridge goes ONLINE.
 There's no automatic background scan.
 If you connect a new pool afterwards start discovery manually.
 
-
 ## Thing Configuration
 
 ### `owner-account` Bridge Configuration
 
-| Name            | Type    | Description                           | Default | Required | 
+| Name            | Type    | Description                           | Default | Required |
 |-----------------|---------|---------------------------------------|---------|----------|
-| email           | text    | EMail address of your account         | N/A     | yes      |
+| email           | text    | Email address of your account         | N/A     | yes      |
 | password        | text    | Password to access your account       | N/A     | yes      |
 | region          | text    | Region where your country is located  | ROW     | yes      |
 
@@ -41,19 +39,19 @@ Region options
 
 ### `visitor-account` Bridge Configuration
 
-| Name              | Type    | Description                                         | Default | Required | 
+| Name              | Type    | Description                                         | Default | Required |
 |-------------------|---------|-----------------------------------------------------|---------|----------|
 | visitorId         | text    | Random 16 digit id with lower case hex characters   | N/A     | no/yes   |
 | grantCode         | text    | Grant from QR code presented by MSpa-Link app       | N/A     | yes      |
 | region            | text    | Region where your country is located                | ROW     | yes      |
 
-The `visitorId` is generated if you create the first time a `visitor-account` via openHAB UI so it's not mandatory. 
-Once generated don't loose it e.g. when deleting the account thing because all grants are bound to this `visitorId`!
+The `visitorId` is generated if you create the first time a `visitor-account` via openHAB UI so it's not mandatory.
+Once generated don't lose it e.g. when deleting the account thing because all grants are bound to this `visitorId`!
 If you use textual configuration you need to generate your own `visitorId` as 16 digit hex lower case characters.
 
 The `grantCode` is a QR code provided by MSpa-Link app.
 On your main screen click on _the gear_ top left, _Devices_ and then _share the spa_ which presents you a QR code.
-Scan it with a third party QR app and put the displayed String into the `grantCode` section and save configuration immediately. 
+Scan it with a third party QR app and put the displayed String into the `grantCode` section and save configuration immediately.
 This `grantCode` is valid for a limited time to grant access.
 
 Region options
@@ -100,7 +98,7 @@ Channels for `pool`
 
 ## Full Example
 
-### Thing Configuration
+### `demo.things` Example
 
 ```java
 Bridge mspa:owner-account:4711  "MSpa Account"      [ email="YOUR_MAIL_ADDRESS",password="YOUR_PASSWORD", region="ROW"] {
@@ -108,7 +106,7 @@ Bridge mspa:owner-account:4711  "MSpa Account"      [ email="YOUR_MAIL_ADDRESS",
 }
 ```
 
-### Item Configuration
+### `demo.items` Exmaple
 
 ```java
 Switch                  MSPA_OSLO_Heater                    {channel="mspa:pool:4711:4712:heater" }

@@ -26,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.config.MSpaVisitorAccountConfiguration;
@@ -57,14 +58,14 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
     public void initialize() {
         MSpaVisitorAccountConfiguration config = getConfigAs(MSpaVisitorAccountConfiguration.class);
         // generate visitor id if necessary
-        if (UNKNOWN.equals(config.visitorId)) {
+        if (config.visitorId.isBlank()) {
             Configuration updateConfig = editConfiguration();
             String visitorId = MSpaUtils.getPasswordHash(UUID.randomUUID().toString()).substring(0, 16);
-            updateConfig.put("visitorId", visitorId);
+            updateConfig.put(PROPERTY_VISITOR_ID, visitorId);
             super.updateConfiguration(updateConfig);
         }
         // check for configuration errors
-        if (UNKNOWN.equals(config.grantCode) || UNKNOWN.equals(config.region)) {
+        if (config.grantCode.isBlank() || config.region.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.mspa.visitor-account.config-parameter-missing");
             return;
@@ -81,7 +82,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
     }
 
     private void doInitialize() {
-        // both calls can end in an http request so they're executed asynchronous
+        // both calls can end in an HTTP request so they're executed asynchronously
         super.initialize();
         grantDevices();
     }
@@ -102,7 +103,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                 validGrants.put(configuredGrants[i], storedGrants.get(configuredGrants[i]));
             } else {
                 // not granted yet
-                Request grantRequest = getRequest(POST, GRANT_DEVICE_ENDPOINT);
+                Request grantRequest = getRequest(HttpMethod.POST, ENDPOINT_GRANT_DEVICE);
                 JSONObject body = new JSONObject();
                 body.put("push_type", "android");
                 body.put("registration_id", "");
@@ -131,7 +132,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
 
     @Override
     public void requestToken() {
-        Request tokenRequest = getRequest(POST, VISITOR_ENDPOINT);
+        Request tokenRequest = getRequest(HttpMethod.POST, ENDPOINT_VISITOR);
         JSONObject body = new JSONObject();
         body.put("visitor_id", visitorConfig.get().visitorId);
         body.put("app_id", APP_IDS.get(visitorConfig.get().region));

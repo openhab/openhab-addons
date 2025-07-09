@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mspa.internal.discovery;
 
+import static org.openhab.binding.mspa.internal.MSpaConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,15 +60,15 @@ public class MSpaDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void deviceDiscovered(ThingTypeUID ttUid, ThingUID bridgeUid, Map<String, Object> properties) {
-        Object deviceId = properties.get("deviceId");
+        Object deviceId = properties.get(PROPERTY_DEVICE_ID);
         String label = "MSpa Pool";
-        Object model = properties.get("productSeries");
+        Object model = properties.get(PROPERTY_PRODUCT_SERIES);
         if (model != null) {
             label = label.concat(" " + model.toString());
         }
         if (deviceId != null) {
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(ttUid, bridgeUid, deviceId.toString()))
-                    .withBridge(bridgeUid).withProperties(properties).withRepresentationProperty("deviceId")
+                    .withBridge(bridgeUid).withProperties(properties).withRepresentationProperty(PROPERTY_DEVICE_ID)
                     .withLabel(label).build());
         }
     }

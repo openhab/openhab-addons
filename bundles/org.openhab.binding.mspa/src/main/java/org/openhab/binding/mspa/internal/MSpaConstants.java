@@ -51,35 +51,42 @@ public class MSpaConstants {
     public static final Map<String, String> APP_SECRETS = Map.of(REGION_ROW, "87025c9ecd18906d27225fe79cb68349",
             REGION_US, "87025c9ecd18906d27225fe79cb68349", REGION_CHINA, "87025c9ecd18906d27225fe79cb68349");
 
-    public static final String TOKEN_ENDPOINT = "/api/enduser/get_token/";
-    public static final String VISITOR_ENDPOINT = "/api/enduser/visitor/";
-    public static final String DEVICE_LIST_ENDPOINT = "/api/enduser/devices/";
-    public static final String DEVICE_SHADOW_ENDPOINT = "/api/device/thing_shadow/";
-    public static final String COMMAND_ENDPOINT = "/api/device/command/";
-    public static final String GRANT_DEVICE_ENDPOINT = "/api/enduser/grant_device/";
+    public static final String ENDPOINT_TOKEN = "/api/enduser/get_token/";
+    public static final String ENDPOINT_VISITOR = "/api/enduser/visitor/";
+    public static final String ENDPOINT_DEVICE_LIST = "/api/enduser/devices/";
+    public static final String ENDPOINT_DEVICE_SHADOW = "/api/device/thing_shadow/";
+    public static final String ENDPOINT_COMMAND = "/api/device/command/";
+    public static final String ENDPOINT_GRANT_DEVICE = "/api/enduser/grant_device/";
 
-    public static final String GET = "GET";
-    public static final String POST = "POST";
+    // List of all Channel ids
+    public static final String CHANNEL_HEATER = "heater";
+    public static final String CHANNEL_WATER_CURRENT_TEMPERATURE = "temperature";
+    public static final String CHANNEL_WATER_TARGET_TEMPERATURE = "target-temperature";
+    public static final String CHANNEL_JET_STREAM = "jet-stream";
+    public static final String CHANNEL_BUBBLES = "bubbles";
+    public static final String CHANNEL_BUBBLE_LEVEL = "bubble-level";
+    public static final String CHANNEL_CIRCULATE = "circulation";
+    public static final String CHANNEL_UVC = "uvc";
+    public static final String CHANNEL_OZONE = "ozone";
+    public static final String CHANNEL_LOCK = "lock";
+
+    public static final String PROPERTY_DEVICE_ID = "deviceId";
+    public static final String PROPERTY_PRODUCT_SERIES = "productSeries";
+    public static final String PROPERTY_VISITOR_ID = "visitorId";
 
     public static final String UNKNOWN = "unknown";
     public static final String EMPTY = "";
 
-    // List of all Channel ids
-    public static final String HEATER = "heater";
-    public static final String WATER_CURRENT_TEMPERATURE = "temperature";
-    public static final String WATER_TARGET_TEMPERATURE = "target-temperature";
-    public static final String JET_STREAM = "jet-stream";
-    public static final String BUBBLES = "bubbles";
-    public static final String BUBBLE_LEVEL = "bubble-level";
-    public static final String CIRCULATE = "circulation";
-    public static final String UVC = "uvc";
-    public static final String OZONE = "ozone";
-    public static final String LOCK = "lock";
-
     public static final String COMMAND_TEMPLATE = new String("{\"desired\": {\"state\": {\"desired\": {%s}}}}");
 
-    public static final Map<String, String> DEVICE_PROPERTY_MAPPING = Map.of("device_id", "deviceId", "product_id",
-            "productId", "sn", "serialNumber", "app_id", "appId", "name", "name", "software_version", "softwareVersion",
-            "enduser_id", "enduserId", "url", "pictureUrl", "product_series", "productSeries", "service_region",
-            "serviceRegion");
+    public static final Map<String, String> DEVICE_PROPERTY_MAPPING = Map.of("device_id", "deviceId", //
+            "product_id", "productId", //
+            "sn", "serialNumber", //
+            "app_id", "appId", //
+            "name", "name", //
+            "software_version", "softwareVersion", //
+            "enduser_id", "enduserId", //
+            "url", "pictureUrl", //
+            "product_series", "productSeries", //
+            "service_region", "serviceRegion");
 }

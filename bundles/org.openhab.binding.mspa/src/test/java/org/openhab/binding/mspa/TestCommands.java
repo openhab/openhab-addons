@@ -62,7 +62,7 @@ class TestCommands {
         // Test Celsius temperature command creation
         int temperatureRequest = 37;
         QuantityType<?> qt37C = QuantityType.valueOf(temperatureRequest + " °C");
-        Optional<JSONObject> commandCelsius = pool.createCommandBody(WATER_TARGET_TEMPERATURE, qt37C);
+        Optional<JSONObject> commandCelsius = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE, qt37C);
         assertTrue(commandCelsius.isPresent(), "Temperature command creation");
         assertEquals(new JSONObject(String.format(COMMAND_TEMPLATE, "\"temperature_setting\":" + 74)).toString(),
                 commandCelsius.get().toString(), "Temperature command content");
@@ -70,22 +70,22 @@ class TestCommands {
         // Test Fahrenheit temperature command creation
         QuantityType<?> qtFahrenheit = qt37C.toUnit(ImperialUnits.FAHRENHEIT);
         assertNotNull(qtFahrenheit, "Temperature conversion to Fahrenheit");
-        Optional<JSONObject> commandFahrenheit = pool.createCommandBody(WATER_TARGET_TEMPERATURE, qtFahrenheit);
+        Optional<JSONObject> commandFahrenheit = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE, qtFahrenheit);
         assertTrue(commandFahrenheit.isPresent(), "Temperature command creation");
         assertEquals(new JSONObject(String.format(COMMAND_TEMPLATE, "\"temperature_setting\":" + 74)).toString(),
                 commandFahrenheit.get().toString(), "Temperature command content");
 
         // Test wrong unit
-        Optional<JSONObject> wrongCommand = pool.createCommandBody(WATER_TARGET_TEMPERATURE,
+        Optional<JSONObject> wrongCommand = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE,
                 QuantityType.valueOf("37 km"));
         assertTrue(wrongCommand.isEmpty(), "Temperature command creation wrong unit");
 
         // Test upper and lower bounds
-        Optional<JSONObject> command = pool.createCommandBody(WATER_TARGET_TEMPERATURE, QuantityType.valueOf("120 °C"));
+        Optional<JSONObject> command = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE, QuantityType.valueOf("120 °C"));
         assertTrue(command.isPresent(), "Temperature command creation");
         assertEquals(new JSONObject(String.format(COMMAND_TEMPLATE, "\"temperature_setting\":" + 80)).toString(),
                 command.get().toString(), "Temperature command content");
-        command = pool.createCommandBody(WATER_TARGET_TEMPERATURE, QuantityType.valueOf("5 °C"));
+        command = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE, QuantityType.valueOf("5 °C"));
         assertTrue(command.isPresent(), "Temperature command creation");
         assertEquals(new JSONObject(String.format(COMMAND_TEMPLATE, "\"temperature_setting\":" + 40)).toString(),
                 command.get().toString(), "Temperature command content");

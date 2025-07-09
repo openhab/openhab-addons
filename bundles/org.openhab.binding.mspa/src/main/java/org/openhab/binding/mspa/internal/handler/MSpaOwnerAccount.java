@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaUtils;
 import org.openhab.binding.mspa.internal.config.MSpaOwnerAccountConfiguration;
@@ -53,7 +54,7 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
     @Override
     public void initialize() {
         MSpaOwnerAccountConfiguration config = getConfigAs(MSpaOwnerAccountConfiguration.class);
-        if (UNKNOWN.equals(config.email) || UNKNOWN.equals(config.password) || UNKNOWN.equals(config.region)) {
+        if (config.email.isBlank() || config.password.isBlank() || config.region.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.mspa.owner-account.config-parameter-missing");
             return;
@@ -66,13 +67,13 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
             token = MSpaUtils.decodeStoredToken(tokenResponse);
         }
         updateStatus(ThingStatus.UNKNOWN);
-        // token validation takes place in base class and can cause http rquest
+        // token validation takes place in base class and can cause HTTP request
         scheduler.schedule(super::initialize, 0, TimeUnit.SECONDS);
     }
 
     @Override
     public void requestToken() {
-        Request tokenRequest = getRequest(POST, TOKEN_ENDPOINT);
+        Request tokenRequest = getRequest(HttpMethod.POST, ENDPOINT_TOKEN);
         JSONObject body = new JSONObject();
         body.put("account", ownerConfig.get().email);
         body.put("password", MSpaUtils.getPasswordHash(ownerConfig.get().password));

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mspa.internal.config;
 
-import static org.openhab.binding.mspa.internal.MSpaConstants.UNKNOWN;
+import static org.openhab.binding.mspa.internal.MSpaConstants.EMPTY;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MSpaVisitorAccountConfiguration {
 
-    public String visitorId = UNKNOWN;
-    public String grantCode = UNKNOWN;
-    public String region = UNKNOWN;
+    public String visitorId = EMPTY;
+    public String grantCode = EMPTY;
+    public String region = EMPTY;
 }
