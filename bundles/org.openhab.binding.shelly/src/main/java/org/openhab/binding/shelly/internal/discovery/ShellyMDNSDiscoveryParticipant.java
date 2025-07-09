@@ -51,21 +51,27 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class)
-public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
+public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private static final String SERVICE_TYPE = "_shelly._tcp.local.";
+    /**
+     * For backwards compatibility with older Gen 1 devices and Gen 2 devices
+     * with older firmware versions, <code>_http._tcp.local.</code> is used.
+     * Newer firmware versions and Gen2+ devices advertise themselves as
+     * <code>_shelly._tcp.local.</code> as well.
+     */
+    private static final String SERVICE_TYPE = "_http._tcp.local.";
 
-    private final Logger logger = LoggerFactory.getLogger(ShellyDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
     private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     private final ShellyTranslationProvider messages;
     private final HttpClient httpClient;
     private final ConfigurationAdmin configurationAdmin;
 
     @Activate
-    public ShellyDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
+    public ShellyMDNSDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
             @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext) {
-        logger.debug("Activating ShellyDiscovery service");
+        logger.debug("Activating Shelly mDNS discovery service");
         this.configurationAdmin = configurationAdmin;
         this.messages = translationProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
