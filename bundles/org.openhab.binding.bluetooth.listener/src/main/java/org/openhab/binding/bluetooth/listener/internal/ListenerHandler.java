@@ -57,6 +57,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
     private @Nullable ListenerConfiguration config;
     private final AtomicBoolean receivedStatus = new AtomicBoolean();
     private @Nullable ScheduledFuture<?> heartbeatFuture;
+    private long scanTime = 0;
 
     public ListenerHandler(Thing thing) {
         super(thing);
@@ -66,212 +67,202 @@ public class ListenerHandler extends BeaconBluetoothHandler {
     public void initialize() {
         super.initialize();
         config = getConfigAs(ListenerConfiguration.class);
-        // is OFFLINE -> configuration error -> no heartbeat needed
-        if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, 0,
-                    config != null ? config.dataTimeout : 1, TimeUnit.MINUTES);
-        }
+        // check configuration
+        int timeout = config != null ? config.dataTimeout : 1;
+        // set unknown
+        updateStatus(ThingStatus.UNKNOWN);
+        // start heartbeat job
+        heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, 0, timeout, TimeUnit.MINUTES);
     }
 
     /**
      * Check device connection timeout
      */
     private void heartbeat() {
-        synchronized (receivedStatus) {
-            if (!receivedStatus.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("No data received for %d minute", config != null ? config.dataTimeout : "null"));
-                scanTime = 0;
-            }
+        if (!receivedStatus.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error [\"" + (config != null ? config.dataTimeout : "null") + "\"]");
+            scanTime = 0;
         }
     }
 
     @Override
     public void dispose() {
-        try {
-            super.dispose();
-        } finally {
-            if (heartbeatFuture != null) {
-                heartbeatFuture.cancel(true);
-                heartbeatFuture = null;
-            }
+        ScheduledFuture<?> heartbeatFuture = this.heartbeatFuture;
+        if (heartbeatFuture != null) {
+            heartbeatFuture.cancel(true);
+            this.heartbeatFuture = null;
         }
+        super.dispose();
     }
-
-    long scanTime = 0;
 
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
-        synchronized (receivedStatus) {
-            receivedStatus.set(true);
-            super.onScanRecordReceived(scanNotification);
-            // RSSI boundaries - not all notifications report RSSI value
-            if (scanNotification.getRssi() > Integer.MIN_VALUE) {
-                if (scanTime > 0) {
-                    long period = System.currentTimeMillis() - scanTime;
-                    updateProperty(ListenerBindingConstants.PROPERTY_ADVERTISING_INTERVAL, String.valueOf(period));
-                    QuantityType<Time> quantity = new QuantityType<Time>(period,
-                            Units.SECOND.prefix(MetricPrefix.MILLI));
-                    updateState(ListenerBindingConstants.CHANNEL_TYPE_INTERVAL, quantity);
-                }
-                scanTime = System.currentTimeMillis();
+        receivedStatus.set(true);
+        super.onScanRecordReceived(scanNotification);
+        // RSSI boundaries - not all notifications report RSSI value
+        if (scanNotification.getRssi() > Integer.MIN_VALUE) {
+            if (scanTime > 0) {
+                long period = System.currentTimeMillis() - scanTime;
+                updateProperty(ListenerBindingConstants.PROPERTY_ADVERTISING_INTERVAL, String.valueOf(period));
+                QuantityType<Time> quantity = new QuantityType<Time>(period, Units.SECOND.prefix(MetricPrefix.MILLI));
+                updateState(ListenerBindingConstants.CHANNEL_TYPE_INTERVAL, quantity);
             }
-            // manufacturer data
-            if (scanNotification.getManufacturerData().length != 0) {
-                // assign manufacturer data
-                byte[] data = scanNotification.getManufacturerData();
+            scanTime = System.currentTimeMillis();
+        }
+        // manufacturer data
+        if (scanNotification.getManufacturerData().length != 0) {
+            // assign manufacturer data
+            byte[] data = scanNotification.getManufacturerData();
 
-                for (var channel : getThing().getChannels()) {
-                    ChannelTypeUID channelType = channel.getChannelTypeUID();
-                    if (channelType == null) {
+            for (var channel : getThing().getChannels()) {
+                ChannelTypeUID channelType = channel.getChannelTypeUID();
+                if (channelType == null) {
+                    continue;
+                }
+                // looking for service channel
+                if (!channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_NUMBER)
+                        && !channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_RAW)) {
+                    continue;
+                }
+                // get channel properties
+                var properties = channel.getConfiguration().getProperties();
+                // retrieve properties values
+                var index = properties.get(ListenerBindingConstants.PARAMETER_DATA_BEGIN);
+                var datalength = properties.get(ListenerBindingConstants.PARAMETER_DATA_LENGTH);
+                var multiplicator = properties.get(ListenerBindingConstants.PARAMETER_MULTIPLICATOR);
+                var payloadLength = properties.get(ListenerBindingConstants.PARAMETER_PAYLOAD_LENGTH);
+                int indexInt = (index == null) ? 0 : ((BigDecimal) index).intValue();
+                int lengthInt = (datalength == null) ? 2 : ((BigDecimal) datalength).intValue();
+                float multiplicatorFloat = (multiplicator == null) ? 1.0f : ((BigDecimal) multiplicator).floatValue();
+                int payloadLengthInt = (payloadLength == null) ? 0 : ((BigDecimal) payloadLength).intValue();
+                // get data for number configured channel
+                if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_NUMBER)) {
+                    if (lengthInt != 1 && lengthInt != 2 && lengthInt != 4 && lengthInt != 8) {
+                        logger.warn("Thing {}: Channel '{}' has set unsupported data length to {}",
+                                getThing().getLabel(), channel.getUID().getId(), lengthInt);
                         continue;
                     }
-                    // looking for service channel
-                    if (!channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_NUMBER)
-                            && !channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_RAW)) {
+                    if (payloadLengthInt > 0 && payloadLengthInt != data.length) {
+                        logger.debug(
+                                "Thing {}, Channel {}: Manufacturer data payload length {}B is different from expected lenght {}B",
+                                getThing().getLabel(), channel.getUID().getId(), data.length, payloadLengthInt);
                         continue;
                     }
-                    // get channel properties
-                    var properties = channel.getConfiguration().getProperties();
-                    // retrieve properties values
-                    var index = properties.get(ListenerBindingConstants.PARAMETER_DATA_BEGIN);
-                    var datalength = properties.get(ListenerBindingConstants.PARAMETER_DATA_LENGTH);
-                    var multiplicator = properties.get(ListenerBindingConstants.PARAMETER_MULTIPLICATOR);
-                    var payloadLength = properties.get(ListenerBindingConstants.PARAMETER_PAYLOAD_LENGTH);
-                    int indexInt = (index == null) ? 0 : ((BigDecimal) index).intValue();
-                    int lengthInt = (datalength == null) ? 2 : ((BigDecimal) datalength).intValue();
-                    float multiplicatorFloat = (multiplicator == null) ? 1.0f
-                            : ((BigDecimal) multiplicator).floatValue();
-                    int payloadLengthInt = (payloadLength == null) ? 0 : ((BigDecimal) payloadLength).intValue();
-                    // get data for number configured channel
-                    if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_NUMBER)) {
-                        if (lengthInt != 1 && lengthInt != 2 && lengthInt != 4 && lengthInt != 8) {
-                            logger.warn("Thing {}: Channel '{}' has set unsupported data length to {}",
-                                    getThing().getLabel(), channel.getUID().getId(), lengthInt);
-                            continue;
-                        }
-                        if (payloadLengthInt > 0 && payloadLengthInt != data.length) {
-                            logger.debug(
-                                    "Thing {}, Channel {}: Manufacturer data payload length {}B is different from expected lenght {}B",
-                                    getThing().getLabel(), channel.getUID().getId(), data.length, payloadLengthInt);
-                            continue;
-                        }
-                        DecimalType value = getDecimalValue(data, indexInt, lengthInt, multiplicatorFloat,
-                                config != null ? config.changeByteOrder : false);
-                        if (value != null) {
-                            updateState(channel.getUID(), value);
-                        }
-                        // get raw data for configured channel
-                    } else if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_RAW)) {
-                        StringType value = getRawValue(data, indexInt, lengthInt);
+                    DecimalType value = getDecimalValue(data, indexInt, lengthInt, multiplicatorFloat,
+                            config != null ? config.changeByteOrder : false);
+                    if (value != null) {
                         updateState(channel.getUID(), value);
                     }
-                }
-                if (config != null && config.autoChannelCreation) {
-                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), "manufacturer-data");
-                    ThingBuilder builder = editThing();
-                    if (getThing().getChannel(channelUID) == null) {
-                        Configuration configuration = new Configuration();
-                        configuration.put(ListenerBindingConstants.PARAMETER_DATA_BEGIN, 0);
-                        configuration.put(ListenerBindingConstants.PARAMETER_DATA_LENGTH, 0);
-                        var channel = ChannelBuilder.create(channelUID, "String")
-                                .withType(new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID,
-                                        ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_RAW))
-                                .withLabel("Manufacturer raw data").withConfiguration(configuration).build();
-                        builder.withChannel(channel);
-                        updateThing(builder.build());
-                    }
-                    updateState(channelUID,
-                            new StringType("0x" + HexUtils.bytesToHex(scanNotification.getManufacturerData())));
+                    // get raw data for configured channel
+                } else if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_RAW)) {
+                    StringType value = getRawValue(data, indexInt, lengthInt);
+                    updateState(channel.getUID(), value);
                 }
             }
-            // services
-            for (var service : scanNotification.getServiceData().entrySet()) {
-                logger.debug("Thing {}: Service notification UUID/value={}/0x{}", getThing().getLabel(),
-                        service.getKey(), HexUtils.bytesToHex(service.getValue()));
-
-                String uuid = service.getKey();
-                byte[] data = service.getValue();
-
-                if (uuid.endsWith("-0000-1000-8000-00805f9b34fb")) {
-                    if (uuid.startsWith("0000")) {
-                        uuid = uuid.substring(4, 8);
-                    } else {
-                        uuid = uuid.substring(0, 8);
-                    }
-                } else if (uuid.endsWith("-8000-00805f9b34fb")) {
-                    uuid = uuid.substring(0, 18);
+            if (config != null && config.autoChannelCreation) {
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), "manufacturer-data");
+                ThingBuilder builder = editThing();
+                if (getThing().getChannel(channelUID) == null) {
+                    Configuration configuration = new Configuration();
+                    configuration.put(ListenerBindingConstants.PARAMETER_DATA_BEGIN, 0);
+                    configuration.put(ListenerBindingConstants.PARAMETER_DATA_LENGTH, 0);
+                    var channel = ChannelBuilder.create(channelUID, "String")
+                            .withType(new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID,
+                                    ListenerBindingConstants.CHANNEL_TYPE_MANUFACTURER_RAW))
+                            .withLabel("Manufacturer raw data").withConfiguration(configuration).build();
+                    builder.withChannel(channel);
+                    updateThing(builder.build());
                 }
-                for (var channel : getThing().getChannels()) {
-                    ChannelTypeUID channelType = channel.getChannelTypeUID();
-                    if (channelType == null) {
+                updateState(channelUID,
+                        new StringType("0x" + HexUtils.bytesToHex(scanNotification.getManufacturerData())));
+            }
+        }
+        // services
+        for (var service : scanNotification.getServiceData().entrySet()) {
+            logger.debug("Thing {}: Service notification UUID/value={}/0x{}", getThing().getLabel(), service.getKey(),
+                    HexUtils.bytesToHex(service.getValue()));
+
+            String uuid = service.getKey();
+            byte[] data = service.getValue();
+
+            if (uuid.endsWith("-0000-1000-8000-00805f9b34fb")) {
+                if (uuid.startsWith("0000")) {
+                    uuid = uuid.substring(4, 8);
+                } else {
+                    uuid = uuid.substring(0, 8);
+                }
+            } else if (uuid.endsWith("-8000-00805f9b34fb")) {
+                uuid = uuid.substring(0, 18);
+            }
+            for (var channel : getThing().getChannels()) {
+                ChannelTypeUID channelType = channel.getChannelTypeUID();
+                if (channelType == null) {
+                    continue;
+                }
+                // looking for service channel
+                if (!channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_NUMBER)
+                        && !channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_RAW)) {
+                    continue;
+                }
+                // get channel properties
+                var properties = channel.getConfiguration().getProperties();
+                // get UUID property
+                var channelUuid = properties.get(ListenerBindingConstants.PARAMETER_DATA_UUID);
+                // looking for channel with advertised UUID
+                if (!channelUuid.toString().equalsIgnoreCase(uuid)) {
+                    continue;
+                }
+                // retrieve rest of properties
+                var index = properties.get(ListenerBindingConstants.PARAMETER_DATA_BEGIN);
+                var datalength = properties.get(ListenerBindingConstants.PARAMETER_DATA_LENGTH);
+                var multiplicator = properties.get(ListenerBindingConstants.PARAMETER_MULTIPLICATOR);
+                var payloadLength = properties.get(ListenerBindingConstants.PARAMETER_PAYLOAD_LENGTH);
+                int indexInt = (index == null) ? 0 : ((BigDecimal) index).intValue();
+                int lengthInt = (datalength == null) ? 2 : ((BigDecimal) datalength).intValue();
+                float multiplicatorFloat = (multiplicator == null) ? 1.0f : ((BigDecimal) multiplicator).floatValue();
+                int payloadLengthInt = (payloadLength == null) ? 0 : ((BigDecimal) payloadLength).intValue();
+                // get data for number configured channel
+                if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_NUMBER)) {
+                    if (lengthInt != 1 && lengthInt != 2 && lengthInt != 4 && lengthInt != 8) {
+                        logger.warn("Thing {}: Channel '{}' has set unsupported data length to {}",
+                                getThing().getLabel(), channel.getUID().getId(), lengthInt);
                         continue;
                     }
-                    // looking for service channel
-                    if (!channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_NUMBER)
-                            && !channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_RAW)) {
+                    if (payloadLengthInt > 0 && payloadLengthInt != data.length) {
+                        logger.debug(
+                                "Thing {}, Channel {}: Service payload length {}B is different from expected lenght {}B",
+                                getThing().getLabel(), channel.getUID().getId(), data.length, payloadLengthInt);
                         continue;
                     }
-                    // get channel properties
-                    var properties = channel.getConfiguration().getProperties();
-                    // get UUID property
-                    var channelUuid = properties.get(ListenerBindingConstants.PARAMETER_DATA_UUID);
-                    // looking for channel with advertised UUID
-                    if (!channelUuid.toString().equalsIgnoreCase(uuid)) {
-                        continue;
-                    }
-                    // retrieve rest of properties
-                    var index = properties.get(ListenerBindingConstants.PARAMETER_DATA_BEGIN);
-                    var datalength = properties.get(ListenerBindingConstants.PARAMETER_DATA_LENGTH);
-                    var multiplicator = properties.get(ListenerBindingConstants.PARAMETER_MULTIPLICATOR);
-                    var payloadLength = properties.get(ListenerBindingConstants.PARAMETER_PAYLOAD_LENGTH);
-                    int indexInt = (index == null) ? 0 : ((BigDecimal) index).intValue();
-                    int lengthInt = (datalength == null) ? 2 : ((BigDecimal) datalength).intValue();
-                    float multiplicatorFloat = (multiplicator == null) ? 1.0f
-                            : ((BigDecimal) multiplicator).floatValue();
-                    int payloadLengthInt = (payloadLength == null) ? 0 : ((BigDecimal) payloadLength).intValue();
-                    // get data for number configured channel
-                    if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_NUMBER)) {
-                        if (lengthInt != 1 && lengthInt != 2 && lengthInt != 4 && lengthInt != 8) {
-                            logger.warn("Thing {}: Channel '{}' has set unsupported data length to {}",
-                                    getThing().getLabel(), channel.getUID().getId(), lengthInt);
-                            continue;
-                        }
-                        if (payloadLengthInt > 0 && payloadLengthInt != data.length) {
-                            logger.debug(
-                                    "Thing {}, Channel {}: Service payload length {}B is different from expected lenght {}B",
-                                    getThing().getLabel(), channel.getUID().getId(), data.length, payloadLengthInt);
-                            continue;
-                        }
-                        DecimalType value = getDecimalValue(data, indexInt, lengthInt, multiplicatorFloat,
-                                config != null ? config.changeByteOrder : false);
-                        if (value != null) {
-                            updateState(channel.getUID(), value);
-                        }
-                        // get raw data for configured channel
-                    } else if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_RAW)) {
-                        StringType value = getRawValue(data, indexInt, lengthInt);
+                    DecimalType value = getDecimalValue(data, indexInt, lengthInt, multiplicatorFloat,
+                            config != null ? config.changeByteOrder : false);
+                    if (value != null) {
                         updateState(channel.getUID(), value);
                     }
+                    // get raw data for configured channel
+                } else if (channelType.getId().equals(ListenerBindingConstants.CHANNEL_TYPE_SERVICE_RAW)) {
+                    StringType value = getRawValue(data, indexInt, lengthInt);
+                    updateState(channel.getUID(), value);
                 }
-                // create channel if creation is enabled
-                if (config != null && config.autoChannelCreation) {
-                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), "service-".concat(uuid));
-                    ThingBuilder builder = editThing();
-                    if (getThing().getChannel(channelUID) == null) {
-                        Configuration configuration = new Configuration();
-                        configuration.put(ListenerBindingConstants.PARAMETER_DATA_UUID, uuid);
-                        configuration.put(ListenerBindingConstants.PARAMETER_DATA_BEGIN, 0);
-                        configuration.put(ListenerBindingConstants.PARAMETER_DATA_LENGTH, 0);
-                        var channel = ChannelBuilder.create(channelUID, "String")
-                                .withType(new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID,
-                                        ListenerBindingConstants.CHANNEL_TYPE_SERVICE_RAW))
-                                .withLabel("UUID " + uuid).withDescription("Service raw data")
-                                .withConfiguration(configuration).build();
-                        builder.withChannel(channel);
-                        updateThing(builder.build());
-                        updateState(channelUID, new StringType("0x" + HexUtils.bytesToHex(data)));
-                    }
+            }
+            // create channel if creation is enabled
+            if (config != null && config.autoChannelCreation) {
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), "service-".concat(uuid));
+                ThingBuilder builder = editThing();
+                if (getThing().getChannel(channelUID) == null) {
+                    Configuration configuration = new Configuration();
+                    configuration.put(ListenerBindingConstants.PARAMETER_DATA_UUID, uuid);
+                    configuration.put(ListenerBindingConstants.PARAMETER_DATA_BEGIN, 0);
+                    configuration.put(ListenerBindingConstants.PARAMETER_DATA_LENGTH, 0);
+                    var channel = ChannelBuilder.create(channelUID, "String")
+                            .withType(new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID,
+                                    ListenerBindingConstants.CHANNEL_TYPE_SERVICE_RAW))
+                            .withLabel("UUID " + uuid).withDescription("Service raw data")
+                            .withConfiguration(configuration).build();
+                    builder.withChannel(channel);
+                    updateThing(builder.build());
+                    updateState(channelUID, new StringType("0x" + HexUtils.bytesToHex(data)));
                 }
             }
         }
