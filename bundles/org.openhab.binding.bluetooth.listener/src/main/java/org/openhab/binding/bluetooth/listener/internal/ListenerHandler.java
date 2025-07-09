@@ -292,13 +292,13 @@ public class ListenerHandler extends BeaconBluetoothHandler {
             buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
         }
         if (length == 1) {
-            value = buffer.get(index);
+            value = buffer.get();
         } else if (length == 2) {
-            value = buffer.getShort(index);
+            value = buffer.getShort();
         } else if (length == 4) {
-            value = buffer.getInt(index);
+            value = buffer.getInt();
         } else if (length == 8) {
-            value = buffer.getLong(index);
+            value = buffer.getLong();
         }
 
         if (multiplicator != 1.0f) {
