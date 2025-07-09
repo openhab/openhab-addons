@@ -69,11 +69,11 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
                 Configuration channelConfig = channel.getConfiguration();
 
                 try {
-                    if (channelConfig.get(CONFIG_DIGITAL_MODE) != null) {
-                        ioConfig.get(i).setIoMode((String) channelConfig.get(CONFIG_DIGITAL_MODE));
+                    if (((String) channelConfig.get(CONFIG_DIGITAL_MODE)) instanceof String s) {
+                        ioConfig.get(i).setIoMode(s);
                     }
-                    if (channelConfig.get(CONFIG_DIGITAL_LOGIC) != null) {
-                        ioConfig.get(i).setIoLogic((String) channelConfig.get(CONFIG_DIGITAL_LOGIC));
+                    if (((String) channelConfig.get(CONFIG_DIGITAL_LOGIC)) instanceof String s) {
+                        ioConfig.get(i).setIoLogic(s);
                     }
                 } catch (IllegalArgumentException e) {
                     throw new OwException(channelId + " has invalid configuration");

@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,7 +99,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration, @Nullable ThingUID bridgeUID) {
         if (thingUID == null) {
-            String name = (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION);
+            String name = Objects.requireNonNullElse(
+                    (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION), "");
             return new ThingUID(thingTypeUID, name, bridgeUID == null ? null : bridgeUID.getId());
         }
         return thingUID;

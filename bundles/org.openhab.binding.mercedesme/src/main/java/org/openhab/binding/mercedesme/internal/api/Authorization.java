@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -118,7 +119,7 @@ public class Authorization {
                 refreshToken();
             }
         }
-        return token.getAccessToken();
+        return Objects.requireNonNullElse(token.getAccessToken(), "");
     }
 
     private void refreshToken() {
@@ -163,7 +164,7 @@ public class Authorization {
             tokenResponseJson.createdOn = Instant.now().toString();
             // A refresh token is delivered optional. If not set in response take old one
             if (Constants.NOT_SET.equals(tokenResponseJson.refreshToken)) {
-                tokenResponseJson.refreshToken = token.getRefreshToken();
+                tokenResponseJson.refreshToken = Objects.requireNonNullElse(token.getRefreshToken(), "");
             }
             token = decodeToken(tokenResponseJson);
             if (authTokenIsValid()) {

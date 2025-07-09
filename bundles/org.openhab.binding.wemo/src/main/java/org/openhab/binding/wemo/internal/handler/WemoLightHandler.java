@@ -15,6 +15,7 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -265,13 +266,13 @@ public class WemoLightHandler extends WemoBaseThingHandler {
     }
 
     @Override
-    public @Nullable String getUDN() {
+    public String getUDN() {
         WemoBridgeHandler wemoBridge = getWemoBridgeHandler();
         if (wemoBridge == null) {
             logger.debug("wemoBridgeHandler not found");
-            return null;
+            return "";
         }
-        return (String) wemoBridge.getThing().getConfiguration().get(UDN);
+        return Objects.requireNonNullElse((String) wemoBridge.getThing().getConfiguration().get(UDN), "");
     }
 
     /**
