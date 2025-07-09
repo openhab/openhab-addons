@@ -66,6 +66,7 @@ public class Response {
             logger.debug("Indoor Temperature: {}", getIndoorTemperature());
             logger.debug("Outdoor Temperature: {}", getOutdoorTemperature());
             logger.debug("LED Display: {}", getDisplayOn());
+            logger.debug("Target Humidity: {}", getTargetHumidity());
         }
 
         if (logger.isTraceEnabled()) {
@@ -73,7 +74,6 @@ public class Response {
             logger.trace("Appliance Error: {}", getApplianceError());
             logger.trace("Auxiliary Heat: {}", getAuxHeat());
             logger.trace("Fahrenheit: {}", getFahrenheit());
-            logger.trace("Humidity: {}", getHumidity());
         }
     }
 
@@ -298,12 +298,12 @@ public class Response {
     }
 
     /**
-     * Not observed with units being tested
-     * From reference Document
+     * This appears to be the target humidity for Dry mode
      * 
-     * @return humidity
+     * 
+     * @return Target Humidity
      */
-    public int getHumidity() {
+    public int getTargetHumidity() {
         return (data[19] & (byte) 0x7f);
     }
 }
