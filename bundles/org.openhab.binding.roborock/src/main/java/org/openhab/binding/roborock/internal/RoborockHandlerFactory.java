@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,12 +43,15 @@ import org.osgi.service.component.annotations.Reference;
 public class RoborockHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
+    private final StorageService storageService;
     private ChannelTypeRegistry channelTypeRegistry;
 
     @Activate
-    public RoborockHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
+    public RoborockHandlerFactory(@Reference StorageService storageService,
+            @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
             @Reference ChannelTypeRegistry channelTypeRegistry) {
         super.activate(componentContext);
+        this.storageService = storageService;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.channelTypeRegistry = channelTypeRegistry;
     }
@@ -61,7 +66,9 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (ROBOROCK_ACCOUNT.equals(thingTypeUID)) {
-            return new RoborockAccountHandler((Bridge) thing, httpClient);
+            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                    String.class.getClassLoader());
+            return new RoborockAccountHandler((Bridge) thing, storage, httpClient);
         } else {
             return new RoborockVacuumHandler(thing, channelTypeRegistry);
         }

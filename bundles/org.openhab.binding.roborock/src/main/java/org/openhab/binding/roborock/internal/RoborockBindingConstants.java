@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.roborock.internal;
 
-import java.io.File;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -33,12 +31,6 @@ public class RoborockBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID ROBOROCK_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID ROBOROCK_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
-
-    // The device definitions file name
-    public static final String FILENAME_LOGINDATA = OpenHAB.getUserDataFolder() + File.separator + "roborock"
-            + File.separator + "login.json";
-    public static final String FILENAME_HOMEDETAIL = OpenHAB.getUserDataFolder() + File.separator + "roborock"
-            + File.separator + "homedetail.json";
 
     public static final String SALT = "TXdfu$jyZ#TZHsg4";
     public static final int AES_BLOCK_SIZE = 16;

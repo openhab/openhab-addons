@@ -14,13 +14,9 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,6 +45,7 @@ import org.openhab.binding.roborock.internal.api.Login.Rriot;
 import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoveryService;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -84,6 +81,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoborockAccountHandler.class);
 
+    private final Storage<String> sessionStorage;
     private @Nullable RoborockAccountConfiguration config;
     private final SchedulerTask initTask;
     private final SchedulerTask reconnectTask;
@@ -95,14 +93,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
     private SecureRandom secureRandom = new SecureRandom();
 
     /** The file we store definitions in */
-    private final File loginFile = new File(RoborockBindingConstants.FILENAME_LOGINDATA);
     protected final Map<Thing, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
 
+    private long lastMQTTMessageTimestamp;
     private final Gson gson = new Gson();
 
-    public RoborockAccountHandler(Bridge bridge, HttpClient httpClient) {
+    public RoborockAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient) {
         super(bridge);
         webTargets = new RoborockWebTargets(httpClient);
+        sessionStorage = stateStorage;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
         reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
     }
@@ -253,27 +252,22 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             }
         }
         Login loginResponse;
-        try {
-            if (loginFile.exists()) {
-                // read date from loginFile
-                final byte[] contents = Files.readAllBytes(loginFile.toPath());
-                final String json = new String(contents, StandardCharsets.UTF_8);
-                loginResponse = gson.fromJson(json, Login.class);
-            } else {
-                loginResponse = doLogin();
-                if (loginResponse.code.equals("200")) {
-                    // save data to loginFile if call is successful
-                    loginFile.getParentFile().mkdirs();
-                    final String json = gson.toJson(loginResponse);
-                    final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
-                    Files.write(loginFile.toPath(), contents);
-                }
+        String sessionStoreToken = sessionStorage.get("token");
+        String sessionStoreRriot = sessionStorage.get("rriot");
+        if (!sessionStoreToken.isEmpty() && !sessionStoreRriot.isEmpty()) {
+            logger.trace("Retrieved token and rriot values from sessionStorage");
+            token = sessionStoreToken;
+            @Nullable
+            Rriot rriotTemp = gson.fromJson(sessionStoreRriot, Rriot.class);
+            if (rriotTemp != null) {
+                rriot = rriotTemp;
             }
+        } else {
+            logger.trace("No available token or rriot values from sessionStorage, logging in");
+            loginResponse = doLogin();
             if (loginResponse.code.equals("200")) {
-                Map<String, String> properties = editProperties();
-                properties.put("token", loginResponse.data.token);
-                properties.put("rriot", gson.toJson(loginResponse.data.rriot));
-                updateProperties(properties);
+                sessionStorage.put("token", loginResponse.data.token);
+                sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
                 token = loginResponse.data.token;
                 rriot = loginResponse.data.rriot;
                 updateStatus(ThingStatus.ONLINE);
@@ -281,8 +275,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error code " + loginResponse.code + " reported");
             }
-        } catch (IOException e) {
-            logger.debug("IOException reading {}: {}", loginFile.toPath(), e.getMessage(), e);
         }
         updateStatus(ThingStatus.ONLINE);
         connectToDevice();
@@ -383,7 +375,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
                 String destination = receivedTopic.substring(receivedTopic.lastIndexOf('/') + 1);
                 logger.debug("Received MQTT message for device {}", destination);
-
+                lastMQTTMessageTimestamp = System.currentTimeMillis();
                 // check list of child handlers and send message to the right one
                 for (Entry<Thing, RoborockVacuumHandler> entry : childDevices.entrySet()) {
                     if (entry.getKey().getUID().getAsString().contains(destination)) {
@@ -477,14 +469,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
 
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
-        logger.debug("Publishing {} message to {}", method, topic);
-        mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
-                .whenComplete((mqtt5Publish, throwable) -> {
-                    if (throwable != null) {
-                        logger.debug("mqtt publish failed");
-                    }
-                });
-        return id;
+        if (this.mqttClient != null) {
+            logger.debug("Publishing {} message to {}", method, topic);
+            mqttClient.publishWith().topic(topic).payload(message).retain(false).send()
+                    .whenComplete((mqtt5Publish, throwable) -> {
+                        if (throwable != null) {
+                            logger.debug("mqtt publish failed");
+                        }
+                    });
+            return id;
+        } else {
+            logger.debug("Failed to publish {} message to {}, this.mqttClient == null", method, topic);
+            return -1;
+        }
     }
 
     byte[] build(String thingID, String localKey, int protocol, int timestamp, byte[] payload) {
