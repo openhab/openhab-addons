@@ -91,7 +91,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
                     "customer_api", // clientId
                     clientSecret, // clientSecret
                     "api", // scope
-                    null // no basic auth /* Boolean.TRUE */
+                    null // no basic auth
             );
         }
         this.oAuthService = oAuthService;

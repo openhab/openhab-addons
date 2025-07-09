@@ -18,11 +18,6 @@ package org.openhab.binding.ondilo.internal.dto;
  * @author MikeTheTux - Initial contribution
  */
 public class LastMeasure {
-    public String data_type;
-    public double value;
-    public String value_time;
-    public boolean is_valid;
-    public String exclusion_reason;
     /*
      * "data_type": "temperature",
      * "value": 12.5,
@@ -30,4 +25,9 @@ public class LastMeasure {
      * "is_valid": true,
      * "exclusion_reason": null
      */
+    public String data_type;
+    public double value;
+    public String value_time;
+    public boolean is_valid;
+    public String exclusion_reason;
 }

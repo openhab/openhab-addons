@@ -21,9 +21,7 @@ public class Recommendation {
     /*
      * "id": 10251,
      * "title": "Clean your filter",
-     * "message":
-     * "I recommend you to regularly clean your filter in order to evacuate the impurities retained and ensure its efficiency."
-     * ,
+     * "message": "I recommend you to regularly clean your filter in order to evacuate the impurities retained and ensure its efficiency.",
      * "created_at": "2020-03-25T04:09:59+0000",
      * "updated_at": "2020-03-25T04:09:59+0000",
      * "status": "waiting",

@@ -85,7 +85,7 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
                 ondiloDiscoveryServiceRegistration.unregister();
             }
         } else if (thingHandler instanceof OndiloHandler) {
-            // Handle AutomowerHandler removal if needed
+            // Handle OniloHandler removal if needed
         }
     }
 
