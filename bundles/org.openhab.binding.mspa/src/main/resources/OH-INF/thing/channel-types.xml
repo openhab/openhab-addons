@@ -7,6 +7,10 @@
 		<item-type>Number</item-type>
 		<label>Bubble Level</label>
 		<description>Intensity of bubbles</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="1">Low</option>
@@ -18,10 +22,35 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Active</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<state pattern="%.1f %unit%"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="set-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

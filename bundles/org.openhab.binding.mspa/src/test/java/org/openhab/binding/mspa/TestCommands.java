@@ -81,7 +81,8 @@ class TestCommands {
         assertTrue(wrongCommand.isEmpty(), "Temperature command creation wrong unit");
 
         // Test upper and lower bounds
-        Optional<JSONObject> command = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE, QuantityType.valueOf("120 °C"));
+        Optional<JSONObject> command = pool.createCommandBody(CHANNEL_WATER_TARGET_TEMPERATURE,
+                QuantityType.valueOf("120 °C"));
         assertTrue(command.isPresent(), "Temperature command creation");
         assertEquals(new JSONObject(String.format(COMMAND_TEMPLATE, "\"temperature_setting\":" + 80)).toString(),
                 command.get().toString(), "Temperature command content");

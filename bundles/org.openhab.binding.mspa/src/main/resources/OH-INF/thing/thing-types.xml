@@ -7,7 +7,7 @@
 	<bridge-type id="owner-account">
 		<label>Owner Account</label>
 		<description>Owner account with email and password credentials</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<context>email</context>
@@ -35,7 +35,7 @@
 	<bridge-type id="visitor-account">
 		<label>Visitor Account</label>
 		<description>Visitor account with access via QR code</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="visitorId" type="text">
 				<label>Visitor ID</label>
@@ -64,16 +64,15 @@
 			<bridge-type-ref id="owner-account"/>
 			<bridge-type-ref id="visitor-account"/>
 		</supported-bridge-type-refs>
-
 		<label>Pool</label>
 		<description>Pool connected with your account</description>
-
+		<semantic-equipment-tag>Wellness</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature">
 				<label>Water Temperature</label>
 				<description>Current water temperature</description>
 			</channel>
-			<channel id="target-temperature" typeId="temperature">
+			<channel id="target-temperature" typeId="set-temperature">
 				<label>Target Water Temperature</label>
 				<description>Temperature to reach with heating</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -111,14 +110,14 @@
 				<description>Disinfect with ozone water cleaning</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="lock" typeId="switch">
+			<channel id="lock" typeId="lock">
 				<label>Lock Panel</label>
 				<description>Lock physical panel for inputs</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 		</channels>
 
-        <representation-property>deviceId</representation-property>
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
