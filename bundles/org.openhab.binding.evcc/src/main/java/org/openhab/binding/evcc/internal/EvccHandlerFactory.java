@@ -16,8 +16,10 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
 import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
@@ -48,16 +50,16 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
     @Reference
     private ChannelTypeRegistry channelTypeRegistry;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
-            THING_TYPE_VEHICLE, THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV);
+    private static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
+            THING_TYPE_VEHICLE, THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV, THING_TYPE_HEATING);
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(@NonNull ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(@NonNull Thing thing) {
         ThingTypeUID type = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(type) && thing instanceof Bridge) {
@@ -74,6 +76,10 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_LOADPOINT.equals(type)) {
             return new EvccLoadpointHandler(thing, channelTypeRegistry);
+        }
+
+        if (THING_TYPE_HEATING.equals(type)) {
+            return new EvccHeatingHandler(thing, channelTypeRegistry);
         }
 
         if (THING_TYPE_BATTERY.equals(type)) {

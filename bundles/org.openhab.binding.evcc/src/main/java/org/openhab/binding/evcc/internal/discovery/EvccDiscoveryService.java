@@ -1,11 +1,11 @@
 package org.openhab.binding.evcc.internal.discovery;
 
-import java.util.Collection;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.mapper.BatteryDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.LoadpointDiscoveryMapper;
@@ -13,7 +13,6 @@ import org.openhab.binding.evcc.internal.discovery.mapper.SiteDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.VehicleDiscoveryMapper;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.ThingTypeUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -31,9 +30,8 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     private final List<EvccDiscoveryMapper> mappers = List.of(new LoadpointDiscoveryMapper(),
             new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper());
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(EvccBindingConstants.THING_TYPE_LOADPOINT,
-            EvccBindingConstants.THING_TYPE_VEHICLE, EvccBindingConstants.THING_TYPE_BATTERY,
-            EvccBindingConstants.THING_TYPE_SITE, EvccBindingConstants.THING_TYPE_PV);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LOADPOINT, THING_TYPE_VEHICLE,
+            THING_TYPE_BATTERY, THING_TYPE_SITE, THING_TYPE_PV, THING_TYPE_HEATING);
 
     public EvccDiscoveryService() {
         super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, false);
@@ -54,8 +52,7 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         logger.debug("Starte EVCC Discovery…");
         thingHandler.fetchEvccState().ifPresent(state -> {
             for (EvccDiscoveryMapper mapper : mappers) {
-                Collection<DiscoveryResult> results = mapper.discover(state, thingHandler);
-                results.forEach(this::thingDiscovered);
+                mapper.discover(state, thingHandler).forEach(this::thingDiscovered);
             }
         });
     }

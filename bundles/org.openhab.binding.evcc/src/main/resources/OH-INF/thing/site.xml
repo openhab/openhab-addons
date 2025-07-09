@@ -7,12 +7,63 @@
 		<label>Site</label>
 		<description>General evcc data</description>
 	</thing-type>
+	<channel-type id="availableVersion">
+		<item-type>String</item-type>
+		<label>Available Version</label>
+		<description>Available evcc update version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="batteryCapacity">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Capacity</label>
 		<description>Capacity of (home) battery</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryDischargeControl">
+		<item-type>Switch</item-type>
+		<label>Battery Discharge Control</label>
+		<description>Enable or disable battery discharge control</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="batteryEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Energy</label>
+		<description>Energy of (home) battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryGridChargeActive">
+		<item-type>Switch</item-type>
+		<label>Battery charging from Grid</label>
+		<description>Indicates whether the battery gets charged from the Grid</description>
+		<category>Switch</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="batteryGridChargeLimit">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Charging Limit</label>
+		<description>Below this limit the charging from grid will start (currency or co2)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryMode">
+		<item-type>String</item-type>
+		<label>Battery Mode</label>
+		<description>Current Battery Mode</description>
+		<category>Battery</category>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryPower">
 		<item-type>Number:Power</item-type>
@@ -27,40 +78,6 @@
 		<description>Current State of Charge of battery</description>
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="batteryEnergy">
-		<item-type>Number:Energy</item-type>
-		<label>Battery Energy</label>
-		<description>Energy of (home) battery</description>
-		<category>Energy</category>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="batteryDischargeControl">
-		<item-type>Switch</item-type>
-		<label>Battery Discharge Control</label>
-		<description>Enable or disable battery discharge control</description>
-		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="ON">Enabled</option>
-				<option value="OFF">Disabled</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="batteryMode">
-		<item-type>String</item-type>
-		<label>Battery Mode</label>
-		<description>Current Battery Mode</description>
-		<category>Battery</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="prioritySoc">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Battery Priority SoC</label>
-		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv"
-		</description>
-		<category>BatteryLevel</category>
-		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="bufferSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -80,13 +97,20 @@
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="residualPower">
-		<item-type>Number:Power</item-type>
-		<label>Grid Residual Power</label>
-		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
-		</description>
-		<category>Energy</category>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
+	<channel-type id="currency">
+		<item-type>String</item-type>
+		<label>Currency</label>
+		<description>Current configured currency</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="greenShareHome">
+		<item-type>Number</item-type>
+		<label>Green share home</label>
+	</channel-type>
+	<channel-type id="greenShareLoadpoints">
+		<item-type>Number</item-type>
+		<label>Amount of green share loadpoints</label>
 	</channel-type>
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>
@@ -102,6 +126,21 @@
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="prioritySoc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Priority SoC</label>
+		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv"
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="pvEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>PV Energy</label>
+		<description>Current energy from photovoltaik</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="pvPower">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
@@ -109,17 +148,82 @@
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="residualPower">
+		<item-type>Number:Power</item-type>
+		<label>Grid Residual Power</label>
+		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
+		</description>
+		<category>Energy</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="smartCostAvailable">
+		<item-type>Switch</item-type>
+		<label>Smart cost available</label>
+		<description>Indicates whether smart costs are available or not</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Available</option>
+				<option value="OFF">Not Available</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="smartCostType">
+		<item-type>String</item-type>
+		<label>Smart cost type</label>
+		<description>Indicates the smart cost type (price or co2)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smartFeedInPriorityAvailable">
+		<item-type>Switch</item-type>
+		<label>Smart feed in available</label>
+		<description>Indicates whether there is priority for smart feed in or not</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Available</option>
+				<option value="OFF">Not Available</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="startup">
+		<item-type>Switch</item-type>
+		<label>Start up</label>
+		<description>Indicates wether start up is enabled or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="tariffFeedIn">
+		<item-type>Number:Currency</item-type>
+		<label>Feed in price per kWh</label>
+		<description>Indicates the current price per kWh for feed in the grid</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tariffGrid">
+		<item-type>Number:Currency</item-type>
+		<label>Grid price per kWh</label>
+		<description>Indicates the current price per kWh from the grid</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tariffPriceHome">
+		<item-type>Number:Currency</item-type>
+		<label>Home price per kWh</label>
+		<description>Indicates the current price per kWh for the site</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tariffPriceLoadpoint">
+		<item-type>Number:Currency</item-type>
+		<label>Loadpoint price per kWh</label>
+		<description>Indicates the current price per kWh for loadpoints</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tariffSolar">
+		<item-type>Number</item-type>
+		<label>Solar Tariff</label>
+		<description>Solar Tariff</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="version">
 		<item-type>String</item-type>
 		<label>Version</label>
 		<description>Current evcc version</description>
-		<category>Text</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="availableVersion">
-		<item-type>String</item-type>
-		<label>Available Version</label>
-		<description>Available evcc update version</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>

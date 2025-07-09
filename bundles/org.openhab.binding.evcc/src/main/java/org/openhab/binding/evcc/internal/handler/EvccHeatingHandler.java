@@ -1,9 +1,9 @@
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -15,26 +15,15 @@ import org.openhab.core.types.Command;
 import com.google.gson.JsonObject;
 
 @NonNullByDefault
-public class EvccVehicleHandler extends EvccBaseThingHandler {
+public class EvccHeatingHandler extends EvccBaseThingHandler {
 
-    @Nullable
-    private final String vehicleId;
+    private final int index;
 
-    public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
+    public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        vehicleId = thing.getProperties().get("id");
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
-    }
-
-    @Override
-    public void updateFromEvccState(JsonObject root) {
-        root = root.getAsJsonObject("vehicles").getAsJsonObject(vehicleId);
-        super.updateFromEvccState(root);
+        Map<String, String> props = thing.getProperties();
+        String indexString = props.getOrDefault("index", "0");
+        index = Integer.parseInt(indexString);
     }
 
     @Override
@@ -49,13 +38,26 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
+
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
-        JsonObject state = stateOpt.get().getAsJsonObject("vehicles").getAsJsonObject(vehicleId);
+        JsonObject state = stateOpt.get().getAsJsonArray("loadpoints").get(index).getAsJsonObject();
         commonInitialize(state);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
+    }
+
+    @Override
+    public void updateFromEvccState(JsonObject root) {
+        root = root.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
+        super.updateFromEvccState(root);
     }
 }

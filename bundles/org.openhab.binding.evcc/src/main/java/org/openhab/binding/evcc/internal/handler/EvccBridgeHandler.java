@@ -8,6 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
@@ -27,21 +29,22 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+@NonNullByDefault
 public class EvccBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
     private final Gson gson = new Gson();
-    private EvccDiscoveryService discoveryService;
 
     private final HttpClientFactory httpClientFactory;
     private HttpClient httpClient;
     private final CopyOnWriteArrayList<EvccJsonAwareHandler> listeners = new CopyOnWriteArrayList<>();
-    private ScheduledFuture<?> pollJob;
-    private volatile JsonObject lastState;
+    private @Nullable ScheduledFuture<?> pollJob;
+    private volatile JsonObject lastState = new JsonObject();
 
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
+        httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -64,9 +67,11 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (pollJob != null && !pollJob.isCancelled()) {
-            pollJob.cancel(true);
-        }
+        Optional.ofNullable(pollJob).ifPresent(polling -> {
+            if (!polling.isCancelled()) {
+                polling.cancel(true);
+            }
+        });
         listeners.clear();
     }
 
@@ -80,9 +85,6 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                 this.lastState = state;
                 notifyListeners(state);
             });
-            if (discoveryService != null) {
-                discoveryService.startScan(null);
-            }
         }, 0, refreshInterval, TimeUnit.SECONDS);
     }
 
@@ -96,6 +98,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                     .header(HttpHeader.ACCEPT, "application/json").send();
 
             if (response.getStatus() == 200) {
+                @Nullable
                 JsonObject return_value = gson.fromJson(response.getContentAsString(), JsonObject.class);
                 if (return_value != null) {
                     updateStatus(ThingStatus.ONLINE);
@@ -133,9 +136,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public void register(EvccJsonAwareHandler handler) {
         listeners.addIfAbsent(handler);
-        if (lastState != null) {
-            handler.updateFromEvccState(lastState);
-        }
+        Optional.ofNullable(lastState).ifPresent(state -> handler.updateFromEvccState(state));
     }
 
     public void unregister(EvccJsonAwareHandler handler) {
@@ -144,7 +145,6 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
+        return; // No commands to handle!
     }
 }

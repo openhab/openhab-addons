@@ -33,6 +33,7 @@ public class EvccBindingConstants {
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
     public static final ThingTypeUID THING_TYPE_PV = new ThingTypeUID(BINDING_ID, "pv");
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
+    public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
 
     public static final String CHANNEL_PV_POWER = "pvPower";
     public static final String CHANNEL_GRID_POWER = "gridPower";
