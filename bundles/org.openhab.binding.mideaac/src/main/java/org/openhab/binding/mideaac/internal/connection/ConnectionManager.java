@@ -34,6 +34,7 @@ import org.openhab.binding.mideaac.internal.handler.Callback;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
 import org.openhab.binding.mideaac.internal.handler.CommandSet;
 import org.openhab.binding.mideaac.internal.handler.EnergyResponse;
+import org.openhab.binding.mideaac.internal.handler.HumidityResponse;
 import org.openhab.binding.mideaac.internal.handler.Packet;
 import org.openhab.binding.mideaac.internal.handler.Response;
 import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
@@ -351,91 +352,45 @@ public class ConnectionManager {
 
             if (responseBytes != null) {
                 resend = true;
-                byte[] data = null;
+                int processed = 0;
                 if (version == 3) {
                     Decryption8370Result result = security.decode8370(responseBytes);
                     for (byte[] response : result.getResponses()) {
+                        byte[] data = null;
                         logger.debug("Response length: {} IP address: {} ", response.length, ipAddress);
                         if (response.length > 40 + 16) {
                             data = security.aesDecrypt(Arrays.copyOfRange(response, 40, response.length - 16));
                             logger.trace("Bytes in HEX, decoded and with header: length: {}, data: {}", data.length,
                                     Utils.bytesToHex(data));
                         }
+                        // The response data from the appliance includes a packet header which we don't want
+                        if (data != null && data.length > 10) {
+                            byte[] processedData = Arrays.copyOfRange(data, 10, data.length);
+                            byte bodyType = processedData[0x0];
+                            handleResponse(processedData, bodyType, callback);
+                            processed++;
+                            if (processed >= 2) {
+                                break;
+                            }
+                        } else {
+                            logger.warn("Decryption failed or insufficient data length to strike header");
+                        }
                     }
                 } else if (version == 2) {
+                    byte[] data = null;
                     if (responseBytes.length > 40 + 16) {
                         data = security.aesDecrypt(Arrays.copyOfRange(responseBytes, 40, responseBytes.length - 16));
                         logger.trace("V2 Bytes decoded with header: length: {}, data: {}", data.length,
                                 Utils.bytesToHex(data));
                     }
-                }
-                // The response data from the appliance includes a packet header which we don't want
-                if (data != null && data.length > 10) {
-                    data = Arrays.copyOfRange(data, 10, data.length);
-                    byte bodyType = data[0x0];
-                    logger.trace("Response bodyType: {}", bodyType);
-                    logger.trace("Bytes in HEX, decoded and stripped without header: length: {}, data: {}", data.length,
-                            Utils.bytesToHex(data));
-                    logger.debug("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}",
-                            data.length, Utils.bytesToBinary(data));
-
-                    // Handle the capabilities response
-                    if (bodyType == (byte) 0xB5) {
-                        try {
-                            logger.debug("Capabilities response detected with bodyType 0xB5.");
-                            CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
-                            if (callback != null) {
-                                callback.updateChannels(capabilitiesResponse);
-                            }
-                        } catch (Exception ex) {
-                            logger.debug("Capability response exception: {}", ex.getMessage());
-                            throw new MideaException(ex);
-                        }
-                        return;
+                    // The response data from the appliance includes a packet header which we don't want
+                    if (data != null && data.length > 10) {
+                        byte[] processedData = Arrays.copyOfRange(data, 10, data.length);
+                        byte bodyType = processedData[0x0];
+                        handleResponse(processedData, bodyType, callback);
+                    } else {
+                        logger.warn("Decryption failed or insufficient data length to strike header");
                     }
-
-                    // Handle the Energy Response
-                    if (bodyType == (byte) 0xC1) {
-                        try {
-                            logger.debug("Energy response detected with bodyType 0xC1.");
-                            EnergyResponse energyUpdate = new EnergyResponse(data);
-                            if (callback != null) {
-                                callback.updateChannels(energyUpdate);
-                            }
-                        } catch (Exception ex) {
-                            logger.debug("Energy response exception: {}", ex.getMessage());
-                            throw new MideaException(ex);
-                        }
-                        return;
-                    }
-
-                    // Handle the poll response
-                    if (data.length < 21) {
-                        logger.warn("Response data is {} long, minimum is 21!", data.length);
-                        return;
-                    }
-                    if (bodyType != -64) {
-                        if (bodyType == 30) {
-                            logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
-                            return;
-                        }
-                        logger.warn("Unexpected response bodyType {}", bodyType);
-                        return;
-                    }
-                    lastResponse = new Response(data, version);
-                    try {
-                        logger.trace("Data length is {}, version is {}, IP address is {}", data.length, version,
-                                ipAddress);
-                        if (callback != null) {
-                            callback.updateChannels(lastResponse);
-                        }
-                    } catch (Exception ex) {
-                        logger.debug("Poll response exception: {}", ex.getMessage());
-                        throw new MideaException(ex);
-                    }
-                    return;
-                } else {
-                    logger.warn("Decryption failed or insufficient data length to strike header");
                 }
                 return;
             } else {
@@ -461,6 +416,88 @@ public class ConnectionManager {
             logger.debug("IO exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress,
                     command, droppedCommands);
             throw new MideaConnectionException(e);
+        }
+    }
+
+    private void handleResponse(byte[] data, byte bodyType, @Nullable Callback callback) throws MideaException {
+        logger.trace("Response bodyType: {}", bodyType);
+        logger.trace("Bytes in HEX, decoded and stripped without header: length: {}, data: {}", data.length,
+                Utils.bytesToHex(data));
+        logger.debug("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}", data.length,
+                Utils.bytesToBinary(data));
+
+        // Validate the proper length
+        if (data.length < 21) {
+            logger.warn("Response data is {} long, minimum is 21!", data.length);
+            return;
+        }
+
+        // Scan for error code
+        if (bodyType == (byte) 0x1E) {
+            logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
+            return;
+        }
+
+        // Handle the capabilities response
+        if (bodyType == (byte) 0xB5) {
+            try {
+                logger.debug("Capabilities response detected with bodyType 0xB5.");
+                CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
+                if (callback != null) {
+                    callback.updateChannels(capabilitiesResponse);
+                }
+            } catch (Exception ex) {
+                logger.debug("Capability response exception: {}", ex.getMessage());
+                throw new MideaException(ex);
+            }
+            return;
+        }
+
+        // Handle the Energy Response
+        if (bodyType == (byte) 0xC1) {
+            try {
+                logger.debug("Energy response detected with bodyType 0xC1.");
+                EnergyResponse energyUpdate = new EnergyResponse(data);
+                if (callback != null) {
+                    callback.updateChannels(energyUpdate);
+                }
+            } catch (Exception ex) {
+                logger.debug("Energy response exception: {}", ex.getMessage());
+                throw new MideaException(ex);
+            }
+            return;
+        }
+
+        // Handle notify2 message (bodyType 0xA0)
+        if (bodyType == (byte) 0xA0) {
+            try {
+                logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
+                HumidityResponse humidityResponse = new HumidityResponse(data);
+                if (callback != null) {
+                    callback.updateChannels(humidityResponse);
+                } else {
+                    logger.debug("Callback is null for unsolicited humidity response, channels not updated.");
+                }
+            } catch (Exception ex) {
+                logger.debug("Unsolicited response exception: {}", ex.getMessage());
+                throw new MideaException(ex);
+            }
+            return;
+        }
+
+        if (bodyType != (byte) 0xC0) {
+            logger.warn("Unexpected response bodyType {}", bodyType);
+            return;
+        }
+        lastResponse = new Response(data, version);
+        try {
+            logger.trace("Data length is {}, version is {}, IP address is {}", data.length, version, ipAddress);
+            if (callback != null) {
+                callback.updateChannels(lastResponse);
+            }
+        } catch (Exception ex) {
+            logger.debug("Poll response exception: {}", ex.getMessage());
+            throw new MideaException(ex);
         }
     }
 

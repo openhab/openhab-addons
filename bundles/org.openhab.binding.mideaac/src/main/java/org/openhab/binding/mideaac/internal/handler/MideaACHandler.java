@@ -102,6 +102,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         public void updateChannels(EnergyResponse energyUpdate) {
             MideaACHandler.this.updateChannels(energyUpdate);
         }
+
+        @Override
+        public void updateChannels(HumidityResponse humidityResponse) {
+            MideaACHandler.this.updateChannels(humidityResponse);
+        }
     };
 
     /**
@@ -176,6 +181,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 connectionManager.sendCommand(CommandHelper.handleOnTimer(command, lastresponse), callbackLambda);
             } else if (channelUID.getId().equals(CHANNEL_OFF_TIMER)) {
                 connectionManager.sendCommand(CommandHelper.handleOffTimer(command, lastresponse), callbackLambda);
+            } else if (channelUID.getId().equals(CHANNEL_TARGET_HUMIDITY)) {
+                connectionManager.sendCommand(CommandHelper.handleTargetHumidity(command, lastresponse),
+                        callbackLambda);
             }
         } catch (MideaConnectionException | MideaAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -367,7 +375,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateChannel(CHANNEL_SLEEP_FUNCTION, OnOffType.from(response.getSleepFunction()));
         updateChannel(CHANNEL_TURBO_MODE, OnOffType.from(response.getTurboMode()));
         updateChannel(CHANNEL_SCREEN_DISPLAY, OnOffType.from(response.getDisplayOn()));
-        updateChannel(CHANNEL_HUMIDITY, new DecimalType(response.getHumidity()));
+        updateChannel(CHANNEL_TARGET_HUMIDITY, new DecimalType(response.getTargetHumidity()));
 
         QuantityType<Temperature> targetTemperature = new QuantityType<Temperature>(response.getTargetTemperature(),
                 SIUnits.CELSIUS);
@@ -453,6 +461,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             updateChannel(CHANNEL_AMPERES, new DecimalType(energyUpdate.getAmperes()));
             updateChannel(CHANNEL_WATTS, new DecimalType(energyUpdate.getWatts()));
         }
+    }
+
+    // Handle Humidity response from room
+    @Override
+    public void updateChannels(HumidityResponse humidityResponse) {
+        updateChannel(CHANNEL_HUMIDITY, new DecimalType(humidityResponse.getHumidity()));
     }
 
     @Override
