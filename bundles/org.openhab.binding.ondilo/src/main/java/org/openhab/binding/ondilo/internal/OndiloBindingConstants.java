@@ -27,8 +27,39 @@ public class OndiloBindingConstants {
     private static final String BINDING_ID = "ondilo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_ONDILO = new ThingTypeUID(BINDING_ID, "ondilo");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    // Ondilo Thing properties
+    public static final String ONDILO_ID = "id";
+    public static final String ONDILO_NAME = "name";
+    public static final String ONDILO_TYPE = "type";
+    public static final String ONDILO_VOLUME = "volume";
+    public static final String ONDILO_DISINFECTION = "disinfection";
+    public static final String ONDILO_ADDRESS = "address";
+    public static final String ONDILO_LOCATION = "location";
+
+    // Measures Channel ids
+    public static final String GROUP_MEASURES = "measure#";
+
+    public static final String CHANNEL_TEMPERATURE = GROUP_MEASURES + "temperature";
+    public static final String CHANNEL_PH = GROUP_MEASURES + "ph";
+    public static final String CHANNEL_ORP = GROUP_MEASURES + "orp";
+    public static final String CHANNEL_SALT = GROUP_MEASURES + "salt";
+    public static final String CHANNEL_TDS = GROUP_MEASURES + "tds";
+    public static final String CHANNEL_BATTERY = GROUP_MEASURES + "battery";
+    public static final String CHANNEL_RSSI = GROUP_MEASURES + "rssi";
+    public static final String CHANNEL_VALUE_TIME = GROUP_MEASURES + "value-time";
+    public static final String CHANNEL_POLL_UPDATE = GROUP_MEASURES + "poll-update";
+
+    // Recommendations Channel ids
+    public static final String GROUP_RECOMMENDATIONS = "recommendation#";
+
+    public static final String CHANNEL_RECOMMENDATION_ID = GROUP_RECOMMENDATIONS + "id";
+    public static final String CHANNEL_RECOMMENDATION_TITLE = GROUP_RECOMMENDATIONS + "title";
+    public static final String CHANNEL_RECOMMENDATION_MESSAGE = GROUP_RECOMMENDATIONS + "message";
+    public static final String CHANNEL_RECOMMENDATION_CREATED_AT = GROUP_RECOMMENDATIONS + "created-at";
+    public static final String CHANNEL_RECOMMENDATION_UPDATED_AT = GROUP_RECOMMENDATIONS + "updated-at";
+    public static final String CHANNEL_RECOMMENDATION_STATUS = GROUP_RECOMMENDATIONS + "status";
+    public static final String CHANNEL_RECOMMENDATION_DEADLINE = GROUP_RECOMMENDATIONS + "deadline";
 }

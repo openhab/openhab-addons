@@ -15,16 +15,21 @@ package org.openhab.binding.ondilo.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link OndiloConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link OndiloBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author MikeTheTux - Initial contribution
  */
 @NonNullByDefault
-public class OndiloConfiguration {
+public class OndiloBridgeConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public int id = 0; // Pool ID, required for the thing
-    public int refreshInterval = 600; // Default to 10 minutes
+    public String url = "http://localhost:8080";
+    public int refreshInterval = 1800; // Default to 30 minutes
+
+    public String getURL() {
+        return url;
+    }
+
+    public int getRefreshInterval() {
+        return refreshInterval;
+    }
 }

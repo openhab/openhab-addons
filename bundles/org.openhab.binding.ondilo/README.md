@@ -1,95 +1,116 @@
 # Ondilo Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding integrates Ondilo ICO pool monitoring devices with openHAB, allowing you to monitor and automate your pool environment using openHAB’s rules and UI.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+`bridge:` Represents your Ondilo account (OAuth2)
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+`ondilo:` Represents an individual pool device
+
+Ondilo ICO Pool as well as Spa devices are supported. Chlor as well as salt water.
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the Ondilo Binding
-#
-# Default secret key for the pairing of the Ondilo Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Pools are discovered automatically after the bridge is authorized and online. Each pool will appear as a new Thing in the inbox.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### Ondilo Bridge
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+- **url**: The URL of the openHAB instance. Required for the redirect during oAuth2 flow (e.g. `http://localhost:8080`)
+- **refreshInterval**: Polling interval of the bridge (i.e. config changes) (default: `1800 s`)
 
-### `sample` Thing Configuration
+### Ondilo Pool/Spa
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+- **id**: The Id of an Ondilo ICO Pool/Spa device. Set via discovery service (e.g. `1234`)
+- **refreshInterval**: Polling interval of the device (i.e. measures) (default: `600 s`)
+
+ICO takes measures every hour. Higher polling will not increase the update interval.
+The requests to the Ondilo Customer API are limited to the following per user quotas:
+
+- 5 requests per second
+- 30 requests per hour
+
+Bridge Thing performs 1 request per cycle - 2 per hour with default interval
+Pool/Spa Thing performs 3 request per cycle - 18 per hour with default interval
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### Measures Channels
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Channel ID                | Type                    | Advanced | Access | Description                                 |
+|---------------------------|-------------------------|----------|--------|---------------------------------------------|
+| temperature               | Number:Temperature      | false    | R      | Water temperature in the pool               |
+| ph                        | Number                  | false    | R      | pH value of the pool water                  |
+| orp                       | Number:ElectricPotential| false    | R      | Oxidation-reduction potential (ORP)         |
+| salt                      | Number:Density          | false    | R      | Salt concentration in the pool              |
+| tds                       | Number:Density          | false    | R      | Total dissolved solids in the pool          |
+| battery                   | Number:Dimensionless    | false    | R      | Battery level of the device                 |
+| rssi                      | Number:Dimensionless    | false    | R      | Signal strength (RSSI)                      |
+| value-time                | DateTime                | true     | R      | Timestamp of the set of measures            |
+| poll-update               | Switch                  | true     | R/W    | Poll status update from the cloud (get latest measures, not a trigger for new measures) |
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+### Recommendations Channels
 
-## Full Example
+| recommendation-id         | Number                  | true     | R      | Unique ID of the current recommendation     |
+| recommendation-title      | String                  | false    | R      | Title of the current recommendation         |
+| recommendation-message    | String                  | false    | R      | Message of the current recommendation       |
+| recommendation-created_at | String                  | true     | R      | Creation time of the current recommendation |
+| recommendation-updated_at | String                  | true     | R      | Last update time of the current recommendation |
+| recommendation-status     | String                  | false    | R      | Status of the current recommendation        |
+| recommendation-deadline   | String                  | true     | R      | Deadline of the current recommendation      |
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+## Example
 
-### Thing Configuration
+### ondilo.thing
 
-```java
-Example thing configuration goes here.
+```Java
+Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=1800 ]  {
+    Thing ondilo "<id_received_from_discovery>" [ mowerId="<id_received_from_discovery>" ] {
+    }
 ```
 
-### Item Configuration
+### ondilo.items
 
 ```java
-Example item configuration goes here.
+Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:mybridge:myOnilo:measure#temperature" }
+Number                    Ondilo_pH           "Pool pH [%d]"                    { channel="ondilo:ondilo:mybridge:myOnilo:measure#ph" }
+Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.1f %unit%]"          { channel="ondilo:ondilo:mybridge:myOnilo:measure#orp" }
+Number:Density            Ondilo_Salt         "Pool Salt [%.0f %unit%]"         { channel="ondilo:ondilo:mybridge:myOnilo:measure#salt" }
+Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %]"             { channel="ondilo:ondilo:mybridge:myOnilo:measure#battery" }
+Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%.0f]"                { channel="ondilo:ondilo:mybridge:myOnilo:measure#rssi" }
+
+String                    Ondilo_RecTitle     "Recommendation Title [%s]"       { channel="ondilo:ondilo:mybridge:myOnilo:recommendation#title" }
+String                    Ondilo_RecMessage   "Recommendation Message [%s]"     { channel="ondilo:ondilo:mybridge:myOnilo:recommendation#message" }
+String                    Ondilo_RecStatus    "Recommendation Status [%s]"      { channel="ondilo:ondilo:mybridge:myOnilo:recommendation#status" }
 ```
 
-### Sitemap Configuration
+### ondilo.sitemap
 
 ```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
+sitemap demo label="Ondilo" {
+    Frame label="Measures" {
+        Text        item=Ondilo_Temperature
+        Text        item=Ondilo_pH
+        Text        item=Ondilo_ORP
+        Text        item=Ondilo_Battery
+        Text        item=Ondilo_RSSI
+    }
+    Frame label="Recommendations" {
+        Text        item=Ondilo_RecTitle
+        Text        item=Ondilo_RecMessage
+        Text        item=Ondilo_RecStatus
+    }
+}
 ```
 
-## Any custom content here!
+## Troubleshooting
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+- If authorization fails, check the openHAB log for error messages and verify your redirect URI
+- For more details, enable TRACE logging for `org.openhab.binding.ondilo`
+
+## Resources
+
+- [Ondilo API Documentation](https://interop.ondilo.com/docs/api/customer/v1)
+- [openHAB Community Forum](https://community.openhab.org/t/request-ondilo-binding/98164)
