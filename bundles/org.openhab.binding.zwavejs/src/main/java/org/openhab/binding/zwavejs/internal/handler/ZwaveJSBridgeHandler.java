@@ -189,7 +189,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         }
     }
 
-    public @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
+    private @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
         // Example messageId: getvalue|0|51|Color Switch|2|currentColor|44|2466
         String[] parts = messageId.split("\\|");
         if (parts.length < 7) {
