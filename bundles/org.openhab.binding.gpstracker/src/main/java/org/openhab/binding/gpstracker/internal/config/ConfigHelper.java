@@ -13,6 +13,7 @@
 package org.openhab.binding.gpstracker.internal.config;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,11 +50,11 @@ public class ConfigHelper {
     }
 
     public static String getRegionName(Configuration config) {
-        return (String) config.get(CONFIG_REGION_NAME);
+        return Objects.requireNonNullElse((String) config.get(CONFIG_REGION_NAME), "");
     }
 
     public static String getTrackerId(Configuration config) {
-        return (String) config.get(CONFIG_TRACKER_ID);
+        return Objects.requireNonNullElse((String) config.get(CONFIG_TRACKER_ID), "");
     }
 
     public static @Nullable PointType getRegionCenterLocation(Configuration config) {

@@ -547,7 +547,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
             String acceptedItemType = null;
-            Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
+            Map<String, Object> configuration = new HashMap<>();
             configuration.put("dp", schemaDp.id);
 
             ChannelTypeUID channeltypeUID;
@@ -555,8 +555,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 channeltypeUID = CHANNEL_TYPE_UID_COLOR;
             } else if (DIMMER_CHANNEL_CODES.contains(channelId)) {
                 channeltypeUID = CHANNEL_TYPE_UID_DIMMER;
-                configuration.put("min", schemaDp.min);
-                configuration.put("max", schemaDp.max);
+                if (schemaDp.min != null) {
+                    configuration.put("min", Objects.requireNonNull(schemaDp.min));
+                }
+                if (schemaDp.max != null) {
+                    configuration.put("max", Objects.requireNonNull(schemaDp.max));
+                }
             } else if ("bool".equals(schemaDp.type)) {
                 channeltypeUID = CHANNEL_TYPE_UID_SWITCH;
             } else if ("enum".equals(schemaDp.type)) {
@@ -567,9 +571,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 channeltypeUID = CHANNEL_TYPE_UID_STRING;
             } else if ("value".equals(schemaDp.type)) {
                 channeltypeUID = CHANNEL_TYPE_UID_NUMBER;
-                configuration.put("min", schemaDp.min);
-                configuration.put("max", schemaDp.max);
-
+                if (schemaDp.min != null) {
+                    configuration.put("min", Objects.requireNonNull(schemaDp.min));
+                }
+                if (schemaDp.max != null) {
+                    configuration.put("max", Objects.requireNonNull(schemaDp.max));
+                }
                 if (schemaDp.scale > 0 || !schemaDp.unit.isEmpty()) {
                     channeltypeUID = CHANNEL_TYPE_UID_QUANTITY;
 

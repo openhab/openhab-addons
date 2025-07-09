@@ -14,6 +14,8 @@ package org.openhab.binding.ipp.internal.factory;
 
 import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipp.internal.handler.IppPrinterHandler;
@@ -69,7 +71,7 @@ public class IppHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getIppPrinterUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration) {
         if (thingUID == null) {
-            String name = (String) configuration.get(PRINTER_PARAMETER_NAME);
+            String name = Objects.requireNonNullElse((String) configuration.get(PRINTER_PARAMETER_NAME), "");
             return new ThingUID(thingTypeUID, name);
         }
         return thingUID;
