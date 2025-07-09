@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -130,7 +131,8 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             return;
         }
         logger.debug("Init socket on Port: {}", port);
-        socket = new XiaomiBridgeSocket(port, (String) config.get(INTERFACE), getThing().getUID().getId());
+        socket = new XiaomiBridgeSocket(port, Objects.requireNonNullElse((String) config.get(INTERFACE), ""),
+                getThing().getUID().getId());
         socket.initialize();
         socket.registerListener(this);
 

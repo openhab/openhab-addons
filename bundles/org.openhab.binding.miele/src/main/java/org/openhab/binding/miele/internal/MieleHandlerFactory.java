@@ -14,6 +14,7 @@ package org.openhab.binding.miele.internal;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -140,7 +141,7 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration) {
         if (thingUID == null) {
-            String hostID = (String) configuration.get(HOST);
+            String hostID = Objects.requireNonNullElse((String) configuration.get(HOST), "");
             thingUID = new ThingUID(thingTypeUID, hostID);
         }
         return thingUID;
@@ -148,7 +149,7 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getApplianceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration, @Nullable ThingUID bridgeUID) {
-        String applianceId = (String) configuration.get(APPLIANCE_ID);
+        String applianceId = Objects.requireNonNullElse((String) configuration.get(APPLIANCE_ID), "");
 
         if (thingUID == null) {
             if (bridgeUID == null) {

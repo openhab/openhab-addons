@@ -14,6 +14,8 @@ package org.openhab.binding.draytonwiser.internal.handler;
 
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
@@ -50,7 +52,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     @Override
     public void initialize() {
         super.initialize();
-        name = (String) getConfig().get("name");
+        name = Objects.requireNonNull((String) getConfig().get("name"));
     }
 
     @Override
