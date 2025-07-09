@@ -7,31 +7,55 @@
 		<item-type>Switch</item-type>
 		<label>Value as Switch</label>
 		<description>Switch item channel</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="contact-type">
 		<item-type>Contact</item-type>
 		<label>Value as Contact</label>
 		<description>Contact item channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="datetime-type">
 		<item-type>DateTime</item-type>
 		<label>Value as DateTime</label>
 		<description>DateTime item channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="dimmer-type">
 		<item-type>Dimmer</item-type>
 		<label>Value as Dimmer</label>
 		<description>Dimmer item channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="rollershutter-type">
 		<item-type>Rollershutter</item-type>
 		<label>Value as Rollershutter</label>
 		<description>Rollershutter item channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="string-type">
 		<item-type>String</item-type>
 		<label>Value as String</label>
 		<description>String item channel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="number-type">
 		<item-type>Number</item-type>
