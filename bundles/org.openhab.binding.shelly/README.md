@@ -89,6 +89,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                   |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                               |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                               |
+| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | SNPL-00112EU                                |
 | shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                               |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                               |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                     |
