@@ -586,6 +586,10 @@
 		<label>@text/channelLockLabel</label>
 		<description>@text/channelLockDescription</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -595,7 +599,8 @@
 		<description>@text/channelAlarmArmedDescription</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

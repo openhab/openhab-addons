@@ -117,6 +117,8 @@ The user default schema will be used.
 
 Default data types for an Oracle DB are different from the general defaults:
 
+| Type                        | Oracle DB Type         |
+|-----------------------------|------------------------|
 | sqltype.COLOR               | `VARCHAR2(70)`         |
 | sqltype.CONTACT             | `VARCHAR2(6)`          |
 | sqltype.DATETIME            | `TIMESTAMP`            |

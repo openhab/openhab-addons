@@ -47,6 +47,36 @@ public class LinkDBRecord extends DatabaseRecord {
     }
 
     /**
+     * Creates a copy of this record as inactive
+     *
+     * @return the inactive record
+     */
+    public LinkDBRecord asInactive() {
+        RecordType type = RecordType.asInactive(getFlags());
+        return new LinkDBRecord(getLocation(), type, getGroup(), getAddress(), getData());
+    }
+
+    /**
+     * Creates a copy of this record with new data
+     *
+     * @param data the new data to use
+     * @return a new record instance with the new data
+     */
+    public LinkDBRecord withNewData(byte[] data) {
+        return new LinkDBRecord(getLocation(), getType(), getGroup(), getAddress(), data);
+    }
+
+    /**
+     * Creates a copy of this record with new location
+     *
+     * @param location the new location to use
+     * @return a new record instance with the new location
+     */
+    public LinkDBRecord withNewLocation(int location) {
+        return new LinkDBRecord(location, getType(), getGroup(), getAddress(), getData());
+    }
+
+    /**
      * Factory method for creating a new LinkDBRecord from a set of parameters
      *
      * @param location the record location to use
@@ -95,39 +125,5 @@ public class LinkDBRecord extends DatabaseRecord {
         byte[] data = msg.getBytes("userData11", 3);
 
         return new LinkDBRecord(location, type, group, address, data);
-    }
-
-    /**
-     * Factory method for creating a new LinkDBRecord from another instance as inactive
-     *
-     * @param record the link db record to use
-     * @return the inactive link db record
-     */
-    public static LinkDBRecord asInactive(LinkDBRecord record) {
-        RecordType type = RecordType.asInactive(record.getFlags());
-
-        return new LinkDBRecord(record.getLocation(), type, record.getGroup(), record.getAddress(), record.getData());
-    }
-
-    /**
-     * Factory method for creating a new LinkDBRecord from another instance with new data
-     *
-     * @param data the new data to use
-     * @param record the link db record to use
-     * @return the link db record with new data
-     */
-    public static LinkDBRecord withNewData(byte[] data, LinkDBRecord record) {
-        return new LinkDBRecord(record.getLocation(), record.getType(), record.getGroup(), record.getAddress(), data);
-    }
-
-    /**
-     * Factory method for creating a new LinkDBRecord from another instance with new location
-     *
-     * @param location the new location to use
-     * @param record the link db record to use
-     * @return the link db record with new location
-     */
-    public static LinkDBRecord withNewLocation(int location, LinkDBRecord record) {
-        return new LinkDBRecord(location, record.getType(), record.getGroup(), record.getAddress(), record.getData());
     }
 }

@@ -60,8 +60,8 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
      * command.
      */
     public BigInteger currentHeapHighWatermark; // 3 uint64 R V
-    // Structs
 
+    // Structs
     /**
      * The SoftwareFault Event shall be generated when a software fault takes place on the Node.
      */

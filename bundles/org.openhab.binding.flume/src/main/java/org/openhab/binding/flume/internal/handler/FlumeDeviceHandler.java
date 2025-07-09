@@ -154,6 +154,8 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             updateDeviceInfo(apiDevice);
         }
 
+        lastUsageAlert = Instant.now(); // don't retrieve any usage alerts prior to going online
+
         try {
             tryFetchUsageAlerts(true);
             tryQueryUsage(true);
@@ -162,7 +164,6 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             handleApiException(e);
         }
 
-        lastUsageAlert = Instant.now(); // don't retrieve any usage alerts prior to going online
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -418,11 +419,12 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         FlumeApiUsageAlert alert;
         FlumeApiQueryWaterUsage query;
 
-        if (System.nanoTime() <= this.expiryUsageAlertFetch || !forceUpdate) {
+        if (System.nanoTime() <= this.expiryUsageAlertFetch && !forceUpdate) {
             return;
         }
 
         resultList = getApi().fetchUsageAlerts(config.id, 1);
+        this.expiryUsageAlertFetch = System.nanoTime() + USAGE_ALERT_FETCH_INTERVAL.toNanos();
 
         if (resultList.isEmpty()) {
             return;
@@ -471,7 +473,6 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
         logger.debug("Alert: {}", stringAlert);
         triggerChannel(CHANNEL_DEVICE_USAGEALERT, stringAlert);
-        this.expiryUsageAlertFetch = System.nanoTime() + USAGE_ALERT_FETCH_INTERVAL.toNanos();
     }
 
     @Override

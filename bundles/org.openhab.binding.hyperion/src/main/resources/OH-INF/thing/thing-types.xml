@@ -93,11 +93,19 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Sets the brightness of the LEDs</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>Sets the color effect of the LEDs</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="effect">
@@ -116,6 +124,10 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Shows whether Hyperion is currently enabled or not and allows enabling or disabling of Hyperion</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="blackborder" advanced="true">

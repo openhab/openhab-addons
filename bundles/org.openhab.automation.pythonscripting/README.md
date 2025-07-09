@@ -71,9 +71,17 @@ Use Python Scripting as script transformation by:
    The script should take one argument `input` and return a value that supports `toString()` or `null`:
 
    ```python
+   "String has " + str(len(input)) + " characters"
+   ```
+
+   or 
+   
+   ```python
    def calc(input):
-       # Do some data transformation here, e.g.
-       return "String has" + data.length + "characters";
+       if input is None:
+           return 0
+
+       return "String has " + str(len(input)) + " characters"
    calc(input)
    ```
 
@@ -81,7 +89,7 @@ Use Python Scripting as script transformation by:
 3. Passing parameters is also possible by using a URL like syntax: `PY(<scriptname>.py?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
-Simple transformations can also be given as an inline script: `PY(|...)`, e.g. `PY(|"String has " + input.length + "characters")`.
+Simple transformations can also be given as an inline script: `PY(|...)`, e.g. `PY(|"String has " + str(len(input)) + "characters")`.
 It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
 
 ::: tip Note
@@ -407,12 +415,14 @@ print(str(OpenHAB.getVersion()))
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | getThing                 | getThing(uid)                                                                         | [Thing](#class-thing)                                                                               |
 | getChannel               | getChannel(uid)                                                                       | [Channel](#class-channel)                                                                           |
-| getItem                  | getItem(item_name)                                                                    | [Item](#class-item) or [GroupItem](#class-groupitem)                                                |
-| resolveItem              | resolveItem(item_or_item_name)                                                        | [Item](#class-item) or [GroupItem](#class-groupitem)                                                |
-| getItemState             | getItemState(item_name, default = None)                                               | [openHAB State](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)                |
 | getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | [openHAB Metadata](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata)          |
 | setItemMetadata          | setItemMetadata(item_or_item_name, namespace, value, configuration=None)              | [openHAB Metadata](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata)          |
 | removeItemMetadata       | removeItemMetadata(item_or_item_name, namespace = None)                               | [openHAB Metadata](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata)          |
+| getItemState             | getItemState(item_name, default = None)                                               | [openHAB State](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)                |
+| getItem                  | getItem(item_name)                                                                    | [Item](#class-item) or [GroupItem](#class-groupitem)                                                |
+| resolveItem              | resolveItem(item_or_item_name)                                                        | [Item](#class-item) or [GroupItem](#class-groupitem)                                                |
+| addItem                  | addItem(item_config)                                                                  | [Item](#class-item) or [GroupItem](#class-groupitem)                                                |
+| safeItemName             | safeItemName(item_name)                                                               |                                                 |
 
 
 ### class Item 
@@ -548,15 +558,14 @@ class UpdateInfo:
 
 ### Python <=> Java conversion
 
-Conversion occurs in both directions
+In addition to standard [value type mappings](https://www.graalvm.org/python/docs/#mapping-types-between-python-and-other-languages), the following type mappings are available.
 
 | Python class              | Java class    |
 | ------------------------- | ------------- |
 | datetime with timezone    | ZonedDateTime |
 | datetime without timezone | Instant       |
 | timedelta                 | Duration      |
-| list                      | Collection    |
-| Set(set)                  | Set           |
+| list                      | Set           |
 | Item                      | Item          |
 
 ### Typical log errors
@@ -578,5 +587,3 @@ You should also check your logs for a message related to the helper lib deployme
 ### Limitations
 
 - GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. https://github.com/oracle/graalpython/issues/367
-- GraalPy does not really support Python 'set' types as arguments of function calls to Java objects https://github.com/oracle/graalpython/issues/260
-  - The reason is that Java is not able to distinguish what is a Python list and what is a Python set. A workaround is to use the class [Set](#class-set)

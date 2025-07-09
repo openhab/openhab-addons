@@ -51,15 +51,46 @@ public class LightState {
 
     public @Nullable Integer transitiontime;
 
+    private static enum ColorMode {
+        CT,
+        HS,
+        XY
+    }
+
+    private @Nullable ColorMode colorModeFrom(@Nullable String value) {
+        if (value != null) {
+            try {
+                return ColorMode.valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // fall through
+            }
+        }
+        return null;
+    }
+
+    private boolean compareXYWithTolerance(double @Nullable [] a, double @Nullable [] b, double tolerance) {
+        return a == null || b == null || ((a.length > 1) && (b.length > 1) && (Math.abs(a[0] - b[0]) < tolerance)
+                && (Math.abs(a[1] - b[1]) < tolerance));
+    }
+
     /**
      * compares two light states and ignore all fields that are null in either state
      *
-     * @param o state to compare with
+     * @param other state to compare with
      * @return true if equal
      */
-    public boolean equalsIgnoreNull(LightState o) {
-        return equalsIgnoreNull(on, o.on) && equalsIgnoreNull(bri, o.bri) && equalsIgnoreNull(hue, o.hue)
-                && equalsIgnoreNull(sat, o.sat) && ((xy != null && o.xy != null) ? Arrays.equals(xy, o.xy) : true);
+    public boolean equalsIgnoreNull(LightState other) {
+        boolean colorsEqual = true;
+        ColorMode thisMode = colorModeFrom(this.colormode);
+        ColorMode otherMode = colorModeFrom(other.colormode);
+        if (thisMode == ColorMode.CT || otherMode == ColorMode.CT) {
+            colorsEqual = equalsIgnoreNull(this.ct, other.ct);
+        } else if (thisMode == ColorMode.HS || otherMode == ColorMode.HS) {
+            colorsEqual = equalsIgnoreNull(this.hue, other.hue) && equalsIgnoreNull(this.sat, other.sat);
+        } else if (thisMode == ColorMode.XY || otherMode == ColorMode.XY) {
+            colorsEqual = compareXYWithTolerance(this.xy, other.xy, 0.01);
+        }
+        return colorsEqual && equalsIgnoreNull(this.on, other.on) && equalsIgnoreNull(this.bri, other.bri);
     }
 
     /**

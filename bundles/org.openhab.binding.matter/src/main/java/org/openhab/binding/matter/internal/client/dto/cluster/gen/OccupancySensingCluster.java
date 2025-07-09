@@ -125,8 +125,8 @@ public class OccupancySensingCluster extends BaseCluster {
      * PhysicalContactUnoccupiedToOccupiedDelay, before the PhysicalContact sensor changes to its occupied state.
      */
     public Integer physicalContactUnoccupiedToOccupiedThreshold; // 50 uint8 RW VM
-    // Structs
 
+    // Structs
     /**
      * If this event is supported, it shall be generated when the Occupancy attribute changes.
      */
