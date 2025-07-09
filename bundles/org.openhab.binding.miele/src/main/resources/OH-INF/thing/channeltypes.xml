@@ -58,6 +58,10 @@
 		<label>Start Time</label>
 		<description>Programmed start time of the program</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -66,6 +70,10 @@
 		<label>End Time</label>
 		<description>End time of the program (programmed or running)</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -74,6 +82,10 @@
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
@@ -82,6 +94,10 @@
 		<label>Elapsed Time</label>
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
@@ -90,6 +106,10 @@
 		<label>Finish Time</label>
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
@@ -97,6 +117,10 @@
 		<item-type>Contact</item-type>
 		<label>Door</label>
 		<description>Current state of the door of the appliance</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -120,6 +144,10 @@
 		<label>Switch</label>
 		<description>Switch the appliance on or off</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="stop">
@@ -172,6 +200,10 @@
 		<item-type>Switch</item-type>
 		<label>Super Cool</label>
 		<description>Start or stop Super Cooling</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 
@@ -193,6 +225,10 @@
 		<item-type>Switch</item-type>
 		<label>Super Freeze</label>
 		<description>Start or stop Super Freezing</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 
