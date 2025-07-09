@@ -686,6 +686,7 @@
 		<description>@text/channel-type.shelly.timestamp.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">
@@ -710,6 +711,7 @@
 		<description>@text/channel-type.shelly.lastUpdate.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">
