@@ -7,12 +7,20 @@
 	<channel-type id="Ubat">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Battery current Channel Type -->
 	<channel-type id="Ibat">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Battery Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

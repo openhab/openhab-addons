@@ -27,42 +27,74 @@
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-heating-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current power heating</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-drinkingwater-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Power Drinking Water</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-cooling-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current power cooling</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="electric-power-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-heating-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power Heating</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-drinkingwater-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current electric power drinking water</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-cooling-channel">
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power Cooling</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

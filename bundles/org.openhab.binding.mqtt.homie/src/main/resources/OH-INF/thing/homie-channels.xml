@@ -12,6 +12,9 @@
 	<channel-type id="homie-color">
 		<item-type>Color</item-type>
 		<label>Color Value (Red,Green,Blue)</label>
+		<tags>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="homie-datetime">
