@@ -11,16 +11,28 @@
 	<channel-type id="pv-power-channel">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pv-target-temperature-heating-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>PV Temp Heating</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pv-target-temperature-drinkingwater-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>PV Temp Drinkingwater</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

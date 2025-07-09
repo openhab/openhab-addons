@@ -7,18 +7,30 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Flow Temperature</label>
 		<description>B16 - Flow Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="return-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temperature</label>
 		<description>B17 - Return Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-speed-channel">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flow Speed</label>
 		<description>P13 - Flow speed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

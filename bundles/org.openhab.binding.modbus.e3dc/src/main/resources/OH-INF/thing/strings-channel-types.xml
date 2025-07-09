@@ -7,54 +7,90 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>String 1 Potential</label>
 		<description>Voltage on String 1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-voltage-channel">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>String 2 Potential</label>
 		<description>Voltage on String 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-voltage-channel">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>String 3 Potential</label>
 		<description>Voltage on String 3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string1-dc-current-channel">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>String 1 Current</label>
 		<description>Current on String 1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-current-channel">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>String 2 Current</label>
 		<description>Current on String 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-current-channel">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>String 3 Current</label>
 		<description>Current on String 3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string1-dc-output-channel">
 		<item-type>Number:Power</item-type>
 		<label>String 1 Power</label>
 		<description>Power produced by String 1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-output-channel">
 		<item-type>Number:Power</item-type>
 		<label>String 2 Power</label>
 		<description>Power produced by String 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-output-channel">
 		<item-type>Number:Power</item-type>
 		<label>String 3 Power</label>
 		<description>Power produced by String 3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
