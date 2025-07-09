@@ -83,12 +83,13 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     getBridge().getBridgeUID()));
             return;
         }
-        deviceName = (String) getConfig().get(PROPERTY_SPOTIFY_DEVICE_NAME);
-        if (deviceName == null || deviceName.isEmpty()) {
+        String tmpDeviceName = (String) getConfig().get(PROPERTY_SPOTIFY_DEVICE_NAME);
+        if (tmpDeviceName == null || tmpDeviceName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
             deviceName = "";
         } else {
+            deviceName = tmpDeviceName;
             commandHandler = new SpotifyHandleCommands(spotifyApi);
             updateStatus(ThingStatus.UNKNOWN);
         }

@@ -14,6 +14,8 @@ package org.openhab.binding.max.internal.factory;
 
 import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
@@ -64,7 +66,8 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration) {
         if (thingUID == null) {
-            String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
+            String serialNumber = Objects.requireNonNullElse((String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER),
+                    "");
             return new ThingUID(thingTypeUID, serialNumber);
         }
         return thingUID;
@@ -73,7 +76,9 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration, ThingUID bridgeUID) {
         if (thingUID == null) {
-            String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
+            String serialNumber = Objects.requireNonNullElse((String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER),
+                    "");
+            ;
             return new ThingUID(thingTypeUID, serialNumber, bridgeUID.getId());
         }
         return thingUID;

@@ -97,7 +97,7 @@ public class MetricsRestController {
     }
 
     @Activate
-    protected void activate(Map<@Nullable String, @Nullable Object> configuration) {
+    protected void activate(Map<String, Object> configuration) {
         logger.info("Metrics service activated, serving the following URL(s): /rest/metrics/prometheus");
         metricsExporters.add(new InfluxMetricsExporter());
         metricsExporters.add(new JmxMetricsExporter());
@@ -106,11 +106,11 @@ public class MetricsRestController {
     }
 
     @Modified
-    protected synchronized void modified(Map<@Nullable String, @Nullable Object> configuration) {
+    protected synchronized void modified(Map<String, Object> configuration) {
         updateConfig(configuration);
     }
 
-    private void updateConfig(@Nullable Map<@Nullable String, @Nullable Object> configuration) {
+    private void updateConfig(Map<String, Object> configuration) {
         this.config = new Configuration(configuration).as(MetricsConfiguration.class);
         logger.debug("Configuration: {}", this.config);
         this.metricsExporters.forEach(e -> e.updateExporterState(config));
