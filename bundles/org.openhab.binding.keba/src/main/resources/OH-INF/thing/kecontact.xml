@@ -114,7 +114,7 @@
 		<description>State of the vehicle plug, e.g. ON if plugged in, OFF if unplugged</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
