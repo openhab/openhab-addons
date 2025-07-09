@@ -9,6 +9,10 @@
 		<label>EJPHPM</label>
 		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -17,6 +21,10 @@
 		<label>EJPHN</label>
 		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

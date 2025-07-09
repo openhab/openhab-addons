@@ -11,7 +11,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 	</channel-type>
 	<!-- Color Temperature -->
@@ -34,7 +34,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 	<!-- Switch Channel -->
@@ -43,6 +43,10 @@
 		<label>Switch</label>
 		<description>Allows to switch a thing ON or OFF.</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<!-- Control Channel -->
 	<channel-type id="control">

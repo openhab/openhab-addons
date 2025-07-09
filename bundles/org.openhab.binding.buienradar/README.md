@@ -51,7 +51,6 @@ Number RAIN_100MIN "Rain 100 min." (Rain) {channel="buienradar:rain_forecast:hom
 Number RAIN_105MIN "Rain 105 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_105" }
 Number RAIN_110MIN "Rain 110 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_110" }
 Number RAIN_115MIN "Rain 115 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_115" }
-Number RAIN_120MIN "Rain 120 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_120" }
 ```
 
 ## Example data visualisation

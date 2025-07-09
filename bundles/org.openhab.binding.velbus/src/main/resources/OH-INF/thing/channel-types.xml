@@ -8,6 +8,10 @@
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
 		<description>Operating mode (heating/cooling) for the thermostat in Velbus</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="HEATING">Heating</option>
@@ -20,6 +24,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Mode (comfort/day/night/safe) for the thermostat in Velbus</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="COMFORT">Comfort</option>
@@ -86,6 +94,10 @@
 		<label>Brightness</label>
 		<description>Brightness control for dimmer action in Velbus</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollershutter">
@@ -93,6 +105,10 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter control for rollershutter action in Velbus</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -100,6 +116,10 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -129,6 +149,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Setpoint</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" min="-55" max="63.5" step="0.5" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -138,6 +162,10 @@
 		<label>Voltage</label>
 		<description>Currently measured voltage</description>
 		<category>Voltage</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -147,6 +175,10 @@
 		<label>Current</label>
 		<description>Currently measured current</description>
 		<category>Current</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -172,6 +204,10 @@
 		<label>Rainfall</label>
 		<description>Currently measured quantity of rain</description>
 		<category>Rainfall</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -181,6 +217,10 @@
 		<label>Illuminance</label>
 		<description>Currently measured illuminance</description>
 		<category>Illuminance</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%">
 		</state>
 	</channel-type>
@@ -190,6 +230,10 @@
 		<label>Wind Speed</label>
 		<description>Currently measured wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
