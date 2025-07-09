@@ -255,14 +255,14 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * @param delay scheduling delay (in milliseconds)
      */
     @Override
-    public void doPoll(long delay) {
+    public void poll(long delay) {
         // process deferred queue
         processDeferredQueue(delay);
         // poll insteon engine if unknown or its feature never queried
         DeviceFeature engineFeature = getFeature(FEATURE_INSTEON_ENGINE);
         if (engineFeature != null
                 && (engine == InsteonEngine.UNKNOWN || engineFeature.getQueryStatus() == QueryStatus.NEVER_QUERIED)) {
-            engineFeature.doPoll(delay);
+            engineFeature.poll(delay);
             return; // insteon engine needs to be known before enqueueing more messages
         }
         // load this device link db if not complete or should be reloaded
@@ -275,7 +275,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             linkDB.update(delay);
         }
 
-        super.doPoll(delay);
+        super.poll(delay);
     }
 
     /**
@@ -359,8 +359,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 .forEach(record -> getResponderFeatures().stream()
                         .filter(feature -> feature.getComponentId() == record.getComponentId()).findFirst()
                         .ifPresent(feature -> {
-                            InsteonChannelConfiguration adjustConfig = InsteonChannelConfiguration.copyOf(config,
-                                    record.getOnLevel(), record.getRampRate());
+                            InsteonChannelConfiguration adjustConfig = config.copy(record.getOnLevel(),
+                                    record.getRampRate());
                             feature.handleCommand(adjustConfig, cmd);
                         }));
     }
@@ -450,6 +450,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                         logger.trace("handled reply of direct for {}", feature.getName());
                         // notify feature queried was answered
                         featureQueriedAnswered(feature);
+                        // reset response timeout
+                        resetResponseTimeout();
                     });
             // update all status features (e.g. device last update time)
             getFeatures().stream().filter(DeviceFeature::isStatusFeature)
@@ -460,7 +462,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 && !isDuplicateMsg(msg)) {
             // add poll delay for non-replayed all link broadcast allowing cleanup msg to be be processed beforehand
             long delay = msg.isAllLinkBroadcast() && !msg.isAllLinkSuccessReport() && !msg.isReplayed() ? 1500L : 0L;
-            doPoll(delay);
+            poll(delay);
         }
     }
 
@@ -469,17 +471,17 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      *
      * @param msg the message to be sent
      * @param feature device feature associated to the message
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     @Override
     public void sendMessage(Msg msg, DeviceFeature feature, long delay) {
         if (isAwake()) {
-            addDeviceRequest(msg, feature, delay);
+            addRequest(msg, feature, delay);
         } else {
             addDeferredRequest(msg, feature);
         }
         // mark feature query status as scheduled for non-broadcast request message
-        if (!msg.isAllLinkBroadcast()) {
+        if (!msg.isAllLinkBroadcast() && !isFeatureQueried(feature)) {
             feature.setQueryStatus(QueryStatus.QUERY_SCHEDULED);
         }
     }
@@ -487,7 +489,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     /**
      * Processes deferred queue
      *
-     * @param delay time (in milliseconds) to delay before sending message
+     * @param delay delay (in milliseconds) before sending message
      */
     private void processDeferredQueue(long delay) {
         synchronized (deferredQueue) {
@@ -497,9 +499,9 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                     Msg msg = request.getMessage();
                     DeviceFeature feature = request.getFeature();
                     deferredQueueHash.remove(msg);
-                    request.setExpirationTime(delay);
+                    request.setScheduledDelay(delay);
                     logger.trace("enqueuing deferred request for {}", feature.getName());
-                    addDeviceRequest(msg, feature, delay);
+                    addRequest(msg, feature, delay);
                 }
             }
         }
@@ -821,12 +823,22 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     /**
-     * Resets heartbeat monitor
+     * Resets heartbeat timeout
      */
-    public void resetHeartbeatMonitor() {
+    public void resetHeartbeatTimeout() {
         InsteonDeviceHandler handler = getHandler();
         if (handler != null) {
-            handler.resetHeartbeatMonitor();
+            handler.resetHeartbeatTimeout();
+        }
+    }
+
+    /**
+     * Resets response timeout
+     */
+    public void resetResponseTimeout() {
+        InsteonDeviceHandler handler = getHandler();
+        if (handler != null) {
+            handler.resetResponseTimeout();
         }
     }
 
@@ -841,7 +853,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 // poll database delta feature
                 pollFeature(FEATURE_DATABASE_DELTA, 0L);
                 // poll remaining features for this device
-                doPoll(0L);
+                poll(500L);
             }
             // log missing links
             logMissingLinks();

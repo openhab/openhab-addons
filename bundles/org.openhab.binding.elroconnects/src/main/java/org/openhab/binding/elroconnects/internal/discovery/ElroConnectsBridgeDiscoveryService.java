@@ -132,7 +132,7 @@ public class ElroConnectsBridgeDiscoveryService
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     @Override

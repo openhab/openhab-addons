@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.transport;
+package org.openhab.binding.insteon.internal.transport.stream;
 
 import java.io.IOException;
 import java.util.Arrays;

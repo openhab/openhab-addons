@@ -359,6 +359,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery</label>
 		<description>The battery level of the mower at the time of last update</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 

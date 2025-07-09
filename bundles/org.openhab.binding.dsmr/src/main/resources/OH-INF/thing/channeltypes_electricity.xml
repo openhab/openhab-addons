@@ -7,36 +7,60 @@
 		<item-type>Number:Energy</item-type>
 		<label>Delivery</label>
 		<description>The total amount of electricity used.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff0Type">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery Tariff 0</label>
 		<description>The total amount of electricity used for tariff 0.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff1Type">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery Tariff 1</label>
 		<description>The total amount of electricity used for tariff 1.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff2Type">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff1BelgiumType">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery Tariff 1</label>
 		<description>The total amount of electricity used for tariff 1.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff2BelgiumType">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff0AntiFraudType" advanced="true">
@@ -91,24 +115,40 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Imported Energy (P+)</label>
 		<description>The total imported energy register (P+).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterPType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Exported Energy (P+)</label>
 		<description>The total exported energy register (P-).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalImportedEnergyRegisterQType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Imported Energy (Q+)</label>
 		<description>The total imported energy register (Q+).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterQType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Exported Energy (Q-)</label>
 		<description>The total exported energy register (Q-).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterRRate1Type" advanced="true">
@@ -151,12 +191,20 @@
 		<item-type>Number:Power</item-type>
 		<label>Actual Power Delivery</label>
 		<description>The current power delivery.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualDeliveryBelgiumType">
 		<item-type>Number:Power</item-type>
 		<label>Actual Power Demand</label>
 		<description>The current power delivery demand.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualProductionType" advanced="true">
@@ -169,6 +217,10 @@
 		<item-type>Number</item-type>
 		<label>Actual Reactive Power Delivery</label>
 		<description>The current reactive power delivery.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.3f kvar" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualReactiveProductionType" advanced="true">
