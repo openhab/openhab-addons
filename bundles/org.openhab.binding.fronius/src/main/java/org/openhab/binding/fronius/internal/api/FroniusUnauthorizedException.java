@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.fronius.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for 401 response from the Fronius controller.
  *
  * @author Florian Hotze - Initial contribution
  */
+@NonNullByDefault
 public class FroniusUnauthorizedException extends Exception {
+    private static final long serialVersionUID = 3939484626114545256L;
+
     public FroniusUnauthorizedException(String message) {
         super(message);
     }

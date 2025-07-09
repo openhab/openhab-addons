@@ -18,8 +18,8 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROD
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.PROPERTY_CATEGORY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +158,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now());
     }
 
     @Override

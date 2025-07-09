@@ -133,6 +133,10 @@ public class AmsDeviceHandler extends BaseThingHandler {
         var state = switch (channel) {
             case CHANNEL_TRAY_TYPE -> //
                 key.flatMap(name -> {
+                    if (name.isBlank()) {
+                        logger.debug("Tray type is blank");
+                        return Optional.empty();
+                    }
                     var trayType = AmsChannel.TrayType.findTrayType(name);
                     if (trayType.isEmpty()) {
                         var msg = "Cannot parse tray type from [{}]! Please report this on https://github.com/openhab/openhab-addons .";
