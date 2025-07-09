@@ -18,12 +18,20 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Comfort Mode</label>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="sleepTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Sleep Mode</label>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="awayTemperature">
@@ -31,6 +39,10 @@
 		<label>Temperature Away Mode</label>
 		<description>Set temperature away mode</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="targetTemperatureHeater">
@@ -47,6 +59,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="heatingActive">
@@ -54,6 +70,10 @@
 		<label>Heating Active</label>
 		<description>Current state of the heater or heaters in room</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="independent">
@@ -66,17 +86,29 @@
 		<item-type>Switch</item-type>
 		<label>Master Switch</label>
 		<description>Master ON/OFF switch for independent heater</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fanActive">
 		<item-type>Switch</item-type>
 		<label>Fan Active</label>
 		<description>Current state of heater fan (if available, OFF if not found)</description>
 		<category>Flow</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="window">
 		<item-type>Contact</item-type>
 		<label>Window State</label>
 		<description>Open window/cold air flow detection</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentEnergy">
@@ -84,11 +116,19 @@
 		<label>Energy Usage</label>
 		<description>Actual energy usage in watts</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
 	<channel-type id="currentMode">
 		<item-type>String</item-type>
 		<label>Current Room Program Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Comfort">Comfort</option>
@@ -120,11 +160,19 @@
 		<item-type>Switch</item-type>
 		<label>Vacation Mode</label>
 		<description>Toggles vacation mode. Start and end time must be preset before activating</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="vacationModeAdvanced">
 		<item-type>Switch</item-type>
 		<label>Advanced Vacation Mode</label>
 		<description>Use room Away mode temperatures instead of home global temperature</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="vacationModeStart">
 		<item-type>DateTime</item-type>
