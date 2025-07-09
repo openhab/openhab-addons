@@ -45,4 +45,11 @@ public interface Callback {
      * @param energyResponse The Energy response from the device used to update properties.
      */
     void updateChannels(EnergyResponse energyResponse);
+
+    /**
+     * Updates channels with a Humidity response.
+     *
+     * @param humidityResponse The unsolicited Humidity response from the device used to update properties.
+     */
+    void updateChannels(HumidityResponse humidityResponse);
 }

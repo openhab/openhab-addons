@@ -182,6 +182,6 @@ public class ResponseTest {
      */
     @Test
     public void testGetHumidity() {
-        assertEquals(50, response.getHumidity());
+        assertEquals(50, response.getTargetHumidity());
     }
 }

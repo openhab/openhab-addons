@@ -28,6 +28,7 @@
 			<channel id="off-timer" typeId="off-timer"/>
 			<channel id="appliance-error" typeId="appliance-error"/>
 			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
+			<channel id="target-humidity" typeId="target-humidity"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="kilowatt-hours" typeId="kilowatt-hours"/>
 			<channel id="amperes" typeId="amperes"/>
@@ -100,8 +101,8 @@
 			</parameter>
 			<parameter name="energyPoll" type="decimal" required="true" min="0" unit="m">
 				<context>energyPoll</context>
-				<label>Energy poll frequency in minutes</label>
-				<description>Energy poll (when AC is On), default 0, disabled. (in case not supported).</description>
+				<label>Energy poll in minutes</label>
+				<description>Energy polling frequency. default 0 ; (in case not supported).</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="d">
@@ -260,10 +261,17 @@
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="target-humidity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Target Humidity</label>
+		<description>Set Target Humidity for Dry Mode (if supported).</description>
+		<category>Humidity</category>
+		<state pattern="%d%%"/>
+	</channel-type>
 	<channel-type id="humidity" advanced="true">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
-		<description>Humidity measured in the room by the indoor unit.</description>
+		<description>Humidity in room (if supported).</description>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>

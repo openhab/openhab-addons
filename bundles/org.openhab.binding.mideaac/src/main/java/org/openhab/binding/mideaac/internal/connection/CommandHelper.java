@@ -437,4 +437,34 @@ public class CommandHelper {
 
         return commandSet;
     }
+
+    // Limit Humidity to range
+    private static int limitHumidityToRange(int humidity) {
+        if (humidity < 32) {
+            return 32;
+        }
+        if (humidity > 80) {
+            return 80;
+        }
+
+        return humidity;
+    }
+
+    /**
+     * Sets the Target Humidity for Dry Mode
+     * 
+     * @param command Target Humidity
+     */
+    public static CommandSet handleTargetHumidity(Command command, Response lastResponse) {
+        CommandSet commandSet = CommandSet.fromResponse(lastResponse);
+
+        if (command instanceof DecimalType decimalCommand) {
+            int humidity = decimalCommand.intValue();
+            commandSet.setTargetHumidity(limitHumidityToRange(humidity));
+        } else {
+            logger.debug("Unknown target humidity command: {}", command);
+        }
+
+        return commandSet;
+    }
 }

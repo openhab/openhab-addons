@@ -70,6 +70,7 @@ public class CommandSet extends CommandBase {
         commandSet.setSleepMode(response.getSleepFunction());
         commandSet.setOnTimer(response.getOnTimerData());
         commandSet.setOffTimer(response.getOffTimerData());
+        commandSet.setTargetHumidity(response.getTargetHumidity());
         return commandSet;
     }
 
@@ -478,5 +479,14 @@ public class CommandSet extends CommandBase {
         byte[] newData = new byte[data.length - 3];
         System.arraycopy(data, 0, newData, 0, newData.length);
         data = newData;
+    }
+
+    /**
+     * Sets the Target Humidity for Dry Mode
+     * 
+     * @param targetHumidity
+     */
+    public void setTargetHumidity(int humidity) {
+        data[0x1D] |= humidity;
     }
 }
