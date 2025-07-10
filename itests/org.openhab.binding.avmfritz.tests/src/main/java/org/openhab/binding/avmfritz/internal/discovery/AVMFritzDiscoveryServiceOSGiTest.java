@@ -245,7 +245,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertEquals(new ThingUID("avmfritz:FRITZ_Smart_Energy_250:1:1234567890120"), discoveryResult.getThingUID());
         assertEquals(SMART_ENERGY_250_THING_TYPE, discoveryResult.getThingTypeUID());
         assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
-        assertEquals("XXXXX-XXXXXXX-X", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("1234567890120", discoveryResult.getProperties().get(CONFIG_AIN));
         assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));
         assertEquals("FRITZ!Smart Energy 250", discoveryResult.getProperties().get(PRODUCT_NAME));
         assertEquals("1234567890120", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
