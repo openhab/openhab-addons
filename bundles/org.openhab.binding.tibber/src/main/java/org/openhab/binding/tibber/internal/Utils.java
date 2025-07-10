@@ -49,7 +49,7 @@ public class Utils {
      *
      * @param json JsonObject to be queried
      * @param path array of JSON keys defining the path to a JsonObject
-     * @return JsonObejt from after iterating though the path
+     * @return JsonObject from after iterating though the path
      */
     public static JsonObject getJsonObject(JsonObject json, String[] path) {
         JsonObject iterator = json;

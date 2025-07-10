@@ -47,7 +47,7 @@ import com.google.gson.JsonObject;
 public class PriceCalculator {
     private static final int AVERAGE_PRICE_INTERVAL = 5;
     private final Logger logger = LoggerFactory.getLogger(PriceCalculator.class);
-    private TreeMap<Instant, PriceInfo> priceMap;
+    private final TreeMap<Instant, PriceInfo> priceMap;
 
     public PriceCalculator(JsonArray spotPrices) {
         priceMap = new TreeMap<>();
@@ -89,7 +89,6 @@ public class PriceCalculator {
     public TreeMap<Instant, Double> calculateAveragePrices() {
         TreeMap<Instant, Double> averages = new TreeMap<>();
         Instant startCalculation = priceMap.firstKey();
-        // Instant start = end.minus(1, ChronoUnit.DAYS);
         Instant iterator = startCalculation;
         // continue loop until iterator current point of calculation
         while (priceMap.higherEntry(iterator) != null) {
@@ -130,7 +129,7 @@ public class PriceCalculator {
                 price += duration * floor.getValue().price;
                 iterator = iterator.plus(duration, ChronoUnit.MINUTES);
             } else {
-                logger.warn("Calaculation of average price out of range {}", iterator);
+                logger.warn("Calculation of average price out of range {}", iterator);
                 break;
             }
         }
@@ -143,7 +142,7 @@ public class PriceCalculator {
      * @param start timestamp of calculation
      * @param powerW power in watts
      * @param durationSeconds duration in seconds
-     * @return price according zo priceMap
+     * @return price according to priceMap
      */
     public double calculatePrice(Instant start, int powerW, int durationSeconds) {
         checkBoundaries(start, start.plus(durationSeconds, ChronoUnit.SECONDS));
@@ -162,7 +161,7 @@ public class PriceCalculator {
             }
         } else {
             throw new PriceCalculationException(
-                    "Calculation for " + start + "out of range. Respect priceInfoStart and priceInfoEnd boundaries.");
+                    "Calculation for " + start + " out of range. Respect priceInfoStart and priceInfoEnd boundaries.");
         }
     }
 

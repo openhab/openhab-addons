@@ -43,6 +43,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tibber.internal.Utils;
 import org.openhab.binding.tibber.internal.action.TibberActions;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
@@ -124,16 +125,19 @@ public class TibberHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             String group = channelUID.getGroupId();
-            if (GROUP_PRICE.equals(group)) {
+            if (CHANNEL_GROUP_PRICE.equals(group)) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_SPOT_PRICE:
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICE), priceCache);
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
+                                priceCache);
                         break;
                     case CHANNEL_PRICE_LEVELS:
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_PRICE_LEVELS), levelCache);
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
+                                levelCache);
                         break;
                     case CHANNEL_AVERAGE:
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_AVERAGE), averageCache);
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_AVERAGE),
+                                averageCache);
                         break;
                 }
             }
@@ -185,7 +189,7 @@ public class TibberHandler extends BaseThingHandler {
         Request currencyRequest = getRequest();
         String body = String.format(QUERY_CONTAINER,
                 String.format(getTemplate(CURRENCY_QUERY_RESOURCE_PATH), tibberConfig.homeid));
-        logger.info("Query with body {}", body);
+        logger.trace("Query with body {}", body);
         currencyRequest.content(new StringContentProvider(body, "utf-8"));
         try {
             ContentResponse cr = currencyRequest.send();
@@ -216,14 +220,9 @@ public class TibberHandler extends BaseThingHandler {
                     // start cron update for new spot prices
                     scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
                     int hour = tibberConfig.updateHour;
-                    if (hour < 0) {
-                        cronDaily = Optional
-                                .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, "*")));
-                    } else {
-                        cronDaily = Optional
-                                .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, hour)));
-                    }
-
+                    String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
+                    cronDaily = Optional
+                            .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour)));
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -236,7 +235,7 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private void watchdog() {
-        if (isRealtimeEnabled() && liveChannelsLinked()) {
+        if (liveChannelsLinked() && isRealtimeEnabled()) {
             webSocket.ifPresentOrElse(socket -> {
                 if (!socket.isConnected()) {
                     socket.start();
@@ -269,7 +268,7 @@ public class TibberHandler extends BaseThingHandler {
             int responseStatus = cr.getStatus();
             String jsonResponse = cr.getContentAsString();
             logger.trace("updatePrices response {} - {}", responseStatus, jsonResponse);
-            if (responseStatus != 200) {
+            if (responseStatus != HttpStatus.OK_200) {
                 updatePriceInfoRetry();
                 return;
             }
@@ -283,11 +282,11 @@ public class TibberHandler extends BaseThingHandler {
                         if (tibberConfig.updateHour <= Instant.now().atZone(timeZoneProvider.getTimeZone()).getHour()) {
                             JsonArray tomorrowPrices = priceInfo.getAsJsonArray("tomorrow");
                             if (tomorrowPrices.isEmpty()) {
-                                logger.info("No update for tomorrow found - retry");
+                                logger.debug("No update for tomorrow found - retry");
                                 updatePriceInfoRetry();
                                 return;
                             } else {
-                                logger.info("update found - continue");
+                                logger.debug("update found - continue");
                                 retryCounter = 0;
                             }
                         }
@@ -307,10 +306,10 @@ public class TibberHandler extends BaseThingHandler {
                             timeSeriesLevels.add(startsAt, Utils.mapToState(levelString));
                         }
                         priceCache = timeSeriesPrices;
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_SPOT_PRICE),
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
                                 timeSeriesPrices);
                         levelCache = timeSeriesLevels;
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_PRICE_LEVELS),
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
                                 timeSeriesLevels);
                         synchronized (this) {
                             calculator = Optional.of(new PriceCalculator(spotPrices));
@@ -323,7 +322,7 @@ public class TibberHandler extends BaseThingHandler {
                             avgSeries.add(key, getEnergyPrice(priceString));
                         });
                         averageCache = avgSeries;
-                        sendTimeSeries(new ChannelUID(thing.getUID(), GROUP_PRICE, CHANNEL_AVERAGE), avgSeries);
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_AVERAGE), avgSeries);
                         updateStatus(ThingStatus.ONLINE);
                     } catch (JsonSyntaxException | DateTimeParseException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -397,8 +396,8 @@ public class TibberHandler extends BaseThingHandler {
 
     private boolean liveChannelsLinked() {
         return getThing().getChannels().stream().map(Channel::getUID)
-                .filter((channelUID -> channelUID.getAsString().contains(GROUP_LIVE)
-                        || channelUID.getAsString().contains(GROUP_STATISTICS)))
+                .filter((channelUID -> channelUID.getAsString().contains(CHANNEL_GROUP_LIVE)
+                        || channelUID.getAsString().contains(CHANNEL_GROUP_STATISTICS)))
                 .anyMatch(this::isLinked);
     };
 
@@ -441,11 +440,11 @@ public class TibberHandler extends BaseThingHandler {
         JsonObject jsonData = Utils.getJsonObject(jsonMessage, SOCKET_MESSAGE_JSON_PATH);
         if (!jsonData.isEmpty()) {
             String value = Utils.getJsonValue(jsonData, "lastMeterConsumption");
-            updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, value, "kWh");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedConsumption");
-            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, value, "kWh");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedConsumptionLastHour");
-            updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedCost");
             if (!EMPTY.equals(value)) {
                 State costState;
@@ -458,38 +457,38 @@ public class TibberHandler extends BaseThingHandler {
                 } else {
                     costState = UnDefType.UNDEF;
                 }
-                updateState(new ChannelUID(thing.getUID(), GROUP_STATISTICS, CHANNEL_DAILY_COST), costState);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_COST), costState);
             }
             value = Utils.getJsonValue(jsonData, "lastMeterProduction");
-            updateChannel(GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, value, "kWh");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedProduction");
-            updateChannel(GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
-            updateChannel(GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "power");
-            updateChannel(GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPower");
-            updateChannel(GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPower");
-            updateChannel(GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
             value = Utils.getJsonValue(jsonData, "powerProduction");
-            updateChannel(GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "minPowerProduction");
-            updateChannel(GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "maxPowerProduction");
-            updateChannel(GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, value, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, value, "W");
             value = Utils.getJsonValue(jsonData, "voltagePhase1");
-            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_1, value, "V");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_VOLTAGE_1, value, "V");
             value = Utils.getJsonValue(jsonData, "voltagePhase2");
-            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_2, value, "V");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_VOLTAGE_2, value, "V");
             value = Utils.getJsonValue(jsonData, "voltagePhase3");
-            updateChannel(GROUP_LIVE, CHANNEL_VOLTAGE_3, value, "V");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_VOLTAGE_3, value, "V");
             value = Utils.getJsonValue(jsonData, "currentL1");
-            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_1, value, "A");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_1, value, "A");
             value = Utils.getJsonValue(jsonData, "currentL2");
-            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
             value = Utils.getJsonValue(jsonData, "currentL3");
-            updateChannel(GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
         }
     }
 
@@ -525,7 +524,7 @@ public class TibberHandler extends BaseThingHandler {
             // do this check for unit tests to avoid NullPointerException
             if (myself != null) {
                 URL url = myself.getResource(fileName);
-                logger.info("try to get {}", url);
+                logger.debug("try to get {}", url);
                 InputStream input = url.openStream();
                 // https://www.baeldung.com/java-scanner-usedelimiter
                 try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {

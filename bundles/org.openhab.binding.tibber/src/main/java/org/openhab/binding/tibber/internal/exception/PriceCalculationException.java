@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PriceCalculationException extends RuntimeException {
-    private static final long serialVersionUID = -1841031906330289887L;
+    private static final long serialVersionUID = 4330974498657720965L;
 
     public PriceCalculationException(String reason) {
         super(reason);

@@ -50,13 +50,13 @@
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
-		<description>Voltage on given Phase</description>
+		<description>Voltage on the given phase</description>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
-		<description>Current on given Phase</description>
+		<description>Current on the given phase</description>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
 </thing:thing-descriptions>

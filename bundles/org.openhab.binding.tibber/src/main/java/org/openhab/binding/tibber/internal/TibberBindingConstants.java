@@ -44,9 +44,9 @@ public class TibberBindingConstants {
     public static final ThingTypeUID TIBBER_THING_TYPE = new ThingTypeUID(BINDING_ID, "tibberapi");
 
     // Channel groups
-    public static final String GROUP_PRICE = "price";
-    public static final String GROUP_LIVE = "live";
-    public static final String GROUP_STATISTICS = "statistics";
+    public static final String CHANNEL_GROUP_PRICE = "price";
+    public static final String CHANNEL_GROUP_LIVE = "live";
+    public static final String CHANNEL_GROUP_STATISTICS = "statistics";
 
     // price channels
     public static final String CHANNEL_SPOT_PRICE = "spot-price";
