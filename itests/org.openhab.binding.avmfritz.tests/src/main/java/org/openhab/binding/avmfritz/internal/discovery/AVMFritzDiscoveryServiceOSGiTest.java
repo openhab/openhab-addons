@@ -115,6 +115,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_DIMMABLE_BULB_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(SMART_ENERGY_250_THING_TYPE));
     }
 
     @SuppressWarnings("null")
@@ -189,6 +190,66 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertEquals("FRITZ!DECT Repeater 100", discoveryResult.getProperties().get(PRODUCT_NAME));
         assertEquals("087610954669", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("03.86", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
+        assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
+
+        final String deviceNotPresentXml = xml.replace("<present>1</present>", "<present>0</present>");
+        devices = (DeviceListModel) u.unmarshal(new StringReader(deviceNotPresentXml));
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+        assertEquals(0, device.getPresent());
+
+        discovery.onDeviceAdded(device);
+        assertNull(discoveryResult);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void validSmart250DiscoveryResult() throws JAXBException, XMLStreamException {
+        //@formatter:off
+        final String xml = """
+                <devicelist version="1">
+                    <device identifier="12345-6789012-0" id="23" functionbitmask="130" fwversion="03.65" manufacturer="AVM" productname="FRITZ!Smart Energy 250">
+                        <present>1</present>
+                        <txbusy>0</txbusy>
+                        <name>FRITZ!Smart Energy 250 #8</name>
+                        <battery>90</battery>
+                        <batterylow>0</batterylow>
+                        <powermeter>
+                            <voltage>0</voltage>
+                            <power>532000</power>
+                            <energy>5921</energy>
+                        </powermeter>
+                    </device>
+                </devicelist>
+            """;
+        //@formatter:on
+
+        XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = u.unmarshal(xsr, DeviceListModel.class).getValue();
+
+        assertNotNull(devices);
+        assertEquals(1, devices.getDevicelist().size());
+
+        AVMFritzBaseModel device = devices.getDevicelist().get(0);
+        assertNotNull(device);
+        assertEquals(1, device.getPresent());
+
+        discovery.onDeviceAdded(device);
+        assertNotNull(discoveryResult);
+
+        assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
+        assertEquals(new ThingUID("avmfritz:FRITZ_Smart_Energy_250:1:1234567890120"), discoveryResult.getThingUID());
+        assertEquals(SMART_ENERGY_250_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
+        assertEquals("XXXXX-XXXXXXX-X", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));
+        assertEquals("FRITZ!Smart Energy 250", discoveryResult.getProperties().get(PRODUCT_NAME));
+        assertEquals("1234567890120", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("03.65", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
 
         final String deviceNotPresentXml = xml.replace("<present>1</present>", "<present>0</present>");
