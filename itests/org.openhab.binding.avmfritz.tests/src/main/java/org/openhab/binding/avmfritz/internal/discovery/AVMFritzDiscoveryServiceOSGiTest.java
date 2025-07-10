@@ -95,7 +95,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
 
     @Test
     public void correctSupportedTypes() {
-        assertEquals(19, discovery.getSupportedThingTypes().size());
+        assertEquals(22, discovery.getSupportedThingTypes().size());
         assertTrue(discovery.getSupportedThingTypes().contains(DECT100_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT200_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT210_THING_TYPE));
@@ -113,6 +113,8 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_BLINDS_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_COLOR_BULB_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_DIMMABLE_BULB_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_SENSOR_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_HOST_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(SMART_ENERGY_250_THING_TYPE));
@@ -242,13 +244,13 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertNotNull(discoveryResult);
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
-        assertEquals(new ThingUID("avmfritz:FRITZ_Smart_Energy_250:1:1234567890120"), discoveryResult.getThingUID());
+        assertEquals(new ThingUID("avmfritz:FRITZ_Smart_Energy_250:1:12345_6789012_0"), discoveryResult.getThingUID());
         assertEquals(SMART_ENERGY_250_THING_TYPE, discoveryResult.getThingTypeUID());
         assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
-        assertEquals("1234567890120", discoveryResult.getProperties().get(CONFIG_AIN));
+        assertEquals("12345-6789012-0", discoveryResult.getProperties().get(CONFIG_AIN));
         assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));
         assertEquals("FRITZ!Smart Energy 250", discoveryResult.getProperties().get(PRODUCT_NAME));
-        assertEquals("1234567890120", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
+        assertEquals("12345-6789012-0", discoveryResult.getProperties().get(PROPERTY_SERIAL_NUMBER));
         assertEquals("03.65", discoveryResult.getProperties().get(PROPERTY_FIRMWARE_VERSION));
         assertEquals(CONFIG_AIN, discoveryResult.getRepresentationProperty());
 
