@@ -149,12 +149,17 @@ public class ShellyThingCreatorTest {
                 Arguments.of("SNSW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of("SNSW-102P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of("SNSW-102P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of("S3SW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of("S3SW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of("S4SW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of("S4SW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PLUSPLUGS, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGIT, "", THING_TYPE_SHELLYPLUSPLUGS), //
-                Arguments.of(SHELLYDT_PLUSPLUGOUTDOORSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGUK, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGUS, "", THING_TYPE_SHELLYPLUSPLUGUS), //
+                Arguments.of(SHELLYDT_PLUSPLUGOUTDOORSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of(SHELLYDT_PLUSSTRIP, "", THING_TYPE_SHELLYPLUSSTRIP), //
                 Arguments.of(SHELLYDT_PLUSI4DC, "", THING_TYPE_SHELLYPLUSI4DC), //
                 Arguments.of(SHELLYDT_PLUSI4, "", THING_TYPE_SHELLYPLUSI4), //
                 Arguments.of(SHELLYDT_PLUSI4G3, "", THING_TYPE_SHELLYPLUSI4), //

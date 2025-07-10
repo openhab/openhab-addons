@@ -84,14 +84,17 @@ See section [Discovery](#discovery) for details.
 |----------------------|----------------------------------------------------------|------------------------------------------------------------|
 | shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU, S4SW-001X16EU |
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU                |
-| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL |
-| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL |
+| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU
+
+ |
+| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                   |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                               |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                               |
-| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | SNPL-00112EU                                |
+| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | SNPL-00112EU                                               |
 | shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                               |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                               |
+|  shellyplusstrip     | Shelly Plus Power Strip 4                                | S4PL-00416EU                                               |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                     |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                 |
 | shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                                  |
@@ -1245,6 +1248,20 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Plus Power Strip 4 (thing-type: shellyplusstrip)
+
+| Group  | Channel     | Type    | read-only | Description                                                                         |
+| ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
+| relay1 |             |         | r/w       | Relay #1 with control options and status values                                      |
+| relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
+| relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
+| relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
+| meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter2 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter3 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter4 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+
+
 ### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
@@ -1586,17 +1603,19 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
 
 
-### Shelly Pro 4PM (thing-type: shelly4pro)
+### Shelly Pro 4PM (thing-type: shellypro4pm)
 
-| Group  | Channel     | Type    | read-only | Description                                                                       |
-| ------ | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
-| relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
+| Group  | Channel     | Type    | read-only | Description                                                                         |
+| ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
+| relay1 |             |         | r/w       | Relay #1 with control options and status values                                      |
+| relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
+| relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
+| relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
+| meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter2 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter3 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter4 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+
 
 ## Shelly BLU Devices
 
