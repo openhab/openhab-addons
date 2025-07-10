@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -29,6 +30,9 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ShellyThingCreator {
+    private static final Pattern SHELLY_SERVICE_NAME_PATTERN = Pattern
+            .compile("^([a-z0-9]*shelly[a-z0-9]*)-([a-z0-9]+)$", Pattern.CASE_INSENSITIVE);
+
     // Device Types
     public static final String SHELLYDT_1 = "SHSW-1";
     public static final String SHELLYDT_1PM = "SHSW-PM";
@@ -645,5 +649,9 @@ public class ShellyThingCreator {
 
     private static ThingTypeUID getRelayOrRollerType(ThingTypeUID relayType, ThingTypeUID rollerType, String mode) {
         return SHELLY_MODE_RELAY.equals(mode) ? relayType : rollerType;
+    }
+
+    public static boolean isValidShellyServiceName(String serviceName) {
+        return SHELLY_SERVICE_NAME_PATTERN.matcher(serviceName).matches();
     }
 }
