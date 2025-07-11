@@ -431,17 +431,12 @@ public class ShellyDeviceProfile {
 
     public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
         String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUDW:
-                return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUMOTION:
-                return (THING_TYPE_SHELLYBLUMOTION_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUHT:
-                return (THING_TYPE_SHELLYBLUHT_STR + "-" + mac).toLowerCase();
-            default:
-                throw new IllegalArgumentException("Unsupported BLU device model " + model);
-        }
+        return "shellyblu" + switch (model) {
+            case SHELLYDT_BLUBUTTON -> "button";
+            case SHELLYDT_BLUDW -> "dw";
+            case SHELLYDT_BLUMOTION -> "motion";
+            case SHELLYDT_BLUHT -> "ht";
+            default -> throw new IllegalArgumentException("Unsupported BLU device model " + model);
+        } + "-" + mac.toLowerCase();
     }
 }

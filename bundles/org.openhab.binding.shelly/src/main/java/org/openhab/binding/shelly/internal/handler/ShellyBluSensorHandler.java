@@ -57,25 +57,20 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
     public static void addBluThing(String gateway, Shelly2NotifyEvent e, @Nullable ShellyThingTable thingTable) {
         String model = substringBefore(getString(e.data.name), "-").toUpperCase();
         String mac = e.data.addr.replaceAll(":", "");
-        String ttype = "";
         LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
-        ThingTypeUID tuid;
+        ThingTypeUID thingTypeUID;
         switch (model) {
             case SHELLYDT_BLUBUTTON:
-                ttype = THING_TYPE_SHELLYBLUBUTTON_STR;
-                tuid = THING_TYPE_SHELLYBLUBUTTON;
+                thingTypeUID = THING_TYPE_SHELLYBLUBUTTON;
                 break;
             case SHELLYDT_BLUDW:
-                ttype = THING_TYPE_SHELLYBLUDW_STR;
-                tuid = THING_TYPE_SHELLYBLUDW;
+                thingTypeUID = THING_TYPE_SHELLYBLUDW;
                 break;
             case SHELLYDT_BLUMOTION:
-                ttype = THING_TYPE_SHELLYBLUMOTION_STR;
-                tuid = THING_TYPE_SHELLYBLUMOTION;
+                thingTypeUID = THING_TYPE_SHELLYBLUMOTION;
                 break;
             case SHELLYDT_BLUHT:
-                ttype = THING_TYPE_SHELLYBLUHT_STR;
-                tuid = THING_TYPE_SHELLYBLUHT;
+                thingTypeUID = THING_TYPE_SHELLYBLUHT;
                 break;
             default:
                 LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
@@ -87,13 +82,13 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
         addProperty(properties, PROPERTY_MODEL_ID, model);
         addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
         addProperty(properties, PROPERTY_DEV_NAME, e.data.name);
-        addProperty(properties, PROPERTY_DEV_TYPE, ttype);
+        addProperty(properties, PROPERTY_DEV_TYPE, thingTypeUID.getId());
         addProperty(properties, PROPERTY_DEV_GEN, "BLU");
         addProperty(properties, PROPERTY_GW_DEVICE, gateway);
         addProperty(properties, CONFIG_DEVICEADDRESS, mac);
 
         if (thingTable != null) {
-            thingTable.discoveredResult(tuid, model, serviceName, mac, properties);
+            thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
         }
     }
 
