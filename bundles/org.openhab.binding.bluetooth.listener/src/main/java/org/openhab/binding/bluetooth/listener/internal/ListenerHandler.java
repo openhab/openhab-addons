@@ -278,7 +278,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
      * @param binEndian byte order
      * @return decimal value
      */
-    private @Nullable DecimalType getDecimalValue(byte[] data, int index, int length, float multiplicator,
+    private @Nullable DecimalType getDecimalValue(byte[] data, int index, int length, float multiplyer,
             boolean binEndian) {
         if (data.length < index + length) {
             return null;
