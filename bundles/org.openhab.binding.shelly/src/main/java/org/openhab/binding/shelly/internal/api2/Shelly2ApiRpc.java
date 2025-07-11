@@ -247,9 +247,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 profile.status.rollers.add(rs);
                 rollerStatus.add(rs);
             }
-            if (getString(profile.device.mode).isEmpty()) {
-                profile.device.mode = SHELLY_MODE_ROLLER; // single mode devices don't return mode
-            }
         } else if (profile.hasRelays) {
             profile.status.relays = new ArrayList<>();
             relayStatus.relays = new ArrayList<>();
@@ -257,9 +254,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             for (int i = 0; i < profile.numRelays; i++) {
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
-            }
-            if (getString(profile.device.mode).isEmpty()) {
-                profile.device.mode = SHELLY_MODE_RELAY; // single mode devices don't return mode
             }
         }
 
