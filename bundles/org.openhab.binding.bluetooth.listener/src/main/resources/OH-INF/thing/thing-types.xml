@@ -31,9 +31,7 @@
 			<parameter name="changeByteOrder" type="boolean">
 				<label>Big Endian</label>
 				<description>Multibyte item byte order for number channels. For items with length 2, 4 or 8 bytes byte order could
-					be changed. Default
-					(false) order is little endian. For big endian order set this to
-					true.</description>
+					be changed. Default (false) order is little endian. For big endian order set this to true.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="autoChannelCreation" type="boolean">
