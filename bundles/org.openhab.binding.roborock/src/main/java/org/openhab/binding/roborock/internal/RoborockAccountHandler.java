@@ -254,7 +254,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
         Login loginResponse;
         String sessionStoreToken = sessionStorage.get("token");
         String sessionStoreRriot = sessionStorage.get("rriot");
-        if (!sessionStoreToken.isEmpty() && !sessionStoreRriot.isEmpty()) {
+        if (!(sessionStoreToken == null) && !(sessionStoreRriot == null)) {
             logger.trace("Retrieved token and rriot values from sessionStorage");
             token = sessionStoreToken;
             @Nullable
@@ -347,6 +347,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
             if (!expectedShutdown) {
                 logger.debug("{}: MQTT disconnected (source {}): {}", getThing().getUID().getId(), ctx.getSource(),
                         ctx.getCause().getMessage());
+                String errorMessage = ctx.getCause().getMessage();
+                if (errorMessage.contains("NOT_AUTHORIZED")) {
+                    logger.trace("MQTT can't connect due to being unauthorised. Clear credentials");
+                    sessionStorage.put("token", null);
+                    sessionStorage.put("rriot", null);
+                    teardownAndScheduleReconnection();
+                }
                 onEventStreamFailure(ctx.getCause());
             }
         };
@@ -364,7 +371,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler {
 
         try {
             this.mqttClient = client;
-            client.connect().get();
+            client.connectWith().keepAlive(60).send();
+            // client.get();
 
             final Consumer<@Nullable Mqtt5Publish> eventCallback = publish -> {
                 if (publish == null) {
