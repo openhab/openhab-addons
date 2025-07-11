@@ -116,6 +116,50 @@
 
 	</thing-type>
 
+	<thing-type id="portable-air-conditioner">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Conditioner</label>
+		<description>This thing represents the Electrolux Portable Air Conditioner.</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
+		<channels>
+			<channel id="appliance-running" typeId="appliance-running"/>
+			<channel id="ambient-temperature" typeId="ambient-temperature"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="sleep-mode" typeId="sleep-mode"/>
+			<channel id="fan-swing" typeId="fan-swing"/>
+			<channel id="child-ui-lock" typeId="child-ui-lock"/>
+			<channel id="fan-mode" typeId="fan-mode"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="network-quality-indicator" typeId="network-quality-indicator"/>
+			<channel id="network-rssi" typeId="network-rssi"/>
+			<channel id="compressor-state" typeId="compressor-state"/>
+			<channel id="fourway-valve-state" typeId="fourway-valve-state"/>
+			<channel id="evap-defrost-state" typeId="evap-defrost-state"/>
+			<channel id="off-timer-active" typeId="off-timer-active"/>
+			<channel id="off-timer-duration" typeId="off-timer-duration"/>
+			<channel id="off-timer-time" typeId="off-timer-time"/>
+			<channel id="on-timer-active" typeId="on-timer-active"/>
+			<channel id="on-timer-duration" typeId="on-timer-duration"/>
+			<channel id="on-timer-time" typeId="on-timer-time"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The appliance serial number.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
@@ -446,6 +490,244 @@
 				<option value="DELICATE_PR_BABY">Delicate baby</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="appliance-running">
+		<item-type>Switch</item-type>
+		<label>Powered On</label>
+		<description>The device's state running state.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ambient-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Ambient Temperature</label>
+		<description>The measured ambient temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>The target set-point temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="16" max="32" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sleep-mode">
+		<item-type>Switch</item-type>
+		<label>Sleep Mode</label>
+		<description>Whether sleep mode is active.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="fan-swing">
+		<item-type>Switch</item-type>
+		<label>Fan Swing</label>
+		<description>Whether fan swing is active.</description>
+		<category>Flow</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="child-ui-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Whether child lock is active.</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="fan-mode">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>The fan speed mode.</description>
+		<category>Flow</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="HIGH">High</option>
+				<option value="MIDDLE">Middle</option>
+				<option value="LOW">Low</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>The operating mode.</description>
+		<category>Settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="COOL">Cool</option>
+				<option value="DRY">Dry</option>
+				<option value="FANONLY">Fan Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="network-quality-indicator">
+		<item-type>String</item-type>
+		<label>Network Quality</label>
+		<description>Indicator for the network quality.</description>
+		<category>Network</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>SignalStrength</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="EXCELLENT">Excellent</option>
+				<option value="VERY_GOOD">Very Good</option>
+				<option value="GOOD">Good</option>
+				<option value="POOR">Poor</option>
+				<option value="VERY_POOR">Very Poor</option>
+				<option value="UNDEFINED">Undefined</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="network-rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>RSSI</label>
+		<description>WiFi Received Signal Strength Indicator.</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="compressor-state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor Running</label>
+		<description>Is the compressor running.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fourway-valve-state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Four Way Valve State</label>
+		<description>The state of the four way valve.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="evap-defrost-state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Evap Defrost State</label>
+		<description>The state of the evap defrost.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="off-timer-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer Off Activate</label>
+		<description>Whether a timer is active to turn off the appliance.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="off-timer-duration" advanced="true">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Timer Off Duration</label>
+		<description>Off timer duration applied when enabled.</description>
+		<category>Settings</category>
+		<state min="0" max="86400" step="1800" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="off-timer-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Auto Off Time</label>
+		<description>The time when the auto off timer will be reached.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="on-timer-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer On Activate</label>
+		<description>Whether a timer is active to turn on the appliance.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="on-timer-duration" advanced="true">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Timer On Duration</label>
+		<description>On timer duration applied when enabled.</description>
+		<category>Settings</category>
+		<state min="0" max="86400" step="1800" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="on-timer-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Auto On Time</label>
+		<description>The time when the auto on timer will be reached.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 </thing:thing-descriptions>
