@@ -202,26 +202,26 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         } else if (command instanceof DecimalType decimalCommand) {
             zwaveCommand.value = decimalCommand.doubleValue();
         } else if (command instanceof DateTimeType dateTimeCommand) {
-            throw new UnsupportedOperationException(dateTimeCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(dateTimeCommand.toString() + " is currently not supported");
         } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-            throw new UnsupportedOperationException(increaseDecreaseCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(increaseDecreaseCommand.toString() + " is currently not supported");
         } else if (command instanceof NextPreviousType nextPreviousCommand) {
-            throw new UnsupportedOperationException(nextPreviousCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(nextPreviousCommand.toString() + " is currently not supported");
         } else if (command instanceof OpenClosedType openClosedCommand) {
             zwaveCommand.value = openClosedCommand == (channelConfig.inverted ? OpenClosedType.CLOSED
                     : OpenClosedType.OPEN);
         } else if (command instanceof PlayPauseType playPauseCommand) {
-            throw new UnsupportedOperationException(playPauseCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(playPauseCommand.toString() + " is currently not supported");
         } else if (command instanceof PointType pointCommand) {
-            throw new UnsupportedOperationException(pointCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(pointCommand.toString() + " is currently not supported");
         } else if (command instanceof RewindFastforwardType rewindFastforwardCommand) {
-            throw new UnsupportedOperationException(rewindFastforwardCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(rewindFastforwardCommand.toString() + " is currently not supported");
         } else if (command instanceof StopMoveType stopMoveCommand) {
-            throw new UnsupportedOperationException(stopMoveCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(stopMoveCommand.toString() + " is currently not supported");
         } else if (command instanceof StringListType stringListCommand) {
-            throw new UnsupportedOperationException(stringListCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(stringListCommand.toString() + " is currently not supported");
         } else if (command instanceof UpDownType upDownCommand) {
-            throw new UnsupportedOperationException(upDownCommand.toString() + "is currently not supported");
+            throw new UnsupportedOperationException(upDownCommand.toString() + " is currently not supported");
         } else if (command instanceof StringType stringCommand) {
             zwaveCommand.value = stringCommand.toString();
         }
