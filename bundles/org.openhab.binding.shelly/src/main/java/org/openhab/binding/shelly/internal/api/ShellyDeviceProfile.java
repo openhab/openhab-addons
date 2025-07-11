@@ -437,6 +437,6 @@ public class ShellyDeviceProfile {
             case SHELLYDT_BLUMOTION -> "motion";
             case SHELLYDT_BLUHT -> "ht";
             default -> throw new IllegalArgumentException("Unsupported BLU device model " + model);
-        } + "-" + mac.toLowerCase();
+        } + "-" + mac.replaceAll(":", "").toLowerCase();
     }
 }
