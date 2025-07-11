@@ -83,9 +83,6 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof OndiloBridgeHandler) {
             unregisterOndiloDiscoveryService();
-        } else if (thingHandler instanceof OndiloHandler) {
-            // Handle OniloHandler removal if needed
-            return;
         }
     }
 

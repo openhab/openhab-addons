@@ -7,7 +7,7 @@
 	<!-- Ondilo Bridge Thing Type -->
 	<bridge-type id="bridge">
 		<label>Ondilo Bridge</label>
-		<description>The bridge for the central communicate with the Ondilo API</description>
+		<description>The bridge for central communication with the Ondilo API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
@@ -95,48 +95,75 @@
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Water Temperature</label>
 		<description>Water temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ph">
 		<item-type>Number</item-type>
 		<label>PH Level</label>
 		<description>PH level</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="orp">
 		<item-type unitHint="mV">Number:ElectricPotential</item-type>
 		<label>ORP</label>
 		<description>Oxidation-Reduction Potential (ORP)</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="salt">
 		<item-type unitHint="mg/l">Number:Density</item-type>
 		<label>Salt</label>
 		<description>Salt level</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="tds">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>TDS</label>
 		<description>Total dissolved solids</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="rssi">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<description>Signal strength (RSSI)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="value-time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Value Time</label>
 		<description>Timestamp of the set of measures</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 	<channel-type id="poll-update" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Poll Update</label>
 		<description>Poll status update from the cloud (get latest measures, not a trigger for new measures)</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Recommendation Channel Types -->
@@ -144,42 +171,68 @@
 		<item-type>Number</item-type>
 		<label>ID</label>
 		<description>ID of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Title of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="message">
 		<item-type>String</item-type>
 		<label>Message</label>
 		<description>Message of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="created-at" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Created At</label>
 		<description>Creation time of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="updated-at" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Updated At</label>
 		<description>Update time of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deadline" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Deadline</label>
 		<description>Deadline of the current recommendation</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

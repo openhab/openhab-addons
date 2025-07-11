@@ -72,7 +72,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 ### Thing Configuration
 
 ```Java
-Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=1800 ]  {
+Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=1800 ] {
     Thing ondilo "<id_received_from_discovery>" [ mowerId="<id_received_from_discovery>" ] {
     }
 ```
@@ -80,16 +80,16 @@ Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=180
 ### Item Configuration
 
 ```java
-Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:mybridge:myonilo:measure#temperature" }
-Number                    Ondilo_pH           "Pool pH [%d]"                    { channel="ondilo:ondilo:mybridge:myonilo:measure#ph" }
-Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.1f %unit%]"          { channel="ondilo:ondilo:mybridge:myonilo:measure#orp" }
-Number:Density            Ondilo_Salt         "Pool Salt [%.0f %unit%]"         { channel="ondilo:ondilo:mybridge:myonilo:measure#salt" }
-Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %]"             { channel="ondilo:ondilo:mybridge:myonilo:measure#battery" }
-Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%.0f]"                { channel="ondilo:ondilo:mybridge:myonilo:measure#rssi" }
+Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:mybridge:myOndilo:measure#temperature" }
+Number                    Ondilo_pH           "Pool pH [%d]"                    { channel="ondilo:ondilo:mybridge:myOndilo:measure#ph" }
+Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.1f %unit%]"          { channel="ondilo:ondilo:mybridge:myOndilo:measure#orp" }
+Number:Density            Ondilo_Salt         "Pool Salt [%.0f %unit%]"         { channel="ondilo:ondilo:mybridge:myOndilo:measure#salt" }
+Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %]"             { channel="ondilo:ondilo:mybridge:myOndilo:measure#battery" }
+Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%.0f]"                { channel="ondilo:ondilo:mybridge:myOndilo:measure#rssi" }
 
-String                    Ondilo_RecTitle     "Recommendation Title [%s]"       { channel="ondilo:ondilo:mybridge:myonilo:recommendation#title" }
-String                    Ondilo_RecMessage   "Recommendation Message [%s]"     { channel="ondilo:ondilo:mybridge:myonilo:recommendation#message" }
-String                    Ondilo_RecStatus    "Recommendation Status [%s]"      { channel="ondilo:ondilo:mybridge:myonilo:recommendation#status" }
+String                    Ondilo_RecTitle     "Recommendation Title [%s]"       { channel="ondilo:ondilo:mybridge:myOndilo:recommendation#title" }
+String                    Ondilo_RecMessage   "Recommendation Message [%s]"     { channel="ondilo:ondilo:mybridge:myOndilo:recommendation#message" }
+String                    Ondilo_RecStatus    "Recommendation Status [%s]"      { channel="ondilo:ondilo:mybridge:myOndilo:recommendation#status" }
 ```
 
 ### Sitemap Configuration

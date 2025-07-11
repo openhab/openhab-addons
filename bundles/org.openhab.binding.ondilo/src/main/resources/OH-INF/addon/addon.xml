@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Ondilo Binding</name>
 	<description>This is the binding for Ondilo ICO Pool and Spa devices.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
