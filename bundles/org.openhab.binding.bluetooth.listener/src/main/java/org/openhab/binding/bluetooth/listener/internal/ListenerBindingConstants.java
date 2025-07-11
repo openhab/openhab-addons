@@ -40,7 +40,7 @@ public class ListenerBindingConstants {
     public static final String PARAMETER_DATA_UUID = "uuid";
     public static final String PARAMETER_DATA_BEGIN = "dataBegin";
     public static final String PARAMETER_DATA_LENGTH = "dataLength";
-    public static final String PARAMETER_MULTIPLICATOR = "multiplicator";
+    public static final String PARAMETER_MULTIPLYER = "multiplyer";
     public static final String PARAMETER_PAYLOAD_LENGTH = "payloadLength";
 
     // List of Property IDs
