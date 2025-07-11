@@ -42,7 +42,7 @@ They support switching the outlet and reading the current power, current voltage
 ### FRITZ!Smart Energy 250
 
 This smart meter read head [FRITZ!Smart Energy 250](https://fritz.com/produkte/smart-home/fritzsmart-energy-250/) has to be connected to a FRITZ!Box by DECT protocol.
-It supports  reading the current power, current voltage, accumulated energy consumption, as well as battery level and battery low indication.
+It supports reading the current power, current voltage, accumulated energy consumption, as well as battery level and battery low indication.
 
 ### FRITZ!DECT Repeater 100
 
