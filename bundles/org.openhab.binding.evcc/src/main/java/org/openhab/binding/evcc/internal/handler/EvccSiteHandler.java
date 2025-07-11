@@ -3,7 +3,6 @@ package org.openhab.binding.evcc.internal.handler;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -33,21 +32,17 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void updateFromEvccState(JsonObject root) {
+        if (root.has("gridConfigured")) {
+            // If grid is configured, add gridPower to the root object
+            // This is a workaround to avoid modifying the original JSON structure
+            double gridPower = root.getAsJsonObject("grid").get("power").getAsDouble();
+            root.addProperty("gridPower", gridPower);
+        }
         super.updateFromEvccState(root);
     }
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge == null)
-            return;
-
-        bridgeHandler = bridge.getHandler() instanceof EvccBridgeHandler ? (EvccBridgeHandler) bridge.getHandler()
-                : null;
-        if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            return;
-        }
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

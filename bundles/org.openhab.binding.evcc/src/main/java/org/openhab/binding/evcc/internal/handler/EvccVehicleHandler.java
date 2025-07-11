@@ -1,24 +1,37 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class EvccVehicleHandler extends EvccBaseThingHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(EvccVehicleHandler.class);
+
     @Nullable
     private final String vehicleId;
+    private final Gson gson = new Gson();
+
+    private String endpoint = "";
 
     public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
@@ -27,8 +40,31 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
+        if (command instanceof State) {
+            HttpClient httpClient = bridgeHandler.getHttpClient();
+            String datapoint = channelUID.getId().replace("vehicle", "").toLowerCase();
+            String value = command.toString().substring(0, command.toString().indexOf(" "));
+            String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
+
+            try {
+                ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
+                        .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
+
+                if (response.getStatus() == 200) {
+                    @Nullable
+                    JsonObject return_value = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                    if (return_value != null) {
+                        // Add logic here!
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    logger.warn("EVCC API-Fehler: HTTP {}", response.getStatus());
+                }
+
+            } catch (Exception e) {
+                logger.error("EVCC Bridge konnte API nicht abrufen", e);
+            }
+        }
     }
 
     @Override
@@ -39,16 +75,11 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge == null)
-            return;
-
-        bridgeHandler = bridge.getHandler() instanceof EvccBridgeHandler ? (EvccBridgeHandler) bridge.getHandler()
-                : null;
+        super.initialize();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
+        endpoint = bridgeHandler.getBaseURL() + "/vehicles";
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

@@ -11,7 +11,6 @@
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
 		<description>Title of vehicle</description>
-		<category>GarageDoor</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleMinSoc">
@@ -26,8 +25,16 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Vehicle Min Current</label>
 		<description>Minimum current thats need to provided to charge the vehicle</description>
-		<category></category>
-		<state min="0" step="1" max="32" readOnly="false"/>
+		<category>Energy</category>
+		<state min="6" step="1" max="32" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleMaxCurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Vehicle Max Current</label>
+		<description>Maximum allowed current thats can be provided to charge the vehicle</description>
+		<category>Energy</category>
+		<state min="6" step="1" max="32" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleLimitSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -47,13 +54,16 @@
 	<channel-type id="vehiclePlanPrecondition">
 		<item-type>Number</item-type>
 		<label>Plan Precondition</label>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehiclePlanSoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Planned SoC</label>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehiclePlanTime">
 		<item-type>DateTime</item-type>
 		<label>Plan date</label>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

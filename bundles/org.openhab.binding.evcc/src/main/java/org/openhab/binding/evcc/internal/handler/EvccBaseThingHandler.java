@@ -68,9 +68,14 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
 
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), key)).withType(channelTypeUID)
-                    .withAcceptedItemType(itemType).build();
+                    // .withAcceptedItemType(itemType)
+                    .build();
 
-            if (!thing.getChannels().stream().anyMatch(c -> c.getUID().equals(channel.getUID()))) {
+            ChannelUID channelUID = channel.getUID();
+
+            setItemValue(itemType, channelUID, value);
+
+            if (!getThing().getChannels().stream().anyMatch(c -> c.getUID().equals(channel.getUID()))) {
                 builder.withChannel(channel);
             }
 
@@ -80,6 +85,21 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         updateStatus(ThingStatus.ONLINE);
         isInitialized = true;
         bridgeHandler.register(this);
+    }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+        Bridge bridge = getBridge();
+        if (bridge == null)
+            return;
+
+        bridgeHandler = bridge.getHandler() instanceof EvccBridgeHandler ? (EvccBridgeHandler) bridge.getHandler()
+                : null;
+        if (bridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return;
+        }
     }
 
     @Override
@@ -99,6 +119,27 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    private boolean setItemValue(String itemType, ChannelUID channelUID, JsonElement value) {
+        switch (itemType) {
+            case "Number:Energy" ->
+                updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.KILOWATT_HOUR));
+            case "Number:Power" -> updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.WATT));
+            case "Number:Dimensionless" ->
+                updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.PERCENT));
+            case "Number:ElectricCurrent" ->
+                updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.AMPERE));
+            case "String" -> updateState(channelUID, new StringType(value.getAsString()));
+            case "Number", "Number:Currency", "Number:Time" ->
+                updateState(channelUID, new DecimalType(value.getAsDouble()));
+            case "Switch" -> updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
+            case "default" -> {
+                logger.debug("Unsupported item type '{}' for channel {}", itemType, channelUID);
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static String capitalizeWords(String input) {
         return Arrays.stream(input.split("(?=[A-Z])")) // split before uppercase
                 .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1)) // capitalize each
@@ -106,13 +147,13 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     private String getThingKey(String key) {
-        Map<@NonNull String, @NonNull String> props = thing.getProperties();
+        Map<@NonNull String, @NonNull String> props = getThing().getProperties();
 
         switch (props.get("type")) {
             case "site":
                 return key;
             case null:
-                logger.warn("Property type was not found for {}", thing.getUID().getAsString());
+                logger.warn("Property type was not found for {}", getThing().getUID().getAsString());
                 return key;
             default:
                 return props.get("type") + key.substring(0, 1).toUpperCase() + key.substring(1);
@@ -124,11 +165,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (!isInitialized) {
             return;
         }
-
-        if (root.has("gridConfigured")) {
-            double gridPower = root.getAsJsonObject("grid").get("power").getAsDouble();
-            root.addProperty("gridPower", gridPower);
-        }
+        ThingBuilder builder = editThing();
+        boolean channelAdded = false;
 
         for (Map.Entry<String, JsonElement> entry : root.entrySet()) {
             String key = getThingKey(entry.getKey());
@@ -139,35 +177,23 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
 
             ChannelUID channelUID = channelUID(key);
-            Channel channel = getThing().getChannel(channelUID.getId());
-            if (channel == null) {
-                continue;
+            Channel existingChannel = getThing().getChannel(channelUID.getId());
+            if (existingChannel == null) {
+
+                ChannelTypeUID typeUID = new ChannelTypeUID(BINDING_ID, key);
+                Channel newChannel = ChannelBuilder.create(channelUID).withType(typeUID).build();
+                builder.withChannel(newChannel);
+                channelAdded = true;
+                logger.debug("Dynamisch neuen Channel hinzugefügt: {}", key);
             }
 
-            switch (getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId()))) {
-                case "Number:Energy":
-                    updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.KILOWATT_HOUR));
-                    break;
-                case "Number:Power":
-                    updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.WATT));
-                    break;
-                case "Number:Dimensionless":
-                    updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.PERCENT));
-                    break;
-                case "String":
-                    updateState(channelUID, new StringType(value.getAsString()));
-                    break;
-                case "Number", "Number:Currency", "Number:Time":
-                    updateState(channelUID, new DecimalType(value.getAsDouble()));
-                    break;
-                case "Switch":
-                    updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
-                    break;
-                default:
-                    logger.warn("Unsupported channel type for channel {}: {}", channelUID,
-                            channel.getAcceptedItemType());
-                    continue;
+            if (!setItemValue(getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId())), channelUID, value)) {
+                continue;
             }
+        }
+
+        if (channelAdded) {
+            updateThing(builder.build());
         }
     }
 

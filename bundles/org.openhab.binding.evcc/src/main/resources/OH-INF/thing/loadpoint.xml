@@ -186,10 +186,10 @@
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<!--
-	<channel-type id="loadpointEffectivePlanTime">
+		<channel-type id="loadpointEffectivePlanTime">
 		<item-type>Number:Time</item-type>
 		<label>Effective plan time</label>
-	</channel-type>
+		</channel-type>
 	-->
 	<channel-type id="loadpointEnableDelay">
 		<item-type>Number:Time</item-type>
@@ -237,37 +237,7 @@
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-
-
-
-
-	<channel-type id="activePhases">
-		<item-type>Number</item-type>
-		<label>Charging Active Phases</label>
-		<description>Current number of active phases while charging</description>
-		<category></category>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-	<channel-type id="chargeCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Charging Current</label>
-		<description>Current amperage per connected phase while charging</description>
-		<category>Energy</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="enabled">
-		<item-type>Switch</item-type>
-		<label>Charging Enabled</label>
-		<description>Charging enabled (mode not "off")</description>
-		<category>Switch</category>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Enabled</option>
-				<option value="OFF">Disabled</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="mode">
+	<channel-type id="loadpointMode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
 		<description>Charging mode: "off", "now", "minpv", "pv"</description>
@@ -281,6 +251,45 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="loadpointOfferedCurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charging Current</label>
+		<description>Current amperage per connected phase while charging</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<!--
+		<channel-type id="loadpointPhaseAction">
+		</channel-type>
+	-->
+	<channel-type id="loadpointPhaseRemaining">
+		<item-type>Number</item-type>
+		<label>Phase remaining</label>
+	</channel-type>
+	<channel-type id="loadpointPhasesActive">
+		<item-type>Number</item-type>
+		<label>Charging Active Phases</label>
+		<description>Current number of active phases while charging</description>
+		<category></category>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointPhasesConfigured">
+		<item-type>Number</item-type>
+		<label>Phases Configured</label>
+	</channel-type>
+
+	<channel-type id="enabled">
+		<item-type>Switch</item-type>
+		<label>Charging Enabled</label>
+		<description>Charging enabled (mode not "off")</description>
+		<category>Switch</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="phases">
 		<item-type>Number</item-type>
@@ -359,5 +368,5 @@
 			characters)</description>
 		<category>Settings</category>
 		<state readOnly="true"/>
-	</channel-type>		
+	</channel-type>
 </thing:thing-descriptions>

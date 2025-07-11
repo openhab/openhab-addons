@@ -7,4 +7,12 @@
 		<label>Photovoltaik</label>
 		<description>Contains the pv data</description>
 	</thing-type>
+	<!-- Already declared in site.xml maybe evcc is going to change it in the future -->
+	<channel-type id="pvPower">
+		<item-type>Number:Power</item-type>
+		<label>PV Power</label>
+		<description>Current power of this photovoltaic system in Watt</description>
+		<category>Power</category>
+		<state pattern="%.0f W" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

@@ -7,6 +7,15 @@
 		<label>evcc Bridge</label>
 		<description>Connection to evcc instance</description>
 		<config-description>
+			<parameter name="schema" type="text">
+				<label>Protocol schema</label>
+				<description>The used protocol schema to connect to your evcc instance</description>
+				<default>http</default>
+				<options>
+					<option value="http">HTTP</option>
+					<option value="https">HTTPS</option>
+				</options>
+			</parameter>
 			<parameter name="host" type="text" required="true">
 				<label>Hostname or IP</label>
 				<description>Address of your evcc instance, for example evcc.local or 192.168.1.2</description>

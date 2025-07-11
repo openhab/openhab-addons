@@ -7,4 +7,5 @@
 		<label>Heating - Loadpoint</label>
 		<description>Contains the heating loadpoint data</description>
 	</thing-type>
+	<!-- This thing is currently using the chame channels as a loadpoint does -->
 </thing:thing-descriptions>

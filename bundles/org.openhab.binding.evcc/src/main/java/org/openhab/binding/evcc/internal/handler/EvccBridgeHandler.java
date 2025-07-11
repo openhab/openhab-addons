@@ -14,6 +14,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -40,11 +41,17 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private final CopyOnWriteArrayList<EvccJsonAwareHandler> listeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> pollJob;
     private volatile JsonObject lastState = new JsonObject();
+    private final String endpoint;
 
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
+        Configuration config = bridge.getConfiguration();
         this.httpClientFactory = httpClientFactory;
         httpClient = httpClientFactory.getCommonHttpClient();
+        String host = String.valueOf(config.get("host"));
+        int port = ((BigDecimal) config.get("port")).intValue();
+        String schema = String.valueOf(config.get("schema"));
+        endpoint = schema + "://" + host + ":" + port + "/api/state";
     }
 
     @Override
@@ -75,6 +82,14 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         listeners.clear();
     }
 
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public String getBaseURL() {
+        return endpoint.substring(0, endpoint.lastIndexOf("/"));
+    }
+
     private void startPolling() {
         int refreshInterval = ((BigDecimal) getConfig().get("pollInterval")).intValue();
         if (refreshInterval <= 0) {
@@ -89,12 +104,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     }
 
     public Optional<JsonObject> fetchEvccState() {
-        String host = String.valueOf(getConfig().get("host"));
-        int port = ((BigDecimal) getConfig().get("port")).intValue();
-        String url = "http://" + host + ":" + port + "/api/state";
-
         try {
-            ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
+            ContentResponse response = httpClient.newRequest(endpoint).timeout(5, TimeUnit.SECONDS)
                     .header(HttpHeader.ACCEPT, "application/json").send();
 
             if (response.getStatus() == 200) {
