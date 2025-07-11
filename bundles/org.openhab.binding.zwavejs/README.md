@@ -38,18 +38,18 @@ The following discovery features are available:
 The `zwavejs` binding requires configuration of the bridge to connect to the Z-Wave JS Webservice.
 The configuration options include:
 
-| Name                  | Type    | Description                                         | Default | Required | Advanced |
-|-----------------------|---------|-----------------------------------------------------|---------|----------|----------|
-| hostname              | text    | Hostname or IP address of the server                | N/A     | yes      | no       |
-| port                  | number  | Port number to access the service                   | 3000    | yes      | no       |
-| maxMessageSize        | number  | Maximum size of messages in bytes                   | 2097152 | no       | yes      |
+| Name                  | Type    | Description                                          | Default | Required | Advanced |
+|-----------------------|---------|------------------------------------------------------|---------|----------|----------|
+| hostname              | text    | Hostname or IP address of the server                 | N/A     | yes      | no       |
+| port                  | number  | Port number to access the service                    | 3000    | yes      | no       |
+| maxMessageSize        | number  | Maximum size of messages in bytes                    | 2097152 | no       | yes      |
 | configurationChannels | boolean | Expose the command class 'configuration' as channels | false   | no       | yes      |
 
 ## Thing Configuration
 
 Each Z-Wave node can have its own configuration options.
 All configuration parameters are set by the binding during startup and are read-only.
-Only the advanced parameter `nodeId` can (optionally) be set in the Thing configuration in the openHAB UI or in the `.things` file.
+Only the advanced parameter `id` can (optionally) be set in the Thing configuration in the openHAB UI or in the `.things` file.
 
 ## Channels
 
@@ -71,7 +71,7 @@ Bridge zwavejs:gateway:myBridge "Z-Wave JS Bridge" [ hostname="localhost", port=
 ### `demo.items` Example
 
 ```java
-Switch LightSwitch "Light Switch" { channel="zwavejs:node:myBridge:node1:switch_binary" }
+Switch LightSwitch "Light Switch" { channel="zwavejs:node:myBridge:node1:binary-switch-value" }
 ```
 
 ## Troubleshooting

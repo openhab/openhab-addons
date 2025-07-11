@@ -11,3 +11,15 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+error_prone_annotations
+* License: Apache License 2.0
+* Project: https://github.com/google/error-prone
+* Source: https://github.com/google/error-prone
+
+gson RuntimeTypeAdapterFactory code snippet
+* License: Apache License 2.0
+* Project: https://github.com/google/gson/
+* Source: https://github.com/google/gson/blob/main/extras/src/main/java/com/google/gson/typeadapters/RuntimeTypeAdapterFactory.java
