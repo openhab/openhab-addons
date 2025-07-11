@@ -31,7 +31,7 @@ As a minimum, the apiKey is needed:
 | nem-time               | String               | NEM time of last pricing update                      |
 | renewables             | Number:Dimensionless | Current level of renewables in the NEM               |
 | spike                  | Switch               | Report if the grid has a current price spike         |
-| estimate               | Switch               | Report if the current pricing is an estimate or note |
+| estimate               | Switch               | Report if the current pricing is an estimate or not  |
 
 ## Full Example
 
