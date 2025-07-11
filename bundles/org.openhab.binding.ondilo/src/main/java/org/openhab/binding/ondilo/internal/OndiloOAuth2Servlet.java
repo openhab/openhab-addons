@@ -13,12 +13,15 @@
 package org.openhab.binding.ondilo.internal;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -29,8 +32,6 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.micrometer.common.lang.Nullable;
-
 /**
  * The {@link OndiloHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -38,6 +39,7 @@ import io.micrometer.common.lang.Nullable;
  * @author MikeTheTux - Initial contribution
  */
 @Component(service = OndiloOAuth2Servlet.class, immediate = true)
+@NonNullByDefault
 public class OndiloOAuth2Servlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -59,8 +61,15 @@ public class OndiloOAuth2Servlet extends HttpServlet {
     // This method is called when the OSGi component is activated
     protected void activate() {
         try {
-            httpService.registerServlet(SERVLET_ALIAS, this, null, null);
-            logger.info("OndiloOAuth2Servlet registered at {}", SERVLET_ALIAS);
+            HttpService httpService = this.httpService;
+            if (httpService != null) {
+                httpService.registerServlet(SERVLET_ALIAS, this, null, null);
+                logger.trace("OndiloOAuth2Servlet registered at {}", SERVLET_ALIAS);
+            } else {
+                logger.error("HttpService is not available. Cannot register OndiloOAuth2Servlet.");
+                return;
+            }
+
         } catch (ServletException | NamespaceException e) {
             logger.error("Failed to register OndiloOAuth2Servlet", e);
         }
@@ -68,35 +77,50 @@ public class OndiloOAuth2Servlet extends HttpServlet {
 
     // This method is called when the OSGi component is deactivated
     protected void deactivate() {
-        httpService.unregister(SERVLET_ALIAS);
-        logger.info("OndiloOAuth2Servlet unregistered from {}", SERVLET_ALIAS);
+        HttpService httpService = this.httpService;
+        if (httpService != null) {
+            httpService.unregister(SERVLET_ALIAS);
+            httpService = null;
+            logger.trace("OndiloOAuth2Servlet unregistered from {}", SERVLET_ALIAS);
+        }
+    }
+
+    private void sendError(HttpServletResponse response, int statusCode, String logMessage, String clientMessage)
+            throws IOException {
+        logger.error("{}", logMessage);
+        response.sendError(statusCode, clientMessage);
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
+        OAuthFactory oAuthFactory = this.oAuthFactory;
+        if (request == null || response == null || oAuthFactory == null) {
+            String logMsg = "Received null request or response in OndiloOAuth2Servlet";
+            logger.error(logMsg);
+            if (response != null) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+            }
+            return;
+        }
         String code = request.getParameter("code");
         String state = request.getParameter("state");
         String error = request.getParameter("error");
 
         if (error != null) {
-            logger.error("OAuth2 error received: {}", error);
-            response.getWriter().println("OAuth2 Error: " + error);
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST, "OAuth2 error received: " + error,
+                    "OAuth2 Error: " + error);
             return;
         }
 
         if (code != null && state != null) {
-            // This is the callback from the OAuth2 provider
             logger.trace("Received OAuth2 callback with code: {}... and state: {}", code.substring(0, 5), state);
             OndiloBridgeHandler onlidoBridgeHander = OndiloBridgeHandler.getOAuthServiceByState(state);
             OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(state);
 
-            StringBuffer url = request.getRequestURL(); // protocol + server + port + path
-            String queryString = request.getQueryString(); // parameters
-            String fullUrl = url.toString();
-            if (queryString != null) {
-                fullUrl += "?" + queryString;
-            }
+            StringBuffer url = request.getRequestURL();
+            String queryString = request.getQueryString();
+            String fullUrl = ((url != null) ? url.toString() : "") + ((queryString != null) ? "?" + queryString : "");
 
             if (oAuthService != null && onlidoBridgeHander != null) {
                 try {
@@ -104,22 +128,25 @@ public class OndiloOAuth2Servlet extends HttpServlet {
                     logger.trace("Authorization code extracted successfully: {}...", authorizationCode.substring(0, 5));
                     onlidoBridgeHander.onOAuth2Authorized(authorizationCode, oAuthService);
 
-                    response.getWriter().println("<h1>Ondilo oAuth2 Authentication Successful!</h1>");
-                    response.getWriter().println("<p>You can now close this window and return to openHAB</p>");
+                    try (PrintWriter writer = response.getWriter()) {
+                        writer.println("<h1>Ondilo OAuth2 Authentication Successful!</h1>");
+                        writer.println("<p>You can now close this window and return to openHAB</p>");
+                    }
                 } catch (OAuthException e) {
-                    logger.error("Failed to extract authorization code from OAuth2 response", e);
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid OAuth2 response");
+                    sendError(response, HttpServletResponse.SC_BAD_REQUEST,
+                            "Failed to extract authorization code from OAuth2 response: " + e.getMessage(),
+                            "Invalid OAuth2 response");
                     return;
                 }
             } else {
-                // If the OAuthClientService is not available, we cannot process the callback
-                logger.error("OAuthClientService is not available. Cannot process OAuth2 callback.");
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "OAuthClientService not available");
+                sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "OAuthClientService is not available. Cannot process OAuth2 callback.",
+                        "OAuthClientService not available");
             }
         } else {
-            logger.error("Invalid Request");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "Invalid request. Missing 'code' or 'state' parameters");
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Invalid oAuth2 response. Missing 'code' or 'state' parameter",
+                    "Invalid OAuth2 response. Missing 'code' or 'state' parameter");
         }
     }
 }

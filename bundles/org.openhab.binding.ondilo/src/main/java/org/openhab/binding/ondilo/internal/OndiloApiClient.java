@@ -13,6 +13,8 @@
 package org.openhab.binding.ondilo.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,16 +60,22 @@ public class OndiloApiClient {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Authorization", "Bearer " + bearer);
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Charset", "utf-8");
+            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
             conn.connect();
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
-                Scanner scanner = new Scanner(conn.getInputStream());
-                String response = scanner.useDelimiter("\\A").next();
-                scanner.close();
-                return response;
+                try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
+                    String response = scanner.useDelimiter("\\A").next();
+                    return response;
+                }
             } else {
                 logger.error("Ondilo API request failed with code: {}", responseCode);
             }
+        } catch (InterruptedIOException e) {
+            logger.warn("Ondilo API request interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
         } catch (IOException | URISyntaxException e) {
             logger.error("Ondilo API request error", e);
         }
@@ -83,6 +91,9 @@ public class OndiloApiClient {
                     this.accessTokenResponse = oAuthService.refreshToken();
                     this.bearer = accessTokenResponse.getAccessToken();
                     logger.trace("AccessToken renewed: {}", bearer);
+                } catch (InterruptedIOException e) {
+                    logger.error("OAuth token refresh interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 } catch (OAuthException | OAuthResponseException | IOException e) {
                     logger.error("Failed to refresh OAuth token for Ondilo API", e);
                 }

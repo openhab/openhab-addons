@@ -19,11 +19,14 @@ package org.openhab.binding.ondilo.internal.dto;
  */
 public class LastMeasure {
     /*
+     * Example JSON representation:
+     * {
      * "data_type": "temperature",
      * "value": 12.5,
      * "value_time": "2020-03-23T16:08:51+0000",
      * "is_valid": true,
      * "exclusion_reason": null
+     * }
      */
     public String data_type;
     public double value;

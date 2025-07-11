@@ -19,15 +19,16 @@ package org.openhab.binding.ondilo.internal.dto;
  */
 public class Recommendation {
     /*
+     * Example JSON representation:
+     * {
      * "id": 10251,
      * "title": "Clean your filter",
-     * "message":
-     * "I recommend you to regularly clean your filter in order to evacuate the impurities retained and ensure its efficiency."
-     * ,
+     * "message": "I recommend you to ...",
      * "created_at": "2020-03-25T04:09:59+0000",
      * "updated_at": "2020-03-25T04:09:59+0000",
      * "status": "waiting",
      * "deadline": "2020-03-26T00:00:00+0000"
+     * }
      */
     public int id;
     public String title;

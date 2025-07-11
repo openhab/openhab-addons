@@ -74,7 +74,9 @@ public class OndiloHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            // not implemented as it would causes >10 channel updates in a row during setup (exceed API limits)
+            // not implemented as it would causes >10 channel updates in a row during setup (exceeds given API quota)
+            // If you want to update the values, use the poll channel instead
+            return;
         } else {
             if (channelUID.getId().equals(CHANNEL_POLL_UPDATE)) {
                 if (command instanceof OnOffType cmd) {
@@ -112,116 +114,118 @@ public class OndiloHandler extends BaseThingHandler {
     public void dispose() {
         if (!ondiloId.get().equals(NO_ID)) {
             stopOndiloPolling();
-            logger.debug("Stopped polling for Ondilo device with ID: {}", ondiloId.get());
+            logger.trace("Stopped polling for Ondilo device with ID: {}", ondiloId.get());
             ondiloId.set(NO_ID);
         }
     }
 
     private synchronized void poll() {
-        OndiloBridge bridge = getOndiloBridge();
-        if ((bridge != null) && (bridge.apiClient != null)) {
-            OndiloApiClient apiClient = bridge.apiClient;
-            String poolsJson = apiClient.get("/pools/" + ondiloId.get()
-                    + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
-            logger.trace("LastMeasures: {}", poolsJson);
-            // Parse JSON to DTO
-            Gson gson = new Gson();
-            List<LastMeasure> lastMeasures = gson.fromJson(poolsJson, new TypeToken<List<LastMeasure>>() {
-            }.getType());
-
-            logger.trace("Parsed {} LastMeasures", lastMeasures.size());
-            if (lastMeasures.isEmpty()) {
-                logger.trace("No lastMeasures available for pool with ID: {}", ondiloId.get());
-                updateLastMeasuresChannels(null);
-            } else {
-                for (LastMeasure lastMeasure : lastMeasures) {
-                    logger.trace("LastMeasure: type={}, value={}", lastMeasure.data_type, lastMeasure.value);
-                    updateLastMeasuresChannels(lastMeasure);
-                }
-            }
-
-            String recommendationsJson = apiClient.get("/pools/" + ondiloId.get() + "/recommendations");
-            logger.trace("recommendations: {}", recommendationsJson);
-            // Parse JSON to DTO
-            List<Recommendation> recommendations = gson.fromJson(recommendationsJson,
-                    new TypeToken<List<Recommendation>>() {
+        try {
+            OndiloBridge bridge = getOndiloBridge();
+            if (bridge != null) {
+                OndiloApiClient apiClient = bridge.apiClient;
+                if (apiClient != null) {
+                    String poolsJson = apiClient.get("/pools/" + ondiloId.get()
+                            + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
+                    logger.trace("LastMeasures: {}", poolsJson);
+                    // Parse JSON to DTO
+                    Gson gson = new Gson();
+                    List<LastMeasure> lastMeasures = gson.fromJson(poolsJson, new TypeToken<List<LastMeasure>>() {
                     }.getType());
 
-            logger.trace("Parsed {} Recommendations", recommendations.size());
-            if (recommendations.isEmpty()) {
-                logger.trace("No Recommendations available for pool with ID: {}", ondiloId.get());
-                updateRecommendationChannels(null);
-            } else {
-                Recommendation recommendation = recommendations.getFirst();
-                // for (Recommendation recommendation : recommendations) {
-                logger.info("Recommentation: id={}, title={}", recommendation.id, recommendation.title);
-                updateRecommendationChannels(recommendation);
-                // }
+                    if ((lastMeasures == null) || lastMeasures.isEmpty()) {
+                        logger.warn("No lastMeasures available for pool with ID: {}", ondiloId.get());
+                        clearLastMeasuresChannels();
+                    } else {
+                        for (LastMeasure lastMeasure : lastMeasures) {
+                            logger.trace("LastMeasure: type={}, value={}", lastMeasure.data_type, lastMeasure.value);
+                            updateLastMeasuresChannels(lastMeasure);
+                        }
+                    }
+
+                    String recommendationsJson = apiClient.get("/pools/" + ondiloId.get() + "/recommendations");
+                    logger.trace("recommendations: {}", recommendationsJson);
+                    // Parse JSON to DTO
+                    List<Recommendation> recommendations = gson.fromJson(recommendationsJson,
+                            new TypeToken<List<Recommendation>>() {
+                            }.getType());
+
+                    if ((recommendations == null) || recommendations.isEmpty()) {
+                        logger.trace("No Recommendations available for pool with ID: {}", ondiloId.get());
+                        clearRecommendationChannels();
+                    } else {
+                        Recommendation recommendation = recommendations.getFirst();
+                        logger.trace("Recommentation: id={}, title={}", recommendation.id, recommendation.title);
+                        updateRecommendationChannels(recommendation);
+                    }
+                }
             }
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error in polling job: {}", e.getMessage(), e);
         }
     }
 
-    private void updateLastMeasuresChannels(@Nullable LastMeasure lastMeasures) {
-        if (lastMeasures != null) {
-            switch (lastMeasures.data_type) {
-                case "temperature":
-                    updateState(CHANNEL_TEMPERATURE, new QuantityType<>(lastMeasures.value, SIUnits.CELSIUS));
-                    break;
-                case "ph":
-                    updateState(CHANNEL_PH, new DecimalType(lastMeasures.value));
-                    break;
-                case "orp":
-                    updateState(CHANNEL_ORP, new QuantityType<>(lastMeasures.value / 1000.0, Units.VOLT));
-                    // Convert mV to V
-                    break;
-                case "salt":
-                    updateState(CHANNEL_SALT,
-                            new QuantityType<>(lastMeasures.value * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
-                    // Convert mg/l to kg/m³
-                    break;
-                case "tds":
-                    updateState(CHANNEL_TDS, new QuantityType<>(lastMeasures.value, Units.PARTS_PER_MILLION));
-                    break;
-                case "battery":
-                    updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasures.value, Units.PERCENT));
-                    break;
-                case "rssi":
-                    updateState(CHANNEL_RSSI, new DecimalType(lastMeasures.value));
-                    break;
-                default:
-                    logger.warn("Unknown data type: {}", lastMeasures.data_type);
-            }
-            // Update value time channel (expect that it is the same for all measures)
-            updateState(CHANNEL_VALUE_TIME, new DateTimeType(convertUtcToSystemTimeZone(lastMeasures.value_time)));
-        } else {
-            updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
-            updateState(CHANNEL_PH, UnDefType.UNDEF);
-            updateState(CHANNEL_ORP, UnDefType.UNDEF);
-            updateState(CHANNEL_SALT, UnDefType.UNDEF);
-            updateState(CHANNEL_TDS, UnDefType.UNDEF);
-            updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
-            updateState(CHANNEL_RSSI, UnDefType.UNDEF);
-        }
+    private void clearLastMeasuresChannels() {
+        updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
+        updateState(CHANNEL_PH, UnDefType.UNDEF);
+        updateState(CHANNEL_ORP, UnDefType.UNDEF);
+        updateState(CHANNEL_SALT, UnDefType.UNDEF);
+        updateState(CHANNEL_TDS, UnDefType.UNDEF);
+        updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
+        updateState(CHANNEL_RSSI, UnDefType.UNDEF);
     }
 
-    private void updateRecommendationChannels(@Nullable Recommendation recommendation) {
-        if (recommendation != null) {
-            updateState(CHANNEL_RECOMMENDATION_ID, new DecimalType(recommendation.id));
-            updateState(CHANNEL_RECOMMENDATION_TITLE, new StringType(recommendation.title));
-            updateState(CHANNEL_RECOMMENDATION_MESSAGE, new StringType(recommendation.message));
-            updateState(CHANNEL_RECOMMENDATION_CREATED_AT, new DateTimeType(recommendation.created_at));
-            updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updated_at));
-            updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status));
-            updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
-        } else {
-            updateState(CHANNEL_RECOMMENDATION_ID, UnDefType.NULL);
-            updateState(CHANNEL_RECOMMENDATION_TITLE, UnDefType.NULL);
-            updateState(CHANNEL_RECOMMENDATION_MESSAGE, UnDefType.NULL);
-            updateState(CHANNEL_RECOMMENDATION_CREATED_AT, UnDefType.NULL);
-            updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, UnDefType.NULL);
-            updateState(CHANNEL_RECOMMENDATION_STATUS, UnDefType.NULL);
-            updateState(CHANNEL_RECOMMENDATION_DEADLINE, UnDefType.NULL);
+    private void clearRecommendationChannels() {
+        updateState(CHANNEL_RECOMMENDATION_ID, UnDefType.NULL);
+        updateState(CHANNEL_RECOMMENDATION_TITLE, UnDefType.NULL);
+        updateState(CHANNEL_RECOMMENDATION_MESSAGE, UnDefType.NULL);
+        updateState(CHANNEL_RECOMMENDATION_CREATED_AT, UnDefType.NULL);
+        updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, UnDefType.NULL);
+        updateState(CHANNEL_RECOMMENDATION_STATUS, UnDefType.NULL);
+        updateState(CHANNEL_RECOMMENDATION_DEADLINE, UnDefType.NULL);
+    }
+
+    private void updateLastMeasuresChannels(LastMeasure lastMeasures) {
+        switch (lastMeasures.data_type) {
+            case "temperature":
+                updateState(CHANNEL_TEMPERATURE, new QuantityType<>(lastMeasures.value, SIUnits.CELSIUS));
+                break;
+            case "ph":
+                updateState(CHANNEL_PH, new DecimalType(lastMeasures.value));
+                break;
+            case "orp":
+                updateState(CHANNEL_ORP, new QuantityType<>(lastMeasures.value / 1000.0, Units.VOLT));
+                // Convert mV to V
+                break;
+            case "salt":
+                updateState(CHANNEL_SALT,
+                        new QuantityType<>(lastMeasures.value * 0.001, Units.KILOGRAM_PER_CUBICMETRE));
+                // Convert mg/l to kg/m³
+                break;
+            case "tds":
+                updateState(CHANNEL_TDS, new QuantityType<>(lastMeasures.value, Units.PARTS_PER_MILLION));
+                break;
+            case "battery":
+                updateState(CHANNEL_BATTERY, new QuantityType<>(lastMeasures.value, Units.PERCENT));
+                break;
+            case "rssi":
+                updateState(CHANNEL_RSSI, new DecimalType(lastMeasures.value));
+                break;
+            default:
+                logger.warn("Unknown data type: {}", lastMeasures.data_type);
         }
+        // Update value time channel (expect that it is the same for all measures)
+        updateState(CHANNEL_VALUE_TIME, new DateTimeType(convertUtcToSystemTimeZone(lastMeasures.value_time)));
+    }
+
+    private void updateRecommendationChannels(Recommendation recommendation) {
+        updateState(CHANNEL_RECOMMENDATION_ID, new DecimalType(recommendation.id));
+        updateState(CHANNEL_RECOMMENDATION_TITLE, new StringType(recommendation.title));
+        updateState(CHANNEL_RECOMMENDATION_MESSAGE, new StringType(recommendation.message));
+        updateState(CHANNEL_RECOMMENDATION_CREATED_AT, new DateTimeType(recommendation.created_at));
+        updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updated_at));
+        updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status));
+        updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
     }
 
     private void startOndiloPolling(Integer refreshInterval) {

@@ -45,11 +45,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.ondilo", service = ThingHandlerFactory.class)
 public class OndiloHandlerFactory extends BaseThingHandlerFactory {
-    private static final Logger logger = LoggerFactory.getLogger(OndiloHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(OndiloHandlerFactory.class);
     private final OAuthFactory oAuthFactory;
     private final TimeZoneProvider timeZoneProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ONDILO);
     private @Nullable ServiceRegistration<?> ondiloDiscoveryServiceRegistration;
+    private @Nullable OndiloDiscoveryService discoveryService;
 
     @Activate
     public OndiloHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference TimeZoneProvider timeZoneProvider) {
@@ -81,11 +82,10 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof OndiloBridgeHandler) {
-            if (ondiloDiscoveryServiceRegistration != null) {
-                ondiloDiscoveryServiceRegistration.unregister();
-            }
+            unregisterOndiloDiscoveryService();
         } else if (thingHandler instanceof OndiloHandler) {
             // Handle OniloHandler removal if needed
+            return;
         }
     }
 
@@ -94,5 +94,21 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
         OndiloDiscoveryService discoveryService = new OndiloDiscoveryService(handler);
         this.ondiloDiscoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
                 discoveryService, new Hashtable<>());
+        discoveryService.startBackgroundDiscovery();
+        this.discoveryService = discoveryService;
+    }
+
+    private void unregisterOndiloDiscoveryService() {
+        logger.trace("Unregistering OndiloDiscoveryService");
+        OndiloDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.stopBackgroundDiscovery();
+            this.discoveryService = null;
+        }
+        ServiceRegistration<?> ondiloDiscoveryServiceRegistration = this.ondiloDiscoveryServiceRegistration;
+        if (ondiloDiscoveryServiceRegistration != null) {
+            ondiloDiscoveryServiceRegistration.unregister();
+            this.ondiloDiscoveryServiceRegistration = null;
+        }
     }
 }

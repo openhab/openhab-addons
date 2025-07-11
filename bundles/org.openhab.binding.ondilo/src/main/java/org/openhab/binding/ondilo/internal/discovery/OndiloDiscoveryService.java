@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OndiloDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(OndiloDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(OndiloDiscoveryService.class);
 
     private final OndiloBridgeHandler bridgeHandler;
     private @Nullable ScheduledExecutorService scheduler;
@@ -59,8 +59,7 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
         checkForDiscoveredPools();
     }
 
-    @Override
-    protected void startBackgroundDiscovery() {
+    public void startBackgroundDiscovery() {
         logger.trace("Starting background discovery scheduler");
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         // Poll bridge every 60 seconds
@@ -68,8 +67,7 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
         this.scheduler = scheduler;
     }
 
-    @Override
-    protected void stopBackgroundDiscovery() {
+    public void stopBackgroundDiscovery() {
         logger.trace("Stopping background discovery scheduler");
         ScheduledExecutorService scheduler = this.scheduler;
         if (scheduler != null && !scheduler.isShutdown()) {
@@ -79,13 +77,17 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
     }
 
     protected void checkForDiscoveredPools() {
-        logger.trace("Checking for discovered pools from bridgeHandler");
-        Optional<List<Pool>> registeredPools = bridgeHandler.getPools();
-        if (registeredPools.isPresent()) {
-            logger.trace("Found {} pools from bridgeHandler", registeredPools.get().size());
-            addDiscoveredPools(registeredPools.get());
-        } else {
-            logger.trace("No pools found from bridgeHandler");
+        try {
+            logger.trace("Checking for discovered pools from bridgeHandler");
+            Optional<List<Pool>> registeredPools = bridgeHandler.getPools();
+            if (registeredPools.isPresent()) {
+                logger.trace("Found {} pools from bridgeHandler", registeredPools.get().size());
+                addDiscoveredPools(registeredPools.get());
+            } else {
+                logger.trace("No pools found from bridgeHandler");
+            }
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error in discovery job: {}", e.getMessage(), e);
         }
     }
 
@@ -108,7 +110,7 @@ public class OndiloDiscoveryService extends AbstractDiscoveryService {
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(poolThingUid).withThingType(thingTypeUID)
                     .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(ONDILO_ID)
-                    .withLabel("Ondilo ICO Pool/Spa: " + pool.name).build();
+                    .withLabel("Ondilo ICO: " + pool.name).build();
             logger.trace("Registering discovered pool ThingUID: {}", poolThingUid);
             thingDiscovered(discoveryResult);
         }

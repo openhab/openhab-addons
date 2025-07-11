@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ondilo.internal;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
@@ -45,6 +47,8 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OndiloBridgeHandler.class);
     private static final ConcurrentHashMap<String, OndiloBridgeHandler> OAUTH_SERVICE_REGISTRY = new ConcurrentHashMap<>();
     private final OAuthFactory oAuthFactory;
+    private final int refreshInterval;
+    private final String openHABURL;
     public @Nullable OAuthClientService oAuthService;
     private @Nullable OndiloBridge bridge;
     private @Nullable String redirectURI;
@@ -52,6 +56,10 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
     public OndiloBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
+
+        OndiloBridgeConfiguration bridgeConfiguration = getConfigAs(OndiloBridgeConfiguration.class);
+        refreshInterval = bridgeConfiguration.getRefreshInterval();
+        openHABURL = bridgeConfiguration.getURL();
     }
 
     // Call this when generating the authorization URL
@@ -72,10 +80,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         logger.trace("Start initialization of Ondilo Bridge Handler");
         String clientSecret = thing.getUID().getAsString();
 
-        OndiloBridgeConfiguration bridgeConfiguration = getConfigAs(OndiloBridgeConfiguration.class);
-        final String openHABURL = bridgeConfiguration.getURL();
         if (!isValidUrl(openHABURL)) {
-            logger.error("Invalid openHAB URL: {}", openHABURL);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Invalid openHAB URL: " + openHABURL);
             return;
@@ -98,7 +103,10 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         AccessTokenResponse accessTokenResponse = null;
         try {
             accessTokenResponse = oAuthService.getAccessTokenResponse();
-        } catch (OAuthException | java.io.IOException | org.openhab.core.auth.client.oauth2.OAuthResponseException e) {
+        } catch (InterruptedIOException e) {
+            logger.warn("OAuth2 access token retrieval interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.error("Failed to get OAuth2 access token: {}", e.getMessage(), e);
         }
         if (accessTokenResponse != null) {
@@ -111,33 +119,36 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startOAuth2Authorization(String clientSecret, OAuthClientService oAuthService) {
-        logger.trace("Start oAuth2 flow");
+        logger.trace("Start OAuth2 flow");
 
         registerOAuthService(clientSecret, this);
         try {
             String url = oAuthService.getAuthorizationUrl(redirectURI, "api", clientSecret);
-            logger.error("Authorize bridge: {}", url);
+            logger.info("Authorize bridge: {}", url);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Authorize bridge: " + url);
         } catch (OAuthException e) {
-            logger.error("Failed to get OAuth2 authorization URL: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth2 error: " + e.getMessage());
         }
     }
 
     public void onOAuth2Authorized(String authorizationCode, OAuthClientService oAuthService) {
-        logger.trace("Finalize oAuth2 flow");
+        logger.trace("Finalize OAuth2 flow");
 
         String clientSecret = thing.getUID().getAsString();
         AccessTokenResponse accessTokenResponse = null;
         try {
             accessTokenResponse = oAuthService.getAccessTokenResponseByAuthorizationCode(authorizationCode,
                     redirectURI);
-        } catch (OAuthException | java.io.IOException | OAuthResponseException e) {
-            logger.error("Failed to get access token by authorization code: {}", e.getMessage(), e);
+        } catch (InterruptedIOException e) {
+            logger.warn("OAuth2 access token retrieval by authorization code interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth2 interrupted");
+            return;
+        } catch (OAuthException | IOException | OAuthResponseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth2 error: " + e.getMessage());
             return;
         }
-        logger.info("accessTokenResponse available");
+        logger.info("Bridge successfully authorized with access token");
 
         unregisterOAuthService(clientSecret);
         finalizeInitialize(accessTokenResponse, oAuthService);
@@ -147,8 +158,6 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         logger.trace("Finalize initialization of Ondilo Bridge Handler");
 
         if (bridge == null) {
-            OndiloBridgeConfiguration bridgeConfiguration = getConfigAs(OndiloBridgeConfiguration.class);
-            final int refreshInterval = bridgeConfiguration.getRefreshInterval();
             OndiloBridge currentBridge = new OndiloBridge(this, oAuthService, accessTokenResponse, refreshInterval,
                     scheduler);
             bridge = currentBridge;
@@ -157,37 +166,43 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
     }
 
     public Optional<List<Pool>> getPools() {
-        List<Pool> currentPools = ((bridge != null) ? bridge.getPools() : null);
-        if (currentPools == null) {
-            logger.debug("No pools available, returning empty list");
+        OndiloBridge bridge = this.bridge;
+        if (bridge == null) {
+            logger.trace("bridge is null, return empty list");
             return Optional.empty();
         } else {
-            return Optional.of(currentPools);
+            List<Pool> currentPools = bridge.getPools();
+            if ((currentPools == null) || currentPools.isEmpty()) {
+                logger.trace("No pools available, return empty list");
+                return Optional.empty();
+            } else {
+                return Optional.of(currentPools);
+            }
         }
     }
 
     @Override
     public void dispose() {
+        String clientSecret = thing.getUID().getAsString();
         OndiloBridge currentBridge = bridge;
         if (currentBridge != null) {
-            currentBridge.stopOndiloBridgePolling();
+            currentBridge.dispose();
             bridge = null;
         }
         if (oAuthService != null) {
-            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            oAuthFactory.ungetOAuthService(clientSecret);
             oAuthService = null;
         }
+
+        OAUTH_SERVICE_REGISTRY.remove(clientSecret);
+        redirectURI = null;
         bridge = null;
-        logger.debug("Ondilo Bridge disposed");
+        logger.trace("Ondilo Bridge disposed");
         super.dispose();
     }
 
     public @Nullable OndiloBridge getOndiloBridge() {
         return bridge;
-    }
-
-    public void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
-        super.updateStatus(status, detail, description);
     }
 
     @Override

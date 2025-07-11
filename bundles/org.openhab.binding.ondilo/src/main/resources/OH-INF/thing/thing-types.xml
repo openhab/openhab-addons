@@ -15,11 +15,12 @@
 				<label>openHAB URL</label>
 				<default>http://localhost:8080</default>
 				<description>The URL of the openHAB instance. Required for the redirect during oAuth2 flow</description>
+				<context>network-address</context>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" unit="s">
+			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<default>1800</default>
-				<description>Polling interval of the bridge (i.e. config changes)</description>
+				<description>Polling interval of the Ondilo bridge (i.e. for config changes)</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -30,8 +31,9 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Ondilo ICO Pool/Spa device</label>
+		<label>Ondilo ICO</label>
 		<description>An Ondilo ICO Pool or Spa device</description>
+		<semantic-equipment-tag>WaterQualitySensor</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="measure" typeId="measure"/>
@@ -52,9 +54,9 @@
 				<label>Id</label>
 				<description>The Id of an Ondilo ICO Pool/Spa device. Set via discovery service</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Polling interval of the device (i.e. measures)</description>
+				<description>Polling interval of the Ondilo ICO (i.e. for measures)</description>
 				<default>600</default>
 			</parameter>
 		</config-description>
@@ -68,7 +70,7 @@
 			<channel id="orp" typeId="orp"/>
 			<channel id="salt" typeId="salt"/>
 			<channel id="tds" typeId="tds"/>
-			<channel id="battery" typeId="battery"/>
+			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="value-time" typeId="value-time"/>
 			<channel id="poll-update" typeId="poll-update"/>
@@ -119,12 +121,6 @@
 		<description>Total dissolved solids</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="battery">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Battery</label>
-		<description>Battery level</description>
-		<state readOnly="true" pattern="%d %"/>
-	</channel-type>
 	<channel-type id="rssi">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
@@ -148,35 +144,42 @@
 		<item-type>Number</item-type>
 		<label>ID</label>
 		<description>ID of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Title of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="message">
 		<item-type>String</item-type>
 		<label>Message</label>
 		<description>Message of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="created-at" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Created At</label>
 		<description>Creation time of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="updated-at" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Updated At</label>
 		<description>Update time of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deadline" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Deadline</label>
 		<description>Deadline of the current recommendation</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

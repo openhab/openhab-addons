@@ -66,19 +66,36 @@ public class OndiloBridge {
     }
 
     public synchronized void pollOndilos() {
-        if (apiClient != null) {
-            String poolsJson = apiClient.get("/pools");
-            logger.trace("pools: {}", poolsJson);
-            // Parse JSON to DTO
-            Gson gson = new Gson();
-            this.pools = gson.fromJson(poolsJson, new TypeToken<List<Pool>>() {
-            }.getType());
-        } else {
-            logger.error("OndiloApiClient is not initialized, cannot poll pools");
+        try {
+            OndiloApiClient apiClient = this.apiClient;
+            if (apiClient != null) {
+                String poolsJson = apiClient.get("/pools");
+                logger.trace("pools: {}", poolsJson);
+                // Parse JSON to DTO
+                Gson gson = new Gson();
+                List<Pool> pools = gson.fromJson(poolsJson, new TypeToken<List<Pool>>() {
+                }.getType());
+                if ((pools != null) && !pools.isEmpty()) {
+                    logger.trace("Polled {} pools", pools.size());
+                } else {
+                    logger.warn("No pools found or failed to parse JSON response");
+                }
+                this.pools = pools;
+            } else {
+                logger.error("OndiloApiClient is not initialized, cannot poll pools");
+            }
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error in polling job: {}", e.getMessage(), e);
         }
     }
 
     public @Nullable List<Pool> getPools() {
         return pools;
+    }
+
+    public void dispose() {
+        stopOndiloBridgePolling();
+        this.apiClient = null;
+        logger.trace("OndiloBridge disposed and polling job stopped.");
     }
 }
