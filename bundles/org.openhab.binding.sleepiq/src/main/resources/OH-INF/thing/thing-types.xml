@@ -208,8 +208,8 @@
 		<label>Today's Message</label>
 		<description>The description of today's sleep quality</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>QualityOfService</tag>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -308,7 +308,7 @@
 		<label>Safe Charge Mode</label>
 		<category>Text</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false" pattern="%s">

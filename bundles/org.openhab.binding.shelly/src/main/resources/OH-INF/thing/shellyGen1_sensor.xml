@@ -248,7 +248,7 @@
 		<description>@text/channel-type.shelly.sensorContact.description</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Info</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -402,6 +402,10 @@
 		<label>@text/channel-type.shelly.motionTimestamp.label</label>
 		<description>@text/channel-type.shelly.motionTimestamp.description</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

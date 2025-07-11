@@ -1020,7 +1020,7 @@
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state readOnly="false">
@@ -1038,7 +1038,7 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">

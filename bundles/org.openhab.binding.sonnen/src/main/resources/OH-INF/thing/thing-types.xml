@@ -224,7 +224,7 @@
 			authentication token field of the binding.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="batteryOperationMode">
@@ -233,6 +233,10 @@
 		<description>Indicates if the Battery is operating in automatic or manual mode. Manual mode is required for active
 			charging the battery. Assure that the battery is in automatic mode if you don't actively charge the battery.Changing
 			the operation mode is happening with the channel "Start/Stop Active Battery Charging from Grid"</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

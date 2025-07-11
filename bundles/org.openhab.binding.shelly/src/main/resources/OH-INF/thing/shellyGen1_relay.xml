@@ -701,6 +701,10 @@
 		<label>@text/channel-type.shelly.timestamp.label</label>
 		<description>@text/channel-type.shelly.timestamp.description</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

@@ -1182,7 +1182,7 @@
 		<item-type>String</item-type>
 		<label>Air Conditioner Mode</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -1416,10 +1416,6 @@
 	<channel-type id="numberOfButtons-channel">
 		<item-type>Number</item-type>
 		<label>Number of Buttons</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="illuminance-channel">
@@ -1455,7 +1451,7 @@
 		<category></category>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<state>
 			<options>
@@ -1797,7 +1793,7 @@
 		<label>Thermostat Mode</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -1932,7 +1928,7 @@
 		<item-type>String</item-type>
 		<label>Washer Mode</label>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -1972,7 +1968,7 @@
 		<category></category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Opening</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state>
 			<options>

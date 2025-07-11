@@ -195,7 +195,7 @@
 		<label>Mower Mode</label>
 		<description>The mower mode</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">

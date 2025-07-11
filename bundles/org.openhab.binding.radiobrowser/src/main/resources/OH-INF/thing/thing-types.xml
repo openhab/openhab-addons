@@ -78,7 +78,7 @@
 		<label>Genre</label>
 		<description>A list of genres or tags that you can select from</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="false">
