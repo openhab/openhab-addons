@@ -66,7 +66,7 @@ public class ListenerHandler extends BeaconBluetoothHandler {
     @Override
     public void initialize() {
         super.initialize();
-        config = getConfigAs(ListenerConfiguration.class);
+        ListenerConfiguration config = this.config = getConfigAs(ListenerConfiguration.class);
         // check configuration
         int timeout = config != null ? config.dataTimeout : 1;
         // set unknown
