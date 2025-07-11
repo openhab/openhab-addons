@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.ToNumberPolicy;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 
@@ -170,7 +171,7 @@ public class ZWaveJSClient implements WebSocketListener {
 
     @Override
     public void onWebSocketClose(int statusCode, @NonNullByDefault({}) String reason) {
-        logger.debug("onClose({}, '{}')", statusCode, reason);
+        logger.debug("onWebSocketClose({}, '{}')", statusCode, reason);
 
         try {
             for (ZwaveEventListener listener : listeners) {
@@ -248,7 +249,13 @@ public class ZWaveJSClient implements WebSocketListener {
         Session localSession = session;
         if (localSession != null) {
             stopKeepAlive();
-            localSession.close(StatusCode.SERVER_ERROR, "Failure: " + localThrowable.getMessage());
+            try {
+                // Close the session with an error status code
+                localSession.close(StatusCode.SERVER_ERROR, "Error: " + localThrowable.getMessage());
+            } catch (Exception e) {
+                logger.warn("Error while closing websocket session: {}", e.getMessage());
+            }
+
             session = null;
         }
 
@@ -269,7 +276,7 @@ public class ZWaveJSClient implements WebSocketListener {
         BaseMessage baseEvent = null;
         try {
             baseEvent = gson.fromJson(message, BaseMessage.class);
-        } catch (Exception ex) {
+        } catch (JsonParseException ex) {
             logger.warn("Failed to parse incoming WebSocket message: {}", ex.getMessage());
             logger.trace("RECV | {}", message);
             notifyListenersOnError("Failed to parse message: " + ex.getMessage());
@@ -283,7 +290,7 @@ public class ZWaveJSClient implements WebSocketListener {
             return;
         }
 
-        handleBaseEvent(baseEvent, message);
+        logEventResponse(baseEvent, message);
 
         // Notify listeners
         try {
@@ -294,7 +301,7 @@ public class ZWaveJSClient implements WebSocketListener {
             if (logger.isDebugEnabled()) {
                 logger.debug("Error invoking event listener on websockettext: {}", e.toString());
             } else {
-                logger.warn("Error invoking event listener on websockettext", e);
+                logger.warn("Error invoking event listener on websockettext");
             }
         }
 
@@ -303,12 +310,11 @@ public class ZWaveJSClient implements WebSocketListener {
             // the binding is starting up, perform schema version handshake
             // also start listening to events
             sendCommand(new ServerInitializeCommand());
-            // sendCommand(new StatisticsCommand(false));
             sendCommand(new ServerListeningCommand());
         }
     }
 
-    private void handleBaseEvent(BaseMessage baseEvent, String message) {
+    private void logEventResponse(BaseMessage baseEvent, String message) {
         if (baseEvent instanceof ResultMessage resultMessage) {
             if (resultMessage.success && (resultMessage.result != null && resultMessage.result.status != 5)) {
                 logger.debug("Received ResultMessage type: {}, success: {}", baseEvent.type, resultMessage.success);
@@ -338,13 +344,11 @@ public class ZWaveJSClient implements WebSocketListener {
     }
 
     /**
-     * Sends a command to the Z-Wave JS server.
-     *
-     * @param command the command to be sent, represented as a {@link BaseCommand} object.
+     * Sends a command to the remote endpoint in JSON format.
+     * Converts the given {@link BaseCommand} object to a JSON string and sends it
+     * using the active session's remote endpoint.
      * 
-     * @throws IOException if an I/O error occurs while sending the command.
-     * 
-     * @throws IllegalStateException if the session or remote endpoint is not available.
+     * @param command The {@link BaseCommand} object to be sent.
      */
     public void sendCommand(BaseCommand command) {
         String commandAsJson = gson.toJson(command);
