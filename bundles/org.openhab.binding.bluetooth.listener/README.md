@@ -40,7 +40,7 @@ All channels are read-only.
 
 ## Full Example
 
-### Thing Configuration
+### `demo.things` Example
 
 ```java
 Bridge bluetooth:bluez:abc [ address="00:00:00:00:00:00" ]
