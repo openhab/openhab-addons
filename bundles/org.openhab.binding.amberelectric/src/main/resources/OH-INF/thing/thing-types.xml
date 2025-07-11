@@ -97,7 +97,7 @@
 	<channel-type id="estimate">
 		<item-type>Switch</item-type>
 		<label>Estimated Price?</label>
-		<description>Report if the current price is an estimate, or a finalised price from AEMO</description>
+		<description>Report if the current price is an estimate (on), or a finalised price (off) from AEMO</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
