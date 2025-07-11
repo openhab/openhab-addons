@@ -10,6 +10,11 @@
 				<type>amberelectric:nem-time</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="estimate">
+				<type>amberelectric:estimate</type>
+			</add-channel>
+		</instruction-set>
 
 	</thing-type>
 

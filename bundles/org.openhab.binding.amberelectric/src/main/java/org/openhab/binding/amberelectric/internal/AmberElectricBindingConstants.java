@@ -41,6 +41,7 @@ public class AmberElectricBindingConstants {
     public static final String CHANNEL_NEM_TIME = "nem-time";
     public static final String CHANNEL_RENEWABLES = "renewables";
     public static final String CHANNEL_SPIKE = "spike";
+    public static final String CHANNEL_ESTIMATE = "estimate";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(AMBERELECTRIC_THING);
 }

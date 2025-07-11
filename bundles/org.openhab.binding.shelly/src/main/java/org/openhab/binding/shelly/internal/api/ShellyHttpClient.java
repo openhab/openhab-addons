@@ -81,7 +81,6 @@ public class ShellyHttpClient {
         this.thingName = thingName;
         setConfig(thingName, config);
         this.httpClient = httpClient;
-        this.httpClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {
