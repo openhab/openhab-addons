@@ -215,7 +215,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         } else if (command instanceof PointType pointCommand) {
             throw new UnsupportedOperationException(pointCommand.toString() + " is currently not supported");
         } else if (command instanceof RewindFastforwardType rewindFastforwardCommand) {
-            throw new UnsupportedOperationException(rewindFastforwardCommand.toString() + " is currently not supported");
+            throw new UnsupportedOperationException(
+                    rewindFastforwardCommand.toString() + " is currently not supported");
         } else if (command instanceof StopMoveType stopMoveCommand) {
             throw new UnsupportedOperationException(stopMoveCommand.toString() + " is currently not supported");
         } else if (command instanceof StringListType stringListCommand) {
