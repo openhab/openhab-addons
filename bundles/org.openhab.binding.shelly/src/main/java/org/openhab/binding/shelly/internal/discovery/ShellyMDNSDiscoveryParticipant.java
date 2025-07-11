@@ -132,7 +132,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
-                    || ShellyDeviceProfile.isGeneration2(serviceName);
+                    || ShellyDeviceProfile.isGeneration2(ShellyThingCreator.getThingTypeUID(serviceName, "", ""));
             return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, bindingConfig, httpClient,
                     messages);
         } catch (IOException e) {
