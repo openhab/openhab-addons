@@ -68,9 +68,7 @@
 			</parameter>
 			<parameter name="dataLength" type="integer" min="1" pattern="^[1,2,4,8]$">
 				<label>Data Length</label>
-				<description>Data length. Only values 1, 2, 4, 8 are allowed
-					(for datatypes byte, short, integer and long
-					respectively).</description>
+				<description>Data length. Only values 1, 2, 4, 8 are allowed (for datatypes byte, short, integer and long respectively).</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="multiplicator" type="decimal">
