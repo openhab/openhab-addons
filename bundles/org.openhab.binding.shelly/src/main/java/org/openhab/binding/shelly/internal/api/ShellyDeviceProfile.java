@@ -429,6 +429,14 @@ public class ShellyDeviceProfile {
         return true;
     }
 
+    /**
+     * Generates a service name based on the provided model name and MAC address.
+     * Delimiters will be stripped from the returned MAC address.
+     *
+     * @param name Model name such as SBBT-02C or just SBDW
+     * @param mac MAC address with or without colon delimiters
+     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
+     */
     public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
         String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
         return "shellyblu" + switch (model) {
