@@ -467,6 +467,27 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
 	</thing-type>
 
+	<thing-type id="FRITZ_Smart_Energy_250">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ Smart Energy 250</label>
+		<description>FRITZ!Smart Energy 250 smart meter read head.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channels>
+			<channel id="energy" typeId="system.electric-energy"/>
+			<channel id="power" typeId="system.electric-power"/>
+			<channel id="voltage" typeId="system.electric-voltage"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 	<!-- Supported FRITZ! groups and features -->
 	<thing-type id="FRITZ_GROUP_HEATING">
 		<supported-bridge-type-refs>
