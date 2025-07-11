@@ -89,7 +89,7 @@
 		<label>PHC EM Channel</label>
 		<description>Channel from an EM module.</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Status</tag>
 			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"></state>

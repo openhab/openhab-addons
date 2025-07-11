@@ -19,7 +19,7 @@
 		<description>Load on UPS (percent)</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Power</tag>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
