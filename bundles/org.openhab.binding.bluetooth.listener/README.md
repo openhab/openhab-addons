@@ -22,7 +22,7 @@ No discovery is implemented.
 |---------------------|----------|---------|--------------------------------------------------------------------------------|
 | address             | yes      |         | The address of the bluetooth device (in format "XX:XX:XX:XX:XX:XX")            |
 | changeByteOrder     | no       | false   | For number channels with length 2, 4 or 8 bytes byte order could be changed. Default (false) order is little endian. |
-| autoChannelCreation | no       | false   | Enable automatic channnel creation from received service and manufacturer data |
+| autoChannelCreation | no       | false   | Enable automatic channel creation from received service and manufacturer data |
 | dataTimeout         | no       | 1       | Maximum time in minutes before a communication error is raised                 |
 
 ## Channels
