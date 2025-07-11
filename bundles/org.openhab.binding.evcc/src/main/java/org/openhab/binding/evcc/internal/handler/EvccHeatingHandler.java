@@ -27,6 +27,11 @@ public class EvccHeatingHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+        if (bridgeHandler == null) {
+            return;
+        }
+        endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + index;
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

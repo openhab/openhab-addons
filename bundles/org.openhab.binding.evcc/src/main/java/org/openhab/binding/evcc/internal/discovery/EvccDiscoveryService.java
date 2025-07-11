@@ -3,9 +3,13 @@ package org.openhab.binding.evcc.internal.discovery;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.discovery.mapper.BatteryDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.LoadpointDiscoveryMapper;
@@ -24,6 +28,7 @@ import org.slf4j.LoggerFactory;
 public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccBridgeHandler> {
 
     private static final int TIMEOUT = 5;
+    private static final int SCAN_INTERVAL = 5; // We scan every 5 seconds since we are using the cached response
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -33,8 +38,10 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LOADPOINT, THING_TYPE_VEHICLE,
             THING_TYPE_BATTERY, THING_TYPE_SITE, THING_TYPE_PV, THING_TYPE_HEATING);
 
+    private @Nullable ScheduledFuture<?> evccDiscoveryJob;
+
     public EvccDiscoveryService() {
-        super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, false);
+        super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, true);
     }
 
     @Override
@@ -50,9 +57,12 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     @Override
     protected void startScan() {
         logger.debug("Starte EVCC Discovery…");
-        thingHandler.fetchEvccState().ifPresent(state -> {
+        thingHandler.getCachedEvccState().ifPresent(state -> {
             for (EvccDiscoveryMapper mapper : mappers) {
-                mapper.discover(state, thingHandler).forEach(this::thingDiscovered);
+                mapper.discover(state, thingHandler).forEach(thing -> {
+                    logger.debug("Thing discovered {}", thing);
+                    thingDiscovered(thing);
+                });
             }
         });
     }
@@ -60,5 +70,28 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_THING_TYPES;
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start evcc background discovery");
+        boolean setUpBackgroundScan = false;
+        if (evccDiscoveryJob == null) {
+            setUpBackgroundScan = true;
+        } else {
+            setUpBackgroundScan = evccDiscoveryJob.isCancelled();
+        }
+        if (setUpBackgroundScan) {
+            evccDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> startScan(), 0, SCAN_INTERVAL, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop WeMo device background discovery");
+        Optional.ofNullable(evccDiscoveryJob).ifPresent(backgroundScan -> {
+            backgroundScan.cancel(isBackgroundDiscoveryEnabled());
+        });
+        evccDiscoveryJob = null;
     }
 }

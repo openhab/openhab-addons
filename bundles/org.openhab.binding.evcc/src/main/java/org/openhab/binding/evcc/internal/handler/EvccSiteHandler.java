@@ -3,12 +3,14 @@ package org.openhab.binding.evcc.internal.handler;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +27,21 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return;
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
+        if (command instanceof State) {
+            String datapoint = channelUID.getId().toLowerCase();
+            String value = "";
+            if (command instanceof OnOffType) {
+                value = command == OnOffType.ON ? "true" : "false";
+            } else {
+                value = command.toString();
+                if (value.contains(" ")) {
+                    value = value.substring(0, command.toString().indexOf(" "));
+                }
+            }
+            String url = endpoint + "/" + datapoint + "/" + value;
+            logger.debug("Sendig command to this url: {}", url);
+            sendCommand(url);
+        }
     }
 
     @Override
@@ -43,6 +57,11 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+        if (bridgeHandler == null) {
+            return;
+        }
+        endpoint = bridgeHandler.getBaseURL();
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -50,6 +69,10 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         }
 
         JsonObject state = stateOpt.get();
+        if (state.has("gridConfigured")) {
+            double gridPower = state.getAsJsonObject("grid").get("power").getAsDouble();
+            state.addProperty("gridPower", gridPower);
+        }
         commonInitialize(state);
     }
 }

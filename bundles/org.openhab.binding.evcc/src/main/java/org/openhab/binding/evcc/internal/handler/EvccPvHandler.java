@@ -27,6 +27,11 @@ public class EvccPvHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+        if (bridgeHandler == null) {
+            return;
+        }
+        // endpoint = bridgeHandler.getBaseURL(); // Currently there is no endpoint for pv
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

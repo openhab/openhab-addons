@@ -21,7 +21,7 @@ public class SiteDiscoveryMapper implements EvccDiscoveryMapper {
             return results;
         String siteTitle = root.get("siteTitle").getAsString();
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_SITE, bridgeHandler.getThing().getUID(), "site");
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(siteTitle)
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Site - " + siteTitle)
                 .withBridge(bridgeHandler.getThing().getUID()).withProperty("type", "site")
                 .withProperty("siteTitle", siteTitle).withRepresentationProperty("siteTitle").build();
         results.add(result);

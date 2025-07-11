@@ -4,14 +4,21 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.BINDING_ID;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -28,15 +35,18 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public abstract class EvccBaseThingHandler extends BaseThingHandler implements EvccJsonAwareHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
+    private final Gson gson = new Gson();
     private final ChannelTypeRegistry channelTypeRegistry;
     protected EvccBridgeHandler bridgeHandler;
     protected boolean isInitialized = false;
+    protected String endpoint = "";
 
     public EvccBaseThingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -45,11 +55,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     protected void commonInitialize(JsonObject state) {
         ThingBuilder builder = editThing();
-
-        if (state.has("gridConfigured")) {
-            double gridPower = state.getAsJsonObject("grid").get("power").getAsDouble();
-            state.addProperty("gridPower", gridPower);
-        }
 
         for (Map.Entry<String, JsonElement> entry : state.entrySet()) {
             String key = getThingKey(entry.getKey());
@@ -68,8 +73,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
 
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), key)).withType(channelTypeUID)
-                    // .withAcceptedItemType(itemType)
-                    .build();
+                    .withAcceptedItemType(itemType).build();
 
             ChannelUID channelUID = channel.getUID();
 
@@ -121,21 +125,25 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     private boolean setItemValue(String itemType, ChannelUID channelUID, JsonElement value) {
         switch (itemType) {
-            case "Number:Energy" ->
-                updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.KILOWATT_HOUR));
-            case "Number:Power" -> updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.WATT));
-            case "Number:Dimensionless" ->
-                updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.PERCENT));
-            case "Number:ElectricCurrent" ->
-                updateState(channelUID, new QuantityType<>(value.getAsDouble(), Units.AMPERE));
-            case "String" -> updateState(channelUID, new StringType(value.getAsString()));
-            case "Number", "Number:Currency", "Number:Time" ->
+            case "Number:Energy":
+            case "Number:Power":
+            case "Number:Dimensionless":
+            case "Number:ElectricCurrent":
+            case "Number", "Number:Currency", "Number:Time":
                 updateState(channelUID, new DecimalType(value.getAsDouble()));
-            case "Switch" -> updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
-            case "default" -> {
+                break;
+            case "Number:Length":
+                updateState(channelUID, new QuantityType<>(value.getAsDouble(), MetricPrefix.KILO(SIUnits.METRE)));
+                break;
+            case "String":
+                updateState(channelUID, new StringType(value.getAsString()));
+                break;
+            case "Switch":
+                updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
+                break;
+            default:
                 logger.debug("Unsupported item type '{}' for channel {}", itemType, channelUID);
                 return false;
-            }
         }
         return true;
     }
@@ -194,6 +202,30 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
         if (channelAdded) {
             updateThing(builder.build());
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    protected void sendCommand(String url) {
+        HttpClient httpClient = bridgeHandler.getHttpClient();
+        try {
+            ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(HttpMethod.POST)
+                    .header(HttpHeader.ACCEPT, "application/json").send();
+
+            if (response.getStatus() == 200) {
+                @Nullable
+                JsonObject return_value = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                if (return_value != null) {
+                    // Add logic here!
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.warn("EVCC API-Fehler: HTTP {}", response.getStatus());
+            }
+
+        } catch (Exception e) {
+            logger.error("EVCC Bridge konnte API nicht abrufen", e);
         }
     }
 

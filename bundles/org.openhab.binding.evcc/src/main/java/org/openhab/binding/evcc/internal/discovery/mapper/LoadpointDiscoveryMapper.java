@@ -44,7 +44,7 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
                 properties.put("type", "loadpoint");
             }
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("evcc Loadpoint - " + title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
                     .withRepresentationProperty("index").build();
 

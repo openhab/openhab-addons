@@ -264,21 +264,143 @@
 		</channel-type>
 	-->
 	<channel-type id="loadpointPhaseRemaining">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Phase remaining</label>
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointPhasesActive">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Charging Active Phases</label>
 		<description>Current number of active phases while charging</description>
-		<category></category>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointPhasesConfigured">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Phases Configured</label>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointPlacActive">
+		<item-type>Switch</item-type>
+		<label>Plan activated</label>
+		<description>Indicates whether a plan has been activated or not</description>
+		<state>
+			<options>
+				<option value="ON">Activated</option>
+				<option value="OFF">Deactivated</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- TODO: Add Plan, pv, session, smartCost channels here -->
+	<channel-type id="loadpointTitle">
+		<item-type>String</item-type>
+		<label>Loadpoint Title</label>
+		<description>Title of loadpoint</description>
+		<category>PowerOutlet</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointVehicleClimaterActive">
+		<item-type>Switch</item-type>
+		<label>Vehicle climater active</label>
+		<description>Indicates whether the climater is active or not</description>
+		<state>
+			<options>
+				<option value="ON">Active</option>
+				<option value="OFF">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="loadpointVehicleDetectionActive">
+		<item-type>Switch</item-type>
+		<label>Vehicle detection active</label>
+		<description>Indicates whether the vehicle detection is active or not</description>
+		<state>
+			<options>
+				<option value="ON">Active</option>
+				<option value="OFF">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="loadpointVehicleLimitSoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Current vehicle SoC limit</label>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="loadpointVehicleName">
+		<item-type>String</item-type>
+		<label>Vehicle Name</label>
+		<description>The unique identifier of the EV used in the evcc configuration (containing no whitespaces nor special
+			characters)</description>
+		<category>Settings</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointVehicleOdometer">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>Vehicle Odometer</label>
+		<description>Total distance travelled by EV</description>
+		<category>MoveControl</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointVehicleRange">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>Vehicle Range</label>
+		<description>Battery range for EV</description>
+		<category></category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointVehicleSoc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Vehicle SoC</label>
+		<description>Current State of Charge of EV</description>
+		<category>BatteryLevel</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointVehicleTitle">
+		<item-type>String</item-type>
+		<label>Vehicle Title</label>
+		<description>The name of the vehicle showed in the UI</description>
+		<category>Settings</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="loadpointVehicleWelcomeActive">
+		<item-type>Switch</item-type>
+		<label>Vehicle welcome active</label>
+		<description>Indicates whether the charge performs a initial load or not when the vehicle gets connected</description>
+		<state>
+			<options>
+				<option value="ON">Active</option>
+				<option value="OFF">Inactive</option>
+			</options>
+		</state>
 	</channel-type>
 
+	<!-- Heating relevant channels -->
+	<channel-type id="vehicleTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature of the heating device</description>
+		<category>Temperature</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="limitTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Charging Limit Temperature</label>
+		<description>Until which Temperature should the heating device be charged</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="effectiveLimitTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Effective Charging Limit Temperature</label>
+		<description>Effective Temperature until which the heating device will be charged</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+
+	<!-- Backward compatibilty channels -->
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Charging Enabled</label>
@@ -299,36 +421,7 @@
 		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="limitTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Charging Limit Temperature</label>
-		<description>Until which Temperature should the heating device be charged</description>
-		<category>Temperature</category>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="effectiveLimitTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Effective Charging Limit Temperature</label>
-		<description>Effective Temperature until which the heating device will be charged</description>
-		<category>Temperature</category>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="title">
-		<item-type>String</item-type>
-		<label>Loadpoint Title</label>
-		<description>Title of loadpoint</description>
-		<category>PowerOutlet</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="vehicleOdometer">
-		<item-type>Number:Length</item-type>
-		<label>Vehicle Odometer</label>
-		<description>Total distance travelled by EV</description>
-		<category>MoveControl</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="vehiclePresent">
+	<channel-type id="loadpointVehiclePresent">
 		<item-type>Switch</item-type>
 		<label>Vehicle Data Access</label>
 		<description>Whether evcc is able to get data from vehicle</description>
@@ -339,34 +432,5 @@
 				<option value="OFF">No data access</option>
 			</options>
 		</state>
-	</channel-type>
-	<channel-type id="vehicleRange">
-		<item-type>Number:Length</item-type>
-		<label>Vehicle Range</label>
-		<description>Battery range for EV</description>
-		<category></category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="vehicleSoC">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Vehicle SoC</label>
-		<description>Current State of Charge of EV</description>
-		<category>BatteryLevel</category>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="vehicleTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current Temperature of the heating device</description>
-		<category>Temperature</category>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="vehicleName">
-		<item-type>String</item-type>
-		<label>Vehicle Name</label>
-		<description>The unique identifier of the EV used in the evcc configuration (containing no whitespaces nor special
-			characters)</description>
-		<category>Settings</category>
-		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

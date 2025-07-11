@@ -27,6 +27,11 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+        if (bridgeHandler == null) {
+            return;
+        }
+        // endpoint = bridgeHandler.getBaseURL(); // Currenlty there is no endpoint
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

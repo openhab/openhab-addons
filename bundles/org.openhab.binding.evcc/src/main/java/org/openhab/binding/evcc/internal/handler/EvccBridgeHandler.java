@@ -45,9 +45,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
-        Configuration config = bridge.getConfiguration();
         this.httpClientFactory = httpClientFactory;
         httpClient = httpClientFactory.getCommonHttpClient();
+        Configuration config = bridge.getConfiguration();
         String host = String.valueOf(config.get("host"));
         int port = ((BigDecimal) config.get("port")).intValue();
         String schema = String.valueOf(config.get("schema"));
@@ -67,7 +67,6 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
         fetchEvccState().ifPresent(state -> {
             this.lastState = state;
-            notifyListeners(state);
             updateStatus(ThingStatus.ONLINE);
         });
     }

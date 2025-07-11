@@ -4,18 +4,23 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
 @NonNullByDefault
 public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
     private final int index;
 
     public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
@@ -27,6 +32,11 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+        if (bridgeHandler == null) {
+            return;
+        }
+        endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + (index + 1);
         Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
         if (stateOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -39,7 +49,27 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // No-op right now!
+        if (command instanceof State) {
+            String datapoint = channelUID.getId().replace("loadpoint", "").toLowerCase();
+            // Special Handling for enbale and disable endpoints
+            if (datapoint.contains("enable")) {
+                datapoint += "/enable/" + datapoint.replace("enable", "");
+            } else if (datapoint.contains("disable")) {
+                datapoint += "/disable/" + datapoint.replace("disable", "");
+            }
+            String value = "";
+            if (command instanceof OnOffType) {
+                value = command == OnOffType.ON ? "true" : "false";
+            } else {
+                value = command.toString();
+                if (value.contains(" ")) {
+                    value = value.substring(0, command.toString().indexOf(" "));
+                }
+            }
+            String url = endpoint + "/" + datapoint + "/" + value;
+            logger.debug("Sendig command to this url: {}", url);
+            sendCommand(url);
+        }
     }
 
     @Override
