@@ -51,7 +51,7 @@ Thing bluetooth:bluez:abc:device (bluetooth:bluez:abc) [ address="11:11:11:11:11
 }
 ```
 
-### Item Configuration
+### `demo.items` Example
 
 ```java
 Number temperature "Temperature"    { channel="bluetooth:bluez:abc:device:temperature" }
