@@ -136,7 +136,7 @@ public interface ShellyApiInterface {
 
     void setActionURLs() throws ShellyApiException;
 
-    void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException;
+    void sendIRKey(String keyCode) throws ShellyApiException;
 
     void postEvent(String device, String index, String event, Map<String, String> parms) throws ShellyApiException;
 

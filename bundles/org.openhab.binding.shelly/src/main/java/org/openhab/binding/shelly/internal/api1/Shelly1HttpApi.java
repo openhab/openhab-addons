@@ -493,10 +493,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      *            plain or hex64 format
      *
      * @throws ShellyApiException
-     * @throws IllegalArgumentException
      */
     @Override
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
+    public void sendIRKey(String keyCode) throws ShellyApiException {
         String type = "";
         if (profile.irCodes.containsKey(keyCode)) {
             type = SHELLY_IR_CODET_STORED;
