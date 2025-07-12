@@ -543,7 +543,7 @@
 		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
