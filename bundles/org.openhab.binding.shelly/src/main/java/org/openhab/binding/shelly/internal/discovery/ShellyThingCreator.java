@@ -122,20 +122,15 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_4PRO = "SHPSW04P";
 
     // Shelly Plus Mini Series
-    // Mini Generation 2
     public static final String SHELLYDT_MINI_1 = "SNSW-001X8EU";
-    public static final String SHELLYDT_MINI_1PM = "SNSW-001P8EU";
-    public static final String SHELLYDT_MINI_PM = "SNPM-001PCEU16";
-
-    // Mini Generation 3
     public static final String SHELLYDT_MINI_1G3 = "S3SW-001X8EU";
-    public static final String SHELLYDT_MINI_1PMG3 = "S3SW-001P8EU";
-    public static final String SHELLYDT_MINI_PMG3 = "S3PM-001PCEU16";
-    // Mini Generation 4
     public static final String SHELLYDT_MINI_1G4 = "S4SW-001X8EU";
-    public static final String SHELLYDT_MINI_PMG4 = "S4EM-001PXCEU16";
+    public static final String SHELLYDT_MINI_1PM = "SNSW-001P8EU";
+    public static final String SHELLYDT_MINI_1PMG3 = "S3SW-001P8EU";
     public static final String SHELLYDT_MINI_1PMG4 = "S4SW-001P8EU";
-    public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16";
+    public static final String SHELLYDT_MINI_PM = "SNPM-001PCEU16";
+    public static final String SHELLYDT_MINI_PMG3 = "S3PM-001PCEU16";
+    public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
 
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
