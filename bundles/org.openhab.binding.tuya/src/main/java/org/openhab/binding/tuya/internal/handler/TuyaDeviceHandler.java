@@ -19,6 +19,7 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYP
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_QUANTITY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_STRING;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_SWITCH;
+import static org.openhab.core.library.CoreItemFactory.NUMBER;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -206,7 +207,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                         if (!schemaDp.unit.isEmpty()) {
                             // If the item type for the channel is not dimensioned the unit is not usable.
                             Channel channel = thing.getChannel(channelId);
-                            if (channel != null && !"Number".equals(channel.getAcceptedItemType())) {
+                            if (channel != null && !NUMBER.equals(channel.getAcceptedItemType())) {
                                 updateState(channelId, new QuantityType<>(d.toPlainString() + " " + schemaDp.unit));
                                 return;
                             }
@@ -375,7 +376,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     // If the item type for the channel is not dimensioned the unit is not usable and we
                     // assume whoever sent a quantity instead of a bare number knows what they are doing.
                     Channel channel = thing.getChannel(channelUID.getId());
-                    if (channel != null && !"Number".equals(channel.getAcceptedItemType())) {
+                    if (channel != null && !NUMBER.equals(channel.getAcceptedItemType())) {
                         quantityType = quantityType.toUnit(schemaDp.unit);
                     }
                 }
