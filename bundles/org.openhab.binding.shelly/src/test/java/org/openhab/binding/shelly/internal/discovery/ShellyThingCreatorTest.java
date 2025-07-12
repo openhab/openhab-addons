@@ -135,6 +135,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_HT, "", THING_TYPE_SHELLYHT), //
                 Arguments.of(SHELLYDT_TRV, "", THING_TYPE_SHELLYTRV), //
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION), //
+
                 // Plus Series
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1G3, "", THING_TYPE_SHELLYPLUS1), //
@@ -142,10 +143,13 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUS1PMG3, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM), //
+                Arguments.of(SHELLYDT_PLUS1L, "", THING_TYPE_SHELLYPLUS1L), //
                 Arguments.of("SNSW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of("SNSW-002P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of("SNSW-102P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of("SNSW-102P16EU", "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
+                Arguments.of(SHELLYDT_PLUS2L, "", THING_TYPE_SHELLYPLUS2L), //
+                Arguments.of(SHELLYDT_PLUSSHUTTER, "", THING_TYPE_SHELLYPLUSSHUTTER), //
                 Arguments.of(SHELLYDT_PLUSPLUGS, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGIT, "", THING_TYPE_SHELLYPLUSPLUGS), //
@@ -162,6 +166,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
+                Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
+                Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
 
                 // Plus Mini Series
                 Arguments.of(SHELLYDT_MINI1, "", THING_TYPE_SHELLY1MINI), //
