@@ -22,9 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OndiloConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public int id = 0; // Pool ID, required for the thing
-    public int refreshInterval = 600; // Default to 10 minutes
+    public int id = 0; // Ondilo ICO ID, required for the thing
 }

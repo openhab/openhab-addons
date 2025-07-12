@@ -20,12 +20,11 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 ### `bridge` Thing Configuration
 
 - **url**: The URL of the openHAB instance. Required for the redirect during OAuth2 flow (e.g. `http://localhost:8080`)
-- **refreshInterval**: Polling interval of the bridge (i.e. configuration changes) in seconds (default: `1800 s`)
+- **refreshInterval**: Polling interval in seconds (default: `600 s`)
 
 ### `ondilo` Thing Configuration
 
 - **id**: The Id of an Ondilo ICO device. Set via discovery service (e.g. `12345`)
-- **refreshInterval**: Polling interval of the device (i.e. measures) in seconds (default: `600 s`)
 
 Ondilo ICO takes measures every hour.
 Higher polling will not increase the update interval.
@@ -39,6 +38,12 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 
 ## Channels
 
+### `bridge` Channels
+
+| Channel ID                | Type                    | Advanced | Access | Description                                            |
+|---------------------------|-------------------------|----------|--------|--------------------------------------------------------|
+| poll-update               | Switch                  | true     | R/W    | Poll status update from the cloud (get latest measures, not a trigger for new measures) |
+
 ### Measures Channels
 
 | Channel ID                | Type                    | Advanced | Access | Description                                            |
@@ -51,7 +56,6 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 | battery                   | Number:Dimensionless    | false    | R      | Battery level of the device                            |
 | rssi                      | Number:Dimensionless    | false    | R      | Signal strength (RSSI)                                 |
 | value-time                | DateTime                | true     | R      | Timestamp of the set of measures                       |
-| poll-update               | Switch                  | true     | R/W    | Poll status update from the cloud (get latest measures, not a trigger for new measures) |
 
 ### Recommendations Channels
 
@@ -70,7 +74,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 ### Thing Configuration
 
 ```Java
-Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=1800 ] {
+Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=600 ] {
     Thing ondilo "<id_received_from_discovery>" [ id="<id_received_from_discovery>" ] {
     }
 ```

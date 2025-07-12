@@ -10,6 +10,10 @@
 		<description>The bridge for central communication with the Ondilo API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
+		<channels>
+			<channel id="poll-update" typeId="poll-update"/>
+		</channels>
+
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>openHAB URL</label>
@@ -19,8 +23,8 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<default>1800</default>
-				<description>Polling interval of the Ondilo bridge (i.e. for config changes)</description>
+				<default>600</default>
+				<description>Polling interval</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -54,11 +58,6 @@
 				<label>Id</label>
 				<description>The Id of an Ondilo ICO Pool/Spa device. Set via discovery service</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Polling interval of the Ondilo ICO (i.e. for measures)</description>
-				<default>600</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -73,7 +72,6 @@
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="value-time" typeId="value-time"/>
-			<channel id="poll-update" typeId="poll-update"/>
 		</channels>
 	</channel-group-type>
 
@@ -89,6 +87,16 @@
 			<channel id="deadline" typeId="deadline"/>
 		</channels>
 	</channel-group-type>
+
+	<!-- Bridge Channel Types -->
+	<channel-type id="poll-update" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Poll Update</label>
+		<description>Poll status update from the cloud (get latest measures, not a trigger for new measures)</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
 
 	<!-- Measure Channel Types -->
 	<channel-type id="temperature">
@@ -156,14 +164,6 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
-	</channel-type>
-	<channel-type id="poll-update" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Poll Update</label>
-		<description>Poll status update from the cloud (get latest measures, not a trigger for new measures)</description>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<!-- Recommendation Channel Types -->

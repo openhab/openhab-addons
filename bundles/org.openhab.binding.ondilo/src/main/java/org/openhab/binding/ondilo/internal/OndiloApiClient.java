@@ -84,7 +84,7 @@ public class OndiloApiClient {
     private void refreshAccessTokenIfNeeded() {
         OAuthClientService oAuthService = this.oAuthService;
         AccessTokenResponse accessTokenResponse = this.accessTokenResponse;
-        if ((oAuthService != null) && (accessTokenResponse != null)) {
+        if (oAuthService != null && accessTokenResponse != null) {
             if (accessTokenResponse.isExpired(Instant.now(), 120)) {
                 try {
                     this.accessTokenResponse = oAuthService.refreshToken();

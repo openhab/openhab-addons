@@ -30,12 +30,14 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,8 +180,8 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
             return Optional.empty();
         } else {
             List<Pool> currentPools = bridge.getPools();
-            if ((currentPools == null) || currentPools.isEmpty()) {
-                logger.trace("No pools available, return empty list");
+            if (currentPools == null || currentPools.isEmpty()) {
+                logger.trace("No Ondilo ICOs available, return empty list");
                 return Optional.empty();
             } else {
                 return Optional.of(currentPools);
@@ -213,7 +215,26 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // No commands for the bridge
+        if (RefreshType.REFRESH == command) {
+            // not implemented as it would causes >10 channel updates in a row during setup (exceeds given API quota)
+            // If you want to update the values, use the poll channel instead
+            return;
+        } else {
+            if (channelUID.getId().equals(CHANNEL_POLL_UPDATE)) {
+                if (command instanceof OnOffType cmd) {
+                    if (cmd == OnOffType.ON) {
+                        OndiloBridge bridge = this.bridge;
+                        if (bridge != null) {
+                            bridge.pollOndiloICOs();
+                        } else {
+                            logger.warn("Bridge is null, cannot poll Ondilo ICOs");
+                        }
+                        // Reset the channel state to OFF after polling
+                        updateState(CHANNEL_POLL_UPDATE, OnOffType.OFF);
+                    }
+                }
+            }
+        }
     }
 
     public static boolean isValidUrl(String url) {

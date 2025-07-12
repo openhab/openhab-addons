@@ -30,7 +30,10 @@ public class OndiloBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_ONDILO = new ThingTypeUID(BINDING_ID, "ondilo");
 
-    // Ondilo Thing properties
+    // Bridge Channel ids
+    public static final String CHANNEL_POLL_UPDATE = "poll-update";
+
+    // Ondilo Thing Properties
     public static final String ONDILO_ID = "id";
     public static final String ONDILO_NAME = "name";
     public static final String ONDILO_TYPE = "type";
@@ -39,7 +42,7 @@ public class OndiloBindingConstants {
     public static final String ONDILO_ADDRESS = "address";
     public static final String ONDILO_LOCATION = "location";
 
-    // Measures Channel ids
+    // Ondilo Thing Measures Channel ids
     public static final String GROUP_MEASURES = "measure#";
 
     public static final String CHANNEL_TEMPERATURE = GROUP_MEASURES + "temperature";
@@ -50,9 +53,8 @@ public class OndiloBindingConstants {
     public static final String CHANNEL_BATTERY = GROUP_MEASURES + "battery";
     public static final String CHANNEL_RSSI = GROUP_MEASURES + "rssi";
     public static final String CHANNEL_VALUE_TIME = GROUP_MEASURES + "value-time";
-    public static final String CHANNEL_POLL_UPDATE = GROUP_MEASURES + "poll-update";
 
-    // Recommendations Channel ids
+    // Ondilo Thing Recommendations Channel ids
     public static final String GROUP_RECOMMENDATIONS = "recommendation#";
 
     public static final String CHANNEL_RECOMMENDATION_ID = GROUP_RECOMMENDATIONS + "id";
@@ -63,7 +65,7 @@ public class OndiloBindingConstants {
     public static final String CHANNEL_RECOMMENDATION_STATUS = GROUP_RECOMMENDATIONS + "status";
     public static final String CHANNEL_RECOMMENDATION_DEADLINE = GROUP_RECOMMENDATIONS + "deadline";
 
-    // i18n keys for state details
+    // I18N keys for state details
     public static final String I18N_URL_INVALID = "@text/thing.ondilo.bridge.config.url.invalid";
     public static final String I18N_OAUTH2_PENDING = "@text/thing.ondilo.bridge.config.oauth2.pending";
     public static final String I18N_OAUTH2_ERROR = "@text/thing.ondilo.bridge.config.oauth2.error";

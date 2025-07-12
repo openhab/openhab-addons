@@ -18,9 +18,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,7 +27,6 @@ import org.openhab.binding.ondilo.internal.dto.Recommendation;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -47,9 +43,6 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 /**
  * The {@link OndiloHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -62,12 +55,14 @@ public class OndiloHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OndiloHandler.class);
     private final TimeZoneProvider timeZoneProvider;
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
-
-    private @Nullable ScheduledFuture<?> ondiloPollingJob;
+    private final int configPoolId;
 
     public OndiloHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
+
+        OndiloConfiguration currentConfig = getConfigAs(OndiloConfiguration.class);
+        this.configPoolId = currentConfig.id;
     }
 
     @Override
@@ -76,34 +71,22 @@ public class OndiloHandler extends BaseThingHandler {
             // not implemented as it would causes >10 channel updates in a row during setup (exceeds given API quota)
             // If you want to update the values, use the poll channel instead
             return;
-        } else {
-            if (channelUID.getId().equals(CHANNEL_POLL_UPDATE)) {
-                if (command instanceof OnOffType cmd) {
-                    if (cmd == OnOffType.ON) {
-                        poll();
-                        updateState(CHANNEL_POLL_UPDATE, OnOffType.OFF);
-                    }
-                }
-            }
         }
     }
 
     @Override
     public void initialize() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            OndiloConfiguration currentConfig = getConfigAs(OndiloConfiguration.class);
-            final int configPoolId = currentConfig.id;
-            final int refreshInterval = currentConfig.refreshInterval;
-
+        OndiloBridge ondiloBridge = getOndiloBridge();
+        if (bridge != null && ondiloBridge != null) {
             if (configPoolId == 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
                 return;
             } else {
                 ondiloId.set(String.valueOf(configPoolId));
             }
+            ondiloBridge.registerOndiloHandler(configPoolId, this);
             updateStatus(ThingStatus.ONLINE);
-            startOndiloPolling(refreshInterval);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
@@ -111,60 +94,18 @@ public class OndiloHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        OndiloBridge ondiloBridge = getOndiloBridge();
+        if (ondiloBridge != null) {
+            ondiloBridge.unregisterOndiloHandler(configPoolId);
+        }
         if (!ondiloId.get().equals(NO_ID)) {
-            stopOndiloPolling();
-            logger.trace("Stopped polling for Ondilo device with ID: {}", ondiloId.get());
+
             ondiloId.set(NO_ID);
         }
     }
 
-    private synchronized void poll() {
-        try {
-            OndiloBridge bridge = getOndiloBridge();
-            if (bridge != null) {
-                OndiloApiClient apiClient = bridge.apiClient;
-                if (apiClient != null) {
-                    String poolsJson = apiClient.get("/pools/" + ondiloId.get()
-                            + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
-                    logger.trace("LastMeasures: {}", poolsJson);
-                    // Parse JSON to DTO
-                    Gson gson = new Gson();
-                    List<LastMeasure> lastMeasures = gson.fromJson(poolsJson, new TypeToken<List<LastMeasure>>() {
-                    }.getType());
-
-                    if ((lastMeasures == null) || lastMeasures.isEmpty()) {
-                        logger.warn("No lastMeasures available for pool with ID: {}", ondiloId.get());
-                        clearLastMeasuresChannels();
-                    } else {
-                        for (LastMeasure lastMeasure : lastMeasures) {
-                            logger.trace("LastMeasure: type={}, value={}", lastMeasure.data_type, lastMeasure.value);
-                            updateLastMeasuresChannels(lastMeasure);
-                        }
-                    }
-
-                    String recommendationsJson = apiClient.get("/pools/" + ondiloId.get() + "/recommendations");
-                    logger.trace("recommendations: {}", recommendationsJson);
-                    // Parse JSON to DTO
-                    List<Recommendation> recommendations = gson.fromJson(recommendationsJson,
-                            new TypeToken<List<Recommendation>>() {
-                            }.getType());
-
-                    if ((recommendations == null) || recommendations.isEmpty()) {
-                        logger.trace("No Recommendations available for pool with ID: {}", ondiloId.get());
-                        clearRecommendationChannels();
-                    } else {
-                        Recommendation recommendation = recommendations.getFirst();
-                        logger.trace("Recommentation: id={}, title={}", recommendation.id, recommendation.title);
-                        updateRecommendationChannels(recommendation);
-                    }
-                }
-            }
-        } catch (RuntimeException e) {
-            logger.warn("Unexpected error in polling job: {}", e.getMessage(), e);
-        }
-    }
-
-    private void clearLastMeasuresChannels() {
+    public void clearLastMeasuresChannels() {
+        // Undef is used as the state is unknown
         updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
         updateState(CHANNEL_PH, UnDefType.UNDEF);
         updateState(CHANNEL_ORP, UnDefType.UNDEF);
@@ -174,7 +115,8 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RSSI, UnDefType.UNDEF);
     }
 
-    private void clearRecommendationChannels() {
+    public void clearRecommendationChannels() {
+        // Null is used, as there is no recommendation available (no to-do's)
         updateState(CHANNEL_RECOMMENDATION_ID, UnDefType.NULL);
         updateState(CHANNEL_RECOMMENDATION_TITLE, UnDefType.NULL);
         updateState(CHANNEL_RECOMMENDATION_MESSAGE, UnDefType.NULL);
@@ -184,7 +126,15 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, UnDefType.NULL);
     }
 
-    private void updateLastMeasuresChannels(LastMeasure lastMeasures) {
+    public void updateLastMeasuresChannels(LastMeasure lastMeasures) {
+        /*
+         * The measures are received using the following units:
+         * - Temperature: Celsius degrees (°C)
+         * - ORP: millivolts (mV)
+         * - Salt: milligrams per liter (mg/l)
+         * - TDS: parts per million (ppm)
+         * - Battery and RSSI: percent (%)
+         */
         switch (lastMeasures.data_type) {
             case "temperature":
                 updateState(CHANNEL_TEMPERATURE, new QuantityType<>(lastMeasures.value, SIUnits.CELSIUS));
@@ -217,7 +167,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_VALUE_TIME, new DateTimeType(convertUtcToSystemTimeZone(lastMeasures.value_time)));
     }
 
-    private void updateRecommendationChannels(Recommendation recommendation) {
+    public void updateRecommendationChannels(Recommendation recommendation) {
         updateState(CHANNEL_RECOMMENDATION_ID, new DecimalType(recommendation.id));
         updateState(CHANNEL_RECOMMENDATION_TITLE, new StringType(recommendation.title));
         updateState(CHANNEL_RECOMMENDATION_MESSAGE, new StringType(recommendation.message));
@@ -225,22 +175,6 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updated_at));
         updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status));
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
-    }
-
-    private void startOndiloPolling(Integer refreshInterval) {
-        if (ondiloPollingJob == null) {
-            ondiloPollingJob = scheduler.scheduleWithFixedDelay(() -> poll(), 2, refreshInterval, TimeUnit.SECONDS);
-        } else {
-            logger.warn("Ondilo polling job is already running, not starting a new one");
-        }
-    }
-
-    private void stopOndiloPolling() {
-        ScheduledFuture<?> ondiloPollingJob = this.ondiloPollingJob;
-        if (ondiloPollingJob != null) {
-            ondiloPollingJob.cancel(true);
-            this.ondiloPollingJob = null;
-        }
     }
 
     @Nullable
