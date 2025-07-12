@@ -9,6 +9,10 @@
 		<item-type>String</item-type>
 		<label>Irrigation Mode</label>
 		<description>Channel representing mode of Orbit B-hyve Device (auto/manual)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="auto">Auto</option>
@@ -38,6 +42,10 @@
 		<item-type>Switch</item-type>
 		<label>Sprinkler State Control</label>
 		<description>Channel for enabling/disabling the sprinkler (ON/OFF)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="smart_watering">
 		<item-type>Switch</item-type>
