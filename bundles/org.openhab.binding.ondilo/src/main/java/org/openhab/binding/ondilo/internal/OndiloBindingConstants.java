@@ -68,4 +68,5 @@ public class OndiloBindingConstants {
     public static final String I18N_OAUTH2_PENDING = "@text/thing.ondilo.bridge.config.oauth2.pending";
     public static final String I18N_OAUTH2_ERROR = "@text/thing.ondilo.bridge.config.oauth2.error";
     public static final String I18N_OAUTH2_INTERRUPTED = "@text/thing.ondilo.bridge.config.oauth2.interrupted";
+    public static final String I18N_ID_INVALID = "@text/thing.ondilo.ondilo.config.id.invalid";
 }

@@ -97,7 +97,7 @@ public class OndiloHandler extends BaseThingHandler {
             final int refreshInterval = currentConfig.refreshInterval;
 
             if (configPoolId == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No ID configured");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
                 return;
             } else {
                 ondiloId.set(String.valueOf(configPoolId));
