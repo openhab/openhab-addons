@@ -123,7 +123,7 @@ See section [Discovery](#discovery) for details.
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
 | shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
 | shellyproem50       | Shelly Pro EM-50 with 2 power meters and 1 relay         | SPEM-002CEBEU50                                |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
 
 ### Shelly BLU
 
