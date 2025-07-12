@@ -439,7 +439,7 @@ public class ShellyDeviceProfile {
      */
     public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
         String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        return "shellyblu" + switch (model) {
+        return THING_TYPE_SHELLYBLU_PREFIX + switch (model) {
             case SHELLYDT_BLUBUTTON -> "button";
             case SHELLYDT_BLUDW -> "dw";
             case SHELLYDT_BLUMOTION -> "motion";
