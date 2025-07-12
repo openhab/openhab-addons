@@ -16,6 +16,10 @@
 	<channel-type id="avg-speed">
 		<item-type>Number:Speed</item-type>
 		<label>Trip Average Speed</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="consumption-ev">
@@ -46,6 +50,10 @@
 		<item-type>Number:Speed</item-type>
 		<label>Rst Average Speed</label>
 		<description>Average speed since last Reset</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="consumption-ev-reset">
