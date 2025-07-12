@@ -14,12 +14,15 @@ package org.openhab.binding.amberelectric.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link AmberElectricHandlerFactory} is responsible for creating things and thing
@@ -30,6 +33,15 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.amberelectric")
 @NonNullByDefault
 public class AmberElectricHandlerFactory extends BaseThingHandlerFactory {
+    private final CronScheduler cronScheduler;
+    private final CronScheduler cronResetEstimatesScheduler;
+
+    @Activate
+    public AmberElectricHandlerFactory(@Reference CronScheduler cronScheduler,
+            @Reference CronScheduler cronResetEstimatesScheduler) {
+        this.cronScheduler = cronScheduler;
+        this.cronResetEstimatesScheduler = cronResetEstimatesScheduler;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -41,7 +53,7 @@ public class AmberElectricHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(AmberElectricBindingConstants.AMBERELECTRIC_THING)) {
-            return new AmberElectricHandler(thing);
+            return new AmberElectricHandler(thing, cronScheduler, cronResetEstimatesScheduler);
         }
 
         return null;
