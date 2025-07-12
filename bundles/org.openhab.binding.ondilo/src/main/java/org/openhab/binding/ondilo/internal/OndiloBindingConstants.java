@@ -62,4 +62,10 @@ public class OndiloBindingConstants {
     public static final String CHANNEL_RECOMMENDATION_UPDATED_AT = GROUP_RECOMMENDATIONS + "updated-at";
     public static final String CHANNEL_RECOMMENDATION_STATUS = GROUP_RECOMMENDATIONS + "status";
     public static final String CHANNEL_RECOMMENDATION_DEADLINE = GROUP_RECOMMENDATIONS + "deadline";
+
+    // i18n keys for state details
+    public static final String I18N_URL_INVALID = "@text/thing.ondilo.bridge.config.url.invalid";
+    public static final String I18N_OAUTH2_PENDING = "@text/thing.ondilo.bridge.config.oauth2.pending";
+    public static final String I18N_OAUTH2_ERROR = "@text/thing.ondilo.bridge.config.oauth2.error";
+    public static final String I18N_OAUTH2_INTERRUPTED = "@text/thing.ondilo.bridge.config.oauth2.interrupted";
 }
