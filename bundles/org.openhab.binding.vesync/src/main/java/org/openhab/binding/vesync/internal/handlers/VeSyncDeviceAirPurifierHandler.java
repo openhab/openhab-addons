@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
-    public static final String DEV_TYPE_FAMILY_AIR_PURIFIER = "LAP";
+    public static final List<String> DEV_TYPE_FAMILY_AIR_PURIFIER = Arrays.asList("LAP");
 
     public static final int DEFAULT_AIR_PURIFIER_POLL_RATE = 120;
 
@@ -200,7 +200,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
     }
 
     @Override
-    public String getDeviceFamilyProtocolPrefix() {
+    public List<String> getDeviceFamilyProtocolPrefix() {
         return DEV_TYPE_FAMILY_AIR_PURIFIER;
     }
 
