@@ -142,6 +142,8 @@ public class ShellyThingCreator {
 
     // Service name prefixes
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
+    public static final String SERVICE_NAME_SHELLYPLUS_PREFIX = "shellyplus";
+    public static final String SERVICE_NAME_SHELLYPRO_PREFIX = "shellypro";
 
     private static final String SERVICE_NAME_SHELLY2_PREFIX = "shellyswitch";
     private static final String SERVICE_NAME_SHELLY25_PREFIX = "shellyswitch25";
@@ -475,6 +477,10 @@ public class ShellyThingCreator {
             throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
         }
         return deviceId;
+    }
+
+    public static ThingTypeUID getThingTypeUID(String serviceName) {
+        return getThingTypeUID(serviceName, "", "");
     }
 
     public static ThingTypeUID getThingTypeUID(String serviceName, String deviceType, String mode) {
