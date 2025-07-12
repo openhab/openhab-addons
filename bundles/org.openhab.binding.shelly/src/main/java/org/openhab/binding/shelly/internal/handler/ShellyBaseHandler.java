@@ -185,7 +185,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void initialize() {
         // start background initialization:
         initJob = scheduler.schedule(() -> {
-            boolean start = true;
+            boolean start = false;
             try {
                 if (initializeThingConfig()) {
                     logger.debug("{}: Config: {}", thingName, config);
@@ -193,8 +193,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             } catch (ShellyApiException e) {
                 start = handleApiException(e);
-            } catch (IllegalArgumentException e) {
-                logger.debug("{}: Unable to initialize, retrying later", thingName, e);
             } finally {
                 // even this initialization failed we start the status update
                 // the updateJob will then try to auto-initialize the thing
@@ -1007,6 +1005,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     protected boolean initializeThingConfig() {
         thingType = getThing().getThingTypeUID().getId();
+        if (THING_TYPE_SHELLYUNKNOWN.equals(getThing().getThingTypeUID())) {
+            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "offline.device-unsupported");
+            return false;
+        }
+
         final Map<String, String> properties = getThing().getProperties();
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
         if (thingName.isEmpty()) {
