@@ -98,11 +98,14 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC, true, false), //
-                Arguments.of(THING_TYPE_SHELLY1MINI, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPMMINI, true, false), //
-                Arguments.of(THING_TYPE_SHELLY1PMMINI, true, false), //
 
-                // Shelly Pro
+                // Shelly Mini series
+                Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_EM, true, false), //
+
+                // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO1PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO2, true, false), //
