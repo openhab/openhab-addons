@@ -730,7 +730,7 @@
 		<description>When the plan SoC should be reached</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Setpoint</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="false"/>
