@@ -15,12 +15,20 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-por">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="ignorepor" type="boolean" required="false">
@@ -34,6 +42,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="ignorepor" type="boolean" required="false">
@@ -59,6 +71,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
 		<description>dewpoint (calculated from temperature and relative humidity)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Relative Humidity Channel -->
@@ -66,12 +82,20 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity (0-100%)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="humidityconf">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity (0-100%)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 		<config-description>
 			<parameter name="humiditytype" type="text" required="false">
@@ -92,6 +116,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Abs. Humidity</label>
 		<description>absolute humidity (calculated from temperature and relative humidity)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Voltage Channel -->
@@ -99,6 +127,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>The voltage measured by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Supply-Voltage Channel -->
@@ -106,6 +138,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Supply Voltage</label>
 		<description>The sensor's supply voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Light Channel -->
@@ -113,6 +149,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Ambient light</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<!-- Current Channel -->
@@ -120,12 +160,20 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>The current measured by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Digital I/O Channel -->
 	<channel-type id="dio">
 		<item-type>Switch</item-type>
 		<label>Digital I/O</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
 				<label>Mode</label>
@@ -152,6 +200,10 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<description>The pressure measured by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Counter Channel -->
