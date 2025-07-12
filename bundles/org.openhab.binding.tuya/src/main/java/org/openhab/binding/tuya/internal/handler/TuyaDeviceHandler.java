@@ -192,8 +192,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 } else if ((Double.class.isAssignableFrom(value.getClass()) || value instanceof String)
                         && CHANNEL_TYPE_UID_QUANTITY.equals(channelTypeUID)) {
                     BigDecimal d;
-                    if (value instanceof String) {
-                        d = new BigDecimal((String) value);
+                    if (value instanceof String stringValue) {
+                        d = new BigDecimal(stringValue);
                     } else {
                         d = new BigDecimal((double) value);
                     }
