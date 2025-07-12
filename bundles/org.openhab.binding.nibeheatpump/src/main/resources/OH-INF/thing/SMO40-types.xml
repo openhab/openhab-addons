@@ -634,7 +634,7 @@
 		<label>Calc. Supply S7</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
