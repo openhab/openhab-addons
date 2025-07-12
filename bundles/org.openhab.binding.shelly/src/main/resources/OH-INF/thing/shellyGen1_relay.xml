@@ -389,6 +389,10 @@
 		<label>@text/channel-type.shelly.rollerShutter.label</label>
 		<description>@text/channel-type.shelly.rollerShutter.description</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollerPosition" advanced="true">
@@ -396,8 +400,8 @@
 		<label>@text/channel-type.shelly.rollerPosition.label</label>
 		<description>@text/channel-type.shelly.rollerPosition.description</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -486,6 +490,10 @@
 		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
 		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="meterWatts">
@@ -557,6 +565,10 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.shelly.meterReactive.label</label>
 		<description>@text/channel-type.shelly.meterReactive.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -578,6 +590,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.shelly.meterTotal.label</label>
 		<description>@text/channel-type.shelly.meterTotal.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -642,7 +658,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -655,7 +671,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -668,7 +684,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -686,6 +702,7 @@
 		<description>@text/channel-type.shelly.timestamp.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">
@@ -709,9 +726,6 @@
 		<label>@text/channel-type.shelly.lastUpdate.label</label>
 		<description>@text/channel-type.shelly.lastUpdate.description</description>
 		<category>Time</category>
-		<tags>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

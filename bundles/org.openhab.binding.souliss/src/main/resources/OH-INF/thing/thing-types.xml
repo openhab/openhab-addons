@@ -1019,6 +1019,10 @@
 	<channel-type id="fan-channel">
 		<item-type>String</item-type>
 		<label>Fan</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">Auto</option>
@@ -1033,6 +1037,10 @@
 	<channel-type id="mode-channel">
 		<item-type>String</item-type>
 		<label>Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="COOLING_MODE">Cool</option>
@@ -1067,6 +1075,10 @@
 		<item-type>Switch</item-type>
 		<label>On/Off</label>
 		<description>Switch on/off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sleep">
@@ -1079,12 +1091,20 @@
 		<item-type>Switch</item-type>
 		<label>On/Off Auto Mode</label>
 		<description>Switch on/off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="stateOnOff">
 		<item-type>Contact</item-type>
 		<label>State On/Off</label>
 		<description>Light on/off</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1093,6 +1113,10 @@
 		<item-type>Contact</item-type>
 		<label>State Open/Closed</label>
 		<description>Contact Open/Closed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1101,6 +1125,10 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter Up/Down</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1108,6 +1136,10 @@
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>State of rollershutter/windows</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="opening">Opening</option>
@@ -1203,7 +1235,7 @@
 		<description>Lux</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f kLux"/>
 	</channel-type>
@@ -1236,6 +1268,10 @@
 		<label>Power</label>
 		<description>Current Power</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
 
@@ -1256,6 +1292,10 @@
 		<description>Color of the LED. Bound to a Dimmer to just set the brightness, bind to a Color chooser for the full
 			control and bind to a Switch for turning the led on or off.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dimmerBrightness">
@@ -1263,6 +1303,10 @@
 		<label>Dimmer Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -1271,6 +1315,10 @@
 		<label>White Mode</label>
 		<description>Switch lamp to white mode</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollerBrightness">
@@ -1278,6 +1326,10 @@
 		<label>Roller Brightness</label>
 		<description>Brightness Up/Down</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

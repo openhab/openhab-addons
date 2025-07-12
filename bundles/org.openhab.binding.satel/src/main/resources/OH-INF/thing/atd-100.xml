@@ -41,6 +41,10 @@
 		<label>Temperature</label>
 		<description>Current temperature in the zone</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
