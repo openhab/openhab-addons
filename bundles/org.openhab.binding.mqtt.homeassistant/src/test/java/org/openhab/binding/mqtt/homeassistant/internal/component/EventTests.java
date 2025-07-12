@@ -30,7 +30,6 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 public class EventTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "event/doorbell/action";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -58,7 +57,6 @@ public class EventTests extends AbstractComponentTests {
         assertNotTriggered(component, "event-type", "else");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testJsonAttributes() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -75,8 +73,9 @@ public class EventTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("MQTT Event"));
 
-        assertChannel(component, "event-type", "zigbee2mqtt/doorbell/action", "", "MQTT Event", TextValue.class);
-        assertChannel(component, "json-attributes", "zigbee2mqtt/doorbell/action", "", "MQTT Event", TextValue.class);
+        assertChannel(component, "event-type", "zigbee2mqtt/doorbell/action", "", "Event", TextValue.class);
+        assertChannel(component, "json-attributes", "zigbee2mqtt/doorbell/action", "", "JSON Attributes",
+                TextValue.class);
 
         publishMessage("zigbee2mqtt/doorbell/action", "{ \"event_type\": \"press\" }");
         assertTriggered(component, "json-attributes", "{ \"event_type\": \"press\" }");

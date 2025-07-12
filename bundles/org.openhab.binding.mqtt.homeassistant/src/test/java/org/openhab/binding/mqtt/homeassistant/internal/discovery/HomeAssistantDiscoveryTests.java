@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -45,7 +46,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "unchecked" })
+@SuppressWarnings({ "unchecked", "null" })
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
@@ -53,7 +54,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
 
     @BeforeEach
     public void beforeEach() {
-        discovery = new TestHomeAssistantDiscovery(channelTypeProvider);
+        discovery = new TestHomeAssistantDiscovery(channelTypeProvider, python);
     }
 
     @Test
@@ -183,8 +184,8 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
     }
 
     private static class TestHomeAssistantDiscovery extends HomeAssistantDiscovery {
-        public TestHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider) {
-            super(null);
+        public TestHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider, HomeAssistantPythonBridge python) {
+            super(null, python);
             this.typeProvider = typeProvider;
         }
     }

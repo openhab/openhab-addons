@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-# this is from Voluptuous
-class Invalid(Exception):
-    """The data was invalid."""
-
 
 class HomeAssistantError(Exception):
     """General Home Assistant exception occurred."""

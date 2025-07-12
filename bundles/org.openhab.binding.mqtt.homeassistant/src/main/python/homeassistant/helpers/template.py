@@ -37,7 +37,9 @@ from jinja2.runtime import AsyncLoopContext, LoopContext
 from jinja2.sandbox import ImmutableSandboxedEnvironment
 from jinja2.utils import Namespace
 
-from homeassistant.exceptions import Invalid, TemplateError
+import voluptuous as vol
+
+from homeassistant.exceptions import TemplateError
 from homeassistant.util import (
     dt as dt_util,
     slugify as slugify_util,
@@ -326,7 +328,7 @@ def forgiving_boolean(
         from . import config_validation as cv  # pylint: disable=import-outside-toplevel
 
         return cv.boolean(value)
-    except Invalid:
+    except vol.Invalid:
         if default is _SENTINEL:
             raise_no_default("bool", value)
         return default

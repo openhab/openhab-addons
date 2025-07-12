@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +36,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractCompone
 @NonNullByDefault
 public class HomeAssistantChannelTransformationTests extends AbstractHomeAssistantTests {
 
-    private @Mock @NonNullByDefault({}) AbstractComponent component;
+    private @Mock @NonNullByDefault({}) AbstractComponent<?> component;
 
     @BeforeEach
     public void beforeEachChannelTransformationTest() {
@@ -110,14 +109,17 @@ public class HomeAssistantChannelTransformationTests extends AbstractHomeAssista
     }
 
     protected @Nullable Object transform(String template, Object value) {
-        return new HomeAssistantChannelTransformation(python, component, template, false).transform(value);
+        return new HomeAssistantChannelTransformation(python, component, python.newRawTemplate(template), false)
+                .transform(value);
     }
 
     protected @Nullable Object transform(String template, Object value, boolean command) {
-        return new HomeAssistantChannelTransformation(python, component, template, command).transform(value);
+        return new HomeAssistantChannelTransformation(python, component, python.newRawTemplate(template), command)
+                .transform(value);
     }
 
     protected @Nullable Object transform(String template, Object value, String defaultValue) {
-        return new HomeAssistantChannelTransformation(python, component, template, defaultValue).transform(value);
+        return new HomeAssistantChannelTransformation(python, component, python.newRawTemplate(template), defaultValue)
+                .transform(value);
     }
 }
