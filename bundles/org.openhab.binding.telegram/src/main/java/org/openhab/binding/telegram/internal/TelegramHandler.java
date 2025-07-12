@@ -554,6 +554,12 @@ public class TelegramHandler extends BaseThingHandler {
 
     public void addMessageId(Long chatId, String replyId, Integer messageId) {
         replyIdToMessageId.put(new ReplyKey(chatId, replyId), messageId);
+
+        // persist current replyIdToMessageId entries in thing storage
+        JsonObject root = new JsonObject();
+        for (Map.Entry<ReplyKey, Integer> entry : replyIdToMessageId.entrySet()) {
+            @Nullable
+            ReplyKey replyKey = entry.getKey();
             @Nullable
             Integer intMsgId = entry.getValue();
             String strMsgId = intMsgId.toString();
