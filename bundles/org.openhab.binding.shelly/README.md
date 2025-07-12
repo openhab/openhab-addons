@@ -18,8 +18,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 - provides detailed information on your Shellys
 - helps to diagnose WiFi issues or device instabilities
-- includes some common actions andshellyplusstripshellyplusstrip
-- simplifies firmware updates.
+- includes some statistical data and common actions
+- simplifies firmware updates
 
 [Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security.
 
@@ -1603,7 +1603,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 | Group  | Channel     | Type    | read-only | Description                                                                         |
 | ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
-| relay1 |             |         | r/w       | Relay #1 with control options and status values                                      |
+| relay1 |             |         | r/w       | Relay #1 with control options and status values                                     |
 | relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
 | relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
 | relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
