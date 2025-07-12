@@ -20,7 +20,7 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 ### `account` Thing Configuration
 
 - **url**: The URL of the openHAB instance. Required for the redirect during OAuth2 authentication flow (e.g. `http://localhost:8080`)
-- **refreshInterval**: Polling interval in seconds (default: `600 s`)
+- **refreshInterval**: Polling interval in seconds (default: `900 s`).
 
 ### `ondilo` Thing Configuration
 
@@ -28,13 +28,15 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 
 Ondilo ICO takes measures every hour.
 Higher polling will not increase the update interval.
+The binding automatically adjusts the polling schedule to match the expected time of the next measurement, which is typically 1 hour (and 1 minute buffer) after the previous measurement.
+
 The requests to the Ondilo Customer API are limited to the following per user quotas:
 
 - 5 requests per second
 - 30 requests per hour
 
-`account` Thing performs 1 request per cycle - 10 per hour with default interval.
-`ondilo` Thing performs 2 requests per cycle - 20 per hour with default interval.
+`account` Thing performs 1 request per cycle - 4 per hour per Ondilo Account with default interval.
+`ondilo` Thing performs 2 requests per cycle - 8 per hour per Ondilo ICO with default interval.
 
 ## Channels
 
@@ -74,7 +76,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 ### Thing Configuration
 
 ```Java
-Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=600 ] {
+Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=900 ] {
     Thing ondilo "<id_received_from_discovery>" [ id="<id_received_from_discovery>" ] {
     }
 ```

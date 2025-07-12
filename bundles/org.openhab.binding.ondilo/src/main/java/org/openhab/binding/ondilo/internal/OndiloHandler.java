@@ -148,7 +148,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, UnDefType.NULL);
     }
 
-    public void updateLastMeasuresChannels(LastMeasure lastMeasures) {
+    public ZonedDateTime updateLastMeasuresChannels(LastMeasure lastMeasures) {
         /*
          * The measures are received using the following units:
          * - Temperature: Celsius degrees (°C)
@@ -186,7 +186,9 @@ public class OndiloHandler extends BaseThingHandler {
                 logger.warn("Unknown data type: {}", lastMeasures.data_type);
         }
         // Update value time channel (expect that it is the same for all measures)
-        updateState(CHANNEL_VALUE_TIME, new DateTimeType(convertUtcToSystemTimeZone(lastMeasures.value_time)));
+        ZonedDateTime valueTime = convertUtcToSystemTimeZone(lastMeasures.value_time);
+        updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
+        return valueTime;
     }
 
     public void updateRecommendationChannels(Recommendation recommendation) {

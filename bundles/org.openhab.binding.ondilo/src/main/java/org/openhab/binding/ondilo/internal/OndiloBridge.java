@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ondilo.internal;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import com.google.gson.reflect.TypeToken;
 public class OndiloBridge {
     private final Logger logger = LoggerFactory.getLogger(OndiloBridge.class);
     private final ScheduledExecutorService scheduler;
+    private final int refreshInterval;
     private @Nullable ScheduledFuture<?> ondiloBridgePollingJob;
     private @Nullable List<Pool> pools;
     public @Nullable OndiloApiClient apiClient;
@@ -49,6 +52,7 @@ public class OndiloBridge {
     public OndiloBridge(OndiloBridgeHandler bridgeHandler, OAuthClientService oAuthService,
             AccessTokenResponse accessTokenResponse, int refreshInterval, ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
+        this.refreshInterval = refreshInterval;
 
         this.apiClient = new OndiloApiClient(oAuthService, accessTokenResponse);
         startOndiloBridgePolling(refreshInterval);
@@ -98,16 +102,23 @@ public class OndiloBridge {
                 if (pools != null && !pools.isEmpty()) {
                     logger.trace("Polled {} Ondilo ICOs", pools.size());
                     // Poll last measures and recommendations for each pool
+                    ZonedDateTime lastValueTime = null;
                     for (Pool pool : pools) {
                         try {
                             // Pause for 1 second between polls in order to keep API rate limits
                             Thread.sleep(1000);
-                            pollOndiloICO(pool.id);
+                            ZonedDateTime valueTime = pollOndiloICO(pool.id);
+                            if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
+                                lastValueTime = valueTime;
+                            }
                         } catch (InterruptedException ie) {
                             Thread.currentThread().interrupt();
                             logger.warn("Polling pause interrupted: {}", ie.getMessage());
                             break;
                         }
+                    }
+                    if (lastValueTime != null) {
+                        adaptPollingToValueTime(lastValueTime, refreshInterval);
                     }
                 } else {
                     logger.warn("No Ondilo ICO found or failed to parse JSON response");
@@ -121,9 +132,32 @@ public class OndiloBridge {
         }
     }
 
-    public void pollOndiloICO(int id) {
+    private void adaptPollingToValueTime(ZonedDateTime lastValueTime, int refreshInterval) {
+        // Measures are taken every 60 minutes, so we should be able to
+        // retrieve next data directly 61 minutes after the last measure.
+        // This can help to avoid polling too frequently and hitting API rate limits.
+        // If the last measure was taken at 12:00, we will poll again at 13:01.
+        // This allows for a buffer in case the measure is not available immediately.
+        ZonedDateTime nextValueTime = lastValueTime.plusMinutes(61);
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime scheduledTime = now.plusSeconds(refreshInterval);
+        if (nextValueTime.isBefore(scheduledTime)) {
+            long delay = Duration.between(now, nextValueTime).getSeconds();
+            if (delay > 0) {
+                if (ondiloBridgePollingJob != null) {
+                    ondiloBridgePollingJob.cancel(true);
+                }
+                ondiloBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollOndiloICOs(), delay,
+                        refreshInterval, TimeUnit.SECONDS);
+                logger.trace("Rescheduled polling to {} (delay {} seconds)", nextValueTime, delay);
+            }
+        }
+    }
+
+    public @Nullable ZonedDateTime pollOndiloICO(int id) {
         OndiloHandler ondiloHandler = getOndiloHandlerForPool(id);
         OndiloApiClient apiClient = this.apiClient;
+        ZonedDateTime lastValueTime = null;
         if (ondiloHandler != null && apiClient != null) {
             String poolsJson = apiClient.get("/pools/" + id
                     + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
@@ -139,7 +173,10 @@ public class OndiloBridge {
             } else {
                 for (LastMeasure lastMeasure : lastMeasures) {
                     logger.trace("LastMeasure: type={}, value={}", lastMeasure.data_type, lastMeasure.value);
-                    ondiloHandler.updateLastMeasuresChannels(lastMeasure);
+                    ZonedDateTime valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasure);
+                    if (lastValueTime == null || valueTime.isBefore(lastValueTime)) {
+                        lastValueTime = valueTime;
+                    }
                 }
             }
 
@@ -161,6 +198,7 @@ public class OndiloBridge {
         } else {
             logger.debug("No OndiloHandler found for Ondilo ICO with ID: {}", id);
         }
+        return lastValueTime;
     }
 
     public @Nullable List<Pool> getPools() {

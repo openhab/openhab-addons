@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OndiloBridgeConfiguration {
 
     public String url = "http://localhost:8080";
-    public int refreshInterval = 600; // Default to 10 minutes
+    public int refreshInterval = 900; // Default to 15 minutes
 
     public String getURL() {
         return url;

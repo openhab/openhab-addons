@@ -23,7 +23,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<default>600</default>
+				<default>900</default>
 				<description>Polling interval</description>
 			</parameter>
 		</config-description>
