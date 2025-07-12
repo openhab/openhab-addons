@@ -67,17 +67,16 @@ public class OndiloApiClient {
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-                    String response = scanner.useDelimiter("\\A").next();
-                    return response;
+                    return scanner.useDelimiter("\\A").next();
                 }
             } else {
-                logger.error("Ondilo API request failed with code: {}", responseCode);
+                logger.warn("Ondilo API request failed with code: {}", responseCode);
             }
         } catch (InterruptedIOException e) {
-            logger.warn("Ondilo API request interrupted: {}", e.getMessage());
+            logger.debug("Ondilo API request interrupted: {}", e.getMessage());
             Thread.currentThread().interrupt();
         } catch (IOException | URISyntaxException e) {
-            logger.error("Ondilo API request error", e);
+            logger.warn("Ondilo API request error", e);
         }
         return null;
     }
@@ -92,10 +91,10 @@ public class OndiloApiClient {
                     this.bearer = accessTokenResponse.getAccessToken();
                     logger.trace("AccessToken renewed: {}", bearer);
                 } catch (InterruptedIOException e) {
-                    logger.error("OAuth token refresh interrupted: {}", e.getMessage());
+                    logger.debug("OAuth token refresh interrupted: {}", e.getMessage());
                     Thread.currentThread().interrupt();
                 } catch (OAuthException | OAuthResponseException | IOException e) {
-                    logger.error("Failed to refresh OAuth token for Ondilo API", e);
+                    logger.warn("Failed to refresh OAuth token for Ondilo API", e);
                 }
             }
         }

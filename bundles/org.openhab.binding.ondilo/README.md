@@ -5,7 +5,6 @@ This binding integrates Ondilo ICO pool monitoring devices with openHAB, allowin
 ## Supported Things
 
 `bridge:` Represents your Ondilo account (OAuth2)
-
 `ondilo:` Represents an individual Ondilo ICO device
 
 Ondilo ICO Pool as well as Spa devices are supported.
@@ -21,12 +20,12 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 ### `bridge` Thing Configuration
 
 - **url**: The URL of the openHAB instance. Required for the redirect during OAuth2 flow (e.g. `http://localhost:8080`)
-- **refreshInterval**: Polling interval of the bridge (i.e. config changes) (default: `1800 s`)
+- **refreshInterval**: Polling interval of the bridge (i.e. configuration changes) in seconds (default: `1800 s`)
 
 ### `ondilo` Thing Configuration
 
 - **id**: The Id of an Ondilo ICO device. Set via discovery service (e.g. `12345`)
-- **refreshInterval**: Polling interval of the device (i.e. measures) (default: `600 s`)
+- **refreshInterval**: Polling interval of the device (i.e. measures) in seconds (default: `600 s`)
 
 Ondilo ICO takes measures every hour.
 Higher polling will not increase the update interval.
@@ -36,7 +35,6 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 - 30 requests per hour
 
 `bridge` Thing performs 1 request per cycle - 2 per hour with default interval.
-
 `ondilo` Thing performs 3 request per cycle - 18 per hour with default interval.
 
 ## Channels
@@ -62,8 +60,8 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 | recommendation-id         | Number                  | true     | R      | Unique ID of the current recommendation                |
 | recommendation-title      | String                  | false    | R      | Title of the current recommendation                    |
 | recommendation-message    | String                  | false    | R      | Message of the current recommendation                  |
-| recommendation-created_at | String                  | true     | R      | Creation time of the current recommendation            |
-| recommendation-updated_at | String                  | true     | R      | Last update time of the current recommendation         |
+| recommendation-created-at | String                  | true     | R      | Creation time of the current recommendation            |
+| recommendation-updated-at | String                  | true     | R      | Last update time of the current recommendation         |
 | recommendation-status     | String                  | false    | R      | Status of the current recommendation                   |
 | recommendation-deadline   | String                  | true     | R      | Deadline of the current recommendation                 |
 
@@ -73,7 +71,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 
 ```Java
 Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=1800 ] {
-    Thing ondilo "<id_received_from_discovery>" [ mowerId="<id_received_from_discovery>" ] {
+    Thing ondilo "<id_received_from_discovery>" [ id="<id_received_from_discovery>" ] {
     }
 ```
 

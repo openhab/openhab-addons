@@ -69,7 +69,6 @@ public class OndiloOAuth2Servlet extends HttpServlet {
                 logger.error("HttpService is not available. Cannot register OndiloOAuth2Servlet.");
                 return;
             }
-
         } catch (ServletException | NamespaceException e) {
             logger.error("Failed to register OndiloOAuth2Servlet", e);
         }

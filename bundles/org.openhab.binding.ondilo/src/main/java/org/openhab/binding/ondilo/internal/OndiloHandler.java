@@ -161,7 +161,7 @@ public class OndiloHandler extends BaseThingHandler {
                 }
             }
         } catch (RuntimeException e) {
-            logger.error("Unexpected error in polling job: {}", e.getMessage(), e);
+            logger.warn("Unexpected error in polling job: {}", e.getMessage(), e);
         }
     }
 
@@ -229,17 +229,18 @@ public class OndiloHandler extends BaseThingHandler {
     }
 
     private void startOndiloPolling(Integer refreshInterval) {
-        ScheduledFuture<?> currentPollingJob = ondiloPollingJob;
-        if (currentPollingJob == null) {
-            ondiloPollingJob = scheduler.scheduleWithFixedDelay(() -> poll(), 1, refreshInterval, TimeUnit.SECONDS);
+        if (ondiloPollingJob == null) {
+            ondiloPollingJob = scheduler.scheduleWithFixedDelay(() -> poll(), 2, refreshInterval, TimeUnit.SECONDS);
+        } else {
+            logger.warn("Ondilo polling job is already running, not starting a new one");
         }
     }
 
     private void stopOndiloPolling() {
-        ScheduledFuture<?> currentPollingJob = ondiloPollingJob;
-        if (currentPollingJob != null) {
-            currentPollingJob.cancel(true);
-            ondiloPollingJob = null;
+        ScheduledFuture<?> ondiloPollingJob = this.ondiloPollingJob;
+        if (ondiloPollingJob != null) {
+            ondiloPollingJob.cancel(true);
+            this.ondiloPollingJob = null;
         }
     }
 

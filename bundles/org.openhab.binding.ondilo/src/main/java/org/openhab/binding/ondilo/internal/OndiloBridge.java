@@ -50,18 +50,19 @@ public class OndiloBridge {
     }
 
     private void startOndiloBridgePolling(Integer refreshInterval) {
-        ScheduledFuture<?> currentPollingJob = ondiloBridgePollingJob;
-        if (currentPollingJob == null) {
+        if (ondiloBridgePollingJob == null) {
             ondiloBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollOndilos(), 1, refreshInterval,
                     TimeUnit.SECONDS);
+        } else {
+            logger.warn("Ondilo bridge polling job is already running, not starting a new one");
         }
     }
 
     public void stopOndiloBridgePolling() {
-        ScheduledFuture<?> currentPollingJob = ondiloBridgePollingJob;
-        if (currentPollingJob != null) {
-            currentPollingJob.cancel(true);
-            ondiloBridgePollingJob = null;
+        ScheduledFuture<?> ondiloBridgePollingJob = this.ondiloBridgePollingJob;
+        if (ondiloBridgePollingJob != null) {
+            ondiloBridgePollingJob.cancel(true);
+            this.ondiloBridgePollingJob = null;
         }
     }
 
@@ -82,10 +83,10 @@ public class OndiloBridge {
                 }
                 this.pools = pools;
             } else {
-                logger.error("OndiloApiClient is not initialized, cannot poll pools");
+                logger.warn("OndiloApiClient is not initialized, cannot poll pools");
             }
         } catch (RuntimeException e) {
-            logger.error("Unexpected error in polling job: {}", e.getMessage(), e);
+            logger.warn("Unexpected error in polling job: {}", e.getMessage(), e);
         }
     }
 

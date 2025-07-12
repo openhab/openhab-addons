@@ -85,6 +85,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
                     "Invalid openHAB URL: " + openHABURL);
             return;
         }
+        updateStatus(ThingStatus.ONLINE);
         redirectURI = openHABURL + (openHABURL.endsWith("/") ? "" : "/") + "ondilo/oauth2callback";
 
         OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(clientSecret);
@@ -104,10 +105,10 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         try {
             accessTokenResponse = oAuthService.getAccessTokenResponse();
         } catch (InterruptedIOException e) {
-            logger.warn("OAuth2 access token retrieval interrupted: {}", e.getMessage());
+            logger.debug("OAuth2 access token retrieval interrupted: {}", e.getMessage());
             Thread.currentThread().interrupt();
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.error("Failed to get OAuth2 access token: {}", e.getMessage(), e);
+            logger.warn("Failed to get OAuth2 access token: {}", e.getMessage(), e);
         }
         if (accessTokenResponse != null) {
             // Already authorized, proceed
@@ -124,7 +125,6 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         registerOAuthService(clientSecret, this);
         try {
             String url = oAuthService.getAuthorizationUrl(redirectURI, "api", clientSecret);
-            logger.info("Authorize bridge: {}", url);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Authorize bridge: " + url);
         } catch (OAuthException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth2 error: " + e.getMessage());
@@ -140,7 +140,6 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
             accessTokenResponse = oAuthService.getAccessTokenResponseByAuthorizationCode(authorizationCode,
                     redirectURI);
         } catch (InterruptedIOException e) {
-            logger.warn("OAuth2 access token retrieval by authorization code interrupted: {}", e.getMessage());
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth2 interrupted");
             return;
@@ -158,9 +157,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
         logger.trace("Finalize initialization of Ondilo Bridge Handler");
 
         if (bridge == null) {
-            OndiloBridge currentBridge = new OndiloBridge(this, oAuthService, accessTokenResponse, refreshInterval,
-                    scheduler);
-            bridge = currentBridge;
+            bridge = new OndiloBridge(this, oAuthService, accessTokenResponse, refreshInterval, scheduler);
             updateStatus(ThingStatus.ONLINE);
         }
     }

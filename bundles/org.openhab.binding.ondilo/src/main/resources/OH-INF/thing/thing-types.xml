@@ -50,7 +50,7 @@
 		</properties>
 
 		<config-description>
-			<parameter name="id" type="integer" required="true">
+			<parameter name="id" type="integer" required="true" min="1">
 				<label>Id</label>
 				<description>The Id of an Ondilo ICO Pool/Spa device. Set via discovery service</description>
 			</parameter>
