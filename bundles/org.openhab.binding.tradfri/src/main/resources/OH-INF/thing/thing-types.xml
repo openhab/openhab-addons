@@ -267,7 +267,7 @@
 		<description>When ON, locks the physical button on the device.</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 
