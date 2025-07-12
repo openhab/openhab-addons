@@ -33,7 +33,7 @@
 		<description>Enable/Disable Mute on the AVR</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>SoundVolume</tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>
