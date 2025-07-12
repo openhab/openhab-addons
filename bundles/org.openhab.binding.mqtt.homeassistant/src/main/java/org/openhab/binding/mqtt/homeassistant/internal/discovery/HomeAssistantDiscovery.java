@@ -36,8 +36,8 @@ import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConsta
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -55,9 +55,6 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * The {@link HomeAssistantDiscovery} is responsible for discovering device nodes that follow the
@@ -78,7 +75,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> future;
-    private final Gson gson;
+    private final HomeAssistantPythonBridge python;
 
     static final String BASE_TOPIC = "homeassistant";
     static final String BIRTH_TOPIC = "homeassistant/status";
@@ -91,10 +88,11 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected MQTTTopicDiscoveryService mqttTopicDiscovery;
 
     @Activate
-    public HomeAssistantDiscovery(@Nullable Map<String, Object> properties) {
+    public HomeAssistantDiscovery(@Nullable Map<String, Object> properties,
+            @Reference HomeAssistantPythonBridge python) {
         super(null, 3, true, BASE_TOPIC + "/#");
-        this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
         configuration = (new Configuration(properties)).as(HomeAssistantConfiguration.class);
+        this.python = python;
     }
 
     @Reference
@@ -151,8 +149,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         HaID haID = new HaID(topic);
 
         try {
-            AbstractChannelConfiguration config = AbstractChannelConfiguration
-                    .fromString(new String(payload, StandardCharsets.UTF_8), gson);
+            AbstractComponentConfiguration config = AbstractComponentConfiguration.create(python, haID.component,
+                    new String(payload, StandardCharsets.UTF_8));
 
             final String thingID = config.getThingId(haID.objectID);
             final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, bridgeUID, thingID);

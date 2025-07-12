@@ -13,6 +13,8 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
@@ -27,20 +29,17 @@ import org.openhab.core.types.Command;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-abstract class AbstractRawSchemaLight extends Light {
+abstract class AbstractRawSchemaLight<C extends Light.LightConfiguration> extends Light<C> {
     protected static final String RAW_CHANNEL_ID = "raw";
 
     protected ComponentChannel rawChannel;
-    protected TextValue colorModeValue;
+    protected @Nullable OnOffValue onOffValue;
 
-    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
+    public AbstractRawSchemaLight(ComponentFactory.ComponentContext builder, C config) {
+        super(builder, config);
         hiddenChannels.add(rawChannel = buildChannel(RAW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(),
-                "Raw state", this).stateTopic(channelConfiguration.stateTopic)
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
-                .build(false));
-        colorModeValue = new TextValue();
+                "Raw state", this).stateTopic(config.getStateTopic())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos()).build(false));
     }
 
     protected boolean handleCommand(Command command) {

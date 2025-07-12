@@ -42,13 +42,11 @@ import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.test.java.JavaOSGiTest;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Tests the {@link DiscoverComponents} class.
@@ -84,7 +82,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        Gson gson = new Gson();
         UnitProvider unitProvider = mock(UnitProvider.class);
 
         DiscoverComponents discover = spy(

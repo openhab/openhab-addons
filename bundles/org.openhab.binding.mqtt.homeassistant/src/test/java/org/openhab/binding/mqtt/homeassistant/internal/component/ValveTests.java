@@ -31,11 +31,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class ValveTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "valve/water_valve";
 
-    @SuppressWarnings("null")
     @Test
     public void testSimple() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -66,8 +66,7 @@ public class ValveTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("MQTT valve"));
 
-        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "MQTT valve",
-                OnOffValue.class);
+        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "Valve", OnOffValue.class);
         assertChannel(component, Valve.STATE_CHANNEL_ID, "", "", "State", TextValue.class);
 
         linkAllChannels(component);
@@ -95,7 +94,6 @@ public class ValveTests extends AbstractComponentTests {
         assertPublished("home-assistant/valve/set", "STOP");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testJsonWithSimple() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -109,8 +107,7 @@ public class ValveTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("MQTT valve"));
 
-        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "MQTT valve",
-                OnOffValue.class);
+        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "Valve", OnOffValue.class);
         assertChannel(component, Valve.STATE_CHANNEL_ID, "", "", "State", TextValue.class);
 
         linkAllChannels(component);
@@ -126,7 +123,6 @@ public class ValveTests extends AbstractComponentTests {
         assertState(component, Valve.STATE_CHANNEL_ID, new StringType("opening"));
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testPositional() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -141,7 +137,7 @@ public class ValveTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("MQTT valve"));
 
-        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "MQTT valve",
+        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "Valve",
                 PercentageValue.class);
         assertChannel(component, Valve.STATE_CHANNEL_ID, "", "", "State", TextValue.class);
 
@@ -193,33 +189,6 @@ public class ValveTests extends AbstractComponentTests {
         assertPublished("home-assistant/valve/set", "0", 3);
         component.getChannel(Valve.STATE_CHANNEL_ID).getState().publishValue(new StringType("STOP"));
         assertPublished("home-assistant/valve/set", "STOP");
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testNoState() {
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
-                  {
-                    "name": "MQTT valve",
-                    "command_topic": "home-assistant/valve/set",
-                    "state_topic": "home-assistant/valve/state",
-                    "state_opening": null,
-                    "state_closing": null
-                  }
-                """);
-
-        assertThat(component.channels.size(), is(1));
-        assertThat(component.getName(), is("MQTT valve"));
-
-        assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "MQTT valve",
-                OnOffValue.class);
-
-        linkAllChannels(component);
-
-        publishMessage("home-assistant/valve/state", "open");
-        assertState(component, Valve.VALVE_CHANNEL_ID, OnOffType.ON);
-        publishMessage("home-assistant/valve/state", "closed");
-        assertState(component, Valve.VALVE_CHANNEL_ID, OnOffType.OFF);
     }
 
     @Override

@@ -1,6 +1,6 @@
 {
 	"name": "A",
-	"icon": "2",
+	"icon": "mdi:2",
 	"qos": 1,
 	"retain": true,
 	"val_tpl": "B",
@@ -23,5 +23,6 @@
 		"sw": "L",
 		"mf": "M"
 	},
-	"~": "D/"
+	"~": "D/",
+	"command_topic": "command"
 }

@@ -18,20 +18,18 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.CommandOption;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT scene, following the https://www.home-assistant.io/integrations/scene.mqtt/ specification.
@@ -39,7 +37,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
+public class Scene extends AbstractComponent<Scene.Configuration> {
     public static final String SCENE_CHANNEL_ID = "scene";
 
     // A command that has already been processed and routed to the correct Value,
@@ -65,33 +63,43 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
         }
     }
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Scene");
+    public static class Configuration extends EntityConfiguration {
+        private final String commandTopic;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Scene");
+            commandTopic = getString("command_topic");
+            // Oddly, Home Assistant doesn't provide a default for this
+            if (config.get("payload_on") == null) {
+                config.put("payload_on", "ON");
+            }
         }
 
-        @SerializedName("command_topic")
-        protected String commandTopic = "";
+        String getCommandTopic() {
+            return commandTopic;
+        }
 
-        @SerializedName("payload_on")
-        protected String payloadOn = "ON";
+        String getPayloadOn() {
+            return getString("payload_on");
+        }
+
+        boolean isRetain() {
+            return getBoolean("retain");
+        }
     }
 
     // Keeps track of discrete command topics, and one SceneValue that uses that topic
     private final Map<String, ChannelState> topicsToChannelStates = new HashMap<>();
-    private final Map<String, ChannelConfiguration> objectIdToScene = new TreeMap<>();
-    private final Map<String, ChannelConfiguration> labelToScene = new HashMap<>();
+    private final Map<String, Configuration> objectIdToScene = new TreeMap<>();
+    private final Map<String, Configuration> labelToScene = new HashMap<>();
 
     private final SceneValue value = new SceneValue();
     private ComponentChannel channel;
 
-    public Scene(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Scene(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        if (channelConfiguration.commandTopic.isEmpty()) {
+        if (config.commandTopic.isEmpty()) {
             throw new ConfigurationException("command_topic is required");
         }
 
@@ -100,12 +108,11 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
         componentId = SCENE_CHANNEL_ID;
         groupId = null;
 
-        channel = buildChannel(SCENE_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
+        channel = buildChannel(SCENE_CHANNEL_ID, ComponentChannelType.STRING, value, "Scene",
+                componentContext.getUpdateListener())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos())
                 .commandFilter(this::handleCommand).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        topicsToChannelStates.put(channelConfiguration.commandTopic, channel.getState());
+        topicsToChannelStates.put(config.getCommandTopic(), channel.getState());
         addScene(this);
     }
 
@@ -114,13 +121,13 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
     }
 
     private void addScene(Scene scene) {
-        ChannelConfiguration channelConfiguration = scene.getChannelConfiguration();
-        objectIdToScene.put(scene.getHaID().objectID, channelConfiguration);
-        labelToScene.put(channelConfiguration.getName(), channelConfiguration);
+        Configuration config = scene.getConfig();
+        objectIdToScene.put(scene.getHaID().objectID, config);
+        labelToScene.put(config.getName(), config);
 
-        if (!topicsToChannelStates.containsKey(channelConfiguration.commandTopic)) {
+        if (!topicsToChannelStates.containsKey(config.commandTopic)) {
             hiddenChannels.add(scene.getChannel());
-            topicsToChannelStates.put(channelConfiguration.commandTopic, scene.getChannel().getState());
+            topicsToChannelStates.put(config.commandTopic, scene.getChannel().getState());
         }
     }
 
@@ -132,7 +139,7 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
         }
 
         String valueStr = command.toString();
-        ChannelConfiguration sceneConfig = objectIdToScene.get(valueStr);
+        Configuration sceneConfig = objectIdToScene.get(valueStr);
         if (sceneConfig == null) {
             sceneConfig = labelToScene.get(command.toString());
         }
@@ -142,7 +149,7 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
 
         ChannelState state = Objects.requireNonNull(topicsToChannelStates.get(sceneConfig.commandTopic));
         // This will end up calling this same method, so be sure no further processing is done
-        state.publishValue(new SceneCommand(sceneConfig.payloadOn));
+        state.publishValue(new SceneCommand(sceneConfig.getPayloadOn()));
 
         return false;
     }
@@ -160,20 +167,18 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
     @Override
     public boolean merge(AbstractComponent<?> other) {
         Scene newScene = (Scene) other;
-        Configuration newConfiguration = mergeChannelConfiguration(channel, newScene);
+        org.openhab.core.config.core.Configuration newConfiguration = mergeChannelConfiguration(channel, newScene);
 
         addScene(newScene);
 
         // Recreate the channel so that the configuration will have all the scenes
         stop();
         channel = buildChannel(SCENE_CHANNEL_ID, ComponentChannelType.STRING, value, "Scene",
-                componentConfiguration.getUpdateListener())
-                .withConfiguration(newConfiguration)
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
+                componentContext.getUpdateListener()).withConfiguration(newConfiguration)
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos())
                 .commandFilter(this::handleCommand).withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         // New ChannelState created; need to make sure we're referencing the correct one
-        topicsToChannelStates.put(channelConfiguration.commandTopic, channel.getState());
+        topicsToChannelStates.put(config.getCommandTopic(), channel.getState());
         return true;
     }
 }

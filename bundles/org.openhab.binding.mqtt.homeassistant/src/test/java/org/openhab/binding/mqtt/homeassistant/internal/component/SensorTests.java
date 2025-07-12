@@ -31,11 +31,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class SensorTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "sensor/0x0000000000000000_sensor_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         // @formatter:off
@@ -75,9 +75,9 @@ public class SensorTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"online\" }");
         assertThat(haThing.getStatus(), is(ThingStatus.ONLINE));
         publishMessage("zigbee2mqtt/sensor/state", "10");
-        assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(10, Units.WATT));
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, QuantityType.valueOf(10, Units.WATT));
         publishMessage("zigbee2mqtt/sensor/state", "20");
-        assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(20, Units.WATT));
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, QuantityType.valueOf(20, Units.WATT));
         assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
                 .build().getPattern(), is("%.0f %unit%"));
 

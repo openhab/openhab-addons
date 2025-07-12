@@ -36,11 +36,11 @@ import org.openhab.core.library.unit.ImperialUnits;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class WaterHeaterTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "water_heater/boiler";
 
-    @SuppressWarnings("null")
     @Test
     public void test() {
         when(unitProvider.getUnit(Temperature.class)).thenReturn(ImperialUnits.FAHRENHEIT);
@@ -83,10 +83,10 @@ public class WaterHeaterTests extends AbstractComponentTests {
 
         publishMessage("basement/boiler/current_temperature", "120");
         assertState(component, WaterHeater.CURRENT_TEMPERATURE_CHANNEL_ID,
-                new QuantityType<>(120, ImperialUnits.FAHRENHEIT));
+                QuantityType.valueOf(120, ImperialUnits.FAHRENHEIT));
         publishMessage("basement/boiler/temperature", "125");
         assertState(component, WaterHeater.TARGET_TEMPERATURE_CHANNEL_ID,
-                new QuantityType<>(125, ImperialUnits.FAHRENHEIT));
+                QuantityType.valueOf(125, ImperialUnits.FAHRENHEIT));
 
         component.getChannel(WaterHeater.MODE_CHANNEL_ID).getState().publishValue(new StringType("eco"));
         assertPublished("basement/boiler/mode/set", "on");
@@ -97,7 +97,6 @@ public class WaterHeaterTests extends AbstractComponentTests {
         assertPublished("basement/boiler/temperature/set", "130");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testSynthesizedPowerState() {
         when(unitProvider.getUnit(Temperature.class)).thenReturn(ImperialUnits.FAHRENHEIT);

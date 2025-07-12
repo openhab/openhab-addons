@@ -12,31 +12,26 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * controls the conditions needed to set the entity to available
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-public enum AvailabilityMode {
+public class AvailabilityMode {
     /**
      * payload_available must be received on all configured availability topics before the entity is marked as online
      */
-    @SerializedName("all")
-    ALL,
+    public static final String ALL = "all";
 
     /**
      * payload_available must be received on at least one configured availability topic before the entity is marked as
      * online
      */
-    @SerializedName("any")
-    ANY,
+    public static final String ANY = "any";
 
     /**
      * the last payload_available or payload_not_available received on any configured availability topic controls the
      * availability
      */
-    @SerializedName("latest")
-    LATEST
+    public static final String LATEST = "latest";
 }

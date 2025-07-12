@@ -36,10 +36,10 @@
     "B1",
     "B2"
   ],
-  "swing_command_template": "C",
-  "swing_command_topic": "D",
-  "swing_state_template": "E",
-  "swing_state_topic": "F",
+  "swing_mode_command_template": "C",
+  "swing_mode_command_topic": "D",
+  "swing_mode_state_template": "E",
+  "swing_mode_state_topic": "F",
   "swing_modes": [
     "G1"
   ],
@@ -61,6 +61,6 @@
   "min_temp": "0",
   "temperature_unit": "F",
   "temp_step": "1",
-  "precision": "0.5",
+  "precision": 0.5,
   "send_if_off": "false"
 }

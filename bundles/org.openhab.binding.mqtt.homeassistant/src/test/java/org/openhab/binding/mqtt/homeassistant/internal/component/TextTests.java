@@ -27,11 +27,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class TextTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "text/0x54ef44100064b266";
 
-    @SuppressWarnings("null")
     @Test
     public void test() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """

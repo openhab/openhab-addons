@@ -41,29 +41,29 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantChannelTransformation.class);
 
     private final HomeAssistantPythonBridge python;
-    private final AbstractComponent component;
+    private final AbstractComponent<?> component;
     private final Value template;
     private final boolean command;
     private final String defaultValue;
     private final boolean parseValueAsInteger;
 
-    public HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent component,
-            String template, boolean command) {
+    public HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent<?> component,
+            Value template, boolean command) {
         this(python, component, template, command, PAYLOAD_SENTINEL_NONE, false);
     }
 
-    public HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent component,
-            String template, boolean command, boolean parseValueAsInteger) {
+    public HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent<?> component,
+            Value template, boolean command, boolean parseValueAsInteger) {
         this(python, component, template, command, PAYLOAD_SENTINEL_NONE, parseValueAsInteger);
     }
 
-    public HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent component,
-            String template, String defaultValue) {
+    public HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent<?> component,
+            Value template, String defaultValue) {
         this(python, component, template, false, defaultValue, false);
     }
 
-    private HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent component,
-            String template, boolean command, String defaultValue, boolean parseValueAsInteger) {
+    private HomeAssistantChannelTransformation(HomeAssistantPythonBridge python, AbstractComponent<?> component,
+            Value template, boolean command, String defaultValue, boolean parseValueAsInteger) {
         super((String) null);
         this.python = python;
         this.component = component;
