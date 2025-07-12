@@ -12,25 +12,31 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Spotify Web Api generic paging object class.
+ * Spotify Web Api Track data class : A track entry.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Paging<T> {
-    List<T> items;
+public class Track extends BaseEntry {
+    private Album album;
+	private List<Artist> artists;
 
-    public void addItems(T item) {
-        if (items == null) {
-            items = new ArrayList<T>();
-        }
-        items.add(item);
+    public Album getAlbum() {
+        return album;
     }
 
-    public List<T> getItems() {
-        return items;
+    public List<Artist> getArtists() {
+        return artists;
+    }
+
+    @Override
+    public List<Image> getImages() {
+        if (album != null) {
+            return album.getImages();
+        }
+
+        return null;
     }
 }
