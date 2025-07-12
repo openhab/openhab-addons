@@ -105,7 +105,7 @@ public class ShellyDeviceProfileTest {
                 // Shelly Pro
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO1PM, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO2_RELAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO2, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO2PM_RELAY, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO2PM_ROLLER, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO3, true, false), //
