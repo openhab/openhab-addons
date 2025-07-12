@@ -68,10 +68,15 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
     }
 
     public static Thing mockThing(int id) {
+        return mockThing(id, null);
+    }
+
+    public static Thing mockThing(int id, @Nullable ThingStatus status) {
         final Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-bridge", "test-thing"));
         when(thing.getBridgeUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-bridge"));
         when(thing.getConfiguration()).thenReturn(createConfig(id));
+        when(thing.getStatus()).thenReturn(status == null ? ThingStatus.ONLINE : status);
 
         return thing;
     }
@@ -150,6 +155,7 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
         when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(bridge.getHandler()).thenReturn(handler);
         when(bridge.getConfiguration()).thenReturn(createBridgeConfig(configAsChannel));
+        when(handler.getThing()).thenReturn(bridge);
         return bridge;
     }
 }

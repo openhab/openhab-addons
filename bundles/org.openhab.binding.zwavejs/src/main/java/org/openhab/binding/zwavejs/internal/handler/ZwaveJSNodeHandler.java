@@ -111,8 +111,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         logger.debug("Node {}. Configuration update: {}", config.id, configurationParameters.keySet());
 
         ZwaveJSBridgeHandler handler = getBridgeHandler();
-        if (handler == null) {
-            logger.warn("Node {}. Bridge handler is null, cannot process configuration update", config.id);
+        if (handler == null || !handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.warn("Node {}. Bridge handler is null or Bridge is offline, cannot process configuration update",
+                    config.id);
             return;
         }
 
@@ -157,8 +158,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         logger.debug("Node {}. Processing command {} type {} for channel {}", config.id, command,
                 command.getClass().getSimpleName(), channelUID);
         ZwaveJSBridgeHandler handler = getBridgeHandler();
-        if (handler == null) {
-            logger.warn("Node {}. Bridge handler is null, cannot process command", config.id);
+        if (handler == null || !handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.warn("Node {}. Bridge handler is null or Bridge is offline, cannot process command", config.id);
             return;
         }
 
@@ -346,9 +347,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     private @Nullable ZwaveJSBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge == null || !bridge.getStatus().equals(ThingStatus.ONLINE)) {
-            // when bridge is offline, stop and wait for it to become online
-            logger.trace("Node {}. Prevented initialisation as bridge is offline", config.id);
+        if (bridge == null) {
+            logger.trace("Node {}. Prevented initialisation as bridge is null", config.id);
             return null;
         }
         if (bridge.getHandler() instanceof ZwaveJSBridgeHandler handler) {
@@ -361,6 +361,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return;
+        }
+
+        if (!handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         handler.registerNodeListener(this);

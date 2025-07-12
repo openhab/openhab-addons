@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
@@ -27,6 +28,7 @@ import org.openhab.binding.zwavejs.internal.handler.ZwaveJSBridgeHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -45,10 +47,14 @@ public class ZwaveJSBridgeHandlerMock extends ZwaveJSBridgeHandler {
     }
 
     public static Bridge mockBridge(String hostname) {
+        return mockBridge(hostname, null);
+    }
+
+    public static Bridge mockBridge(String hostname, @Nullable ThingStatus status) {
         final Bridge bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-bridge"));
         when(bridge.getConfiguration()).thenReturn(createConfig(hostname));
-
+        when(bridge.getStatus()).thenReturn(status == null ? ThingStatus.ONLINE : status);
         return bridge;
     }
 
