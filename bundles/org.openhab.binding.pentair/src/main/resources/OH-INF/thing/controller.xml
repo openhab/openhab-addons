@@ -277,7 +277,7 @@
 		<label>Light Mode</label>
 		<description>The current light mode.</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
