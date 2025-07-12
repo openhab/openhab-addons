@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
@@ -46,6 +48,7 @@ public class SchemaDp {
     public @Nullable Double max;
     public Integer scale = 0;
     public @Nullable List<String> range;
+    public @Nullable Unit<?> parsedUnit;
 
     public static SchemaDp fromRemoteSchema(Gson gson, DeviceSchema.Description function) {
         SchemaDp schemaDp = new SchemaDp();
