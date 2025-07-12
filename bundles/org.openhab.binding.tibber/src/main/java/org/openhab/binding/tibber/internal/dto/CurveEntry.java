@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CurveEntry {
     public int powerWatts;
-    public int durationSeconds;
+    public long durationSeconds;
 
-    public CurveEntry(int powerWatts, int durationSeconds) {
+    public CurveEntry(int powerWatts, long durationSeconds) {
         this.powerWatts = powerWatts;
         this.durationSeconds = durationSeconds;
     }

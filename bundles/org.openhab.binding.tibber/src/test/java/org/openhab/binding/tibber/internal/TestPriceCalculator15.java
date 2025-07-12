@@ -13,7 +13,6 @@
 package org.openhab.binding.tibber.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.tibber.internal.TibberBindingConstants.PRICE_INFO_JSON_PATH;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,15 +25,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
 import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -45,47 +42,31 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TestPriceCalculator15 {
 
-    @Nullable
-    PriceCalculator getPriceCalculator() {
-        String fileName = "src/test/resources/price15-query-response.json";
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
-            JsonObject rootJsonObject = (JsonObject) JsonParser.parseString(content);
-            JsonObject priceInfo = Utils.getJsonObject(rootJsonObject, PRICE_INFO_JSON_PATH);
-            if (!priceInfo.isEmpty()) {
-                JsonArray spotPrices = new JsonArray();
-                spotPrices.addAll(priceInfo.getAsJsonArray("today"));
-                spotPrices.addAll(priceInfo.getAsJsonArray("tomorrow"));
-                PriceCalculator calc = new PriceCalculator(spotPrices);
-                return calc;
-            } else {
-                fail("Prices empty");
-            }
-        } catch (IOException e) {
-            fail("Error reading file " + fileName);
-        }
-        return null;
+    private String priceResponseFile = "src/test/resources/price15-query-response.json";
+    private @NonNullByDefault({}) PriceCalculator priceCalculator;
+
+    @BeforeEach
+    void setup() {
+        priceCalculator = TestPriceCalculator.getPriceCalculator(priceResponseFile);
     }
 
     @Test
     void testPriceCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
         // Price of first available hour
-        Instant start = calc.priceInfoStart();
-        double price = calc.calculatePrice(start, 1000, 3600);
+        Instant start = priceCalculator.priceInfoStart();
+        double price = priceCalculator.calculatePrice(start, 1000, 3600);
         // assertEquals(0.3136, price, 0.0001, "Price of first hour");
         assertEquals(0.3105, price, 0.0001, "Price of first hour");
 
         // Price half first, half second hour
-        price = calc.calculatePrice(start.plus(30, ChronoUnit.MINUTES), 1000, 3600);
+        price = priceCalculator.calculatePrice(start.plus(30, ChronoUnit.MINUTES), 1000, 3600);
         // 0.3136 * 0.5 + 0.3073 * 0.5 = 0.3104
         // assertEquals(0.3104, price, 0.0001, "Half price first, half price second hour");
         assertEquals(0.3095, price, 0.0001, "Half price first, half price second hour");
 
         // odd numbers
-        price = calc.calculatePrice(start.plus(73, ChronoUnit.MINUTES), 823, 3600 * 2 + 39 * 60 + 23); // 9563 seconds
+        price = priceCalculator.calculatePrice(start.plus(73, ChronoUnit.MINUTES), 823, 3600 * 2 + 39 * 60 + 23); // 9563
+                                                                                                                  // seconds
         /**
          * 0.3073 * 2820 s + 0.3039 * 3600 + 0.3025 * 3143
          * 866,586 + 1094,04 + 950,7575
@@ -95,21 +76,18 @@ public class TestPriceCalculator15 {
         assertEquals(0.6613, price, 0.0001, "Odd numbers");
 
         // Price of last available hour
-        start = calc.priceInfoEnd().minus(60, ChronoUnit.MINUTES);
-        price = calc.calculatePrice(start, 1000, 3600);
+        start = priceCalculator.priceInfoEnd().minus(60, ChronoUnit.MINUTES);
+        price = priceCalculator.calculatePrice(start, 1000, 3600);
         // assertEquals(0.3197, price, 0.0001, "Price of first hour");
         assertEquals(0.3231, price, 0.0001, "Price of first hour");
     }
 
     @Test
     void testPriceList() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
         // out of bounds
         Instant start = Instant.parse("2025-05-18T05:23:14.000+02:00");
         Instant end = Instant.parse("2025-05-18T14:49:58.000+02:00");
-        List<PriceInfo> priceInfos = calc.listPrices(start, end, true);
+        List<PriceInfo> priceInfos = priceCalculator.listPrices(start, end, true);
         double previousPrice = Double.MIN_VALUE;
         int totalDuration = 0;
         for (Iterator<PriceInfo> iterator = priceInfos.iterator(); iterator.hasNext();) {
@@ -125,14 +103,12 @@ public class TestPriceCalculator15 {
 
     @Test
     void testCurveCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
         String fileName = "src/test/resources/laundry-curve.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
-            Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(), curve);
+            Map<String, Object> result = priceCalculator.calculateBestPrice(priceCalculator.priceInfoStart(),
+                    priceCalculator.priceInfoEnd(), curve);
             assertEquals("2025-05-18T12:45:00Z", result.get("cheapestStart"), "Cheapest Start");
             assertEquals("2025-05-19T18:45:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
             Object cheapestPrice = result.get("lowestPrice");
@@ -151,11 +127,8 @@ public class TestPriceCalculator15 {
 
     @Test
     void testBestPriceCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
-        Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(),
-                List.of(new CurveEntry(1786, 1800)));
+        Map<String, Object> result = priceCalculator.calculateBestPrice(priceCalculator.priceInfoStart(),
+                priceCalculator.priceInfoEnd(), List.of(new CurveEntry(1786, 1800)));
         assertEquals("2025-05-18T12:30:00Z", result.get("cheapestStart"), "Cheapest Start");
         assertEquals("2025-05-19T18:00:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
         Object cheapestPrice = result.get("lowestPrice");
@@ -171,11 +144,8 @@ public class TestPriceCalculator15 {
 
     @Test
     void testBestPriceScheduleCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
-        List<ScheduleEntry> schedule = calc.calculateNonConsecutive(calc.priceInfoStart(), calc.priceInfoEnd(), 11000,
-                8 * 3600 + 54 * 60);
+        List<ScheduleEntry> schedule = priceCalculator.calculateNonConsecutive(priceCalculator.priceInfoStart(),
+                priceCalculator.priceInfoEnd(), 11000, 8 * 3600 + 54 * 60);
         assertEquals(7, schedule.size(), "Number of schedules");
 
         assertEquals(1.04940, schedule.get(0).cost, 0.0001, "Cost Element 1");

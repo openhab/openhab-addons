@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
@@ -46,10 +46,17 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TestPriceCalculator {
 
-    protected @Nullable PriceCalculator getPriceCalculator() {
-        String fileName = "src/test/resources/price-query-response.json";
+    private String priceResponseFile = "src/test/resources/price-query-response.json";
+    private @NonNullByDefault({}) PriceCalculator priceCalculator;
+
+    @BeforeEach
+    void setup() {
+        priceCalculator = TestPriceCalculator.getPriceCalculator(priceResponseFile);
+    }
+
+    public static PriceCalculator getPriceCalculator(String priceResponseFile) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(priceResponseFile)));
             JsonObject rootJsonObject = (JsonObject) JsonParser.parseString(content);
             JsonObject priceInfo = Utils.getJsonObject(rootJsonObject, PRICE_INFO_JSON_PATH);
             if (!priceInfo.isEmpty()) {
@@ -62,37 +69,33 @@ public class TestPriceCalculator {
                 fail("Prices empty");
             }
         } catch (IOException e) {
-            fail("Error reading file " + fileName);
+            fail("Error reading file " + priceResponseFile);
         }
-        return null;
+        fail("Error reading file " + priceResponseFile);
+        throw new RuntimeException("Failed to create PriceCalculator");
     }
 
     @Test
     void testLimits() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
-        assertEquals(Instant.parse("2025-05-17T22:00:00Z"), calc.priceInfoStart());
-        assertEquals(Instant.parse("2025-05-19T22:00:00Z"), calc.priceInfoEnd());
+        assertEquals(Instant.parse("2025-05-17T22:00:00Z"), priceCalculator.priceInfoStart());
+        assertEquals(Instant.parse("2025-05-19T22:00:00Z"), priceCalculator.priceInfoEnd());
     }
 
     @Test
     void testPriceCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
         // Price of first available hour
-        Instant start = calc.priceInfoStart();
-        double price = calc.calculatePrice(start, 1000, 3600);
+        Instant start = priceCalculator.priceInfoStart();
+        double price = priceCalculator.calculatePrice(start, 1000, 3600);
         assertEquals(0.3136, price, 0.0001, "Price of first hour");
 
         // Price half first, half second hour
-        price = calc.calculatePrice(start.plus(30, ChronoUnit.MINUTES), 1000, 3600);
+        price = priceCalculator.calculatePrice(start.plus(30, ChronoUnit.MINUTES), 1000, 3600);
         // 0.3136 * 0.5 + 0.3073 * 0.5 = 0.3104
         assertEquals(0.3104, price, 0.0001, "Half price first, half price second hour");
 
         // odd numbers
-        price = calc.calculatePrice(start.plus(73, ChronoUnit.MINUTES), 823, 3600 * 2 + 39 * 60 + 23); // 9563 seconds
+        price = priceCalculator.calculatePrice(start.plus(73, ChronoUnit.MINUTES), 823, 3600 * 2 + 39 * 60 + 23); // 9563
+                                                                                                                  // seconds
         /**
          * 0.3073 * 2820 s + 0.3039 * 3600 + 0.3025 * 3143
          * 866,586 + 1094,04 + 950,7575
@@ -101,14 +104,14 @@ public class TestPriceCalculator {
         assertEquals(0.6655, price, 0.0001, "Odd numbers");
 
         // Price of last available hour
-        start = calc.priceInfoEnd().minus(60, ChronoUnit.MINUTES);
-        price = calc.calculatePrice(start, 1000, 3600);
+        start = priceCalculator.priceInfoEnd().minus(60, ChronoUnit.MINUTES);
+        price = priceCalculator.calculatePrice(start, 1000, 3600);
         assertEquals(0.3197, price, 0.0001, "Price of first hour");
 
         // out of bounds
         start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
         try {
-            calc.calculatePrice(start, 1000, 3600 * 98);
+            priceCalculator.calculatePrice(start, 1000, 3600 * 98);
             fail("Calculation out of range");
         } catch (PriceCalculationException pce) {
             String message = pce.getMessage();
@@ -117,7 +120,7 @@ public class TestPriceCalculator {
         }
         start = start.minus(2, ChronoUnit.DAYS);
         try {
-            calc.calculatePrice(start, 1000, 3600 * 98);
+            priceCalculator.calculatePrice(start, 1000, 3600 * 98);
             fail("Calculation out of range");
         } catch (PriceCalculationException pce) {
             String message = pce.getMessage();
@@ -128,13 +131,10 @@ public class TestPriceCalculator {
 
     @Test
     void testPriceList() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
         // out of bounds
         Instant start = Instant.parse("2025-05-18T05:23:14.000+02:00");
         Instant end = Instant.parse("2025-05-18T14:49:58.000+02:00");
-        List<PriceInfo> priceInfos = calc.listPrices(start, end, true);
+        List<PriceInfo> priceInfos = priceCalculator.listPrices(start, end, true);
         double previousPrice = Double.MIN_VALUE;
         int totalDuration = 0;
         for (Iterator<PriceInfo> iterator = priceInfos.iterator(); iterator.hasNext();) {
@@ -150,14 +150,12 @@ public class TestPriceCalculator {
 
     @Test
     void testCurveCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
         String fileName = "src/test/resources/laundry-curve.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             List<CurveEntry> curve = Utils.convertCurve(JsonParser.parseString(content));
-            Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(), curve);
+            Map<String, Object> result = priceCalculator.calculateBestPrice(priceCalculator.priceInfoStart(),
+                    priceCalculator.priceInfoEnd(), curve);
             assertEquals("2025-05-18T12:00:00Z", result.get("cheapestStart"), "Cheapest Start");
             assertEquals("2025-05-19T18:00:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
             Object cheapestPrice = result.get("lowestPrice");
@@ -176,11 +174,8 @@ public class TestPriceCalculator {
 
     @Test
     void testBestPriceCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
-        Map<String, Object> result = calc.calculateBestPrice(calc.priceInfoStart(), calc.priceInfoEnd(),
-                List.of(new CurveEntry(1786, 1800)));
+        Map<String, Object> result = priceCalculator.calculateBestPrice(priceCalculator.priceInfoStart(),
+                priceCalculator.priceInfoEnd(), List.of(new CurveEntry(1786, 1800)));
         assertEquals("2025-05-18T12:00:00Z", result.get("cheapestStart"), "Cheapest Start");
         assertEquals("2025-05-19T18:00:00Z", result.get("mostExpensiveStart"), "Most Expensive Start");
         Object cheapestPrice = result.get("lowestPrice");
@@ -196,11 +191,8 @@ public class TestPriceCalculator {
 
     @Test
     void testBestPriceScheduleCalculation() {
-        PriceCalculator calc = getPriceCalculator();
-        assertNotNull(calc);
-
-        List<ScheduleEntry> schedule = calc.calculateNonConsecutive(calc.priceInfoStart(), calc.priceInfoEnd(), 11000,
-                8 * 3600 + 54 * 60);
+        List<ScheduleEntry> schedule = priceCalculator.calculateNonConsecutive(priceCalculator.priceInfoStart(),
+                priceCalculator.priceInfoEnd(), 11000, 8 * 3600 + 54 * 60);
         assertEquals(2, schedule.size(), "Number of schedules");
 
         assertEquals(13.9238, schedule.get(0).cost, 0.0001, "Cost Element 1");

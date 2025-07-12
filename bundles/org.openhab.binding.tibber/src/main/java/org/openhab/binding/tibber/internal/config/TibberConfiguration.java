@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tibber.internal.config;
 
-import static org.openhab.binding.tibber.internal.TibberBindingConstants.EMPTY;
+import static org.openhab.binding.tibber.internal.TibberBindingConstants.EMPTY_VALUE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TibberConfiguration {
-    public String token = EMPTY;
-    public String homeid = EMPTY;
+    public String token = EMPTY_VALUE;
+    public String homeid = EMPTY_VALUE;
     public int updateHour = 13;
 }

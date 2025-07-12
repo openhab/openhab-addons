@@ -44,6 +44,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.tibber.internal.Utils;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public class TibberWebsocket {
         client.setMaxIdleTimeout(30 * 1000);
 
         ClientUpgradeRequest newRequest = new ClientUpgradeRequest();
-        newRequest.setHeader(HttpHeader.USER_AGENT.asString(), AGENT_VERSION);
+        newRequest.setHeader(HttpHeader.USER_AGENT.asString(), Utils.getUserAgent(this));
         newRequest.setHeader(HttpHeader.AUTHORIZATION.asString(), "Bearer " + config.token);
         newRequest.setSubProtocols("graphql-transport-ws");
 
@@ -203,7 +204,7 @@ public class TibberWebsocket {
                 try {
                     session.getRemote().sendPong(buffer);
                 } catch (IOException e) {
-                    logger.warn("Websocket onPing answer exception {}", e.getMessage());
+                    logger.debug("Websocket onPing answer exception {}", e.getMessage());
                 }
             }, () -> {
                 logger.debug("Websocket onPing answer cannot be initiated");
@@ -222,7 +223,7 @@ public class TibberWebsocket {
                 pingPongMap.put(pingId, Instant.now());
                 session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
             } catch (IOException e) {
-                logger.warn("Websocket ping failed {}", e.getMessage());
+                logger.debug("Websocket ping failed {}", e.getMessage());
             }
         });
     }

@@ -28,7 +28,7 @@ Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.t
 - If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
 - Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
-```
+```graphql
 {
   viewer {
     homes {
@@ -138,6 +138,7 @@ In case of error `Instant.MIN` is returned.
 ### `listPrices`
 
 List prices in ascending / decending _price_ order.
+Use [persistence estensions](https://www.openhab.org/docs/configuration/persistence.html#persistence-extensions-in-scripts-and-rules) if you need _time_ ordering.
 
 #### Parameters
 
@@ -145,7 +146,7 @@ List prices in ascending / decending _price_ order.
 |---------------|-----------|---------------------------------------|-------------------|-----------|
 | earliestStart | Instant   | Earliest start time                   | now               | no        |
 | latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
-| ascending     | boolean   | Hour when spot prices are updated     | true              | no        |
+| ascending     | boolean   | Price sorting order                   | true              | no        |
 
 #### Example
 
@@ -335,12 +336,12 @@ For use cases like battery electric vehicle or heat-pump.
 
 #### Parameters
 
-| Name          | Type      | Description              w             | Default          | Required  |
-|---------------|-----------|---------------------------------------|-------------------|-----------|
-| earliestStart | Instant   | Earliest start time                   | now               | no        |
-| latestStop    | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
-| power         | int       | Needed power                          | N/A               | no        |
-| duration      | int       | Hour when spot prices are updated     | N/A               | yes       |
+| Name          | Type      | Description                               | Default          | Required  |
+|---------------|-----------|-------------------------------------------|-------------------|-----------|
+| earliestStart | Instant   | Earliest start time                       | now               | no        |
+| latestStop    | Instant   | Latest end time                           | `priceInfoEnd`    | no        |
+| power         | int       | Needed power                              | N/A               | no        |
+| duration      | int       | Duration in seconds or String (8h 15m)    | N/A               | yes       |
 
 #### Example
 
@@ -351,7 +352,7 @@ when
 then
     var actions = getActions("tibber","tibber:tibberapi:xyz")
     // long period with constant power value
-    var parameters = "{\"power\": 11000, \"duration\": \"8 h 15 m\"}"
+    var parameters = "{\"power\": 11000, \"duration\": \"8h 15m\"}"
     var result = actions.bestPriceSchedule(parameters)
     // get cost and convert it into double value
     val costString = transform("JSONPATH", "$.cost", result)

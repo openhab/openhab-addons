@@ -22,12 +22,12 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
@@ -98,11 +98,12 @@ public class TibberHandler extends BaseThingHandler {
 
     private final ConcurrentLinkedQueue<String> messageQueue = new ConcurrentLinkedQueue<>();
     private TibberConfiguration tibberConfig = new TibberConfiguration();
-    private Optional<ScheduledFuture<?>> websocketWatchdog = Optional.empty();
+    private Optional<ScheduledFuture<?>> watchdog = Optional.empty();
     private Optional<ScheduledCompletableFuture<?>> cronDaily = Optional.empty();
     private Optional<TibberWebsocket> webSocket = Optional.empty();
     private Optional<Boolean> realtimeEnabled = Optional.empty();
     private Optional<String> currencyUnit = Optional.empty();
+    private Object calculatorLock = new Object();
     private int retryCounter = 0;
     private boolean isDisposed = true;
 
@@ -148,7 +149,7 @@ public class TibberHandler extends BaseThingHandler {
     public void initialize() {
         isDisposed = false;
         tibberConfig = getConfigAs(TibberConfiguration.class);
-        if (EMPTY.equals(tibberConfig.homeid) || EMPTY.equals(tibberConfig.token)) {
+        if (EMPTY_VALUE.equals(tibberConfig.homeid) || EMPTY_VALUE.equals(tibberConfig.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.configuration-error");
         } else {
@@ -164,10 +165,10 @@ public class TibberHandler extends BaseThingHandler {
             job.cancel(true);
         });
         cronDaily = Optional.empty();
-        websocketWatchdog.ifPresent(job -> {
+        watchdog.ifPresent(job -> {
             job.cancel(true);
         });
-        websocketWatchdog = Optional.empty();
+        watchdog = Optional.empty();
         webSocket.ifPresent(socket -> {
             socket.stop();
         });
@@ -178,7 +179,7 @@ public class TibberHandler extends BaseThingHandler {
     public Request getRequest() {
         Request req = httpClient.POST(BASE_URL).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token);
-        req.header(HttpHeader.USER_AGENT, AGENT_VERSION);
+        req.header(HttpHeader.USER_AGENT, Utils.getUserAgent(this));
 
         req.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
         req.header("cache-control", "no-cache");
@@ -214,8 +215,7 @@ public class TibberHandler extends BaseThingHandler {
 
                     // create websocket and watchdog
                     webSocket = Optional.of(new TibberWebsocket(this, tibberConfig, httpClient));
-                    websocketWatchdog = Optional
-                            .of(scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES));
+                    watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES));
 
                     // start cron update for new spot prices
                     scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
@@ -223,6 +223,7 @@ public class TibberHandler extends BaseThingHandler {
                     String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
                     cronDaily = Optional
                             .of(cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour)));
+                    return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -232,6 +233,7 @@ public class TibberHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.initial-call-failed  [\"" + e.getMessage() + "\"]");
         }
+        watchdog = Optional.of(scheduler.schedule(this::doInitialize, 1, TimeUnit.MINUTES));
     }
 
     private void watchdog() {
@@ -311,7 +313,7 @@ public class TibberHandler extends BaseThingHandler {
                         levelCache = timeSeriesLevels;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
                                 timeSeriesLevels);
-                        synchronized (this) {
+                        synchronized (calculatorLock) {
                             calculator = Optional.of(new PriceCalculator(spotPrices));
                         }
 
@@ -338,15 +340,19 @@ public class TibberHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.price-update-failed  [\"" + jsonResponse + "\"]");
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             updatePriceInfoRetry();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
+        } catch (InterruptedException e1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.price-update-failed  [\"" + e1.getMessage() + "\"]");
+            Thread.currentThread().interrupt();
         }
     }
 
     public PriceCalculator getPriceCalculator() {
-        synchronized (this) {
+        synchronized (calculatorLock) {
             if (calculator.isPresent()) {
                 return calculator.get();
             } else {
@@ -446,9 +452,9 @@ public class TibberHandler extends BaseThingHandler {
             value = Utils.getJsonValue(jsonData, "accumulatedConsumptionLastHour");
             updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
             value = Utils.getJsonValue(jsonData, "accumulatedCost");
-            if (!EMPTY.equals(value)) {
+            if (!EMPTY_VALUE.equals(value)) {
                 State costState;
-                if (!NULL.equals(value)) {
+                if (!NULL_VALUE.equals(value)) {
                     if (currencyUnit.isPresent()) {
                         costState = QuantityType.valueOf(value + " " + currencyUnit.get());
                     } else {
@@ -493,16 +499,18 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     private void updateChannel(String group, String channelId, String value, String unit) {
-        if (!EMPTY.equals(value)) {
-            // value is delivered
-            if (!NULL.equals(value)) {
-                // value isn't null
-                updateState(new ChannelUID(thing.getUID(), group, channelId), QuantityType.valueOf(value + " " + unit));
-            } else {
-                // value is null
-                updateState(new ChannelUID(thing.getUID(), group, channelId), UnDefType.UNDEF);
-            }
-        } // value not delivered - don't update
+        if (EMPTY_VALUE.equals(value)) {
+            // value not present - don't update
+            return;
+        }
+        // value is present
+        if (!NULL_VALUE.equals(value)) {
+            // value isn't null
+            updateState(new ChannelUID(thing.getUID(), group, channelId), QuantityType.valueOf(value + " " + unit));
+        } else {
+            // value is null
+            updateState(new ChannelUID(thing.getUID(), group, channelId), UnDefType.NULL);
+        }
     }
 
     public String getTemplate(String name) {
@@ -512,7 +520,7 @@ public class TibberHandler extends BaseThingHandler {
             if (!template.isBlank()) {
                 templates.put(name, template);
             } else {
-                template = EMPTY;
+                template = EMPTY_VALUE;
             }
         }
         return template;
@@ -540,7 +548,7 @@ public class TibberHandler extends BaseThingHandler {
         } catch (IOException e) {
             logger.warn("no resource found for path {}", fileName);
         }
-        return EMPTY;
+        return EMPTY_VALUE;
     }
 
     /**
@@ -548,6 +556,6 @@ public class TibberHandler extends BaseThingHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TibberActions.class);
+        return Set.of(TibberActions.class);
     }
 }

@@ -14,8 +14,6 @@ package org.openhab.binding.tibber.internal;
 
 import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
@@ -62,8 +60,6 @@ public class TibberHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(TIBBER_THING_TYPE)) {
-            thing.setProperty("version", AGENT_VERSION);
-            thing.setProperty("timeZone", ZoneId.systemDefault().toString());
             return new TibberHandler(thing, httpFactory.getCommonHttpClient(), cron, bundleContext, timeZoneProvider);
         } else {
             return null;

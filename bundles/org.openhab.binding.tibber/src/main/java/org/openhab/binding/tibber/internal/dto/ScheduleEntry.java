@@ -23,16 +23,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ScheduleEntry {
-    public Instant start;
-    public Instant stop;
+    public String start;
+    public String stop;
     public int duration;
     public double cost;
 
-    public ScheduleEntry(Instant start, Instant stop, int duration, double cost) {
+    public ScheduleEntry(String start, String stop, int duration, double cost) {
         this.start = start;
         this.stop = stop;
         this.duration = duration;
         this.cost = cost;
+    }
+
+    public ScheduleEntry(Instant start, Instant stop, int duration, double cost) {
+        this(start.toString(), stop.toString(), duration, cost);
     }
 
     @Override

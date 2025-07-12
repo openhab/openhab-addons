@@ -123,7 +123,7 @@ public class TibberActions implements ThingActions {
                     } else {
                         powerValue = ((Integer) power).intValue();
                     }
-                    Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
+                    Long duration = (Long) parameterMap.get(PARAM_DURATION);
                     if (duration == null) {
                         throw new CalculationParameterException(
                                 "No curve and no duration given for bestPeriod calculation " + parameters);
@@ -162,7 +162,7 @@ public class TibberActions implements ThingActions {
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
             Instant stop = (Instant) parameterMap.get(PARAM_LATEST_END);
-            Integer duration = (Integer) parameterMap.get(PARAM_DURATION);
+            Long duration = (Long) parameterMap.get(PARAM_DURATION);
             Integer power = (Integer) parameterMap.get(PARAM_POWER);
             if (start != null && stop != null && duration != null && power != null) {
                 List<ScheduleEntry> priceList = calc.calculateNonConsecutive(start, stop, power.intValue(),
@@ -225,15 +225,9 @@ public class TibberActions implements ThingActions {
      * @param parameterMap
      */
     private void completeConfig(Map<String, Object> parameterMap) {
-        if (!parameterMap.containsKey(PARAM_EARLIEST_START)) {
-            parameterMap.put(PARAM_EARLIEST_START, Instant.now());
-        }
-        if (!parameterMap.containsKey(PARAM_LATEST_END)) {
-            parameterMap.put(PARAM_LATEST_END, priceInfoEnd());
-        }
-        if (!parameterMap.containsKey(PARAM_ASCENDING)) {
-            parameterMap.put(PARAM_ASCENDING, true);
-        }
+        parameterMap.putIfAbsent(PARAM_EARLIEST_START, Instant.now());
+        parameterMap.putIfAbsent(PARAM_LATEST_END, priceInfoEnd());
+        parameterMap.putIfAbsent(PARAM_ASCENDING, true);
         Object duration = parameterMap.get(PARAM_DURATION);
         if (duration != null) {
             parameterMap.put(PARAM_DURATION, Utils.parseDuration(duration.toString()));

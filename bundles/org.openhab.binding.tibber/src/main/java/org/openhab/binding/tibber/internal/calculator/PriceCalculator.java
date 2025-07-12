@@ -144,7 +144,7 @@ public class PriceCalculator {
      * @param durationSeconds duration in seconds
      * @return price according to priceMap
      */
-    public double calculatePrice(Instant start, int powerW, int durationSeconds) {
+    public double calculatePrice(Instant start, int powerW, long durationSeconds) {
         checkBoundaries(start, start.plus(durationSeconds, ChronoUnit.SECONDS));
         Entry<Instant, PriceInfo> startEntry = priceMap.floorEntry(start);
         Entry<Instant, PriceInfo> nextEntry = priceMap.higherEntry(start);
@@ -156,7 +156,7 @@ public class PriceCalculator {
                 // calculate price from this time period plus later periods
                 int partDuration = (int) Duration.between(start, nextEntry.getKey()).toSeconds();
                 double partPrice = powerW / 1000.0 * partDuration / 3600.0 * startEntry.getValue().price;
-                int remainingDuration = durationSeconds - partDuration;
+                long remainingDuration = durationSeconds - partDuration;
                 return (partPrice + calculatePrice(nextEntry.getKey(), powerW, remainingDuration));
             }
         } else {

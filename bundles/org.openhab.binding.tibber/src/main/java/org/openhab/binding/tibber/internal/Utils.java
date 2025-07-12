@@ -27,6 +27,9 @@ import org.openhab.binding.tibber.internal.exception.CalculationParameterExcepti
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.DurationUtils;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,10 +81,10 @@ public class Utils {
             if (!elem.isJsonNull()) {
                 return elem.getAsString();
             } else {
-                return NULL;
+                return NULL_VALUE;
             }
         }
-        return EMPTY;
+        return EMPTY_VALUE;
     }
 
     /**
@@ -104,33 +107,15 @@ public class Utils {
      * @param durationString duration with number and optional unit
      * @return duration in seconds
      */
-    public static int parseDuration(String durationString) {
-        String toBeParsed = durationString.strip();
-        String[] split = toBeParsed.split(" ");
+    public static long parseDuration(String durationString) {
         try {
-            int parsedDuration = Integer.parseInt(split[0]);
-            if (split.length > 1) {
-                switch (split[1].toLowerCase()) {
-                    case "s":
-                        // nothing to do
-                        break;
-                    case "m":
-                        parsedDuration = parsedDuration * 60;
-                        break;
-                    case "h":
-                        parsedDuration = parsedDuration * 60 * 60;
-                        break;
-                    default:
-                        throw new CalculationParameterException("Cannot decode duration " + durationString);
-                }
-            }
-            if (split.length > 2) {
-                return parsedDuration + parseDuration(toBeParsed.substring(1 + split[0].length() + split[1].length()));
-            } else {
-                return parsedDuration;
-            }
+            return Long.parseLong(durationString); // check if String is a number
         } catch (NumberFormatException e) {
-            throw new CalculationParameterException("Cannot decode duration " + durationString);
+            try {
+                return DurationUtils.parse(durationString).toSeconds(); // check if String is a duration
+            } catch (IllegalArgumentException e2) {
+                throw new CalculationParameterException("Cannot decode duration " + durationString);
+            }
         }
     }
 
@@ -212,7 +197,7 @@ public class Utils {
                 }
             } else {
                 int powerValue = 0;
-                int durationValue = 0;
+                long durationValue = 0;
                 JsonElement power = entry.get(PARAM_POWER);
                 if (power != null) {
                     powerValue = power.getAsInt();
@@ -276,6 +261,18 @@ public class Utils {
                     return 3;
                 }
                 return Integer.MAX_VALUE;
+        }
+    }
+
+    // fulfill https://developer.tibber.com/docs/guides/calling-api
+    // Clients must set the User-Agent HTTP header when calling the GraphQL API. Both platform and driver version
+    // must be indicated. E.g. Homey/10.0.0 com.tibber/1.8.3.
+    public static String getUserAgent(Object reference) {
+        Bundle b = FrameworkUtil.getBundle(reference.getClass());
+        if (b == null) {
+            return "openHAB5/com.tibber.test";
+        } else {
+            return "openHAB/" + b.getVersion().toString();
         }
     }
 }

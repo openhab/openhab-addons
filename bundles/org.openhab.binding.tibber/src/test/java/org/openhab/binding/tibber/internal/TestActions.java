@@ -112,7 +112,7 @@ public class TestActions {
         assertNotNull(actions);
         Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
 
-        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "1 h 3 m");
+        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "1h 3m");
         String result = actions.bestPricePeriod(params);
         JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
         assertEquals("2025-05-18T12:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
@@ -152,7 +152,7 @@ public class TestActions {
         assertNotNull(actions);
 
         Instant start = Instant.parse("2025-05-18T00:00:00.000+02:00").truncatedTo(ChronoUnit.SECONDS);
-        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "8 h 15 m");
+        Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "8h 15m");
         String result = actions.bestPriceSchedule(params);
         JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
         assertEquals(2, resultJson.get("size").getAsInt(), "Number of schedules");

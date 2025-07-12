@@ -30,7 +30,7 @@
 			</parameter>
 			<parameter name="updateHour" type="integer">
 				<label>Spot Price Update Hour</label>
-				<description>Hour when spot prices are updated</description>
+				<description>Your local time hour when spot prices are updated</description>
 				<default>13</default>
 			</parameter>
 		</config-description>

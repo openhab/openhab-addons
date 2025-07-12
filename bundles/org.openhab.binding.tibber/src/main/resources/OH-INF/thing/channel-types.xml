@@ -7,14 +7,15 @@
 	<channel-type id="price">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Current Total Price</label>
-		<description>Total Price: + Tax</description>
-		<state pattern="%.3f %unit%"></state>
+		<description>Total Price + Tax</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="price-level">
 		<item-type>Number</item-type>
 		<label>Price Level</label>
 		<description>Current price level</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="-2">Very Cheap</option>
 				<option value="-1">Cheap</option>
@@ -27,36 +28,36 @@
 	<channel-type id="cost">
 		<item-type>Number:Currency</item-type>
 		<label>Total Cost</label>
-		<state pattern="%.2f %unit%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy-detailed">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
-		<state pattern="%.3f %unit%"></state>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
-		<state pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
-		<label>Power consumption/production</label>
+		<label>Power Consumption/Production</label>
 		<description>Power consumption/production for given time interval</description>
-		<state pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage on the given phase</description>
-		<state pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current on the given phase</description>
-		<state pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 </thing:thing-descriptions>

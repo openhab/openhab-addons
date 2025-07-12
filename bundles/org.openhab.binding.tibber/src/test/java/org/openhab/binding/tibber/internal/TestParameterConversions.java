@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
-import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 
 /**
  * The {@link TestParameterConversions} tests the conversion of price calculation parameters.
@@ -32,30 +31,6 @@ import org.openhab.binding.tibber.internal.exception.CalculationParameterExcepti
  */
 @NonNullByDefault
 public class TestParameterConversions {
-
-    @Test
-    void testParseDuration() {
-        int result = Utils.parseDuration("5");
-        assertEquals(5, result, "Parse without unit");
-        result = Utils.parseDuration("5 s");
-        assertEquals(5, result, "Parse with s unit");
-        result = Utils.parseDuration("5 m");
-        assertEquals(5 * 60, result, "Parse with m unit");
-        result = Utils.parseDuration("5 h");
-        assertEquals(5 * 60 * 60, result, "Parse with h unit");
-        result = Utils.parseDuration("1 h 3 s");
-        assertEquals(1 * 60 * 60 + 3, result, "Parse with h and s unit");
-        result = Utils.parseDuration("1 h 5 m 3 s");
-        assertEquals(1 * 60 * 60 + 5 * 60 + 3, result, "Parse with h, m and s unit");
-        try {
-            result = Utils.parseDuration("1h5d3s");
-            fail("Wrong input parsed correctly");
-        } catch (CalculationParameterException cpe) {
-            String message = cpe.getMessage();
-            assertNotNull(message);
-            assertTrue(message.startsWith("Cannot decode"));
-        }
-    }
 
     @Test
     void testParameterConversion() {
@@ -70,7 +45,7 @@ public class TestParameterConversions {
         json = "{\"earliestStart\":\"" + now.toString() + "\",\"duration\":73}";
         assertTrue(Utils.convertParameters(json, params), "Parameters are JSON format");
         Object duration = params.get(PARAM_DURATION);
-        assertTrue(duration instanceof Integer, "Duration is Integer");
+        assertTrue(duration instanceof Long, "Duration is Integer");
     }
 
     @Test
