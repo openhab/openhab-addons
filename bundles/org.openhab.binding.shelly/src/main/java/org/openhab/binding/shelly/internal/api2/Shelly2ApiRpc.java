@@ -248,6 +248,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
             }
+            if (getString(profile.device.mode).isEmpty()) {
+                profile.device.mode = SHELLY_MODE_RELAY; // Pro 2 does not return profile
+            }
         }
 
         if (profile.numInputs > 0) {
@@ -1243,7 +1246,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
+    public void sendIRKey(String keyCode) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 

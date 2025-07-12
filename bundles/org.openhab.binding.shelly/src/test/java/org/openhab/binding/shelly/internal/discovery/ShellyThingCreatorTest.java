@@ -115,7 +115,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_1L, "", THING_TYPE_SHELLY1L), //
                 Arguments.of(SHELLYDT_1, "", THING_TYPE_SHELLY1), //
                 Arguments.of(SHELLYDT_SHPRO, "", THING_TYPE_SHELLY4PRO), //
-                Arguments.of(SHELLYDT_4PRO, "", THING_TYPE_SHELLY4PRO), //
                 Arguments.of(SHELLYDT_3EM, "", THING_TYPE_SHELLY3EM), //
                 Arguments.of(SHELLYDT_EM, "", THING_TYPE_SHELLYEM), //
                 Arguments.of(SHELLYDT_SHPLG_S, "", THING_TYPE_SHELLYPLUGS), //
@@ -171,6 +170,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_MINIG3_1, "", THING_TYPE_SHELLY1MINI), //
                 Arguments.of(SHELLYDT_MINIG3_PM, "", THING_TYPE_SHELLYPMMINI), //
                 Arguments.of(SHELLYDT_MINIG3_1PM, "", THING_TYPE_SHELLY1PMMINI), //
+
                 // Pro Series
                 Arguments.of(SHELLYDT_PRO1, "", THING_TYPE_SHELLYPRO1), //
                 Arguments.of(SHELLYDT_PRO1_2, "", THING_TYPE_SHELLYPRO1), //
@@ -193,12 +193,15 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
                 Arguments.of(SHELLYDT_PRO4PM, "", THING_TYPE_SHELLYPRO4PM), //
                 Arguments.of(SHELLYDT_PRO4PM_2, "", THING_TYPE_SHELLYPRO4PM), //
+                Arguments.of(SHELLYDT_4PRO, "", THING_TYPE_SHELLYPRO4PM), //
+
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
                 Arguments.of(SHELLYDT_BLUDW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
                 Arguments.of(SHELLYDT_BLUHT, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of(SHELLYDT_BLUGW, "", THING_TYPE_SHELLYBLUGW), //
+
                 // Wall displays
                 Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
     }
