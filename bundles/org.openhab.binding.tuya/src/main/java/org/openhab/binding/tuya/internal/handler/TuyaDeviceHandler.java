@@ -36,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.config.ChannelConfiguration;
@@ -204,13 +206,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     if (schemaDp != null) {
                         d = d.movePointLeft(schemaDp.scale);
 
-                        if (!schemaDp.unit.isEmpty()) {
-                            // If the item type for the channel is not dimensioned the unit is not usable.
-                            Channel channel = thing.getChannel(channelId);
-                            if (channel != null && !NUMBER.equals(channel.getAcceptedItemType())) {
-                                updateState(channelId, new QuantityType<>(d.toPlainString() + " " + schemaDp.unit));
-                                return;
-                            }
+                        Unit<?> unit = schemaDp.parsedUnit;
+                        if (unit != null) {
+                            updateState(channelId, new QuantityType<>(d, unit));
+                            return;
                         }
                     }
 
@@ -552,17 +551,20 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     channeltypeUID = CHANNEL_TYPE_UID_QUANTITY;
 
                     if (!schemaDp.unit.isEmpty()) {
-                        try {
-                            QuantityType<?> reftype = new QuantityType<>("1 " + schemaDp.unit);
-                            String dimension = UnitUtils.getDimensionName(reftype.getUnit());
+                        Unit<?> unit = schemaDp.parsedUnit;
+                        if (unit == null) {
+                            unit = UnitUtils.parseUnit(schemaDp.unit);
+                            schemaDp.parsedUnit = unit;
+                        }
+
+                        if (unit != null) {
+                            String dimension = UnitUtils.getDimensionName(unit);
                             if (dimension != null) {
                                 acceptedItemType = "Number:" + dimension;
                             } else {
                                 logger.warn("{} has unit \"{}\" but openHAB doesn't know the dimension", channelId,
                                         schemaDp.unit);
                             }
-                        } catch (IllegalArgumentException ex) {
-                            logger.warn("{} has unit \"{}\" but that could not be parsed", channelId, schemaDp.unit);
                         }
                     }
                 }
