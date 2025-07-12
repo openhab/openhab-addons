@@ -8,6 +8,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -15,6 +19,10 @@
 		<item-type>Number</item-type>
 		<label>EP23-BT2 Supply Temp S4</label>
 		<description>Supply temperature for system 4</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -22,6 +30,10 @@
 		<item-type>Number</item-type>
 		<label>EP22-BT2 Supply Temp S3</label>
 		<description>Supply temperature for system 3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -29,6 +41,10 @@
 		<item-type>Number</item-type>
 		<label>EP21-BT2 Supply Temp S2</label>
 		<description>Supply temperature for system 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -36,6 +52,10 @@
 		<item-type>Number</item-type>
 		<label>BT2 Supply Temp S1</label>
 		<description>Supply temperature for system 1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -43,6 +63,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT3 Return Temp</label>
 		<description>Return temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -50,6 +74,10 @@
 		<item-type>Number</item-type>
 		<label>BT7 HW Top</label>
 		<description>Hot water top temperature, BT7</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -57,6 +85,10 @@
 		<item-type>Number</item-type>
 		<label>BT6 HW Load</label>
 		<description>Hot water load temperature, BT6</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -64,6 +96,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-BT16 Evaporator Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -71,6 +107,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-EP14-BT17 Suction</label>
 		<description>Suction temperature, BT17</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -78,6 +118,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-BT18 Compressor Temp.</label>
 		<description>Valid only for F3/470</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -85,6 +129,10 @@
 		<item-type>Number</item-type>
 		<label>EB100-BT19 Addition Temp.</label>
 		<description>Valid only for F3/470</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -92,6 +140,10 @@
 		<item-type>Number</item-type>
 		<label>BT20 Exhaust Air Temp. 1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -99,6 +151,10 @@
 		<item-type>Number</item-type>
 		<label>BT21 Vented Air Temp. 1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -106,6 +162,10 @@
 		<item-type>Number</item-type>
 		<label>EP23-BT50 Room Temp S4</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -113,6 +173,10 @@
 		<item-type>Number</item-type>
 		<label>EP22-BT50 Room Temp S3</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -120,6 +184,10 @@
 		<item-type>Number</item-type>
 		<label>EP21-BT50 Room Temp S2</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -127,6 +195,10 @@
 		<item-type>Number</item-type>
 		<label>BT50 Room Temp S1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -134,6 +206,10 @@
 		<item-type>Number</item-type>
 		<label>BT53 Solar Panel Temp</label>
 		<description>Used in Solar and AHPS Docking accessories</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -141,6 +217,10 @@
 		<item-type>Number</item-type>
 		<label>BT54 Solar Load Temp</label>
 		<description>Used in Solar and AHPS Docking accessories</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -155,6 +235,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Average</label>
 		<description>EB100-BT1 Outdoor temperature average</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -162,6 +246,10 @@
 		<item-type>Number</item-type>
 		<label>BT25 Ext. Supply</label>
 		<description>External supply temperature, BT25</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -176,6 +264,10 @@
 		<item-type>Number</item-type>
 		<label>BT22 Supply Air Temp.</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -183,6 +275,10 @@
 		<item-type>Number</item-type>
 		<label>EP30-BT55 Solar Tank Top Temp</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -211,6 +307,10 @@
 		<item-type>Number</item-type>
 		<label>BT52 External Water Heater Load Temp.</label>
 		<description>Used in DEH and AHPS Docking accessories</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -218,6 +318,10 @@
 		<item-type>Number</item-type>
 		<label>EP23-BT3 Return Temp S4</label>
 		<description>Return temperature for system 4</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -225,6 +329,10 @@
 		<item-type>Number</item-type>
 		<label>EP22-BT3 Return Temp S3</label>
 		<description>Return temperature for system 3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -232,6 +340,10 @@
 		<item-type>Number</item-type>
 		<label>EP21-BT3 Return Temp S2</label>
 		<description>Return temperature for system 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -239,6 +351,10 @@
 		<item-type>Number</item-type>
 		<label>EP47-BT2 Supply Temp S8</label>
 		<description>Supply temperature for system 8</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -246,6 +362,10 @@
 		<item-type>Number</item-type>
 		<label>EP46-BT2 Supply Temp S7</label>
 		<description>Supply temperature for system 7</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -253,6 +373,10 @@
 		<item-type>Number</item-type>
 		<label>EP45-BT2 Supply Temp S6</label>
 		<description>Supply temperature for system 6</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -260,6 +384,10 @@
 		<item-type>Number</item-type>
 		<label>EP44-BT2 Supply Temp S5</label>
 		<description>Supply temperature for system 5</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -267,6 +395,10 @@
 		<item-type>Number</item-type>
 		<label>EP47-BT3 Return Temp S8</label>
 		<description>Return temperature for system 8</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -274,6 +406,10 @@
 		<item-type>Number</item-type>
 		<label>EP46-BT3 Return Temp S7</label>
 		<description>Return temperature for system 7</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -281,6 +417,10 @@
 		<item-type>Number</item-type>
 		<label>EP45-BT3 Return Temp S6</label>
 		<description>Return temperature for system 6</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -288,6 +428,10 @@
 		<item-type>Number</item-type>
 		<label>EP44-BT3 Return Temp S5</label>
 		<description>Return temperature for system 5</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -295,6 +439,10 @@
 		<item-type>Number</item-type>
 		<label>EP47-BT50 Room Temp S8</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -302,6 +450,10 @@
 		<item-type>Number</item-type>
 		<label>EP46-BT50 Room Temp S7</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -309,6 +461,10 @@
 		<item-type>Number</item-type>
 		<label>EP45-BT50 Room Temp S6</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -316,6 +472,10 @@
 		<item-type>Number</item-type>
 		<label>EP44-BT50 Room Temp S5</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -323,6 +483,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Average, 1h</label>
 		<description>EB100-BT1 Outdoor temperature average, 1h</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -330,6 +494,10 @@
 		<item-type>Number</item-type>
 		<label>EP47-BT50 Room Temp S8 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -337,6 +505,10 @@
 		<item-type>Number</item-type>
 		<label>EP46-BT50 Room Temp S7 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -344,6 +516,10 @@
 		<item-type>Number</item-type>
 		<label>EP45-BT50 Room Temp S6 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -351,6 +527,10 @@
 		<item-type>Number</item-type>
 		<label>EP44-BT50 Room Temp S5 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -358,6 +538,10 @@
 		<item-type>Number</item-type>
 		<label>EP23-BT50 Room Temp S4 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -365,6 +549,10 @@
 		<item-type>Number</item-type>
 		<label>EP22-BT50 Room Temp S3 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -372,6 +560,10 @@
 		<item-type>Number</item-type>
 		<label>EP21-BT50 Room Temp S2 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -379,6 +571,10 @@
 		<item-type>Number</item-type>
 		<label>BT50 Room Temp S1 Average</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -386,6 +582,10 @@
 		<item-type>Number</item-type>
 		<label>BT74 Average</label>
 		<description>BT74 heating cooling sensor average</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -393,6 +593,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S8</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -400,6 +604,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S7</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -407,6 +615,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S6</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -414,6 +626,10 @@
 		<item-type>Number</item-type>
 		<label>Calculated Supply S5</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -547,6 +763,10 @@
 		<item-type>Number</item-type>
 		<label>+Adjust Temp Indoor</label>
 		<description>Average of all room sensors</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -554,6 +774,10 @@
 		<item-type>Number</item-type>
 		<label>+Adjust Temp Outdoor</label>
 		<description>Outdoor temp</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -582,6 +806,10 @@
 		<item-type>Number</item-type>
 		<label>BT64 Average</label>
 		<description>BT64 Cooling supply average</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -650,6 +878,10 @@
 		<item-type>Number</item-type>
 		<label>Offset to Smart Home System</label>
 		<description>Offset to smart home system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1147,6 +1379,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 10</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1154,6 +1390,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 9</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1161,6 +1401,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 8</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1168,6 +1412,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 7</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1175,6 +1423,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 6</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1182,6 +1434,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 5</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1189,6 +1445,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 4</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1196,6 +1456,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 3</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1203,6 +1467,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 2</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1210,6 +1478,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Temperature 1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1217,6 +1489,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 10</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1224,6 +1500,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 9</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1231,6 +1511,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 8</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1238,6 +1522,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 7</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1245,6 +1533,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 6</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1252,6 +1544,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 5</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1259,6 +1555,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 4</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1266,6 +1566,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 3</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1273,6 +1577,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 2</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1280,6 +1588,10 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Energy 1</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
 	</channel-type>
@@ -1294,6 +1606,10 @@
 		<item-type>Number</item-type>
 		<label>PV Panel Heat Offset</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1301,6 +1617,10 @@
 		<item-type>Number</item-type>
 		<label>PV Panel Pool Offset</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1385,6 +1705,10 @@
 		<item-type>Number</item-type>
 		<label>BT1 Average, 24h</label>
 		<description>EB100-BT1 Outdoor temperature average, 24h</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1392,6 +1716,10 @@
 		<item-type>Number</item-type>
 		<label>Used Heating Power Average, 24h</label>
 		<description>Used heating power average, 24h</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1399,6 +1727,10 @@
 		<item-type>Number</item-type>
 		<label>BT22 Supply Air Temp.</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1406,6 +1738,10 @@
 		<item-type>Number</item-type>
 		<label>BT22 Supply Air Temp.</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1413,6 +1749,10 @@
 		<item-type>Number</item-type>
 		<label>BT22 Supply Air Temp.</label>
 		<description></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1427,6 +1767,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S4</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1434,6 +1778,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S3</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1441,6 +1789,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S2</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1448,6 +1800,10 @@
 		<item-type>Number</item-type>
 		<label>Calc. Supply S1</label>
 		<description>Calculated supply temperature for the climate system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
@@ -1472,6 +1828,10 @@
 		<item-type>Number</item-type>
 		<label>Int. El.add. Power</label>
 		<description>Current power from the internal electrical addition</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f kW" readOnly="true">
 		</state>
 	</channel-type>
@@ -1922,6 +2282,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 4</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -1929,6 +2293,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 3</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -1936,6 +2304,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 2</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -1943,6 +2315,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 1</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2113,6 +2489,10 @@
 		<item-type>Number</item-type>
 		<label>Start Temperature HW Luxury</label>
 		<description>Start temperature for heating water</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2120,6 +2500,10 @@
 		<item-type>Number</item-type>
 		<label>Start Temperature HW Normal</label>
 		<description>Start temperature for heating water</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2127,6 +2511,10 @@
 		<item-type>Number</item-type>
 		<label>Start Temperature HW Economy</label>
 		<description>Start temperature for heating water</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2141,6 +2529,10 @@
 		<item-type>Number</item-type>
 		<label>Stop Temperature HW Luxury</label>
 		<description>Temperature where hot water generation will stop</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2148,6 +2540,10 @@
 		<item-type>Number</item-type>
 		<label>Stop Temperature HW Normal</label>
 		<description>Temperature where hot water generation will stop</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2155,6 +2551,10 @@
 		<item-type>Number</item-type>
 		<label>Stop Temperature HW Economy</label>
 		<description>Temperature where hot water generation will stop</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2944,6 +3344,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 8</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2951,6 +3355,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 7</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2958,6 +3366,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 6</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>
@@ -2965,6 +3377,10 @@
 		<item-type>Number</item-type>
 		<label>Min Supply System 5</label>
 		<description></description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
 	</channel-type>

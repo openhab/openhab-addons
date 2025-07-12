@@ -85,6 +85,10 @@
 		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Potential 1</label>
 		<description>Potential measured on first 120V branch.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -92,6 +96,10 @@
 		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Potential 2</label>
 		<description>Potential measured on second 120V branch.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -99,6 +107,10 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Leg 1 Power</label>
 		<description>Power detected by the first Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -106,6 +118,10 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Leg 2 Power</label>
 		<description>Power detected by the second Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -113,6 +129,10 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Main Power</label>
 		<description>Power detected by the main Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -120,6 +140,10 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Solar Power</label>
 		<description>Power detected by the solar Sense clamp.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -127,6 +151,10 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Power consumed from the grid (negative if supplying power to grid)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -140,6 +168,10 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Power</label>
 		<description>Power draw of discovered device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
