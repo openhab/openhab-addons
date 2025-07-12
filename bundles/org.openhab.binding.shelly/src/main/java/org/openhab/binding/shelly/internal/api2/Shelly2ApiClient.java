@@ -322,6 +322,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (rs.current != null) {
             emeter.current = rs.current;
         }
+        if (rs.frequency != null) {
+            emeter.frequency = rs.frequency;
+        }
         if (rs.pf != null) {
             emeter.pf = rs.pf;
         }
@@ -342,6 +345,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             @Nullable Shelly2DeviceStatusVoltage vm, boolean channelUpdate) throws ShellyApiException {
         if (bs == null) {
             return false;
+        }
+        if (bs.id == null) { // invalid for fw 1.6.1
+            bs.id = id;
         }
         ShellyDeviceProfile profile = getProfile();
 
@@ -623,6 +629,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs == null) {
             return false;
         }
+        if (cs.id == null) { // invalid in fw 1.6.1
+            cs.id = id;
+        }
 
         if (cs.id == null) {
             cs.id = id;
@@ -884,7 +893,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sdata.bat.value = getDouble(value.battery.percent);
         }
         if (value.external != null && value.external.present != null) {
-            sdata.charger = getBool(value.external.present);
+            sdata.charger = value.external.present;
         }
     }
 
