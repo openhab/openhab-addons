@@ -197,6 +197,33 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="quantity">
+		<item-type>Number</item-type>
+		<label>Number</label>
+
+		<category>Number</category>
+
+		<state pattern="%.3f %unit%"></state>
+
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>DP</label>
+			</parameter>
+			<parameter name="min" type="integer">
+				<label>Minimum</label>
+			</parameter>
+			<parameter name="max" type="integer">
+				<label>Maximum</label>
+			</parameter>
+			<parameter name="sendAsString" type="boolean">
+				<label>Send As String</label>
+				<description>Send the value as string instead of number.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>String</label>
