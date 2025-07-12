@@ -637,6 +637,14 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="meterFrequency" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>@text/channel-type.shelly.meterFrequency.label</label>
+		<description>@text/channel-type.shelly.meterFrequency.description</description>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
