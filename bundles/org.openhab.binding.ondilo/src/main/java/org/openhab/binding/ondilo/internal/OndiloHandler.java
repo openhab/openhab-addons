@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +58,7 @@ public class OndiloHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
     private final int configPoolId;
+    private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
     public OndiloHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -87,13 +90,32 @@ public class OndiloHandler extends BaseThingHandler {
             }
             ondiloBridge.registerOndiloHandler(configPoolId, this);
             updateStatus(ThingStatus.ONLINE);
+            stopBridgeRecoveryJob();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            startBridgeRecoveryJob();
+        }
+    }
+
+    private void startBridgeRecoveryJob() {
+
+        if (bridgeRecoveryJob == null) {
+            // Check every 10 seconds after 5s delay
+            bridgeRecoveryJob = scheduler.scheduleWithFixedDelay(() -> initialize(), 5, 10, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopBridgeRecoveryJob() {
+        ScheduledFuture<?> bridgeRecoveryJob = this.bridgeRecoveryJob;
+        if (bridgeRecoveryJob != null) {
+            bridgeRecoveryJob.cancel(true);
+            this.bridgeRecoveryJob = null;
         }
     }
 
     @Override
     public void dispose() {
+        stopBridgeRecoveryJob();
         OndiloBridge ondiloBridge = getOndiloBridge();
         if (ondiloBridge != null) {
             ondiloBridge.unregisterOndiloHandler(configPoolId);
