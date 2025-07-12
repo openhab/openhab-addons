@@ -312,7 +312,7 @@
 
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Progress</tag>
+			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f d"/>
 	</channel-type>
