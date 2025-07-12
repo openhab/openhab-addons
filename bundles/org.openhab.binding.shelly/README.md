@@ -1608,9 +1608,9 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
 | relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
 | meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter2 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter3 |             |         | r/w       | Power Meter #1 with measurement values                                              |
-| meter4 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter2 |             |         | r/w       | Power Meter #2 with measurement values                                              |
+| meter3 |             |         | r/w       | Power Meter #3 with measurement values                                              |
+| meter4 |             |         | r/w       | Power Meter #4 with measurement values                                              |
 
 ## Shelly BLU Devices
 
