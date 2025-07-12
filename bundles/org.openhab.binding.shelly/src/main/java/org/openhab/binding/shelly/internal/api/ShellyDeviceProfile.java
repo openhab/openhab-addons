@@ -33,6 +33,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
+import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
@@ -403,10 +404,16 @@ public class ShellyDeviceProfile {
         return "";
     }
 
+    public static boolean isGeneration2(String serviceName) {
+        return (serviceName.startsWith("shelly") && (serviceName.contains("g3") || serviceName.contains("g4")))
+                || isGeneration2(ShellyThingCreator.getThingTypeUID(serviceName));
+    }
+
     public static boolean isGeneration2(ThingTypeUID thingTypeUID) {
         String thingTypeID = thingTypeUID.getId();
-        return thingTypeID.startsWith("shellyplus") || thingTypeID.startsWith("shellypro")
-                || thingTypeID.contains("mini") || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID)
+        return thingTypeID.startsWith(SERVICE_NAME_SHELLYPLUS_PREFIX)
+                || thingTypeID.startsWith(SERVICE_NAME_SHELLYPRO_PREFIX) || thingTypeID.contains("mini")
+                || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSHTG3.equals(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
     }

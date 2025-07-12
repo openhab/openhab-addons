@@ -131,8 +131,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             config.password = bindingConfig.defaultPassword;
 
             String gen = getString(service.getPropertyString("gen"));
-            boolean gen2 = "2".equals(gen) || "3".equals(gen)
-                    || ShellyDeviceProfile.isGeneration2(ShellyThingCreator.getThingTypeUID(serviceName, "", ""));
+            boolean gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(serviceName);
             return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, bindingConfig, httpClient,
                     messages);
         } catch (IOException e) {
