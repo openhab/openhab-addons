@@ -30,7 +30,6 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 public class TagTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "tag/0AFFD2";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -41,9 +40,9 @@ public class TagTests extends AbstractComponentTests {
                 """);
 
         assertThat(component.channels.size(), is(1));
-        assertThat(component.getName(), is("MQTT Tag Scanner"));
+        assertThat(component.getName(), is("Tag Scanner"));
 
-        assertChannel(component, Tag.TAG_CHANNEL_ID, "0AFFD2/tag_scanned", "", "MQTT Tag Scanner", TextValue.class);
+        assertChannel(component, Tag.TAG_CHANNEL_ID, "0AFFD2/tag_scanned", "", "Tag Scanner", TextValue.class);
 
         publishMessage("0AFFD2/tag_scanned", """
                 {
