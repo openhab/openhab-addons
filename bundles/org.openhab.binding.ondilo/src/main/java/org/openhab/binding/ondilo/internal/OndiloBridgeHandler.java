@@ -78,7 +78,6 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.trace("Start initialization of Ondilo Bridge Handler");
-        String clientSecret = thing.getUID().getAsString();
 
         if (!isValidUrl(openHABURL)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -86,6 +85,12 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
+
+        scheduler.execute(() -> getInitialAccessToken());
+    }
+
+    private void getInitialAccessToken() {
+        String clientSecret = thing.getUID().getAsString();
         redirectURI = openHABURL + (openHABURL.endsWith("/") ? "" : "/") + "ondilo/oauth2callback";
 
         OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(clientSecret);
