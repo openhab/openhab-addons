@@ -6,31 +6,55 @@
 	<channel-type id="front-left-lock">
 		<item-type>Switch</item-type>
 		<label>Door Lock Front Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="front-right-lock">
 		<item-type>Switch</item-type>
 		<label>Door Lock Front Right</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-left-lock">
 		<item-type>Switch</item-type>
 		<label>Door Lock Rear Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-right-lock">
 		<item-type>Switch</item-type>
 		<label>Door Lock Rear Right</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="deck-lid-lock">
 		<item-type>Switch</item-type>
 		<label>Deck Lid Lock</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="gas-flap-lock">
 		<item-type>Switch</item-type>
 		<label>Flap Lock</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

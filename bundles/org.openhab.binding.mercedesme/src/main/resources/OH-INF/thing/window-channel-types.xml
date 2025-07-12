@@ -6,6 +6,10 @@
 	<channel-type id="front-left-window">
 		<item-type>Number</item-type>
 		<label>Window Front Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -20,6 +24,10 @@
 	<channel-type id="front-right-window">
 		<item-type>Number</item-type>
 		<label>Window Front Right </label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -34,6 +42,10 @@
 	<channel-type id="rear-left-window">
 		<item-type>Number</item-type>
 		<label>Window Rear Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -48,6 +60,10 @@
 	<channel-type id="rear-right-window">
 		<item-type>Number</item-type>
 		<label>Window Rear Right</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -62,21 +78,37 @@
 	<channel-type id="rear-right-blind">
 		<item-type>Number</item-type>
 		<label>Window Blind Rear Right</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-left-blind">
 		<item-type>Number</item-type>
 		<label>Window Blind Rear Left</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-blind">
 		<item-type>Number</item-type>
 		<label>Window Blind Rear</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flip-window">
 		<item-type>Number</item-type>
 		<label>Flip Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
