@@ -127,7 +127,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         try {
             result = typeGenerator.generate(thing.getUID(), node, true);
         } catch (Exception e) {
-            logger.error("Node {}. Error generating type information during configuration update", config.id, e);
+            logger.warn("Node {}. Error generating type information during configuration update", config.id, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.build-channels-failed");
             return;
@@ -153,17 +153,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
-    public void handleRemoval() {
-        super.handleRemoval();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Node {}. Processing command {} type {} for channel {}", config.id, command,
                 command.getClass().getSimpleName(), channelUID);
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            logger.warn("Node {}. Bridge handler is null, cannot process command", config.id);
             return;
         }
 
@@ -195,8 +190,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     hsbTypeCommand);
         } else if (command instanceof QuantityType<?> quantityCommand) {
             zwaveCommand.value = handleQuantityTypeCommand(channelConfig, quantityCommand);
-        } else if (PercentType.class.equals(command.getClass())
-                && (command instanceof PercentType percentTypeCommand)) {
+        } else if (command instanceof PercentType percentTypeCommand) {
             zwaveCommand.value = handlePercentTypeCommand(channelConfig, channel, colorCap, isColorChannelCmd,
                     isColorTempChannelCmd, percentTypeCommand);
         } else if (command instanceof DecimalType decimalCommand) {
@@ -276,7 +270,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             value = 100 - value;
         }
 
-        // For dimmers, 100% is often represented as 99.
+        // For dimmers, 100% is represented as 99 (zero based value).
         if (CoreItemFactory.DIMMER.equals(channel.getAcceptedItemType()) && value == 100) {
             value = 99;
         }
@@ -378,7 +372,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         if (Status.DEAD == nodeDetails.status) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("The Z-Wave JS state of this node is: {}", nodeDetails.status));
+                    "@text/offline.comm-error.dead-node");
             return;
         }
         if (!setupThing(nodeDetails)) {
@@ -391,7 +385,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             internalInitialize();
         }
