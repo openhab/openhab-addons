@@ -12,28 +12,19 @@
  */
 package org.openhab.binding.tibber.internal.config;
 
+import static org.openhab.binding.tibber.internal.TibberBindingConstants.EMPTY_VALUE;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link TibberConfiguration} class contains fields mapping configuration parameters.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - make configuration variables public and introduce updateHour
  */
 @NonNullByDefault
 public class TibberConfiguration {
-    private String token = "";
-    private String homeid = "";
-    private int refresh;
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getHomeid() {
-        return homeid;
-    }
-
-    public int getRefresh() {
-        return refresh;
-    }
+    public String token = EMPTY_VALUE;
+    public String homeid = EMPTY_VALUE;
+    public int updateHour = 13;
 }
