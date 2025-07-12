@@ -17,3 +17,6 @@ This is useful when latencies in the system limit prevent very small movements a
 Rollershutter <itemName> { channel="<channelUID>"[profile="transform:ROLLERSHUTTERPOSITION", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]}
 ```
 
+## Setting a known position
+
+When this profile initially starts, it assumes the position of the rollershutter is in position 0. However, you can post and update to the item and the profile will update the known position. This if useful if a restart of openHAB occurs and you want to update the positon to the last known position.
