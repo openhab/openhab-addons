@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -126,7 +127,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            gatewayCommunication = new MieleGatewayCommunicationController(httpClient, (String) getConfig().get(HOST));
+            gatewayCommunication = new MieleGatewayCommunicationController(httpClient,
+                    Objects.requireNonNullElse((String) getConfig().get(HOST), ""));
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
@@ -442,7 +444,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    private @Nullable NetworkInterface getMulticastInterface(String interfaceIpAddress) throws SocketException {
+    private @Nullable NetworkInterface getMulticastInterface(@Nullable String interfaceIpAddress)
+            throws SocketException {
         Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 
         @Nullable

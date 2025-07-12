@@ -17,6 +17,7 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +62,7 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
 
     @Override
     public void initialize() {
-        id = (String) getConfig().get(DEVICE_ID);
+        id = Objects.requireNonNullElse((String) getConfig().get(DEVICE_ID), "");
         getBridgeHandler().ifPresent(h -> h.registerDataListener(this));
     }
 
