@@ -261,14 +261,8 @@
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
 			</channel-group>
-			<channel-group id="meter1" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
-			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
-			</channel-group>
-			<channel-group id="meter2" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>

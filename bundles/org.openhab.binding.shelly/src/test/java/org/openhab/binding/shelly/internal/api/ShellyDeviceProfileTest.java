@@ -86,7 +86,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYMOTION, false, false), //
                 Arguments.of(THING_TYPE_SHELLYTRV, false, false), //
-                // Generation 2 Plus series
+
+                // Shelly Plus
                 Arguments.of(THING_TYPE_SHELLYPLUS1, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS1PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS2PM_RELAY, true, false), //
@@ -98,7 +99,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLY1MINI, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPMMINI, true, false), //
                 Arguments.of(THING_TYPE_SHELLY1PMMINI, true, false), //
-                // Generation 2 Pro series
+
+                // Shelly Pro
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO1PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO2_RELAY, true, false), //
@@ -113,7 +115,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSHTG3, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), //
-                Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false));
+
+                Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
+                Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
     }
 }
