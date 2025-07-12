@@ -98,6 +98,7 @@ See section [Discovery](#discovery) for details.
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                                  |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                  |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                 |
+| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                               |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                               |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                             |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                   |
@@ -1243,7 +1244,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
+### Shelly Plus Dimmer / 10V (thing-type: shellyplusdimmer, shellyplus10v)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
