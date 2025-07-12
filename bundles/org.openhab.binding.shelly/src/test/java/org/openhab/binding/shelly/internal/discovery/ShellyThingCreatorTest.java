@@ -179,9 +179,9 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO1PM_2, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PM_3, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPRO1CB), //
-                Arguments.of("SPSW-002XE16EU", "", THING_TYPE_SHELLYPRO2_RELAY), //
-                Arguments.of("SPSW-102XE16EU", "", THING_TYPE_SHELLYPRO2_RELAY), //
-                Arguments.of("SPSW-202XE16EU", "", THING_TYPE_SHELLYPRO2_RELAY), //
+                Arguments.of(SHELLYDT_PRO2, "", THING_TYPE_SHELLYPRO2), //
+                Arguments.of(SHELLYDT_PRO2_2, "", THING_TYPE_SHELLYPRO2), //
+                Arguments.of(SHELLYDT_PRO2_3, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of("SPSW-002PE16EU", "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
                 Arguments.of("SPSW-102PE16EU", "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
                 Arguments.of("SPSW-202PE16EU", "relay", THING_TYPE_SHELLYPRO2PM_RELAY), //
@@ -210,7 +210,7 @@ public class ShellyThingCreatorTest {
     void getThingUIDReturnsThingTypeMatchingServiceName() {
         Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
                 THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLYPLUSHTG3,
-                THING_TYPE_SHELLYPLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2_RELAY,
+                THING_TYPE_SHELLYPLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2,
                 THING_TYPE_SHELLYPRO2PM_ROLLER, THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYRGBW2_COLOR);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()
