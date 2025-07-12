@@ -27,7 +27,7 @@ public class OndiloBindingConstants {
     private static final String BINDING_ID = "ondilo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_ONDILO = new ThingTypeUID(BINDING_ID, "ondilo");
 
     // Bridge Channel ids

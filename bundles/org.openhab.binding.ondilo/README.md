@@ -4,7 +4,7 @@ This binding integrates Ondilo ICO pool monitoring devices with openHAB, allowin
 
 ## Supported Things
 
-`bridge:` Represents your Ondilo account (OAuth2)
+`account:` Represents your Ondilo Account (authentication using OAuth2 flow)
 `ondilo:` Represents an individual Ondilo ICO device
 
 Ondilo ICO Pool as well as Spa devices are supported.
@@ -12,14 +12,14 @@ Chlor as well as salt water.
 
 ## Discovery
 
-Ondilo ICOs are discovered automatically after the bridge is authorized and online.
+Ondilo ICOs are discovered automatically after the `account` is authorized and online.
 Each Ondilo ICO will appear as a new Thing in the inbox.
 
 ## Thing Configuration
 
-### `bridge` Thing Configuration
+### `account` Thing Configuration
 
-- **url**: The URL of the openHAB instance. Required for the redirect during OAuth2 flow (e.g. `http://localhost:8080`)
+- **url**: The URL of the openHAB instance. Required for the redirect during OAuth2 authentication flow (e.g. `http://localhost:8080`)
 - **refreshInterval**: Polling interval in seconds (default: `600 s`)
 
 ### `ondilo` Thing Configuration
@@ -33,12 +33,12 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 - 5 requests per second
 - 30 requests per hour
 
-`bridge` Thing performs 1 request per cycle - 2 per hour with default interval.
-`ondilo` Thing performs 3 request per cycle - 18 per hour with default interval.
+`account` Thing performs 1 request per cycle - 10 per hour with default interval.
+`ondilo` Thing performs 2 requests per cycle - 20 per hour with default interval.
 
 ## Channels
 
-### `bridge` Channels
+### `account` Channels
 
 | Channel ID                | Type                    | Advanced | Access | Description                                            |
 |---------------------------|-------------------------|----------|--------|--------------------------------------------------------|
@@ -74,7 +74,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 ### Thing Configuration
 
 ```Java
-Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=600 ] {
+Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=600 ] {
     Thing ondilo "<id_received_from_discovery>" [ id="<id_received_from_discovery>" ] {
     }
 ```
@@ -82,22 +82,22 @@ Bridge ondilo:bridge:mybridge [ url="http://localhost:8080", refreshInterval=600
 ### Item Configuration
 
 ```java
-Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:mybridge:myOndilo:measure#temperature" }
-Number                    Ondilo_pH           "Pool pH [%d]"                    { channel="ondilo:ondilo:mybridge:myOndilo:measure#ph" }
-Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.1f %unit%]"          { channel="ondilo:ondilo:mybridge:myOndilo:measure#orp" }
-Number:Density            Ondilo_Salt         "Pool Salt [%.0f %unit%]"         { channel="ondilo:ondilo:mybridge:myOndilo:measure#salt" }
-Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %]"             { channel="ondilo:ondilo:mybridge:myOndilo:measure#battery" }
-Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%.0f]"                { channel="ondilo:ondilo:mybridge:myOndilo:measure#rssi" }
+Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:ondiloAccount:12345:measure#temperature" }
+Number                    Ondilo_pH           "Pool pH [%d]"                    { channel="ondilo:ondilo:ondiloAccount:12345:measure#ph" }
+Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.1f %unit%]"          { channel="ondilo:ondilo:ondiloAccount:12345:measure#orp" }
+Number:Density            Ondilo_Salt         "Pool Salt [%.0f %unit%]"         { channel="ondilo:ondilo:ondiloAccount:12345:measure#salt" }
+Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %]"             { channel="ondilo:ondilo:ondiloAccount:12345:measure#battery" }
+Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%.0f]"                { channel="ondilo:ondilo:ondiloAccount:12345:measure#rssi" }
 
-String                    Ondilo_RecTitle     "Recommendation Title [%s]"       { channel="ondilo:ondilo:mybridge:myOndilo:recommendation#title" }
-String                    Ondilo_RecMessage   "Recommendation Message [%s]"     { channel="ondilo:ondilo:mybridge:myOndilo:recommendation#message" }
-String                    Ondilo_RecStatus    "Recommendation Status [%s]"      { channel="ondilo:ondilo:mybridge:myOndilo:recommendation#status" }
+String                    Ondilo_RecTitle     "Recommendation Title [%s]"       { channel="ondilo:ondilo:ondiloAccount:12345:recommendation#title" }
+String                    Ondilo_RecMessage   "Recommendation Message [%s]"     { channel="ondilo:ondilo:ondiloAccount:12345:recommendation#message" }
+String                    Ondilo_RecStatus    "Recommendation Status [%s]"      { channel="ondilo:ondilo:ondiloAccount:12345:recommendation#status" }
 ```
 
 ### Sitemap Configuration
 
 ```perl
-sitemap demo label="Ondilo" {
+sitemap demo label="Ondilo ICO" {
     Frame label="Measures" {
         Text        item=Ondilo_Temperature
         Text        item=Ondilo_pH

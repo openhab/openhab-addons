@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Ondilo Bridge Thing Type -->
-	<bridge-type id="bridge">
-		<label>Ondilo Bridge</label>
-		<description>The bridge for central communication with the Ondilo API</description>
+	<bridge-type id="account">
+		<label>Ondilo Account</label>
+		<description>The Ondilo account for central communication with the Ondilo API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
@@ -32,7 +32,7 @@
 	<!-- Ondilo Thing Type -->
 	<thing-type id="ondilo">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Ondilo ICO</label>

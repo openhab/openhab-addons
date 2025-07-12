@@ -158,7 +158,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
                     I18N_OAUTH2_ERROR + " [\"" + e.getMessage() + "\"]");
             return;
         }
-        logger.info("Bridge successfully authorized with access token");
+        logger.info("Ondilo Account successfully authorized with access token");
 
         unregisterOAuthService(clientSecret);
         finalizeInitialize(accessTokenResponse, oAuthService);
@@ -176,7 +176,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
     public Optional<List<Pool>> getPools() {
         OndiloBridge bridge = this.bridge;
         if (bridge == null) {
-            logger.trace("bridge is null, return empty list");
+            logger.trace("Bridge is null, return empty list");
             return Optional.empty();
         } else {
             List<Pool> currentPools = bridge.getPools();

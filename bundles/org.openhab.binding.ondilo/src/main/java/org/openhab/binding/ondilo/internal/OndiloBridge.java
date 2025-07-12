@@ -170,6 +170,6 @@ public class OndiloBridge {
     public void dispose() {
         stopOndiloBridgePolling();
         this.apiClient = null;
-        logger.trace("OndiloBridge disposed and polling job stopped.");
+        logger.trace("OndiloBridge disposed and polling job stopped");
     }
 }
