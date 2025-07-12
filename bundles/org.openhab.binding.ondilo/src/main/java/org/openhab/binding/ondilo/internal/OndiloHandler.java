@@ -41,7 +41,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -246,12 +245,9 @@ public class OndiloHandler extends BaseThingHandler {
 
     @Nullable
     private OndiloBridge getOndiloBridge() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof OndiloBridgeHandler bridgeHandler) {
-                return bridgeHandler.getOndiloBridge();
-            }
+        if ((getBridge() instanceof Bridge bridge)
+                && (bridge.getHandler() instanceof OndiloBridgeHandler bridgeHandler)) {
+            return bridgeHandler.getOndiloBridge();
         }
         return null;
     }

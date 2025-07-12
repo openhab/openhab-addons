@@ -85,7 +85,7 @@ public class OndiloBridgeHandler extends BaseBridgeHandler {
                     "Invalid openHAB URL: " + openHABURL);
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN); // Set to UNKNOWN initially
         redirectURI = openHABURL + (openHABURL.endsWith("/") ? "" : "/") + "ondilo/oauth2callback";
 
         OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(clientSecret);
