@@ -101,6 +101,7 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PLUSWALLDISPLAY = "SAWD-0A1XX10EU1";
     public static final String SHELLYDT_PLUSRGBWPM = "SNDC-0D4P10WW";
     public static final String SHELLYDT_PLUSEM = "S3EM-002CXCEU";
+    public static final String SHELLYDT_PLUS3EM63 = "S3EM-003CXCEU63";
 
     // Shelly Pro Series
     public static final String SHELLYDT_PRO1 = "SPSW-001XE16EU";
@@ -213,6 +214,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPLUSDIMMER0110VG3_STR = "shelly0110dimg3";
     public static final String THING_TYPE_SHELLYPLUSRGBWPM_STR = "shellyplusrgbwpm";
     public static final String THING_TYPE_SHELLYPLUSEM_STR = "shellyplusem";
+    public static final String THING_TYPE_SHELLYPLUS3EM63_STR = "shellyplus3em63";
 
     // Shelly Wall Display
     public static final String THING_TYPE_SHELLYPLUSWALLDISPLAY_STR = "shellywalldisplay";
@@ -347,6 +349,8 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYPLUSRGBWPM_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSEM = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPLUSEM_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUS3EM63 = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYPLUS3EM63_STR);
 
     // Shelly Wall Display
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSWALLDISPLAY = new ThingTypeUID(BINDING_ID,
@@ -444,6 +448,7 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PLUSDIMMER0110VG3, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
+            Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
 
             // Plus Mini Series
             Map.entry(SHELLYDT_MINI1, THING_TYPE_SHELLY1MINI), //
@@ -464,7 +469,8 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
-            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2),
+            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), //
+            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
             Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
@@ -564,6 +570,7 @@ public class ShellyThingCreator {
             Map.entry(THING_TYPE_SHELLYPLUSDIMMER0110VG3_STR, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(THING_TYPE_SHELLYPLUSRGBWPM_STR, THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry(THING_TYPE_SHELLYPLUSEM_STR, THING_TYPE_SHELLYPLUSEM),
+            Map.entry(THING_TYPE_SHELLYPLUS3EM63_STR, THING_TYPE_SHELLYPLUS3EM63),
 
             Map.entry(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, THING_TYPE_SHELLYPLUSWALLDISPLAY),
 

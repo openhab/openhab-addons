@@ -90,13 +90,15 @@ See section [Discovery](#discovery) for details.
 | shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL                               |
 | shellyplusshutter    | Shelly Plus Shutter for 1x roller                        | S3SH-0A2P4EU                                |
 | shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | SNPL-00112EU                                |
-| shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                |
-| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                |
-| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                |
-| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                |
+| shellyplusplug       | Shelly Plus Outdoor Plug-S                               | S3PL-20112EU                                |
+| shellyplusplug       | Shelly Plus Plug-IT                                      | SNPL-00110IT                                |
+| shellyplusplug       | Shelly Plus Plug-UK                                      | SNPL-00112UK                                |
+| shellyplusplugus     | Shelly Plus Plug-US                                      | SNPL-00116US                                |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                      |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                  |
 | shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                   |
+| shellyplusem         | Shelly Plus EM                                           | S3EM-002CXCEU                               |
+| shellyplus3em63      | Shelly Plus 3EM-63                                       | S3EM-002CXCEU                               |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                                  |
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                                  |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                  |
@@ -1309,6 +1311,51 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
+
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
+|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
+|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
 
 ### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
 
