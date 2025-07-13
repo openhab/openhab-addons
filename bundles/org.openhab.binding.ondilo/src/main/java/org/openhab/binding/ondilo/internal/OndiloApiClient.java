@@ -117,8 +117,10 @@ public class OndiloApiClient {
             if (accessTokenResponse.isExpired(Instant.now(), 120)) {
                 try {
                     this.accessTokenResponse = oAuthService.refreshToken();
-                    this.bearer = accessTokenResponse.getAccessToken();
-                    logger.trace("AccessToken renewed: {}", bearer);
+                    if (this.accessTokenResponse != null) {
+                        this.bearer = this.accessTokenResponse.getAccessToken();
+                        logger.trace("AccessToken renewed: {}", bearer);
+                    }
                 } catch (InterruptedIOException e) {
                     logger.debug("OAuth token refresh interrupted: {}", e.getMessage());
                     Thread.currentThread().interrupt();
