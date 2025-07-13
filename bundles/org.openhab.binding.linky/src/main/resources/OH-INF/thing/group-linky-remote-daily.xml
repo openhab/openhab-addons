@@ -61,7 +61,6 @@
 				<label>Peak Timestamp Day-3</label>
 				<description>Maximum power usage timestamp for Day-3</description>
 			</channel>
-
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
