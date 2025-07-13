@@ -221,7 +221,6 @@
 			<property name="productType"/>
 			<property name="productName"/>
 			<property name="pairingAt"/>
-			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
@@ -265,6 +264,7 @@
 			<property name="createdAt"/>
 			<property name="updatedAt"/>
 			<property name="householdId"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 
