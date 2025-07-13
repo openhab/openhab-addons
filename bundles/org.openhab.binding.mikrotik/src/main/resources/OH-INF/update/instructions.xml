@@ -6,13 +6,13 @@
 	<thing-type uid="mikrotik:interface">
 		<instruction-set targetVersion="1">
 			<add-channel id="poeOutState">
-				<type>interface:poeOutState</type>
+				<type>mikrotik:poeOutState</type>
 			</add-channel>
 			<add-channel id="poeOutStatus">
-				<type>interface:poeOutStatus</type>
+				<type>mikrotik:poeOutStatus</type>
 			</add-channel>
 			<add-channel id="poeOutPower">
-				<type>interface:poeOutPower</type>
+				<type>mikrotik:poeOutPower</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
