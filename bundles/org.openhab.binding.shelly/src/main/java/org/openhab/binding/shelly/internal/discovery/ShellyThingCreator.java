@@ -140,243 +140,113 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_BLUGW = "SNGW-BT01";
     public static final String SHELLYDT_BLUGWG3 = "S3GW-1DBT001";
 
-    // Thing names
-    public static final String THING_TYPE_SHELLY1_STR = "shelly1";
-    public static final String THING_TYPE_SHELLY1L_STR = "shelly1l";
-    public static final String THING_TYPE_SHELLY1PM_STR = "shelly1pm";
-    public static final String THING_TYPE_SHELLYEM_STR = "shellyem";
-    public static final String THING_TYPE_SHELLY3EM_STR = "shellyem3"; // bad: misspelled product name, it's 3EM
-    public static final String THING_TYPE_SHELLY2_PREFIX = "shellyswitch";
-    public static final String THING_TYPE_SHELLY2_RELAY_STR = "shelly2-relay";
-    public static final String THING_TYPE_SHELLY2_ROLLER_STR = "shelly2-roller";
-    public static final String THING_TYPE_SHELLY25_PREFIX = "shellyswitch25";
-    public static final String THING_TYPE_SHELLY25_RELAY_STR = "shelly25-relay";
-    public static final String THING_TYPE_SHELLY25_ROLLER_STR = "shelly25-roller";
-    public static final String THING_TYPE_SHELLY4PRO_STR = "shelly4pro";
-    public static final String THING_TYPE_SHELLYPLUG_STR = "shellyplug";
-    public static final String THING_TYPE_SHELLYPLUGS_STR = "shellyplugs";
-    public static final String THING_TYPE_SHELLYPLUGU1_STR = "shellyplugu1"; // Shelly Plug US
-    public static final String THING_TYPE_SHELLYDIMMER_STR = "shellydimmer";
-    public static final String THING_TYPE_SHELLYDIMMER2_STR = "shellydimmer2";
-    public static final String THING_TYPE_SHELLYIX3_STR = "shellyix3";
-    public static final String THING_TYPE_SHELLYBULB_STR = "shellybulb";
-    public static final String THING_TYPE_SHELLYDUO_STR = "shellybulbduo";
-    public static final String THING_TYPE_SHELLYVINTAGE_STR = "shellyvintage";
-    public static final String THING_TYPE_SHELLYRGBW2_PREFIX = "shellyrgbw2";
-    public static final String THING_TYPE_SHELLYRGBW2_COLOR_STR = THING_TYPE_SHELLYRGBW2_PREFIX + "-color";
-    public static final String THING_TYPE_SHELLYRGBW2_WHITE_STR = THING_TYPE_SHELLYRGBW2_PREFIX + "-white";
-    public static final String THING_TYPE_SHELLYDUORGBW_STR = "shellycolorbulb";
-    public static final String THING_TYPE_SHELLYHT_STR = "shellyht";
-    public static final String THING_TYPE_SHELLYSMOKE_STR = "shellysmoke";
-    public static final String THING_TYPE_SHELLYGAS_STR = "shellygas";
-    public static final String THING_TYPE_SHELLYFLOOD_STR = "shellyflood";
-    public static final String THING_TYPE_SHELLYDOORWIN_STR = "shellydw";
-    public static final String THING_TYPE_SHELLYDOORWIN2_STR = "shellydw2";
-    public static final String THING_TYPE_SHELLYEYE_STR = "shellyseye";
-    public static final String THING_TYPE_SHELLYSENSE_STR = "shellysense";
-    public static final String THING_TYPE_SHELLYTRV_STR = "shellytrv";
-    public static final String THING_TYPE_SHELLYMOTION_STR = "shellymotion";
-    public static final String THING_TYPE_SHELLYMOTION2_STR = "shellymotion2";
-    public static final String THING_TYPE_SHELLYBUTTON1_STR = "shellybutton1";
-    public static final String THING_TYPE_SHELLYBUTTON2_STR = "shellybutton2";
-    public static final String THING_TYPE_SHELLYUNI_STR = "shellyuni";
+    // Service name prefixes
+    public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
+    public static final String SERVICE_NAME_SHELLYPLUS_PREFIX = "shellyplus";
+    public static final String SERVICE_NAME_SHELLYPRO_PREFIX = "shellypro";
 
-    // Shelly Plus Series
-    public static final String THING_TYPE_SHELLYPLUS1_STR = "shellyplus1";
-    public static final String THING_TYPE_SHELLYPLUS1G3_STR = "shelly1g3";
-    public static final String THING_TYPE_SHELLYPLUS1G4_STR = "shelly1g4";
-    public static final String THING_TYPE_SHELLYPLUS1PM_STR = "shellyplus1pm";
-    public static final String THING_TYPE_SHELLYPLUS1PMG3_STR = "shelly1pmg3";
-    public static final String THING_TYPE_SHELLYPLUS1PMG4_STR = "shelly1pmg4";
-    public static final String THING_TYPE_SHELLYPLUS2PM_RELAY_STR = "shellyplus2pm-relay";
-    public static final String THING_TYPE_SHELLYPLUS2PM_ROLLER_STR = "shellyplus2pm-roller";
-    public static final String THING_TYPE_SHELLYPLUSI4_STR = "shellyplusi4";
-    public static final String THING_TYPE_SHELLYPLUSI4G3_STR = "shellyi4g3";
-    public static final String THING_TYPE_SHELLYPLUSI4DC_STR = "shellyplusi4dc";
-    public static final String THING_TYPE_SHELLYPLUSHT_STR = "shellyplusht";
-    public static final String THING_TYPE_SHELLYPLUSHTG3_STR = "shellyhtg3";
-    public static final String THING_TYPE_SHELLYPLUSSMOKE_STR = "shellyplussmoke";
-    public static final String THING_TYPE_SHELLYPLUSUNI_STR = "shellyplusuni";
-    public static final String THING_TYPE_SHELLYPLUSPLUGS_STR = "shellyplusplug";
-    public static final String SVC_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplugus";
-    public static final String THING_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplusplugus";
-    public static final String THING_TYPE_SHELLYPLUSDIMMERUS_STR = "shellypluswdus";
-    public static final String THING_TYPE_SHELLYPLUSDIMMER10V_STR = "shellyplus10v";
-    public static final String THING_TYPE_SHELLYPLUSDIMMER0110VG3_STR = "shelly0110dimg3";
-    public static final String THING_TYPE_SHELLYPLUSRGBWPM_STR = "shellyplusrgbwpm";
-    public static final String THING_TYPE_SHELLYPLUSSTRIP_STR = "shellyplusstrip";
-
-    // Shelly Wall Display
-    public static final String THING_TYPE_SHELLYPLUSWALLDISPLAY_STR = "shellywalldisplay";
-
-    // Shelly Plus Mini Series
-    public static final String THING_TYPE_SHELLYMINI_1_STR = "shelly1mini";
-    public static final String THING_TYPE_SHELLYMINI_1G3_STR = "shelly1minig3";
-    public static final String THING_TYPE_SHELLYMINI_1G4_STR = "shelly1minig4";
-    public static final String THING_TYPE_SHELLYMINI_PM_STR = "shellypmmini";
-    public static final String THING_TYPE_SHELLYMINI_PMG3_STR = "shellypmminig3";
-    public static final String THING_TYPE_SHELLYMINI_PMG4_STR = "shellypmminig4";
-    public static final String THING_TYPE_SHELLYMINI_EM_STR = "shellyemmini"; // G4 device was renamed to EM
-    public static final String THING_TYPE_SHELLYMINI_1PM_STR = "shelly1pmmini";
-    public static final String THING_TYPE_SHELLYMINI_1PMG3_STR = "shelly1pmminig3";
-    public static final String THING_TYPE_SHELLYMINI_1PMG4_STR = "shelly1pmminig4";
-
-    // Shelly Pro Series
-    public static final String THING_TYPE_SHELLYPRO1_STR = "shellypro1";
-    public static final String THING_TYPE_SHELLYPRO1PM_STR = "shellypro1pm";
-    public static final String THING_TYPE_SHELLYPRO1CB_STR = "shellypro1cb";
-    public static final String THING_TYPE_SHELLYPRO2_STR = "shellypro2";
-    public static final String THING_TYPE_SHELLYPRO2PM_RELAY_STR = "shellypro2pm-relay";
-    public static final String THING_TYPE_SHELLYPRO2PM_ROLLER_STR = "shellypro2pm-roller";
-    public static final String THING_TYPE_SHELLYPRO3_STR = "shellypro3";
-    public static final String THING_TYPE_SHELLYPRO3EM_STR = "shellypro3em";
-    public static final String THING_TYPE_SHELLYPROEM50_STR = "shellyproem50";
-    public static final String THING_TYPE_SHELLYPRO4PM_STR = "shellypro4pm";
-
-    // Shelly BLU Series
-    public static final String THING_TYPE_SHELLYBLU_PREFIX = "shellyblu";
-    public static final String THING_TYPE_SHELLYBLUBUTTON_STR = THING_TYPE_SHELLYBLU_PREFIX + "button";
-    public static final String THING_TYPE_SHELLYBLUDW_STR = THING_TYPE_SHELLYBLU_PREFIX + "dw";
-    public static final String THING_TYPE_SHELLYBLUMOTION_STR = THING_TYPE_SHELLYBLU_PREFIX + "motion";
-    public static final String THING_TYPE_SHELLYBLUHT_STR = THING_TYPE_SHELLYBLU_PREFIX + "ht";
-    public static final String THING_TYPE_SHELLYBLUGW_STR = THING_TYPE_SHELLYBLU_PREFIX + "gw";
-    public static final String THING_TYPE_SHELLYBLUGWG3_STR = THING_TYPE_SHELLYBLU_PREFIX + "gwg3";
+    private static final String SERVICE_NAME_SHELLY2_PREFIX = "shellyswitch";
+    private static final String SERVICE_NAME_SHELLY25_PREFIX = "shellyswitch25";
+    private static final String SERVICE_NAME_SHELLYPLUG_PREFIX = "shellyplug";
+    private static final String SERVICE_NAME_SHELLYPLUGS_PREFIX = "shellyplugs";
+    private static final String SERVICE_NAME_SHELLYPLUGU1_PREFIX = "shellyplugu1"; // Shelly Plug US
+    private static final String SERVICE_NAME_SHELLYRGBW2_PREFIX = "shellyrgbw2";
+    private static final String SERVICE_NAME_SHELLYMOTION_PREFIX = "shellymotion";
 
     // Password protected or unknown device
     public static final String THING_TYPE_SHELLYPROTECTED_STR = "shellydevice";
     public static final String THING_TYPE_SHELLYUNKNOWN_STR = "shellyunknown";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SHELLY1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY1_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY1L = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY1L_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY1PM = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY1PM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYEM = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYEM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY3EM = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY3EM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY2_RELAY = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLY2_RELAY_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY2_ROLLER = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLY2_ROLLER_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY25_RELAY = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLY25_RELAY_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY25_ROLLER = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLY25_ROLLER_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLY4PRO = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY4PRO_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUG = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUG_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUGS = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUGS_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUGU1 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUGU1_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYUNI = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYUNI_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYDIMMER = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYDIMMER_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYDIMMER2 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYDIMMER2_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYIX3 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYIX3_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBULB = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBULB_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYDUO = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYDUO_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYVINTAGE = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYVINTAGE_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYDUORGBW = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYDUORGBW_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYHT = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYHT_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYSENSE = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYSENSE_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYSMOKE = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYSMOKE_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYGAS = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYGAS_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYFLOOD = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYFLOOD_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYDOORWIN = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYDOORWIN_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYDOORWIN2 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYDOORWIN2_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYTRV = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYTRV_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBUTTON1 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYBUTTON1_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBUTTON2 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYBUTTON2_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYEYE = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYEYE_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYMOTION = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYMOTION_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_COLOR = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYRGBW2_COLOR_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_WHITE = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYRGBW2_WHITE_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLY1 = new ThingTypeUID(BINDING_ID, "shelly1");
+    public static final ThingTypeUID THING_TYPE_SHELLY1L = new ThingTypeUID(BINDING_ID, "shelly1l");
+    public static final ThingTypeUID THING_TYPE_SHELLY1PM = new ThingTypeUID(BINDING_ID, "shelly1pm");
+    public static final ThingTypeUID THING_TYPE_SHELLYEM = new ThingTypeUID(BINDING_ID, "shellyem");
+    public static final ThingTypeUID THING_TYPE_SHELLY3EM = new ThingTypeUID(BINDING_ID, "shellyem3");
+    public static final ThingTypeUID THING_TYPE_SHELLY2_RELAY = new ThingTypeUID(BINDING_ID, "shelly2-relay");
+    public static final ThingTypeUID THING_TYPE_SHELLY2_ROLLER = new ThingTypeUID(BINDING_ID, "shelly2-roller");
+    public static final ThingTypeUID THING_TYPE_SHELLY25_RELAY = new ThingTypeUID(BINDING_ID, "shelly25-relay");
+    public static final ThingTypeUID THING_TYPE_SHELLY25_ROLLER = new ThingTypeUID(BINDING_ID, "shelly25-roller");
+    public static final ThingTypeUID THING_TYPE_SHELLY4PRO = new ThingTypeUID(BINDING_ID, "shelly4pro");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUG = new ThingTypeUID(BINDING_ID, "shellyplug");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUGS = new ThingTypeUID(BINDING_ID, "shellyplugs");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUGU1 = new ThingTypeUID(BINDING_ID, "shellyplugu1");
+    public static final ThingTypeUID THING_TYPE_SHELLYUNI = new ThingTypeUID(BINDING_ID, "shellyuni");
+    public static final ThingTypeUID THING_TYPE_SHELLYDIMMER = new ThingTypeUID(BINDING_ID, "shellydimmer");
+    public static final ThingTypeUID THING_TYPE_SHELLYDIMMER2 = new ThingTypeUID(BINDING_ID, "shellydimmer2");
+    public static final ThingTypeUID THING_TYPE_SHELLYIX3 = new ThingTypeUID(BINDING_ID, "shellyix3");
+    public static final ThingTypeUID THING_TYPE_SHELLYBULB = new ThingTypeUID(BINDING_ID, "shellybulb");
+    public static final ThingTypeUID THING_TYPE_SHELLYDUO = new ThingTypeUID(BINDING_ID, "shellybulbduo");
+    public static final ThingTypeUID THING_TYPE_SHELLYVINTAGE = new ThingTypeUID(BINDING_ID, "shellyvintage");
+    public static final ThingTypeUID THING_TYPE_SHELLYDUORGBW = new ThingTypeUID(BINDING_ID, "shellycolorbulb");
+    public static final ThingTypeUID THING_TYPE_SHELLYHT = new ThingTypeUID(BINDING_ID, "shellyht");
+    public static final ThingTypeUID THING_TYPE_SHELLYSENSE = new ThingTypeUID(BINDING_ID, "shellysense");
+    public static final ThingTypeUID THING_TYPE_SHELLYSMOKE = new ThingTypeUID(BINDING_ID, "shellysmoke");
+    public static final ThingTypeUID THING_TYPE_SHELLYGAS = new ThingTypeUID(BINDING_ID, "shellygas");
+    public static final ThingTypeUID THING_TYPE_SHELLYFLOOD = new ThingTypeUID(BINDING_ID, "shellyflood");
+    public static final ThingTypeUID THING_TYPE_SHELLYDOORWIN = new ThingTypeUID(BINDING_ID, "shellydw");
+    public static final ThingTypeUID THING_TYPE_SHELLYDOORWIN2 = new ThingTypeUID(BINDING_ID, "shellydw2");
+    public static final ThingTypeUID THING_TYPE_SHELLYTRV = new ThingTypeUID(BINDING_ID, "shellytrv");
+    public static final ThingTypeUID THING_TYPE_SHELLYBUTTON1 = new ThingTypeUID(BINDING_ID, "shellybutton1");
+    public static final ThingTypeUID THING_TYPE_SHELLYBUTTON2 = new ThingTypeUID(BINDING_ID, "shellybutton2");
+    public static final ThingTypeUID THING_TYPE_SHELLYEYE = new ThingTypeUID(BINDING_ID, "shellyseye");
+    public static final ThingTypeUID THING_TYPE_SHELLYMOTION = new ThingTypeUID(BINDING_ID, "shellymotion");
+    public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_COLOR = new ThingTypeUID(BINDING_ID, "shellyrgbw2-color");
+    public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_WHITE = new ThingTypeUID(BINDING_ID, "shellyrgbw2-white");
     public static final ThingTypeUID THING_TYPE_SHELLYPROTECTED = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPROTECTED_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYUNKNOWN = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYUNKNOWN_STR);
 
     // Shelly Plus
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUS1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPLUS1_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUS1PM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUS1PM_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUS1 = new ThingTypeUID(BINDING_ID, "shellyplus1");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUS1PM = new ThingTypeUID(BINDING_ID, "shellyplus1pm");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUS2PM_RELAY = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUS2PM_RELAY_STR);
+            "shellyplus2pm-relay");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUS2PM_ROLLER = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUS2PM_ROLLER_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSI4 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSI4_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSI4DC = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSI4DC_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSHT = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSHT_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSUNI = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSUNI_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSHTG3 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSHTG3_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSSMOKE = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSSMOKE_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGS = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSPLUGS_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGUS = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSPLUGUS_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMERUS = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSDIMMERUS_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER10V = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSDIMMER10V_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSRGBWPM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSRGBWPM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPLUSSTRIP = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSSTRIP_STR);
+            "shellyplus2pm-roller");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSI4 = new ThingTypeUID(BINDING_ID, "shellyplusi4");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSI4DC = new ThingTypeUID(BINDING_ID, "shellyplusi4dc");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSHT = new ThingTypeUID(BINDING_ID, "shellyplusht");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSUNI = new ThingTypeUID(BINDING_ID, "shellyplusuni");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSHTG3 = new ThingTypeUID(BINDING_ID, "shellyhtg3");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSSMOKE = new ThingTypeUID(BINDING_ID, "shellyplussmoke");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGS = new ThingTypeUID(BINDING_ID, "shellyplusplug");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGUS = new ThingTypeUID(BINDING_ID, "shellyplusplugus");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMERUS = new ThingTypeUID(BINDING_ID, "shellypluswdus");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER10V = new ThingTypeUID(BINDING_ID, "shellyplus10v");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSRGBWPM = new ThingTypeUID(BINDING_ID, "shellyplusrgbwpm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSSTRIP = new ThingTypeUID(BINDING_ID, "shellyplusstrip");
 
     // Shelly Wall Display
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSWALLDISPLAY = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
+            "shellywalldisplay");
 
     // Shelly Plus Mini Series
-    public static final ThingTypeUID THING_TYPE_SHELLYMINI_1 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYMINI_1_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYMINI_PM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYMINI_PM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYMINI_1PM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYMINI_1PM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYMINI_EM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYMINI_EM_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYMINI_1 = new ThingTypeUID(BINDING_ID, "shelly1mini");
+    public static final ThingTypeUID THING_TYPE_SHELLYMINI_PM = new ThingTypeUID(BINDING_ID, "shellypmmini");
+    public static final ThingTypeUID THING_TYPE_SHELLYMINI_1PM = new ThingTypeUID(BINDING_ID, "shelly1pmmini");
+    public static final ThingTypeUID THING_TYPE_SHELLYMINI_EM = new ThingTypeUID(BINDING_ID, "shellyemmini");
 
     // Shelly Pro
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO1_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO1PM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO1PM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO1CB = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO1CB_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO2 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO2_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_RELAY = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO2PM_RELAY_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO1 = new ThingTypeUID(BINDING_ID, "shellypro1");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO1PM = new ThingTypeUID(BINDING_ID, "shellypro1pm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO1CB = new ThingTypeUID(BINDING_ID, "shellypro1cb");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO2 = new ThingTypeUID(BINDING_ID, "shellypro2");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_RELAY = new ThingTypeUID(BINDING_ID, "shellypro2pm-relay");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_ROLLER = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO2PM_ROLLER_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO3 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO3_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO3EM_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPROEM50 = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPROEM50_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO4PM_STR);
+            "shellypro2pm-roller");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3 = new ThingTypeUID(BINDING_ID, "shellypro3");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
+    public static final ThingTypeUID THING_TYPE_SHELLYPROEM50 = new ThingTypeUID(BINDING_ID, "shellyproem50");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID, "shellypro4pm");
 
     // Shelly Blu series
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYBLUBUTTON_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUDW_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYBLUMOTION_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUHT = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUHT_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYBLUGW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUGW_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID, "shellyblubutton");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, "shellybludw");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID, "shellyblumotion");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUHT = new ThingTypeUID(BINDING_ID, "shellybluht");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUGW = new ThingTypeUID(BINDING_ID, "shellyblugw");
 
     private static final Map<String, ThingTypeUID> THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
             Map.entry(SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
@@ -452,7 +322,8 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
-            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2),
+            Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), //
+            Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
             Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
@@ -500,87 +371,87 @@ public class ShellyThingCreator {
 
     private static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
-            Map.entry(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1),
-            Map.entry(THING_TYPE_SHELLY1PM_STR, THING_TYPE_SHELLY1PM),
-            Map.entry(THING_TYPE_SHELLY1L_STR, THING_TYPE_SHELLY1L),
-            Map.entry(THING_TYPE_SHELLY3EM_STR, THING_TYPE_SHELLY3EM),
-            Map.entry(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM),
-            Map.entry(THING_TYPE_SHELLY4PRO_STR, THING_TYPE_SHELLY4PRO),
-            Map.entry(THING_TYPE_SHELLYDIMMER2_STR, THING_TYPE_SHELLYDIMMER2),
-            Map.entry(THING_TYPE_SHELLYDIMMER_STR, THING_TYPE_SHELLYDIMMER),
-            Map.entry(THING_TYPE_SHELLYIX3_STR, THING_TYPE_SHELLYIX3),
-            Map.entry(THING_TYPE_SHELLYDUORGBW_STR, THING_TYPE_SHELLYDUORGBW),
-            Map.entry(THING_TYPE_SHELLYVINTAGE_STR, THING_TYPE_SHELLYVINTAGE),
-            Map.entry(THING_TYPE_SHELLYBULB_STR, THING_TYPE_SHELLYBULB),
-            Map.entry(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO),
-            Map.entry(THING_TYPE_SHELLYHT_STR, THING_TYPE_SHELLYHT),
-            Map.entry(THING_TYPE_SHELLYSMOKE_STR, THING_TYPE_SHELLYSMOKE),
-            Map.entry(THING_TYPE_SHELLYGAS_STR, THING_TYPE_SHELLYGAS),
-            Map.entry(THING_TYPE_SHELLYFLOOD_STR, THING_TYPE_SHELLYFLOOD),
-            Map.entry(THING_TYPE_SHELLYTRV_STR, THING_TYPE_SHELLYTRV),
-            Map.entry(THING_TYPE_SHELLYDOORWIN_STR, THING_TYPE_SHELLYDOORWIN),
-            Map.entry(THING_TYPE_SHELLYDOORWIN2_STR, THING_TYPE_SHELLYDOORWIN2),
-            Map.entry(THING_TYPE_SHELLYSENSE_STR, THING_TYPE_SHELLYSENSE),
-            Map.entry(THING_TYPE_SHELLYEYE_STR, THING_TYPE_SHELLYEYE),
-            Map.entry(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1),
-            Map.entry(THING_TYPE_SHELLYBUTTON2_STR, THING_TYPE_SHELLYBUTTON2),
-            Map.entry(THING_TYPE_SHELLYUNI_STR, THING_TYPE_SHELLYUNI),
-            Map.entry(THING_TYPE_SHELLYMOTION2_STR, THING_TYPE_SHELLYMOTION),
+            Map.entry("shelly1", THING_TYPE_SHELLY1), //
+            Map.entry("shelly1pm", THING_TYPE_SHELLY1PM), //
+            Map.entry("shelly1l", THING_TYPE_SHELLY1L), //
+            Map.entry("shellyem3", THING_TYPE_SHELLY3EM), // Product name is 3EM
+            Map.entry("shellyem", THING_TYPE_SHELLYEM), //
+            Map.entry("shelly4pro", THING_TYPE_SHELLY4PRO), //
+            Map.entry("shellydimmer2", THING_TYPE_SHELLYDIMMER2), //
+            Map.entry("shellydimmer", THING_TYPE_SHELLYDIMMER), //
+            Map.entry("shellyix3", THING_TYPE_SHELLYIX3), //
+            Map.entry("shellycolorbulb", THING_TYPE_SHELLYDUORGBW),
+            Map.entry("shellyvintage", THING_TYPE_SHELLYVINTAGE), //
+            Map.entry("shellybulb", THING_TYPE_SHELLYBULB), //
+            Map.entry("shellybulbduo", THING_TYPE_SHELLYDUO), //
+            Map.entry("shellyht", THING_TYPE_SHELLYHT), //
+            Map.entry("shellysmoke", THING_TYPE_SHELLYSMOKE), //
+            Map.entry("shellygas", THING_TYPE_SHELLYGAS), //
+            Map.entry("shellyflood", THING_TYPE_SHELLYFLOOD), //
+            Map.entry("shellytrv", THING_TYPE_SHELLYTRV), //
+            Map.entry("shellydw", THING_TYPE_SHELLYDOORWIN), //
+            Map.entry("shellydw2", THING_TYPE_SHELLYDOORWIN2), //
+            Map.entry("shellysense", THING_TYPE_SHELLYSENSE), //
+            Map.entry("shellyseye", THING_TYPE_SHELLYEYE), //
+            Map.entry("shellybutton1", THING_TYPE_SHELLYBUTTON1), //
+            Map.entry("shellybutton2", THING_TYPE_SHELLYBUTTON2), //
+            Map.entry("shellyuni", THING_TYPE_SHELLYUNI), //
+            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION),
 
-            // Shelly Plus
-            Map.entry(THING_TYPE_SHELLYPLUS1_STR, THING_TYPE_SHELLYPLUS1),
-            Map.entry(THING_TYPE_SHELLYPLUS1G3_STR, THING_TYPE_SHELLYPLUS1),
-            Map.entry(THING_TYPE_SHELLYPLUS1G4_STR, THING_TYPE_SHELLYPLUS1),
-            Map.entry(THING_TYPE_SHELLYPLUS1PM_STR, THING_TYPE_SHELLYPLUS1PM),
-            Map.entry(THING_TYPE_SHELLYPLUS1PMG3_STR, THING_TYPE_SHELLYPLUS1PM),
-            Map.entry(THING_TYPE_SHELLYPLUS1PMG4_STR, THING_TYPE_SHELLYPLUS1PM),
-            Map.entry(THING_TYPE_SHELLYPLUS2PM_RELAY_STR, THING_TYPE_SHELLYPLUS2PM_RELAY),
-            Map.entry(THING_TYPE_SHELLYPLUS2PM_ROLLER_STR, THING_TYPE_SHELLYPLUS2PM_ROLLER),
-            Map.entry(SVC_TYPE_SHELLYPLUSPLUGUS_STR, THING_TYPE_SHELLYPLUSPLUGUS),
-            Map.entry(THING_TYPE_SHELLYPLUSPLUGS_STR, THING_TYPE_SHELLYPLUSPLUGS),
-            Map.entry(THING_TYPE_SHELLYPLUSPLUGUS_STR, THING_TYPE_SHELLYPLUSPLUGUS),
-            Map.entry(THING_TYPE_SHELLYPLUSI4_STR, THING_TYPE_SHELLYPLUSI4),
-            Map.entry(THING_TYPE_SHELLYPLUSI4G3_STR, THING_TYPE_SHELLYPLUSI4),
-            Map.entry(THING_TYPE_SHELLYPLUSI4DC_STR, THING_TYPE_SHELLYPLUSI4DC),
-            Map.entry(THING_TYPE_SHELLYPLUSHT_STR, THING_TYPE_SHELLYPLUSHT),
-            Map.entry(THING_TYPE_SHELLYPLUSSMOKE_STR, THING_TYPE_SHELLYPLUSSMOKE),
-            Map.entry(THING_TYPE_SHELLYPLUSUNI_STR, THING_TYPE_SHELLYPLUSUNI),
-            Map.entry(THING_TYPE_SHELLYPLUSDIMMERUS_STR, THING_TYPE_SHELLYPLUSDIMMERUS),
-            Map.entry(THING_TYPE_SHELLYPLUSDIMMER10V_STR, THING_TYPE_SHELLYPLUSDIMMER10V),
-            Map.entry(THING_TYPE_SHELLYPLUSRGBWPM_STR, THING_TYPE_SHELLYPLUSRGBWPM),
-            Map.entry(THING_TYPE_SHELLYPLUSSTRIP_STR, THING_TYPE_SHELLYPLUSSTRIP),
-            Map.entry(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, THING_TYPE_SHELLYPLUSWALLDISPLAY),
+            // Shelly Plus Series
+            Map.entry("shellyplus1", THING_TYPE_SHELLYPLUS1), //
+            Map.entry("shelly1g3", THING_TYPE_SHELLYPLUS1), //
+            Map.entry("shelly1g4", THING_TYPE_SHELLYPLUS1), //
+            Map.entry("shellyplus1pm", THING_TYPE_SHELLYPLUS1PM), //
+            Map.entry("shelly1pmg3", THING_TYPE_SHELLYPLUS1PM), //
+            Map.entry("shelly1pmg4", THING_TYPE_SHELLYPLUS1PM), //
+            Map.entry("shellyplus2pm-relay", THING_TYPE_SHELLYPLUS2PM_RELAY),
+            Map.entry("shellyplus2pm-roller", THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
+            Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry("shellyplusplugus", THING_TYPE_SHELLYPLUSPLUGUS),
+            Map.entry("shellyplusi4", THING_TYPE_SHELLYPLUSI4), //
+            Map.entry("shellyi4g3", THING_TYPE_SHELLYPLUSI4), //
+            Map.entry("shellyplusi4dc", THING_TYPE_SHELLYPLUSI4DC), //
+            Map.entry("shellyplusht", THING_TYPE_SHELLYPLUSHT), //
+            Map.entry("shellyplussmoke", THING_TYPE_SHELLYPLUSSMOKE),
+            Map.entry("shellyplusuni", THING_TYPE_SHELLYPLUSUNI),
+            Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
+            Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
+            Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
+            Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
+            Map.entry("shellywalldisplay", THING_TYPE_SHELLYPLUSWALLDISPLAY),
 
-            // Shelly Plus Mini
-            Map.entry(THING_TYPE_SHELLYMINI_1_STR, THING_TYPE_SHELLYMINI_1),
-            Map.entry(THING_TYPE_SHELLYMINI_1G3_STR, THING_TYPE_SHELLYMINI_1),
-            Map.entry(THING_TYPE_SHELLYMINI_1G4_STR, THING_TYPE_SHELLYMINI_1),
-            Map.entry(THING_TYPE_SHELLYMINI_PM_STR, THING_TYPE_SHELLYMINI_PM),
-            Map.entry(THING_TYPE_SHELLYMINI_PMG3_STR, THING_TYPE_SHELLYMINI_PM),
-            Map.entry(THING_TYPE_SHELLYMINI_EM_STR, THING_TYPE_SHELLYMINI_EM),
-            Map.entry(THING_TYPE_SHELLYMINI_1PM_STR, THING_TYPE_SHELLYMINI_1PM),
-            Map.entry(THING_TYPE_SHELLYMINI_1PMG3_STR, THING_TYPE_SHELLYMINI_1PM),
-            Map.entry(THING_TYPE_SHELLYMINI_1PMG4_STR, THING_TYPE_SHELLYMINI_1PM),
+            // Shelly Plus Mini Series
+            Map.entry("shelly1mini", THING_TYPE_SHELLYMINI_1), //
+            Map.entry("shelly1minig3", THING_TYPE_SHELLYMINI_1), //
+            Map.entry("shelly1minig4", THING_TYPE_SHELLYMINI_1), //
+            Map.entry("shellypmmini", THING_TYPE_SHELLYMINI_PM), //
+            Map.entry("shellypmminig3", THING_TYPE_SHELLYMINI_PM), //
+            Map.entry("shellyemmini", THING_TYPE_SHELLYMINI_EM), // // G4 device was renamed to EM
+            Map.entry("shelly1pmmini", THING_TYPE_SHELLYMINI_1PM), //
+            Map.entry("shelly1pmminig3", THING_TYPE_SHELLYMINI_1PM),
+            Map.entry("shelly1pmminig4", THING_TYPE_SHELLYMINI_1PM),
 
-            // Shelly Pro
-            Map.entry(THING_TYPE_SHELLYPRO1_STR, THING_TYPE_SHELLYPRO1),
-            Map.entry(THING_TYPE_SHELLYPRO1PM_STR, THING_TYPE_SHELLYPRO1PM),
-            Map.entry(THING_TYPE_SHELLYPRO1CB_STR, THING_TYPE_SHELLYPRO1CB),
-            Map.entry(THING_TYPE_SHELLYPRO2PM_RELAY_STR, THING_TYPE_SHELLYPRO2PM_RELAY),
-            Map.entry(THING_TYPE_SHELLYPRO2PM_ROLLER_STR, THING_TYPE_SHELLYPRO2PM_ROLLER),
-            Map.entry(THING_TYPE_SHELLYPRO2_STR, THING_TYPE_SHELLYPRO2),
-            Map.entry(THING_TYPE_SHELLYPROEM50_STR, THING_TYPE_SHELLYPROEM50),
-            Map.entry(THING_TYPE_SHELLYPRO3EM_STR, THING_TYPE_SHELLYPRO3EM),
-            Map.entry(THING_TYPE_SHELLYPRO3_STR, THING_TYPE_SHELLYPRO3),
-            Map.entry(THING_TYPE_SHELLYPRO4PM_STR, THING_TYPE_SHELLYPRO4PM),
+            // Shelly Pro Series
+            Map.entry("shellypro1", THING_TYPE_SHELLYPRO1), //
+            Map.entry("shellypro1pm", THING_TYPE_SHELLYPRO1PM), //
+            Map.entry("shellypro1cb", THING_TYPE_SHELLYPRO1CB), //
+            Map.entry("shellypro2pm-relay", THING_TYPE_SHELLYPRO2PM_RELAY),
+            Map.entry("shellypro2pm-roller", THING_TYPE_SHELLYPRO2PM_ROLLER),
+            Map.entry("shellypro2", THING_TYPE_SHELLYPRO2), //
+            Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
+            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
+            Map.entry("shellypro3", THING_TYPE_SHELLYPRO3), //
+            Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM),
 
-            // Shelly BLU
-            Map.entry(THING_TYPE_SHELLYBLUBUTTON_STR, THING_TYPE_SHELLYBLUBUTTON),
-            Map.entry(THING_TYPE_SHELLYBLUDW_STR, THING_TYPE_SHELLYBLUDW),
-            Map.entry(THING_TYPE_SHELLYBLUMOTION_STR, THING_TYPE_SHELLYBLUMOTION),
-            Map.entry(THING_TYPE_SHELLYBLUHT_STR, THING_TYPE_SHELLYBLUHT),
-            Map.entry(THING_TYPE_SHELLYBLUGW_STR, THING_TYPE_SHELLYBLUGW),
-            Map.entry(THING_TYPE_SHELLYBLUGWG3_STR, THING_TYPE_SHELLYBLUGW),
+            // Shelly BLU Series
+            Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
+            Map.entry("shellybludw", THING_TYPE_SHELLYBLUDW), //
+            Map.entry("shellyblumotion", THING_TYPE_SHELLYBLUMOTION), //
+            Map.entry("shellybluht", THING_TYPE_SHELLYBLUHT), //
+            Map.entry("shellyblugw", THING_TYPE_SHELLYBLUGW), //
+            Map.entry("shellyblugwg3", THING_TYPE_SHELLYBLUGW),
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
@@ -608,6 +479,10 @@ public class ShellyThingCreator {
         return deviceId;
     }
 
+    public static ThingTypeUID getThingTypeUID(String serviceName) {
+        return getThingTypeUID(serviceName, "", "");
+    }
+
     public static ThingTypeUID getThingTypeUID(String serviceName, String deviceType, String mode) {
         if (THING_TYPE_SHELLYPROTECTED_STR.equals(serviceName)) {
             return THING_TYPE_SHELLYPROTECTED;
@@ -619,28 +494,29 @@ public class ShellyThingCreator {
         }
 
         // First check for special handling
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY25_PREFIX)) { // Shelly v2.5
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLY25_PREFIX)) { // Shelly v2.5
             return getRelayOrRollerType(THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, mode);
         }
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLY2_PREFIX)) { // Shelly v2
             return getRelayOrRollerType(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER, mode);
         }
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUG_STR) && !serviceNameLowerCase.contains("plugus")
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUG_PREFIX) && !serviceNameLowerCase.contains("plugus")
                 && !serviceNameLowerCase.contains("plugsg3")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
-            if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGS_STR) || serviceNameLowerCase.contains("-s")) {
+            if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGS_PREFIX)
+                    || serviceNameLowerCase.contains("-s")) {
                 return THING_TYPE_SHELLYPLUGS;
             }
-            if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYPLUGU1_STR)) {
+            if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGU1_PREFIX)) {
                 return THING_TYPE_SHELLYPLUGU1;
             }
             return THING_TYPE_SHELLYPLUG;
         }
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYRGBW2_PREFIX)) {
             return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR : THING_TYPE_SHELLYRGBW2_WHITE;
         }
-        if (serviceNameLowerCase.startsWith(THING_TYPE_SHELLYMOTION_STR)) {
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYMOTION_PREFIX)) {
             // depending on firmware release the Motion advertises under shellymotion-xxx or shellymotionsensor-xxxx
             return THING_TYPE_SHELLYMOTION;
         }
