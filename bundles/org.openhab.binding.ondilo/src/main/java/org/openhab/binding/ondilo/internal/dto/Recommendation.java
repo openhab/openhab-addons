@@ -26,10 +26,10 @@ public class Recommendation {
      * "id": 10251,
      * "title": "Clean your filter",
      * "message": "I recommend you to ...",
-     * "created_at": "2020-03-25T04:09:59+0000",
-     * "updated_at": "2020-03-25T04:09:59+0000",
+     * "created_at": "2025-07-13T00:32:06+0000",
+     * "updated_at": "2025-07-13T00:32:06.000000Z",
      * "status": "waiting",
-     * "deadline": "2020-03-26T00:00:00+0000"
+     * "deadline": "2052-11-28T00:00:00.000000Z"
      * }
      */
 
