@@ -287,6 +287,7 @@
 /bundles/org.openhab.binding.ojelectronics/ @EvilPingu
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
 /bundles/org.openhab.binding.omnilink/ @ecdye
+/bundles/org.openhab.binding.ondilo/ @MikeTheTux
 /bundles/org.openhab.binding.onebusaway/ @sdwilsh
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
