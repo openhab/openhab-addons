@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class CalculationParameterException extends RuntimeException {
+public class CalculationParameterException extends Exception {
     private static final long serialVersionUID = -1841031906330289887L;
 
     public CalculationParameterException(String reason) {

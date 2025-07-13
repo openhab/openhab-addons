@@ -119,6 +119,7 @@ Performing a calcuation a `parameters` object is needed containing e.g. your bou
 Parameter object allow 2 types: Java `Map` or JSON `String`.
 The result is returned as JSON encoded `String`.
 Refer below sections how the result looks like.
+If the action cannot be performed, a warning will be logged and an empty `String` will be returned.
 Some real life scenarios are schown in [Action Examples](#action-examples) section.
 
 ### `priceInfoStart`
@@ -345,7 +346,7 @@ For use cases like battery electric vehicle or heat-pump.
 
 #### Example
 
-```javascript
+```java
 rule "Tibber Schedule Calculation"
 when
     System started // use your trigger
@@ -464,5 +465,4 @@ Number:Energy               Tibber_API_Last_Hour_Consumption    "Last Hour Consu
 Number:Energy               Tibber_API_Total_Production         "Total Production"          {channel="tibber:tibberapi:xyz:statistics#total-production"}
 Number:Energy               Tibber_API_Daily_Production         "Daily Production"          {channel="tibber:tibberapi:xyz:statistics#daily-production"}
 Number:Energy               Tibber_API_Last_Hour_Production     "Last Hour Production"      {channel="tibber:tibberapi:xyz:statistics#last-hour-production"}
-
 ```
