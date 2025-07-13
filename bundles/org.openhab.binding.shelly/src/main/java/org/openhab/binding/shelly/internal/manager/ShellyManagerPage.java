@@ -321,7 +321,7 @@ public class ShellyManagerPage {
                 break;
             case OFFLINE:
                 ThingStatusDetail sd = th.getThing().getStatusInfo().getStatusDetail();
-                if (uid.contains(THING_TYPE_SHELLYUNKNOWN_STR) || (sd == ThingStatusDetail.CONFIGURATION_ERROR)
+                if (uid.contains(THING_TYPE_SHELLYUNKNOWN.getId()) || (sd == ThingStatusDetail.CONFIGURATION_ERROR)
                         || (sd == ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)) {
                     statusIcon = ICON_CONFIG;
                     break;
