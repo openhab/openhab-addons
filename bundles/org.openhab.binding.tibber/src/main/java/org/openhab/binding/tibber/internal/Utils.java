@@ -107,7 +107,7 @@ public class Utils {
      * @param durationString duration with number and optional unit
      * @return duration in seconds
      */
-    public static long parseDuration(String durationString) {
+    public static long parseDuration(String durationString) throws CalculationParameterException {
         try {
             return Long.parseLong(durationString); // check if String is a number
         } catch (NumberFormatException e) {
@@ -127,7 +127,8 @@ public class Utils {
      * @return true if parameters were given as JSON String
      */
     @SuppressWarnings("unchecked")
-    public static boolean convertParameters(Object parameters, Map<String, Object> targetMap) {
+    public static boolean convertParameters(Object parameters, Map<String, Object> targetMap)
+            throws CalculationParameterException {
         if (parameters instanceof String json) {
             JsonObject parametersJson = (JsonObject) JsonParser.parseString(json);
             Map<String, JsonElement> parameterMap = parametersJson.asMap();
@@ -172,7 +173,7 @@ public class Utils {
      * @param curve JSON array
      * @return List of CurveEntry
      */
-    public static List<CurveEntry> convertCurve(JsonElement curve) {
+    public static List<CurveEntry> convertCurve(JsonElement curve) throws CalculationParameterException {
         List<CurveEntry> curveList = new ArrayList<>();
         JsonArray curveArray = ((JsonArray) curve);
         int previousPower = Integer.MAX_VALUE;

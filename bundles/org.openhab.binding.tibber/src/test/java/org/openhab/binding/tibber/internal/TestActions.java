@@ -70,7 +70,7 @@ public class TestActions {
     }
 
     @Test
-    void testBounadries() {
+    void testBoundaries() {
         TibberActions actions = getActions();
         assertNotNull(actions);
 
@@ -124,7 +124,7 @@ public class TestActions {
     }
 
     @Test
-    void testCurve() {
+    void testCurve() throws CalculationParameterException {
         TibberActions actions = getActions();
         assertNotNull(actions);
 
@@ -176,20 +176,12 @@ public class TestActions {
     }
 
     @Test
-    void testParameterException() {
+    void testParameterError() {
         TibberActions actions = getActions();
         assertNotNull(actions);
 
         // will not work because now() as default parameter earliestStart is out of bounds
-        try {
-            actions.bestPriceSchedule(Map.of());
-            fail("Wrong parameters exception expected");
-        } catch (CalculationParameterException cpe) {
-            String message = cpe.getMessage();
-            assertNotNull(message);
-            assertTrue(message.startsWith("Cannot perform calculation with parameters"));
-            return;
-        }
-        fail("Wrong parameters exception expected");
+        String actual = actions.bestPriceSchedule(Map.of());
+        assertEquals("", actual);
     }
 }

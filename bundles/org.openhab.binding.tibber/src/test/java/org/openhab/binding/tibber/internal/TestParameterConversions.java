@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
+import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 
 /**
  * The {@link TestParameterConversions} tests the conversion of price calculation parameters.
@@ -33,7 +34,7 @@ import org.openhab.binding.tibber.internal.dto.CurveEntry;
 public class TestParameterConversions {
 
     @Test
-    void testParameterConversion() {
+    void testParameterConversion() throws CalculationParameterException {
         Instant now = Instant.now();
         String json = "{\"earliestStart\":\"" + now.toString() + "\"}";
         Map<String, Object> params = new HashMap<>();
@@ -49,7 +50,7 @@ public class TestParameterConversions {
     }
 
     @Test
-    void testMapToMapConversion() {
+    void testMapToMapConversion() throws CalculationParameterException {
         Map<String, Object> params = new HashMap<>();
         params.put(PARAM_CURVE, List.of(new CurveEntry(1000, 60)));
         Map<String, Object> convertedParams = new HashMap<>();
