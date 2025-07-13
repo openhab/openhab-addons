@@ -144,6 +144,7 @@
 			<channel id="on-timer-active" typeId="on-timer-active"/>
 			<channel id="on-timer-duration" typeId="on-timer-duration"/>
 			<channel id="on-timer-time" typeId="on-timer-time"/>
+			<channel id="filter-state" typeId="filter-state"/>
 		</channels>
 
 		<properties>
@@ -824,6 +825,23 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="filter-state">
+		<item-type>String</item-type>
+		<label>Filter State</label>
+		<description>The air filters state.</description>
+		<category>text</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good</option>
+				<option value="CLEAN">Dirty</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>
