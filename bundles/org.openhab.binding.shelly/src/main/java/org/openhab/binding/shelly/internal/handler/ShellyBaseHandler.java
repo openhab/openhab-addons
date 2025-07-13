@@ -154,9 +154,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.httpClient = httpClient;
 
         // Create thing handler depending on device generation
-        String thingType = getThingType();
-        blu = ShellyDeviceProfile.isBluSeries(thingType);
-        gen2 = ShellyDeviceProfile.isGeneration2(thingType);
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
+        gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
             this.api = new ShellyBluApi(thingName, thingTable, this);
         } else if (gen2) {
@@ -292,7 +292,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         cache.clear();
         resetStats();
 
-        profile.initFromThingType(thingType);
+        profile.initFromThingType(thing.getThingTypeUID());
         logger.debug(
                 "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
                 thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
@@ -331,8 +331,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         api.setConfig(thingName, config);
-        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
-        tmpPrf.initFromThingType(thingType);
+        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
+        tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -1495,7 +1495,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         try {
             refreshSettings |= forceRefresh;
             if (refreshSettings) {
-                profile = api.getDeviceProfile(thingType, null);
+                profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }
