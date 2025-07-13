@@ -390,9 +390,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            internalInitialize();
-        }
+        internalInitialize();
     }
 
     @Override
@@ -582,7 +580,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         try {
             result = typeGenerator.generate(thing.getUID(), node, configurationAsChannels);
         } catch (Exception e) {
-            logger.error("Node {}. Error generating type information", node.nodeId, e);
+            logger.warn("Node {}. Error generating type information", node.nodeId, e);
             return false;
         }
 
@@ -619,13 +617,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
         }
         if (!channelsToRemove.isEmpty()) {
-            logger.trace(null, "Node {}. Removing {} channels", this.config.id, channelsToRemove.size());
+            logger.trace("Node {}. Removing {} channels", this.config.id, channelsToRemove.size());
             builder.withoutChannels(channelsToRemove);
         }
         if (!result.channels.isEmpty()) {
             List<Channel> channels = result.channels.entrySet().stream().sorted(Map.Entry.comparingByKey())
-                    .map(Map.Entry::getValue).collect(Collectors.toList());
-            logger.trace(null, "Node {}. Adding {} channels", this.config.id, channels.size());
+                    .map(Map.Entry::getValue).toList();
+            logger.trace("Node {}. Adding {} channels", this.config.id, channels.size());
             builder.withChannels(channels);
         }
         if (!channelsToRemove.isEmpty() || !result.channels.isEmpty()) {
