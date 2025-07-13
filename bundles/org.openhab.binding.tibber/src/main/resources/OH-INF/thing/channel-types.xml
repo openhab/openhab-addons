@@ -15,6 +15,9 @@
 		<item-type>Number</item-type>
 		<label>Price Level</label>
 		<description>Current price level</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="-2">Very Cheap</option>
@@ -34,30 +37,50 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption/Production</label>
 		<description>Power consumption/production for given time interval</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage on the given phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current on the given phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 </thing:thing-descriptions>
