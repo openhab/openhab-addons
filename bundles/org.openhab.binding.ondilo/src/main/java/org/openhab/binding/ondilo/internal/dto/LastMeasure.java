@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ondilo.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link LastMeasure} DTO for representing Ondilo LastMeasures.
  *
@@ -28,9 +30,17 @@ public class LastMeasure {
      * "exclusion_reason": null
      * }
      */
-    public String data_type;
+    @SerializedName("data_type")
+    public String dataType;
+
     public double value;
-    public String value_time;
-    public boolean is_valid;
-    public String exclusion_reason;
+
+    @SerializedName("value_time")
+    public String valueTime;
+
+    @SerializedName("is_valid")
+    public boolean isValid;
+
+    @SerializedName("exclusion_reason")
+    public String exclusionReason;
 }

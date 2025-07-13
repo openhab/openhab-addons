@@ -121,7 +121,6 @@ public class OndiloHandler extends BaseThingHandler {
     }
 
     private void startBridgeRecoveryJob() {
-
         if (bridgeRecoveryJob == null) {
             // Check every 10 seconds after 5s delay
             bridgeRecoveryJob = scheduler.scheduleWithFixedDelay(() -> initialize(), 5, 10, TimeUnit.SECONDS);
@@ -144,7 +143,6 @@ public class OndiloHandler extends BaseThingHandler {
             ondiloBridge.unregisterOndiloHandler(configPoolId);
         }
         if (!ondiloId.get().equals(NO_ID)) {
-
             ondiloId.set(NO_ID);
         }
     }
@@ -181,7 +179,7 @@ public class OndiloHandler extends BaseThingHandler {
          * - TDS: parts per million (ppm)
          * - Battery and RSSI: percent (%)
          */
-        switch (lastMeasures.data_type) {
+        switch (lastMeasures.dataType) {
             case "temperature":
                 updateState(CHANNEL_TEMPERATURE, new QuantityType<>(lastMeasures.value, SIUnits.CELSIUS));
                 break;
@@ -207,10 +205,10 @@ public class OndiloHandler extends BaseThingHandler {
                 updateState(CHANNEL_RSSI, new DecimalType(lastMeasures.value));
                 break;
             default:
-                logger.warn("Unknown data type: {}", lastMeasures.data_type);
+                logger.warn("Unknown data type: {}", lastMeasures.dataType);
         }
         // Update value time channel (expect that it is the same for all measures)
-        ZonedDateTime valueTime = convertUtcToSystemTimeZone(lastMeasures.value_time);
+        ZonedDateTime valueTime = convertUtcToSystemTimeZone(lastMeasures.valueTime);
         updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
         return valueTime;
     }
@@ -219,8 +217,8 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_ID, new DecimalType(recommendation.id));
         updateState(CHANNEL_RECOMMENDATION_TITLE, new StringType(recommendation.title));
         updateState(CHANNEL_RECOMMENDATION_MESSAGE, new StringType(recommendation.message));
-        updateState(CHANNEL_RECOMMENDATION_CREATED_AT, new DateTimeType(recommendation.created_at));
-        updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updated_at));
+        updateState(CHANNEL_RECOMMENDATION_CREATED_AT, new DateTimeType(recommendation.createdAt));
+        updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updatedAt));
         updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status.name()));
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
         this.recommendationId = recommendation.id; // Update last processed recommendation ID
@@ -228,8 +226,7 @@ public class OndiloHandler extends BaseThingHandler {
 
     @Nullable
     private OndiloBridge getOndiloBridge() {
-        if ((getBridge() instanceof Bridge bridge)
-                && (bridge.getHandler() instanceof OndiloBridgeHandler bridgeHandler)) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof OndiloBridgeHandler bridgeHandler) {
             return bridgeHandler.getOndiloBridge();
         }
         return null;

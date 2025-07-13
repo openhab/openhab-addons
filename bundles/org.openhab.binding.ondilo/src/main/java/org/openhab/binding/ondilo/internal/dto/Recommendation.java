@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ondilo.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Recommendation} DTO for representing Ondilo recommendations.
  *
@@ -32,11 +34,19 @@ public class Recommendation {
      */
 
     public int id;
+
     public String title;
+
     public String message;
-    public String created_at;
-    public String updated_at;
+
+    @SerializedName("created_at")
+    public String createdAt;
+
+    @SerializedName("updated_at")
+    public String updatedAt;
+
     public Status status;
+
     public String deadline;
 
     public enum Status {

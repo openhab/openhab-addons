@@ -144,6 +144,7 @@ public class OndiloBridge {
         if (nextValueTime.isBefore(scheduledTime)) {
             long delay = Duration.between(now, nextValueTime).getSeconds();
             if (delay > 0) {
+                ScheduledFuture<?> ondiloBridgePollingJob = this.ondiloBridgePollingJob;
                 if (ondiloBridgePollingJob != null) {
                     ondiloBridgePollingJob.cancel(true);
                 }
@@ -172,7 +173,7 @@ public class OndiloBridge {
                 ondiloHandler.clearLastMeasuresChannels();
             } else {
                 for (LastMeasure lastMeasure : lastMeasures) {
-                    logger.trace("LastMeasure: type={}, value={}", lastMeasure.data_type, lastMeasure.value);
+                    logger.trace("LastMeasure: type={}, value={}", lastMeasure.dataType, lastMeasure.value);
                     ZonedDateTime valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasure);
                     if (lastValueTime == null || valueTime.isBefore(lastValueTime)) {
                         lastValueTime = valueTime;

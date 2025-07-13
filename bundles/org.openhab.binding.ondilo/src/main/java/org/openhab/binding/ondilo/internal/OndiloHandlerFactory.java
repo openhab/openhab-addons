@@ -72,8 +72,7 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
             registerOndiloDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_ONDILO.equals(thingTypeUID)) {
-            OndiloHandler handler = new OndiloHandler(thing, timeZoneProvider);
-            return handler;
+            return new OndiloHandler(thing, timeZoneProvider);
         }
 
         return null;

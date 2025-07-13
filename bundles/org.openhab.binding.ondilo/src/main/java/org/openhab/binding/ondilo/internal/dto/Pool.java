@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ondilo.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Pool} DTO for representing Ondilo pools.
  *
@@ -49,14 +51,17 @@ public class Pool {
     public float volume;
     public Disinfection disinfection;
     public Address address;
-    public String updated_at;
+
+    @SerializedName("updated_at")
+    public String updatedAt;
 
     public static class Disinfection {
         public String primary;
         public Secondary secondary;
 
         public static class Secondary {
-            public boolean uv_sanitizer;
+            @SerializedName("uv_sanitizer")
+            public boolean uvSanitizer;
             public boolean ozonator;
         }
     }
@@ -75,7 +80,7 @@ public class Pool {
     }
 
     public String getDisinfection() {
-        return disinfection.primary + " (UV:" + disinfection.secondary.uv_sanitizer + ", Ozone:"
+        return disinfection.primary + " (UV:" + disinfection.secondary.uvSanitizer + ", Ozone:"
                 + disinfection.secondary.ozonator + ")";
     }
 
