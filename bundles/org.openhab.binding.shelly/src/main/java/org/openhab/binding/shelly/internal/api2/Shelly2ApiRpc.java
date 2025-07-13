@@ -248,9 +248,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
             }
-            if (getString(profile.device.mode).isEmpty()) {
-                profile.device.mode = SHELLY_MODE_RELAY; // Pro 2 does not return profile
-            }
         }
 
         if (profile.numInputs > 0) {
