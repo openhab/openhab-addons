@@ -87,6 +87,7 @@
     <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.grundfosalpha</module>
     <module>org.openhab.binding.bluetooth.hdpowerview</module>
+    <module>org.openhab.binding.bluetooth.listener</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
