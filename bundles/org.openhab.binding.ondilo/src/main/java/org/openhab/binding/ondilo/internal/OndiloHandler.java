@@ -14,9 +14,8 @@ package org.openhab.binding.ondilo.internal;
 
 import static org.openhab.binding.ondilo.internal.OndiloBindingConstants.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.dto.LastMeasure;
 import org.openhab.binding.ondilo.internal.dto.Recommendation;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,15 +53,13 @@ import org.slf4j.LoggerFactory;
 public class OndiloHandler extends BaseThingHandler {
     private static final String NO_ID = "NO_ID";
     private final Logger logger = LoggerFactory.getLogger(OndiloHandler.class);
-    private final TimeZoneProvider timeZoneProvider;
     private int recommendationId = 0; // Used to track the last recommendation ID processed
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
     private final int configPoolId;
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
-    public OndiloHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public OndiloHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
 
         OndiloConfiguration currentConfig = getConfigAs(OndiloConfiguration.class);
         this.configPoolId = currentConfig.id;
@@ -102,9 +98,8 @@ public class OndiloHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
         OndiloBridge ondiloBridge = getOndiloBridge();
-        if (bridge != null && ondiloBridge != null) {
+        if (ondiloBridge != null) {
             if (configPoolId == 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
                 return;
@@ -170,7 +165,7 @@ public class OndiloHandler extends BaseThingHandler {
         this.recommendationId = 0; // Reset last processed recommendation ID
     }
 
-    public ZonedDateTime updateLastMeasuresChannels(LastMeasure lastMeasures) {
+    public Instant updateLastMeasuresChannels(LastMeasure lastMeasures) {
         /*
          * The measures are received using the following units:
          * - Temperature: Celsius degrees (°C)
@@ -208,7 +203,7 @@ public class OndiloHandler extends BaseThingHandler {
                 logger.warn("Unknown data type: {}", lastMeasures.dataType);
         }
         // Update value time channel (expect that it is the same for all measures)
-        ZonedDateTime valueTime = convertUtcToSystemTimeZone(lastMeasures.valueTime);
+        Instant valueTime = parseUtcTimeToInstant(lastMeasures.valueTime);
         updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
         return valueTime;
     }
@@ -232,16 +227,8 @@ public class OndiloHandler extends BaseThingHandler {
         return null;
     }
 
-    public ZonedDateTime convertUtcToSystemTimeZone(String utcTime) {
-        // Define the input format
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        // Parse as LocalDateTime (no zone)
-        LocalDateTime localDateTime = LocalDateTime.parse(utcTime, inputFormatter);
-        // Attach UTC zone
-        ZonedDateTime utcZoned = localDateTime.atZone(ZoneId.of("UTC"));
-        // Convert to system default zone
-        ZonedDateTime systemZoned = utcZoned.withZoneSameInstant(timeZoneProvider.getTimeZone());
-        // Format as string (same pattern or as needed)
-        return systemZoned;
+    private Instant parseUtcTimeToInstant(String utcTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
+        return Instant.from(formatter.parse(utcTime));
     }
 }

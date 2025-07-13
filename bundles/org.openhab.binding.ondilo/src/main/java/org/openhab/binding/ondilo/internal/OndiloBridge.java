@@ -13,7 +13,7 @@
 package org.openhab.binding.ondilo.internal;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,12 +102,12 @@ public class OndiloBridge {
                 if (pools != null && !pools.isEmpty()) {
                     logger.trace("Polled {} Ondilo ICOs", pools.size());
                     // Poll last measures and recommendations for each pool
-                    ZonedDateTime lastValueTime = null;
+                    Instant lastValueTime = null;
                     for (Pool pool : pools) {
                         try {
                             // Pause for 1 second between polls in order to keep API rate limits
                             Thread.sleep(1000);
-                            ZonedDateTime valueTime = pollOndiloICO(pool.id);
+                            Instant valueTime = pollOndiloICO(pool.id);
                             if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
                                 lastValueTime = valueTime;
                             }
@@ -132,15 +132,15 @@ public class OndiloBridge {
         }
     }
 
-    private void adaptPollingToValueTime(ZonedDateTime lastValueTime, int refreshInterval) {
+    private void adaptPollingToValueTime(Instant lastValueTime, int refreshInterval) {
         // Measures are taken every 60 minutes, so we should be able to
         // retrieve next data directly 60 minutes + buffer of 90 seconds after the last measure.
         // This can help to avoid polling too frequently and hitting API rate limits.
         // If the last measure was taken at 12:00°°, we will poll again at 13:01³°.
         // This allows for a buffer in case the measure is not available immediately.
-        ZonedDateTime nextValueTime = lastValueTime.plusHours(1).plusMinutes(1).plusSeconds(30);
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime scheduledTime = now.plusSeconds(refreshInterval);
+        Instant nextValueTime = lastValueTime.plusSeconds(3690); // 60 minutes + 1 minute + 30 seconds buffer
+        Instant now = Instant.now();
+        Instant scheduledTime = now.plusSeconds(refreshInterval);
         if (nextValueTime.isBefore(scheduledTime)) {
             long delay = Duration.between(now, nextValueTime).getSeconds();
             if (delay > 0) {
@@ -155,10 +155,10 @@ public class OndiloBridge {
         }
     }
 
-    public @Nullable ZonedDateTime pollOndiloICO(int id) {
+    public @Nullable Instant pollOndiloICO(int id) {
         OndiloHandler ondiloHandler = getOndiloHandlerForPool(id);
         OndiloApiClient apiClient = this.apiClient;
-        ZonedDateTime lastValueTime = null;
+        Instant lastValueTime = null;
         if (ondiloHandler != null && apiClient != null) {
             String poolsJson = apiClient.get("/pools/" + id
                     + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi");
@@ -174,7 +174,7 @@ public class OndiloBridge {
             } else {
                 for (LastMeasure lastMeasure : lastMeasures) {
                     logger.trace("LastMeasure: type={}, value={}", lastMeasure.dataType, lastMeasure.value);
-                    ZonedDateTime valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasure);
+                    Instant valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasure);
                     if (lastValueTime == null || valueTime.isBefore(lastValueTime)) {
                         lastValueTime = valueTime;
                     }

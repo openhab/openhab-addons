@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ondilo.internal.discovery.OndiloDiscoveryService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -47,15 +46,13 @@ import org.slf4j.LoggerFactory;
 public class OndiloHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(OndiloHandlerFactory.class);
     private final OAuthFactory oAuthFactory;
-    private final TimeZoneProvider timeZoneProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ONDILO);
     private @Nullable ServiceRegistration<?> ondiloDiscoveryServiceRegistration;
     private @Nullable OndiloDiscoveryService discoveryService;
 
     @Activate
-    public OndiloHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference TimeZoneProvider timeZoneProvider) {
+    public OndiloHandlerFactory(@Reference OAuthFactory oAuthFactory) {
         this.oAuthFactory = oAuthFactory;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -72,9 +69,8 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
             registerOndiloDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_ONDILO.equals(thingTypeUID)) {
-            return new OndiloHandler(thing, timeZoneProvider);
+            return new OndiloHandler(thing);
         }
-
         return null;
     }
 
