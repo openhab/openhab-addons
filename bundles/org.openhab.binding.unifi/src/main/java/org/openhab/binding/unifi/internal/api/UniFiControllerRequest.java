@@ -64,8 +64,6 @@ class UniFiControllerRequest<T> {
 
     private static final String CONTENT_TYPE_APPLICATION_JSON_UTF_8 = MimeTypes.Type.APPLICATION_JSON_UTF_8.asString();
 
-    private static final long TIMEOUT_SECONDS = 5;
-
     private static final String PROPERTY_DATA = "data";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerRequest.class);
@@ -79,6 +77,7 @@ class UniFiControllerRequest<T> {
     private final int port;
 
     private final boolean unifios;
+    private final int timeoutSeconds;
 
     private final HttpMethod method;
 
@@ -95,7 +94,8 @@ class UniFiControllerRequest<T> {
     // Public API
 
     public UniFiControllerRequest(final Class<T> resultType, final Gson gson, final HttpClient httpClient,
-            final HttpMethod method, final String host, final int port, final String csrfToken, final boolean unifios) {
+            final HttpMethod method, final String host, final int port, final String csrfToken, final boolean unifios,
+            int timeoutSeconds) {
         this.resultType = resultType;
         this.gson = gson;
         this.httpClient = httpClient;
@@ -104,6 +104,7 @@ class UniFiControllerRequest<T> {
         this.port = port;
         this.csrfToken = csrfToken;
         this.unifios = unifios;
+        this.timeoutSeconds = timeoutSeconds;
     }
 
     public void setAPIPath(final String relativePath) {
@@ -189,7 +190,7 @@ class UniFiControllerRequest<T> {
         Response response;
         try {
             request.send(listener);
-            response = listener.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            response = listener.get(timeoutSeconds, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException e) {
             throw new UniFiCommunicationException(e);
         } catch (final ExecutionException e) {
@@ -237,7 +238,7 @@ class UniFiControllerRequest<T> {
 
     private Request newRequest() {
         final HttpURI uri = new HttpURI(HttpScheme.HTTPS.asString(), host, port, path);
-        final Request request = httpClient.newRequest(uri.toString()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        final Request request = httpClient.newRequest(uri.toString()).timeout(timeoutSeconds, TimeUnit.SECONDS)
                 .method(method);
         for (final Entry<String, String> entry : queryParameters.entrySet()) {
             request.param(entry.getKey(), entry.getValue());

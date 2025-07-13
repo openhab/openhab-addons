@@ -8,6 +8,7 @@
 	<thing-type id="upnprenderer">
 		<label>UPnPRenderer</label>
 		<description>UPnP AV Renderer</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
@@ -77,6 +78,7 @@
 	<thing-type id="upnpserver">
 		<label>UPnPServer</label>
 		<description>UPnP AV Server</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="upnprenderer" typeId="upnprenderer"/>
 			<channel id="currenttitle" typeId="system.media-title"/>
@@ -143,32 +145,56 @@
 		<label>Loudness</label>
 		<description>Loudness</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the player</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="repeat">
 		<item-type>Switch</item-type>
 		<label>Repeat</label>
 		<description>Repeat the selection</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
 		<item-type>Switch</item-type>
 		<label>Shuffle</label>
 		<description>Random shuffle the selection</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="onlyplayone">
 		<item-type>Switch</item-type>
 		<label>Only Play One</label>
 		<description>Stop playback after playing one media entry from queue</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="uri">
 		<item-type>String</item-type>
 		<label>URI</label>
 		<description>Now playing URI</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="favoriteselect">
 		<item-type>String</item-type>
@@ -197,48 +223,80 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Now playing album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="albumart">
 		<item-type>Image</item-type>
 		<label>Album Art</label>
 		<description>Now playing album art</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="creator">
 		<item-type>String</item-type>
 		<label>Creator</label>
 		<description>Now playing creator</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="publisher">
 		<item-type>String</item-type>
 		<label>Publisher</label>
 		<description>Now playing publisher</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="genre">
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Now playing genre</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="tracknumber">
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>Now playing track number</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="trackduration">
 		<item-type>Number:Time</item-type>
 		<label>Track Duration</label>
 		<description>Now playing track duration</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="trackposition">
 		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>Now playing track position</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="reltrackposition">
@@ -246,12 +304,20 @@
 		<label>Relative Track Position</label>
 		<description>Track position as percentage of track duration</description>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Progress</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="upnprenderer">
 		<item-type>String</item-type>
 		<label>Renderer</label>
 		<description>Select AV renderer</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="browse">
 		<item-type>String</item-type>

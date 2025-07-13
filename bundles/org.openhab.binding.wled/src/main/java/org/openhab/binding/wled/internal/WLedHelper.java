@@ -30,17 +30,14 @@ import org.openhab.core.library.types.PercentType;
  */
 @NonNullByDefault
 public class WLedHelper {
-    public static HSBType parseToHSBType(String message, int brightness) {
+    public static HSBType parseToHSBType(String message) {
         // example message rgb in array brackets [255.0, 255.0, 255.0]
         List<String> colors = Arrays.asList(message.replaceAll("\\[|\\]", "").split("\\s*,\\s*"));
         try {
             int r = new BigDecimal(colors.get(0)).intValue();
             int g = new BigDecimal(colors.get(1)).intValue();
             int b = new BigDecimal(colors.get(2)).intValue();
-            HSBType tmp = HSBType.fromRGB(r, g, b);
-            PercentType brightnessPercent = new PercentType(
-                    new BigDecimal(brightness).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP));
-            return new HSBType(tmp.getHue(), tmp.getSaturation(), brightnessPercent);
+            return HSBType.fromRGB(r, g, b);
         } catch (NumberFormatException e) {
             return new HSBType();
         }

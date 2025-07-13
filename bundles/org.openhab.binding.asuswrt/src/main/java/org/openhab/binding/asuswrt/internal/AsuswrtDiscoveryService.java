@@ -95,7 +95,7 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
      * Removes all scan results.
      */
     private void removeAllResults() {
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     /**

@@ -7,7 +7,11 @@
 		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<channels>
 			<channel id="sendMessage" typeId="sendMessage"/>
+			<channel id="refreshActivity" typeId="refreshActivity"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="discoverSmartHome" type="integer">
 				<label>Device Discovery Mode</label>
@@ -39,6 +43,12 @@
 				</description>
 				<default>120</default>
 			</parameter>
+			<parameter name="activityRequestDelay" type="integer" min="2" unit="s">
+				<label>Activity Request Delay</label>
+				<description>The number of seconds between a voice command was detected and the received command is requested from
+					the server.</description>
+				<default>10</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 	<thing-type id="echo">
@@ -65,11 +75,6 @@
 			<channel id="musicProviderId" typeId="musicProviderId"/>
 			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand"/>
 			<channel id="startCommand" typeId="startCommand"/>
-			<channel id="radioStationId" typeId="radioStationId"/>
-			<channel id="radio" typeId="radio"/>
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
-			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
@@ -85,9 +90,14 @@
 			<channel id="bluetooth" typeId="bluetooth"/>
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand"/>
+			<channel id="lastSpokenText" typeId="lastSpokenText"/>
 			<channel id="notificationVolume" typeId="notificationVolume"/>
 			<channel id="ascendingAlarm" typeId="ascendingAlarm"/>
+			<channel id="doNotDisturb" typeId="doNotDisturb"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">3</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
@@ -120,11 +130,6 @@
 			<channel id="musicProviderId" typeId="musicProviderId"/>
 			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand"/>
 			<channel id="startCommand" typeId="startCommand"/>
-			<channel id="radioStationId" typeId="radioStationId"/>
-			<channel id="radio" typeId="radio"/>
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
-			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
@@ -140,9 +145,14 @@
 			<channel id="bluetooth" typeId="bluetooth"/>
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand"/>
+			<channel id="lastSpokenText" typeId="lastSpokenText"/>
 			<channel id="notificationVolume" typeId="notificationVolume"/>
 			<channel id="ascendingAlarm" typeId="ascendingAlarm"/>
+			<channel id="doNotDisturb" typeId="doNotDisturb"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">3</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
@@ -175,11 +185,6 @@
 			<channel id="musicProviderId" typeId="musicProviderId"/>
 			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand"/>
 			<channel id="startCommand" typeId="startCommand"/>
-			<channel id="radioStationId" typeId="radioStationId"/>
-			<channel id="radio" typeId="radio"/>
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
-			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
@@ -195,9 +200,14 @@
 			<channel id="bluetooth" typeId="bluetooth"/>
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand"/>
+			<channel id="lastSpokenText" typeId="lastSpokenText"/>
 			<channel id="notificationVolume" typeId="notificationVolume"/>
 			<channel id="ascendingAlarm" typeId="ascendingAlarm"/>
+			<channel id="doNotDisturb" typeId="doNotDisturb"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">3</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
@@ -210,8 +220,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
-		<label>Amazon Echo Whole House Audio Control</label>
-		<description>Amazon Multiroom Music</description>
+		<label>Whole House Audio Control</label>
+		<description>Amazon Multiroom (Whole House Audio) Music</description>
 		<channels>
 			<channel id="player" typeId="player"/>
 			<channel id="mediaProgressTime" typeId="mediaProgressTime"/>
@@ -223,12 +233,10 @@
 			<channel id="subtitle1" typeId="subtitle1"/>
 			<channel id="subtitle2" typeId="subtitle2"/>
 			<channel id="providerDisplayName" typeId="providerDisplayName"/>
-			<channel id="radioStationId" typeId="radioStationId"/>
-			<channel id="radio" typeId="radio"/>
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
-			<channel id="amazonMusic" typeId="amazonMusic"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
@@ -256,7 +264,7 @@
 		<label>Smart Home Device</label>
 		<description>Smart home device connected to Alexa</description>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
@@ -283,20 +291,26 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-type id="save">
+	<channel-type id="save" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Save</label>
-		<description>Save the current flash briefing configuration (Write only)</description>
+		<description>Save the current flash briefing configuration (write-only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="active">
 		<item-type>Switch</item-type>
 		<label>Active</label>
 		<description>Activate this flash briefing configuration</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="playOnDevice" advanced="true">
 		<item-type>String</item-type>
 		<label>Play On Device</label>
 		<description>Plays the briefing on the device (serial number or name, write only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="bluetoothDeviceName" advanced="true">
 		<item-type>String</item-type>
@@ -304,46 +318,24 @@
 		<description>Connected bluetooth device</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="radioStationId" advanced="true">
-		<item-type>String</item-type>
-		<label>TuneIn Radio Station Id</label>
-		<description>Id of the radio station</description>
-	</channel-type>
 	<channel-type id="remind" advanced="true">
 		<item-type>String</item-type>
 		<label>Remind</label>
 		<description>Speak the reminder and send a notification to the Alexa app</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
 		<label>Start a Routine</label>
-		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)
+		<description>The command which must be spoken to active the routing without the preceding "Alexa," (write-only)
 		</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="playAlarmSound" advanced="true">
 		<item-type>String</item-type>
 		<label>Alarm Sound</label>
 		<description>Plays an alarm sound</description>
-	</channel-type>
-	<channel-type id="amazonMusicTrackId" advanced="true">
-		<item-type>String</item-type>
-		<label>Amazon Music Track Id</label>
-		<description>Id of the amazon music track</description>
-	</channel-type>
-	<channel-type id="amazonMusic" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Amazon Music</label>
-		<description>Amazon Music turned on</description>
-	</channel-type>
-	<channel-type id="amazonMusicPlayListId" advanced="true">
-		<item-type>String</item-type>
-		<label>Amazon Music Play List Id</label>
-		<description>Amazon Music play list id (Write only, no current state)</description>
-	</channel-type>
-	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
-		<item-type>String</item-type>
-		<label>Amazon Music Last Selected Playlist Id</label>
-		<description>Id of the playlist which was started with openHAB</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="providerDisplayName" advanced="true">
 		<item-type>String</item-type>
@@ -365,25 +357,17 @@
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Title</label>
-		<description>Title</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="subtitle1" advanced="true">
 		<item-type>String</item-type>
 		<label>Subtitle 1</label>
-		<description>Subtitle 1</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="subtitle2" advanced="true">
 		<item-type>String</item-type>
 		<label>Subtitle 2</label>
-		<description>Subtitle 2</description>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="radio" advanced="true">
-		<item-type>Switch</item-type>
-		<label>TuneIn Radio</label>
-		<description>Radio turned on</description>
 	</channel-type>
 	<channel-type id="bluetooth" advanced="true">
 		<item-type>Switch</item-type>
@@ -394,21 +378,37 @@
 		<item-type>Switch</item-type>
 		<label>Loop</label>
 		<description>Loop</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
 		<item-type>Switch</item-type>
 		<label>Shuffle</label>
 		<description>Shuffle play</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>Music Player</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of the sound</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="equalizerTreble">
 		<item-type>Number</item-type>
@@ -431,233 +431,308 @@
 	<channel-type id="musicProviderId">
 		<item-type>String</item-type>
 		<label>Music Provider</label>
-		<description>Music provider</description>
 	</channel-type>
 	<channel-type id="playMusicVoiceCommand">
 		<item-type>String</item-type>
 		<label>Music Voice Command</label>
-		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
+		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (write-only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="sendMessage" advanced="false">
+	<channel-type id="sendMessage">
 		<item-type>String</item-type>
 		<label>Send Message</label>
-		<description>Sends a message to the Echo devices (Write only).</description>
+		<description>Sends a message to the Echo devices (write-only).</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="refreshActivity">
+		<item-type>Switch</item-type>
+		<label>Refresh Activity</label>
+		<description>A command send to this channel refreshes the customer history activity (write-only)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>
 		<label>Announcement</label>
-		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding
+		<description>Display the announcement message on the display (write-only). See in the tutorial section of the binding
 			description to learn how it's possible to set the title and turn off the sound.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
-		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a
+		<description>Speak the text (write-only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a
 			secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe
 			it?&lt;/speak&gt;</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Speak Volume</label>
 		<description>Volume of the Speak channel. If 0, the current volume will be used.</description>
 	</channel-type>
-	<channel-type id="textCommand" advanced="true">
+	<channel-type id="textCommand">
 		<item-type>String</item-type>
 		<label>TextCommand</label>
-		<description>Run a command (Write only). The command can run like a spoken command.</description>
+		<description>Run a command (write-only). The command can run like a spoken command.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="lastVoiceCommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Voice Command</label>
 		<description>Last voice command spoken to the device. Writing to the channel starts voice output.</description>
-		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="mediaProgress" advanced="false">
+	<channel-type id="lastSpokenText" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Spoken Text</label>
+		<description>Last spoken text of the device.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="mediaProgress">
 		<item-type>Dimmer</item-type>
 		<label>Media Progress</label>
 		<description>Media progress in percent</description>
-		<state readOnly="false"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Media Play Time</label>
-		<description>Media play time</description>
-		<state readOnly="false" pattern="%d %unit%"/>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="mediaLength" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Media Length</label>
-		<description>Media length</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="startCommand">
 		<item-type>String</item-type>
 		<label>Start</label>
-		<description>Start information (Write only)</description>
-		<state pattern="String" readOnly="false">
-			<options>
-				<option value="Weather">Weather</option>
-				<option value="Traffic">Traffic</option>
-				<option value="GoodMorning">Good morning</option>
-				<option value="SingASong">Song</option>
-				<option value="TellStory">Story</option>
-				<option value="FlashBriefing">Flash briefing</option>
-			</options>
-		</state>
+		<description>Start information (write-only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Notification Volume</label>
-		<description>Notification Volume</description>
-		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="ascendingAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Ascending Alarm</label>
 		<description>Ascending alarm up to the configured volume</description>
-		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="doNotDisturb">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb</label>
+		<description>Do Not Disturb mode enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="nextReminder" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Reminder</label>
-		<description>Next Reminder</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextAlarm" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Alarm</label>
-		<description>Next alarm</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextMusicAlarm" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Music Alarm</label>
-		<description>Next music alarm</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextTimer" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Timer</label>
-		<description>Next timer</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<!-- dynamic smart home device channels -->
 	<!-- Alexa.AcousticEventSensor -->
-	<channel-type id="glassBreakDetectionState">
+	<channel-type id="acousticEventDetectionState">
 		<item-type>Contact</item-type>
-		<label>Glass Break Detection State</label>
-		<description>Glass Break Detection State</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="smokeAlarmDetectionState">
-		<item-type>Contact</item-type>
-		<label>Smoke Alarm Detection State</label>
-		<description>Smoke Alarm Detection State</description>
+		<label>Acoustic Event</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<!-- Alexa.BrightnessController -->
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>Brightness</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
 	<!-- Alexa.ColorController -->
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>Color</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+		<config-description>
+			<parameter name="matchColors" type="boolean">
+				<label>Match Colors</label>
+				<description>The API does not support sending HSB values. Enabling this allows the binding to try to get the most
+					similar pre-defined color and send that instead.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="colorName">
 		<item-type>String</item-type>
 		<label>Color Name</label>
-		<description>Color Name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.ColorTemperatureController -->
 	<channel-type id="colorTemperatureName">
 		<item-type>String</item-type>
 		<label>Color Temperature Name</label>
-		<description>Color Temperature Name</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.PercentageController -->
 	<channel-type id="percentage">
 		<item-type>Dimmer</item-type>
 		<label>Percentage</label>
-		<description>Percentage</description>
 	</channel-type>
 	<!-- Alexa.PowerController -->
 	<channel-type id="powerState">
 		<item-type>Switch</item-type>
 		<label>Power State</label>
-		<description>Power State</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+	<!-- Alexa.LockController -->
+	<channel-type id="lockState">
+		<item-type>Switch</item-type>
+		<label>Lock State</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 	<!-- Alexa.PowerLevelController -->
 	<channel-type id="powerLevel">
 		<item-type>Dimmer</item-type>
 		<label>Power Level</label>
-		<description>Power Level</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
 	<!-- Alexa.SecurityPanelController -->
 	<channel-type id="armState">
 		<item-type>String</item-type>
 		<label>ARM State</label>
-		<description>ARM State</description>
 	</channel-type>
 	<channel-type id="burglaryAlarm">
 		<item-type>Contact</item-type>
 		<label>Burglary Alarm</label>
-		<description>Burglary Alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="carbonMonoxideAlarm">
 		<item-type>Contact</item-type>
 		<label>Carbon Monoxide Alarm</label>
-		<description>Carbon Monoxide Alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fireAlarm">
 		<item-type>Contact</item-type>
 		<label>Fire Alarm</label>
-		<description>Fire Alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="waterAlarm">
 		<item-type>Contact</item-type>
 		<label>Water Alarm</label>
-		<description>Water Alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<!-- Alexa.TemperatureSensor -->
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Temperature</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<!-- Alexa.HumiditySensor -->
-	<channel-type id="relativeHumidity">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Relative humidity measured by the thermostat.</description>
-		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern=":.1%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<!-- Alexa.MotionSensor -->
+	<channel-type id="motionDetected">
+		<item-type>Switch</item-type>
+		<label>Motion Detected</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<!-- Alexa.EndpointHealth -->
+	<channel-type id="connectivity">
+		<item-type>String</item-type>
+		<label>Connectivity</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<!-- Alexa.ContactSensor -->
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<!-- Alexa.Location -->
+	<channel-type id="geoLocation">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 	<!-- Alexa.ThermostatController -->
 	<channel-type id="targetSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Setpoint</label>
-		<description>Target Setpoint</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="upperSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Upper Setpoint</label>
-		<description>Upper Setpoint</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -668,7 +743,6 @@
 	<channel-type id="lowerSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Lower Setpoint</label>
-		<description>Lower Setpoint</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -679,7 +753,72 @@
 	<channel-type id="thermostatMode">
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
-		<description>Thermostat Mode</description>
-		<state pattern="%s"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="HEAT">Heat</option>
+				<option value="COOL">Cool</option>
+				<option value="OFF">Off</option>
+				<option value="ECO">Eco</option>
+			</options>
+		</state>
 	</channel-type>
+	<!-- Alexa.RangeController -->
+	<channel-type id="indoorAirQuality">
+		<item-type>Number</item-type>
+		<label>Indoor Air Quality</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="relativeHumidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern=":.1%"/>
+	</channel-type>
+	<channel-type id="pm25">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5</label>
+		<description>Particulate Matter PM2.5 density.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="carbonMonoxide">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Carbon Monoxide</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="voc">
+		<item-type>Number</item-type>
+		<label>VOC</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
+	</channel-type>
+
+
 </thing:thing-descriptions>

@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Internal Alarm</label>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="alarm_command" typeId="alarm_command"></channel>
 			<channel id="intrusion_control" typeId="intrusion_control"></channel>

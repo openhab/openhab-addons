@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Watermeter</label>
 		<description>A specific water meter.</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="last_reading_value" typeId="last_reading_value_water"/>
 			<channel id="last_reading_date" typeId="last_reading_date"/>
@@ -27,6 +28,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state pattern="%.3f  %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

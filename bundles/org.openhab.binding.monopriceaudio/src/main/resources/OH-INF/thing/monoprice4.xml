@@ -10,6 +10,7 @@
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="all" typeId="all">
@@ -175,6 +176,10 @@
 		<item-type>Switch</item-type>
 		<label>All On</label>
 		<description>Turn All Zones On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="source">
@@ -209,12 +214,20 @@
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
 		<description>Controls if the Zone Should Ignore an Incoming Audio Page</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="page">
 		<item-type>Contact</item-type>
 		<label>Page Active</label>
 		<description>Indicates if the Page Mode is Active for This Zone</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Inactive</option>

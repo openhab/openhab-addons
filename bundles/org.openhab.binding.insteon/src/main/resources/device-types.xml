@@ -1,6 +1,6 @@
 <xml>
 
-	<!-- Base features for all device types except Network Bridge and X10 -->
+	<!-- Base features for all device types except specific Network Bridge and X10 -->
 
 	<base-features>
 		<feature name="insteonEngine">InsteonEngine</feature>
@@ -678,6 +678,25 @@
 		</feature-group>
 	</device-type>
 
+	<device-type name="NetworkBridge_X10">
+		<feature name="x10Event1" group="1">X10BridgeEvent</feature>
+		<feature name="x10Event2" group="2">X10BridgeEvent</feature>
+		<feature name="x10Event3" group="3">X10BridgeEvent</feature>
+		<feature name="x10Event4" group="4">X10BridgeEvent</feature>
+		<feature name="x10Event5" group="5">X10BridgeEvent</feature>
+		<feature name="x10Event6" group="6">X10BridgeEvent</feature>
+		<feature name="x10Event7" group="7">X10BridgeEvent</feature>
+		<feature name="x10Event8" group="8">X10BridgeEvent</feature>
+		<feature name="x10Event9" group="9">X10BridgeEvent</feature>
+		<feature name="x10Event10" group="10">X10BridgeEvent</feature>
+		<feature name="x10Event11" group="11">X10BridgeEvent</feature>
+		<feature name="x10Event12" group="12">X10BridgeEvent</feature>
+		<feature name="x10Event13" group="13">X10BridgeEvent</feature>
+		<feature name="x10Event14" group="14">X10BridgeEvent</feature>
+		<feature name="x10Event15" group="15">X10BridgeEvent</feature>
+		<feature name="x10Event16" group="16">X10BridgeEvent</feature>
+	</device-type>
+
 	<!-- Irrigation Control -->
 
 	<device-type name="IrrigationControl_Sprinkler">
@@ -731,13 +750,12 @@
 			<feature name="timeFormat">ThermostatTimeFormat</feature>
 			<feature name="ledOnOff" bit="6">ThermostatOpFlags</feature>
 		</feature-group>
+		<feature name="reporting">ThermostatStatusReporting</feature>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
 		<default-link name="dehumidifying" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
 		<default-link name="humidifying" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
-		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
-			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
-		</default-link>
+		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF"/>
 	</device-type>
 
 	<device-type name="ClimateControl_WirelessThermostat" batteryPowered="true">
@@ -773,13 +791,12 @@
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="stayAwake" on="0x06" off="0x07">OpFlags</feature>
 		</feature-group>
+		<feature name="reporting">ThermostatStatusReporting</feature>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
 		<default-link name="dehumidifying" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
 		<default-link name="humidifying" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
-		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
-			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
-		</default-link>
+		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF"/>
 	</device-type>
 
 	<device-type name="ClimateControl_VenstarThermostat">
@@ -798,20 +815,18 @@
 			<feature name="programLock" bit="7" on="0x04" off="0x05">OpFlags</feature>
 			<feature name="ledOnOff" bit="5" on="0x06" off="0x07" inverted="true">OpFlags</feature>
 		</feature-group>
+		<feature name="reporting">ThermostatStatusReporting</feature>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
 		<default-link name="fan" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
-		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
-			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
-		</default-link>
+		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF"/>
 	</device-type>
 
 	<!-- Sensors and Actuators -->
 
 	<device-type name="SensorsActuators_IOLinc">
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="contact" group="2">GenericSensorContact</feature>
-		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="switch">IOLincRelaySwitch</feature>
+		<feature name="contact">GenericSensorContact</feature>
 		<feature-group name="extDataGroup" type="ExtDataGroup">
 			<feature name="momentaryDuration">IOLincMomentaryDuration</feature>
 		</feature-group>
@@ -819,9 +834,10 @@
 			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
 			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
 			<feature name="relaySensorFollow" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="relaySensorInverted" bit="6" on="0x0E" off="0x0F" inverted="true">OpFlags</feature>
 			<feature name="relayMode">IOLincRelayMode</feature>
 		</feature-group>
-		<default-link name="relay" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="sensor" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
 	</device-type>
 
 	<device-type name="SensorsActuators_Siren">

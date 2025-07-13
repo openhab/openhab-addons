@@ -7,6 +7,7 @@
 	<thing-type id="EcoMeterS">
 		<label>Proteus EcoMeter S</label>
 		<description>Sensor for measuring water level of a cistern. Connected via USB</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="Temperature"/>
@@ -30,6 +31,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature measured by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -37,6 +42,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Sensor Level</label>
 		<description>The distance between the sensor and the water surface</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -44,6 +53,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Usable Level in litre</label>
 		<description>The usable level in litre</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -51,6 +64,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Usable Level in percent</label>
 		<description>The usable level in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

@@ -14,25 +14,26 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Fan component, following the https://www.home-assistant.io/components/fan.mqtt/ specification.
@@ -42,84 +43,143 @@ import com.google.gson.annotations.SerializedName;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements ChannelStateUpdateListener {
+public class Fan extends AbstractComponent<Fan.Configuration> implements ChannelStateUpdateListener {
     public static final String SWITCH_CHANNEL_ID = "switch";
     public static final String SPEED_CHANNEL_ID = "speed";
     public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
 
-    private static final BigDecimal BIG_DECIMAL_HUNDRED = new BigDecimal(100);
-    private static final String FORMAT_INTEGER = "%.0f";
-
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Fan");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Fan");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("state_value_template")
-        protected @Nullable String stateValueTemplate;
-        @SerializedName("state_topic")
-        protected @Nullable String stateTopic;
-        @SerializedName("command_template")
-        protected @Nullable String commandTemplate;
-        @SerializedName("command_topic")
-        protected String commandTopic = "";
-        @SerializedName("direction_command_template")
-        protected @Nullable String directionCommandTemplate;
-        @SerializedName("direction_command_topic")
-        protected @Nullable String directionCommandTopic;
-        @SerializedName("direction_state_topic")
-        protected @Nullable String directionStateTopic;
-        @SerializedName("direction_value_template")
-        protected @Nullable String directionValueTemplate;
-        @SerializedName("oscillation_command_template")
-        protected @Nullable String oscillationCommandTemplate;
-        @SerializedName("oscillation_command_topic")
-        protected @Nullable String oscillationCommandTopic;
-        @SerializedName("oscillation_state_topic")
-        protected @Nullable String oscillationStateTopic;
-        @SerializedName("oscillation_value_template")
-        protected @Nullable String oscillationValueTemplate;
-        @SerializedName("payload_oscillation_off")
-        protected String payloadOscillationOff = "oscillate_off";
-        @SerializedName("payload_oscillation_on")
-        protected String payloadOscillationOn = "oscillate_on";
-        @SerializedName("payload_off")
-        protected String payloadOff = "OFF";
-        @SerializedName("payload_on")
-        protected String payloadOn = "ON";
-        @SerializedName("payload_reset_percentage")
-        protected String payloadResetPercentage = "None";
-        @SerializedName("payload_reset_preset_mode")
-        protected String payloadResetPresetMode = "None";
-        @SerializedName("percentage_command_template")
-        protected @Nullable String percentageCommandTemplate;
-        @SerializedName("percentage_command_topic")
-        protected @Nullable String percentageCommandTopic;
-        @SerializedName("percentage_state_topic")
-        protected @Nullable String percentageStateTopic;
-        @SerializedName("percentage_value_template")
-        protected @Nullable String percentageValueTemplate;
-        @SerializedName("preset_mode_command_template")
-        protected @Nullable String presetModeCommandTemplate;
-        @SerializedName("preset_mode_command_topic")
-        protected @Nullable String presetModeCommandTopic;
-        @SerializedName("preset_mode_state_topic")
-        protected @Nullable String presetModeStateTopic;
-        @SerializedName("preset_mode_value_template")
-        protected @Nullable String presetModeValueTemplate;
-        @SerializedName("preset_modes")
-        protected @Nullable List<String> presetModes;
-        @SerializedName("speed_range_max")
-        protected int speedRangeMax = 100;
-        @SerializedName("speed_range_min")
-        protected int speedRangeMin = 1;
+        @Nullable
+        String getDirectionCommandTopic() {
+            return getOptionalString("direction_command_topic");
+        }
+
+        @Nullable
+        Value getDirectionCommandTemplate() {
+            return getOptionalValue("direction_command_template");
+        }
+
+        @Nullable
+        String getDirectionStateTopic() {
+            return getOptionalString("direction_state_topic");
+        }
+
+        @Nullable
+        Value getDirectionValueTemplate() {
+            return getOptionalValue("direction_value_template");
+        }
+
+        @Nullable
+        String getOscillationCommandTopic() {
+            return getOptionalString("oscillation_command_topic");
+        }
+
+        @Nullable
+        Value getOscillationCommandTemplate() {
+            return getOptionalValue("oscillation_command_template");
+        }
+
+        @Nullable
+        String getOscillationStateTopic() {
+            return getOptionalString("oscillation_state_topic");
+        }
+
+        @Nullable
+        Value getOscillationValueTemplate() {
+            return getOptionalValue("oscillation_value_template");
+        }
+
+        @Nullable
+        String getPercentageCommandTopic() {
+            return getOptionalString("percentage_command_topic");
+        }
+
+        @Nullable
+        Value getPercentageCommandTemplate() {
+            return getOptionalValue("percentage_command_template");
+        }
+
+        @Nullable
+        String getPercentageStateTopic() {
+            return getOptionalString("percentage_state_topic");
+        }
+
+        @Nullable
+        Value getPercentageValueTemplate() {
+            return getOptionalValue("percentage_value_template");
+        }
+
+        @Nullable
+        String getPresetModeCommandTopic() {
+            return getOptionalString("preset_mode_command_topic");
+        }
+
+        List<String> getPresetModes() {
+            return getStringList("preset_modes");
+        }
+
+        @Nullable
+        Value getPresetModeCommandTemplate() {
+            return getOptionalValue("preset_mode_command_template");
+        }
+
+        @Nullable
+        String getPresetModeStateTopic() {
+            return getOptionalString("preset_mode_state_topic");
+        }
+
+        @Nullable
+        Value getPresetModeValueTemplate() {
+            return getOptionalValue("preset_mode_value_template");
+        }
+
+        int getSpeedRangeMin() {
+            return getInt("speed_range_min");
+        }
+
+        int getSpeedRangeMax() {
+            return getInt("speed_range_max");
+        }
+
+        String getPayloadResetPercentage() {
+            return getString("payload_reset_percentage");
+        }
+
+        String getPayloadResetPresetMode() {
+            return getString("payload_reset_preset_mode");
+        }
+
+        String getPayloadOff() {
+            return getString("payload_off");
+        }
+
+        String getPayloadOn() {
+            return getString("payload_on");
+        }
+
+        String getPayloadOscillationOff() {
+            return getString("payload_oscillation_off");
+        }
+
+        String getPayloadOscillationOn() {
+            return getString("payload_oscillation_on");
+        }
+
+        @Nullable
+        Value getStateValueTemplate() {
+            return getOptionalValue("state_value_template");
+        }
     }
 
     private final OnOffValue onOffValue;
@@ -130,74 +190,74 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
     private final ComponentChannel primaryChannel;
     private final ChannelStateUpdateListener channelStateUpdateListener;
 
-    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
-        this.channelStateUpdateListener = componentConfiguration.getUpdateListener();
+    public Fan(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
+        this.channelStateUpdateListener = componentContext.getUpdateListener();
 
-        onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
-        ChannelStateUpdateListener onOffListener = channelConfiguration.percentageCommandTopic == null
-                ? componentConfiguration.getUpdateListener()
+        boolean optimistic = config.isOptimistic();
+        String payloadOn = config.getPayloadOn();
+        String payloadOff = config.getPayloadOff();
+        onOffValue = new OnOffValue(payloadOn, payloadOff);
+        String percentageCommandTopic = config.getPercentageCommandTopic();
+        ChannelStateUpdateListener onOffListener = percentageCommandTopic == null ? componentContext.getUpdateListener()
                 : this;
         onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                onOffListener)
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .inferOptimistic(channelConfiguration.optimistic)
-                .build(channelConfiguration.percentageCommandTopic == null);
+                onOffListener).stateTopic(config.getStateTopic(), config.getStateValueTemplate())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
+                .inferOptimistic(optimistic).build(percentageCommandTopic == null);
 
         rawSpeedState = UnDefType.NULL;
 
-        speedValue = new PercentageValue(BigDecimal.valueOf(channelConfiguration.speedRangeMin - 1),
-                BigDecimal.valueOf(channelConfiguration.speedRangeMax), null, channelConfiguration.payloadOn,
-                channelConfiguration.payloadOff, FORMAT_INTEGER);
+        speedValue = new PercentageValue(BigDecimal.valueOf(config.getSpeedRangeMin() - 1),
+                BigDecimal.valueOf(config.getSpeedRangeMax()), null, payloadOn, payloadOff, FORMAT_INTEGER);
 
-        if (channelConfiguration.percentageCommandTopic != null) {
+        if (percentageCommandTopic != null) {
             hiddenChannels.add(onOffChannel);
             primaryChannel = speedChannel = buildChannel(SPEED_CHANNEL_ID, ComponentChannelType.DIMMER, speedValue,
                     "Speed", this)
-                    .stateTopic(channelConfiguration.percentageStateTopic, channelConfiguration.percentageValueTemplate)
-                    .commandTopic(channelConfiguration.percentageCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.percentageCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).commandFilter(this::handlePercentageCommand)
-                    .build();
+                    .stateTopic(config.getPercentageStateTopic(), config.getPercentageValueTemplate())
+                    .commandTopic(percentageCommandTopic, config.isRetain(), config.getQos(),
+                            config.getPercentageCommandTemplate())
+                    .parseCommandValueAsInteger(true).inferOptimistic(optimistic)
+                    .commandFilter(this::handlePercentageCommand).build();
         } else {
             primaryChannel = onOffChannel;
             speedChannel = null;
         }
 
-        List<String> presetModes = channelConfiguration.presetModes;
-        if (presetModes != null) {
-            TextValue presetModeValue = new TextValue(presetModes.toArray(new String[0]));
-            presetModeValue.setNullValue(channelConfiguration.payloadResetPresetMode);
+        String presetModeCommandTopic = config.getPresetModeCommandTopic();
+        if (presetModeCommandTopic != null) {
+            TextValue presetModeValue = new TextValue(config.getPresetModes().toArray(new String[0]));
+            presetModeValue.setNullValue(config.getPayloadResetPresetMode());
             buildChannel(PRESET_MODE_CHANNEL_ID, ComponentChannelType.STRING, presetModeValue, "Preset Mode",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.presetModeStateTopic, channelConfiguration.presetModeValueTemplate)
-                    .commandTopic(channelConfiguration.presetModeCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.presetModeCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).build();
+                    componentContext.getUpdateListener())
+                    .stateTopic(config.getPresetModeStateTopic(), config.getPresetModeValueTemplate())
+                    .commandTopic(presetModeCommandTopic, config.isRetain(), config.getQos(),
+                            config.getPresetModeCommandTemplate())
+                    .inferOptimistic(optimistic).build();
         }
 
-        if (channelConfiguration.oscillationCommandTopic != null) {
-            OnOffValue oscillationValue = new OnOffValue(channelConfiguration.payloadOscillationOn,
-                    channelConfiguration.payloadOscillationOff);
+        String oscillationCommandTopic = config.getOscillationCommandTopic();
+        if (oscillationCommandTopic != null) {
+            OnOffValue oscillationValue = new OnOffValue(config.getPayloadOscillationOn(),
+                    config.getPayloadOscillationOff());
             buildChannel(OSCILLATION_CHANNEL_ID, ComponentChannelType.SWITCH, oscillationValue, "Oscillation",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.oscillationStateTopic,
-                            channelConfiguration.oscillationValueTemplate)
-                    .commandTopic(channelConfiguration.oscillationCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.oscillationCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).build();
+                    componentContext.getUpdateListener())
+                    .stateTopic(config.getOscillationStateTopic(), config.getOscillationValueTemplate())
+                    .commandTopic(oscillationCommandTopic, config.isRetain(), config.getQos(),
+                            config.getOscillationCommandTemplate())
+                    .inferOptimistic(optimistic).build();
         }
 
-        if (channelConfiguration.directionCommandTopic != null) {
+        String directionCommandTopic = config.getDirectionCommandTopic();
+        if (directionCommandTopic != null) {
             TextValue directionValue = new TextValue(new String[] { "forward", "backward" });
             buildChannel(DIRECTION_CHANNEL_ID, ComponentChannelType.STRING, directionValue, "Direction",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.directionStateTopic, channelConfiguration.directionValueTemplate)
-                    .commandTopic(channelConfiguration.directionCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
-                    .inferOptimistic(channelConfiguration.optimistic).build();
+                    componentContext.getUpdateListener())
+                    .stateTopic(config.getDirectionStateTopic(), config.getDirectionValueTemplate())
+                    .commandTopic(directionCommandTopic, config.isRetain(), config.getQos(),
+                            config.getDirectionCommandTemplate())
+                    .inferOptimistic(optimistic).build();
         }
 
         finalizeChannels();

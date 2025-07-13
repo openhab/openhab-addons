@@ -296,13 +296,12 @@ public class WledApiV084 implements WledApi {
             // There is no thing setup for this segmentIndex.
             return;
         }
-        HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString(),
-                state.stateResponse.seg[segmentIndex].bri);
+        HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString());
         handler.update(segmentIndex, CHANNEL_PRIMARY_COLOR, tempHSB);
-        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR, WLedHelper.parseToHSBType(
-                state.stateResponse.seg[segmentIndex].col[1].toString(), state.stateResponse.seg[segmentIndex].bri));
-        handler.update(segmentIndex, CHANNEL_THIRD_COLOR, WLedHelper.parseToHSBType(
-                state.stateResponse.seg[segmentIndex].col[2].toString(), state.stateResponse.seg[segmentIndex].bri));
+        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR,
+                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[1].toString()));
+        handler.update(segmentIndex, CHANNEL_THIRD_COLOR,
+                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[2].toString()));
         if (state.ledInfo.rgbw) {
             handler.update(segmentIndex, CHANNEL_PRIMARY_WHITE,
                     WLedHelper.parseWhitePercent(state.stateResponse.seg[segmentIndex].col[0].toString()));
@@ -379,17 +378,14 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setMasterHSB(HSBType hsbType, int segmentIndex) throws ApiException {
         if (hsbType.getBrightness().toBigDecimal().equals(BigDecimal.ZERO)) {
-            updateStateFromReply(postState(
-                    "{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex + ",\"fx\":0,\"bri\":"
-                            + hsbType.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
-                            + ",\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
-                            + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                            + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
+            updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex
+                    + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
+                    + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+                    + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
             return;
         }
         updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + segmentIndex
-                + ",\"fx\":0,\"bri\":" + hsbType.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
-                + ",\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+                + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
     }
@@ -432,7 +428,7 @@ public class WledApiV084 implements WledApi {
     }
 
     @Override
-    public void setUdpRecieve(boolean bool) throws ApiException {
+    public void setUdpReceive(boolean bool) throws ApiException {
         postState("{\"udpn\":{\"recv\":" + bool + "}}");
     }
 
@@ -476,8 +472,7 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setWhiteOnly(PercentType percentType, int segmentIndex) throws ApiException {
-        postState("{\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"bri\":"
-                + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ",\"col\":[[0,0,0,"
+        postState("{\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"col\":[[0,0,0,"
                 + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
     }
 
@@ -542,5 +537,11 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setSleepTargetBrightness(PercentType percent) throws ApiException {
         postState("{\"nl\":{\"tbri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}}");
+    }
+
+    @Override
+    public void setLegacyWhite(String whiteChannel, PercentType brightness, int segmentIndex) throws ApiException {
+        // only API>0.9.0 supports segments, so we have to set the value for all stripes here
+        sendGetRequest(whiteChannel + brightness.toBigDecimal().multiply(BIG_DECIMAL_2_55));
     }
 }

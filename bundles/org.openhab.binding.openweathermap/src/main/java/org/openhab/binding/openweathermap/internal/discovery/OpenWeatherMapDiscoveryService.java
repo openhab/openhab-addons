@@ -72,7 +72,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        removeOlderResults(Instant.now().toEpochMilli(), bridgeHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), bridgeHandler.getThing().getUID());
         super.deactivate();
     }
 

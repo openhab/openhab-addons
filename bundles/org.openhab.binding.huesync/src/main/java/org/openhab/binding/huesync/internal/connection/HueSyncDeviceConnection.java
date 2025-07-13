@@ -34,6 +34,7 @@ import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistra
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
+import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -49,20 +50,28 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Handles the connection to a Hue HDMI Sync Box using the official API.
  * 
  * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncDeviceConnection {
     private final Logger logger = LoggerFactory.getLogger(HueSyncDeviceConnection.class);
 
     private final HueSyncConnection connection;
+    private final HueSyncExceptionHandler exceptionHandler;
 
     private final Map<String, Consumer<Command>> deviceCommandExecutors = new HashMap<>();
 
-    public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
-            throws CertificateException, IOException, URISyntaxException {
-        this.connection = new HueSyncConnection(httpClient, configuration.host, configuration.port);
+    public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration,
+            HueSyncExceptionHandler exceptionHandler) throws CertificateException, IOException, URISyntaxException {
+        this.exceptionHandler = exceptionHandler;
+        try {
+            this.connection = new HueSyncConnection(httpClient, configuration);
 
-        registerCommandHandlers();
+            registerCommandHandlers();
+        } catch (IOException | URISyntaxException | CertificateException e) {
+            exceptionHandler.handle(e);
+            throw e;
+        }
     }
 
     // #region private
@@ -109,7 +118,11 @@ public class HueSyncDeviceConnection {
 
         String json = String.format("{ \"%s\": %s }", key, value);
 
-        this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
+        try {
+            this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
+        } catch (HueSyncConnectionException exception) {
+            exceptionHandler.handle(exception);
+        }
     }
 
     // #endregion
@@ -131,29 +144,29 @@ public class HueSyncDeviceConnection {
         }
     }
 
-    public @Nullable HueSyncDevice getDeviceInfo() {
+    public @Nullable HueSyncDevice getDeviceInfo() throws Exception {
         return this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDevice.class);
     }
 
-    public @Nullable HueSyncDeviceDetailed getDetailedDeviceInfo() {
+    public @Nullable HueSyncDeviceDetailed getDetailedDeviceInfo() throws Exception {
         return this.connection.isRegistered()
                 ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDeviceDetailed.class)
                 : null;
     }
 
-    public @Nullable HueSyncHdmi getHdmiInfo() {
+    public @Nullable HueSyncHdmi getHdmiInfo() throws Exception {
         return this.connection.isRegistered()
                 ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.HDMI, "", HueSyncHdmi.class)
                 : null;
     }
 
-    public @Nullable HueSyncExecution getExecutionInfo() {
+    public @Nullable HueSyncExecution getExecutionInfo() throws Exception {
         return this.connection.isRegistered()
                 ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.EXECUTION, "", HueSyncExecution.class)
                 : null;
     }
 
-    public @Nullable HueSyncRegistration registerDevice(String id) throws HueSyncConnectionException {
+    public @Nullable HueSyncRegistration registerDevice(String id) throws Exception {
         if (!id.isBlank()) {
             try {
                 HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
@@ -181,16 +194,20 @@ public class HueSyncDeviceConnection {
     }
 
     public void unregisterDevice() {
-        this.connection.unregisterDevice();
+        try {
+            this.connection.unregisterDevice();
+        } catch (HueSyncConnectionException e) {
+            this.logger.warn("{}", e.getMessage());
+        }
     }
 
     public void dispose() {
         this.connection.dispose();
     }
 
-    public void updateConfiguration(HueSyncConfiguration config) {
-        this.logger.debug("Connection configuration update for device {}:{} - Registration Id [{}]", config.host,
-                config.port, config.registrationId);
+    public void updateAuthentication(HueSyncConfiguration config) {
+        this.logger.debug("Configure authentication for device {}:{} - Registration Id [{}]", config.host, config.port,
+                config.registrationId);
 
         this.connection.updateAuthentication(config.registrationId, config.apiAccessToken);
     }

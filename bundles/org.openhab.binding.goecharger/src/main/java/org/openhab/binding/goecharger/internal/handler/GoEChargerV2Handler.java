@@ -13,13 +13,16 @@
 package org.openhab.binding.goecharger.internal.handler;
 
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.*;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.*;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.*;
 
+import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,8 +41,6 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -68,7 +69,6 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         super(thing, httpClient);
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanExpressions")
     @Override
     protected State getValue(String channelId, GoEStatusResponseBaseDTO goeResponseBase) {
         var state = super.getValue(channelId, goeResponseBase);
@@ -82,11 +82,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.phases == null) {
                     return UnDefType.UNDEF;
                 }
-                var phases = "1";
-                if (goeResponse.phases == 2) {
-                    phases = "3";
-                }
-                return new DecimalType(phases);
+                return new DecimalType((goeResponse.phases == 2) ? 3 : 1);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
@@ -148,6 +144,9 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 }
                 return new DecimalType(goeResponse.awattarMaxPrice);
             case ALLOW_CHARGING:
+                if (goeResponse.allowCharging == null) {
+                    return UnDefType.UNDEF;
+                }
                 return OnOffType.from(goeResponse.allowCharging);
             case TEMPERATURE_TYPE2_PORT:
                 // It was reported that the temperature is invalid when only one value is returned
@@ -248,48 +247,45 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
 
         switch (channelUID.getId()) {
             case MAX_CURRENT:
-                key = "amp";
+                key = AMP;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue());
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String.valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.AMPERE)).intValue());
                 }
                 break;
             case AWATTAR_MAX_PRICE:
-                key = "awp";
+                key = AWP;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand);
                 }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                key = "dwo";
+                key = DWO;
                 var multiplier = 1000;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue() * multiplier);
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(
-                            ((QuantityType<Energy>) command).toUnit(Units.KILOWATT_HOUR).intValue() * multiplier);
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String
+                            .valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.KILOWATT_HOUR)).intValue()
+                                    * multiplier);
                 }
                 break;
             case PHASES:
-                key = "psm";
+                key = PSM;
                 if (command instanceof DecimalType decimalCommand) {
-                    var phases = 1;
-                    if (decimalCommand.intValue() == 3) {
-                        // set value 2 for 3 phases
-                        phases = 2;
-                    }
-                    value = String.valueOf(phases);
+                    // set value 2 for 3 phases
+                    value = decimalCommand.intValue() == 3 ? "2" : "1";
                 }
                 break;
             case FORCE_STATE:
-                key = "frc";
+                key = FRC;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue());
                 }
                 break;
             case TRANSACTION:
-                key = "trx";
+                key = TRX;
                 if (command instanceof DecimalType decimalCommand) {
                     value = String.valueOf(decimalCommand.intValue());
                 }
@@ -306,36 +302,58 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     @Override
     public void initialize() {
         // only read needed parameters
-        filter = "?filter=";
-        var declaredFields = GoEStatusResponseV2DTO.class.getDeclaredFields();
-        var declaredFieldsBase = GoEStatusResponseV2DTO.class.getSuperclass().getDeclaredFields();
+        filter = "filter=";
+        Field[] declaredFields = GoEStatusResponseV2DTO.class.getDeclaredFields();
+        Field[] declaredFieldsBase = Objects.requireNonNull(GoEStatusResponseV2DTO.class.getSuperclass())
+                .getDeclaredFields();
 
-        for (var field : declaredFields) {
-            filter += field.getAnnotation(SerializedName.class).value() + ",";
+        for (Field field : declaredFields) {
+            filter += Objects.requireNonNull(field.getAnnotation(SerializedName.class)).value() + ",";
         }
-        for (var field : declaredFieldsBase) {
-            filter += field.getAnnotation(SerializedName.class).value() + ",";
+        for (Field field : declaredFieldsBase) {
+            filter += Objects.requireNonNull(field.getAnnotation(SerializedName.class)).value() + ",";
         }
         filter = filter.substring(0, filter.length() - 1);
 
         super.initialize();
     }
 
-    private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", config.ip.toString()) + filter;
+    private String getReadUrl() throws IllegalArgumentException {
+        if (config.ip instanceof String ip) {
+            return GoEChargerBindingConstants.API_URL_V2.replace("%IP%", ip) + "?" + filter;
+        } else if (config.serial instanceof String serial && config.token instanceof String token) {
+            return GoEChargerBindingConstants.API_URL_CLOUD_V2.replace("%SERIAL%", serial).replace("%TOKEN%", token)
+                    + "&" + filter;
+        } else {
+            throw new IllegalArgumentException("either ip or token+serial must be configured");
+        }
     }
 
-    private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
-                .replace("%VALUE%", value);
+    private String getWriteUrl(String key, String value) throws IllegalArgumentException {
+        if (config.ip instanceof String ip) {
+            return GoEChargerBindingConstants.SET_URL_V2.replace("%IP%", ip).replace("%KEY%", key).replace("%VALUE%",
+                    value);
+        } else if (config.serial instanceof String serial && config.token instanceof String token) {
+            return GoEChargerBindingConstants.SET_URL_CLOUD_V2.replace("%SERIAL%", serial).replace("%TOKEN%", token)
+                    .replace("%KEY%", key).replace("%VALUE%", value);
+        } else {
+            throw new IllegalArgumentException("either ip or token+serial must be configured");
+        }
     }
 
     private void sendData(String key, String value) {
-        String urlStr = getWriteUrl(key, value);
-        logger.trace("POST URL = {}", urlStr);
+        String urlStr;
+        try {
+            urlStr = getWriteUrl(key, value);
+        } catch (IllegalArgumentException e) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        HttpMethod httpMethod = HttpMethod.GET;
+        logger.trace("{} URL = {}", httpMethod, urlStr);
 
         try {
-            HttpMethod httpMethod = HttpMethod.GET;
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(httpMethod)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
@@ -343,34 +361,36 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
             logger.trace("{} Response: {}", httpMethod.toString(), response);
 
             var statusCode = contentResponse.getStatus();
-            if (!(statusCode == 200 || statusCode == 204)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/unsuccessful.communication-error");
+            if (!(statusCode == 200 || statusCode == 202 || statusCode == 204)) {
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/unsuccessful.communication-error");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
             }
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ie.toString());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, ie.toString());
             logger.debug("Could not send data: {}, {}", urlStr, ie.toString());
         } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.toString());
             logger.debug("Could not send data: {}, {}", urlStr, e.toString());
         }
     }
 
     /**
-     * Request new data from Go-eCharger
+     * Retrieves data from the Go-E Charger API based on the configured API version.
+     * Sends an HTTP GET request to the charger and parses the response into the appropriate DTO.
      *
-     * @return the Go-eCharger object mapping the JSON response or null in case of
-     *         error
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
+     * @return A {@link GoEStatusResponseBaseDTO} object containing the parsed response data.
+     *         Returns {@link GoEStatusResponseDTO} for API version 1 and {@link GoEStatusResponseV2DTO} for API version
+     *         2.
+     * @throws InterruptedException If the thread is interrupted while waiting for the response.
+     * @throws TimeoutException If the request times out.
+     * @throws ExecutionException If an exception occurs during the execution of the request.
+     * @throws JsonSyntaxException If the response JSON cannot be parsed into the expected DTO.
+     * @throws IllegalArgumentException If the response JSON is invalid or does not match the expected format.
      */
-    @Nullable
     @Override
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected @Nullable GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException,
+            ExecutionException, JsonSyntaxException, IllegalArgumentException {
         String urlStr = getReadUrl();
         logger.trace("GET URL = {}", urlStr);
 
@@ -389,10 +409,10 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
     @Override
     protected void updateChannelsAndStatus(@Nullable GoEStatusResponseBaseDTO goeResponse, @Nullable String message) {
         if (goeResponse == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, message);
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ONLINE);
             allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
         }
     }

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -32,7 +31,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class SmokeDetector2HandlerTest extends AbstractSmokeDetectorHandlerTest<SmokeDetector2Handler> {
+class SmokeDetector2HandlerTest extends AbstractSmokeDetectorHandlerWithAlarmServiceTest<SmokeDetector2Handler> {
 
     @Override
     protected SmokeDetector2Handler createFixture() {

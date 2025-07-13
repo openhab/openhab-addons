@@ -12,6 +12,7 @@
 
 		<label>Intellichem</label>
 		<description>A Pentair Intellichem controller.</description>
+		<semantic-equipment-tag>Chlorinator</semantic-equipment-tag>
 
 		<channels>
 			<channel id="phReading" typeId="phReading"/>
@@ -95,6 +96,10 @@
 		<item-type>Number</item-type>
 		<label>Tank Level</label>
 		<description>Tank level (1-7).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -102,6 +107,10 @@
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Calcium Hardess</label>
 		<description>Calcium hardness (ppm).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -109,6 +118,10 @@
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>CYA Reading</label>
 		<description>Cyanuric acid reading (ppm).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -116,6 +129,10 @@
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Total Alkalinity</label>
 		<description>Total Alkalinity reading (ppm).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -123,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>PH Doser Type</label>
 		<description>The doser type for PH (None, CO2, Acid).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NONE">None</option>
@@ -155,6 +176,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Dose Time</label>
 		<description>The time a particular chemical has been dosing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lsi">
@@ -168,6 +193,10 @@
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Salt Level (PPM)</label>
 		<description>Current salt content reading of the water (PPM).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -175,6 +204,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -182,6 +215,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Flow Alarm</label>
 		<description>Water flow alarm (on = no water flow).</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -189,6 +226,9 @@
 		<item-type>Switch</item-type>
 		<label>PH Alarm</label>
 		<description>PH alarm reported.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -196,6 +236,9 @@
 		<item-type>Switch</item-type>
 		<label>ORP Alarm</label>
 		<description>ORP alarm reported.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -203,6 +246,9 @@
 		<item-type>Switch</item-type>
 		<label>PH Tank Alarm</label>
 		<description>PH tank alarm reported.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -210,6 +256,9 @@
 		<item-type>Switch</item-type>
 		<label>ORP Tank Alarm</label>
 		<description>ORP tank alarm reported.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -217,6 +266,9 @@
 		<item-type>Switch</item-type>
 		<label>Probe Fault Alarm</label>
 		<description>Probe fault alarm reported.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -224,6 +276,9 @@
 		<item-type>Switch</item-type>
 		<label>PH Lockout Warning</label>
 		<description>Unit is in PH Lockout.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -231,6 +286,9 @@
 		<item-type>Switch</item-type>
 		<label>PH Daily Limit Reached</label>
 		<description>Daily limit of PH dosing has been reached.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -238,6 +296,9 @@
 		<item-type>Switch</item-type>
 		<label>ORP Daily Limit Reached</label>
 		<description>Daily limit of ORP dosing has been reached.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -245,6 +306,9 @@
 		<item-type>Switch</item-type>
 		<label>Invalid Setup</label>
 		<description>Invalid setup for the unit.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -252,6 +316,9 @@
 		<item-type>Switch</item-type>
 		<label>Chlorinator Comm Error</label>
 		<description>Error in communicating with the Chlorinator.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

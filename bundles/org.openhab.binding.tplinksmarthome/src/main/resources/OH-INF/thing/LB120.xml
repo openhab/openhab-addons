@@ -8,7 +8,7 @@
 		<label>LB120</label>
 		<description>TP-Link LB120 Smart Wi-Fi LED Bulb with Tunable White Light</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>

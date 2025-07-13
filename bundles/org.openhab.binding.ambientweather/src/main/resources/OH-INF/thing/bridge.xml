@@ -8,6 +8,7 @@
 	<bridge-type id="bridge">
 		<label>Ambient Weather Account</label>
 		<description>Represents an account at Ambient Weather (ambientweather.net)</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:ambientweather:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

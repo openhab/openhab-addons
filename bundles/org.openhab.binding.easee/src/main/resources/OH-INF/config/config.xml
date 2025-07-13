@@ -36,6 +36,24 @@
 			<description>Interval in which data is polled from EaseeCloud (in seconds).</description>
 			<default>60</default>
 		</parameter>
+		<parameter name="sessionDataPollingInterval" type="integer" required="false" min="60" max="1200" unit="s"
+			groupName="connection">
+			<label>Session Data Polling Interval</label>
+			<description>Interval in which session data is polled from EaseeCloud (in seconds).</description>
+			<default>360</default>
+		</parameter>
+		<parameter name="webRequestInitialDelay" type="integer" required="false" min="5" max="60" unit="s"
+			groupName="connection">
+			<label>Initial Web Request Delay</label>
+			<description>Initial time to wait before first request is sent to EaseeCloud (in seconds).</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="webRequestInterval" type="integer" required="false" min="1" max="10" unit="s"
+			groupName="connection">
+			<label>Web Request Interval</label>
+			<description>Interval between two subsequent requests to be sent to EaseeCloud (in seconds).</description>
+			<default>2</default>
+		</parameter>
 	</config-description>
 	<config-description uri="thing-type:easee:charger">
 		<parameter name="id" type="text" required="true">

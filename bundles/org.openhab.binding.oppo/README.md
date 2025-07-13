@@ -118,7 +118,7 @@ The following channels are available:
 
 ## Full Example
 
-oppo.things:
+### `oppo.things` Example
 
 ```java
 // direct IP connection
@@ -132,7 +132,7 @@ oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, ve
 
 ```
 
-oppo.items:
+### `oppo.items` Example
 
 ```java
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
@@ -142,7 +142,7 @@ Number oppo_source "Source Input [%s]" { channel="oppo:player:myoppo:source" }
 String oppo_play_mode "Play Mode [%s]" { channel="oppo:player:myoppo:play_mode" }
 Player oppo_control "Control" { channel="oppo:player:myoppo:control" }
 String oppo_time_mode "Time Mode [%s]" { channel="oppo:player:myoppo:time_mode" }
-Number:Time oppo_time_display "Time [JS(secondsformat.js):%s]" { channel="oppo:player:myoppo:time_display" }
+Number:Time oppo_time_display "Time [%s]" { channel="oppo:player:myoppo:time_display" }
 Number oppo_current_title "Current Title/Track [%s]" { channel="oppo:player:myoppo:current_title" }
 Number oppo_total_title "Total Title/Track [%s]" { channel="oppo:player:myoppo:total_title" }
 Number oppo_current_chapter "Current Chapter [%s]" { channel="oppo:player:myoppo:current_chapter" }
@@ -163,34 +163,7 @@ String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
 String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
 ```
 
-secondsformat.js:
-
-```javascript
-(function(timestamp) {
-    var totalSeconds = Date.parse(timestamp) / 1000
-
-    if (isNaN(totalSeconds)) {
-        return '-';
-    } else {
-        hours = Math.floor(totalSeconds / 3600);
-        totalSeconds %= 3600;
-        minutes = Math.floor(totalSeconds / 60);
-        seconds = totalSeconds % 60;
-        if ( hours < 10 ) {
-            hours = '0' + hours;
-        }
-        if ( minutes < 10 ) {
-            minutes = '0' + minutes;
-        }
-        if ( seconds < 10 ) {
-            seconds = '0' + seconds;
-        }
-        return hours + ':' + minutes + ':' + seconds;
-    }
-})(input)
-```
-
-oppo.sitemap:
+### `oppo.sitemap` Example
 
 ```perl
 sitemap oppo label="Oppo Blu-ray" {

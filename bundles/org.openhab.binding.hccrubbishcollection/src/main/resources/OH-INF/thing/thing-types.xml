@@ -7,6 +7,7 @@
 	<thing-type id="collection">
 		<label>HCC NZ Rubbish Collection</label>
 		<description>Rubbish collection days for Hamilton City Council (NZ).</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="day" typeId="day"/>
@@ -49,6 +50,10 @@
 	<channel-type id="bin">
 		<item-type>DateTime</item-type>
 		<label>Collection Date</label>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tY-%1$tm-%1$td" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="collection-event">

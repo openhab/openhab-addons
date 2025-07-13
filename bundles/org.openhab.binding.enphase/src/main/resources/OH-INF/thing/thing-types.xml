@@ -8,6 +8,7 @@
 	<bridge-type id="envoy">
 		<label>Envoy</label>
 		<description>Envoy gateway</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="production" typeId="envoy-production">
@@ -77,6 +78,7 @@
 
 		<label>Inverter</label>
 		<description>Inverter</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lastReportWatts" typeId="last-report-watts"/>
@@ -110,6 +112,7 @@
 
 		<label>Relay Controller</label>
 		<description>Network system relay controller</description>
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 
 		<channels>
 			<channel id="relay" typeId="relay"/>
@@ -188,18 +191,30 @@
 		<item-type>Number:Energy</item-type>
 		<label>Produced Today</label>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-seven-days">
 		<item-type>Number:Energy</item-type>
 		<label>Produced 7 Days</label>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-lifetime">
 		<item-type>Number:Energy</item-type>
 		<label>Produced Lifetime</label>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watts-now">
@@ -207,6 +222,10 @@
 		<label>Latest Produced Power</label>
 		<description>Latest watts produced</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -216,6 +235,10 @@
 		<label>Last Report</label>
 		<description>Last reported power delivery</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-report-watts">
@@ -223,6 +246,10 @@
 		<label>Max Report</label>
 		<description>Maximum reported power</description>
 		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-report-date">
@@ -237,6 +264,10 @@
 	<channel-type id="relay">
 		<item-type>Contact</item-type>
 		<label>Relay Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="line-connected">

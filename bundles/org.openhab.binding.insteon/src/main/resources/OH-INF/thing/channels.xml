@@ -42,6 +42,10 @@
 	<channel-type id="armed">
 		<item-type>Switch</item-type>
 		<label>Armed</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="backlight-duration" advanced="true">
@@ -54,6 +58,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -61,6 +69,10 @@
 		<item-type>Switch</item-type>
 		<label>Battery Powered</label>
 		<description>Battery powered or wired</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -75,6 +87,10 @@
 		<item-type>Switch</item-type>
 		<label>Button A</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -82,6 +98,10 @@
 		<item-type>Switch</item-type>
 		<label>Button B</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -89,6 +109,10 @@
 		<item-type>Switch</item-type>
 		<label>Button C</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -96,6 +120,10 @@
 		<item-type>Switch</item-type>
 		<label>Button D</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -103,6 +131,10 @@
 		<item-type>Switch</item-type>
 		<label>Button E</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -110,6 +142,10 @@
 		<item-type>Switch</item-type>
 		<label>Button F</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -117,6 +153,10 @@
 		<item-type>Switch</item-type>
 		<label>Button G</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -124,6 +164,10 @@
 		<item-type>Switch</item-type>
 		<label>Button H</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -154,6 +198,10 @@
 	<channel-type id="carbon-monoxide-alarm">
 		<item-type>Switch</item-type>
 		<label>Carbon Monoxide Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -167,6 +215,10 @@
 		<label>Cool Setpoint</label>
 		<description>Set the temperature setpoint to activate the cooling.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -174,6 +226,10 @@
 		<item-type>Switch</item-type>
 		<label>Daytime</label>
 		<description>Daytime or nightime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -182,6 +238,10 @@
 		<label>Dehumidify Setpoint</label>
 		<description>Set the humidity setpoint to activate the dehumidifier.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state min="20" max="90" step="1" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -189,6 +249,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 		<config-description-ref uri="channel-type:insteon:dimmer"/>
 	</channel-type>
@@ -210,6 +274,10 @@
 	<channel-type id="energy-saving">
 		<item-type>Switch</item-type>
 		<label>Energy Saving Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -217,12 +285,20 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Usage</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fan-mode">
 		<item-type>String</item-type>
 		<label>Fan Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">Auto</option>
@@ -234,6 +310,10 @@
 	<channel-type id="fan-speed">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Off</option>
@@ -247,6 +327,10 @@
 	<channel-type id="fan-state">
 		<item-type>Switch</item-type>
 		<label>Fan State</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -283,6 +367,10 @@
 		<label>Heat Setpoint</label>
 		<description>Set the temperature setpoint to activate the heating.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -303,6 +391,10 @@
 		<label>Humidify Setpoint</label>
 		<description>Set the humidity setpoint to activate the humidifier.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state min="0" max="79" step="1" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -310,6 +402,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ambient Humidity</label>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -318,6 +414,10 @@
 		<label>Last Heard From</label>
 		<description>The last time a message from the device was received.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -325,6 +425,10 @@
 		<item-type>Switch</item-type>
 		<label>Leak Sensor</label>
 		<category>Water</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -351,6 +455,10 @@
 	<channel-type id="light-level">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ambient Light Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
@@ -382,12 +490,20 @@
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="low-battery">
 		<item-type>Switch</item-type>
 		<label>Low Battery Alert</label>
 		<category>LowBattery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -408,7 +524,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Momentary Duration</label>
 		<description>Set the output relay closure duration for momentary relay modes (A-C).</description>
-		<state min="0.2" max="25" step="0.1" pattern="%.1f %unit%"/>
+		<state min="0.1" max="6300" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="monitor-mode" advanced="true">
@@ -421,6 +537,10 @@
 		<item-type>Switch</item-type>
 		<label>Motion Sensor</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -445,18 +565,30 @@
 		<item-type>Switch</item-type>
 		<label>Bottom Outlet</label>
 		<category>PowerOutlet</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="outlet-top">
 		<item-type>Switch</item-type>
 		<label>Top Outlet</label>
 		<category>PowerOutlet</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power-usage">
 		<item-type>Number:Power</item-type>
 		<label>Power Usage</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -464,24 +596,40 @@
 		<item-type>Player</item-type>
 		<label>Program 1</label>
 		<description>Toggle the sprinkler program. When needed, activate the previous/next valve.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program2">
 		<item-type>Player</item-type>
 		<label>Program 2</label>
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program3">
 		<item-type>Player</item-type>
 		<label>Program 3</label>
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program4">
 		<item-type>Player</item-type>
 		<label>Program 4</label>
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="program-lock" advanced="true">
@@ -493,6 +641,10 @@
 	<channel-type id="pump">
 		<item-type>Switch</item-type>
 		<label>Pump Control</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ramp-rate" advanced="true">
@@ -539,7 +691,7 @@
 
 	<channel-type id="relay-mode" advanced="true">
 		<item-type>String</item-type>
-		<label>Output Relay Mode</label>
+		<label>Relay Mode</label>
 		<state>
 			<options>
 				<option value="LATCHING">Latching</option>
@@ -552,8 +704,14 @@
 
 	<channel-type id="relay-sensor-follow" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Output Relay Sensor Follow</label>
-		<description>Set the output relay to trigger when the sensor input changes state.</description>
+		<label>Relay Sensor Follow</label>
+		<description>Set the relay to trigger when the sensor changes state.</description>
+	</channel-type>
+
+	<channel-type id="relay-sensor-inverted" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Relay Sensor Inverted</label>
+		<description>Invert the sensor state when the relay triggers.</description>
 	</channel-type>
 
 	<channel-type id="resume-dim" advanced="true">
@@ -571,6 +729,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
@@ -578,18 +740,30 @@
 		<item-type>Switch</item-type>
 		<label>Scene</label>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="siren">
 		<item-type>Switch</item-type>
 		<label>Siren</label>
 		<category>Siren</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="smoke-alarm">
 		<item-type>Switch</item-type>
 		<label>Smoke Alarm</label>
 		<category>Smoke</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -610,6 +784,10 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sync-time" advanced="true">
@@ -622,6 +800,10 @@
 	<channel-type id="system-mode">
 		<item-type>String</item-type>
 		<label>System Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">Off</option>
@@ -648,6 +830,10 @@
 	<channel-type id="tamper-switch">
 		<item-type>Contact</item-type>
 		<label>Tamper Switch</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -655,6 +841,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Ambient Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -785,41 +975,73 @@
 	<channel-type id="valve1">
 		<item-type>Switch</item-type>
 		<label>Valve 1</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve2">
 		<item-type>Switch</item-type>
 		<label>Valve 2</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve3">
 		<item-type>Switch</item-type>
 		<label>Valve 3</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve4">
 		<item-type>Switch</item-type>
 		<label>Valve 4</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve5">
 		<item-type>Switch</item-type>
 		<label>Valve 5</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve6">
 		<item-type>Switch</item-type>
 		<label>Valve 6</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve7">
 		<item-type>Switch</item-type>
 		<label>Valve 7</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="valve8">
 		<item-type>Switch</item-type>
 		<label>Valve 8</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- trigger channel types -->
@@ -1028,4 +1250,211 @@
 		</event>
 	</channel-type>
 
+	<channel-type id="x10-event1" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 1</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event2" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 2</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event3" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 3</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event4" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 4</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event5" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 5</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event6" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 6</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event7" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 7</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event8" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 8</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event9" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 9</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event10" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 10</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event11" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 11</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event12" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 12</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event13" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 13</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event14" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 14</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event15" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 15</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event16" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 16</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
 </thing:thing-descriptions>

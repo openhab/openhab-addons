@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -74,6 +75,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     protected @Nullable InsteonBridgeHandler getInsteonBridgeHandler() {
         return Optional.ofNullable(getBridge()).map(Bridge::getHandler).filter(InsteonBridgeHandler.class::isInstance)
                 .map(InsteonBridgeHandler.class::cast).orElse(null);
+    }
+
+    @Override
+    public boolean isOnline() {
+        return getThing().getStatus() == ThingStatus.ONLINE;
     }
 
     @Override
@@ -144,9 +150,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("channel {} received command {}", channelUID, command);
 
-        ThingStatus status = getThing().getStatus();
-        if (status != ThingStatus.ONLINE) {
-            logger.debug("thing {} not ready to handle commands, it will be ignored", getThing().getUID());
+        if (!isOnline()) {
+            logger.debug("thing {} not online, ignoring command", getThing().getUID());
             return;
         }
 
@@ -255,7 +260,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
     protected void initializeChannels(Device device) {
         DeviceType deviceType = device.getType();
-        if (deviceType == null) {
+        ThingHandlerCallback callback = getCallback();
+        if (deviceType == null || callback == null) {
             return;
         }
 
@@ -272,13 +278,9 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                         deviceTypeName);
             } else {
                 String channelId = featureNameToChannelId(featureName);
-                Channel channel = createChannel(channelId);
-                if (channel != null) {
-                    logger.trace("adding channel {}", channel.getUID());
-                    channels.add(channel);
-                } else {
-                    logger.warn("unable to create channel {} for {}", channelId, deviceTypeName);
-                }
+                Channel channel = createChannel(channelId, callback);
+                logger.trace("adding channel {}", channel.getUID());
+                channels.add(channel);
                 // add existing custom channels with the same channel type id but different channel id
                 for (Channel customChannel : getCustomChannels(channelId)) {
                     logger.trace("adding custom channel {}", customChannel.getUID());
@@ -290,16 +292,16 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
         updateThing(editThing().withChannels(channels).build());
     }
 
-    private @Nullable Channel createChannel(String channelId) {
+    private Channel createChannel(String channelId, ThingHandlerCallback callback) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-        Channel channel = getThing().getChannel(channelUID);
-        ThingHandlerCallback callback = getCallback();
-        // create channel if not already available
-        if (channel == null && callback != null) {
-            channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+        ChannelBuilder channelBuilder = callback.createChannelBuilder(channelUID, channelTypeUID);
+        Channel oldChannel = getThing().getChannel(channelUID);
+        if (oldChannel != null) {
+            channelBuilder.withConfiguration(oldChannel.getConfiguration());
+            channelBuilder.withProperties(oldChannel.getProperties());
         }
-        return channel;
+        return channelBuilder.build();
     }
 
     private List<Channel> getCustomChannels(String channelId) {
@@ -315,6 +317,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                 .filter(channel -> isLinked(channel.getUID()) || channel.getKind() == ChannelKind.TRIGGER)
                 .filter(channel -> !channelHandlers.containsKey(channel.getUID())).map(Channel::getUID)
                 .forEach(this::channelLinked);
+    }
+
+    protected void unlinkChannels() {
+        getThing().getChannels().stream().map(Channel::getUID).filter(channelHandlers::containsKey)
+                .forEach(this::channelUnlinked);
     }
 
     @Override
@@ -370,9 +377,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }

@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * An MQTT button, following the https://www.home-assistant.io/integrations/button.mqtt/ specification.
@@ -27,35 +28,45 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Button extends AbstractComponent<Button.ChannelConfiguration> {
+public class Button extends AbstractComponent<Button.Configuration> {
     public static final String BUTTON_CHANNEL_ID = "button";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Button");
+    public static final String PAYLOAD_PRESS = "PRESS";
+
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_PRESS, "@text/command.button.press");
+
+    public static class Configuration extends EntityConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Button");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
+        String getCommandTopic() {
+            return getString("command_topic");
+        }
 
-        @SerializedName("payload_press")
-        protected String payloadPress = "PRESS";
+        String getPayloadPress() {
+            return getString("payload_press");
+        }
+
+        boolean isRetain() {
+            return getBoolean("retain");
+        }
     }
 
-    public Button(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Button(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
+        TextValue value = new TextValue(Map.of(), Map.of(PAYLOAD_PRESS, config.getPayloadPress()), Map.of(),
+                COMMAND_LABELS);
 
-        buildChannel(BUTTON_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
+        buildChannel(BUTTON_CHANNEL_ID, ComponentChannelType.STRING, value, "Button",
+                componentContext.getUpdateListener())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         finalizeChannels();
     }

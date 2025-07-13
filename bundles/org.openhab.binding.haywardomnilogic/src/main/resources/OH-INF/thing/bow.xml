@@ -32,12 +32,20 @@
 	<channel-type id="waterFlow">
 		<item-type>Switch</item-type>
 		<label>Flow Sensor</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="waterTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temp</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

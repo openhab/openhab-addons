@@ -88,6 +88,7 @@ public enum DSCAlarmCode {
     ZoneRestored("610", "Zone Restored", "610: General status of the zone - restored."),
     EnvisalinkZoneTimerDump("615", "Envisalink Zone Timer Dump",
             "615: The raw zone timers used inside the Envisalink."),
+    BypassedZonesBitfield("616", "Bypassed Zones Bitfield", "616: Bypassed zones bitfield."),
     DuressAlarm("620", "Duress Alarm", "620: A duress code has been entered on a system keypad."),
     FireKeyAlarm("621", "Fire Key Alarm", "621: A Fire key alarm has been activated."),
     FireKeyRestored("622", "Fire Key Alarm Restore", "622: A Fire key alarm has been restored."),

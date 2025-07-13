@@ -13,6 +13,7 @@ This bundle provides a list of useful Profiles:
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
+| [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
 
 ## Generic Command Profile
 
@@ -100,14 +101,16 @@ It requires no specific configuration.
 The values of `QuantityType`, `PercentType` and `DecimalTypes` are negated (multiplied by `-1`).
 Otherwise the following mapping is used:
 
-`IncreaseDecreaseType`: `INCREASE` <-> `DECREASE`
-`NextPreviousType`: `NEXT` <-> `PREVIOUS`
-`OnOffType`: `ON` <-> `OFF`
-`OpenClosedType`: `OPEN` <-> `CLOSED`
-`PlayPauseType`: `PLAY` <-> `PAUSE`
-`RewindFastforwardType`: `REWIND` <-> `FASTFORWARD`
-`StopMoveType`: `MOVE` <-> `STOP`
-`UpDownType`: `UP` <-> `DOWN`
+| Type                    | Inversion                  |
+|:------------------------|:---------------------------|
+| `IncreaseDecreaseType`  | `INCREASE` <-> `DECREASE`  |
+| `NextPreviousType`      | `NEXT` <-> `PREVIOUS`      |
+| `OnOffType`             | `ON` <-> `OFF`             |
+| `OpenClosedType`        | `OPEN` <-> `CLOSED`        |
+| `PlayPauseType`         | `PLAY` <-> `PAUSE`         |
+| `RewindFastforwardType` | `REWIND` <-> `FASTFORWARD` |
+| `StopMoveType`          | `MOVE` <-> `STOP`          |
+| `UpDownType`            | `UP` <-> `DOWN`            |
 
 ### Invert / Negate Profile Example
 
@@ -218,7 +221,7 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
 - An item name, which will be evaluated to its state.
 - A type constant, such as `ON`, `OFF`, `UNDEF`, `NULL`, `OPEN`, `CLOSED`, `PLAY`, `PAUSE`, `UP`, `DOWN`, etc.
   Note that these are unquoted.
-- A String value, enclosed with single quotes, e.g. `'ON'`.
+- A String value, enclosed with single or double quotes, e.g. `'ON'`, `"FOO"`.
   A string value is different to the actual `OnOffType.ON`.
   To compare against an actual OnOffType, use an unquoted `ON`.
 - A plain number to represent a `DecimalType`.
@@ -229,8 +232,9 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
     For example, with an initial data of `10`, a new data of `12` or `8` would both result in a $DELTA of `2`.
   - `$DELTA_PERCENT` to represent the difference in percentage.
     It is calculated as `($DELTA / current_data) * 100`.
-    Note that this can also be done by omitting the `LHS_OPERAND` and using a number followed with a percent sign `%` as the `RHS_OPERAND`.
-    See the example below.
+    Note in most cases, this check can be written without `$DELTA_PERCENT`, e.g. `> 5%`. It is equivalent to `$DELTA_PERCENT > 5`.
+    However, when the incoming value from the binding is a Percent Quantity Type, for example a Humidity data in %, the `$DELTA_PERCENT` must be explicitly written in order to perform a delta percent check.
+    See the examples below.
   - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
   - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
   - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.
@@ -240,6 +244,12 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
   By default, 5 samples of the previous values are kept.
   This can be customized by specifying the "window size" or sample count applicable to the function, e.g. `$MEDIAN(10)` will return the median of the last 10 values.
   All the functions except `$DELTA` support a custom window size.
+
+In the case of comparisons and calculations involving `QuantityType` values, both operands, whether they are Item states, the incoming value, or constants, must be of the same type and have compatible units.
+In other words a comparison between a `QuantityType` operand and an incoming `DecimalType` value (or vice versa) will fail.
+All `QuantityType` values are converted to the Unit of the linked Item before the calculation and/or comparison is done.
+So if the binding sends a value that cannot be converted to the Unit of the linked Item, then that value is excluded.
+e.g. if the linked item has a Unit of `Units.METRE` and the binding sends a value of `Units.CELSIUS` then the value is ignored.
 
 The state of one item can be compared against the state of another item by having item names on both sides of the comparison, e.g.: `Item1 > Item2`.
 When `LHS_OPERAND` is omitted, e.g. `> 10, < 100`, the comparisons are applied against the input data from the binding.
@@ -296,9 +306,24 @@ Number:Temperature BoilerTemperature {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 10" ]
 }
 
-// Or more succinctly:
+// Or more succinctly, the $DELTA_PERCENT is inferred here
 Number:Temperature BoilerTemperature {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="> 10%" ]
+}
+```
+
+When the incoming value from the binding is a Percent Quantity Type:
+
+```java
+// This performs a value comparison, not a delta percent comparison.
+// Because the incoming value is a Percent Quantity, it isn't inferred as a $DELTA_PERCENT check.
+Number:Dimensionless Humidity {
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="> 0%, <= 100%" ]
+}
+
+// To actually perform a $DELTA_PERCENT check against a Percent Quantity data, specify it explicitly
+Number:Dimensionless Humidity {
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5%" ]
 }
 ```
 
@@ -310,5 +335,29 @@ Number:Power MaximumPowerLimit { unit="W" }
 
 Number:Power PowerUsage {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= MinimumPowerLimit", "< MaximumPowerLimit" ]
+}
+```
+
+## Inactivity Profile
+
+This profile sets the state of the item to `ON` if the binding has not provided any new data values within a given timeout period.
+The purpose is to indicate an alarm condition if the binding is no longer providing values for the given channel.
+
+### Inactivity Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                                                                                                                                              |
+|-------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `timeout`               | text    | Duration after which the item's state is updated if no data is received from the binding. The default is 1h. The format is the same as used in the [expire parameter](https://www.openhab.org/docs/configuration/items). |
+| `inverted`              | boolean | Optional. If false (default), the item's state is initially OFF, and changes to ON after the timeout. If true, the behavior is reversed: the initial state is ON, and it changes to OFF after the timeout.               |
+
+### Inactivity Profile Example
+
+```java
+Switch myChannelInactivityStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="60m" ]
+}
+
+Switch myChannelActivityStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1d", inverted=true ]
 }
 ```

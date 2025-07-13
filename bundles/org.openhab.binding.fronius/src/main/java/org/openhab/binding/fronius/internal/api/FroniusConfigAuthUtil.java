@@ -19,14 +19,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpHeader;
@@ -63,26 +60,27 @@ public class FroniusConfigAuthUtil {
      * @param httpClient the {@link HttpClient} to use for the request
      * @param loginUri the {@link URI} of the login endpoint
      * @return a {@link Map} containing the authentication parameters of the authentication challenge
-     * @throws IOException when the response does not contain the expected authentication header
+     * @throws FroniusCommunicationException when the authentication challenge request failed or the response does not
+     *             contain the expected authentication header
      */
     private static Map<String, String> getAuthParams(HttpClient httpClient, URI loginUri, int timeout)
-            throws IOException {
+            throws FroniusCommunicationException {
         LOGGER.debug("Sending login request to get authentication challenge");
         CountDownLatch latch = new CountDownLatch(1);
-        Request initialRequest = httpClient.newRequest(loginUri).timeout(timeout, TimeUnit.MILLISECONDS);
-        XWwwAuthenticateHeaderListener XWwwAuthenticateHeaderListener = new XWwwAuthenticateHeaderListener(latch);
-        initialRequest.onResponseHeaders(XWwwAuthenticateHeaderListener);
-        initialRequest.send(result -> latch.countDown());
+        Request request = httpClient.newRequest(loginUri).timeout(timeout, TimeUnit.MILLISECONDS);
+        XWwwAuthenticateHeaderListener xWwwAuthenticateHeaderListener = new XWwwAuthenticateHeaderListener(latch);
+        request.onResponseHeaders(xWwwAuthenticateHeaderListener);
+        request.send(result -> latch.countDown());
         // Wait for the request to complete
         try {
             latch.await();
-        } catch (InterruptedException ie) {
-            throw new RuntimeException(ie);
+        } catch (InterruptedException e) {
+            throw new FroniusCommunicationException("Failed to sent authentication challenge request", e);
         }
 
-        String authHeader = XWwwAuthenticateHeaderListener.getAuthHeader();
+        String authHeader = xWwwAuthenticateHeaderListener.getAuthHeader();
         if (authHeader == null) {
-            throw new IOException("No authentication header found in login response");
+            throw new FroniusCommunicationException("No authentication header found in login response");
         }
         LOGGER.debug("Parsing authentication challenge");
 
@@ -114,19 +112,28 @@ public class FroniusConfigAuthUtil {
      * @param nc
      * @param cnonce
      * @return the digest authentication header
-     * @throws FroniusCommunicationException if an authentication parameter is missing
+     * @throws FroniusCommunicationException if an authentication parameter is missing or the digest header could not be
+     *             created
      */
     private static String createDigestHeader(@Nullable String nonce, @Nullable String realm, @Nullable String qop,
             String uri, HttpMethod method, String username, String password, int nc, String cnonce)
             throws FroniusCommunicationException {
         if (nonce == null || realm == null || qop == null) {
-            throw new FroniusCommunicationException("Missing authentication parameter");
+            throw new FroniusCommunicationException("Failed to create digest header",
+                    new IllegalArgumentException("Missing authentication parameters"));
         }
         LOGGER.debug("Creating digest authentication header");
-        String ha1 = md5Hex(username + ":" + realm + ":" + password);
-        String ha2 = md5Hex(method.asString() + ":" + uri);
-        String response = md5Hex(
-                ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
+        String ha1;
+        String ha2;
+        String response;
+        try {
+            ha1 = md5Hex(username + ":" + realm + ":" + password);
+            ha2 = md5Hex(method.asString() + ":" + uri);
+            response = md5Hex(
+                    ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
+        } catch (NoSuchAlgorithmException e) {
+            throw new FroniusCommunicationException("Failed to create digest header", e);
+        }
 
         return String.format(DIGEST_AUTH_HEADER_FORMAT, username, realm, nonce, uri, response, qop, nc, cnonce);
     }
@@ -136,15 +143,10 @@ public class FroniusConfigAuthUtil {
      *
      * @param data the data to hash
      * @return the hashed data as a hex string
+     * @throws NoSuchAlgorithmException if the MD5 algorithm is not available
      */
-    private static String md5Hex(String data) {
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            // should never occur
-            throw new RuntimeException(e);
-        }
+    private static String md5Hex(String data) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] array = md.digest(data.getBytes());
         StringBuilder sb = new StringBuilder();
         for (byte b : array) {
@@ -159,22 +161,36 @@ public class FroniusConfigAuthUtil {
      * @param httpClient the {@link HttpClient} to use for the request
      * @param loginUri the {@link URI} of the login endpoint
      * @param authHeader the authentication header to use for the login request
-     * @throws InterruptedException when the request is interrupted
      * @throws FroniusCommunicationException when the login request failed
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
     private static void performLoginRequest(HttpClient httpClient, URI loginUri, String authHeader, int timeout)
-            throws InterruptedException, FroniusCommunicationException {
-        Request loginRequest = httpClient.newRequest(loginUri).header(HttpHeader.AUTHORIZATION, authHeader)
-                .timeout(timeout, TimeUnit.MILLISECONDS);
-        ContentResponse loginResponse;
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        Request request = httpClient.newRequest(loginUri).header(HttpHeader.AUTHORIZATION, authHeader).timeout(timeout,
+                TimeUnit.MILLISECONDS);
+        StatusListener statusListener = new StatusListener(latch);
+        request.onResponseBegin(statusListener);
+        Integer status;
         try {
-            loginResponse = loginRequest.send();
-            if (loginResponse.getStatus() != 200) {
-                throw new FroniusCommunicationException(
-                        "Failed to send login request, status code: " + loginResponse.getStatus());
+            request.send(result -> latch.countDown());
+            // Wait for the request to complete
+            latch.await();
+
+            status = statusListener.getStatus();
+            if (status == null) {
+                throw new FroniusCommunicationException("Failed to send login request: No status code received.");
             }
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (IOException | InterruptedException e) {
             throw new FroniusCommunicationException("Failed to send login request", e);
+        }
+
+        if (status == 401) {
+            throw new FroniusUnauthorizedException(
+                    "Failed to send login request, status code: 401 Unauthorized. Please check your credentials.");
+        }
+        if (status != 200) {
+            throw new FroniusCommunicationException("Failed to send login request, status code: " + status);
         }
     }
 
@@ -183,7 +199,7 @@ public class FroniusConfigAuthUtil {
      * request.
      *
      * @param httpClient the {@link HttpClient} to use for the request
-     * @param baseUri the base URI of the Fronius inverter
+     * @param baseUri the base URI of the Fronius inverter, MUST NOT end with a slash
      * @param username the username to use for the login
      * @param password the password to use for the login
      * @param method the {@link HttpMethod} to be used by the next request
@@ -191,42 +207,48 @@ public class FroniusConfigAuthUtil {
      * @param timeout the timeout in milliseconds for the login requests
      * @return the authentication header for the next request
      * @throws FroniusCommunicationException when the login failed or interrupted
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
     public static synchronized String login(HttpClient httpClient, URI baseUri, String username, String password,
-            HttpMethod method, String relativeUrl, int timeout) throws FroniusCommunicationException {
+            HttpMethod method, String relativeUrl, int timeout)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Perform request to get authentication parameters
         LOGGER.debug("Getting authentication parameters");
-        URI loginUri = baseUri.resolve(URI.create(LOGIN_ENDPOINT + "?user=" + username));
-        String relativeLoginUrl = LOGIN_ENDPOINT + "?user=" + username;
+        URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
+        String relativeLoginUrl = loginUri.getPath();
         Map<String, String> authDetails;
 
         int attemptCount = 1;
-        try {
-            while (true) {
-                Throwable lastException;
+        while (true) {
+            Throwable lastException;
+            try {
+                authDetails = getAuthParams(httpClient, loginUri, timeout);
+                break;
+            } catch (IOException e) {
+                LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
                 try {
-                    authDetails = getAuthParams(httpClient, loginUri, timeout);
-                    break;
-                } catch (IOException e) {
-                    LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
                     Thread.sleep(500 * attemptCount);
-                    attemptCount++;
-                    lastException = e;
+                } catch (InterruptedException ie) {
+                    throw new FroniusCommunicationException("Failed to request authentication challenge", ie);
                 }
-
-                if (attemptCount >= 3) {
-                    LOGGER.debug("Failed connecting to {} after {} attempts.", loginUri, attemptCount, lastException);
-                    throw new FroniusCommunicationException("Unable to connect", lastException);
-                }
+                attemptCount++;
+                lastException = e;
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new FroniusCommunicationException("Interrupted", e);
+
+            if (attemptCount >= 3) {
+                LOGGER.debug("Failed connecting to {} after {} attempts.", loginUri, attemptCount, lastException);
+                throw new FroniusCommunicationException("Unable to connect", lastException);
+            }
         }
 
         // Create auth header for login request
         int nc = 1;
-        String cnonce = md5Hex(String.valueOf(System.currentTimeMillis()));
+        String cnonce;
+        try {
+            cnonce = md5Hex(String.valueOf(System.currentTimeMillis()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new FroniusCommunicationException("Failed to create cnonce", e);
+        }
         String authHeader = createDigestHeader(authDetails.get("nonce"), authDetails.get("realm"),
                 authDetails.get("qop"), relativeLoginUrl, HttpMethod.GET, username, password, nc, cnonce);
 
@@ -239,13 +261,13 @@ public class FroniusConfigAuthUtil {
                 try {
                     performLoginRequest(httpClient, loginUri, authHeader, timeout);
                     break;
-                } catch (InterruptedException ie) {
-                    throw new FroniusCommunicationException("Failed to send login request", ie);
                 } catch (FroniusCommunicationException e) {
                     LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
-                    Thread.sleep(500 * attemptCount);
+                    Thread.sleep(500L * attemptCount);
                     attemptCount++;
                     lastException = e;
+                } catch (FroniusUnauthorizedException e) {
+                    throw e;
                 }
 
                 if (attemptCount >= 3) {
@@ -269,6 +291,9 @@ public class FroniusConfigAuthUtil {
 
     /**
      * Listener to extract the X-Www-Authenticate header from the response of a {@link Request}.
+     * Required to mitigate {@link org.eclipse.jetty.client.HttpResponseException}: HTTP protocol violation:
+     * Authentication challenge without WWW-Authenticate header being thrown due to Fronius non-standard authentication
+     * header.
      */
     private static class XWwwAuthenticateHeaderListener extends Response.Listener.Adapter {
         private final CountDownLatch latch;
@@ -286,6 +311,32 @@ public class FroniusConfigAuthUtil {
 
         public @Nullable String getAuthHeader() {
             return authHeader;
+        }
+    }
+
+    /**
+     * Listener to extract the HTTP status code from the response of a {@link Request} on response begin.
+     * Required to mitigate {@link org.eclipse.jetty.client.HttpResponseException}: HTTP protocol violation:
+     * Authentication challenge without WWW-Authenticate header being thrown due to Fronius non-standard authentication
+     * header.
+     */
+    private static class StatusListener extends Response.Listener.Adapter {
+        private final CountDownLatch latch;
+        private @Nullable Integer status;
+
+        public StatusListener(CountDownLatch latch) {
+            this.latch = latch;
+        }
+
+        @Override
+        public void onBegin(Response response) {
+            this.status = response.getStatus();
+            latch.countDown();
+            super.onBegin(response);
+        }
+
+        public @Nullable Integer getStatus() {
+            return status;
         }
     }
 }

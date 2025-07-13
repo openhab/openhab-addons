@@ -8,6 +8,7 @@
 
 		<label>Renault Car</label>
 		<description>A MyRenault registered car.</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
@@ -110,6 +111,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterystatusupdated">
@@ -123,6 +128,10 @@
 		<item-type>String</item-type>
 		<label>Plug Status</label>
 		<description>Status of charging plug.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="UNPLUGGED">Unplugged</option>
@@ -136,6 +145,10 @@
 	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
 		<label>Charging Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NOT_IN_CHARGE">Not charging</option>
@@ -153,6 +166,10 @@
 	<channel-type id="chargingmode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="UNKNOWN">Unknown</option>
@@ -165,6 +182,10 @@
 		<item-type>Switch</item-type>
 		<label>Pause Charge</label>
 		<description>Pause or resume the charge.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
@@ -188,6 +209,10 @@
 	<channel-type id="hvacstatus">
 		<item-type>String</item-type>
 		<label>HVAC Status (ON | OFF | PENDING)</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="ON">On</option>
@@ -201,6 +226,10 @@
 		<label>HVAC Target Temperature</label>
 		<description>HVAC target temperature (19 to 21)</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="externaltemperature" advanced="true">
@@ -208,6 +237,10 @@
 		<label>External Temperature</label>
 		<description>Temperature outside of the car</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="image">
@@ -228,6 +261,10 @@
 		<label>Locked</label>
 		<description>Locked status of the car</description>
 		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="linky">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="enedis"/>
+			<bridge-type-ref id="enedis-api"/>
+			<bridge-type-ref id="my-electrical-data"/>
+		</supported-bridge-type-refs>
+
+		<label>Linky</label>
+		<description>
+			Provides your energy consumption data.
+			In order to receive the data, you must activate your account at
+			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group typeId="load-curve" id="load-curve"/>
+			<channel-group typeId="daily" id="daily"/>
+			<channel-group typeId="weekly" id="weekly"/>
+			<channel-group typeId="monthly" id="monthly"/>
+			<channel-group typeId="yearly" id="yearly"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="prmId" type="text" required="false">
+				<label>prmId</label>
+				<description>The Meter Id (PRM). If not provided, the binding will use the first registered meter found on your
+					Enedis account.</description>
+			</parameter>
+			<parameter name="timezone" type="text" required="false">
+				<label>timezone</label>
+				<description>The timezone associated with your Point of delivery.
+					Will default to openhab default timezone.
+					You will
+					need to change this if your linky is located in a different timezone that your openhab location.
+					You can use an
+					offset, or a label like Europe/Paris</description>
+			</parameter>
+			<parameter name="token" type="text" required="false">
+				<label>Token</label>
+				<description>Your Enedis token (you will need it only if you use MyElectricalData bridge. This can be left empty,
+					the connection page will automatically fill it
+					http://youopenhab/connectlinky)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

@@ -122,8 +122,6 @@ public class EaseeBindingConstants {
     public static final String CMD_VAL_RESUME_CHARGING = "resume_charging";
 
     // web request constants
-    public static final long WEB_REQUEST_INITIAL_DELAY = 30;
-    public static final long WEB_REQUEST_INTERVAL = 5;
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
     public static final int WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES = 5;
     public static final int WEB_REQUEST_TOKEN_MAX_AGE_MINUTES = 60;

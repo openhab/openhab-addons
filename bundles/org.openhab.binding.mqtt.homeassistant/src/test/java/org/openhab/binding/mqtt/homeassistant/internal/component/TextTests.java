@@ -27,11 +27,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class TextTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "text/0x54ef44100064b266";
 
-    @SuppressWarnings("null")
     @Test
     public void test() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -47,6 +47,8 @@ public class TextTests extends AbstractComponentTests {
         assertThat(component.getName(), is("MQTT Text"));
 
         assertChannel(component, Text.TEXT_CHANNEL_ID, "txt/state", "txt/cmd", "MQTT Text", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("txt/state", "stuff");
         assertState(component, Text.TEXT_CHANNEL_ID, new StringType("stuff"));

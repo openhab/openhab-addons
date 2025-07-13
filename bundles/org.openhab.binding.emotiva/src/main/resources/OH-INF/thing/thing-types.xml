@@ -7,7 +7,7 @@
 	<thing-type id="processor">
 		<label>Emotiva Processor</label>
 		<description>Emotiva Processor Thing for Emotiva Binding</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="main-zone" typeId="zone">
@@ -127,12 +127,20 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power ON/OFF the device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zonePower">
 		<item-type>Switch</item-type>
 		<label>Power (zone)</label>
 		<description>Power ON/OFF this zone of the Processor</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volume">
@@ -140,6 +148,10 @@
 		<label>Volume</label>
 		<description>Set the volume level of this zone</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -148,6 +160,10 @@
 		<label>Volume (dB)</label>
 		<description>Set the volume level (dB). Same as [mainVolume - 96]</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="-96" max="15" step="0.5" pattern="%.1f dB"/>
 	</channel-type>
 
@@ -156,6 +172,10 @@
 		<label>Mute</label>
 		<description>Enable or Disable Mute on this zone of the Processor</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="source">
@@ -219,6 +239,10 @@
 		<label>Volume Speaker</label>
 		<description>Increased/Reduced volume for a given speaker, in dB</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="-24" step="0.5" max="24" pattern="%.1f dB"/>
 	</channel-type>
 
@@ -270,6 +294,10 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Enable/Disable Loudness on this zone of the Processor</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="frequency">
@@ -288,6 +316,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Tuner Channel</label>
 		<description>Radio Tuner Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state min="1" max="20"/>
 	</channel-type>
 
@@ -307,6 +339,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Radio Tuner Channel Frequency</label>
 		<description>User select radio tuner channel frequency"</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" min="535000" max="108000000" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -314,6 +350,10 @@
 		<item-type>String</item-type>
 		<label>Radio Tuner Channel Name</label>
 		<description>User select radio tuner channel name</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="channel-1">channel-1</option>
@@ -344,6 +384,10 @@
 		<item-type>String</item-type>
 		<label>Radio Tuner Signal</label>
 		<description>Radio tuner signal quality</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

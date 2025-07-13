@@ -22,12 +22,16 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +50,13 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
+    private final HDPowerviewPropertyGetter propertyGetter;
 
-    public HDPowerViewHubDiscoveryService() {
+    @Activate
+    public HDPowerViewHubDiscoveryService(@Reference HDPowerviewPropertyGetter propertyGetter) {
         super(Set.of(THING_TYPE_HUB), 60, true);
         scanner = createScanner();
+        this.propertyGetter = propertyGetter;
     }
 
     @Override
@@ -83,17 +90,20 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                     NbtAddress address = NbtAddress.getByName(netBiosName);
                     if (address != null) {
                         String host = address.getInetAddress().getHostAddress();
-                        ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                        String serial = propertyGetter.getSerialNumberApiV1(host);
+                        ThingUID thingUID = new ThingUID(THING_TYPE_HUB, serial);
+                        String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, "1", host);
                         DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                                 .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                                .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                                .withLabel("PowerView Hub (" + host + ")").build();
-                        logger.debug("NetBios discovered hub on host '{}'", host);
+                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                        logger.debug("NetBios discovered Gen 1 hub '{}' on host '{}'", thingUID, host);
                         thingDiscovered(hub);
                     }
+                } catch (HubException e) {
+                    logger.debug("Error discovering hub", e);
                 } catch (UnknownHostException e) {
-                    // Nothing to do here - the host couldn't be found, likely because it doesn't
-                    // exist
+                    // Nothing to do here - the host couldn't be found, likely because it doesn't exist
                 }
             }
         };

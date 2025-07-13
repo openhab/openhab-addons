@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homewizard"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="hw-power">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<description>
+			This channel provides the active usage in Watt.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-power-advanced" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<description>
+			This channel provides the active usage in Watt.
+		</description>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="hw-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Active Voltage</label>
+		<description>
+			This channel provides the active voltage in Volt.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-voltage-advanced" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Active Voltage</label>
+		<description>
+			This channel provides the active voltage in Volt.
+		</description>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="hw-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Active Current</label>
+		<description>
+			This channel provides the active current in Ampere.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-current-advanced" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Active Current</label>
+		<description>
+			This channel provides the active current in Ampere.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-energy-import">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy Import</label>
+		<description>
+			This channel provides the total energy usage meter reading in kWh.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-energy-import-advanced" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Import</label>
+		<description>
+			This channel provides the total energy usage meter reading in kWh.
+		</description>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="hw-energy-export">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy Export</label>
+		<description>
+			This channel provides the total energy feed-in meter reading in kWh.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-energy-export-advanced" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Export</label>
+		<description>
+			This channel provides the total energy feed-in meter reading in kWh.
+		</description>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="hw-reactive-power" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reactive Power</label>
+		<description>
+			This channel provides the active reactive power in Volt-Ampere reactive.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f VA"/>
+	</channel-type>
+
+	<channel-type id="hw-apparent-power" advanced="true">
+		<item-type>Number</item-type>
+		<label>Apparent Power</label>
+		<description>
+			This channel provides the active apparent power in Volt-Ampere.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f VA"/>
+	</channel-type>
+
+	<channel-type id="hw-power-factor" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<description>
+			This channel provides the active power factor.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-frequency" advanced="true">
+		<item-type unitHint="Hz">Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>
+			This channel provides the active frequency in Hertz.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>

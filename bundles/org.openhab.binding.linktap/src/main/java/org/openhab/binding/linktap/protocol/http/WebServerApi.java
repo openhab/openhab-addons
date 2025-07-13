@@ -18,6 +18,7 @@ import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIs
 
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -86,10 +87,10 @@ public final class WebServerApi {
     private static final String FIELD_ADMIN_USER = "admin";
     private static final String FIELD_ADMIN_USER_PWD = "adminpwd";
 
-    private static final int REQ_TIMEOUT_SECONDS = 3;
     private static final WebServerApi INSTANCE = new WebServerApi();
     private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
     private final Logger logger = LoggerFactory.getLogger(WebServerApi.class);
+    private final JettyTraceListener jettyTraceListener = new JettyTraceListener(logger);
 
     private @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable TranslationProvider translationProvider;
@@ -131,11 +132,11 @@ public final class WebServerApi {
         }
     }
 
-    public Map<String, String> getBridgeProperities(final String hostname)
+    public Map<String, String> getBridgeProperities(final String hostname, final int timeoutSeconds)
             throws LinkTapException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname).method(HttpMethod.GET);
-            final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
@@ -166,7 +167,8 @@ public final class WebServerApi {
             throw new TransientCommunicationIssueException(COMMUNICATIONS_LOST);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
-            if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
+            if (t instanceof UnknownHostException || t instanceof SocketTimeoutException
+                    || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
@@ -373,8 +375,9 @@ public final class WebServerApi {
         return "";
     }
 
-    public boolean configureBridge(final @Nullable String hostname, final Optional<Boolean> mdnsEnable,
-            final Optional<Boolean> nonHtmlEnable, final Optional<String> localServer)
+    public boolean configureBridge(final @Nullable String hostname, final int timeoutSeconds,
+            final Optional<Boolean> mdnsEnable, final Optional<Boolean> nonHtmlEnable,
+            final Optional<String> localServer)
             throws InterruptedException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             if (hostname == null) {
@@ -382,10 +385,11 @@ public final class WebServerApi {
             }
             final String targetHost = URI_HOST_PREFIX + hostname;
             final Request request = httpClient.newRequest(targetHost).method(HttpMethod.GET);
-            final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
+            logger.trace("Validating response from Gateway web UI");
             validateHeaders(cr.getHeaders());
             final String responseData = cr.getContentAsString();
             final Document doc = Jsoup.parse(responseData);
@@ -407,7 +411,8 @@ public final class WebServerApi {
                     logger.debug("Updating mdns server settings on gateway");
                     final Request mdnsRequest = httpClient
                             .newRequest(targetHost + "/index.shtml?flag=4&" + mdnsEnableReqStr).method(HttpMethod.GET);
-                    final ContentResponse mdnsCr = mdnsRequest.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+                    final ContentResponse mdnsCr = addTraceListener(mdnsRequest)
+                            .timeout(timeoutSeconds, TimeUnit.SECONDS).send();
                     if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                         throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
                     }
@@ -430,8 +435,8 @@ public final class WebServerApi {
                     final Request lhttpApiRequest = httpClient
                             .newRequest(targetHost + "/index.shtml?flag=5&" + localHttpApiReqStr)
                             .method(HttpMethod.GET);
-                    final ContentResponse mdnsCr = lhttpApiRequest.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                            .send();
+                    final ContentResponse mdnsCr = addTraceListener(lhttpApiRequest)
+                            .timeout(timeoutSeconds, TimeUnit.SECONDS).send();
                     if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                         throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
                     }
@@ -443,7 +448,8 @@ public final class WebServerApi {
                 logger.debug("Rebooting gateway to apply new settings");
                 final Request restartReq = httpClient.newRequest(targetHost + "/index.shtml?flag=0")
                         .method(HttpMethod.GET);
-                final ContentResponse mdnsCr = restartReq.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+                final ContentResponse mdnsCr = addTraceListener(restartReq).timeout(timeoutSeconds, TimeUnit.SECONDS)
+                        .send();
                 if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                     throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
                 }
@@ -457,7 +463,7 @@ public final class WebServerApi {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
-            } else if (t instanceof SocketTimeoutException) {
+            } else if (t instanceof SocketTimeoutException || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
@@ -468,7 +474,8 @@ public final class WebServerApi {
         }
     }
 
-    public boolean unlockWebInterface(final String hostname, final String username, final String password)
+    public boolean unlockWebInterface(final String hostname, final int timeoutSeconds, final String username,
+            final String password)
             throws LinkTapException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             org.eclipse.jetty.util.Fields fields = new org.eclipse.jetty.util.Fields();
@@ -476,12 +483,13 @@ public final class WebServerApi {
             fields.put(FIELD_ADMIN_USER_PWD, password);
             final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname + "/login.shtml")
                     .method(HttpMethod.POST).content(new FormContentProvider(fields));
-            final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
             validateHeaders(cr.getHeaders());
-            return !getBridgeProperities(hostname).isEmpty();
+            return !getBridgeProperities(hostname, timeoutSeconds).isEmpty();
         } catch (InterruptedException e) {
             return false;
         } catch (TimeoutException e) {
@@ -490,7 +498,7 @@ public final class WebServerApi {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
-            } else if (t instanceof SocketTimeoutException) {
+            } else if (t instanceof SocketTimeoutException || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
@@ -514,15 +522,15 @@ public final class WebServerApi {
         }
     }
 
-    public String sendRequest(final String hostname, final String requestBody)
+    public String sendRequest(final String hostname, final int timeoutSeconds, final String requestBody)
             throws NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             final InetAddress address = InetAddress.getByName(hostname);
             logger.trace("API Endpoint: {}", URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
-            final Request request = httpClient.POST(URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
-            request.content(new StringContentProvider(requestBody), REQ_HDR_APPLICATION_JSON);
+            final Request request = httpClient.POST(URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml")
+                    .content(new StringContentProvider(requestBody), REQ_HDR_APPLICATION_JSON);
 
-            final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
@@ -560,7 +568,7 @@ public final class WebServerApi {
             throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
-            if (t instanceof UnknownHostException) {
+            if (t instanceof UnknownHostException || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
@@ -568,5 +576,13 @@ public final class WebServerApi {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             }
         }
+    }
+
+    private org.eclipse.jetty.client.api.Request addTraceListener(final Request request) {
+        if (logger.isTraceEnabled()) {
+            return request.onRequestQueued(jettyTraceListener).onRequestBegin(jettyTraceListener)
+                    .onRequestSuccess(jettyTraceListener).onRequestFailure(jettyTraceListener);
+        }
+        return request;
     }
 }

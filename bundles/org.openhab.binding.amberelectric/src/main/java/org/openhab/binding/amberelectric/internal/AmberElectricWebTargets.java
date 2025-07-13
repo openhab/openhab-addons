@@ -18,8 +18,6 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
-import org.openhab.binding.amberelectric.internal.api.Sites;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,18 +37,18 @@ public class AmberElectricWebTargets {
     public AmberElectricWebTargets() {
     }
 
-    public Sites getSites(String apiKey, String nmi) throws AmberElectricCommunicationException {
+    public String getSites(String apiKey) throws AmberElectricCommunicationException {
         String getSitesUri = BASE_URI + "sites";
         String response = invoke("GET", getSitesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
-        return Sites.parse(response, nmi);
+        return response;
     }
 
-    public CurrentPrices getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
-        String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current";
+    public String getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
+        String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current?next=288";
         String response = invoke("GET", getCurrentPricesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
-        return CurrentPrices.parse(response);
+        return response;
     }
 
     protected Properties getHttpHeaders(String accessToken) {

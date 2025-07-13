@@ -8,7 +8,7 @@
 	<thing-type id="inverter">
 		<label>SolarMax Power Inverter</label>
 		<description>Basic thing for the SolarMax Power Inverter binding</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="lastUpdated" typeId="lastUpdated"/>
 			<channel id="startups" typeId="startups"/>
@@ -59,6 +59,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>Time when data was last read from the device</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -73,6 +77,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase 1 Current</label>
 		<description>AC Phase 1 Current in Amps</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -80,6 +88,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase 2 Current</label>
 		<description>AC Phase 2 Current in Amps</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -87,6 +99,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase 3 Current</label>
 		<description>AC Phase 3 Current in Amps</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -94,6 +110,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Today</label>
 		<description>Energy Generated Today in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -101,6 +121,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Total</label>
 		<description>Energy Generated Total since recording began in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -115,6 +139,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Yesterday</label>
 		<description>Energy Generated Yesterday in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -122,6 +150,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Last Month</label>
 		<description>Energy Generated Last Month in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -129,6 +161,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Last Year</label>
 		<description>Energy Generated Last Year in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -136,6 +172,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated This Month</label>
 		<description>Energy Generated This Month in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -143,6 +183,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated This Year</label>
 		<description>Energy Generated This Year in wH</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -150,6 +194,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Power Generated</label>
 		<description>Power currently being generated in w</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -157,6 +205,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<description>AcFrequency in Hz</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -164,6 +216,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Phase1 Voltage</label>
 		<description>AC Phase1 Voltage in V</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -171,6 +227,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Phase2 Voltage</label>
 		<description>AC Phase2 Voltage in V</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -178,6 +238,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Phase3 Voltage</label>
 		<description>AC Phase3 Voltage in V</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -185,6 +249,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Sink Temperature</label>
 		<description>Heat Sink Temperature in degrees celcius</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 

@@ -235,7 +235,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
                             strStore.put(DEVICE_CHANNEL_OH_VOLUME_LIMIT, String.valueOf(targetValue));
                             break;
                     }
-                } else if (command instanceof StringType stringCmd) {
+                } else if (command instanceof StringType) {
                     switch (channelUID.getId()) {
                         case DEVICE_CHANNEL_CHILD_LOCK: {
                             sendRequest(new LockReq(Integer.valueOf(command.toString())));
@@ -445,6 +445,12 @@ public class LinkTapHandler extends PollingDeviceHandler {
     @Override
     public void handleBridgeDataUpdated() {
         switch (getThing().getStatus()) {
+            case ONLINE:
+                if (!initPending) {
+                    logger.trace("Handling new bridge data for {} not required already online and processed",
+                            getThing().getLabel());
+                    return;
+                }
             case OFFLINE:
             case UNKNOWN:
                 logger.trace("Handling new bridge data for {}", getThing().getLabel());

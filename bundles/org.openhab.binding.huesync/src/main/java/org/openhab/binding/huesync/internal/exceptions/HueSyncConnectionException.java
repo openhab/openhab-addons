@@ -12,17 +12,43 @@
  */
 package org.openhab.binding.huesync.internal.exceptions;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncConnectionException extends HueSyncException {
     private static final long serialVersionUID = 0L;
+    private @Nullable Exception innerException = null;
+
+    public HueSyncConnectionException(String message, Exception exception) {
+        super(message);
+        this.innerException = exception;
+    }
 
     public HueSyncConnectionException(String message) {
         super(message);
+    }
+
+    public @Nullable Exception getInnerException() {
+        return this.innerException;
+    }
+
+    @Override
+    public @Nullable String getLocalizedMessage() {
+        var innerMessage = Optional.ofNullable(this.innerException.getLocalizedMessage());
+        var message = super.getLocalizedMessage();
+
+        if (innerMessage.isPresent()) {
+            message = message + " (" + innerMessage.get() + ")";
+        }
+
+        return message;
     }
 }
