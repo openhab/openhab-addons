@@ -37,6 +37,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -51,34 +53,50 @@ import com.google.gson.JsonParser;
 @ThingActionsScope(name = "tibber")
 @NonNullByDefault
 public class TibberActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(TibberActions.class);
+
     private Optional<TibberHandler> thingHandler = Optional.empty();
 
     @RuleAction(label = "@text/actionPriceInfoStartLabel", description = "@text/actionPriceInfoStartDescription")
     public @ActionOutput(name = "result", label = "Earliest Start", type = "java.time.Instant") Instant priceInfoStart() {
-        if (thingHandler.isPresent()) {
+        if (!thingHandler.isPresent()) {
+            logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+            return Instant.MAX;
+        }
+        try {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             return calc.priceInfoStart();
-        } else {
-            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+        } catch (PriceCalculationException e) {
+            logger.warn("{}", e.getMessage());
+            return Instant.MAX;
         }
     }
 
     @RuleAction(label = "@text/actionPriceInfoEndLabel", description = "@text/actionPriceInfoEndDescription")
     public @ActionOutput(name = "result", label = "Latest End", type = "java.time.Instant") Instant priceInfoEnd() {
-        if (thingHandler.isPresent()) {
+        if (!thingHandler.isPresent()) {
+            logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+            return Instant.MIN;
+        }
+        try {
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             return calc.priceInfoEnd();
-        } else {
-            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+        } catch (PriceCalculationException e) {
+            logger.warn("{}", e.getMessage());
+            return Instant.MIN;
         }
     }
 
     @RuleAction(label = "@text/actionListPricesLabel", description = "@text/actionListPricesDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String listPrices(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
-        Map<String, Object> parameterMap = new HashMap<>();
-        Utils.convertParameters(parameters, parameterMap);
-        if (thingHandler.isPresent()) {
+        if (!thingHandler.isPresent()) {
+            logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+            return "";
+        }
+        try {
+            Map<String, Object> parameterMap = new HashMap<>();
+            Utils.convertParameters(parameters, parameterMap);
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
@@ -90,8 +108,9 @@ public class TibberActions implements ThingActions {
             } else {
                 throw new CalculationParameterException("Cannot perform calculation with parameters " + parameterMap);
             }
-        } else {
-            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+        } catch (PriceCalculationException | CalculationParameterException e) {
+            logger.warn("{}", e.getMessage());
+            return "";
         }
     }
 
@@ -99,9 +118,13 @@ public class TibberActions implements ThingActions {
     @RuleAction(label = "@text/actionBestPricePeriodLabel", description = "@text/actionBestPricePeriodDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPricePeriod(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
-        Map<String, Object> parameterMap = new HashMap<>();
-        Utils.convertParameters(parameters, parameterMap);
-        if (thingHandler.isPresent()) {
+        if (!thingHandler.isPresent()) {
+            logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+            return "";
+        }
+        try {
+            Map<String, Object> parameterMap = new HashMap<>();
+            Utils.convertParameters(parameters, parameterMap);
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
@@ -147,17 +170,22 @@ public class TibberActions implements ThingActions {
             } else {
                 throw new CalculationParameterException("Cannot perform calculation with parameters " + parameterMap);
             }
-        } else {
-            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+        } catch (PriceCalculationException | CalculationParameterException e) {
+            logger.warn("{}", e.getMessage());
+            return "";
         }
     }
 
     @RuleAction(label = "@text/actionBestPriceScheduleLabel", description = "@text/actionBestPriceScheduleDescription")
     public @ActionOutput(name = "result", label = "@text/actionOutputResultLabel", type = "java.lang.String") String bestPriceSchedule(
             @ActionInput(name = "parameters", label = "@text/actionInputParametersLabel", type = "java.lang.Object") Object parameters) {
-        Map<String, Object> parameterMap = new HashMap<>();
-        Utils.convertParameters(parameters, parameterMap);
-        if (thingHandler.isPresent()) {
+        if (!thingHandler.isPresent()) {
+            logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+            return "";
+        }
+        try {
+            Map<String, Object> parameterMap = new HashMap<>();
+            Utils.convertParameters(parameters, parameterMap);
             PriceCalculator calc = thingHandler.get().getPriceCalculator();
             completeConfig(parameterMap);
             Instant start = (Instant) parameterMap.get(PARAM_EARLIEST_START);
@@ -181,8 +209,9 @@ public class TibberActions implements ThingActions {
             } else {
                 throw new CalculationParameterException("Cannot perform calculation with parameters " + parameterMap);
             }
-        } else {
-            throw new PriceCalculationException("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+        } catch (PriceCalculationException | CalculationParameterException e) {
+            logger.warn("{}", e.getMessage());
+            return "";
         }
     }
 
@@ -224,7 +253,7 @@ public class TibberActions implements ThingActions {
      *
      * @param parameterMap
      */
-    private void completeConfig(Map<String, Object> parameterMap) {
+    private void completeConfig(Map<String, Object> parameterMap) throws CalculationParameterException {
         parameterMap.putIfAbsent(PARAM_EARLIEST_START, Instant.now());
         parameterMap.putIfAbsent(PARAM_LATEST_END, priceInfoEnd());
         parameterMap.putIfAbsent(PARAM_ASCENDING, true);

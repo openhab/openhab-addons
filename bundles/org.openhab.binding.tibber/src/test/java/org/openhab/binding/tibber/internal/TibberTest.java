@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
+import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -123,7 +124,7 @@ public class TibberTest {
         }
     }
 
-    void laundryCurveConversion() {
+    void laundryCurveConversion() throws CalculationParameterException {
         String fileName = "src/test/resources/laundry-curve.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));

@@ -144,7 +144,7 @@ public class PriceCalculator {
      * @param durationSeconds duration in seconds
      * @return price according to priceMap
      */
-    public double calculatePrice(Instant start, int powerW, long durationSeconds) {
+    public double calculatePrice(Instant start, int powerW, long durationSeconds) throws PriceCalculationException {
         checkBoundaries(start, start.plus(durationSeconds, ChronoUnit.SECONDS));
         Entry<Instant, PriceInfo> startEntry = priceMap.floorEntry(start);
         Entry<Instant, PriceInfo> nextEntry = priceMap.higherEntry(start);
@@ -173,7 +173,8 @@ public class PriceCalculator {
      * @param curve power duration tuples representing a device power curve
      * @return Map with results of cheapest start and price plus most expensive start
      */
-    public Map<String, Object> calculateBestPrice(Instant earliestStart, Instant latestEnd, List<CurveEntry> curve) {
+    public Map<String, Object> calculateBestPrice(Instant earliestStart, Instant latestEnd, List<CurveEntry> curve)
+            throws PriceCalculationException {
         checkBoundaries(earliestStart, latestEnd);
         int totalDuration = 0;
         for (Iterator<CurveEntry> iterator = curve.iterator(); iterator.hasNext();) {
@@ -226,7 +227,8 @@ public class PriceCalculator {
      * @param ascending true for ascending, false for descending order
      * @return list matching exactly between the timestamps with PriceInfo
      */
-    public List<PriceInfo> listPrices(Instant earliestStart, Instant latestEnd, boolean ascending) {
+    public List<PriceInfo> listPrices(Instant earliestStart, Instant latestEnd, boolean ascending)
+            throws PriceCalculationException {
         checkBoundaries(earliestStart, latestEnd);
         TreeMap<Instant, PriceInfo> calculationMap = new TreeMap<>();
         for (Entry<Instant, PriceInfo> entry : priceMap.entrySet()) {
@@ -287,7 +289,7 @@ public class PriceCalculator {
      * @return List of ScheduleEntries
      */
     public List<ScheduleEntry> calculateNonConsecutive(Instant earliestStart, Instant latestEnd, int powerW,
-            int durationS) {
+            int durationS) throws PriceCalculationException {
         checkBoundaries(earliestStart, latestEnd);
         List<PriceInfo> sortedList = listPrices(earliestStart, latestEnd, true);
         List<ScheduleEntry> schedule = new ArrayList<>();
@@ -367,7 +369,7 @@ public class PriceCalculator {
      * @param start
      * @param end
      */
-    private void checkBoundaries(Instant start, Instant end) {
+    private void checkBoundaries(Instant start, Instant end) throws PriceCalculationException {
         if (!start.isBefore(end)) {
             throw new PriceCalculationException("Calculation start " + start + " is after end " + end);
         }
