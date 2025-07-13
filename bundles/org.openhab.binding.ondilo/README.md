@@ -28,7 +28,7 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 
 Ondilo ICO takes measures every hour.
 Higher polling will not increase the update interval.
-The binding automatically adjusts the polling schedule to match the expected time of the next measure, which is typically 1 hour (plus 1 minute buffer) after the previous measure.
+The binding automatically adjusts the polling schedule to match the expected time of the next measure, which is typically 1 hour (plus 1.5 minutes buffer) after the previous measure.
 
 The requests to the Ondilo Customer API are limited to the following per user quotas:
 
@@ -68,7 +68,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 | recommendation-message    | String                  | false    | R      | Message of the current recommendation                  |
 | recommendation-created-at | String                  | true     | R      | Creation time of the current recommendation            |
 | recommendation-updated-at | String                  | true     | R      | Last update time of the current recommendation         |
-| recommendation-status     | String                  | false    | R      | Status of the current recommendation                   |
+| recommendation-status     | String                  | false    | R/W    | Status of the current recommendation (`waiting`/`ok`)<br/>`sendCommand("ok")` to validate current `waiting` recommendation |
 | recommendation-deadline   | String                  | true     | R      | Deadline of the current recommendation                 |
 
 ## Full Example

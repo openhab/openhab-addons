@@ -223,7 +223,12 @@
 		<tags>
 			<tag>Status</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state>
+			<options>
+				<option value="waiting">waiting</option>
+				<option value="ok">ok</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="deadline" advanced="true">
 		<item-type>DateTime</item-type>

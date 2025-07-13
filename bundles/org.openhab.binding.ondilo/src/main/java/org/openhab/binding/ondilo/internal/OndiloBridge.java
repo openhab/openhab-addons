@@ -134,11 +134,11 @@ public class OndiloBridge {
 
     private void adaptPollingToValueTime(ZonedDateTime lastValueTime, int refreshInterval) {
         // Measures are taken every 60 minutes, so we should be able to
-        // retrieve next data directly 61 minutes after the last measure.
+        // retrieve next data directly 60 minutes + buffer of 90 seconds after the last measure.
         // This can help to avoid polling too frequently and hitting API rate limits.
-        // If the last measure was taken at 12:00, we will poll again at 13:01.
+        // If the last measure was taken at 12:00°°, we will poll again at 13:01³°.
         // This allows for a buffer in case the measure is not available immediately.
-        ZonedDateTime nextValueTime = lastValueTime.plusMinutes(61);
+        ZonedDateTime nextValueTime = lastValueTime.plusHours(1).plusMinutes(1).plusSeconds(30);
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime scheduledTime = now.plusSeconds(refreshInterval);
         if (nextValueTime.isBefore(scheduledTime)) {
@@ -191,14 +191,42 @@ public class OndiloBridge {
                 logger.trace("No Recommendations available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearRecommendationChannels();
             } else {
-                Recommendation recommendation = recommendations.getFirst();
-                logger.trace("Recommentation: id={}, title={}", recommendation.id, recommendation.title);
+                Recommendation waitingRecommendation = null;
+                for (Recommendation rec : recommendations) {
+                    if (rec.status == Recommendation.Status.waiting) {
+                        waitingRecommendation = rec;
+                        break;
+                    }
+                }
+                Recommendation recommendation;
+                if (waitingRecommendation != null) {
+                    logger.trace("Waiting Recommendation: id={}, title={}", waitingRecommendation.id,
+                            waitingRecommendation.title);
+                    recommendation = waitingRecommendation;
+                } else {
+                    recommendation = recommendations.get(0);
+                    logger.trace("Latest Recommentation: id={}, title={}", recommendation.id, recommendation.title);
+                }
                 ondiloHandler.updateRecommendationChannels(recommendation);
             }
         } else {
             logger.debug("No OndiloHandler found for Ondilo ICO with ID: {}", id);
         }
         return lastValueTime;
+    }
+
+    public void validateRecommendation(int poolId, int recommendationId) {
+        OndiloApiClient apiClient = this.apiClient;
+        if (apiClient != null) {
+            String response = apiClient.put("/pools/" + poolId + "/recommendations/" + recommendationId);
+            if (response != null && "\"Done\"".equals(response.trim())) {
+                logger.trace("Validated Recommendation successfully");
+            } else {
+                logger.warn("Failed to validate Recommendation, API response: {}", response);
+            }
+        } else {
+            logger.warn("OndiloApiClient is not initialized, cannot validate recommendation");
+        }
     }
 
     public @Nullable List<Pool> getPools() {

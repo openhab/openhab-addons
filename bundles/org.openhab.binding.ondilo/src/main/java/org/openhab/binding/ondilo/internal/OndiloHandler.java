@@ -56,6 +56,7 @@ public class OndiloHandler extends BaseThingHandler {
     private static final String NO_ID = "NO_ID";
     private final Logger logger = LoggerFactory.getLogger(OndiloHandler.class);
     private final TimeZoneProvider timeZoneProvider;
+    private int recommendationId = 0; // Used to track the last recommendation ID processed
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
     private final int configPoolId;
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
@@ -74,6 +75,28 @@ public class OndiloHandler extends BaseThingHandler {
             // not implemented as it would causes >10 channel updates in a row during setup (exceeds given API quota)
             // If you want to update the values, use the poll channel instead
             return;
+        } else if (CHANNEL_RECOMMENDATION_STATUS.equals(channelUID.getId())) {
+            if (command instanceof StringType cmd) {
+                try {
+                    Recommendation.Status status = Recommendation.Status.valueOf(cmd.toString());
+                    if (status == Recommendation.Status.ok) {
+                        OndiloBridge ondiloBridge = getOndiloBridge();
+                        if (ondiloBridge != null && this.recommendationId != 0) {
+                            ondiloBridge.validateRecommendation(configPoolId, recommendationId);
+                        } else {
+                            logger.warn(
+                                    "Cannot validate recommendation, as the bridge is not initialized or no recommendation ID is set");
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid Status: {}, Error: {}", cmd.toString(), e.getMessage());
+                }
+            } else {
+                logger.warn("Received command for channel {} with unsupported type: {}", channelUID.getId(),
+                        command.getClass().getSimpleName());
+            }
+        } else {
+            logger.warn("Received command for unknown channel: {}", channelUID.getId());
         }
     }
 
@@ -146,6 +169,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, UnDefType.NULL);
         updateState(CHANNEL_RECOMMENDATION_STATUS, UnDefType.NULL);
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, UnDefType.NULL);
+        this.recommendationId = 0; // Reset last processed recommendation ID
     }
 
     public ZonedDateTime updateLastMeasuresChannels(LastMeasure lastMeasures) {
@@ -197,8 +221,9 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_MESSAGE, new StringType(recommendation.message));
         updateState(CHANNEL_RECOMMENDATION_CREATED_AT, new DateTimeType(recommendation.created_at));
         updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updated_at));
-        updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status));
+        updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status.name()));
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
+        this.recommendationId = recommendation.id; // Update last processed recommendation ID
     }
 
     @Nullable

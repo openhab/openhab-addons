@@ -81,6 +81,35 @@ public class OndiloApiClient {
         return null;
     }
 
+    @Nullable
+    public synchronized String put(String endpoint) {
+        try {
+            refreshAccessTokenIfNeeded();
+            URL url = new URI(ONDILO_API_URL + endpoint).toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Authorization", "Bearer " + bearer);
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Charset", "utf-8");
+            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
+            conn.connect();
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                try (InputStream is = conn.getInputStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
+                    return scanner.useDelimiter("\\A").next();
+                }
+            } else {
+                logger.warn("Ondilo API request failed with code: {}", responseCode);
+            }
+        } catch (InterruptedIOException e) {
+            logger.debug("Ondilo API request interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        } catch (IOException | URISyntaxException e) {
+            logger.warn("Ondilo API request error", e);
+        }
+        return null;
+    }
+
     private void refreshAccessTokenIfNeeded() {
         OAuthClientService oAuthService = this.oAuthService;
         AccessTokenResponse accessTokenResponse = this.accessTokenResponse;

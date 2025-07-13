@@ -30,11 +30,17 @@ public class Recommendation {
      * "deadline": "2020-03-26T00:00:00+0000"
      * }
      */
+
     public int id;
     public String title;
     public String message;
     public String created_at;
     public String updated_at;
-    public String status;
+    public Status status;
     public String deadline;
+
+    public enum Status {
+        waiting,
+        ok
+    }
 }
