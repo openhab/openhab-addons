@@ -107,7 +107,7 @@
 
 	<thing-type id="shellyplusshutter">
 		<label>ShellyPlus Shutter</label>
-		<description>@text/thing-type.shelly.shellyplusshutter-roller.description</description>
+		<description>@text/thing-type.shelly.shellyplusshutter.description</description>
 		<category>Rollershutter</category>
 		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
