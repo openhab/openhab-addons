@@ -32,6 +32,7 @@ import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
 import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
+import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 
 import com.google.gson.JsonArray;
@@ -82,7 +83,7 @@ public class TestPriceCalculator {
     }
 
     @Test
-    void testPriceCalculation() {
+    void testPriceCalculation() throws PriceCalculationException {
         // Price of first available hour
         Instant start = priceCalculator.priceInfoStart();
         double price = priceCalculator.calculatePrice(start, 1000, 3600);
@@ -130,7 +131,7 @@ public class TestPriceCalculator {
     }
 
     @Test
-    void testPriceList() {
+    void testPriceList() throws PriceCalculationException {
         // out of bounds
         Instant start = Instant.parse("2025-05-18T05:23:14.000+02:00");
         Instant end = Instant.parse("2025-05-18T14:49:58.000+02:00");
@@ -149,7 +150,7 @@ public class TestPriceCalculator {
     }
 
     @Test
-    void testCurveCalculation() {
+    void testCurveCalculation() throws CalculationParameterException, PriceCalculationException {
         String fileName = "src/test/resources/laundry-curve.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -173,7 +174,7 @@ public class TestPriceCalculator {
     }
 
     @Test
-    void testBestPriceCalculation() {
+    void testBestPriceCalculation() throws PriceCalculationException {
         Map<String, Object> result = priceCalculator.calculateBestPrice(priceCalculator.priceInfoStart(),
                 priceCalculator.priceInfoEnd(), List.of(new CurveEntry(1786, 1800)));
         assertEquals("2025-05-18T12:00:00Z", result.get("cheapestStart"), "Cheapest Start");
@@ -190,7 +191,7 @@ public class TestPriceCalculator {
     }
 
     @Test
-    void testBestPriceScheduleCalculation() {
+    void testBestPriceScheduleCalculation() throws PriceCalculationException {
         List<ScheduleEntry> schedule = priceCalculator.calculateNonConsecutive(priceCalculator.priceInfoStart(),
                 priceCalculator.priceInfoEnd(), 11000, 8 * 3600 + 54 * 60);
         assertEquals(2, schedule.size(), "Number of schedules");

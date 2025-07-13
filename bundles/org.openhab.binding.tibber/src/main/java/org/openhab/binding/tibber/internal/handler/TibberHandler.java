@@ -351,7 +351,7 @@ public class TibberHandler extends BaseThingHandler {
         }
     }
 
-    public PriceCalculator getPriceCalculator() {
+    public PriceCalculator getPriceCalculator() throws PriceCalculationException {
         synchronized (calculatorLock) {
             if (calculator.isPresent()) {
                 return calculator.get();
