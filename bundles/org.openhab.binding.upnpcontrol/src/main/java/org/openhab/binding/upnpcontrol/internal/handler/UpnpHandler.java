@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
+import org.jupnp.controlpoint.ControlPoint;
 import org.jupnp.model.message.header.UDNHeader;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.types.UDN;
@@ -253,9 +254,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
         cancelKeepAliveJob();
-        if (device.getIdentity().getMaxAgeSeconds() > 0) {
-            keepAliveJob = upnpScheduler.scheduleWithFixedDelay(this::sendDeviceSearchRequest,
-                    device.getIdentity().getMaxAgeSeconds(), device.getIdentity().getMaxAgeSeconds(), TimeUnit.SECONDS);
+        int maxAgeSeconds = device.getIdentity().getMaxAgeSeconds();
+        if (maxAgeSeconds > 0) {
+            keepAliveJob = upnpScheduler.scheduleWithFixedDelay(this::sendDeviceSearchRequest, maxAgeSeconds,
+                    maxAgeSeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -682,14 +684,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * periodic search request will help keep the device registered.
      */
     protected void sendDeviceSearchRequest() {
-        // try {
-        // UpnpHeader<UDN> searchTarget = new UDNHeader(new UDN(getUDN()));
-        // OutgoingSearchRequest searchRequest = new OutgoingSearchRequest(searchTarget, 5);
-        // upnpService.getRouter().send(searchRequest);
-        upnpService.getControlPoint().search(new UDNHeader(new UDN(getUDN())));
-        logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
-        // } catch (RouterException e) {
-        // logger.debug("Failed to send M-SEARCH", e);
-        // }
+        ControlPoint controlPoint = upnpService.getControlPoint();
+        if (controlPoint != null) {
+            controlPoint.search(new UDNHeader(new UDN(getUDN())));
+            logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
+        }
     }
 }
