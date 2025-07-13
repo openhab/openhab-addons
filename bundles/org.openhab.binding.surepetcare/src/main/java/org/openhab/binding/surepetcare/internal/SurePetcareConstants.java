@@ -125,6 +125,6 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT = "feederLastChangeLeft";
     public static final String PET_CHANNEL_FEEDER_LAST_CHANGE_RIGHT = "feederLastChangeRight";
     public static final String PET_CHANNEL_WATER_DEVICE = "waterDevice";
-    public static final String PET_CHANNEL_WATER_LASTDRINKING = "waterLastDrinking";
+    public static final String PET_CHANNEL_WATER_LAST_DRINKING = "waterLastDrinking";
     public static final String PET_CHANNEL_WATER_LAST_CHANGE = "waterLastChange";
 }

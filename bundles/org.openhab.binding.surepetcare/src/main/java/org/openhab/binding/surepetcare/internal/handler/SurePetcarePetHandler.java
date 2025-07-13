@@ -221,7 +221,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                         updateState(PET_CHANNEL_WATER_DEVICE, new StringType(device.name));
                         updateState(PET_CHANNEL_WATER_LAST_CHANGE,
                                 new QuantityType<>(drinking.drinkChange.get(0), MetricPrefix.MILLI(Units.LITRE)));
-                        updateState(PET_CHANNEL_WATER_LASTDRINKING, new DateTimeType(drinking.drinkChangeAt));
+                        updateState(PET_CHANNEL_WATER_LAST_DRINKING, new DateTimeType(drinking.drinkChangeAt));
                     }
                 }
             } else {
