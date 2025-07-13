@@ -61,11 +61,11 @@ Zero reflects _normal_ price while values above 0 are _expensive_ and values bel
 
 Mapping:
 
-- Very Cheap : -2
-- Cheap : -1
-- Normal : 0
-- Expensive : 1
-- Very Expensive : 2
+- Very Cheap: -2
+- Cheap: -1
+- Normal: 0
+- Expensive: 1
+- Very Expensive: 2
 
 The `average` values are not delivered by the Tibber API.
 It's calculated by the binding to provide a trend line for the last 24 hours.
