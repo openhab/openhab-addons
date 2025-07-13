@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tibber.internal.config;
+package org.openhab.binding.tibber.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TibberConfiguration} class contains fields mapping configuration parameters.
+ * The {@link CalculationParameterException} exception is thrown if ThingsActions parameters contains errors
  *
- * @author Stian Kjoglum - Initial contribution
- * @author Bernd Weymann - make configuration variables public and introduce updateHour
+ * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class TibberConfiguration {
-    public String token = "";
-    public String homeid = "";
-    public int updateHour = 13;
+public class CalculationParameterException extends RuntimeException {
+    private static final long serialVersionUID = -1841031906330289887L;
+
+    public CalculationParameterException(String reason) {
+        super(reason);
+    }
 }
