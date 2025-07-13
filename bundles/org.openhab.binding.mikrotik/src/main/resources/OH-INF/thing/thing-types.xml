@@ -104,6 +104,9 @@
 				<description>RouterOS Interface name (i.e. ether1)</description>
 			</parameter>
 		</config-description>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 	</thing-type>
 
 	<thing-type id="wifiRegistration">
