@@ -252,7 +252,7 @@ public class Utils {
             case PRICE_LEVEL_VERY_EXPENSIVE:
                 return 2;
             default:
-                LOGGER.warn("Level {} cannot be mapped", levelString);
+                LOGGER.warn("Level {} cannot be mapped. Please create GitHub issue", levelString);
                 return Integer.MAX_VALUE;
         }
     }
