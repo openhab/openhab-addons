@@ -93,6 +93,7 @@ import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +166,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+    public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
@@ -267,9 +268,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
         // Mini PM has 1 meter, but no relay
-        if (thingType.equals(THING_TYPE_SHELLYPRO2_STR)) {
+        if (THING_TYPE_SHELLYPRO2.equals(thingTypeUID)) {
             profile.numMeters = 0;
-        } else if (thingType.equals(THING_TYPE_SHELLYPRO3EM_STR)) {
+        } else if (THING_TYPE_SHELLYPRO3EM.equals(thingTypeUID)) {
             profile.numMeters = 3;
         } else if (dc.pm10 != null) {
             profile.numMeters = 1;
