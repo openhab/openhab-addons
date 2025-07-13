@@ -1,0 +1,17 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "value updated",
+        "nodeId": 25,
+        "args": {
+            "commandClassName": "Binary Switch",
+            "commandClass": 37,
+            "property": "currentValue",
+            "endpoint": 0,
+            "newValue": false,
+            "prevValue": true,
+            "propertyName": "currentValue"
+        }
+    }
+}
