@@ -482,6 +482,7 @@
     <module>org.openhab.binding.yioremote</module>
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.binding.zoneminder</module>
+    <module>org.openhab.binding.zwavejs</module>
     <module>org.openhab.binding.zway</module>
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>
