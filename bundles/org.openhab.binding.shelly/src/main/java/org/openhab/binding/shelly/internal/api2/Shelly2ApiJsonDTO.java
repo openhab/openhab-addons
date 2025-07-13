@@ -932,6 +932,8 @@ public class Shelly2ApiJsonDTO {
         public Double apower;
         public Double voltage;
         public Double current;
+        @SerializedName("freq")
+        public Double frequency;
         public Double pf;
         public Shelly2Energy aenergy;
         public Shelly2DeviceStatusTemp temperature;

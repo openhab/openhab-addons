@@ -30,6 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christoph Weitkamp - Added channels 'voltage' and 'battery_level'
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
+ * @author Andrew Fiddian-Green - Added support for FRITZ!Smart Energy 250
  */
 @NonNullByDefault
 public class AVMFritzBindingConstants {
@@ -62,6 +63,7 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_HAN_FUN_DIMMABLE_BULB = "HAN_FUN_DIMMABLE_BULB";
     public static final String DEVICE_HAN_FUN_SENSOR = "HAN_FUN_SENSOR";
     public static final String DEVICE_HAN_FUN_HOST = "HAN_FUN_HOST";
+    public static final String DEVICE_SMART_ENERGY_250 = "FRITZ_Smart_Energy_250";
 
     // List of main group types
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
@@ -94,6 +96,8 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
     public static final ThingTypeUID HAN_FUN_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SENSOR);
     public static final ThingTypeUID HAN_FUN_HOST_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_HOST);
+    public static final ThingTypeUID SMART_ENERGY_250_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            DEVICE_SMART_ENERGY_250);
 
     // List of all Thing config ids
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
@@ -196,7 +200,8 @@ public class AVMFritzBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
             DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE,
-            HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE);
+            HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE,
+            SMART_ENERGY_250_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
             GROUP_SWITCH_THING_TYPE);

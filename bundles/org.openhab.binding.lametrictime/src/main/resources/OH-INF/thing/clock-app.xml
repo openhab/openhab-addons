@@ -29,6 +29,10 @@
 		<item-type>DateTime</item-type>
 		<label>Set Alarm</label>
 		<description>Set the alarm to a specific time (date is ignored)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="clockCommandType">
 		<item-type>String</item-type>

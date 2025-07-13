@@ -58,8 +58,8 @@
 		<description>Control the roller shutter position (read/write)</description>
 		<category>Blinds</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>OpenLevel</tag>
-			<tag>Opening</tag>
 		</tags>
 	</channel-type>
 

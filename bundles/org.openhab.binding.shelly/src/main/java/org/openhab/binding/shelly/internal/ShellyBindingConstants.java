@@ -48,17 +48,18 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPLUSI4, THING_TYPE_SHELLYPLUSI4DC,
             THING_TYPE_SHELLYPLUSDIMMER10V, THING_TYPE_SHELLYPLUSUNI, THING_TYPE_SHELLYPLUSHT,
             THING_TYPE_SHELLYPLUSHTG3, THING_TYPE_SHELLYPLUSSMOKE, THING_TYPE_SHELLYPLUSPLUGS,
-            THING_TYPE_SHELLYPLUSPLUGUS, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER,
-            THING_TYPE_SHELLYPLUSRGBWPM,
+            THING_TYPE_SHELLYPLUSPLUGUS, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSRGBWPM,
+            THING_TYPE_SHELLYPLUSSTRIP, THING_TYPE_SHELLYPLUS1L, THING_TYPE_SHELLYPLUS2L, THING_TYPE_SHELLYPLUSSHUTTER,
+            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63, THING_TYPE_SHELLYPLUSDIMMER,
 
             // Shelly Wall Display
             THING_TYPE_SHELLYPLUSWALLDISPLAY,
 
             // Shelly Plus Mini
-            THING_TYPE_SHELLY1MINI, THING_TYPE_SHELLYPMMINI, THING_TYPE_SHELLY1PMMINI,
+            THING_TYPE_SHELLYMINI_1, THING_TYPE_SHELLYMINI_PM, THING_TYPE_SHELLYMINI_1PM, THING_TYPE_SHELLYMINI_EM,
 
             // Shelly Pro
-            THING_TYPE_SHELLYPRO1, THING_TYPE_SHELLYPRO1PM, THING_TYPE_SHELLYPRO1CB, THING_TYPE_SHELLYPRO2_RELAY,
+            THING_TYPE_SHELLYPRO1, THING_TYPE_SHELLYPRO1PM, THING_TYPE_SHELLYPRO1CB, THING_TYPE_SHELLYPRO2,
             THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYPRO2PM_ROLLER, THING_TYPE_SHELLYPRO3,
             THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPROEM50, THING_TYPE_SHELLYPRO4PM,
 
@@ -142,6 +143,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_REACTWATTS = "reactiveWatts";
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
+    public static final String CHANNEL_EMETER_FREQUENCY = "frequency";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
     public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
     public static final String CHANNEL_GROUP_NMETER = "nmeter";
@@ -262,7 +264,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_BUTTON_TRIGGER1 = CHANNEL_BUTTON_TRIGGER + "1";
     public static final String CHANNEL_BUTTON_TRIGGER2 = CHANNEL_BUTTON_TRIGGER + "2";
 
-    public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.8.2";
     public static final String SHELLY_API_MIN_FWCOIOT = "v1.6";// v1.6.0+
     public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
@@ -299,6 +300,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 1;
     public static final int DIGITS_AMPERE = 3;
+    public static final int DIGITS_FREQUENCY = 1;
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;

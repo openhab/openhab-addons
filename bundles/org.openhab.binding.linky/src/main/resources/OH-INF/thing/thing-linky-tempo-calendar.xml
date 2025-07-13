@@ -11,11 +11,10 @@
 
 		<label>Tempo Calendar</label>
 		<description>Provides tempo calendar</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="tempo-calendar" id="tempo-calendar"/>
 		</channel-groups>
 	</thing-type>
-
-
 </thing:thing-descriptions>
