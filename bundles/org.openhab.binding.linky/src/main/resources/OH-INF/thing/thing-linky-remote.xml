@@ -17,6 +17,7 @@
 			In order to receive the data, you must activate your account at
 			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
 		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="load-curve" id="load-curve"/>
@@ -49,6 +50,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-
 </thing:thing-descriptions>
