@@ -253,13 +253,6 @@ public class Utils {
                 return 2;
             default:
                 LOGGER.warn("Level {} cannot be mapped", levelString);
-                // try fallback
-                if (levelString.toLowerCase().contains("cheap")) {
-                    return -3;
-                }
-                if (levelString.toLowerCase().contains("expensive")) {
-                    return 3;
-                }
                 return Integer.MAX_VALUE;
         }
     }
