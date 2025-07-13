@@ -37,10 +37,10 @@ public class ShellyDeviceProfileTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForApiDetermination")
     void determineApi(ThingTypeUID thingTypeUid, boolean expectedIsGeneration2, boolean expectedIsBlu) {
-        boolean actualIsGeneration2 = ShellyDeviceProfile.isGeneration2(thingTypeUid.getId());
+        boolean actualIsGeneration2 = ShellyDeviceProfile.isGeneration2(thingTypeUid);
         assertThat(actualIsGeneration2, is(equalTo(expectedIsGeneration2)));
 
-        boolean actualIsBlue = ShellyDeviceProfile.isBluSeries(thingTypeUid.getId());
+        boolean actualIsBlue = ShellyDeviceProfile.isBluSeries(thingTypeUid);
         assertThat(actualIsBlue, is(equalTo(expectedIsBlu)));
     }
 
