@@ -197,7 +197,7 @@ public class TibberHandler extends BaseThingHandler {
             int responseStatus = cr.getStatus();
             String currencyResponse = cr.getContentAsString();
             logger.trace("doInitialze response {} - {}", responseStatus, currencyResponse);
-            if (responseStatus == 200) {
+            if (responseStatus == HttpStatus.OK_200) {
                 JsonObject jsonResponse = (JsonObject) JsonParser.parseString(currencyResponse);
                 JsonObject currency = Utils.getJsonObject(jsonResponse, CURRENCY_QUERY_JSON_PATH);
                 if (!currency.isEmpty()) {
