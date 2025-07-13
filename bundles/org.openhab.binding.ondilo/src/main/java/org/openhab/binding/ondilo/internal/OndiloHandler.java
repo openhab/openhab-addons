@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class OndiloHandler extends BaseThingHandler {
     private static final String NO_ID = "NO_ID";
     private final Logger logger = LoggerFactory.getLogger(OndiloHandler.class);
-    private int recommendationId = 0; // Used to track the last recommendation ID processed
+    private int recommendationId; // Used to track the last recommendation ID processed
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
     private final int configPoolId;
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
@@ -100,6 +100,9 @@ public class OndiloHandler extends BaseThingHandler {
     public void initialize() {
         OndiloBridge ondiloBridge = getOndiloBridge();
         if (ondiloBridge != null) {
+            // Initialize to 0, as no recommendation has been processed yet
+            recommendationId = 0;
+
             if (configPoolId == 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
                 return;
@@ -140,6 +143,7 @@ public class OndiloHandler extends BaseThingHandler {
         if (!ondiloId.get().equals(NO_ID)) {
             ondiloId.set(NO_ID);
         }
+        recommendationId = 0; // Reset last processed recommendation ID
     }
 
     public void clearLastMeasuresChannels() {
