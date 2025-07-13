@@ -29,12 +29,9 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
-import org.jupnp.model.message.discovery.OutgoingSearchRequest;
 import org.jupnp.model.message.header.UDNHeader;
-import org.jupnp.model.message.header.UpnpHeader;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.types.UDN;
-import org.jupnp.transport.RouterException;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -103,6 +100,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     protected final Object invokeActionLock = new Object();
 
+    protected @Nullable ScheduledFuture<?> keepAliveJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected final Object jobLock = new Object();
 
@@ -156,6 +154,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public void dispose() {
         cancelPollingJob();
+        cancelKeepAliveJob();
         removeSubscriptions();
 
         UpnpControlUtil.playlistsUnsubscribe(this);
@@ -191,6 +190,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             job.cancel(true);
         }
         pollingJob = null;
+    }
+
+    private void cancelKeepAliveJob() {
+        ScheduledFuture<?> job = keepAliveJob;
+
+        if (job != null) {
+            job.cancel(true);
+        }
+        keepAliveJob = null;
     }
 
     /**
@@ -244,6 +252,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
+        cancelKeepAliveJob();
+        if (device.getIdentity().getMaxAgeSeconds() > 0) {
+            keepAliveJob = upnpScheduler.scheduleWithFixedDelay(this::sendDeviceSearchRequest,
+                    device.getIdentity().getMaxAgeSeconds(), device.getIdentity().getMaxAgeSeconds(), TimeUnit.SECONDS);
+        }
     }
 
     protected void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
@@ -669,13 +682,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * periodic search request will help keep the device registered.
      */
     protected void sendDeviceSearchRequest() {
-        try {
-            UpnpHeader<UDN> searchTarget = new UDNHeader(new UDN(getUDN()));
-            OutgoingSearchRequest searchRequest = new OutgoingSearchRequest(searchTarget, 5);
-            upnpService.getRouter().send(searchRequest);
-            logger.debug("M-SEARCH query sent for device UDN: {}", searchTarget.getValue());
-        } catch (RouterException e) {
-            logger.debug("Failed to send M-SEARCH", e);
-        }
+        // try {
+        // UpnpHeader<UDN> searchTarget = new UDNHeader(new UDN(getUDN()));
+        // OutgoingSearchRequest searchRequest = new OutgoingSearchRequest(searchTarget, 5);
+        // upnpService.getRouter().send(searchRequest);
+        upnpService.getControlPoint().search(new UDNHeader(new UDN(getUDN())));
+        logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
+        // } catch (RouterException e) {
+        // logger.debug("Failed to send M-SEARCH", e);
+        // }
     }
 }
