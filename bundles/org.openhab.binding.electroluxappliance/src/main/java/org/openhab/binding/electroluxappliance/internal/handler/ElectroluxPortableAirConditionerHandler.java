@@ -227,7 +227,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                     return reported.getUiLockModeOn() ? OnOffType.ON : OnOffType.OFF;
                 }
             case CHANNEL_FAN_MODE:
-                if (reported.isReadFanSpeedSetting()) {
+                if (reported.getIsReadFanSpeedSetting()) {
                     return new StringType(reported.getFanSpeedSetting().toUpperCase());
                 }
             case CHANNEL_MODE:
@@ -292,6 +292,11 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
                     return new DateTimeType(
                             dto.getApplianceStateTimestamp().plus(reported.getStopTime(), ChronoUnit.SECONDS));
                 }
+            case CHANNEL_FILTER_STATE:
+                if (reported.getIsReadFilterState()) {
+                    return new StringType(reported.getFilterState().toUpperCase());
+                }
+
         }
         return UnDefType.UNDEF;
     }
