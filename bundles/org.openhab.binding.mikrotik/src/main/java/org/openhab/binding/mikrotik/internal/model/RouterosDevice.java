@@ -54,15 +54,14 @@ public class RouterosDevice {
     public static final String PROP_NAME_KEY = "name";
     public static final String PROP_SSID_KEY = "ssid";
     public static final String PROP_CONFIG_SSID_KEY = "configuration.ssid";
+
     private static final String CMD_PRINT_IFACES = "/interface/print";
     private static final String CMD_PRINT_IFACE_TYPE_TPL = "/interface/%s/print";
     private static final String CMD_MONTOR_IFACE_MONITOR_TPL = "/interface/%s/monitor numbers=%s once";
     private static final String CMD_MONITOR_POE_TPL = "/interface/%s/poe/monitor numbers=%s once";
     private static final String CMD_SET_POE_OUT_TPL = "/interface/%s/poe/set numbers=%s poe-out=%s";
     private static final String CMD_PRINT_CAPS_IFACES = "/caps-man/interface/print";
-    private static final String CMD_PRINT_CAPSMAN_REGS = "/caps-man/registration-table/print";
     private static final String CMD_PRINT_WIFI_REGS = "/interface/wifi/registration-table/print";
-    private static final String CMD_PRINT_WIRELESS_REGS = "/interface/wireless/registration-table/print";
     private static final String CMD_PRINT_RESOURCE = "/system/resource/print";
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
     private static final String CMD_PRINT_PACKAGES = "/system/package/print";
@@ -124,6 +123,7 @@ public class RouterosDevice {
     public void start() throws MikrotikApiException {
         login();
         updateRouterboardInfo();
+        RouterosRouterboardInfo rbInfo = this.rbInfo;
         if (rbInfo != null) {
             logger.debug("RouterOS Version = {}", rbInfo.getFirmwareVersion());
         }
@@ -422,7 +422,7 @@ public class RouterosDevice {
             return;
         }
 
-        if (!state.equals("auto-on") && !state.equals("forced-on") && !state.equals("off")) {
+        if (!"auto-on".equals(state) && !"forced-on".equals(state) && !"off".equals(state)) {
             logger.warn("Unsupported PoE state '{}'", state);
 
             return;

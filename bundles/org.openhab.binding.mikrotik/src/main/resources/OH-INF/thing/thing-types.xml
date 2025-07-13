@@ -97,16 +97,19 @@
 			<!-- ppp & vpn interface channels -->
 			<channel id="upSince" typeId="upSince"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>name</representation-property>
+
 		<config-description>
 			<parameter name="name" type="text" required="true">
 				<label>Interface Name</label>
 				<description>RouterOS Interface name (i.e. ether1)</description>
 			</parameter>
 		</config-description>
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
+
 	</thing-type>
 
 	<thing-type id="wifiRegistration">
