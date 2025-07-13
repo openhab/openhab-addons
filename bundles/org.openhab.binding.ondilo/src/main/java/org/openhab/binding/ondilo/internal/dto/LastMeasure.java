@@ -25,7 +25,7 @@ public class LastMeasure {
      * {
      * "data_type": "temperature",
      * "value": 12.5,
-     * "value_time": "2020-03-23T16:08:51+0000",
+     * "value_time": "2025-07-13 04:33:39",
      * "is_valid": true,
      * "exclusion_reason": null
      * }
