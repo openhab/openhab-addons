@@ -16,6 +16,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -112,8 +113,8 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     }
 
     @Override
-    public @Nullable String getUDN() {
-        return (String) this.getConfig().get(WemoBindingConstants.UDN);
+    public String getUDN() {
+        return Objects.requireNonNullElse((String) this.getConfig().get(WemoBindingConstants.UDN), "");
     }
 
     protected boolean isUpnpDeviceRegistered() {

@@ -44,6 +44,10 @@ public class SerialRego6xxHeatPumpHandler extends Rego6xxHeatPumpHandler {
     @Override
     public void initialize() {
         String portName = (String) getConfig().get(RegoHeatPumpBindingConstants.PORT_NAME);
+        if (portName == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured");
+            return;
+        }
         serialPortIdentifier = serialPortManager.getIdentifier(portName);
         if (serialPortIdentifier == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

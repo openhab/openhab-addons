@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pioneeravr.internal.handler;
 
+import java.util.Objects;
+
 import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnection;
 import org.openhab.binding.pioneeravr.internal.protocol.serial.SerialAvrConnection;
@@ -34,7 +36,9 @@ public class SerialAvrHandler extends AbstractAvrHandler {
 
     @Override
     protected AvrConnection createConnection() {
-        String serialPort = (String) this.getConfig().get(PioneerAvrBindingConstants.SERIAL_PORT_PARAMETER);
+        String serialPort = Objects.requireNonNullElse(
+                (String) this.getConfig().get(PioneerAvrBindingConstants.SERIAL_PORT_PARAMETER), "");
+        ;
 
         return new SerialAvrConnection(serialPort, serialPortManager);
     }
