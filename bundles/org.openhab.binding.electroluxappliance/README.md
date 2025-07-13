@@ -121,6 +121,7 @@ The following channels are supported:
 | on-timer-active           | Switch             | Whether a timer is active to turn on the appliance.                                                 | Yes - When on applies on-timer-duration  |
 | on-timer-duration         | Number:Time        | Whether a timer is active to turn on the appliance. (Applied when on-timer-active is switched on)   | Yes - to set time for on-timer-active    |
 | on-timer-time             | DateTime           | The time when the auto on timer will be reached.                                                    | No                                       |
+| filter-state              | String             | The air filters state.                                                                              | No                                       |
 
 ## Full Example
 
@@ -178,4 +179,5 @@ DateTime Electrolux_Air_Conditioner_Offtimertime "Auto Off Expiry [%1$tF %1$tR]"
 Switch Electrolux_Air_Conditioner_Timer_On_Activate "Timer On Activate" <Switch> (Electrolux_Air_Conditioner) [Mode, Status] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-active" }
 Number:Time Electrolux_Air_Conditioner_Timer_On_Duration "Timer On Duration [%.1f %unit%]" <Settings> (Electrolux_Air_Conditioner) [Point] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-duration", unit="s" }
 DateTime Electrolux_Air_Conditioner_Ontimertime "Auto On Expiry [%1$tF %1$tR]" <Time> (Electrolux_Air_Conditioner) [Status, Timestamp] { channel="electroluxappliance:portable-air-conditioner:myAPI:myportable-air-con:on-timer-time" }
+String Electrolux_Air_Conditioner_Filter_State "Filter State" <text> (Electrolux_Air_Conditioner) [Info, Status] { channel="electroluxappliance:portable-air-conditioner:a4f9fc0801:40308110:filter-state" }
 ```
