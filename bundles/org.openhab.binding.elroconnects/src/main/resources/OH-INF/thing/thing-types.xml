@@ -71,6 +71,7 @@
 		<label>Smoke Alarm</label>
 		<description>ELRO Connects smoke alarm</description>
 		<category>SmokeDetector</category>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="smokeAlarm" typeId="smokealarm"/>
 			<channel id="muteAlarm" typeId="mutealarm"/>
@@ -93,6 +94,7 @@
 		</supported-bridge-type-refs>
 		<label>CO Alarm</label>
 		<description>ELRO Connects CO alarm</description>
+		<semantic-equipment-tag>COSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="coAlarm" typeId="coalarm"/>
 			<channel id="muteAlarm" typeId="mutealarm"/>
@@ -115,6 +117,7 @@
 		</supported-bridge-type-refs>
 		<label>Heat Alarm</label>
 		<description>ELRO Connects heat alarm</description>
+		<semantic-equipment-tag>HeatDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="heatAlarm" typeId="heatalarm"/>
 			<channel id="muteAlarm" typeId="mutealarm"/>
@@ -137,6 +140,7 @@
 		</supported-bridge-type-refs>
 		<label>Water Alarm</label>
 		<description>ELRO Connects water alarm</description>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="waterAlarm" typeId="wateralarm"/>
 			<channel id="muteAlarm" typeId="mutealarm"/>
@@ -160,6 +164,7 @@
 		<label>Door/Window Sensor</label>
 		<description>ELRO Connects door/window contact sensor</description>
 		<category>Door</category>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="entryAlarm" typeId="entryalarm"/>
 			<channel id="entry" typeId="entry"/>
@@ -182,6 +187,7 @@
 		<label>Motion Sensor</label>
 		<description>ELRO Connects motion sensor</description>
 		<category>MotionDetector</category>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="motionAlarm" typeId="motionalarm"/>
 			<channel id="motion" typeId="system.motion"/>
@@ -204,6 +210,7 @@
 		<label>Temperature Sensor</label>
 		<description>ELRO Connects temperature sensor</description>
 		<category>Sensor</category>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
@@ -226,6 +233,7 @@
 		<label>Power Socket</label>
 		<description>ELRO Connects power socket</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="signal" typeId="system.signal-strength"/>
 			<channel id="powerState" typeId="system.power"/>
@@ -243,6 +251,9 @@
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="alarm">
@@ -319,6 +330,7 @@
 		<label>Entry Contact</label>
 		<description>Door/window contact open/closed</description>
 		<tags>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"></state>
@@ -328,12 +340,20 @@
 		<item-type>Switch</item-type>
 		<label>Mute Alarm</label>
 		<description>Mute</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="testalarm">
 		<item-type>Switch</item-type>
 		<label>Test Alarm</label>
 		<description>Trigger alarm test sound</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="temperature">

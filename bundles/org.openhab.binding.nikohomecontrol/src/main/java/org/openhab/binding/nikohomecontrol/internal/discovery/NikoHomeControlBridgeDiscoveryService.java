@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,8 +92,8 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         ThingUID uid = new ThingUID(BINDING_ID, "bridge", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
-                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withRepresentationProperty(CONFIG_HOST_NAME)
-                .build();
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withProperty(CONFIG_CONTROLLER_ID, bridgeId)
+                .withRepresentationProperty(CONFIG_CONTROLLER_ID).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -104,8 +104,8 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         ThingUID uid = new ThingUID(BINDING_ID, "bridge2", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
-                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withRepresentationProperty(CONFIG_HOST_NAME)
-                .build();
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withProperty(CONFIG_CONTROLLER_ID, bridgeId)
+                .withRepresentationProperty(CONFIG_CONTROLLER_ID).build();
         thingDiscovered(discoveryResult);
     }
 

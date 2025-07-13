@@ -11,7 +11,7 @@
 
 		<label>Gas Sensor</label>
 		<description>Sensor which sends gas measurement data (EEP: A5-09)</description>
-
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

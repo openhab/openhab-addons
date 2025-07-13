@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +30,6 @@ import org.openhab.binding.openweathermap.internal.dto.onecall.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.onecallhist.Hourly;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -61,8 +61,8 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     // the relative day in history.
     private int day = 0;
 
-    public OpenWeatherMapOneCallHistoryHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public OpenWeatherMapOneCallHistoryHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -103,6 +103,10 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     @Override
     protected void updateChannel(ChannelUID channelUID) {
         String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Cannot update {} as it has no GroupId", channelUID);
+            return;
+        }
         switch (channelGroupId) {
             case CHANNEL_GROUP_ONECALL_HISTORY:
                 updateHistoryCurrentChannel(channelUID);
@@ -233,9 +237,17 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
         String channelGroupId = channelUID.getGroupId();
         logger.debug("Updating hourly history data for channel {}, group {}, count {}", channelId, channelGroupId,
                 count);
+
         OpenWeatherMapOneCallHistAPIData localWeatherData = weatherData;
-        if (localWeatherData != null && localWeatherData.getHourly().size() > count) {
-            Hourly historyData = localWeatherData.getHourly().get(count);
+        List<Hourly> hourly;
+        if (localWeatherData == null || (hourly = localWeatherData.getHourly()) == null) {
+            logger.warn("No weather data available for channel {}, possible cause: api v3.0 does not support it",
+                    channelUID);
+            return;
+        }
+
+        if (hourly.size() > count) {
+            Hourly historyData = hourly.get(count);
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:
@@ -293,6 +305,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     @Nullable
                     State tempstate = new QuantityType<>(historyData.getVisibility(), METRE).toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
+                    break;
                 case CHANNEL_RAIN:
                     Precipitation rain = historyData.getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.get1h(), MILLI(METRE));

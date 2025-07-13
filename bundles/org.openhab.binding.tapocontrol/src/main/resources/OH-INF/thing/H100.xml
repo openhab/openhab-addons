@@ -11,7 +11,7 @@
 
 		<label>Tapo Hub H100</label>
 		<description>Tapo SmartHub H100</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="alarm" typeId="smartHubAlarms"/>
 			<channel-group id="device" typeId="deviceStateS"/>

@@ -11,25 +11,54 @@ Tested models: Emotiva XMC-2
 
 ## Discovery
 
-The binding automatically discovers devices on your network.
+The binding can discover devices on your network as long as port 7001 is opened on the openHAB machine.
+
+### Network Openings
+
+The following ports are required to be opened in the firewall of you openHAB machine to have a fully working binding:
+
+* 7001/udp - Used for device discovery, cannot be changed.
+* 7003/udp - Used for regular notifications from the Emotiva device, can be changed via the **notifyPort** configuration.
+* 7005/udp - Used for menu notifications from the Emotiva device, can be changed via the **menuNotifyPort** configuration.
 
 ## Thing Configuration
 
 The Emotiva Processor thing requires the `ipAddress` it can connect to.
 There are more parameters which all have defaults set.
 
-| Parameter             | Values                                                        | Default |
-|-----------------------|---------------------------------------------------------------|---------|
-| ipAddress             | IP address of the processor                                   | -       |
-| controlPort           | port number, e.g. 7002                                        | 7002    |
-| notifyPort            | port number, e.g. 7003                                        | 7003    |
-| infoPort              | port number, e.g. 7004                                        | 7004    |
-| setupPortTCP          | port number, e.g. 7100                                        | 7100    |
-| menuNotifyPort        | port number, e.g. 7005                                        | 7005    |
-| protocolVersion       | Emotiva Network Protocol version, e.g. 3.0                    | 2.0     |
-| keepAlive             | Time between notification update from device, in milliseconds | 7500    |
-| retryConnectInMinutes | Time between connection retry, in minutes                     | 2       |
+| Parameter              | Values                                                        | Default |
+|------------------------|---------------------------------------------------------------|---------|
+| ipAddress              | IP address of the processor                                   | -       |
+| controlPort            | port number, e.g. 7002                                        | 7002    |
+| notifyPort             | port number, e.g. 7003                                        | 7003    |
+| infoPort               | port number, e.g. 7004                                        | 7004    |
+| setupPortTCP           | port number, e.g. 7100                                        | 7100    |
+| menuNotifyPort         | port number, e.g. 7005                                        | 7005    |
+| activateFrontBar       | Activates Front Bar channels                                  | false   |
+| activateOSDMenu        | Activates OSD menu channels                                   | false   |
+| activateZone2          | Activates Zone 2 channels                                     | false   |
+| protocolVersion        | Emotiva Network Protocol version, 2.0 or 3.0 supported        | 3.0     |
+| keepAlive              | Time between notification update from device, in milliseconds | 7500    |
+| retryConnectInMinutes  | Time between connection retry, in minutes                     | 2       |
 
+### Dynamic channels and extended functionality
+
+Emotiva processors have limited processing power, so if the binding subscribes to all channels simultaneously the device might grind to a halt after a while, requiring a manual reboot of the device.
+The binding is designed to dynamically enable and disabled channels based on the selected source. 
+Furthermore, the configuration values **activateFrontBar**, **activateOSDMenu** and **activateZone2** controls extra functionality this is default off to reduce the overall load on the device.
+
+### Protocol Version
+
+Protocol version is usually reported by the device to the binding during discovery, but if a device is added manually, version 3.0 is set by default. 
+Most modern Emotiva devices supports Emotiva Network Protocol version 3.0, but some devices with older firmware versions might require version 2.0.
+
+### Keep Alive
+
+A job to monitor the availability of the device is started whenever a successful connection is made. 
+This monitors the regular a notification message received via the Control Protocol, and whenever a keep alive message is not received, the device is set OFFLINE. 
+This might be an indication the device either has been disconnected or has been turned off manually. 
+The binding will retry connecting to the device every 2 minutes, so if a device is turned back on it will automatically be discovered by the binding. 
+If the devices goes away within minutes after an initial connection, this might be an indication that the **notifyPort** has not been opened in the firewall.
 
 ## Channels
 
@@ -38,15 +67,15 @@ The Emotiva Processor supports the following channels (some channels are model s
 | Channel Type ID                    | Item Type          | Description                                                |
 |------------------------------------|--------------------|------------------------------------------------------------|
 | _Main zone_                        |                    |                                                            |
-| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |      
-| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |             
-| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         | 
-| main-zone#mute                     | Switch (RW)        | Main zone mute                                             | 
-| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   | 
+| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |
+| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |
+| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         |
+| main-zone#mute                     | Switch (RW)        | Main zone mute                                             |
+| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   |
 | _Zone 2_                           |                    |                                                            |
-| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        | 
-| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     | 
-| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           | 
+| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        |
+| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     |
+| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           |
 | zone2#mute                         | Switch (RW)        | Zone 2 mute                                                |
 | zone2#input                        | String (RW)        | Zone 2 input                                               |
 | _General_                          |                    |                                                            |
@@ -117,15 +146,15 @@ The Emotiva Processor supports the following channels (some channels are model s
 
 ## Full Example
 
-### `.things` file:
+### `.things` file
 
-```perl
+```java
 Thing emotiva:processor:1 "XMC-2" @ "Living room" [ipAddress="10.0.0.100", protocolVersion="3.0"]
 ```
 
-### `.items` file:
+### `.items` file
 
-```perl
+```java
 Switch                  emotiva-power               "Processor"                     {channel="emotiva:processor:1:general#power"}
 Dimmer                  emotiva-volume              "Volume [%d %%]"                {channel="emotiva:processor:1:main-zone#volume"}
 Number:Dimensionless    emotiva-volume-db           "Volume [%d dB]"                {channel="emotiva:processor:1:main-zone#volume-db"}
@@ -148,16 +177,16 @@ String                  emotiva-menu-tottom-center  ""                      <non
 String                  emotiva-menu-tottom-end     ""                      <none>  {channel="emotiva:processor:1:general#menu-display-bottom-end"}
 ```
 
-### `.sitemap` file:
+### `.sitemap` file
 
 ```perl
 Group item=emotiva-input label="Processor" icon="receiver" {
     Default   item=emotiva-power
-    Default   item=emotiva-mute             
-    Setpoint  item=emotiva-volume           
-    Default   item=emotiva-volume-db        step=2 minValue=-96.0 maxValue=15.0 
-    Selection item=emotiva-source           
-    Text      item=emotiva-mode-surround    
+    Default   item=emotiva-mute
+    Setpoint  item=emotiva-volume
+    Default   item=emotiva-volume-db        step=2 minValue=-96.0 maxValue=15.0
+    Selection item=emotiva-source
+    Text      item=emotiva-mode-surround
     Setpoint  item=emotiva-speakers-center  step=0.5 minValue=-12.0 maxValue=12.0
     Default   item=emotiva-zone2power
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
@@ -267,8 +268,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     }
 
     /**
-     * Returns the HomematicGateway.
+     * Returns the {@link HomematicGateway}.
+     *
+     * @return The gateway or null if gateway has not yet been initialized.
      */
+    @Nullable
     public HomematicGateway getGateway() {
         return gateway;
     }

@@ -8,7 +8,7 @@ A full regex is in the form `s/<regex>/<substitution>/g` whereat the delimiter `
 The regular expression in the format `s/<regex>/result/g`, replaces all occurrences of `<regex>` in the source string with `result`.
 The regular expression in the format `s/<regex>/result/` (without `g`), replaces the first occurrence of `<regex>` in the source string with `result`.
 
-If the regular expression contains a [capture group](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html#cg) defined by `()`, it returns the captured string.
+If the regular expression contains a [capture group](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#cg) defined by `()`, it returns the captured string.
 Multiple capture groups can be used to retrieve multiple strings and can be combined as a result string defined in the `substitution`.
 
 The transformation can be set to be restricted to only match if the input string begins with a character by prepending `^` to the beginning of a pattern or to only match if the input string ends with a specified character by appending `$` at the end.
@@ -39,7 +39,7 @@ the regex transformation can be used to extract the value to display it on the l
 
 **.items**
 
-```csv
+```java
 String  Temperature_str "Temperature [REGEX(.*=(\\d*\\.\\d*).*):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
@@ -62,17 +62,17 @@ Thus the value `44.0` would be saved as a number.
 
 **.rules**
 
-```php
+```java
 rule "Convert String to Item Number"
-  when
+when
     Item Temperature_str changed
- then
+then
     // use the transformation service to retrieve the value
     val newValue = transform("REGEX", ".*=(\\d*\\.\\d*).*", Temperature_str.state.toString)
 
     // post the new value to the Number Item
     Temperature.postUpdate( newValue )
- end
+end
 ```
 
 Now the resulting Number can also be used in the label to [change the color](https://docs.openhab.org/configuration/sitemaps.html#label-and-value-colors) or in a rule as value for comparison.

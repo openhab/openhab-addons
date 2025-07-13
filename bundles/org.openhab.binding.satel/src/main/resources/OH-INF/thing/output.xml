@@ -17,7 +17,7 @@
 <li>wireless - in the INTEGRA 128-WRL control panel and/or when the ACU-120, ACU-270, ACU-100 or ACU-250 controller is connected. The number of available wireless outputs depends on the number of wireless devices registered in the system and is determined during the procedure of adding wireless devices.</li>
 <li>virtual - the outputs which do not exist physically, but can be used e.g. for execution of logical functions.</li></ul>]]>
 		</description>
-
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel typeId="output_state" id="state"/>
 		</channels>
@@ -47,6 +47,9 @@
 		<item-type>Switch</item-type>
 		<label>Output State</label>
 		<description>Represents state of the output</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

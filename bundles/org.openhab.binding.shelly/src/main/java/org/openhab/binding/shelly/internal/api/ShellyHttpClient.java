@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,6 @@ public class ShellyHttpClient {
         this.thingName = thingName;
         setConfig(thingName, config);
         this.httpClient = httpClient;
-        this.httpClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {

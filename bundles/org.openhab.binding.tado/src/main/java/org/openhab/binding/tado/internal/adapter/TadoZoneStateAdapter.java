@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.tado.internal.adapter;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +29,7 @@ import org.openhab.binding.tado.swagger.codegen.api.model.CoolingZoneSetting;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.swagger.codegen.api.model.HeatingZoneSetting;
 import org.openhab.binding.tado.swagger.codegen.api.model.HotWaterZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.OpenWindow;
 import org.openhab.binding.tado.swagger.codegen.api.model.Overlay;
 import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionType;
 import org.openhab.binding.tado.swagger.codegen.api.model.PercentageDataPoint;
@@ -226,13 +225,8 @@ public class TadoZoneStateAdapter {
         return "ON".equals(power.getValue());
     }
 
-    private static DecimalType toDecimalType(double value) {
-        BigDecimal decimal = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
-        return new DecimalType(decimal);
-    }
-
     private static DateTimeType toDateTimeType(OffsetDateTime offsetDateTime) {
-        return new DateTimeType(offsetDateTime.toZonedDateTime());
+        return new DateTimeType(offsetDateTime.toInstant());
     }
 
     private static State toTemperatureState(@Nullable TemperatureObject temperature, TemperatureUnit temperatureUnit) {
@@ -260,6 +254,18 @@ public class TadoZoneStateAdapter {
             return OnOffType.from(openWindowDetected);
         }
         return OnOffType.OFF;
+    }
+
+    public State getOpenWindowRemainingTime() {
+        int seconds = 0;
+        OpenWindow openWindow = zoneState.getOpenWindow();
+        if (openWindow != null) {
+            Integer remainingSeconds = openWindow.getRemainingTimeInSeconds();
+            if (remainingSeconds != 0) {
+                seconds = remainingSeconds.intValue();
+            }
+        }
+        return new QuantityType<>(seconds, Units.SECOND);
     }
 
     public State getLight() {

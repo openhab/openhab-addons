@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,16 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 import org.openhab.core.types.util.UnitUtils;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Number, following the https://www.home-assistant.io/components/number.mqtt/ specification.
@@ -30,64 +30,57 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Number extends AbstractComponent<Number.ChannelConfiguration> {
+public class Number extends AbstractComponent<Number.Configuration> {
     public static final String NUMBER_CHANNEL_ID = "number"; // Randomly chosen channel "ID"
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Number");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Number");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("unit_of_measurement")
-        protected @Nullable String unitOfMeasurement;
-        @SerializedName("device_class")
-        protected @Nullable String deviceClass;
+        double getMin() {
+            return getDouble("min");
+        }
 
-        @SerializedName("command_template")
-        protected @Nullable String commandTemplate;
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
+        double getMax() {
+            return getDouble("max");
+        }
 
-        protected BigDecimal min = new BigDecimal(1);
-        protected BigDecimal max = new BigDecimal(100);
-        protected BigDecimal step = new BigDecimal(1);
+        String getPayloadReset() {
+            return getString("payload_reset");
+        }
 
-        @SerializedName("payload_reset")
-        protected String payloadReset = "None";
+        double getStep() {
+            return getDouble("step");
+        }
 
-        protected String mode = "auto";
+        @Nullable
+        String getUnitOfMeasurement() {
+            return getOptionalString("unit_of_measurement");
+        }
 
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Number(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+    public Number(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
+        NumberValue value = new NumberValue(BigDecimal.valueOf(config.getMin()), BigDecimal.valueOf(config.getMax()),
+                BigDecimal.valueOf(config.getStep()), UnitUtils.parseUnit(config.getUnitOfMeasurement()));
 
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Number does not support forced optimistic mode");
-        }
+        buildChannel(NUMBER_CHANNEL_ID, ComponentChannelType.NUMBER, value, "Number",
+                componentContext.getUpdateListener()).stateTopic(config.getStateTopic(), config.getValueTemplate())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
+                .inferOptimistic(config.isOptimistic()).build();
 
-        NumberValue value = new NumberValue(channelConfiguration.min, channelConfiguration.max,
-                channelConfiguration.step, UnitUtils.parseUnit(channelConfiguration.unitOfMeasurement));
-
-        buildChannel(NUMBER_CHANNEL_ID, ComponentChannelType.NUMBER, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .build();
+        finalizeChannels();
     }
 }

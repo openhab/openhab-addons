@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link AbstractChannelThrottler} is abstract class implementing a
  * throttler with one global execution rate, or rate limiter
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 abstract class AbstractChannelThrottler implements ChannelThrottler {
 
     protected final Rate totalRate;
@@ -37,7 +41,7 @@ abstract class AbstractChannelThrottler implements ChannelThrottler {
         this.timeProvider = timeProvider;
     }
 
-    protected synchronized long callTime(Rate channel) {
+    protected synchronized long callTime(@Nullable Rate channel) {
         long now = timeProvider.getCurrentTimeInMillis();
         long callTime = totalRate.callTime(now);
         if (channel != null) {

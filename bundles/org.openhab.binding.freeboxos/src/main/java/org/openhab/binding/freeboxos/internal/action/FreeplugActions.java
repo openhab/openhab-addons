@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class FreeplugActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "reset freeplug", description = "Resets the Freeplug")
+    @RuleAction(label = "@text/action.resetPlug.label", description = "@text/action.resetPlug.description")
     public void resetPlug() {
         logger.debug("Freeplug reset requested");
         FreeplugHandler plugHandler = this.handler;

@@ -12,7 +12,7 @@
 
 		<label>Simple Push Button</label>
 		<description>Represents a physical Push Button (EEP: F6-01, D2-03)</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.internal.helper.ProtocolMode;
-import org.openhab.binding.smartmeter.internal.iec62056.Iec62056_21MeterReader;
+import org.openhab.binding.smartmeter.internal.iec62056.MeterReader;
 import org.openhab.binding.smartmeter.internal.sml.SmlMeterReader;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 
@@ -49,8 +49,8 @@ public class MeterDeviceFactory {
         switch (protocolMode) {
             case D:
             case ABC:
-                return new Iec62056_21MeterReader(serialPortManagerSupplier, deviceId, serialPort, initMessage,
-                        baudrate, baudrateChangeDelay, protocolMode);
+                return new MeterReader(serialPortManagerSupplier, deviceId, serialPort, initMessage, baudrate,
+                        baudrateChangeDelay, protocolMode);
             case SML:
                 return SmlMeterReader.createInstance(serialPortManagerSupplier, deviceId, serialPort, initMessage,
                         baudrate, baudrateChangeDelay);

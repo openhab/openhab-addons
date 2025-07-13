@@ -1,36 +1,39 @@
 # KSTAR Hybrid Inverter
 # Modbus information taken from "MODBUS RS485 Communication Protocol V2.5" document provided by KSTAR
 
-#INPUT_REGISTERS = 3000 - 3660    # 0x0BB8 - 0x0E4C
-#HOLDING_REGISTERS = 3200 - 3237  # 0x0C80 - 0x0C9B
+# This inverter exposes its data in the following registers (although not all of them are used by this definition file):
+#
+#  - INPUT_REGISTERS   3000 - 3660 decimal, 0x0BB8 - 0x0E4C hexadecimal
+#  - HOLDING_REGISTERS 3200 - 3237 decimal. 0x0C80 - 0x0C9B  hexadecimal
+#
+# Each request can get a maximum of 125 registers as per modbus protocol (start and end included), so we need to
+# split up the list of used registers into multiple requests of maximum 125 registers each.
 
 requests:
-  # Input registers 3000 - 3667
+  # Start requesting from the first needed register (3000)
   - start: 3000
-    end: 3125
+    end: 3124
     mb_functioncode: 0x04
 
-  # Input registers 3200 - 3228 not read as they would clash with holding registers
+  # Input registers 3200 - 3227 can't be read as they would clash with holding registers of same number
   - start: 3125
-    end: 3200
+    end: 3199
     mb_functioncode: 0x04
 
-  - start: 3228
-    end: 3250
-    mb_functioncode: 0x04
-
-  - start: 3250
-    end: 3375
-    mb_functioncode: 0x04
-
-  - start: 3375
-    end: 3500
-    mb_functioncode: 0x04
-
-  # Holding registers 3200 - 3237. Inverter system information.
+  # Change to holding registers 3200 - 3237 (mb_functioncode 3) for the inverter system information.
   - start: 3200
-    end: 3218
+    end: 3217
     mb_functioncode: 0x03
+
+  # Continue with the needed input registers
+  - start: 3228
+    end: 3249
+    mb_functioncode: 0x04
+
+  # Last input register currently used by this definition file is 3301, so we can skip the rest for now.
+  - start: 3250
+    end: 3301
+    mb_functioncode: 0x04
 
 parameters:
   - group: solar
@@ -699,7 +702,7 @@ parameters:
         scale: 0.01
         rule: 1
         registers: [ 3098 ]
-        icon: 'mdi:home-lightning-bolt'
+        icon: 'mdi:sine-wave'
 
       - name: "R-phase Meter Current"
         class: "current"
@@ -744,7 +747,7 @@ parameters:
         scale: 0.01
         rule: 1
         registers: [ 3125 ]
-        icon: 'mdi:home-lightning-bolt'
+        icon: 'mdi:sine-wave'
 
       - name: "R-phase Inverter Power"
         class: "power"

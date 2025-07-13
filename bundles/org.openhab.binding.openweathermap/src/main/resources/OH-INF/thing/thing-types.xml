@@ -12,6 +12,7 @@
 
 		<label>Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the OpenWeatherMap API.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="station" typeId="station"/>
@@ -86,6 +87,7 @@
 
 		<label>Air Pollution</label>
 		<description>Provides air pollution data from the OpenWeatherMap API.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current" typeId="airPollution"/>
@@ -102,6 +104,7 @@
 		</supported-bridge-type-refs>
 		<label>One Call API Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the OpenWeatherMap One Call API.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current" typeId="oneCallCurrent"/>
@@ -238,7 +241,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 		<representation-property>location</representation-property>
 
@@ -251,6 +254,7 @@
 		</supported-bridge-type-refs>
 		<label>One Call API Historical data</label>
 		<description>Provides historical weather data from the OpenWeatherMap One Call API.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="history" typeId="oneCallHistory"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,6 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                     }
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error processing data: " + e.getMessage());
-
                 } catch (RuntimeException e) {
                     // we catch runtime exceptions here to prevent the receiving thread to stop accidentally if
                     // something like an IllegalStateException or NumberFormatExceptions are thrown. This indicates a

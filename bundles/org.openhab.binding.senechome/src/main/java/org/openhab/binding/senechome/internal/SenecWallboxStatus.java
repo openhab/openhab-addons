@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.senechome.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Enum with available Senec specific wallbox states.
  *
  * @author Erwin Guib - Initial Contribution
  */
+@NonNullByDefault
 public enum SenecWallboxStatus {
     WAIT_FOR_EV(0xA1, "Waiting for EV"),
     EV_ASKING_CHARGE(0xB1, "EV asking for charge"),

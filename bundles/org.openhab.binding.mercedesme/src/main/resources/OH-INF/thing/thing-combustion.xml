@@ -11,7 +11,7 @@
 
 		<label>Mercedes Benz</label>
 		<description>Conventional Fuel Vehicle</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="vehicle" typeId="vehicle-values"/>
 			<channel-group id="doors" typeId="door-values"/>
@@ -28,7 +28,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:mercedesme:conv"/>

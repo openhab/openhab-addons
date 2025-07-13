@@ -11,7 +11,7 @@
 
 		<label>Wall Mounted Smart Controller (WSC2)</label>
 		<description>A battery powered smart controller with two push buttons.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="button1" typeId="system.button"/>
 			<channel id="button2" typeId="system.button"/>

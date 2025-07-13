@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_CID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_MAC_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_NID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_NUMBER;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SITE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WID;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WIFI_NAME;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,8 @@ import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiNetwork;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
@@ -80,9 +83,11 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             final ThingUID bridgeUID = thingHandler.getThing().getUID();
 
             discoverSites(cache, bridgeUID);
+            discoverNetworks(cache, bridgeUID);
             discoverWlans(cache, bridgeUID);
             discoverClients(cache, bridgeUID);
             discoverPoePorts(cache, bridgeUID);
+            discoverAccessPoints(cache, bridgeUID);
         } catch (final UniFiException e) {
             logger.debug("Exception during discovery of UniFi Things", e);
         }
@@ -100,13 +105,24 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
         }
     }
 
+    private void discoverNetworks(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiNetwork network : cache.getNetworks()) {
+            final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_NETWORK, bridgeUID,
+                    stripIdShort(network.getId()));
+            final Map<String, Object> properties = Map.of(PARAMETER_NID, network.getId());
+
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_NETWORK)
+                            .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_NID).withTTL(TTL_SECONDS)
+                            .withProperties(properties).withLabel(network.getName()).build());
+        }
+    }
+
     private void discoverWlans(final UniFiControllerCache cache, final ThingUID bridgeUID) {
         for (final UniFiWlan wlan : cache.getWlans()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_WLAN, bridgeUID,
                     stripIdShort(wlan.getId()));
-            final String siteName = wlan.getSite() == null ? "" : wlan.getSite().getName();
-            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE, siteName,
-                    PARAMETER_WIFI_NAME, wlan.getName());
+            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId());
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
                     .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)
@@ -125,6 +141,20 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withBridge(bridgeUID)
                     .withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS).withProperties(properties)
                     .withLabel(uc.getName()).build());
+        }
+    }
+
+    private void discoverAccessPoints(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiDevice ud : cache.getDevices()) {
+            if (DEVICE_TYPE_UAP.equals(ud.getType())) {
+                final var thingTypeUID = UniFiBindingConstants.THING_TYPE_ACCESS_POINT;
+                final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(ud.getId()));
+                final Map<String, Object> properties = Map.of(PARAMETER_SITE, ud.getSite().getName(),
+                        PARAMETER_MAC_ADDRESS, ud.getMac());
+                thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                        .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_MAC_ADDRESS).withTTL(TTL_SECONDS)
+                        .withProperties(properties).withLabel(ud.getName()).build());
+            }
         }
     }
 

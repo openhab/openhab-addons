@@ -7,11 +7,11 @@ Ruuvi Cloud Subscription is not needed at all as the integration is local.
 Compared to Ruuvi Tag Bluetooth binding, this binding has the benefit of relying on strong and reliable antenna of Ruuvi Gateway, as opposed to e.g. usually much weaker antenna integrated onto computer motherboard.
 Obvious downside compared to the bluetooth binding is the requirement of having Ruuvi Gateway device.
 
-Both RuuviTag and RuuviTag Pro are supported. 
+Both RuuviTag and RuuviTag Pro are supported.
 
 ## Setup the Gateway
 
-Before using this binding, Ruuvi Gateway needs to configured to publish the sensor data via MQTT. 
+Before using this binding, Ruuvi Gateway needs to configured to publish the sensor data via MQTT.
 
 For further instructions, refer to relevant section in [Ruuvi Gateway documentation](https://ruuvi.com/gateway-config/).
 For most convenient usage of this binding, please ensure that "Use 'ruuvi' on the prefix' MQTT setting is enabled on Ruuvi Gateway.
@@ -23,7 +23,6 @@ First install the MQTT binding and setup a `broker` thing and make sure it is ON
 This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered things should appear in your thing Inbox.
 
 ## Thing Configuration
-
 
 There is only thing type supported by this binding, `ruuvitag_beacon`.
 No manual configuration is needed, and discovery function can be used instead.
@@ -49,7 +48,7 @@ For users that prefer manual configuration, we list here the configurable parame
 | dataFormat                | Number                   | Data format version                                                      |
 | measurementSequenceNumber | Number:Dimensionless     | Measurement sequence number                                              |
 | movementCounter           | Number:Dimensionless     | Movement counter                                                         |
-| rssi                      | Number                   | Received signal (between the Gateway and the sensor) strength indicator  |
+| rssi                      | Number:Power             | Received signal (between the Gateway and the sensor) strength indicator  |
 | ts                        | DateTime                 | Timestamp when the message from Bluetooth-sensor was received by Gateway |
 | gwts                      | DateTime                 | Timestamp when the message from Bluetooth-sensor was relayed by Gateway  |
 | gwmac                     | String                   | MAC-address of Ruuvi Gateway                                             |

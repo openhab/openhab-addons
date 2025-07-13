@@ -59,7 +59,7 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 
 ## Channels
 
-### Hyperion Server (V1):
+### Hyperion Server (V1)
 
 | Channel    | Item   | Description                                        | Example                               |
 |------------|--------|----------------------------------------------------|---------------------------------------|
@@ -87,9 +87,9 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 | v4l             | Switch | Enables or disables the V4L component              | hyperion:serverNG:myServer:v4l             |
 | leddevice       | Switch | Enables or disables the led device component       | hyperion:serverNG:myServer:leddevice       |
 
-## Items:
+## Items
 
-### Hyperion Server (V1):
+### Hyperion Server (V1)
 
 ```java
 Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverV1:myServer:brightness"}
@@ -155,7 +155,7 @@ sitemap demo label="Main Menu" {
     'X-Mas'='X-Mas'
   ]
   Switch item=Clear mappings=[50="Clear"]
-  
+
   // only serverNG
   Switch item=HyperionEnabled
   Switch item=BlackBorderEnabled

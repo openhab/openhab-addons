@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,7 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
     private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Energy>> energyCaptor;
 
     @BeforeEach
+    @Override
     public void beforeEach(TestInfo testInfo)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         PowerMeterServiceState powerMeterServiceState = new PowerMeterServiceState();

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
-    private final Map<String, Resource> automationsCache = new ConcurrentHashMap<>();;
+    private final Map<String, Resource> automationsCache = new ConcurrentHashMap<>();
     private final Set<String> automationScriptIds = ConcurrentHashMap.newKeySet();
     private final ChannelGroupUID automationChannelGroupUID;
 
@@ -853,7 +853,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             Resource cachedAutomation = automationsCache.get(automation.getId());
             return Objects.isNull(cachedAutomation) || !automation.getName().equals(cachedAutomation.getName());
         })) {
-
             synchronized (automationsCache) {
                 automationsCache.clear();
                 automationsCache.putAll(automations.stream().collect(Collectors.toMap(a -> a.getId(), a -> a)));

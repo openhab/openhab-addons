@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.doorbird.internal.handler.ControllerHandler;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,13 +38,10 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.doorbird", service = ThingHandlerFactory.class)
 public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
-    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
     @Activate
-    public DoorbirdHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference HttpClientFactory httpClientFactory) {
-        this.timeZoneProvider = timeZoneProvider;
+    public DoorbirdHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -58,7 +54,7 @@ public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_D101.equals(thingTypeUID) || THING_TYPE_D210X.equals(thingTypeUID)) {
-            return new DoorbellHandler(thing, timeZoneProvider, httpClient, bundleContext);
+            return new DoorbellHandler(thing, httpClient, bundleContext);
         } else if (THING_TYPE_A1081.equals(thingTypeUID)) {
             return new ControllerHandler(thing);
         }

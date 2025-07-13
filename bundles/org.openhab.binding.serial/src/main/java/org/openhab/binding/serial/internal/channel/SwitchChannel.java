@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.serial.internal.channel;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
 
@@ -27,8 +26,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class SwitchChannel extends DeviceChannel {
 
-    public SwitchChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
-        super(valueTransformationProvider, config);
+    public SwitchChannel(final ChannelConfig config) {
+        super(config);
     }
 
     @Override

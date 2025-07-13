@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,7 +111,7 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
 
     /**
      * Set DiscoveryService
-     * 
+     *
      * @param discoveryService
      */
     public void setDiscoveryService(TapoChildDiscoveryService discoveryService) {
@@ -140,7 +140,7 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
     /**
      * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
      * received
-     * 
+     *
      * @param queryCommand command where new data belong to
      */
     @Override
@@ -164,6 +164,13 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
     /****************************
      * CHILD THINGS
      ****************************/
+
+    /****************************
+     * Send Command to Child
+     */
+    public void sendCommandToChild(TapoChildDeviceData childData) {
+        connector.sendChildCommand(childData, false);
+    }
 
     /**
      * Update all Child-Things
@@ -276,7 +283,7 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
 
     public TapoChildDeviceData getChild(String deviceSerial) {
         List<TapoChildDeviceData> childDeviceList = tapoChildsList.getChildDeviceList();
-        for (int i = 0; i <= childDeviceList.size(); i++) {
+        for (int i = 0; i < childDeviceList.size(); i++) {
             TapoChildDeviceData child = childDeviceList.get(i);
             if (child.getDeviceId().equals(deviceSerial)) {
                 return child;

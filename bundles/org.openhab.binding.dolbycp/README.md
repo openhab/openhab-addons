@@ -38,11 +38,11 @@ Normally, only the hostname or IP address must be configured.
 
 These channels can be used to retrieve the current device state and change the controls.
 
-The input mode can be either be controlled by the "input" string channel, or by writing an ON value to the dedicated switch channels, which represents the physical buttons on the CP750 device. 
+The input mode can be either be controlled by the "input" string channel, or by writing an ON value to the dedicated switch channels, which represents the physical buttons on the CP750 device.
 
 | Channel    | Type   | Read/Write | Description                                                                                                     |
 |------------|--------|------------|-----------------------------------------------------------------------------------------------------------------|
-| fader      | Dimmer | RW         | Fader value (0 to 100)                                                                                          | 
+| fader      | Dimmer | RW         | Fader value (0 to 100)                                                                                          |
 | mute       | Switch | RW         | Mute (ON or OFF)                                                                                                |
 | input      | String | RW         | Input channel as string (one of "analog", "dig_1", "dig_2", "dig_3", "dig_4", "non-sync" or "mic")              |
 | analog     | Switch | RW         | Is ON if input mode is 'analog'. When an ON command is retrieved, input mode will be changed to this channel.   |
@@ -55,7 +55,7 @@ The input mode can be either be controlled by the "input" string channel, or by 
 
 ## Full Example
 
-The following example is for a device connected at IP 192.168.1.135 on port 61408 with all channels linked to items. 
+The following example is for a device connected at IP 192.168.1.135 on port 61408 with all channels linked to items.
 
 demo.things:
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
                 return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider);
             } else {
-                return new NikoHomeControlBridgeHandler1((Bridge) thing, timeZoneProvider);
+                return new NikoHomeControlBridgeHandler1((Bridge) thing, networkAddressService, timeZoneProvider);
             }
         } else if (ACTION_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new NikoHomeControlActionHandler(thing);

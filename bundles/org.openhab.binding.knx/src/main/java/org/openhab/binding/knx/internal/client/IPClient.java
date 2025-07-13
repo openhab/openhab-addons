@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 import tuwien.auto.calimero.link.medium.KNXMediumSettings;
 import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.secure.Security;
 
 /**
  * IP specific {@link AbstractKNXClient} implementation.
@@ -88,9 +89,9 @@ public class IPClient extends AbstractKNXClient {
             byte[] secureRoutingBackboneGroupKey, long secureRoutingLatencyToleranceMs, byte[] secureTunnelDevKey,
             int secureTunnelUser, byte[] secureTunnelUserKey, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, CommandExtensionData commandExtensionData,
-            StatusUpdateCallback statusUpdateCallback) {
+            Security openhabSecurity, StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                commandExtensionData, statusUpdateCallback);
+                commandExtensionData, openhabSecurity, statusUpdateCallback);
         this.ipConnectionType = ipConnectionType;
         this.ip = ip;
         this.localSource = localSource;
@@ -136,9 +137,9 @@ public class IPClient extends AbstractKNXClient {
         // Calimero service mode, ROUTING for both classic and secure routing
         int serviceMode = CustomKNXNetworkLinkIP.ROUTING;
         if (ipConnectionType == IpConnectionType.TUNNEL) {
-            serviceMode = CustomKNXNetworkLinkIP.TUNNELING;
+            serviceMode = CustomKNXNetworkLinkIP.TunnelingV1;
         } else if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
-            serviceMode = CustomKNXNetworkLinkIP.TUNNELINGV2;
+            serviceMode = CustomKNXNetworkLinkIP.TunnelingV2;
         }
 
         // creating the connection here as a workaround for

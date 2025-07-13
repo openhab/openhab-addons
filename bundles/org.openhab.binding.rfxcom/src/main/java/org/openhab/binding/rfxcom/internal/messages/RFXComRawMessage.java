@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.openhab.core.util.HexUtils;
 /**
  * RFXCOM data class for raw messages.
  *
- * @author James Hewitt-Thomas - New addition to the PRO RFXCom firmware
+ * @author James Hewitt-Thomas - Initial contribution, new addition to the PRO RFXCom firmware
  */
 public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.SubType> {
 

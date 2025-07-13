@@ -89,6 +89,10 @@
 		<item-type>Switch</item-type>
 		<label>Telephone Line</label>
 		<description>Reports telephone line failure</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -102,6 +106,10 @@
 		<label>AC Line</label>
 		<description>Reports power line failure</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -115,6 +123,10 @@
 		<label>Battery</label>
 		<description>Reports battery failure</description>
 		<category>LowBattery</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Failure</option>
@@ -153,6 +165,10 @@
 		<item-type>Switch</item-type>
 		<label>Bell Status</label>
 		<description>Reports if bell is absent</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Absent</option>
@@ -179,6 +195,10 @@
 		<label>Global Fire Loop</label>
 		<description>Reports if fire loop has been triggered</description>
 		<category>Smoke</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Fire!</option>

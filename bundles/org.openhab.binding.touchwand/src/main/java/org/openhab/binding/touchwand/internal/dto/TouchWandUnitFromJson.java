@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TouchWandUnitFromJson {
 
-    private static final Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
 
     public TouchWandUnitFromJson() {
     }
@@ -93,7 +93,7 @@ public class TouchWandUnitFromJson {
             unitObj = JsonParser.parseString(JsonUnit).getAsJsonObject();
             myTouchWandUnitData = parseResponse(unitObj);
         } catch (JsonParseException | IllegalStateException e) {
-            logger.warn("Could not parse response {}", JsonUnit);
+            LOGGER.warn("Could not parse response {}", JsonUnit);
             myTouchWandUnitData = new TouchWandUnknownTypeUnitData(); // Return unknown type
         }
         return myTouchWandUnitData;

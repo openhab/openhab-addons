@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class AmberElectricBindingConstants {
     public static final String CHANNEL_NEM_TIME = "nem-time";
     public static final String CHANNEL_RENEWABLES = "renewables";
     public static final String CHANNEL_SPIKE = "spike";
+    public static final String CHANNEL_ESTIMATE = "estimate";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(AMBERELECTRIC_THING);
 }

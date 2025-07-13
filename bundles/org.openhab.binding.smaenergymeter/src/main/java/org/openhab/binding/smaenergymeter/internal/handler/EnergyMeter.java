@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 
 /**
@@ -26,11 +27,12 @@ import org.openhab.core.library.types.DecimalType;
  * @author Łukasz Dywicki - Extracted multicast group handling to
  *         {@link org.openhab.binding.smaenergymeter.internal.packet.PacketListener}.
  */
+@NonNullByDefault
 public class EnergyMeter {
 
     private static final byte[] E_METER_PROTOCOL_ID = new byte[] { 0x60, 0x69 };
 
-    private String serialNumber;
+    private String serialNumber = "";
     private final FieldDTO powerIn;
     private final FieldDTO energyIn;
     private final FieldDTO powerOut;

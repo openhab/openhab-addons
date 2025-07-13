@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public abstract class KNXChannel {
 
     KNXChannel(List<String> gaKeys, List<Class<? extends Type>> acceptedTypes, Channel channel) {
         this.gaKeys = gaKeys;
-        this.preferredType = acceptedTypes.get(0);
+        this.preferredType = acceptedTypes.getFirst();
 
         // this is safe because we already checked the presence of the ChannelTypeUID before
         this.channelType = Objects.requireNonNull(channel.getChannelTypeUID()).getId();
@@ -131,7 +131,7 @@ public abstract class KNXChannel {
                 return new WriteSpecImpl(entry.getValue(), dpt, command);
             }
         }
-        // if we didn't find a match, check if we find a sub-type match
+        // if we didn't find a match, check if we find a subtype match
         for (Map.Entry<String, GroupAddressConfiguration> entry : groupAddressConfigurations.entrySet()) {
             String dpt = Objects.requireNonNullElse(entry.getValue().getDPT(), getDefaultDPT(entry.getKey()));
             Set<Class<? extends Type>> expectedTypeClasses = DPTUtil.getAllowedTypes(dpt);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -374,7 +374,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                                         "Session request auth was unsuccessful in _doAuth(), please verify login parameters");
                             }
                         }
-
                     }
                 }
             }
@@ -469,7 +468,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                             return resultObj;
                         }
                     }
-
                 }
 
                 return null;
@@ -541,7 +539,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                     } catch (SiemensHvacException ex) {
                         logger.debug("error unregistring handler: {}", handler);
                     }
-
                 }
             }
 

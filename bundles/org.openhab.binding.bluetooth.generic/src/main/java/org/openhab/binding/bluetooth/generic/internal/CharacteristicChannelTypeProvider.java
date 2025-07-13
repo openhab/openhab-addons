@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link CharacteristicChannelTypeProvider} that provides channel types for dynamically discovered characteristics.
  *
- * @author Vlad Kolotov - Original author
+ * @author Vlad Kolotov - Initial contribution
  * @author Connor Petty - Modified for openHAB use.
  */
 @NonNullByDefault

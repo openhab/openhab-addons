@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,6 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
             this.isBulkRetrievalEnabled = uncheckedConfiguration.isBulkRetrievalEnabled;
             this.isSequentialEnforced = uncheckedConfiguration.isSequentialEnforced;
             this.isProtocolTraceEnabled = uncheckedConfiguration.isProtocolTraceEnabled;
-
         }
         logger.trace("VeluxBinding(constructor) done.");
     }

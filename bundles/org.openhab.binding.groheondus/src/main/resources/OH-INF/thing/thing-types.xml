@@ -9,7 +9,7 @@
 		<description>This is an interface to the GROHE ONDUS Account as it is used by the app. If username and password are
 			not set, you can configure to use a `refreshToken` to login. Read the README to get more info.
 		</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="username" type="text" required="false">
 				<label>Username</label>
@@ -30,7 +30,7 @@
 
 		<label>GROHE SENSE GUARD Appliance</label>
 		<description>A SENSE GUARD device</description>
-
+		<semantic-equipment-tag>HotWaterFaucet</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="pressure" typeId="pressure"/>
@@ -71,6 +71,7 @@
 
 		<label>GROHE SENSE Appliance</label>
 		<description>A SENSE device</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="name"/>
@@ -115,29 +116,49 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The ambient temperature of the appliance</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="valve_open">
 		<item-type>Switch</item-type>
 		<label>Valve Open</label>
 		<description>Valve switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The humidity reported by the device</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature reported by the device</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="waterconsumption">
 		<item-type>Number:Volume</item-type>
 		<label>Water Consumption</label>
 		<description>The amount of water consumed in the given time period in liters.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
@@ -151,6 +172,10 @@
 		<item-type>Number:Volume</item-type>
 		<label>Water Consumption Since Midnight</label>
 		<description>The amount of water consumed since midnight in liters</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

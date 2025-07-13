@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,6 +107,7 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_NOTICE = "notice";
 
     // Bridge config properties
+    public static final String CONFIG_CONTROLLER_ID = "controllerId";
     public static final String CONFIG_HOST_NAME = "addr";
     public static final String CONFIG_PORT = "port";
     public static final String CONFIG_REFRESH = "refresh";

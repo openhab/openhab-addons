@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,9 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_OBSERVATION = new ThingTypeUID(BINDING_ID, "observation");
     public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
     public static final ThingUID UID_LOCAL_FORECAST = new ThingUID(BINDING_ID, "forecast", "local");
+
+    // List of all static Channel Group IDs
+    public static final String CHANNEL_GROUP_FORECAST = "forecast";
 
     // List of all Channel ids
     public static final String CHANNEL_TIME = "time";

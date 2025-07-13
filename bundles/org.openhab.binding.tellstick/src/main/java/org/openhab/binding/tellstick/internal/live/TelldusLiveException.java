@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tellstick.internal.live;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.tellstick.device.TellstickException;
 
 /**
@@ -20,6 +22,7 @@ import org.tellstick.device.TellstickException;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLiveException extends TellstickException {
 
     public TelldusLiveException(Exception source) {
@@ -30,7 +33,7 @@ public class TelldusLiveException extends TellstickException {
     private static final long serialVersionUID = 3067179547449451158L;
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return getCause().getMessage();
     }
 }

@@ -1,7 +1,7 @@
 # Yamaha MusicCast Binding
 
 Binding to control Yamaha models via their MusicCast protocol (aka Yamaha Extended Control).
-With support for 4 zones : main, zone2, zone3, zone4. Main is always present. Zone2, Zone3, Zone4 are read from the model.
+With support for 4 zones: main, zone2, zone3, zone4. Main is always present. Zone2, Zone3, Zone4 are read from the model.
 
 UDP events are captured to reflect changes in the binding for
 
@@ -56,7 +56,7 @@ You can also use _RADIO / TUNER_ (as _tuner_).
 | input          | String               | See below for list                                                  |
 | soundProgram   | String               | See below for list                                                  |
 | selectPreset   | String               | Select Netradio/USB preset (fetched from Model)                     |
-| sleep          | Number               | Fixed values for Sleep : 0/30/60/90/120 in minutes                  |
+| sleep          | Number               | Fixed values for Sleep: 0/30/60/90/120 in minutes                   |
 | recallScene    | Number               | Select a scene (8 defaults scenes are foreseen)                     |
 | player         | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
 | artist         | String               | Artist                                                              |

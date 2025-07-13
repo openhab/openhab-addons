@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.gree.internal;
+
+import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.math.BigDecimal;
 
@@ -26,16 +28,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GreeConfiguration {
     public String ipAddress = "";
     public String broadcastAddress = "";
-    public int refresh = 60;
+    public int refreshInterval = 60;
     /**
      * The currentTemperatureOffset is configureable in case the user wants to offset this temperature for calibration
      * of the temperature sensor.
      */
     public BigDecimal currentTemperatureOffset = new BigDecimal(0.0);
+    public EncryptionTypes encryptionType = EncryptionTypes.UNKNOWN;
 
     @Override
     public String toString() {
-        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh
-                + ", currentTemperatureOffset=" + currentTemperatureOffset;
+        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refreshInterval="
+                + refreshInterval + ", currentTemperatureOffset=" + currentTemperatureOffset + ", encryptionType="
+                + encryptionType;
     }
 }

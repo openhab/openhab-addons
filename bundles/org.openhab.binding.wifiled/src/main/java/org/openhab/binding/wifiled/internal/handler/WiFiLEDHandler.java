@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Osman Basha - Initial contribution
- * @author Ries van Twisk
+ * @author Ries van Twisk - Improvements
  */
 public class WiFiLEDHandler extends BaseThingHandler {
 

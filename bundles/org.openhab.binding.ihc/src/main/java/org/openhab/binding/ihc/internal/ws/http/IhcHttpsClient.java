@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public abstract class IhcHttpsClient {
             return resp;
         } catch (Exception e) {
             if (logger.isTraceEnabled()) {
-                logger.trace("Exception occured (connectionPool={}, clientId={} requestId={}, in {}): {}",
+                logger.trace("Exception occurred (connectionPool={}, clientId={} requestId={}, in {}): {}",
                         ihcConnectionPool.hashCode(), client.hashCode(), requestId,
                         Duration.between(start, LocalDateTime.now()), e.getMessage());
             }

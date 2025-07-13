@@ -12,7 +12,7 @@
 		<description>Bridge representing the Spotify Player in the context of a user account. The bridge is associated with
 			one specific Spotify account. If you want to control your devices in the context of different accounts you have to
 			register a bridge for each account. Go to http://your openHAB address::8080/connectspotify to authorize.</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="accessToken" typeId="accessToken"/>
 
@@ -60,6 +60,7 @@
 
 		<properties>
 			<property name="user"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>clientId</representation-property>
@@ -96,7 +97,7 @@
 		<description>Thing representing a Spotify Connect device. The device exists in the context of the bridge and the
 			Spotify account associated with the bride. This means the same device can be present as a thing under each Spotify
 			bridge you have configured.</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="trackPlay" typeId="trackPlay"/>
 			<channel id="deviceId" typeId="deviceId"/>
@@ -152,6 +153,10 @@
 		<item-type>Switch</item-type>
 		<label>Active Device Shuffle</label>
 		<description>If shuffle is on or off on the active device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="playlists">
@@ -189,6 +194,10 @@
 		<item-type>String</item-type>
 		<label>Track Id</label>
 		<description>Channel reports track id currently being played.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackHref" advanced="true">
@@ -206,36 +215,60 @@
 		<item-type>String</item-type>
 		<label>Track Type</label>
 		<description>The type of the track currently played track type</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
-		<item-type>Number</item-type>
-		<label>Track Duration (ms)</label>
-		<description>The duration of the currently played track (ms)</description>
-		<state readOnly="true"/>
+	<channel-type id="currentlyPlayedTrackDurationMs">
+		<item-type>Number:Time</item-type>
+		<label>Track Duration</label>
+		<description>The duration of the currently played track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
-	<channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
-		<item-type>Number</item-type>
-		<label>Track Progress (ms)</label>
-		<description>The progress of the currently played track (ms)</description>
-		<state readOnly="true"/>
+	<channel-type id="currentlyPlayedTrackProgressMs">
+		<item-type>Number:Time</item-type>
+		<label>Track Progress</label>
+		<description>The progress of the currently played track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
-	<channel-type id="currentlyPlayedTrackDuration">
+	<channel-type id="currentlyPlayedTrackDuration" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Duration (m:ss)</label>
 		<description>The duration currently played track formatted (m:ss)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="currentlyPlayedTrackProgress">
+	<channel-type id="currentlyPlayedTrackProgress" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Progress (m:ss)</label>
 		<description>The progress of the currently played track formatted (m:ss)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackNumber" advanced="true">
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>The track number of currently played track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
@@ -261,6 +294,10 @@
 		<item-type>String</item-type>
 		<label>Album Id</label>
 		<description>The Spotify ID of the album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumHref" advanced="true">
@@ -306,6 +343,10 @@
 		<item-type>String</item-type>
 		<label>Artist Id</label>
 		<description>The Spotify ID for the artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedArtistHref" advanced="true">
@@ -348,6 +389,10 @@
 		<item-type>Switch</item-type>
 		<label>Device Shuffle</label>
 		<description>If shuffle is on or off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="deviceActive" advanced="true">
 		<item-type>Switch</item-type>

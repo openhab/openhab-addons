@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="statistics">
+		<label>Statistics</label>
+		<description>Consumption/Production Statistics</description>
+		<channels>
+			<channel id="total-consumption" typeId="energy">
+				<label>Total Consumption</label>
+				<description>Total energy consumption measured by Tibber Pulse meter</description>
+			</channel>
+			<channel id="daily-consumption" typeId="energy-detailed">
+				<label>Daily Consumption</label>
+				<description>Energy consumed since midnight in kilowatt-hours</description>
+			</channel>
+			<channel id="daily-cost" typeId="cost">
+				<label>Daily Cost</label>
+				<description>Accumulated cost since midnight</description>
+			</channel>
+			<channel id="last-hour-consumption" typeId="energy-detailed">
+				<label>Last Hour Consumption</label>
+				<description>Energy consumed since last hour shift in kilowatt-hours</description>
+			</channel>
+			<channel id="total-production" typeId="energy">
+				<label>Total Production</label>
+				<description>Total energy production measured by Tibber Pulse meter</description>
+			</channel>
+			<channel id="daily-production" typeId="energy-detailed">
+				<label>Daily Production</label>
+				<description>Net energy produced since midnight in kilowatt-hours</description>
+			</channel>
+			<channel id="last-hour-production" typeId="energy-detailed">
+				<label>Last Hour Production</label>
+				<description>Net energy produced since last hour shift in kilowatt-hours</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

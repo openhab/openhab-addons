@@ -295,6 +295,10 @@
 		<label>CPUm Temperature</label>
 		<description>Actual measured CPU Marvell temperature of the Freebox Server</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
@@ -303,6 +307,10 @@
 		<label>CPUb Temperature</label>
 		<description>Actual measured CPU Broadcom (xDSL) temperature of the Freebox Server</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
@@ -311,6 +319,10 @@
 		<label>Switch Temperature</label>
 		<description>Actual measured switch temperature of the Freebox Server</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%d °C"/>
 	</channel-type>
 
@@ -318,6 +330,10 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>Actual measured fan speed (rpm) of the Freebox Server</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
@@ -461,6 +477,9 @@
 		<label>Ringing</label>
 		<description>Is the phone ringing</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -545,12 +564,20 @@
 		<item-type>String</item-type>
 		<label>Play Audio or Video URL</label>
 		<description>Play an audio or video media from the given URL</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop Playback</label>
 		<description>Stop the media playback</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

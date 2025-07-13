@@ -73,10 +73,10 @@ sitemap:
 
 ```perl
 Switch item=AC_Office_Heater_MasterSwitch
-Selection item=AC_Office_Room_Mode 
+Selection item=AC_Office_Room_Mode
 Setpoint item=AC_Office_Room_Target_Temperature
 Selection item=AC_Office_Heater_Fan_Level
 Selection item=AC_Office_Room_Swing_Mode
-Text item=AC_Office_Room_Current_Temperature  
+Text item=AC_Office_Room_Current_Temperature
 Text item=AC_Office_Room_Current_Humidity
 ```

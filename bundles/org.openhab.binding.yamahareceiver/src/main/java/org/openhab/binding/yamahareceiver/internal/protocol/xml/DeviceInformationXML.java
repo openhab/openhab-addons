@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,7 +113,6 @@ public class DeviceInformationXML implements DeviceInformation {
 
             XMLConstants.FEATURE_BY_YNC_TAG
                     .forEach((name, feature) -> checkFeature(featureNode, name, feature, state.features));
-
         } else {
             // on older models (RX-V3900) the Feature_Existence element does not exist
 

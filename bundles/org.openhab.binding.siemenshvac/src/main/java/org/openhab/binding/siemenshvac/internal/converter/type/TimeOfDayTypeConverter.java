@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
-import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import javax.measure.Unit;
@@ -22,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -40,12 +38,6 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 public class TimeOfDayTypeConverter extends AbstractTypeConverter {
-    private final TimeZoneProvider timeZoneProvider;
-
-    public TimeOfDayTypeConverter(final TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
-
     @Override
     protected boolean toBindingValidation(Type type) {
         return true;
@@ -71,10 +63,9 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     protected State fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         if ("----".equals(value.getAsString())) {
-            return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
+            return new DateTimeType();
         } else {
-
-            if (unit.equals("h:m")) {
+            if ("h:m".equals(unit)) {
                 String st = value.getAsString();
                 String[] parts = st.split(":");
                 int h = Integer.parseInt(parts[0]);
@@ -83,7 +74,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
                 Unit<Time> targetUnit = Units.MINUTE;
                 return new QuantityType<>(h * 60 + m, targetUnit);
 
-            } else if (unit.equals("m:s")) {
+            } else if ("m:s".equals(unit)) {
                 String st = value.getAsString();
                 String[] parts = st.split(":");
                 int m = Integer.parseInt(parts[0]);
@@ -92,7 +83,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
                 Unit<Time> targetUnit = Units.SECOND;
                 return new QuantityType<>(m * 60 + s, targetUnit);
 
-            } else if (unit.equals("h")) {
+            } else if ("h".equals(unit)) {
                 int val = Integer.parseInt(value.getAsString());
 
                 Unit<Time> targetUnit = Units.HOUR;

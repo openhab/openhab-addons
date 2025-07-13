@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,12 +25,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.thing.ThingUID;
@@ -51,12 +51,13 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final ThingUID thingUID;
     private final ScheduledExecutorService scheduler;
     private final ChannelStateUpdateListener updateListener;
+    private final HomeAssistantChannelLinkageChecker linkageChecker;
     private final AvailabilityTracker tracker;
-    private final TransformationServiceProvider transformationServiceProvider;
-    private final boolean newStyleChannels;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
     private final Gson gson;
+    private final HomeAssistantPythonBridge python;
+    private final UnitProvider unitProvider;
 
     private @Nullable ScheduledFuture<?> stopDiscoveryFuture;
     private WeakReference<@Nullable MqttBrokerConnection> connectionRef = new WeakReference<>(null);
@@ -69,6 +70,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      */
     public static interface ComponentDiscovered {
         void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component);
+
+        void componentRemoved(HaID homeAssistantTopicID);
     }
 
     /**
@@ -79,15 +82,16 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * @param channelStateUpdateListener Channel update listener. Usually the handler.
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
-            ChannelStateUpdateListener channelStateUpdateListener, AvailabilityTracker tracker, Gson gson,
-            TransformationServiceProvider transformationServiceProvider, boolean newStyleChannels) {
+            ChannelStateUpdateListener channelStateUpdateListener, HomeAssistantChannelLinkageChecker linkageChecker,
+            AvailabilityTracker tracker, Gson gson, HomeAssistantPythonBridge python, UnitProvider unitProvider) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
+        this.linkageChecker = linkageChecker;
         this.gson = gson;
+        this.python = python;
+        this.unitProvider = unitProvider;
         this.tracker = tracker;
-        this.transformationServiceProvider = transformationServiceProvider;
-        this.newStyleChannels = newStyleChannels;
     }
 
     @Override
@@ -99,11 +103,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         HaID haID = new HaID(topic);
         String config = new String(payload);
         AbstractComponent<?> component = null;
+        ComponentDiscovered discoveredListener = this.discoveredListener;
 
         if (config.length() > 0) {
             try {
-                component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler,
-                        gson, transformationServiceProvider, newStyleChannels);
+                component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, linkageChecker,
+                        tracker, scheduler, gson, python, unitProvider);
                 component.setConfigSeen();
 
                 logger.trace("Found HomeAssistant component {}", haID);
@@ -117,11 +122,9 @@ public class DiscoverComponents implements MqttMessageSubscriber {
             } catch (ConfigurationException e) {
                 logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
                         haID.objectID, haID.component, e.getMessage());
-            } catch (Exception e) {
-                logger.warn("HomeAssistant discover error: {}", e.getMessage());
             }
-        } else {
-            logger.warn("Configuration of HomeAssistant thing {} is empty", haID.objectID);
+        } else if (discoveredListener != null) {
+            discoveredListener.componentRemoved(haID);
         }
     }
 

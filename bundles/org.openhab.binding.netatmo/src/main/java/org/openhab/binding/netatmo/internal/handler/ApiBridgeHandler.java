@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,16 +18,15 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -36,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,7 +81,6 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -103,11 +102,12 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
+    private static final int API_LIMIT_INTERVAL_S = 3600;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
-    private final Deque<LocalDateTime> requestsTimestamps = new ArrayDeque<>(200);
+    private final Deque<Instant> requestsTimestamps = new ArrayDeque<>(200);
     private final BindingConfiguration bindingConf;
     private final HttpClient httpClient;
     private final OAuthFactory oAuthFactory;
@@ -128,7 +128,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
@@ -138,22 +137,16 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         ApiHandlerConfiguration configuration = getConfiguration();
 
-        if (configuration.clientId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    ConfigurationLevel.EMPTY_CLIENT_ID.message);
-            return;
-        }
-
-        if (configuration.clientSecret.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    ConfigurationLevel.EMPTY_CLIENT_SECRET.message);
+        ConfigurationLevel confLevel = configuration.check();
+        if (!ConfigurationLevel.COMPLETED.equals(confLevel)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confLevel.message);
             return;
         }
 
         oAuthClientService = oAuthFactory
-                .createOAuthClientService(this.getThing().getUID().getAsString(),
-                        AuthenticationApi.TOKEN_URI.toString(), AuthenticationApi.AUTH_URI.toString(),
-                        configuration.clientId, configuration.clientSecret, FeatureArea.ALL_SCOPES, false)
+                .createOAuthClientService(this.getThing().getUID().getAsString(), AuthenticationApi.TOKEN_URI,
+                        AuthenticationApi.AUTH_URI, configuration.clientId, configuration.clientSecret,
+                        FeatureArea.ALL_SCOPES, false)
                 .withGsonBuilder(new GsonBuilder().registerTypeAdapter(AccessTokenResponse.class,
                         new AccessTokenResponseDeserializer()));
 
@@ -167,24 +160,19 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        logger.debug("Connecting to Netatmo API.");
+        logger.debug("Connected to Netatmo API.");
 
         ApiHandlerConfiguration configuration = getConfiguration();
-        if (!configuration.webHookUrl.isBlank()) {
-            SecurityApi securityApi = getRestManager(SecurityApi.class);
-            if (securityApi != null) {
-                webHookServlet.ifPresent(servlet -> servlet.dispose());
-                WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                        configuration.webHookUrl, configuration.webHookPostfix);
-                servlet.startListening();
-                this.webHookServlet = Optional.of(servlet);
-            }
+        if (!configuration.webHookUrl.isBlank()
+                && getRestManager(SecurityApi.class) instanceof SecurityApi securityApi) {
+            webHookServlet.ifPresent(servlet -> servlet.dispose());
+            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+                    configuration.webHookUrl, configuration.webHookPostfix);
+            servlet.startListening();
+            this.webHookServlet = Optional.of(servlet);
         }
 
         updateStatus(ThingStatus.ONLINE);
-
-        getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
-                .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
     }
 
     private boolean authenticate(@Nullable String code, @Nullable String redirectUri) {
@@ -200,8 +188,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
 
                 // Dispose grant servlet upon completion of authorization flow.
-                grantServlet.ifPresent(servlet -> servlet.dispose());
-                grantServlet = Optional.empty();
+                freeGrantServlet();
             } else {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             }
@@ -210,8 +197,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             startAuthorizationFlow();
             return false;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            prepareReconnection(code, redirectUri);
+            prepareReconnection(getConfiguration().reconnectInterval, e.getMessage(), code, redirectUri);
             return false;
         }
 
@@ -221,9 +207,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        connectApi.setAccessToken(accessTokenResponse.getAccessToken());
-        connectApi.setScope(accessTokenResponse.getScope());
-
+        connectApi.setAccessToken(accessTokenResponse.getAccessToken(), accessTokenResponse.getScope());
         return true;
     }
 
@@ -232,23 +216,34 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message.formatted(servlet.getPath()));
+                "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
+                        .formatted(servlet.getPath()));
+        connectApi.dispose();
     }
 
     public ApiHandlerConfiguration getConfiguration() {
         return getConfigAs(ApiHandlerConfiguration.class);
     }
 
-    private void prepareReconnection(@Nullable String code, @Nullable String redirectUri) {
+    private void prepareReconnection(int delay, @Nullable String message, @Nullable String code,
+            @Nullable String redirectUri) {
+        if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        }
         connectApi.dispose();
         freeConnectJob();
-        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri),
-                getConfiguration().reconnectInterval, TimeUnit.SECONDS));
+        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS));
+        logger.debug("Reconnection scheduled in {} seconds", delay);
     }
 
     private void freeConnectJob() {
         connectJob.ifPresent(j -> j.cancel(true));
         connectJob = Optional.empty();
+    }
+
+    private void freeGrantServlet() {
+        grantServlet.ifPresent(servlet -> servlet.dispose());
+        grantServlet = Optional.empty();
     }
 
     @Override
@@ -258,8 +253,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         webHookServlet.ifPresent(servlet -> servlet.dispose());
         webHookServlet = Optional.empty();
 
-        grantServlet.ifPresent(servlet -> servlet.dispose());
-        grantServlet = Optional.empty();
+        freeGrantServlet();
 
         connectApi.dispose();
         freeConnectJob();
@@ -284,13 +278,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public <T extends RestManager> @Nullable T getRestManager(Class<T> clazz) {
         if (!managers.containsKey(clazz)) {
             try {
-                Constructor<T> constructor = clazz.getConstructor(getClass());
-                T instance = constructor.newInstance(this);
+                T instance = clazz.getConstructor(getClass()).newInstance(this);
                 Set<Scope> expected = instance.getRequiredScopes();
                 if (connectApi.matchesScopes(expected)) {
                     managers.put(clazz, instance);
                 } else {
-                    logger.info("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
+                    logger.warn("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
                 logger.warn("Error invoking RestManager constructor for class {}: {}", clazz, e.getMessage());
@@ -307,7 +300,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
             if (!authenticate(null, null)) {
-                prepareReconnection(null, null);
+                prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
@@ -317,20 +310,21 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
                 try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
                     request.content(inputStreamContentProvider, contentType);
-                    request.header(HttpHeader.ACCEPT, "application/json");
+                    request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
                 }
                 logger.trace(" -with payload: {} ", payload);
             }
 
             if (isLinked(requestCountChannelUID)) {
-                LocalDateTime now = LocalDateTime.now();
-                LocalDateTime oneHourAgo = now.minusHours(1);
+                Instant now = Instant.now();
                 requestsTimestamps.addLast(now);
+                Instant oneHourAgo = now.minus(1, ChronoUnit.HOURS);
                 while (requestsTimestamps.getFirst().isBefore(oneHourAgo)) {
                     requestsTimestamps.removeFirst();
                 }
                 updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
             }
+
             logger.trace(" -with headers: {} ",
                     String.join(", ", request.getHeaders().stream().map(HttpField::toString).toList()));
             ContentResponse response = request.send();
@@ -348,27 +342,30 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
             } catch (NetatmoException e) {
-                exception = new NetatmoException("Error deserializing error: %s".formatted(statusCode.getMessage()));
+                if (statusCode == Code.TOO_MANY_REQUESTS) {
+                    exception = new NetatmoException(statusCode.getMessage());
+                } else {
+                    exception = new NetatmoException(
+                            "Error deserializing error: %s".formatted(statusCode.getMessage()));
+                }
+            }
+            if (statusCode == Code.TOO_MANY_REQUESTS
+                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+                prepareReconnection(API_LIMIT_INTERVAL_S,
+                        "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
             }
             throw exception;
-        } catch (NetatmoException e) {
-            if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                prepareReconnection(null, null);
-            }
-            throw e;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            throw new NetatmoException("Request interrupted");
+            throw new NetatmoException(e, "Request interrupted");
         } catch (TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
-                logger.debug("Request timedout, retry counter: {}", retryCount);
+                logger.debug("Request error, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
-            prepareReconnection(null, null);
-            throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
+            prepareReconnection(getConfiguration().reconnectInterval, "@text/request-time-out", null, e.getMessage());
+            throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
         }
     }
 

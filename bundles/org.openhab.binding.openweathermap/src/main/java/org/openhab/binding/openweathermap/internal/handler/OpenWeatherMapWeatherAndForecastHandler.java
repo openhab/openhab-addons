@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,6 @@ import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeT
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -77,8 +76,8 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private @Nullable OpenWeatherMapJsonHourlyForecastData hourlyForecastData;
     private @Nullable OpenWeatherMapJsonDailyForecastData dailyForecastData;
 
-    public OpenWeatherMapWeatherAndForecastHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public OpenWeatherMapWeatherAndForecastHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -179,11 +178,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                         editConfig.put(CONFIG_FORECAST_DAYS, 0);
                         updateConfiguration(editConfig);
                         logger.debug("Removing daily forecast channel groups.");
-                        List<Channel> channels = getThing().getChannels().stream()
-                                .filter(c -> CHANNEL_GROUP_FORECAST_TODAY.equals(c.getUID().getGroupId())
-                                        || CHANNEL_GROUP_FORECAST_TOMORROW.equals(c.getUID().getGroupId())
-                                        || c.getUID().getGroupId().startsWith(CHANNEL_GROUP_DAILY_FORECAST_PREFIX))
-                                .collect(Collectors.toList());
+                        List<Channel> channels = getThing().getChannels().stream().filter(c -> {
+                            String groupId = c.getUID().getGroupId();
+                            return CHANNEL_GROUP_FORECAST_TODAY.equals(groupId)
+                                    || CHANNEL_GROUP_FORECAST_TOMORROW.equals(groupId)
+                                    || (groupId != null && groupId.startsWith(CHANNEL_GROUP_DAILY_FORECAST_PREFIX));
+                        }).collect(Collectors.toList());
                         updateThing(editThing().withoutChannels(channels).build());
                     } else {
                         throw e;
@@ -200,6 +200,10 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     @Override
     protected void updateChannel(ChannelUID channelUID) {
         String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Cannot update {} as it has no GroupId", channelUID);
+            return;
+        }
         switch (channelGroupId) {
             case CHANNEL_GROUP_STATION:
             case CHANNEL_GROUP_CURRENT_WEATHER:

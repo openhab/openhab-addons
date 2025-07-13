@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.melcloud.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Config class for a Heatpump device.
  *
  * @author Wietse van Buitenen - Initial Contribution
  *
  */
+@NonNullByDefault
 public class HeatpumpDeviceConfig {
-    public Integer deviceID;
-    public Integer buildingID;
-    public Integer pollingInterval;
+    public Integer deviceID = 0;
+    public @Nullable Integer buildingID;
+    public Integer pollingInterval = 360;
 
     @Override
     public String toString() {

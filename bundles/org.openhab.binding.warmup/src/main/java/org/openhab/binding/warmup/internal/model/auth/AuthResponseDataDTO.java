@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,5 @@ package org.openhab.binding.warmup.internal.model.auth;
 /**
  * @author James Melville - Initial contribution
  */
-public class AuthResponseDataDTO {
-    private String method;
-    private String token;
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getMethod() {
-        return method;
-    }
+public record AuthResponseDataDTO(String method, String token) {
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,7 +103,7 @@ public class IRobotDiscoveryService extends AbstractDiscoveryService {
     private Runnable createScanner() {
         return () -> {
             Set<String> robots = new HashSet<>();
-            long timestampOfLastScan = getTimestampOfLastScan();
+            Instant timestampOfLastScan = getTimestampOfLastScan();
             for (InetAddress broadcastAddress : getBroadcastAddresses()) {
                 logger.debug("Starting broadcast for {}", broadcastAddress.toString());
 

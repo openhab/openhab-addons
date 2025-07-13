@@ -8,6 +8,7 @@
 	<bridge-type id="shc">
 		<label>Smart Home Controller</label>
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="scenario-triggered" typeId="scenario-triggered"/>
@@ -17,6 +18,8 @@
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
@@ -30,6 +33,7 @@
 
 		<label>In-wall Switch</label>
 		<description>A simple light control.</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -48,6 +52,7 @@
 
 		<label>Compact Smart Plug</label>
 		<description>A compact smart plug with energy monitoring capabilities.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -66,6 +71,7 @@
 
 		<label>Twinguard</label>
 		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -92,6 +98,7 @@
 
 		<label>Door/Window Contact</label>
 		<description>Detects open windows and doors.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -110,6 +117,7 @@
 
 		<label>Door/Window Contact II</label>
 		<description>Detects open windows and doors and features an additional button.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -117,6 +125,30 @@
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="bypass-state" typeId="bypass-state"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="window-contact-2-plus">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Door/Window Contact II Plus</label>
+		<description>Detects open windows and doors, provides a configurable button and a vibration sensor.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+
+		<channels>
+			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="bypass-state" typeId="bypass-state"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="vibration-sensor-enabled" typeId="vibration-sensor-enabled"/>
+			<channel id="vibration-sensor-sensitivity" typeId="vibration-sensor-sensitivity"/>
+			<channel id="vibration-sensor-state" typeId="vibration-sensor-state"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -131,6 +163,7 @@
 		<label>Motion Detector</label>
 		<description>Detects every movement through an intelligent combination of passive infra-red technology and an
 			additional temperature sensor.</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
@@ -154,6 +187,8 @@
 
 		<label>Shutter Control</label>
 		<description>Control of your shutter to take any position you desire.</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+
 
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -170,6 +205,7 @@
 
 		<label>Shutter Control II</label>
 		<description>Second generation shutter control.</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -190,6 +226,7 @@
 
 		<label>Light Control II</label>
 		<description>Advanced light control with two switch circuits.</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -212,6 +249,7 @@
 
 		<label>Thermostat</label>
 		<description>Radiator thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -234,6 +272,7 @@
 		<label>Climate Control</label>
 		<description>This is a virtual device which is automatically created for all rooms that have
 			thermostats in it.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -251,6 +290,7 @@
 
 		<label>Wall Thermostat</label>
 		<description>Display of the current room temperature as well as the relative humidity in the room.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -270,6 +310,7 @@
 
 		<label>Security Camera 360</label>
 		<description>Indoor security camera with 360° view and motion detection.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
 		<channels>
 			<channel id="privacy-mode" typeId="privacy-mode"/>
@@ -287,6 +328,7 @@
 
 		<label>Security Camera Eyes</label>
 		<description>Outdoor security camera with motion detection and light.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
 		<channels>
 			<channel id="privacy-mode" typeId="privacy-mode"/>
@@ -304,6 +346,7 @@
 
 		<label>Intrusion Detection System</label>
 		<description>Allows to retrieve and control the state of the intrusion detection alarm system.</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="system-availability" typeId="system-availability"/>
@@ -324,6 +367,7 @@
 
 		<label>Smart Bulb</label>
 		<description>A smart bulb connected via Zigbee.</description>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -342,12 +386,18 @@
 
 		<label>Smoke Detector</label>
 		<description>The smoke detector warns you in case of fire.</description>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 
 		<channels>
+			<channel id="alarm" typeId="alarm"/>
 			<channel id="smoke-check" typeId="smoke-check"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
@@ -374,6 +424,7 @@
 
 		<label>Universal Switch</label>
 		<description>Universally configurable switch with two buttons.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="key-code" typeId="key-code"/>
@@ -392,6 +443,7 @@
 
 		<label>Universal Switch II</label>
 		<description>Universally configurable switch with four buttons.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="key-code" typeId="key-code"/>
@@ -410,13 +462,19 @@
 
 		<label>Smoke Detector II</label>
 		<description>The smoke detector warns you in case of fire.</description>
+		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 
 		<channels>
+			<channel id="alarm" typeId="alarm"/>
 			<channel id="smoke-check" typeId="smoke-check"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
@@ -428,6 +486,7 @@
 
 		<label>Dimmer</label>
 		<description>Smart dimmer capable of controlling any dimmable lamp.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -446,6 +505,7 @@
 
 		<label>Water Detector</label>
 		<description>Smart sensor to detect water leakage.</description>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="water-leakage" typeId="water-leakage"/>
@@ -468,6 +528,7 @@
 
 		<label>Relay</label>
 		<description>The smart switching relay is your universal all-rounder for smart switching.</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -510,6 +571,10 @@
 		<label>Alarm State</label>
 		<description>The alarm state of the intrusion detection system. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON,
 			ALARM_MUTED and UNKNOWN.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ALARM_OFF">No alarm</option>
@@ -574,6 +639,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current measured temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="40" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -594,6 +663,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -614,6 +687,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -621,6 +698,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -628,6 +709,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Purity</label>
 		<description>Purity of the air. A higher value indicates a higher pollution.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state min="500" max="5500" pattern="%.1f ppm" readOnly="true"/>
 	</channel-type>
 
@@ -635,6 +720,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Overall description of the air quality.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -642,6 +731,10 @@
 		<item-type>String</item-type>
 		<label>Purity Rating</label>
 		<description>Rating of the air purity.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -649,6 +742,10 @@
 		<item-type>String</item-type>
 		<label>Combined Rating</label>
 		<description>Combined rating of the air quality.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GOOD">Good Quality</option>
@@ -676,6 +773,10 @@
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
 		<description>A window and door contact.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -690,6 +791,10 @@
 		<item-type>Number</item-type>
 		<label>Illuminance</label>
 		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state min="0" max="1000" step="1" readOnly="true"/>
 	</channel-type>
 
@@ -697,6 +802,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
 		<description>Current open ratio (0 to 100).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" step="0.5" readOnly="false"/>
 	</channel-type>
 
@@ -711,6 +820,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -815,6 +928,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Leakage</label>
 		<description>Indicates whether a water leakage was detected.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Leakage detected</option>
@@ -861,7 +978,7 @@
 		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Tilt</tag>
+			<tag>Motion</tag>
 		</tags>
 	</channel-type>
 
@@ -885,6 +1002,72 @@
 		<description>Timestamp indicating when the last impulse was triggered.</description>
 		<category>Time</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<item-type>String</item-type>
+		<label>Alarm</label>
+		<description>Alarm state of the smoke detector.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="IDLE_OFF">Alarm off</option>
+				<option value="PRIMARY_ALARM">Primary alarm</option>
+				<option value="SECONDARY_ALARM">Secondary alarm</option>
+				<option value="INTRUSION_ALARM">Intrusion alarm</option>
+				<option value="INTRUSION_ALARM_ON_REQUESTED">Intrusion alarm on requested</option>
+				<option value="INTRUSION_ALARM_OFF_REQUESTED">Intrusion alarm off requested</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="vibration-sensor-enabled">
+		<item-type>Switch</item-type>
+		<label>Vibration Sensor Switch</label>
+		<description>Channel to enable or disable the vibration sensor.</description>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="vibration-sensor-sensitivity">
+		<item-type>String</item-type>
+		<label>Vibration Sensor Sensitivity</label>
+		<description>The sensitivity of the vibration sensor.</description>
+		<state readOnly="false">
+			<options>
+				<option value="VERY_HIGH">Very high</option>
+				<option value="HIGH">High</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="LOW">Low</option>
+				<option value="VERY_LOW">Very Low</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="vibration-sensor-state">
+		<item-type>String</item-type>
+		<label>Vibration Sensor State</label>
+		<description>Indicates whether vibrations were detected by the sensor.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Vibration</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_VIBRATION">No vibration</option>
+				<option value="VIBRATION_DETECTED">Vibration detected</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

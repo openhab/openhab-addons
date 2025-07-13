@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.config.discovery.inbox.InboxPredicates.forThingTypeUID;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -160,7 +161,7 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
             }
 
             @Override
-            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                     @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }
@@ -212,7 +213,7 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
             }
 
             @Override
-            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                     @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }

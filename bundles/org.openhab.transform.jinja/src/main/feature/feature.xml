@@ -5,8 +5,11 @@
 	<feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature dependency="true">openhab.tp-commons-net</feature>
-		<bundle dependency="true">mvn:org.jsoup/jsoup/1.15.3</bundle>
-		<bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.jinjava.jinjava/2.7.4</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.re2j.re2j/1.2</bundle>
+		<bundle dependency="true">mvn:ch.obermuhlner/big-math/2.3.2</bundle>
+		<bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson.version}</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.immutables.immutables-exceptions/1.9</bundle>
 		<bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jinja/${project.version}</bundle>
 	</feature>
 </features>

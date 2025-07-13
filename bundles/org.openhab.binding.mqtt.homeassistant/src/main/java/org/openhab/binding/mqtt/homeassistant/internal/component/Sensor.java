@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,11 +22,10 @@ import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.ROConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.core.types.util.UnitUtils;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
@@ -34,46 +33,53 @@ import com.google.gson.annotations.SerializedName;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
-    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
-    private static final Pattern TRIGGER_ICONS = Pattern.compile("^mdi:(toggle|gesture).*$");
+public class Sensor extends AbstractComponent<Sensor.Configuration> {
+    public static final String SENSOR_CHANNEL_ID = "sensor";
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Sensor");
+    public static class Configuration extends EntityConfiguration implements ROConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Sensor");
         }
 
-        @SerializedName("unit_of_measurement")
-        protected @Nullable String unitOfMeasurement;
-        @SerializedName("device_class")
-        protected @Nullable String deviceClass;
-        @SerializedName("state_class")
-        protected @Nullable String stateClass;
-        @SerializedName("force_update")
-        protected boolean forceUpdate = false;
-        @SerializedName("expire_after")
-        protected @Nullable Integer expireAfter;
+        @Nullable
+        String getDeviceClass() {
+            return getOptionalString("device_class");
+        }
 
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
+        @Nullable
+        Integer getExpireAfter() {
+            return getOptionalInt("expire_after");
+        }
 
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes")
-        protected @Nullable List<String> jsonAttributes;
+        boolean getForceUpdate() {
+            return getBoolean("force_update");
+        }
+
+        @Nullable
+        List<String> getOptions() {
+            return getOptionalStringList("options");
+        }
+
+        @Nullable
+        String getStateClass() {
+            return getOptionalString("state_class");
+        }
+
+        @Nullable
+        String getUnitOfMeasurement() {
+            return getOptionalString("unit_of_measurement");
+        }
     }
 
-    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+    public Sensor(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
         Value value;
-        String uom = channelConfiguration.unitOfMeasurement;
-        String sc = channelConfiguration.stateClass;
+        String uom = config.getUnitOfMeasurement();
+        String sc = config.getStateClass();
         ComponentChannelType type;
 
         if (uom != null && !uom.isBlank()) {
@@ -89,22 +95,19 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
             type = ComponentChannelType.STRING;
         }
 
-        String icon = channelConfiguration.getIcon();
+        buildChannel(SENSOR_CHANNEL_ID, type, value, "Sensor", getListener(componentContext, value))
+                .stateTopic(config.getStateTopic(), config.getValueTemplate()).build();
 
-        boolean trigger = TRIGGER_ICONS.matcher(icon).matches();
-
-        buildChannel(SENSOR_CHANNEL_ID, type, value, getName(), getListener(componentConfiguration, value))
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
-                .trigger(trigger).build();
+        finalizeChannels();
     }
 
-    private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,
-            Value value) {
-        ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
+    private ChannelStateUpdateListener getListener(ComponentFactory.ComponentContext componentContext, Value value) {
+        ChannelStateUpdateListener updateListener = componentContext.getUpdateListener();
 
-        if (channelConfiguration.expireAfter != null) {
-            updateListener = new ExpireUpdateStateListener(updateListener, channelConfiguration.expireAfter, value,
-                    componentConfiguration.getTracker(), componentConfiguration.getScheduler());
+        Integer expireAfter = config.getExpireAfter();
+        if (expireAfter != null) {
+            updateListener = new ExpireUpdateStateListener(updateListener, expireAfter, value,
+                    componentContext.getTracker(), componentContext.getScheduler());
         }
         return updateListener;
     }

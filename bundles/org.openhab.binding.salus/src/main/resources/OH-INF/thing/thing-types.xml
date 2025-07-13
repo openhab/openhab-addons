@@ -84,7 +84,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="generic-input-number-channel">
-		<item-type>Number:Dimensionsless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Generic Number Input</label>
 		<description>
 			This channel type represents a generic input.
@@ -102,6 +102,10 @@
 			temperature (numeric).
 		</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-input-channel">
@@ -113,6 +117,10 @@
 			temperature (numeric).
 		</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

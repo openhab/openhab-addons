@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -26,7 +27,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
-import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomePresence;
@@ -47,21 +47,20 @@ import com.google.gson.reflect.TypeToken;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class HomeApi {
-    private static final HttpClient CLIENT = new HttpClient(new SslContextFactory());
+    private static final HttpClient CLIENT = new HttpClient(new SslContextFactory.Client());
 
     private String baseUrl = "https://my.tado.com/api/v2";
     private int timeout = 5000;
 
     private Gson gson;
-    private Authorizer authorizer;
+    private OAuthorizerV2 authorizer;
 
-    public HomeApi(Gson gson, Authorizer authorizer) {
+    public HomeApi(Gson gson, OAuthorizerV2 authorizer) {
         this.gson = gson;
         this.authorizer = authorizer;
     }
 
     public void deleteZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling deleteZoneOverlay");
@@ -103,7 +102,6 @@ public class HomeApi {
     }
 
     public HomeState homeState(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling homeState");
@@ -142,7 +140,6 @@ public class HomeApi {
     }
 
     public List<MobileDevice> listMobileDevices(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling listMobileDevices");
@@ -181,7 +178,6 @@ public class HomeApi {
     }
 
     public List<Zone> listZones(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling listZones");
@@ -220,7 +216,6 @@ public class HomeApi {
     }
 
     public HomeInfo showHome(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showHome");
@@ -259,7 +254,6 @@ public class HomeApi {
     }
 
     public User showUser() throws IOException, ApiException {
-
         startHttpClient(CLIENT);
 
         // create path and map variables
@@ -293,7 +287,6 @@ public class HomeApi {
     }
 
     public GenericZoneCapabilities showZoneCapabilities(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneCapabilities");
@@ -339,7 +332,6 @@ public class HomeApi {
     }
 
     public OverlayTemplate showZoneDefaultOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneDefaultOverlay");
@@ -385,7 +377,6 @@ public class HomeApi {
     }
 
     public Zone showZoneDetails(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneDetails");
@@ -431,7 +422,6 @@ public class HomeApi {
     }
 
     public Overlay showZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneOverlay");
@@ -477,7 +467,6 @@ public class HomeApi {
     }
 
     public ZoneState showZoneState(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneState");
@@ -521,16 +510,13 @@ public class HomeApi {
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
-    public void updatePresenceLock(Long homeId, HomePresence json) throws IOException, ApiException {
-
+    /**
+     * If the {@link HomePresence} DTO is null we send an HTTP DELETE otherwise we send an HTTP PUT.
+     */
+    public void updatePresenceLock(Long homeId, HomePresence dto) throws IOException, ApiException {
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling updatePresenceLock");
-        }
-
-        // verify the required parameter 'json' is set
-        if (json == null) {
-            throw new ApiException(400, "Missing the required parameter 'json' when calling updatePresenceLock");
         }
 
         startHttpClient(CLIENT);
@@ -538,18 +524,20 @@ public class HomeApi {
         // create path and map variables
         String path = "/homes/{home_id}/presenceLock".replaceAll("\\{" + "home_id" + "\\}", homeId.toString());
 
-        Request request = CLIENT.newRequest(baseUrl + path).method(HttpMethod.PUT).timeout(timeout,
-                TimeUnit.MILLISECONDS);
+        Request request = CLIENT.newRequest(baseUrl + path).method(dto == null ? HttpMethod.DELETE : HttpMethod.PUT)
+                .timeout(timeout, TimeUnit.MILLISECONDS);
 
-        request.accept("application/json");
         request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
         }
 
-        String serializedBody = gson.toJson(json);
-        request.content(new StringContentProvider(serializedBody), "application/json");
+        if (dto != null) {
+            String serializedBody = gson.toJson(dto);
+            request.content(new StringContentProvider(serializedBody), "application/json");
+            request.accept("application/json");
+        }
 
         ContentResponse response;
         try {
@@ -565,7 +553,6 @@ public class HomeApi {
     }
 
     public Overlay updateZoneOverlay(Long homeId, Long zoneId, Overlay json) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling updateZoneOverlay");
@@ -626,5 +613,9 @@ public class HomeApi {
                 // nothing we can do here
             }
         }
+    }
+
+    public @Nullable OAuthorizerV2 getAuthorizerV2() {
+        return authorizer instanceof OAuthorizerV2 v2 ? v2 : null;
     }
 }

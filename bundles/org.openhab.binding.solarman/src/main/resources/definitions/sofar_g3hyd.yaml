@@ -1,26 +1,35 @@
 # Sofar G3 also HYD 5-20KTL-3PH
-# This works also for rebranded ZCS Azzurro 3-Phase inverters such as the 3PH HYD6000 ZSS
+# This works also for rebranded ZCS Azzurro 3-Phase inverters such as the 3PH HYD6000 ZSS, or single phase such as 1PH HY6000 ZSS HP
 # Note that this won't work if your ZCS inverter is connected via Connext, you have to be using a Wi-Fi or Ethernet Kit such as ZSM-WIFI-USB.
 requests:
-  - start: 0x0404
-    end: 0x0420
+  - start: 0x0404 # inverter and faults
+    end: 0x042B
     mb_functioncode: 0x03
-  - start: 0x0484
+  - start: 0x0445 # serial number, hw, sw and firmare versions
+    end: 0x0465
+    mb_functioncode: 0x03
+  - start: 0x0484 # on-grid
     end: 0x04AF
     mb_functioncode: 0x03
-# off - grid info
-#  - start: 0x0504
-#    end: 0x051F
-#    mb_functioncode: 0x03
-  - start: 0x0584
+  - start: 0x0504 # off-grid
+    end: 0x051F
+    mb_functioncode: 0x03
+  - start: 0x0584 # dc
     end: 0x0589
     mb_functioncode: 0x03
-  - start: 0x0604
-    end: 0x060A # end of first battery after this continue battery pack 2,3,4
+  - start: 0x0604 # battery 1
+    end: 0x060A # end of first battery, last battery (8th) ends in 0x063A
     mb_functioncode: 0x03
-  - start: 0x0684
+  - start: 0x0684 # generation
     end: 0x069B
     mb_functioncode: 0x03
+  - start: 0x104D # battery dod and eod
+    end: 0x104E
+    mb_functioncode: 0x03
+  - start: 0x1052 # battery eps buffer
+    end: 0x1052
+    mb_functioncode: 0x03
+
 parameters:
 
   - group: Inverter
@@ -128,6 +137,77 @@ parameters:
         rule: 2
         registers: [ 0x0422 ]
         icon: 'mdi:thermometer'
+      - name: "Generation Time Today"
+        class: "duration"
+        state_class: "measurement"
+        uom: "min"
+        scale: 1
+        rule: 1
+        registers: [ 0x0426 ]
+        icon: 'mdi:clock'
+      - name: "Insulation resistance"
+        class: ""
+        state_class: "measurement"
+        uom: "kΩ"
+        scale: 1
+        rule: 1
+        registers: [ 0x042B ]
+        icon: 'mdi:omega'
+      - name: "Serial Number"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        isstr: true
+        registers: [ 0x0445,0x0446,0x0447,0x0448,0x0449,0x044A,0x044B,0x044C ] # serial number 17th to 20th digits are in 0x0470 and 0x0471
+        icon: 'mdi:barcode'
+      - name: "Hardware Version"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        isstr: true
+        registers: [ 0x044D,0x044E ]
+        icon: 'mdi:alpha-v'
+      - name: "Software Version Master"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        isstr: true
+        registers: [ 0x0453,0x0454,0x0455,0x0456 ]
+        icon: 'mdi:alpha-v'
+      - name: "Software Version Slave"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        isstr: true
+        registers: [ 0x0457,0x0458,0x0459,0x045A ]
+        icon: 'mdi:alpha-v'
+      - name: "Safety Version"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 7
+        registers: [ 0x045B,0x045C ]
+        icon: 'mdi:alpha-v'
+      - name: "Safety Firmware Version"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        isstr: true
+        registers: [ 0x0460,0x0461,0x0462,0x0463 ]
+        icon: 'mdi:alpha-v'
+      - name: "Safety Hardware Version"
+        class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        isstr: true
+        registers: [ 0x0464,0x0465 ]
+        icon: 'mdi:alpha-v'
 
   - group: InverterDC
     items:
@@ -238,62 +318,30 @@ parameters:
         rule: 1
         registers: [ 0x060A ]
         icon: 'mdi:battery'
-      - name: "Battery 2 Voltage"
-        class: "voltage"
-        state_class: "measurement"
-        uom: "V"
-        scale: 0.1
-        rule: 1
-        registers: [ 0x060B ]
-        icon: 'mdi:battery'
-      - name: "Battery 2 Current"
-        class: "current"
-        state_class: "measurement"
-        uom: "A"
-        scale: 0.01
-        rule: 2
-        registers: [ 0x060C ]
-        icon: 'mdi:current-dc'
-      - name: "Battery 2 Power"
-        class: "power"
-        state_class: "measurement"
-        uom: "W"
-        scale: 10
-        rule: 2
-        registers: [ 0x060D ]
-        icon: 'mdi:battery-charging'
-      - name: "Battery 2 Temperature"
-        class: "temperature"
-        state_class: "measurement"
-        uom: "°C"
-        scale: 1
-        rule: 2
-        registers: [ 0x060E ]
-        icon: 'mdi:battery'
-      - name: "Battery 2 SOC"
-        class: "battery"
-        state_class: "measurement"
-        uom: "%"
-        scale: 1
-        rule: 1
-        registers: [ 0x060F ]
-        icon: 'mdi:battery'
-      - name: "Battery 2 SOH"
-        class: "battery"
-        state_class: "measurement"
-        uom: "%"
-        scale: 1
-        rule: 1
-        registers: [ 0x0610 ]
-        icon: 'mdi:battery'
-      - name: "Battery 2 Number of Cycles"
+      - name: "Battery DOD"
         class: ""
         state_class: "measurement"
-        uom: "cycle"
+        uom: "%"
         scale: 1
         rule: 1
-        registers: [ 0x0611 ]
+        registers: [ 0x104D ]
         icon: 'mdi:battery'
+      - name: "Battery EOD"
+        class: ""
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [ 0x104E ]
+        icon: 'mdi:battery'
+      - name: "Battery EPS Buffer"
+        class: ""
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [ 0x1052 ]
+        icon: 'mdi:battery-low'
 
   - group: GridAC
     items:
@@ -894,6 +942,10 @@ parameters:
             value: "ID03 Grid Over Frequency Protection"
           - key: 8
             value: "ID04 Grid Under Frequency Protection"
+          - key: 10
+            value: "LOOKUP" # off-grid
+          - key: 14
+            value: "ID03 Grid Over Frequency Protection" # also ID14 Grid voltage unbalance
           - key: 16
             value: "ID05 Leakage current fault"
           - key: 32

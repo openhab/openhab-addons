@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.melcloud.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception to encapsulate any issues communicating with MELCloud.
  *
  * @author Pauli Anttila - Initial Contribution
  */
+@NonNullByDefault
 public class MelCloudCommException extends Exception {
     private static final long serialVersionUID = 1L;
 

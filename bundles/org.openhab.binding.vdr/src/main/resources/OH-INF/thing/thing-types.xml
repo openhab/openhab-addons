@@ -6,7 +6,7 @@
 	<thing-type id="vdr">
 		<label>VDR</label>
 		<description>VDR - The Video Disk Recorder (https://tvdr.de)</description>
-
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="channel" typeId="vdrChannel"/>
@@ -83,6 +83,10 @@
 		<item-type>Number</item-type>
 		<label>Channel Number</label>
 		<description>Current Channel Number</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="false" pattern="%d"/>
 	</channel-type>
 	<channel-type id="vdrChannelName">
@@ -184,18 +188,30 @@
 		<item-type>DateTime</item-type>
 		<label>Event Start Time</label>
 		<description>Start Time of EPG Event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vdrEventEnd">
 		<item-type>DateTime</item-type>
 		<label>Event End Time</label>
 		<description>End Time of EPG Event</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vdrEventDuration">
 		<item-type>Number:Time</item-type>
 		<label>Event Duration</label>
 		<description>Duration of EPG Event in Minutes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

@@ -7,7 +7,7 @@
 	<thing-type id="tv">
 		<label>Samsung TV</label>
 		<description>Allows to control Samsung TV</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="volume" typeId="volume"/>
 			<channel id="mute" typeId="mute"/>
@@ -32,10 +32,11 @@
 			<channel id="artJson" typeId="artworkjson"/>
 			<channel id="artBrightness" typeId="artworkbrightness"/>
 			<channel id="artColorTemperature" typeId="artworkcolortemperature"/>
+			<channel id="artOrientation" typeId="artworkorientation"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>hostName</representation-property>

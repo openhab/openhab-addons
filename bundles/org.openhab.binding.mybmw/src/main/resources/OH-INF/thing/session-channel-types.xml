@@ -14,6 +14,10 @@
 	<channel-type id="session-energy-channel">
 		<item-type>String</item-type>
 		<label>Charged Energy in Session</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="session-issue-channel">
 		<item-type>String</item-type>

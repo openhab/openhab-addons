@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.tellstick.internal.conf;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for Tellstick bridge used to connect to the
  * Telldus Core service on the local machine.
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TellstickBridgeConfiguration {
-    public int resendInterval;
-    public String libraryPath;
+    public String libraryPath = "C:/Program Files/Telldus/;C:/Program Files (x86)/Telldus/";
+    public int resendInterval = 100;
 }

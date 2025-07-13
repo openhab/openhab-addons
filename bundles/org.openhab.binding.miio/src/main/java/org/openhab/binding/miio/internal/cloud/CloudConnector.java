@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -194,7 +194,7 @@ public class CloudConnector {
             try {
                 JsonObject homelistInfo = cl.getHomeList(country.trim().toLowerCase());
                 final HomeListDTO homelist = GSON.fromJson(homelistInfo, HomeListDTO.class);
-                if (homelist != null && homelist.getHomelist() != null && homelist.getHomelist().size() > 0) {
+                if (homelist != null && homelist.getHomelist() != null && !homelist.getHomelist().isEmpty()) {
                     homeLists.put(country, homelist);
                 }
             } catch (JsonSyntaxException e) {

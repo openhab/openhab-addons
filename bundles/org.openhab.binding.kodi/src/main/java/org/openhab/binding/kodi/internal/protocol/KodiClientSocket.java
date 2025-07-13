@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,7 +169,7 @@ public class KodiClientSocket {
 
         @OnWebSocketError
         public void onError(Throwable error) {
-            logger.trace("Error occured: {}", error.getMessage());
+            logger.trace("Error occurred: {}", error.getMessage());
             onClose(0, error.getMessage());
         }
     }

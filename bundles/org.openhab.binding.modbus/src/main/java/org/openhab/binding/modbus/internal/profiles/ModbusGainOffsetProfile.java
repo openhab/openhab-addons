@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,7 +157,6 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
                     result = applyGainTowardsItem(offsetted, gain);
                 } else {
                     result = applyGainTowardsHandler(quantityState, gain).subtract(pregainOffsetQt);
-
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
                 logger.warn(

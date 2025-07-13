@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void scanner() {
-        long timestampOfLastScan = getTimestampOfLastScan();
+        Instant timestampOfLastScan = getTimestampOfLastScan();
         for (InetAddress broadcastAddress : getBroadcastAddresses()) {
             logger.trace("Starting broadcast for {}", broadcastAddress.toString());
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ public interface HTTPConstants {
     static final String CREDENTIALS = "Credentials";
     static final String USERNAME = "username";
     static final String PASSWORD = "password";
+    static final String HCAPTCHA_TOKEN = "hcaptchatoken";
     static final String CONTENT_LENGTH = "Content-Length";
     static final String CODE_CHALLENGE = "code_challenge";
     static final String CODE_CHALLENGE_METHOD = "code_challenge_method";
@@ -56,5 +57,6 @@ public interface HTTPConstants {
     static final String HEADER_X_IDENTITY_PROVIDER = "x-identity-provider";
     static final String HEADER_X_CORRELATION_ID = "x-correlation-id";
     static final String HEADER_BMW_CORRELATION_ID = "bmw-correlation-id";
+    static final String HEADER_BMW_SESSION_ID = "bmw-session-id";
     static final String HEADER_BMW_VIN = "bmw-vin";
 }

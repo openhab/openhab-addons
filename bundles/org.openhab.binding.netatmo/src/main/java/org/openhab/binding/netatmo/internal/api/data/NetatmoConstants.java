@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,6 +149,7 @@ public class NetatmoConstants {
     public static final String PARAM_EVENT_ID = "event_id";
     public static final String PARAM_SCHEDULE_ID = "schedule_id";
     public static final String PARAM_OFFSET = "offset";
+    public static final String PARAM_SIZE = "size";
     public static final String PARAM_GATEWAY_TYPE = "gateway_types";
     public static final String PARAM_MODE = "mode";
     public static final String PARAM_URL = "url";
@@ -247,8 +248,8 @@ public class NetatmoConstants {
     }
 
     // Radio signal quality thresholds
-    static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
-    static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
+    static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp: bad, average, good, full
+    static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp: low, medium, high, full
 
     // Thermostat definitions
     public enum SetpointMode {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class ChannelUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+                LOGGER.warn("Error occurred when adding channels, reason: {}", e.getMessage(), e);
             }
 
             try {
@@ -122,7 +122,7 @@ public class ChannelUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+                LOGGER.warn("Error occurred when adding channels, reason: {}", e.getMessage(), e);
             }
         } else {
             LOGGER.warn("Project file data doesn't exist, can't automatically create channels!");

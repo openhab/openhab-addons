@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -153,7 +153,8 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final int maxSize = maxSizeBD.intValue();
             try {
                 regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                        currentConfiguration.password, calendarFile, maxSize * 1048576, this);
+                        currentConfiguration.password, calendarFile, maxSize * 1048576, this,
+                        currentConfiguration.userAgent);
             } catch (URISyntaxException e) {
                 throw new ConfigBrokenException(String.format(
                         "The URI '%s' for downloading the calendar contains syntax errors.", currentConfiguration.url));
@@ -267,7 +268,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
                             cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item!", e);
+                    logger.debug("Exception occurred while pushing to item!", e);
                 }
             }
         }

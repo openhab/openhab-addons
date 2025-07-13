@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,6 @@ public abstract class BaseOnOffCommand extends BaseLGSerialCommand {
 
     @Override
     protected LGSerialResponse createResponse(int set, boolean success, String data) {
-        return new OnOffResponse(set, success, data);
+        return new OnOffResponse(set, success, data, false);
     }
 }

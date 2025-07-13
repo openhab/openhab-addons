@@ -6,55 +6,34 @@ The Hydrawise binding allows monitoring and control of [Hunter Industries's](htt
 
 ## Supported Things
 
-### Account Bridge Thing
-
-The Account Bridge Thing type represents the user's account on the Hydrawise cloud service. The bridge can have one or more child [Controllers](#controller-thing) linked.
-
+- `account`: Bridge type represents the user's account on the Hydrawise cloud service. The bridge can have one or more child [Controllers](#controller-thing) linked.
 An account must be manually added and configured.
+- `controller` Things are automatically discovered once an account Bridge is properly configured.[more details](#local-thing)
+- `local` Things uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network. [more details](#local-thing)
 
-### Controller Thing
-
-Controller Things are automatically discovered once an [Account Bridge](#account-bridge-thing) has be properly configured.
+### `controller` Thing
 
 The Controller Thing type is the primary way most users will control and monitor their irrigation system.
-This allows full control over zones, sensors and weather forecasts.  
+This allows full control over zones, sensors and weather forecasts.<br>
 Changes made through this Thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules.
+Controller Things require a parent `account` Bridge
 
-Controller Things require a parent [Account Bridge](#account-bridge-thing)
+### `local` Thing
 
-#### Controller Thing Supported Channel Groups
-
-| channel group ID                              |
-|-----------------------------------------------|
-| [Controller](#controller-thing-1) |
-| [Zones](#zone-channel-group)                  |
-| [All Zones](#all-zones-channel-group)         |
-| [Sensor](#sensor-channel-group)               |
-| [Forecast](#forecast-channel-group)             |
-
-### Local Thing
-
-The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.  
-This provides a subset of features compared to the Cloud Thing type limited to basic zone control.  
+The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.
+This provides a subset of features compared to the Cloud Thing type limited to basic zone control.
 Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state.
 
 Local control may not be available on later Hydrawise controller firmware versions.
 
 Use Cases
 
-- The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
+- The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.
 - This is also useful if you wish to not use the cloud scheduling  at all and use openHAB as the irrigation scheduling system.
-
-#### Local Thing Supported Channel Groups
-
-| channel group ID                      |
-|---------------------------------------|
-| [Zones](#zone-channel-group)          |
-| [All Zones](#all-zones-channel-group) |
 
 ## Thing Configuration
 
-### Account Thing
+### `account` Bridge Configuration
 
 | Configuration Name | type    | required | Comments                                                                                                                  |
 |--------------------|---------|----------|---------------------------------------------------------------------------------------------------------------------------|
@@ -64,13 +43,13 @@ Use Cases
 | refresh            | Integer | False    | Defaults to a 60 second polling rate, more frequent polling may cause the service to deny requests                        |
 | refreshToken       | Boolean | False    | An oAuth refresh token, this will be automatically configured after the first login and updated as the token is refreshed |
 
-### Controller Thing
+### `controller` Thing Configuration
 
 | Configuration Name | type    | required | Comments             |
 |--------------------|---------|----------|----------------------|
 | controllerId       | Integer | True     | ID of the controller |
 
-### Local Thing
+### `local` Thing Configuration
 
 | Configuration Name | type    | required | Comments                                                                                                        |
 |--------------------|---------|----------|-----------------------------------------------------------------------------------------------------------------|
@@ -79,9 +58,26 @@ Use Cases
 | password           | String  | True     | Password set on the touch panel of the controller.  This can be found under the setting menu on the controller. |
 | refresh            | Integer | True     | Defaults to a 30 seconds polling rate                                                                           |
 
-## Channels
+## Channels and Groups
 
 ### Channel Groups
+
+### Controller Thing Supported Channel Groups
+
+| channel group ID                      |
+|---------------------------------------|
+| [Controller](#controller-thing-1)     |
+| [Zones](#zone-channel-group)          |
+| [All Zones](#all-zones-channel-group) |
+| [Sensor](#sensor-channel-group)       |
+| [Forecast](#forecast-channel-group)   |
+
+#### Local Thing Supported Channel Groups
+
+| channel group ID                      |
+|---------------------------------------|
+| [Zones](#zone-channel-group)          |
+| [All Zones](#all-zones-channel-group) |
 
 #### System Channel Group
 
@@ -160,6 +156,19 @@ Channels uses across zones, sensors and forecasts
 | probabilityofprecipitation | Number             | forecast       | Daily probability of precipitation percentage | R          |
 
 ## Full Example
+
+## `demo.things` Example
+
+```java
+Bridge hydrawise:account:myaccount "Hydrawise Cloud" [ userName="my-username", password="my-password", savePassword=true, refresh=120 ] {
+    Thing controller irrigation1 "Frontyard Controller" [ controllerId="12345" ]
+    Thing controller irrigation2 "Backyard Controller" [ controllerId="67890" ]
+}
+
+Thing local directIrrigation "Garden Controller" [ host="host-ip", username="my-username", password="my-password", refresh="30" ]
+```
+
+## `demo.items` Example
 
 ```java
 Group Sprinkler             "Sprinkler"

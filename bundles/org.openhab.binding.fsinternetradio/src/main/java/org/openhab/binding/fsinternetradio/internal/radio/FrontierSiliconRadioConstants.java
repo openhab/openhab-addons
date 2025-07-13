@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.fsinternetradio.internal.radio;
 /**
  * Internal constants for the frontier silicon radio.
  *
- * @author Markus Rathgeb - Moved the constants to separate class
+ * @author Markus Rathgeb - Initial contribution, moved the constants to separate class
  */
 public class FrontierSiliconRadioConstants {
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.core.types.Type;
  * RFXCOM data class for control message.
  *
  * @author Pauli Anttila - Initial contribution
- * @author Mike Jagdis
+ * @author Mike Jagdis - Improvements
  */
 public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
     private byte[] data = new byte[14];

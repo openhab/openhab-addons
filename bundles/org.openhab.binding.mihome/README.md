@@ -109,7 +109,7 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ ..., interface="eth0", ... 
 
 ## Configuration examples
 
-### xiaomi.things:
+### `xiaomi.things` Example
 
 ```java
 Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX", ipAddress="192.168.0.3", port=9898, key="XXXXXXXXXXXXXXXX" ] {
@@ -125,12 +125,12 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX"
 }
 ```
 
-### xiaomi.items:
+### `xiaomi.items` Example
 
 ```java
 // Replace <GwID> with itemId of gateway from Things file
 // Replace <ID> with itemId of item from Things file
-// Gateway 
+// Gateway
 Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
 Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
 Color Gateway_Color <rgb> { channel="mihome:gateway:<GwID>:<ID>:color" }
@@ -231,14 +231,14 @@ Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_ln2:<GwID>:<ID>:ch2" }
 Rollershutter CurtainMotorControl <blinds> { channel="curtain:<GwID>:<ID>:curtainControl" }
 ```
 
-### xiaomi.rules:
+### `xiaomi.rules` Example
 
 ```java
 rule "Mijia & Aqara Wireless Switch"
 when
     Channel "mihome:sensor_switch:<GwID>:<ID>:button" triggered
 then
-    
+
     switch(receivedEvent) {
         case "SHORT_PRESSED": {
             <ACTION>
@@ -385,7 +385,7 @@ then
 end
 ```
 
-### xiaomi.sitemap:
+### `xiaomi.sitemap` Example
 
 ```perl
 sitemap xiaomi label="Xiaomi" {
@@ -553,7 +553,7 @@ In order to verify that traffic is actually received by the machine use `tcpdump
 
 - List your network interfaces `ifconfig | grep MULTICAST` or `ip link | grep MULTICAST`
 - Use `tcpdump -i <interface> port 9898` for each interface to verify if you receive traffic
-  
+
 If you already know the correct interface, or you found the correct one through tcpdump:
 
 - Configure the `interface` property of the `Bridge` Thing with the correct name (for example `eth0`, etc)

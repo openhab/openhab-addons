@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,8 @@ import org.openhab.core.types.TimeSeries.Policy;
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
 
+    @Nullable
+    Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
     ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
@@ -154,6 +156,10 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public @Nullable Bridge getBridge(ThingUID bridgeUID) {
-        return null;
+        return bridge;
+    }
+
+    public void setBridge(Bridge b) {
+        bridge = b;
     }
 }

@@ -9,6 +9,7 @@
 		<label>Deutsche Bahn Timetable</label>
 		<description>Connection to the timetable API of Deutsche Bahn. Provides timetable data that can be displayed using the
 			train things.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="clientId" type="text" required="true">
@@ -51,6 +52,7 @@
 		</supported-bridge-type-refs>
 		<label>Train</label>
 		<description>Displays information about a train within the given timetable at one station.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="tripAttributes" id="trip">
 				<label>Trip</label>
@@ -185,6 +187,10 @@
 		<item-type>DateTime</item-type>
 		<label>Planned Time</label>
 		<description>Provides the planned time of a train.</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
@@ -192,6 +198,10 @@
 		<item-type>DateTime</item-type>
 		<label>Changed Time</label>
 		<description>Provides the changed time of a train.</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
@@ -199,6 +209,10 @@
 		<item-type>String</item-type>
 		<label>Planned Status</label>
 		<description>Provides the planned status of a train.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="p">Planned</option>
@@ -212,6 +226,10 @@
 		<item-type>String</item-type>
 		<label>Changed Status</label>
 		<description>Provides the changed status of a train.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="p">Planned</option>
@@ -233,6 +251,10 @@
 		<label>Messages</label>
 		<description>Messages for this train. Contains all translated codes from the messages of the selected train stop.
 			Multiple messages will be separated with a single dash.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

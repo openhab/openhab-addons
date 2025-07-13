@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 
 /**
  * A MQTT switch, following the https://www.home-assistant.io/components/switch.mqtt/ specification.
@@ -27,57 +28,60 @@ import com.google.gson.annotations.SerializedName;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
-    public static final String SWITCH_CHANNEL_ID = "switch"; // Randomly chosen channel "ID"
+public class Switch extends AbstractComponent<Switch.Configuration> {
+    public static final String SWITCH_CHANNEL_ID = "switch";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Switch");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Switch");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
+        String getPayloadOff() {
+            return getString("payload_off");
+        }
 
-        @SerializedName("state_on")
-        protected @Nullable String stateOn;
-        @SerializedName("state_off")
-        protected @Nullable String stateOff;
-        @SerializedName("payload_on")
-        protected String payloadOn = "ON";
-        @SerializedName("payload_off")
-        protected String payloadOff = "OFF";
+        String getPayloadOn() {
+            return getString("payload_on");
+        }
 
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
+        @Nullable
+        String getStateOff() {
+            return getOptionalString("state_off");
+        }
+
+        @Nullable
+        String getStateOn() {
+            return getOptionalString("state_on");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+    public Switch(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
-
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
+        String payloadOff = config.getPayloadOff();
+        String payloadOn = config.getPayloadOn();
+        String stateOff = config.getStateOff();
+        String stateOn = config.getStateOn();
+        if (stateOff == null) {
+            stateOff = payloadOff;
         }
+        OnOffValue value = new OnOffValue(stateOn, stateOff, payloadOn, payloadOff);
 
-        OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
-                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, "Switch",
+                componentContext.getUpdateListener()).stateTopic(config.getStateTopic(), config.getValueTemplate())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
+                .inferOptimistic(config.isOptimistic()).build();
 
-        buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
-                .build();
+        finalizeChannels();
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.senechome.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SenecSystemStatus} class defines available Senec specific
  * system states.
@@ -19,6 +21,7 @@ package org.openhab.binding.senechome.internal;
  * @author Steven Schwarznau - Initial contribution
  *
  */
+@NonNullByDefault
 public enum SenecSystemStatus {
 
     INITIALSTATE(0, "INITIAL STATE"),

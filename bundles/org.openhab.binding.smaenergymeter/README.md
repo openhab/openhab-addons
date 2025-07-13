@@ -34,7 +34,7 @@ The polling period parameter is used to trigger readout of meter. In case if two
 | Channel     | Description            |
 |-------------|------------------------|
 | powerIn     | Purchased power        |
-| powerInL1   | Purchased power L3     |
+| powerInL1   | Purchased power L1     |
 | powerInL2   | Purchased power L2     |
 | powerInL3   | Purchased power L3     |
 | powerOut    | Grid feed-in power     |

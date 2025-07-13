@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,6 @@ import java.time.temporal.ChronoUnit;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -33,9 +31,9 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public class AwattarUtil {
 
-    public static long getMillisToNextMinute(int mod, TimeZoneProvider timeZoneProvider) {
+    public static long getMillisToNextMinute(int mod, ZoneId zoneId) {
         long now = Instant.now().toEpochMilli();
-        ZonedDateTime dt = ZonedDateTime.now(timeZoneProvider.getTimeZone()).truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime dt = ZonedDateTime.now(zoneId).truncatedTo(ChronoUnit.MINUTES);
         int min = dt.getMinute();
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
@@ -45,10 +43,6 @@ public class AwattarUtil {
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
         return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plusHours(hour);
-    }
-
-    public static DateTimeType getDateTimeType(long time, TimeZoneProvider tz) {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), tz.getTimeZone()));
     }
 
     public static QuantityType<Time> getDuration(long millis) {

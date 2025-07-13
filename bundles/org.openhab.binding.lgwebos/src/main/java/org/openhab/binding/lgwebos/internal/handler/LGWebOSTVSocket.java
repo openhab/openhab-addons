@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,6 +71,7 @@ import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.openhab.binding.lgwebos.internal.handler.core.LaunchSession;
 import org.openhab.binding.lgwebos.internal.handler.core.LaunchSession.LaunchSessionType;
+import org.openhab.binding.lgwebos.internal.handler.core.MediaAppInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.Response;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.openhab.binding.lgwebos.internal.handler.core.TextInputStatusInfo;
@@ -88,12 +89,14 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Hyun Kook Khang - Initial contribution
  * @author Sebastian Prehn - Web Socket implementation and adoption for openHAB
+ * @author Jimmy Tanagra - Add media state subscription
  */
 @WebSocket()
 @NonNullByDefault
 public class LGWebOSTVSocket {
 
     private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
+    private static final String MEDIA_FOREGROUND_APP = "ssap://com.webos.media/getForegroundAppInfo";
     // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
     // private static final String APP_STATE = "ssap://system.launcher/getAppState";
     private static final String VOLUME = "ssap://audio/getVolume";
@@ -418,6 +421,10 @@ public class LGWebOSTVSocket {
     @OnWebSocketMessage
     public void onMessage(String message) {
         Response response = GSON.fromJson(message, Response.class);
+        if (response == null) {
+            logger.warn("Received an unexpected null response. Ignoring the response");
+            return;
+        }
         JsonElement payload = response.getPayload();
         JsonObject jsonPayload = payload == null ? null : payload.getAsJsonObject();
         String messageToLog = (jsonPayload != null && jsonPayload.has("client-key")) ? "***" : message;
@@ -494,6 +501,7 @@ public class LGWebOSTVSocket {
                 map.put(PROPERTY_DEVICE_OS, jsonPayload.get("deviceOS").getAsString());
                 map.put(PROPERTY_DEVICE_OS_VERSION, jsonPayload.get("deviceOSVersion").getAsString());
                 map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION, jsonPayload.get("deviceOSReleaseVersion").getAsString());
+                map.put(PROPERTY_DEVICE_ID, jsonPayload.get("deviceUUID").getAsString());
                 map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
                 config.storeProperties(map);
                 sendRegister();
@@ -726,6 +734,20 @@ public class LGWebOSTVSocket {
         ServiceCommand<CommandConfirmation> request = new ServiceCommand<>(uri, null,
                 x -> GSON.fromJson(x, CommandConfirmation.class), listener);
         sendCommand(request);
+    }
+
+    public ServiceSubscription<MediaAppInfo> subscribeMediaState(ResponseListener<MediaAppInfo> listener) {
+        ServiceSubscription<MediaAppInfo> request = new ServiceSubscription<>(MEDIA_FOREGROUND_APP, null,
+                jsonObj -> GSON.fromJson(jsonObj, MediaAppInfo.class), listener);
+        sendCommand(request);
+        return request;
+    }
+
+    public ServiceCommand<MediaAppInfo> getMediaState(ResponseListener<MediaAppInfo> listener) {
+        ServiceCommand<MediaAppInfo> request = new ServiceCommand<>(MEDIA_FOREGROUND_APP, null,
+                jsonObj -> GSON.fromJson(jsonObj, MediaAppInfo.class), listener);
+        sendCommand(request);
+        return request;
     }
 
     // APPS

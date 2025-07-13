@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,8 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState}
  * instead.
  *
- * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ * @author Tomasz Maruszak - Initial contribution, [yamaha] Tuner band selection and preset feature for dual band models
+ *         (RX-S601D)
  */
 public class InputWithTunerDABControlXML extends AbstractInputControlXML
         implements InputWithTunerBandControl, InputWithPresetControl {

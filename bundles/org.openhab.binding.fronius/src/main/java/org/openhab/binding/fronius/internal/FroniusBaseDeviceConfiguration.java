@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.fronius.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FroniusBaseDeviceConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class FroniusBaseDeviceConfiguration {
-    public Integer deviceId;
+    public int deviceId = 1;
 }

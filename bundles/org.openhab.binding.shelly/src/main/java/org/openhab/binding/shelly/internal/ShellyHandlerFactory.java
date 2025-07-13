@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 
 import java.util.HashMap;
@@ -47,8 +47,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.reactivex.annotations.NonNull;
 
 /**
  * The {@link ShellyHandlerFactory} is responsible for creating things and thing handlers.
@@ -109,32 +107,27 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        String thingType = thingTypeUID.getId();
         ShellyBaseHandler handler = null;
 
-        if (thingType.equals(THING_TYPE_SHELLYPROTECTED_STR)) {
+        if (THING_TYPE_SHELLYPROTECTED.equals(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
-        } else if (thingType.equals(THING_TYPE_SHELLYBULB_STR) || thingType.equals(THING_TYPE_SHELLYDUO_STR)
-                || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
-                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
-                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
-                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
+        } else if (LIGHT_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
-        } else if (thingType.startsWith("shellyblu")) {
+        } else if (BLU_SENSOR_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyBluSensorHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
-        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyRelayHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
@@ -155,7 +148,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      * Remove handler of things.
      */
     @Override
-    protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof ShellyBaseHandler shellyBaseHandler) {
             shellyBaseHandler.stop();
             String uid = thingHandler.getThing().getUID().getAsString();

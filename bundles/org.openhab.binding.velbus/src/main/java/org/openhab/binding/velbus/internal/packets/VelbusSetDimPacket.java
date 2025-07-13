@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,14 @@ public class VelbusSetDimPacket extends VelbusPacket {
 
     public void setDim(byte dim) {
         data[2] = dim;
+    }
+
+    public void setMode(byte mode) {
+        data[3] = mode;
+    }
+
+    public void setLastUsedDim() {
+        data[0] = COMMAND_RESTORE_LAST_DIMVALUE;
     }
 
     @Override

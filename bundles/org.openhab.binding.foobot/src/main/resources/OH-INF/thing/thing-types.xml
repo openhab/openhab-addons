@@ -8,6 +8,7 @@
 	<bridge-type id="account">
 		<label>Foobot Account</label>
 		<description>Your Foobot account.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="apiKeyLimitRemaining" typeId="api-key-limit-remaining"/>
@@ -41,6 +42,7 @@
 
 		<label>Foobot</label>
 		<description>A Foobot device.</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="time" typeId="time"/>
@@ -72,6 +74,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter</label>
 		<description>Particulate Matter Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature">
@@ -79,6 +85,10 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity">
@@ -86,6 +96,10 @@
 		<label>Humidity</label>
 		<description>Humidity Level</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="co2">
@@ -93,12 +107,20 @@
 		<label>Carbon Dioxide</label>
 		<description>Carbon dioxide Level</description>
 		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d ppm"/>
 	</channel-type>
 	<channel-type id="voc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Volatile Compounds</label>
 		<description>Volatile Organic Compounds Level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>
 	<channel-type id="gpi">

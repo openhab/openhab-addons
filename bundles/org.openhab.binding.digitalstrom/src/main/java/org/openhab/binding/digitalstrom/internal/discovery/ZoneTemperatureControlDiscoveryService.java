@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
     public void deactivate() {
         logger.debug("Deactivate discovery service for zone teperature control type remove thing types {}",
                 super.getSupportedThingTypes());
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     /**

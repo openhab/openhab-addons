@@ -19,12 +19,12 @@ Discovery is not supported.
 
 ## Thing Configuration
 
-### URTSI II Device:
+### URTSI II Device
 
 - Port: The port which is used to access the device (e.g. /dev/ttyUSB0)
 - Command execution interval: The time (in ms) the binding should wait between sending commands to the device
 
-### RTS Device (e.g. rollershutter):
+### RTS Device (e.g. rollershutter)
 
 - Channel: The URTSI II channel the RTS device is assigned to at URTSI II.
 

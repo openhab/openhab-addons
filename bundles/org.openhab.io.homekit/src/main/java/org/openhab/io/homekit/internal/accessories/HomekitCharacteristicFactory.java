@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,6 +188,26 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
  */
 @NonNullByDefault
 public class HomekitCharacteristicFactory {
+    // These values represent ranges that do not match the defaults that are part of
+    // the HAP specification/the defaults in HAP-Java, but nonetheless are commonly
+    // encountered in consumer-grade devices. So we define our own default min/max so
+    // that users don't have to override the default unnecessarily.
+
+    // HAP default is 50-400 mired/2500-20,000 K. These numbers represent
+    // the warmest and coolest bulbs I could reasonably find at general
+    // purpose retailers.
+    public static final int COLOR_TEMPERATURE_MIN_MIREDS = 107; // 9300 K
+    public static final int COLOR_TEMPERATURE_MAX_MIREDS = 556; // 1800 K
+    // HAP default is 0 °C, but it's very common for outdoor temperatures and/or
+    // refrigation devices to go below freezing.
+    // Lowest recorded temperature on Earth is -89.2 °C. This is just a nice round number.
+    public static final int CURRENT_TEMPERATURE_MIN_CELSIUS = -100;
+    // HAP default is 0.0001 lx, but this is commonly rounded to 0 by many devices
+    public static final int CURRENT_AMBIENT_LIGHT_LEVEL_MIN_LUX = 0;
+    // HAP default is 100k
+    // https://en.wikipedia.org/wiki/Daylight#Intensity_in_different_conditions
+    public static final int CURRENT_AMBIENT_LIGHT_LEVEL_MAX_LUX = 120000;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
 
     // List of optional characteristics and corresponding method to create them.
@@ -590,11 +610,6 @@ public class HomekitCharacteristicFactory {
         return convertAndRound(degrees, SIUnits.CELSIUS, getSystemTemperatureUnit());
     }
 
-    public static double getTemperatureStep(HomekitTaggedItem taggedItem, double defaultValue) {
-        return taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.STEP,
-                new QuantityType(defaultValue, SIUnits.CELSIUS), true).doubleValue();
-    }
-
     private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem,
             int defaultValue) {
         return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem, defaultValue));
@@ -796,14 +811,10 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         final boolean inverted = taggedItem.isInverted();
 
-        int minValue = taggedItem
-                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
-                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED), false)
-                .intValue();
-        int maxValue = taggedItem
-                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
-                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED), false)
-                .intValue();
+        int minValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                new QuantityType(COLOR_TEMPERATURE_MIN_MIREDS, Units.MIRED), false).intValue();
+        int maxValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                new QuantityType(COLOR_TEMPERATURE_MAX_MIREDS, Units.MIRED), false).intValue();
 
         // It's common to swap these if you're providing in Kelvin instead of mired
         if (minValue > maxValue) {
@@ -883,7 +894,7 @@ public class HomekitCharacteristicFactory {
                         Objects.requireNonNull(new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP,
                                 SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
                         true)
-                .toUnit(SIUnits.CELSIUS).doubleValue();
+                .toUnitRelative(SIUnits.CELSIUS).doubleValue();
         return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
@@ -947,13 +958,9 @@ public class HomekitCharacteristicFactory {
 
     private static CurrentTemperatureCharacteristic createCurrentTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        double minValue = taggedItem
-                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
-                        Objects.requireNonNull(
-                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
-                                        .toUnit(getSystemTemperatureUnit())),
-                        false)
-                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double minValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE, Objects.requireNonNull(
+                new QuantityType(CURRENT_TEMPERATURE_MIN_CELSIUS, SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
         double maxValue = taggedItem
                 .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
                         Objects.requireNonNull(
@@ -967,7 +974,7 @@ public class HomekitCharacteristicFactory {
                                 new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_STEP, SIUnits.CELSIUS)
                                         .toUnit(getSystemTemperatureUnit())),
                         true)
-                .toUnit(SIUnits.CELSIUS).doubleValue();
+                .toUnitRelative(SIUnits.CELSIUS).doubleValue();
         return new CurrentTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), getSubscriber(taggedItem, TARGET_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, TARGET_TEMPERATURE, updater));
@@ -1061,7 +1068,7 @@ public class HomekitCharacteristicFactory {
                         Objects.requireNonNull(new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP,
                                 SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
                         true)
-                .toUnit(SIUnits.CELSIUS).doubleValue();
+                .toUnitRelative(SIUnits.CELSIUS).doubleValue();
         return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
@@ -1561,7 +1568,7 @@ public class HomekitCharacteristicFactory {
                                 new QuantityType(TargetTemperatureCharacteristic.DEFAULT_STEP, SIUnits.CELSIUS)
                                         .toUnit(getSystemTemperatureUnit())),
                         true)
-                .toUnit(SIUnits.CELSIUS).doubleValue();
+                .toUnitRelative(SIUnits.CELSIUS).doubleValue();
         return new TargetTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_TEMPERATURE, updater),

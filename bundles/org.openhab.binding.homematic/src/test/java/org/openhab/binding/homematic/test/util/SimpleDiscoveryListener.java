@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.test.util;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,7 +46,7 @@ public class SimpleDiscoveryListener implements DiscoveryListener {
     }
 
     @Override
-    public @Nullable Collection<@NonNull ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+    public @Nullable Collection<@NonNull ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
             @Nullable Collection<@NonNull ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return null;
     }
