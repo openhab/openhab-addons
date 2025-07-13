@@ -94,6 +94,7 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_ON_TIMER_ACTIVE = "on-timer-active";
     public static final String CHANNEL_ON_TIMER_DURATION = "on-timer-duration";
     public static final String CHANNEL_ON_TIMER_TIME = "on-timer-time";
+    public static final String CHANNEL_FILTER_STATE = "filter-state";
 
     // List of all Properties ids
     public static final String PROPERTY_BRAND = "brand";

@@ -172,7 +172,7 @@ public class PortableAirConditionerStateDTO extends ApplianceStateDTO {
         @SerializedName("fanSpeedSetting")
         private String fanSpeedSetting = NOT_READ_STRING;
 
-        public boolean isReadFanSpeedSetting() {
+        public boolean getIsReadFanSpeedSetting() {
             return !NOT_READ_STRING.equals(fanSpeedSetting);
         }
 
@@ -196,7 +196,15 @@ public class PortableAirConditionerStateDTO extends ApplianceStateDTO {
         }
 
         @SerializedName("filterState")
-        private String filterState = "";
+        private String filterState = NOT_READ_STRING;
+
+        public boolean getIsReadFilterState() {
+            return !NOT_READ_STRING.equals(filterState);
+        }
+
+        public String getFilterState() {
+            return filterState;
+        }
 
         @SerializedName("dataModelVersion")
         private String dataModelVersion = "";
