@@ -48,11 +48,11 @@ public class RouterosDevice {
     private final String password;
     private @Nullable ApiConnection connection;
 
+    public static final String PROP_POE_OUT_KEY = "poe-out";
     public static final String PROP_ID_KEY = ".id";
     public static final String PROP_TYPE_KEY = "type";
     public static final String PROP_NAME_KEY = "name";
     public static final String PROP_SSID_KEY = "ssid";
-    public static final String PROP_POE_OUT_KEY = "poe-out";
 
     private static final String CMD_PRINT_IFACES = "/interface/print";
     private static final String CMD_PRINT_IFACE_TYPE_TPL = "/interface/%s/print";
