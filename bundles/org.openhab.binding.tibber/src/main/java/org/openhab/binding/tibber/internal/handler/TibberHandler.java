@@ -149,7 +149,7 @@ public class TibberHandler extends BaseThingHandler {
     public void initialize() {
         isDisposed = false;
         tibberConfig = getConfigAs(TibberConfiguration.class);
-        if (EMPTY_VALUE.equals(tibberConfig.homeid) || EMPTY_VALUE.equals(tibberConfig.token)) {
+        if (tibberConfig.homeid.isBlank() || tibberConfig.token.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.configuration-error");
         } else {
