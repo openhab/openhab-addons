@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.evcc.internal.discovery;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
@@ -13,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.discovery.mapper.BatteryDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.LoadpointDiscoveryMapper;
+import org.openhab.binding.evcc.internal.discovery.mapper.PvDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.SiteDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.VehicleDiscoveryMapper;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
@@ -23,6 +36,12 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link EvccDiscoveryService} is responsible for creating the bridge and thing
+ * handlers.
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = EvccDiscoveryService.class, configurationPid = "discovery.evcc")
 public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccBridgeHandler> {
@@ -33,7 +52,8 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<EvccDiscoveryMapper> mappers = List.of(new LoadpointDiscoveryMapper(),
-            new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper());
+            new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper(),
+            new PvDiscoveryMapper());
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LOADPOINT, THING_TYPE_VEHICLE,
             THING_TYPE_BATTERY, THING_TYPE_SITE, THING_TYPE_PV, THING_TYPE_HEATING);

@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.evcc.internal.handler;
 
 import java.math.BigDecimal;
@@ -30,6 +42,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * The {@link EvccBridgeHandler} is responsible for creating the bridge and thing
+ * handlers.
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
 @NonNullByDefault
 public class EvccBridgeHandler extends BaseBridgeHandler {
 
@@ -73,11 +91,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        Optional.ofNullable(pollJob).ifPresent(polling -> {
-            if (!polling.isCancelled()) {
-                polling.cancel(true);
-            }
-        });
+        if (null != pollJob && !pollJob.isCancelled()) {
+            pollJob.cancel(true);
+        }
         listeners.clear();
     }
 
@@ -109,10 +125,14 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
             if (response.getStatus() == 200) {
                 @Nullable
-                JsonObject return_value = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                if (return_value != null) {
+                JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                if (returnValue != null) {
                     updateStatus(ThingStatus.ONLINE);
-                    return Optional.of(return_value.getAsJsonObject("result"));
+                    if (returnValue.has("result")) {
+                        return Optional.of(returnValue.getAsJsonObject("result"));
+                    } else {
+                        return Optional.of(returnValue);
+                    }
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

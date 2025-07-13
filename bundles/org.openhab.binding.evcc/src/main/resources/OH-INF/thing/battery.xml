@@ -3,7 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="battery">
+	<thing-type id="battery" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
 		<label>Battery</label>
 		<description>Contains the battery data</description>
 	</thing-type>
@@ -39,5 +43,12 @@
 		<description>Current State of Charge of battery</description>
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryTitle">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Name shown in the UI</description>
+		<category>Setting</category>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

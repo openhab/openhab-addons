@@ -16,7 +16,8 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
@@ -32,6 +33,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -41,25 +43,31 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Florian Hotze - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.evcc", service = ThingHandlerFactory.class)
 public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
-    @Reference
-    private HttpClientFactory httpClientFactory;
+    private final HttpClientFactory httpClientFactory;
 
-    @Reference
-    private ChannelTypeRegistry channelTypeRegistry;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
-    private static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SITE,
             THING_TYPE_VEHICLE, THING_TYPE_LOADPOINT, THING_TYPE_BATTERY, THING_TYPE_PV, THING_TYPE_HEATING);
 
+    @Activate
+    public EvccHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference ChannelTypeRegistry channelTypeRegistry) {
+        this.httpClientFactory = httpClientFactory;
+        this.channelTypeRegistry = channelTypeRegistry;
+    }
+
     @Override
-    public boolean supportsThingType(@NonNull ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(@NonNull Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID type = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(type) && thing instanceof Bridge) {
@@ -89,7 +97,6 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_PV.equals(type)) {
             return new EvccPvHandler(thing, channelTypeRegistry);
         }
-
         return null;
     }
 }
