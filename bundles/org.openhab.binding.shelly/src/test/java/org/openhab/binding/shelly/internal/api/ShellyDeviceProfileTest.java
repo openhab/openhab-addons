@@ -98,6 +98,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSPLUGUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
 
                 // Shelly Mini series
                 Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
