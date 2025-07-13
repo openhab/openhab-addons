@@ -108,9 +108,9 @@ The `dp2` parameter identifies the ON/OFF switch that is usually available on di
 The `reversed` parameter changes the direction of the scale (e.g. 0 becomes 100, 100 becomes 0).
 It defaults to `false`.
 
-### Type `number`
+### Type `number/quantity`
 
-The `number` channel has two additional mandatory parameters `min` and `max`.
+The `number` and `quantity` channels have two additional mandatory parameters `min` and `max`.
 The `min` and `max` parameters define the range allowed (e.g. 0-86400 for turn-off "countdown").
 
 ### Type `string`
