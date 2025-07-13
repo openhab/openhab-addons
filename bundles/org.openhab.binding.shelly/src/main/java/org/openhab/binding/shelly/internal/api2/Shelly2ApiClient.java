@@ -632,9 +632,17 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         int rIdx = getRollerIdx(getProfile(), cs.id);
         ShellyRollerStatus rs = status.rollers.get(rIdx);
-        ShellySettingsMeter sm = status.meters.get(rIdx);
-        ShellySettingsEMeter emeter = status.emeters.get(rIdx);
-        rs.isValid = sm.isValid = emeter.isValid = true;
+        ShellySettingsMeter sm;
+        ShellySettingsEMeter emeter;
+        if (status.emeters != null) {
+            emeter = status.emeters.get(rIdx);
+            sm = status.meters.get(rIdx);
+            rs.isValid = sm.isValid = emeter.isValid = true;
+        } else {
+            emeter = new ShellySettingsEMeter();
+            sm = new ShellySettingsMeter();
+            rs.isValid = sm.isValid = emeter.isValid = false;
+        }
         if (cs.state != null) {
             if (!getString(rs.state).equals(cs.state)) {
                 logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
@@ -679,9 +687,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         rollerStatus.set(cs.id, rs);
         status.rollers.set(cs.id, rs);
-        relayStatus.meters.set(cs.id, sm);
-        status.meters.set(cs.id, sm);
-        status.emeters.set(cs.id, emeter);
+        if (emeter.isValid) { // Shelly Shutter has no meters
+            relayStatus.meters.set(cs.id, sm);
+            status.meters.set(cs.id, sm);
+            status.emeters.set(cs.id, emeter);
+        }
 
         postAlarms(cs.errors);
         if (rs.calibrating != null && rs.calibrating) {
