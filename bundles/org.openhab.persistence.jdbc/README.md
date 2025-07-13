@@ -11,11 +11,11 @@ The following databases are currently supported and tested:
 
 | Database                                     | Tested Driver / Version                                                                                                                     |
 | -------------------------------------------- |---------------------------------------------------------------------------------------------------------------------------------------------|
-| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
+| [Apache Derby](https://db.apache.org/derby/) | [derby-10.17.1.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
 | [H2](https://www.h2database.com/)            | [h2-2.2.224.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                                                      |
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                                                    |
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
-| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
+| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-9.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
 | [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                                                       |
 | [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
@@ -117,6 +117,8 @@ The user default schema will be used.
 
 Default data types for an Oracle DB are different from the general defaults:
 
+| Type                        | Oracle DB Type         |
+|-----------------------------|------------------------|
 | sqltype.COLOR               | `VARCHAR2(70)`         |
 | sqltype.CONTACT             | `VARCHAR2(6)`          |
 | sqltype.DATETIME            | `TIMESTAMP`            |

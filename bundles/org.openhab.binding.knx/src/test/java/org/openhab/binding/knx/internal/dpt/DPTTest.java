@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,10 @@ class DPTTest {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 lx"), "7.013"));
 
         assertEquals("3000", ValueEncoder.encode(new QuantityType<>("3000 K"), "7.600"));
+        // unit for 7.600 is K; special handling for color temperature: make sure °C and mired work as well
+        assertEquals("3273.15", ValueEncoder.encode(new QuantityType<>("3000 °C"), "7.600"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mired"), "7.600"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mirek"), "7.600"));
     }
 
     @Test
@@ -196,6 +200,14 @@ class DPTTest {
         ValueEncoder.encode(new QuantityType<>("1"), "9.030");
         // wrong unit
         ValueEncoder.encode(new QuantityType<>("1 kg"), "9.030");
+
+        // MEEE EMMM MMMM MMMM
+        // "the encoded value 7FFFh shall always be used to denote invalid data"
+        // ETS sends 0x7fff if NaN is sent via diagnostics
+        // approach is to ignore data, same as for NaN with DPT14
+        // -> should return null and do not throw an exception
+        assertNull(ValueDecoder.decode("9.001", new byte[] { (byte) 0x7f, (byte) 0xff }, QuantityType.class));
+        assertNull(ValueDecoder.decode("9.001", new byte[] { (byte) 0x7f, (byte) 0xff }, DecimalType.class));
     }
 
     @Test
@@ -316,7 +328,15 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 Pa"), "14.066"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 N/m"), "14.067"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 °C"), "14.068"));
+        // unit for 14.068 is °C; special handling for color temperature: make sure °C and mired work as well
+        assertEquals("-272.15", ValueEncoder.encode(new QuantityType<>("1 K"), "14.068"));
+        assertEquals("3726.85", ValueEncoder.encode(new QuantityType<>("250 mired"), "14.068"));
+        assertEquals("3726.85", ValueEncoder.encode(new QuantityType<>("250 mirek"), "14.068"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "14.069"));
+        // unit for 14.069 is K; special handling for color temperature: make sure °C and mired work as well
+        assertEquals("274.15", ValueEncoder.encode(new QuantityType<>("1 °C"), "14.069"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mired"), "14.069"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mirek"), "14.069"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "14.070"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 J/K"), "14.071"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 W/m/K"), "14.072"));
@@ -332,6 +352,26 @@ class DPTTest {
 
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 m³/h"), "14.1200"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 l/s"), "14.1201"));
+        // IEEE 754 floating point representation, signaling and and non-signaling +/-NAN and +/-INF
+        // -> should return null and do not throw an exception
+        // ETS sends 0xffc00000 if NaN is sent via diagnostics
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                QuantityType.class));
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0xff, (byte) 0xbf, (byte) 0xff, (byte) 0xff },
+                QuantityType.class));
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                QuantityType.class));
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0x7f, (byte) 0xbf, (byte) 0xff, (byte) 0xff },
+                QuantityType.class));
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0x7f, (byte) 0x80, 0, 0 }, QuantityType.class));
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0xff, (byte) 0x80, 0, 0 }, QuantityType.class));
+        // same for DecimalType
+        assertNull(ValueDecoder.decode("14.000", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                DecimalType.class));
+        // and for dimensionless
+        assertNull(ValueDecoder.decode("14.057", new byte[] { (byte) 0xff, (byte) 0x80, 0, 0 }, QuantityType.class));
+        assertNull(ValueDecoder.decode("14.057", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                DecimalType.class));
     }
 
     @Test
@@ -526,6 +566,12 @@ class DPTTest {
 
         // 64-bit signed (DPT 29)
         assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
+
+        // workaround for color temperatures given in MIRED, required as long as toUnit does
+        // not convert MIRED to Kelvin
+        // -> if this test fails, workaround in ValueEncoder can be removed
+        assertNull((new QuantityType<>("1 mired")).toUnit("K"));
+        assertNotNull((new QuantityType<>("1 mired")).toInvertibleUnit("K"));
     }
 
     private static Stream<Map.Entry<String, String>> unitProvider() {

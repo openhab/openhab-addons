@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.handler;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -39,14 +38,14 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
+import org.openhab.binding.mqtt.homeassistant.internal.actions.HomeAssistantUpdateThingActions;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.component.DeviceTrigger;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Update;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
@@ -56,6 +55,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
@@ -83,15 +83,15 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
-        implements ComponentDiscovered, Consumer<List<Object>> {
+        implements ComponentDiscovered, Consumer<List<Object>>, HomeAssistantChannelLinkageChecker {
     public static final String AVAILABILITY_CHANNEL = "availability";
     private static final Comparator<AbstractComponent<?>> COMPONENT_COMPARATOR = Comparator
             .comparing((AbstractComponent<?> component) -> component.hasGroup())
             .thenComparing(AbstractComponent::getName);
-    private static final URI UPDATABLE_CONFIG_DESCRIPTION_URI = URI.create("thing-type:mqtt:homeassistant-updatable");
 
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantThingHandler.class);
 
+    protected final BaseThingHandlerFactory thingHandlerFactory;
     protected final MqttChannelTypeProvider channelTypeProvider;
     protected final MqttChannelStateDescriptionProvider stateDescriptionProvider;
     protected final ChannelTypeRegistry channelTypeRegistry;
@@ -111,7 +111,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     private Set<HaID> discoveryHomeAssistantIDs = new HashSet<>();
 
     private boolean started;
-    private boolean newStyleChannels;
     private @Nullable Update updateComponent;
 
     /**
@@ -123,11 +122,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      * @param subscribeTimeout Timeout for the entire tree parsing and subscription. In milliseconds.
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      */
-    public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
-            MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-            Jinjava jinjava, UnitProvider unitProvider, int subscribeTimeout, int attributeReceiveTimeout) {
+    public HomeAssistantThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
+            MqttChannelTypeProvider channelTypeProvider, MqttChannelStateDescriptionProvider stateDescriptionProvider,
+            ChannelTypeRegistry channelTypeRegistry, Jinjava jinjava, UnitProvider unitProvider, int subscribeTimeout,
+            int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
         this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        this.thingHandlerFactory = thingHandlerFactory;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
@@ -135,11 +136,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.unitProvider = unitProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
-
-        newStyleChannels = "true".equals(thing.getProperties().get("newStyleChannels"));
-
-        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson, jinjava,
-                unitProvider, newStyleChannels);
+        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, this, gson, jinjava,
+                unitProvider);
     }
 
     @Override
@@ -187,8 +185,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 String channelConfigurationJSON = (String) channelConfig.get("config");
                 try {
                     AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
-                            channelConfigurationJSON, this, this, scheduler, gson, jinjava, unitProvider,
-                            newStyleChannels);
+                            channelConfigurationJSON, this, this, this, scheduler, gson, jinjava, unitProvider);
                     if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
                         typeID = calculateThingTypeUID(component);
                     }
@@ -252,6 +249,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     // we need to join all the stops, otherwise they might not be done when start is called
                     .collect(FutureCollector.allOf()).join();
 
+            haComponents.clear();
+            haComponentsByUniqueId.clear();
+            haComponentsByHaId.clear();
+            channelStates.clear();
+            discoveryHomeAssistantIDs.clear();
+            updateComponent = null;
             started = false;
         }
         super.stop();
@@ -343,11 +346,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                         return null;
                     });
                 }
-
-                if (discovered instanceof Update) {
-                    updateComponent = (Update) discovered;
-                    updateComponent.setReleaseStateUpdateListener(this::releaseStateUpdated);
-                }
             }
             updateThingType(typeID);
         }
@@ -368,11 +366,26 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     haComponents.remove(known.getComponentId());
                     haComponentsByHaId.remove(removed);
                     componentActuallyRemoved = true;
+
+                    if (known.equals(updateComponent)) {
+                        updateComponent = null;
+                    }
                 }
             }
             if (componentActuallyRemoved) {
                 updateThingType(getThing().getThingTypeUID());
             }
+        }
+    }
+
+    public void doUpdate() {
+        Update updateComponent = this.updateComponent;
+        if (updateComponent == null) {
+            logger.warn(
+                    "Received update command for Home Assistant device {}, but it does not have an update component.",
+                    getThing().getUID());
+        } else {
+            updateComponent.doUpdate();
         }
     }
 
@@ -383,26 +396,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
         }
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
-            throws ConfigValidationException {
-        if (configurationParameters.containsKey("doUpdate")) {
-            configurationParameters = new HashMap<>(configurationParameters);
-            Object value = configurationParameters.remove("doUpdate");
-            if (value instanceof Boolean doUpdate && doUpdate) {
-                Update updateComponent = this.updateComponent;
-                if (updateComponent == null) {
-                    logger.warn(
-                            "Received update command for Home Assistant device {}, but it does not have an update component.",
-                            getThing().getUID());
-                } else {
-                    updateComponent.doUpdate();
-                }
-            }
-        }
-        super.handleConfigurationUpdate(configurationParameters);
     }
 
     private boolean updateThingType(ThingTypeUID typeID) {
@@ -433,10 +426,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 var channelDefs = sortedComponents.stream().map(AbstractComponent::getChannelDefinitions)
                         .flatMap(List::stream).toList();
                 thingTypeBuilder.withChannelDefinitions(channelDefs).withChannelGroupDefinitions(groupDefs);
-                Update updateComponent = this.updateComponent;
-                if (updateComponent != null && updateComponent.isUpdatable()) {
-                    thingTypeBuilder.withConfigDescriptionURI(UPDATABLE_CONFIG_DESCRIPTION_URI);
-                }
 
                 channelTypeProvider.putThingType(thingTypeBuilder.build());
 
@@ -486,33 +475,19 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     private boolean addComponent(AbstractComponent<?> component) {
         AbstractComponent<?> existing = haComponents.get(component.getComponentId());
         if (existing != null) {
-            // DeviceTriggers that are for the same subtype, topic, and value template
-            // can be coalesced together
-            if (component instanceof DeviceTrigger newTrigger && existing instanceof DeviceTrigger oldTrigger
-                    && newTrigger.getChannelConfiguration().getSubtype()
-                            .equals(oldTrigger.getChannelConfiguration().getSubtype())
-                    && newTrigger.getChannelConfiguration().getTopic()
-                            .equals(oldTrigger.getChannelConfiguration().getTopic())
-                    && oldTrigger.getHaID().nodeID.equals(newTrigger.getHaID().nodeID)) {
-                String newTriggerValueTemplate = newTrigger.getChannelConfiguration().getValueTemplate();
-                String oldTriggerValueTemplate = oldTrigger.getChannelConfiguration().getValueTemplate();
-                if ((newTriggerValueTemplate == null && oldTriggerValueTemplate == null)
-                        || (newTriggerValueTemplate != null & oldTriggerValueTemplate != null
-                                && newTriggerValueTemplate.equals(oldTriggerValueTemplate))) {
-                    // Adjust the set of valid values
-                    MqttBrokerConnection connection = this.connection;
-
-                    if (oldTrigger.merge(newTrigger) && connection != null) {
-                        // Make sure to re-start if this did something, and it was stopped
-                        oldTrigger.start(connection, scheduler, 0).exceptionally(e -> {
-                            logger.warn("Failed to start component {}", oldTrigger.getHaID(), e);
-                            return null;
-                        });
-                    }
-                    haComponentsByUniqueId.put(component.getUniqueId(), component);
-                    haComponentsByHaId.put(component.getHaID(), component);
-                    return false;
+            // Check for components that merge together
+            if (component.mergeable(existing)) {
+                MqttBrokerConnection connection = this.connection;
+                if (existing.merge(component) && connection != null) {
+                    // Make sure to re-start if this did something, and it was stopped
+                    existing.start(connection, scheduler, 0).exceptionally(e -> {
+                        logger.warn("Failed to start component {}", existing.getHaID(), e);
+                        return null;
+                    });
                 }
+                haComponentsByUniqueId.put(component.getUniqueId(), component);
+                haComponentsByHaId.put(component.getHaID(), component);
+                return false;
             }
 
             // rename the conflict
@@ -524,6 +499,14 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         haComponents.put(component.getComponentId(), component);
         haComponentsByUniqueId.put(component.getUniqueId(), component);
         haComponentsByHaId.put(component.getHaID(), component);
+
+        if (component instanceof Update updateComponent) {
+            this.updateComponent = updateComponent;
+            updateComponent.setReleaseStateUpdateListener(this::releaseStateUpdated);
+            if (updateComponent.isUpdatable()) {
+                thingHandlerFactory.registerService(this, HomeAssistantUpdateThingActions.class);
+            }
+        }
         return true;
     }
 
@@ -563,4 +546,36 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     Map<@Nullable String, AbstractComponent<?>> getComponents() {
         return haComponents;
     }
+
+    // For components to check if a channel is linked before starting them
+    @Override
+    public boolean isChannelLinked(ChannelUID channelUID) {
+        return isLinked(channelUID);
+    }
+
+    // A channel is newly linked; make sure it is started
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        MqttBrokerConnection connection = this.connection;
+        // We haven't started at all yet.
+        if (connection == null) {
+            return;
+        }
+        synchronized (haComponents) {
+            haComponents.forEach((id, component) -> {
+                if (component.getChannels().stream().anyMatch(channel -> channel.getUID().equals(channelUID))) {
+                    component.start(connection, scheduler, attributeReceiveTimeout).exceptionally(e -> {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                        return null;
+                    });
+                }
+            });
+        }
+        super.channelLinked(channelUID);
+    }
+
+    // Don't bother unsubscribing on unlink; it's a relatively rare operation during normal usage,
+    // and a decent amount of effort to make sure there aren't other links before stopping them, and
+    // making sure not to stop other channels that are still linked.
+    // A disable/re-enable of the thing will clear the subscriptions.
 }

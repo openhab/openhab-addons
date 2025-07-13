@@ -62,7 +62,7 @@
 
 		<label>Groupe PSA Car</label>
 		<description>Car connected via Groupe PSA (Peugeot, Citroen, Vauxhall, Opel, DS) Bridge</description>
-
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="battery" typeId="battery"/>
 			<channel-group id="doors" typeId="doors"/>

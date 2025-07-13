@@ -7,7 +7,7 @@
 	<thing-type id="lightswitch">
 		<label>WeMo Light Switch</label>
 		<description>This is a WeMo LightSwitch</description>
-
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 		</channels>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,6 @@ public class FlumeBridgeConfig {
     public String username = "";
     public String password = "";
 
-    public int refreshIntervalInstantaneous = DEFAULT_POLLING_INTERVAL_INSTANTANEOUS;
-    public int refreshIntervalCumulative = DEFAULT_POLLING_INTERVAL_CUMULATIVE;
+    public int refreshIntervalInstantaneous = DEFAULT_POLLING_INTERVAL_INSTANTANEOUS_MIN;
+    public int refreshIntervalCumulative = DEFAULT_POLLING_INTERVAL_CUMULATIVE_MIN;
 }

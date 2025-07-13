@@ -5,6 +5,7 @@ import "user-events.proto";
 import "vehicle-commands.proto";
 import "protos.proto";
 import "vehicleapi.proto";
+import "google/protobuf/timestamp.proto";
 
 option java_package = "com.daimler.mbcarkit.proto";
 
@@ -129,6 +130,37 @@ message VehicleAttributeStatus {
     T24H = 2;
   }
 
+  enum TcuConnectionStateLowChannelStatus {
+    UNKNOWN_TCU_CONNECTION_STATE = 0;
+    INITIALLY_CONNECTED = 1;
+    RECONNECTED = 2;
+    DISCONNECTED = 3;
+    UNPLANNED_DISCONNECTED = 4;
+  }
+  
+  enum ChargingCouplerErrorDetails {
+    CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE = 0;
+    CHARING_COUPLER_ERROR_DETAILS_RELIEVE_CHARGE_COUPLER_AND_RETRY = 1;
+    CHARING_COUPLER_ERROR_DETAILS_CONTACT_SERVICE_HOTLINE_FOR_EMERGENCY_UNLOCK = 2;
+    CHARING_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPLUG_CHARGE_COUPLER = 3;
+    CHARING_COUPLER_ERROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT = 4;
+  }
+
+  enum ChargingErrorImpossibleChangeTo400V {
+    CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO = 0;
+    CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUCK_TO_800V = 1;
+  }
+
+  enum ChargingErrorImpossibleChangeTo800V {
+    CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO = 0;
+    CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOSSIBLE_STUCK_TO_400V = 1;
+  }
+
+  enum ChargingErrorVehicleNoSupport400V {
+    CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO = 0;
+    CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_CHARGING_NOT_POSSIBLE = 1;
+  }
+
   // A list of service ids for which this attribute was sent
   // this field ist just used backend internally and will always
   // be empty when sent out to the client.
@@ -164,7 +196,136 @@ message VehicleAttributeStatus {
     EcoHistogramValue eco_histogram_value = 28;
     WeeklyProfileValue weekly_profile_value = 29;
     ChargeProgramsValue charge_programs_value = 31;
+    ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;
+    ChargingPowerControl charging_power_control = 33;
+    TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;
+    PrecondState precond_state = 44;
+    ChargingPowerRestrictions charging_power_restrictions = 55;
+    ChargingCouplerErrorDetails charging_coupler_error_details = 56;
+    ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;
+    ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;
+    ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;
+    ChargingPredictionSoc charging_prediction_soc = 80;
+    ChargingPredictionDepartureTime charging_prediction_departure_time = 81;
+    // ChargingScheduleActive charging_schedule_active = 82;
+    ChargeFlaps charge_flaps = 84;
+    ChargeInlets charge_inlets = 85;
+    
   }
+}
+
+message ChargingPredictionSoc {
+  google.protobuf.Timestamp predicted_end_time = 1;
+  int64 predicted_electrical_energy_range = 2;
+}
+
+message ChargingPredictionDepartureTime {
+  int32 predicted_soc = 1;
+  int64 predicted_electrical_energy_range = 2;
+}
+
+
+message ChargeInletsEntry {
+  enum ChargeInletsCouplerState {
+    CHARGE_INLETS_COUPLER_STATE_UNKNOWN = 0;
+    CHARGE_INLETS_COUPLER_STATE_PLUGGED = 1;
+    CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED = 2;
+    CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED = 3;
+    CHARGE_INLETS_COUPLER_STATE_DEFECT = 4;
+  }
+
+  enum ChargeInletsLockState {
+    CHARGE_INLETS_LOCK_STATE_UNKNOWN = 0;
+    CHARGE_INLETS_LOCK_STATE_UNLOCKED = 1;
+    CHARGE_INLETS_LOCK_STATE_LOCKED = 2;
+    CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR = 3;
+    CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE = 4;
+  }
+
+  int64 id = 1;
+  ChargeInletsCouplerState coupler_state = 2;
+  ChargeInletsLockState lock_state = 3;
+}
+
+message ChargeInlets {
+  repeated ChargeInletsEntry entries = 1;
+}
+
+enum ChargeFlapsPositionState {
+  CHARGE_FLAPS_POSITION_STATE_DEFAULT = 0;
+  CHARGE_FLAPS_POSITION_STATE_OPEN = 1;
+  CHARGE_FLAPS_POSITION_STATE_CLOSED = 2;
+  CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED = 3;
+  CHARGE_FLAPS_POSITION_STATE_UNKNOWN = 4;
+}
+
+message ChargeFlapsEntry {
+  int64 id = 1;
+  ChargeFlapsPositionState position_state = 2;
+}
+
+message ChargeFlaps {
+  repeated ChargeFlapsEntry entries= 1;
+}
+
+enum ChargingPowerRestriction {
+  CHARGING_POWER_RESTRICTION_NO_RESTRICTION = 0;
+  CHARGING_POWER_RESTRICTION_ECO_CHARGING_ACTIVE = 1;
+  CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CUSTOMER_SETTING = 2;
+  CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICLE_CHARGING_SYSTEM = 3;
+  CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_REMOTE_CONTROL = 4;
+  CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_INFRASTRUCTURE = 5;
+  CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_STRATEGY = 6;
+  CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_LOW = 7;
+  CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH = 8;
+  CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_LOW = 9;
+  CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_HIGH = 10;
+}
+
+message ChargingPowerRestrictions {
+  repeated ChargingPowerRestriction charging_power_restriction = 1;
+}
+
+message ChargingBreakClockTimerValue {
+  repeated ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;
+}
+
+enum PrecondStateType {
+  PRECOND_STATE_TYPE_ON_UNLOCK = 0;
+  PRECOND_STATE_TYPE_AT_DEPARTURE_TIME = 1;
+  PRECOND_STATE_TYPE_IMMEDIATE = 2;
+  PRECOND_STATE_TYPE_CHILD_PRESENCE_DETECTION = 3;
+}
+
+message PrecondState {
+  bool activation_state = 1;
+  bool precond_immediate_support = 2;
+  repeated PrecondStateType precond_state_types = 3;
+}
+
+message ChargingPowerControl {
+  enum ChargingStatusForPowerControl {
+    NOT_DEFINED = 0;
+    DEACTIVATED = 1;
+    ACTIVATED = 2;
+  }
+  
+  ChargingStatusForPowerControl charge_status = 1;
+  int32 ctrl_duration = 2;
+  int32 ctrl_info = 3;
+  int32 charge_power = 4;
+  int32 serv_stat = 5;
+  int32 serv_avail = 6;
+  int32 use_case = 7;
+}
+
+message ChargingBreakClockTimerEntry {
+  ChargingBreakClockTimerEntryStatus status = 1;
+  int32 endTimeHour = 2;
+  int32 endTimeMinute = 3;
+  int32 startTimeHour = 4;
+  int32 startTimeMinute = 5;
+  int32 timerId = 6;
 }
 
 message ChargeProgramsValue {
@@ -375,6 +536,7 @@ message PushMessage {
     AppTwinCommandStatusUpdatesByVIN apptwin_command_status_updates_by_vin = 17;
     AppTwinPendingCommandsRequest apptwin_pending_command_request = 18;
     AssignedVehicles assigned_vehicles = 19;
+    DataChangeEvent data_change_event = 21;
   }
 }
 
@@ -454,4 +616,31 @@ message PreferredDealerChange {
 
   // When was the event emitted (milliseconds in Unix time)
   int64 emit_timestamp_in_ms = 10;
+}
+
+message AcknowledgeDataChangeEvent {
+  int32 sequence_number = 1;
+}
+
+enum Scope {
+  USER = 0;
+  ONBOARD_FENCES = 1;
+  USER_PIN = 3;
+  SERVICE_PREREQUISITE = 4;
+  USER_PROFILE_PICTURE = 5;
+}
+
+message Scopes {
+  Scope scope = 1;
+  string ciamId = 2;
+  string vin = 3;
+  map<string, string> additional_resources = 4;
+  string resource_ciam_id = 5;
+  string resource_vin = 6;
+}
+
+message DataChangeEvent {
+  repeated Scopes scopes = 1;
+  string tracking_id = 2;  
+  int32 sequence_number = 3;
 }

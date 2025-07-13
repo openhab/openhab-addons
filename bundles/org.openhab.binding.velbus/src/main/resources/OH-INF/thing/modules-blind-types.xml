@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmb1bl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1BL</label>
+		<description>1-channel blind control module for din rail</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb1bls">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1BLS</label>
+		<description>1-channel blind control module for universal mounting</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb2bl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB2BL</label>
+		<description>2-channel blind control module</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="rollershutter"/>
+			<channel id="CH2" typeId="rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:2channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb2ble">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB2BLE</label>
+		<description>2-channel blind control module with extended possibilities</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="rollershutter"/>
+			<channel id="CH2" typeId="rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:2channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb2ble-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB2BLE-10</label>
+		<description>2-channel blind control module with extended possibilities</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="rollershutter"/>
+			<channel id="CH2" typeId="rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:2channelDevice"/>
+	</thing-type>
+
+</thing:thing-descriptions>

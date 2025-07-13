@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ public abstract class AbstractChannelConfiguration {
     public static final char PARENT_TOPIC_PLACEHOLDER = '~';
     private static final String DEFAULT_THING_NAME = "Home Assistant Device";
 
-    protected @Nullable String name;
+    protected String name;
 
     protected String icon = "";
     protected int qos; // defaults to 0 according to HA specification
@@ -136,7 +136,7 @@ public abstract class AbstractChannelConfiguration {
         return properties;
     }
 
-    public @Nullable String getName() {
+    public String getName() {
         return name;
     }
 

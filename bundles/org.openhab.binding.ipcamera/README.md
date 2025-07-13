@@ -13,7 +13,6 @@ To see what features each brand has implemented from their APIs, please see this
 - Check this readme for any setup steps for your brand.
 - Check if the camera is offline, if so there will be a reason listed.
 - Always look at the log files with TRACE enabled, as any FFmpeg and camera errors may not reach the INFO logs.
-To enable TRACE logging, enter this in the openHAB console `log:set TRACE org.openhab.binding.ipcamera`.
 - Search the forum using any log messages to find how others have already solved it.
 - Only after doing the above ask for help in the forum and create a new thread.
 
@@ -139,7 +138,7 @@ The discovery feature of openHAB can be used to find and setup ONVIF cameras.
 This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
 The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
-The binding will only search using openHAB's currently selected primary network address, see <https://www.openhab.org/docs/settings/>.
+The binding will only search using openHAB's currently selected primary network address.
 If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
 Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
 
@@ -210,7 +209,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `ipWhitelist`| Enter any IPs inside brackets that you wish to allow to access the video stream. `DISABLE` the default value will turn this feature off.  Example: `ipWhitelist="(127.0.0.1)(192.168.0.99)"` |
 | `ptzContinuous`| If set to false (default) the camera will move using Relative commands, If set to true the camera will instead use continuous movements and will require an `OFF` command to stop the movement. |
 | `onvifEventServiceType`| ONVIF event method to use. If camera does not report event capabilities, the event method can be forced here. |
-| | `0` - Auto detect event capabilities. (Default) ONVIF event capabilities are detected automatically. PullMessages is prefered over WSBaseNotification because there is no way to determine if an WSBaseNotification subscription exists on startup. |
+| | `0` - Auto detect event capabilities. (Default) ONVIF event capabilities are detected automatically. PullMessages is preferred over WSBaseNotification because there is no way to determine if an WSBaseNotification subscription exists on startup. |
 | | `1` - ONVIF events disabled. |
 | | `2` - Force ONVIF PullMessages event method even if the camera does not claim to support this. |
 | | `3` - Force ONVIF WSBaseSubscription event method even if the camera does not claim to support this. |
@@ -700,6 +699,16 @@ when
     Item Doorbell_recordingGif changed to 0
 then
     sendPushoverMessage(pushoverBuilder("Sending GIF from backyard").withApiKey("dsfhghj6546fghfg").withUser("qwerty54657").withDevice("Phone1").withAttachment("/tmpfs/DoorCam/ipcamera.gif"))
+end
+```
+
+## How To Reboot Camera
+```
+rule "Reboot Camera At 12:00 AM"
+when
+    Time cron "0 0 0 ? *"
+then
+  getActions("ipcamera", "ipcamera:reolink:1a40bbe041").reboot()
 end
 ```
 

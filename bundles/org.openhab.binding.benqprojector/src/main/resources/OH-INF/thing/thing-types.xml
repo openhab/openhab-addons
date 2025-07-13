@@ -7,6 +7,7 @@
 	<thing-type id="projector-serial">
 		<label>BenQ Projector - Serial</label>
 		<description>A BenQ projector connected via a serial port</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -18,6 +19,10 @@
 			<channel id="directcmd" typeId="directcmd"/>
 			<channel id="lamptime" typeId="lamptime"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -39,6 +44,7 @@
 		<label>BenQ Projector - TCP/IP</label>
 		<description>A BenQ projector connected via the built-in ethernet port or a serial over
 			IP device</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -50,6 +56,10 @@
 			<channel id="directcmd" typeId="directcmd"/>
 			<channel id="lamptime" typeId="lamptime"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -137,11 +147,19 @@
 		<item-type>Switch</item-type>
 		<label>Freeze Image</label>
 		<description>Turn the Freeze Image Mode On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="blank">
 		<item-type>Switch</item-type>
 		<label>Screen Blank</label>
 		<description>Turn the Screen Blank On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="directcmd" advanced="true">
 		<item-type>String</item-type>
@@ -171,6 +189,10 @@
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
 		<description>Retrieves the number of hours the lamp has been used</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 

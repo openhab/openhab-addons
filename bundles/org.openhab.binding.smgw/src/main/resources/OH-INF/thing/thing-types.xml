@@ -8,7 +8,7 @@
 	<thing-type id="smgw">
 		<label>Smartmeter Gateway</label>
 		<description>A Smartmeter Gateway</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="meter" typeId="system.electric-energy">
 				<label>Meter Reading</label>

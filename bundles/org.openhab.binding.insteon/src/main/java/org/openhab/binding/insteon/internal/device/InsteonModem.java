@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import org.openhab.binding.insteon.internal.transport.PortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 
 /**
@@ -251,8 +252,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
         DeviceType deviceType = productData.getDeviceType();
         if (deviceType == null) {
-            logger.warn("unsupported product data for modem {} devCat:{} subCat:{}", address, deviceCategory,
-                    subCategory);
+            logger.warn("unsupported product data for modem {} devCat:{} subCat:{}", address,
+                    HexUtils.getHexString(deviceCategory), HexUtils.getHexString(subCategory));
             return;
         }
         setAddress(address);
@@ -267,6 +268,26 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         InsteonBridgeHandler handler = getHandler();
         if (handler != null) {
             handler.modemDiscovered(this);
+        }
+    }
+
+    public void reset() {
+        try {
+            Msg msg = Msg.makeMessage("ResetIM");
+            writeMessage(msg);
+        } catch (IOException e) {
+            logger.warn("error sending modem reset query", e);
+        } catch (InvalidMessageTypeException e) {
+            logger.warn("invalid message ", e);
+        }
+    }
+
+    private void handleModemReset() {
+        logger.debug("modem reset initiated");
+
+        InsteonBridgeHandler handler = getHandler();
+        if (handler != null) {
+            handler.reset(RESET_TIME);
         }
     }
 
@@ -385,18 +406,6 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     /**
-     * Notifies that the modem reset process has been initiated
-     */
-    public void resetInitiated() {
-        logger.debug("modem reset initiated");
-
-        InsteonBridgeHandler handler = getHandler();
-        if (handler != null) {
-            handler.reset(RESET_TIME);
-        }
-    }
-
-    /**
      * Notifies that the modem port has disconnected
      */
     @Override
@@ -448,9 +457,6 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
             if (address == null) {
                 return;
             }
-            if (msg.isX10()) {
-                lastX10Address = msg.isX10Address() ? (X10Address) address : null;
-            }
             long time = System.currentTimeMillis();
             Device device = getAddress().equals(address) ? this : getDevice(address);
             if (device != null) {
@@ -462,8 +468,12 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     private void handleIMMessage(Msg msg) throws FieldException {
-        if (msg.getCommand() == 0x60) {
+        if (msg.getCommand() == 0x60 && msg.isReplyAck()) {
+            // we got an im info reply ack
             handleModemInfo(msg);
+        } else if (msg.getCommand() == 0x55 || msg.getCommand() == 0x67 && msg.isReplyAck()) {
+            // we got a user reset detected message or im reset reply ack
+            handleModemReset();
         } else {
             handleMessage(msg);
         }
@@ -483,13 +493,12 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     private void handleX10Message(Msg msg) throws FieldException {
-        X10Address address = lastX10Address;
-        if (msg.isX10Address()) {
-            // store the x10 address to use with the next cmd
-            lastX10Address = msg.getX10Address();
-        } else if (address != null) {
+        X10Address address = msg.isX10Address() ? msg.getX10Address() : lastX10Address;
+        if (address != null) {
             handleMessage(address, msg);
-            lastX10Address = null;
+            // store the x10 address to use with the next cmd
+            lastX10Address = msg.isX10Address() ? address : null;
+
         }
     }
 

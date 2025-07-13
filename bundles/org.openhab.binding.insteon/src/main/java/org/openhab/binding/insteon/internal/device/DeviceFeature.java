@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -236,13 +236,13 @@ public class DeviceFeature {
 
     public int getComponentId() {
         int componentId = 0;
-        if (device instanceof InsteonDevice insteonDevice) {
-            // use feature group as component id if device has more than one controller or responder feature,
-            // othewise use the component id of the link db first record
-            if (insteonDevice.getControllerOrResponderFeatures().size() > 1) {
+        if (device instanceof InsteonDevice insteonDevice && isControllerOrResponderFeature()) {
+            // use feature group as component id if device has more than one controller or responder feature group,
+            // set to 1 if device link db has a matching record, otherwise fall back to 0
+            if (insteonDevice.getControllerOrResponderFeatureGroups().size() > 1) {
                 componentId = getGroup();
-            } else {
-                componentId = insteonDevice.getLinkDB().getFirstRecordComponentId();
+            } else if (insteonDevice.getLinkDB().hasComponentIdRecord(1, isControllerFeature())) {
+                componentId = 1;
             }
         }
         return componentId;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -70,6 +71,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     private static final List<String> MQTT_TOPICS = CONFIG_TOPICS.stream()
             .map(AbstractHomeAssistantTests::configTopicToMqtt).collect(Collectors.toList());
 
+    private @Mock @NonNullByDefault({}) BaseThingHandlerFactory thingHandlerFactory;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
     private @NonNullByDefault({}) HomeAssistantThingHandler thingHandler;
     private @NonNullByDefault({}) HomeAssistantThingHandler nonSpyThingHandler;
@@ -88,8 +90,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     }
 
     protected void setupThingHandler() {
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
@@ -222,13 +225,13 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         //
         // verify that both channels are there and the label corresponds to newer discovery topic payload
         //
-        Channel corridorTempChannel = nonSpyThingHandler.getThing().getChannel("tempCorridor_5Fsensor#sensor");
+        Channel corridorTempChannel = nonSpyThingHandler.getThing().getChannel("tempCorridor");
         assertThat("Corridor temperature channel is created", corridorTempChannel, notNullValue());
         Objects.requireNonNull(corridorTempChannel); // for compiler
         assertThat("Corridor temperature channel is having the updated label from 2nd discovery topic publish",
                 corridorTempChannel.getLabel(), is("CorridorTemp NEW"));
 
-        Channel outsideTempChannel = nonSpyThingHandler.getThing().getChannel("tempOutside_5Fsensor#sensor");
+        Channel outsideTempChannel = nonSpyThingHandler.getThing().getChannel("tempOutside");
         assertThat("Outside temperature channel is created", outsideTempChannel, notNullValue());
 
         verify(thingHandler, times(2)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
@@ -347,7 +350,6 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).withChannel(channelBuilder.build())
                 .withConfiguration(thingConfiguration).build();
-        haThing.setProperty("newStyleChannels", "true");
 
         setupThingHandler();
         thingHandler.initialize();
@@ -358,60 +360,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
     @Test
     public void testDuplicateChannelId() {
-        thingHandler.initialize();
-
-        verify(callbackMock).statusUpdated(eq(haThing), any());
-        // Expect a call to the bridge status changed, the start, the propertiesChanged method
-        verify(thingHandler).bridgeStatusChanged(any());
-        verify(thingHandler, timeout(SUBSCRIBE_TIMEOUT)).start(any());
-
-        MQTT_TOPICS.forEach(t -> {
-            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(t), any());
-        });
-
-        verify(thingHandler, never()).componentDiscovered(any(), any());
-        assertThat(haThing.getChannels().size(), is(0));
-
-        thingHandler.discoverComponents.processMessage("homeassistant/number/abc/activeEnergyReports/config", """
-                {
-                  "name":"ActiveEnergyReports",
-                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
-                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
-                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
-                  "value_template":"{{ value_json.activeEnergyReports }}"
-                }
-                """.getBytes(StandardCharsets.UTF_8));
-        thingHandler.discoverComponents.processMessage("homeassistant/sensor/abc/activeEnergyReports/config", """
-                {
-                  "command_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)/set/activeEnergyReports",
-                  "max":32767,
-                  "min":0,
-                  "name":"ActiveEnergyReports",
-                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
-                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
-                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
-                  "value_template":"{{ value_json.activeEnergyReports }}"
-                }
-                """.getBytes(StandardCharsets.UTF_8));
-        thingHandler.delayedProcessing.forceProcessNow();
-        waitForAssert(() -> {
-            assertThat("2 channels created", nonSpyThingHandler.getThing().getChannels().size() == 2);
-        });
-
-        Channel numberChannel = nonSpyThingHandler.getThing()
-                .getChannel("0x04cd15fffedb7f81_5FactiveEnergyReports_5Fzigbee2mqtt_number#number");
-        assertThat("Number channel is created", numberChannel, notNullValue());
-
-        Channel sensorChannel = nonSpyThingHandler.getThing()
-                .getChannel("0x04cd15fffedb7f81_5FactiveEnergyReports_5Fzigbee2mqtt_sensor#sensor");
-        assertThat("Sensor channel is created", sensorChannel, notNullValue());
-    }
-
-    @Test
-    public void testDuplicateChannelIdNewStyleChannels() {
-        haThing.setProperty("newStyleChannels", "true");
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
@@ -465,10 +416,10 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     }
 
     @Test
-    public void testDuplicateChannelIdNewStyleChannelsComplex() {
-        haThing.setProperty("newStyleChannels", "true");
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+    public void testDuplicateChannelIdComplex() {
+        thingHandler = new HomeAssistantThingHandler(haThing, thingHandlerFactory, channelTypeProvider,
+                stateDescriptionProvider, channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT,
+                ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;

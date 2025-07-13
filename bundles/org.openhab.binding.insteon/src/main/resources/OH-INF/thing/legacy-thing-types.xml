@@ -7,6 +7,7 @@
 	<bridge-type id="network">
 		<label>Insteon Network (Legacy)</label>
 		<description>An Insteon PLM or Hub that communicates with Insteon devices.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="port" type="text" required="true">
@@ -42,7 +43,7 @@
 
 		<label>Insteon Device (Legacy)</label>
 		<description>An Insteon or X10 device such as a switch, dimmer, keypad, sensor, etc.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<representation-property>address</representation-property>
 
 		<config-description>
@@ -116,90 +117,154 @@
 	<channel-type id="legacyAcDelay">
 		<item-type>Number</item-type>
 		<label>AC Delay</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyBacklightDuration">
 		<item-type>Number</item-type>
 		<label>Back Light Duration</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyBatteryLevel">
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyBatteryPercent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Percent</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyBatteryWatermarkLevel">
 		<item-type>Number</item-type>
 		<label>Battery Watermark Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyBeep">
 		<item-type>Switch</item-type>
 		<label>Beep</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyBottomOutlet">
 		<item-type>Switch</item-type>
 		<label>Bottom Outlet</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonA">
 		<item-type>Switch</item-type>
 		<label>Button A</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonB">
 		<item-type>Switch</item-type>
 		<label>Button B</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonC">
 		<item-type>Switch</item-type>
 		<label>Button C</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonD">
 		<item-type>Switch</item-type>
 		<label>Button D</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonE">
 		<item-type>Switch</item-type>
 		<label>Button E</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonF">
 		<item-type>Switch</item-type>
 		<label>Button F</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonG">
 		<item-type>Switch</item-type>
 		<label>Button G</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyButtonH">
 		<item-type>Switch</item-type>
 		<label>Button H</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-button"/>
 	</channel-type>
 
 	<channel-type id="legacyBroadcastOnOff">
 		<item-type>Switch</item-type>
 		<label>Broadcast On/Off</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
 
@@ -217,69 +282,117 @@
 	<channel-type id="legacyDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-dimmer"/>
 	</channel-type>
 
 	<channel-type id="legacyFan">
 		<item-type>Number</item-type>
 		<label>Fan</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyFanMode">
 		<item-type>Number</item-type>
 		<label>Fan Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOff">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonA">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button A</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonB">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button B</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonC">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button C</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonD">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button D</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonE">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button E</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonF">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button F</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonG">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button G</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="legacyFastOnOffButtonH">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button H</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
 	</channel-type>
 
@@ -291,21 +404,37 @@
 	<channel-type id="legacyHumidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyHumidityHigh">
 		<item-type>Number</item-type>
 		<label>Humidity High</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyHumidityLow">
 		<item-type>Number</item-type>
 		<label>Humidity Low</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyIsCooling">
 		<item-type>Number</item-type>
 		<label>Is Cooling</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyIsHeating">
@@ -316,48 +445,80 @@
 	<channel-type id="legacyKeypadButtonA">
 		<item-type>Switch</item-type>
 		<label>Keypad Button A</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonB">
 		<item-type>Switch</item-type>
 		<label>Keypad Button B</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonC">
 		<item-type>Switch</item-type>
 		<label>Keypad Button C</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonD">
 		<item-type>Switch</item-type>
 		<label>Keypad Button D</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonE">
 		<item-type>Switch</item-type>
 		<label>Keypad Button E</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonF">
 		<item-type>Switch</item-type>
 		<label>Keypad Button F</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonG">
 		<item-type>Switch</item-type>
 		<label>Keypad Button G</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
 	<channel-type id="legacyKeypadButtonH">
 		<item-type>Switch</item-type>
 		<label>Keypad Button H</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
 	</channel-type>
 
@@ -369,21 +530,37 @@
 	<channel-type id="legacyLastHeardFrom">
 		<item-type>DateTime</item-type>
 		<label>Last Heard From</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyLedBrightness">
 		<item-type>Number</item-type>
 		<label>LED Brightness</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyLedOnOff">
 		<item-type>Switch</item-type>
 		<label>LED On/Off</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyLightDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Light Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-dimmer"/>
 	</channel-type>
 
@@ -395,23 +572,39 @@
 	<channel-type id="legacyLightLevelAboveThreshold">
 		<item-type>Contact</item-type>
 		<label>Light Level Above/Below Threshold</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Illuminance</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyLoadDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Load Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-dimmer"/>
 	</channel-type>
 
 	<channel-type id="legacyLoadSwitch">
 		<item-type>Switch</item-type>
 		<label>Load Switch</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
 
 	<channel-type id="legacyLoadSwitchFastOnOff">
 		<item-type>Switch</item-type>
 		<label>Load Switch Fast On/Off</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
 
@@ -423,6 +616,10 @@
 	<channel-type id="legacyLowBattery">
 		<item-type>Contact</item-type>
 		<label>Low Battery</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>LowBattery</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyManualChange">
@@ -486,11 +683,19 @@
 	<channel-type id="legacyOnLevel">
 		<item-type>Number</item-type>
 		<label>On Level</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyRampDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Ramp Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyRampRate">
@@ -501,16 +706,28 @@
 	<channel-type id="legacyReset">
 		<item-type>Switch</item-type>
 		<label>Reset</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyStage1Duration">
 		<item-type>Number</item-type>
 		<label>Stage 1 Duration</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacySwitch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
 
@@ -522,32 +739,56 @@
 	<channel-type id="legacyTamperSwitch">
 		<item-type>Contact</item-type>
 		<label>Tamper Switch</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tampered</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyTemperatureLevel">
 		<item-type>Number</item-type>
 		<label>Temperature Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyTopOutlet">
 		<item-type>Switch</item-type>
 		<label>Top Outlet</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
 	</channel-type>
 
 	<channel-type id="legacyUpdate">
 		<item-type>Switch</item-type>
 		<label>Update</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="legacyWatts">
 		<item-type>Number:Power</item-type>
 		<label>Watts</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

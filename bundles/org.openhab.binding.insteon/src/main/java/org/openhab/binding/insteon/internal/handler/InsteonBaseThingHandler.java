@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -255,7 +256,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
     protected void initializeChannels(Device device) {
         DeviceType deviceType = device.getType();
-        if (deviceType == null) {
+        ThingHandlerCallback callback = getCallback();
+        if (deviceType == null || callback == null) {
             return;
         }
 
@@ -272,13 +274,9 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                         deviceTypeName);
             } else {
                 String channelId = featureNameToChannelId(featureName);
-                Channel channel = createChannel(channelId);
-                if (channel != null) {
-                    logger.trace("adding channel {}", channel.getUID());
-                    channels.add(channel);
-                } else {
-                    logger.warn("unable to create channel {} for {}", channelId, deviceTypeName);
-                }
+                Channel channel = createChannel(channelId, callback);
+                logger.trace("adding channel {}", channel.getUID());
+                channels.add(channel);
                 // add existing custom channels with the same channel type id but different channel id
                 for (Channel customChannel : getCustomChannels(channelId)) {
                     logger.trace("adding custom channel {}", customChannel.getUID());
@@ -290,16 +288,16 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
         updateThing(editThing().withChannels(channels).build());
     }
 
-    private @Nullable Channel createChannel(String channelId) {
+    private Channel createChannel(String channelId, ThingHandlerCallback callback) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-        Channel channel = getThing().getChannel(channelUID);
-        ThingHandlerCallback callback = getCallback();
-        // create channel if not already available
-        if (channel == null && callback != null) {
-            channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+        ChannelBuilder channelBuilder = callback.createChannelBuilder(channelUID, channelTypeUID);
+        Channel oldChannel = getThing().getChannel(channelUID);
+        if (oldChannel != null) {
+            channelBuilder.withConfiguration(oldChannel.getConfiguration());
+            channelBuilder.withProperties(oldChannel.getProperties());
         }
-        return channel;
+        return channelBuilder.build();
     }
 
     private List<Channel> getCustomChannels(String channelId) {
@@ -317,6 +315,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                 .forEach(this::channelLinked);
     }
 
+    protected void unlinkChannels() {
+        getThing().getChannels().stream().map(Channel::getUID).filter(channelHandlers::containsKey)
+                .forEach(this::channelUnlinked);
+    }
+
     @Override
     public void refresh() {
         InsteonModem modem = getModem();
@@ -329,8 +332,6 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
         updateStatus();
     }
-
-    public abstract void updateStatus();
 
     public void updateProperties(Device device) {
         Map<String, String> properties = editProperties();
@@ -372,9 +373,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }

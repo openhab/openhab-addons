@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -247,9 +247,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     public synchronized void login() {
         if (thingConfig.getEmail().isEmpty() || thingConfig.getPassword().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Can not access device as username and/or password are null");
-            return;
+            if (!thingConfig.isDevMode() || (thingConfig.isDevMode() && thingConfig.getToken().isEmpty())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Can not access device as username and/or password are null");
+                return;
+            }
         }
 
         if (tooManyRequests || Instant.now().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
@@ -269,15 +271,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             lastLoginTimestamp = Instant.now();
 
             if (thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
+                // make sure all requests will be sent to cloud
+                thingConfig.setDevMode(false);
                 if (!loginCozyTouch()) {
                     return;
                 }
             } else {
-                loginTahoma();
-            }
-
-            if (thingConfig.isDevMode()) {
-                initializeLocalMode();
+                if (thingConfig.isDevMode()) {
+                    initializeLocalMode();
+                } else {
+                    loginTahoma();
+                }
             }
 
             String id = registerEvents();
@@ -356,13 +360,13 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         if (!thingConfig.getIp().isEmpty() && !thingConfig.getPin().isEmpty()) {
             try {
                 if (thingConfig.getToken().isEmpty()) {
+                    loginTahoma();
                     localToken = getNewLocalToken();
                     logger.debug("Local token retrieved");
                     activateLocalToken();
                     updateConfiguration();
                 } else {
                     localToken = thingConfig.getToken();
-                    activateLocalToken();
                 }
                 logger.debug("Local mode initialized, waiting for cloud sync");
                 Thread.sleep(3000);

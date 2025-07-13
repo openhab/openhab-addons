@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,11 @@ public class AuthData {
         public class NameValuePair {
             public @Nullable String name;
             public @Nullable Object value;
+
+            public NameValuePair(String name, Object value) {
+                this.name = name;
+                this.value = value;
+            }
 
             public @Nullable String valueAsString() {
                 return (value instanceof String stringValue) ? stringValue : null;

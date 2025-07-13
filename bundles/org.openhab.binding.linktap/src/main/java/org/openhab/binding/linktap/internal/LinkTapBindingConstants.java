@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,6 +59,7 @@ public class LinkTapBindingConstants {
     public static final String BRIDGE_CONFIG_MDNS_ENABLE = "enableMDNS";
     public static final String BRIDGE_CONFIG_NON_HTML_COMM_ENABLE = "enableJSONComms";
     public static final String BRIDGE_CONFIG_ENFORCE_COMM_LIMITS = "enforceProtocolLimits";
+    public static final String BRIDGE_CONFIG_GATEWAY_RESPONSE_TIMEOUT = "gatewayResponseTimeout";
 
     public static final String DEVICE_PROP_DEV_ID = "deviceId";
     public static final String DEVICE_PROP_DEV_NAME = "deviceName";

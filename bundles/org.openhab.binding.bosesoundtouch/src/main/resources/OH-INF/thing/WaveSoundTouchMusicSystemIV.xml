@@ -7,6 +7,7 @@
 	<thing-type id="waveSoundTouchMusicSystemIV">
 		<label>Bose Wave SoundTouch Music System IV</label>
 		<description>A Bose Wave SoundTouch Music System IV</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power"/>

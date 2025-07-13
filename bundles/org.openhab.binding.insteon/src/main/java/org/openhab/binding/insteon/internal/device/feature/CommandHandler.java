@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -532,7 +532,6 @@ public abstract class CommandHandler extends BaseFeatureHandler {
             if (level == -1) {
                 State state = getInsteonDevice().getFeatureState(FEATURE_ON_LEVEL);
                 level = (state instanceof PercentType percent ? percent : PercentType.HUNDRED).intValue();
-
             }
             logger.trace("{}: using on level {}%", nm(), level);
             return (int) Math.ceil(level * 255.0 / 100); // round up
@@ -1403,7 +1402,6 @@ public abstract class CommandHandler extends BaseFeatureHandler {
             } catch (IllegalArgumentException e) {
                 logger.warn("{}: got unexpected alert type command: {}, ignoring request", nm(), cmd);
                 return -1;
-
             }
         }
     }
@@ -1412,6 +1410,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
      * LED brightness command handler
      */
     public static class LEDBrightnessCommandHandler extends CommandHandler {
+        private static final int DEFAULT_ON_LEVEL = 50;
+
         LEDBrightnessCommandHandler(DeviceFeature feature) {
             super(feature);
         }
@@ -1424,7 +1424,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         @Override
         public void handleCommand(InsteonChannelConfiguration config, Command cmd) {
             try {
-                int level = getLevel(cmd);
+                PercentType state = getState(config, cmd);
+                int level = getLevel(state);
                 int userData2 = getParameterAsInteger("d2", -1);
                 if (userData2 != -1) {
                     // set led on/off
@@ -1439,6 +1440,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                         logger.debug("{}: sent led brightness level {} request to {}", nm(),
                                 HexUtils.getHexString(level), address);
                     }
+                    // update state since led brightness channel not automatically updated by the framework
+                    feature.updateState(state);
                 } else {
                     logger.warn("{}: no d2 parameter specified in command handler", nm());
                 }
@@ -1449,19 +1452,27 @@ public abstract class CommandHandler extends BaseFeatureHandler {
             }
         }
 
-        private int getLevel(Command cmd) {
-            int level;
+        private int getLevel(PercentType percent) {
+            return (int) Math.round(percent.intValue() * 127.0 / 100);
+        }
+
+        private PercentType getState(InsteonChannelConfiguration config, Command cmd) {
             if (cmd instanceof PercentType percent) {
-                level = percent.intValue();
-            } else {
-                level = OnOffType.OFF.equals(cmd) ? 0 : 100;
+                return percent;
             }
-            return (int) Math.round(level * 127.0 / 100);
+            if (OnOffType.OFF.equals(cmd)) {
+                return PercentType.ZERO;
+            }
+            int level = config.getOnLevel();
+            if (level == -1) {
+                level = DEFAULT_ON_LEVEL;
+            }
+            return new PercentType(level);
         }
 
         private void setLEDOnOff(InsteonChannelConfiguration config, Command cmd) {
-            State state = getInsteonDevice().getFeatureState(FEATURE_LED_ON_OFF);
-            if (!((State) cmd).equals(state)) {
+            DeviceFeature feature = getInsteonDevice().getFeature(FEATURE_LED_ON_OFF);
+            if (feature != null) {
                 feature.handleCommand(config, cmd);
             }
         }
@@ -1716,6 +1727,10 @@ public abstract class CommandHandler extends BaseFeatureHandler {
      * I/O linc momentary duration command handler
      */
     public static class IOLincMomentaryDurationCommandHandler extends CommandHandler {
+        private static final double DEFAULT_DURATION = 2;
+        private static final double MIN_DURATION = 0.1;
+        private static final double MAX_DURATION = 6300;
+
         IOLincMomentaryDurationCommandHandler(DeviceFeature feature) {
             super(feature);
         }
@@ -1729,34 +1744,26 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         public void handleCommand(InsteonChannelConfiguration config, Command cmd) {
             try {
                 double duration = getDuration(cmd);
-                if (duration != -1) {
-                    InsteonAddress address = getInsteonDevice().getAddress();
-                    int prescaler = 1;
-                    int delay = (int) Math.round(duration * 10);
-                    if (delay > 255) {
-                        prescaler = (int) Math.ceil(delay / 255.0);
-                        delay = (int) Math.round(delay / (double) prescaler);
-                    }
-                    boolean setCRC = getInsteonDevice().getInsteonEngine().supportsChecksum();
-                    // define ext command message to set momentary duration delay
-                    Msg delayMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
-                            new byte[] { (byte) 0x01, (byte) 0x06, (byte) delay }, setCRC);
-                    // define ext command message to set momentary duration prescaler
-                    Msg prescalerMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
-                            new byte[] { (byte) 0x01, (byte) 0x07, (byte) prescaler }, setCRC);
-                    // send requests
-                    feature.sendRequest(delayMsg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent momentary duration delay {} request to {}", nm(),
-                                HexUtils.getHexString(delay), address);
-                    }
-                    feature.sendRequest(prescalerMsg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent momentary duration prescaler {} request to {}", nm(),
-                                HexUtils.getHexString(prescaler), address);
-                    }
-                } else {
-                    logger.warn("{}: got unexpected momentary duration command {}, ignoring request", nm(), cmd);
+                int multiplier = getDurationMultiplier(duration);
+                int delay = (int) Math.round(duration * 10 / multiplier);
+                InsteonAddress address = getInsteonDevice().getAddress();
+                boolean setCRC = getInsteonDevice().getInsteonEngine().supportsChecksum();
+                // define ext command message to set momentary duration delay
+                Msg delayMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
+                        new byte[] { (byte) 0x01, (byte) 0x06, (byte) delay }, setCRC);
+                // define ext command message to set momentary duration multiplier
+                Msg multiplierMsg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00,
+                        new byte[] { (byte) 0x01, (byte) 0x07, (byte) multiplier }, setCRC);
+                // send requests
+                feature.sendRequest(delayMsg);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: sent momentary duration delay {} request to {}", nm(),
+                            HexUtils.getHexString(delay), address);
+                }
+                feature.sendRequest(multiplierMsg);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: sent momentary duration multiplier {} request to {}", nm(),
+                            HexUtils.getHexString(multiplier), address);
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -1766,12 +1773,29 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         }
 
         private double getDuration(Command cmd) {
+            double duration = DEFAULT_DURATION;
             if (cmd instanceof DecimalType time) {
-                return time.doubleValue();
+                duration = time.doubleValue();
             } else if (cmd instanceof QuantityType<?> time) {
-                return Objects.requireNonNullElse(time.toInvertibleUnit(Units.SECOND), time).doubleValue();
+                duration = Objects.requireNonNullElse(time.toInvertibleUnit(Units.SECOND), time).doubleValue();
             }
-            return -1;
+            return Math.max(MIN_DURATION, Math.min(MAX_DURATION, duration));
+        }
+
+        private int getDurationMultiplier(double duration) {
+            int delay = (int) Math.round(duration * 10);
+            // multiplier discrete steps as used by the insteon app
+            int multiplier = 1;
+            if (delay > 51000) {
+                multiplier = 250;
+            } else if (delay > 25500) {
+                multiplier = 200;
+            } else if (delay > 2550) {
+                multiplier = 100;
+            } else if (delay > 255) {
+                multiplier = 10;
+            }
+            return multiplier;
         }
     }
 
@@ -2187,8 +2211,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         }
 
         private void setLEDControl(InsteonChannelConfiguration config) {
-            State state = getInsteonModem().getFeatureState(FEATURE_LED_CONTROL);
-            if (!OnOffType.ON.equals(state)) {
+            DeviceFeature feature = getInsteonModem().getFeature(FEATURE_LED_CONTROL);
+            if (feature != null) {
                 feature.handleCommand(config, OnOffType.ON);
             }
         }
@@ -2291,7 +2315,6 @@ public abstract class CommandHandler extends BaseFeatureHandler {
      * X10 percent command handler
      */
     public static class X10PercentCommandHandler extends X10CommandHandler {
-
         private static final int[] X10_LEVEL_CODES = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
 
         X10PercentCommandHandler(DeviceFeature feature) {

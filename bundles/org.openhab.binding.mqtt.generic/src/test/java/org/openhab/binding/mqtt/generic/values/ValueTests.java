@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,6 +230,12 @@ public class ValueTests {
     }
 
     @Test
+    public void numberDimension() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.MIRED);
+        assertThat(v.getItemType(), is("Number:Temperature"));
+    }
+
+    @Test
     public void rollershutterUpdateWithStrings() {
         RollershutterValue v = new RollershutterValue("fancyON", "fancyOff", "fancyStop");
         // Test with UP/DOWN/STOP command
@@ -312,6 +318,8 @@ public class ValueTests {
         assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("110"));
         assertThat(v.parseCommand(new DecimalType(10.0)), is(PercentType.ZERO));
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("10"));
+
+        v.update(OnOffType.OFF);
 
         assertThat(v.parseCommand(OnOffType.ON), is(OnOffType.ON));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("110"));

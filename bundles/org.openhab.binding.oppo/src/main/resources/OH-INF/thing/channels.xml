@@ -10,6 +10,7 @@
 		<description>
 			Controls an Oppo Blu-ray Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -39,6 +40,10 @@
 			<channel id="hdr_mode" typeId="hdr_mode"/>
 			<channel id="remote_button" typeId="remote_button"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="model" type="integer" required="true">
@@ -84,12 +89,20 @@
 		<item-type>Number</item-type>
 		<label>Source Input</label>
 		<description>Select the Source Input for the Player</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="play_mode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -98,6 +111,10 @@
 		<label>Control</label>
 		<description>Transport Controls e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="time_mode">
@@ -116,9 +133,13 @@
 
 	<channel-type id="time_display">
 		<item-type>Number:Time</item-type>
-		<label>Time Display (S)</label>
-		<description>The Playback Time Elapsed/Remaining in Seconds</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<label>Time Display</label>
+		<description>The Playback Time Elapsed/Remaining</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="current_title">
@@ -153,6 +174,10 @@
 		<item-type>String</item-type>
 		<label>Repeat Mode</label>
 		<description>The Current Repeat Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="00">Off</option>
@@ -169,6 +194,10 @@
 		<item-type>String</item-type>
 		<label>Zoom Mode</label>
 		<description>The Current Zoom Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="00">Off</option>
@@ -192,6 +221,10 @@
 		<item-type>String</item-type>
 		<label>Disc Type</label>
 		<description>The Current Type of Disc in the Player</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -199,6 +232,10 @@
 		<item-type>String</item-type>
 		<label>Audio Type</label>
 		<description>The Current Audio Track Type</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -227,6 +264,10 @@
 		<item-type>String</item-type>
 		<label>Output Video Resolution</label>
 		<description>The Video Resolution of the Player Output</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -241,6 +282,10 @@
 		<item-type>Number</item-type>
 		<label>OSD Position</label>
 		<description>Set the OSD Position 0 to 5</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state min="0" max="5" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -255,12 +300,20 @@
 		<item-type>String</item-type>
 		<label>HDMI Mode</label>
 		<description>The Current HDMI Output Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hdr_mode">
 		<item-type>String</item-type>
 		<label>HDR Mode</label>
 		<description>The Current HDR Output Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="Auto">Auto</option>
@@ -274,6 +327,10 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>Simulate Pressing a Button on the Remote Control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="EJT">Eject</option>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,9 +90,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
     // this is the units lookup cache.
     protected final Map<String, UnitAndType> unitsCache = new ConcurrentHashMap<>();
     // marks an entry with known un-resolveable unit
-    protected final UnitAndType NULL_MARKER = new UnitAndType(Units.ONE, "");
+    protected static final UnitAndType NULL_MARKER = new UnitAndType(Units.ONE, "");
     // marks an entry with special handling - i.e. 'Imp'
-    protected final UnitAndType SPECIAL_MARKER = new UnitAndType(Units.ONE, "s");
+    protected static final UnitAndType SPECIAL_MARKER = new UnitAndType(Units.ONE, "s");
 
     public TACmiSchemaHandler(final Thing thing, final HttpClient httpClient,
             final TACmiChannelTypeProvider channelTypeProvider) {

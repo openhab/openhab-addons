@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.RegistryHook;
 
 /**
  * @author David Graeff - Initial contribution
@@ -149,13 +148,5 @@ public class DummyItemRegistry implements ItemRegistry {
             }
         }
         return put;
-    }
-
-    @Override
-    public void addRegistryHook(RegistryHook<Item> hook) {
-    }
-
-    @Override
-    public void removeRegistryHook(RegistryHook<Item> hook) {
     }
 }

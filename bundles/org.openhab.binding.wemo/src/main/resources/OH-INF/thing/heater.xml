@@ -7,7 +7,7 @@
 	<thing-type id="Heater">
 		<label>Holmes Heater</label>
 		<description>Holmes Smart Heater with WeMo</description>
-
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="heaterMode" typeId="heaterMode"/>
 			<channel id="currentTemperature" typeId="currentTemperature"/>

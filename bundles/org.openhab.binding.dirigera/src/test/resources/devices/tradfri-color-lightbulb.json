@@ -1,0 +1,61 @@
+        {
+	"id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+	"type": "light",
+	"deviceType": "light",
+	"createdAt": "2024-10-04T17:41:34.000Z",
+	"isReachable": true,
+	"lastSeen": "2024-10-14T05:17:01.000Z",
+	"customIcon": "lighting_pendant_light",
+	"attributes": {
+		"customName": "Dining Room",
+		"model": "TRADFRI bulb E27 CWS globe 806lm",
+		"manufacturer": "IKEA of Sweden",
+		"firmwareVersion": "1.0.38",
+		"hardwareVersion": "1",
+		"serialNumber": "7CC6B6FFFE5FFFA2",
+		"productCode": "LED2109G6",
+		"isOn": true,
+		"startupOnOff": "startOn",
+		"lightLevel": 92,
+		"startUpCurrentLevel": -1,
+		"colorHue": 119.9981689453125,
+		"colorSaturation": 0.7,
+		"colorTemperature": 2702,
+		"colorTemperatureMin": 4000,
+		"colorTemperatureMax": 2202,
+		"startupTemperature": -1,
+		"colorMode": "color",
+		"identifyStarted": "2000-01-01T00:00:00.000Z",
+		"identifyPeriod": 0,
+		"permittingJoin": false,
+		"otaStatus": "upToDate",
+		"otaState": "readyToCheck",
+		"otaProgress": 0,
+		"otaPolicy": "autoUpdate",
+		"otaScheduleStart": "00:00",
+		"otaScheduleEnd": "00:00"
+	},
+	"capabilities": {
+		"canSend": [],
+		"canReceive": [
+			"customName",
+			"isOn",
+			"lightLevel",
+			"colorTemperature",
+			"colorHue",
+			"colorSaturation"
+		]
+	},
+	"room": {
+		"id": "921edb07-e344-4c70-a09e-11935c727f58",
+		"name": "Esszimmer",
+		"color": "ikea_yellow_no_31",
+		"icon": "rooms_cutlery"
+	},
+	"deviceSet": [],
+	"remoteLinks": [
+		"22e4b77b-9a60-4727-944b-0d5e3e33b58f_1"
+	],
+	"isHidden": false,
+	"adaptiveProfile": {}
+}

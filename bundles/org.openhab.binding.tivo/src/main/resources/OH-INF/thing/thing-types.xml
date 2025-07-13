@@ -10,6 +10,8 @@
 			The TiVo TCP Control Protocol is an ASCII-based command protocol for remote control of a TiVo DVR over a TCP local
 			network connection. The commands allow control of channel changes, user interface navigation and allow the client to
 			send simulated remote control button presses to the Digital Video Recorder.</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
+
 		<channels>
 			<channel id="channelSet" typeId="channelSet"/>
 			<channel id="channelForce" typeId="channelForce"/>
@@ -19,6 +21,10 @@
 			<channel id="kbdCommand" typeId="kbdCommand"/>
 			<channel id="dvrStatus" typeId="dvrStatus"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>host</representation-property>
 
@@ -84,6 +90,10 @@
 		<description>Displays the current channel number. When changed (SETCH), tunes the DVR to the specified channel (unless
 			a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. Type:
 			Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %d</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state min="1" max="9999" step="0.1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="channelForce">
@@ -93,6 +103,10 @@
 			cancelling any recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be
 			in Live TV mode for this command to work. Type: Number (1-9999) [Decimals allowed for OTA sub-channels],
 			DisplayFormat: %d</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state min="1" max="9999" step="0.1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="isRecording">

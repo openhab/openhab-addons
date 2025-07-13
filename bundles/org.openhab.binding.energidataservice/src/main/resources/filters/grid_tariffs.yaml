@@ -48,10 +48,16 @@
 # FLOW Elnet
 - gln: "5790000392551"
   chargeTypeCodes:
-    - "FE2 NT-01"
+    - "FE1 NT-01"
   notes:
-    - "Nettarif C time"
+    - "Nettarif C"
   start: "StartOfDay"
+# Forsyning Elnet
+- gln: "5790001088309"
+  chargeTypeCodes:
+    - "STR-NT-03"
+  notes:
+    - "Nettarif C"
 # Hammel Elforsyning Net
 - gln: "5790001090166"
   chargeTypeCodes:
@@ -98,9 +104,9 @@
     - "CD R"
   start: "2023-01-01"
 # Netselskabet Elværk
-- gln: "5790000681075"
+- gln: "5790000681358"
   chargeTypeCodes:
-    - "0NCFF"
+    - "5NCFF"
   notes:
     - "Nettarif C Flex"
   start: "StartOfDay"

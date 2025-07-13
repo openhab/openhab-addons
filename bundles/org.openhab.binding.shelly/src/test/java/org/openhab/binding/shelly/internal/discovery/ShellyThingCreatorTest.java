@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 
 import java.util.Set;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
@@ -43,7 +43,7 @@ public class ShellyThingCreatorTest {
     @MethodSource("provideTestCasesForGetThingUIDThrowsForInvalidServiceName")
     void getThingUIDThrowsForInvalidServiceName(String serviceName) {
         assertThrows(IllegalArgumentException.class, () -> {
-            ShellyThingCreator.getThingUID(serviceName, "", "", false);
+            ShellyThingCreator.getThingUID(serviceName);
         });
     }
 
@@ -52,9 +52,9 @@ public class ShellyThingCreatorTest {
     }
 
     @Test
-    void getThingUIDReturnsThingUidForUnknown() {
-        ThingUID actual = ShellyThingCreator.getThingUID("johndoe-" + DEVICE_ID, "", "", true);
-        ThingUID expected = new ThingUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR, DEVICE_ID);
+    void getThingUIDForUnknownReturnsThingUidForUnknown() {
+        ThingUID actual = ShellyThingCreator.getThingUIDForUnknown("johndoe-" + DEVICE_ID, "", "");
+        ThingUID expected = new ThingUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR, DEVICE_ID);
 
         assertThat(actual, is(equalTo(expected)));
     }
@@ -63,13 +63,13 @@ public class ShellyThingCreatorTest {
     @MethodSource("provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset")
     void getThingUIDReturnsThingUidAccordingToRuleset(String serviceName, String deviceType, String mode,
             String expectedThingTypeId) {
-        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, mode, false);
-        ThingUID expected = new ThingUID(ShellyBindingConstants.BINDING_ID, expectedThingTypeId, DEVICE_ID);
-        ThingTypeUID expectedThingTypeUid = new ThingTypeUID(ShellyBindingConstants.BINDING_ID, expectedThingTypeId);
+        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, mode);
+        ThingUID expected = new ThingUID(BINDING_ID, expectedThingTypeId, DEVICE_ID);
+        ThingTypeUID expectedThingTypeUid = new ThingTypeUID(BINDING_ID, expectedThingTypeId);
 
         assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType + "; mode: " + mode, actual,
                 is(equalTo(expected)));
-        assertThat(ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS, hasItem(expectedThingTypeUid));
+        assertThat(SUPPORTED_THING_TYPES_UIDS, hasItem(expectedThingTypeUid));
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidAccordingToRuleset() {
@@ -89,6 +89,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplug-su1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGS_STR), //
                 Arguments.of("shellyplugu1-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1_STR), //
                 Arguments.of("shellyplugu12-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUGU1_STR), //
+                Arguments.of("shellyplugus-" + DEVICE_ID, "", "", THING_TYPE_SHELLYPLUSPLUGUS_STR), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "color", THING_TYPE_SHELLYRGBW2_COLOR_STR), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "", THING_TYPE_SHELLYRGBW2_WHITE_STR), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "", "colour", THING_TYPE_SHELLYRGBW2_WHITE_STR), //
@@ -99,12 +100,12 @@ public class ShellyThingCreatorTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForGetThingUIDReturnsThingUidByDeviceType")
     void getThingUIDReturnsThingUidByDeviceType(String deviceType, String mode, String expectedThingTypeId) {
-        ThingUID actual = ShellyThingCreator.getThingUID("x-" + DEVICE_ID, deviceType, mode, false);
-        ThingUID expected = new ThingUID(ShellyBindingConstants.BINDING_ID, expectedThingTypeId, DEVICE_ID);
-        ThingTypeUID expectedThingTypeUid = new ThingTypeUID(ShellyBindingConstants.BINDING_ID, expectedThingTypeId);
+        ThingUID actual = ShellyThingCreator.getThingUID("x-" + DEVICE_ID, deviceType, mode);
+        ThingUID expected = new ThingUID(BINDING_ID, expectedThingTypeId, DEVICE_ID);
+        ThingTypeUID expectedThingTypeUid = new ThingTypeUID(BINDING_ID, expectedThingTypeId);
 
         assertThat("deviceType: " + deviceType + "; mode: " + mode, actual, is(equalTo(expected)));
-        assertThat(ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS, hasItem(expectedThingTypeUid));
+        assertThat(SUPPORTED_THING_TYPES_UIDS, hasItem(expectedThingTypeUid));
     }
 
     private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidByDeviceType() {
@@ -155,7 +156,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSHT, "", THING_TYPE_SHELLYPLUSHT_STR), //
                 Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHTG3_STR), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE_STR), //
-                Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYUNI_STR), //
+                Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
@@ -174,6 +175,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO1PM, "", THING_TYPE_SHELLYPRO1PM_STR), //
                 Arguments.of(SHELLYDT_PRO1PM_2, "", THING_TYPE_SHELLYPRO1PM_STR), //
                 Arguments.of(SHELLYDT_PRO1PM_3, "", THING_TYPE_SHELLYPRO1PM_STR), //
+                Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPRO1CB_STR), //
                 Arguments.of("SPSW-002XE16EU", "relay", THING_TYPE_SHELLYPRO2_RELAY_STR), //
                 Arguments.of("SPSW-102XE16EU", "relay", THING_TYPE_SHELLYPRO2_RELAY_STR), //
                 Arguments.of("SPSW-202XE16EU", "relay", THING_TYPE_SHELLYPRO2_RELAY_STR), //
@@ -200,22 +202,16 @@ public class ShellyThingCreatorTest {
 
     @Test
     void getThingUIDReturnsThingTypeMatchingServiceName() {
-        Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION,
-                THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUGW, THING_TYPE_SHELLYBLUBUTTON, THING_TYPE_SHELLY2_RELAY,
-                THING_TYPE_SHELLY2_ROLLER, THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY,
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPLUSHTG3_STR),
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPLUS2PM_RELAY_STR),
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPLUS2PM_ROLLER_STR),
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPRO2_RELAY_STR),
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPRO2PM_ROLLER_STR),
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYPRO2PM_RELAY_STR),
-                new ThingTypeUID(ShellyBindingConstants.BINDING_ID, THING_TYPE_SHELLYRGBW2_COLOR_STR));
+        Set<ThingTypeUID> excludedThingTypeUids = Set.of(THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
+                THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLYPLUSHTG3,
+                THING_TYPE_SHELLYPLUS2PM_RELAY, THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPRO2_RELAY,
+                THING_TYPE_SHELLYPRO2PM_ROLLER, THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYRGBW2_COLOR);
 
-        for (ThingTypeUID supportedThingTypeUid : ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream()
+        for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES_UIDS.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {
             String thingTypeId = supportedThingTypeUid.getId();
-            ThingUID actualThingUid = ShellyThingCreator.getThingUID(thingTypeId + "-" + DEVICE_ID, "", "", false);
-            ThingUID expectedThingUid = new ThingUID(ShellyBindingConstants.BINDING_ID, thingTypeId, DEVICE_ID);
+            ThingUID actualThingUid = ShellyThingCreator.getThingUID(thingTypeId + "-" + DEVICE_ID);
+            ThingUID expectedThingUid = new ThingUID(BINDING_ID, thingTypeId, DEVICE_ID);
             assertThat(actualThingUid, is(equalTo(expectedThingUid)));
         }
     }

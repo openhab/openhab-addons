@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class FreeAtHomeHttpCommunicationException extends Exception {
     private static final long serialVersionUID = -817364286035448863L;
     private String errorMessage = "Unknown_Exception";
-    private int errorCode;
+    private final int errorCode;
 
     public FreeAtHomeHttpCommunicationException(int errorCode, String message) {
         super(message);
@@ -37,6 +37,7 @@ public class FreeAtHomeHttpCommunicationException extends Exception {
         this.errorCode = errorCode;
     }
 
+    @Override
     public @Nullable String getMessage() {
         return this.errorMessage;
     }

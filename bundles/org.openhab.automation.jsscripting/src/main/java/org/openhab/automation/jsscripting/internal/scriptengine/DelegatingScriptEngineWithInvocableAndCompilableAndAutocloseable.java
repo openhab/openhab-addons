@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 /**
  * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
  * methods.
@@ -33,9 +31,9 @@ import org.eclipse.jdt.annotation.NonNull;
  */
 public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
         implements ScriptEngine, Invocable, Compilable, AutoCloseable {
-    protected @NonNull T delegate;
+    protected T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(@NonNull T delegate) {
+    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(T delegate) {
         this.delegate = delegate;
     }
 

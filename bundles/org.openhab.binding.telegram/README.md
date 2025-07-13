@@ -2,7 +2,7 @@
 
 The Telegram binding allows sending and receiving messages to and from Telegram clients (<https://telegram.org>), by using the Telegram Bot API.
 
-# Prerequisites
+## Prerequisites
 
 As described in the Telegram Bot API (<https://core.telegram.org/bots#6-botfather>), this is the manual procedure needed in order to get the necessary information.
 
@@ -59,15 +59,15 @@ In order to send a message, an action must be used instead.
 
 **telegramBot** parameters:
 
-| Property | Default | Required | Description |
-|-|-|-|-|
-| `chatIds` | | Yes | A list of chatIds that are entered one per line in the UI, or are comma separated values when using textual config. |
-| `botToken` | | Yes | Authentication token that looks like 1122334455:AABBCCDDEEFFGG1122334455667788 |
-| `parseMode` |  None   | No | Support for formatted messages, values: Markdown or HTML. |
-| `proxyHost` |  None   | No | Proxy host for telegram binding. |
-| `proxyPort` |  None   | No | Proxy port for telegram binding. |
-| `proxyType` |  SOCKS5 | No | Type of proxy server for telegram binding (SOCKS5 or HTTP). |
-| `longPollingTime` | 25 | No | Timespan in seconds for long polling the telegram API. |
+| Property          | Default | Required | Description                                                                                                         |
+|-------------------|---------|----------|---------------------------------------------------------------------------------------------------------------------|
+| `chatIds`         |         | Yes      | A list of chatIds that are entered one per line in the UI, or are comma separated values when using textual config. |
+| `botToken`        |         | Yes      | Authentication token that looks like 1122334455:AABBCCDDEEFFGG1122334455667788                                      |
+| `parseMode`       | None    | No       | Support for formatted messages, values: Markdown or HTML.                                                           |
+| `proxyHost`       | None    | No       | Proxy host for telegram binding.                                                                                    |
+| `proxyPort`       | None    | No       | Proxy port for telegram binding.                                                                                    |
+| `proxyType`       | SOCKS5  | No       | Type of proxy server for telegram binding (SOCKS5 or HTTP).                                                         |
+| `longPollingTime` | 25      | No       | Timespan in seconds for long polling the telegram API.                                                              |
 
 By default chat ids are bi-directionally, i.e. they can send and receive messages.
 They can be prefixed with an access modifier:
@@ -193,10 +193,11 @@ Each of the actions returns true on success or false on failure.
 
 These actions will send a message to all chat ids configured for this bot.
 
-| Action                     | Description  |
-|----------------------------|--------------|
-| sendTelegram(String message) | Sends a message. |
-| sendTelegram(String format, Object... args)          | Sends a formatted message (See <https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html> for more information).
+| Action                                                                                                                         | Description                                                                                                                                  |
+|--------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| sendTelegram(String message)                                                                                                   | Sends a message.                                                                                                                             |
+| sendTelegram(String format, Object... args)                                                                                    | Sends a formatted message (See <https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html> for more information) |
+| sendTelegramTo(Long[] chatIds, String message, Integer replyMessageId,Boolean silent, Integer messageThreadId, Object... args) | Sends a message with various options                                                                                                         |
 | sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png) |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should _always_ call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
 | deleteTelegramQuery(String replyId) | Deletes a question in the chat. The replyId must be the same as used for the corresponding sendTelegramQuery() action. |

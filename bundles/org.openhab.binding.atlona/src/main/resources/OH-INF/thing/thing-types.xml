@@ -8,6 +8,7 @@
 	<thing-type id="pro3-44m">
 		<label>Atlona PRO3 4x4 HDBaseT Matrix</label>
 		<description>Atlona PRO3 4x4 HDBaseT Matrix (Model AT-UHD-PRO3-44M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -56,6 +57,7 @@
 	<thing-type id="pro3-66m">
 		<label>Atlona PRO3 6x6 HDBaseT Matrix</label>
 		<description>Atlona PRO3 6x6 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -124,6 +126,7 @@
 	<thing-type id="pro3-88m">
 		<label>Atlona PRO3 8x8 HDBaseT Matrix</label>
 		<description>Atlona PRO3 8x8 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -208,6 +211,7 @@
 	<thing-type id="pro3-1616m">
 		<label>Atlona PRO3 16x16 HDBaseT Matrix</label>
 		<description>Atlona PRO3 16x16 HDBaseT Matrix (Model AT-UHD-PRO3-1616M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -364,6 +368,7 @@
 	<thing-type id="pro3-hd44m">
 		<label>Atlona PRO3 HD 4x4 HDBaseT Matrix</label>
 		<description>Atlona PRO3 HD 4x4 HDBaseT Matrix (Model AT-PRO3HD44M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -392,6 +397,7 @@
 	<thing-type id="pro3-hd66m">
 		<label>Atlona PRO3 HD 6x6 HDBaseT Matrix</label>
 		<description>Atlona PRO3 HD 6x6 HDBaseT Matrix (Model AT-PRO3HD66M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -477,6 +483,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Whether the matrix is on or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="panellock" advanced="true">
 		<item-type>Switch</item-type>
@@ -519,6 +529,10 @@
 		<item-type>Switch</item-type>
 		<label>Mirror Enabled</label>
 		<description>Whether the HDMI port mirroring is enabled or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volume">
 		<item-type>Number</item-type>
@@ -530,5 +544,9 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Sets the output to muted or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

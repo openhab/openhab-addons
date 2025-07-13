@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.insteon.internal;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +34,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class InsteonBindingConstants {
     public static final String BINDING_ID = "insteon";
-    public static final String BINDING_DATA_DIR = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID;
+    public static final Path BINDING_DATA_DIR = Path.of(OpenHAB.getUserDataFolder(), BINDING_ID);
 
     // List of all thing type uids
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
@@ -75,10 +75,14 @@ public class InsteonBindingConstants {
     public static final String FEATURE_LED_ON_OFF = "ledOnOff";
     public static final String FEATURE_LINK_FF_GROUP = "linkFFGroup";
     public static final String FEATURE_LOW_BATTERY_THRESHOLD = "lowBatteryThreshold";
+    public static final String FEATURE_MOMENTARY_DURATION = "momentaryDuration";
+    public static final String FEATURE_MONITOR_MODE = "monitorMode";
     public static final String FEATURE_ON_LEVEL = "onLevel";
     public static final String FEATURE_PING = "ping";
     public static final String FEATURE_RAMP_RATE = "rampRate";
-    public static final String FEATURE_SCENE_ON_OFF = "sceneOnOff";
+    public static final String FEATURE_RELAY_MODE = "relayMode";
+    public static final String FEATURE_RELAY_SENSOR_FOLLOW = "relaySensorFollow";
+    public static final String FEATURE_SCENE = "scene";
     public static final String FEATURE_STAY_AWAKE = "stayAwake";
     public static final String FEATURE_TEMPERATURE_SCALE = "temperatureScale";
     public static final String FEATURE_TWO_GROUPS = "2Groups";

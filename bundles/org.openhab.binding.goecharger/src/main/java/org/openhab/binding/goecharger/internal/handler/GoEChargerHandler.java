@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -366,8 +366,8 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
      */
     @Nullable
     @Override
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException, ExecutionException,
+            JsonSyntaxException, IllegalArgumentException {
         String urlStr = getReadUrl();
         logger.trace("GET URL = {}", urlStr);
 

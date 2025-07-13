@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,11 +129,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
         String channelId = channelUID.getId();
         if (ELECTRICITY_CHANNELS.contains(channelId)) {
-            if (!electricityPriceProvider.forceRefreshPrices(getChannelSubscription(channelId))) {
-                // All subscriptions are automatically notified upon actual changes after download.
-                // If cached values are the same, we will update the requested channel directly.
-                updateChannelFromCache(getChannelSubscription(channelId), channelId);
-            }
+            updateChannelFromCache(getChannelSubscription(channelId), channelId);
         } else if (CO2_EMISSION_CHANNELS.contains(channelId)) {
             Subscription subscription = getChannelSubscription(channelId);
             unsubscribe(subscription);

@@ -7,6 +7,7 @@
 	<thing-type id="omnik">
 		<label>OmnikInverter Binding Thing</label>
 		<description>Thing for OmnikInverter Binding</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 

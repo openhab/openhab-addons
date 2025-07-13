@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,4 +65,7 @@ public class GoEChargerBindingConstants {
 
     public static final String API_URL_V2 = "http://%IP%/api/status";
     public static final String SET_URL_V2 = "http://%IP%/api/set?%KEY%=%VALUE%";
+
+    public static final String API_URL_CLOUD_V2 = "https://%SERIAL%.api.v3.go-e.io/api/status?token=%TOKEN%";
+    public static final String SET_URL_CLOUD_V2 = "https://%SERIAL%.api.v3.go-e.io/api/set?token=%TOKEN%&%KEY%=%VALUE%";
 }

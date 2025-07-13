@@ -48,6 +48,30 @@ All devices support the following channels:
 | maxpilotcurrent         | Number:ElectricCurrent   | yes       | current offered to the vehicle via control pilot signalization          |
 | maxpilotcurrentdutycyle | Number:Dimensionless     | yes       | duty cycle of the control pilot signal                                  |
 
+## Rule Actions
+
+Certain Keba models support setting the text on the built-in display.
+The text can be set via a rule action `setDisplay`. It comes in two variants:
+
+```java
+rule "Set Display Text"
+when
+  System reached start level 100
+then
+   val keContactActions = getActions("keba", "keba:kecontact:1")
+   // Default duration
+   keContactActions.setDisplay("TEXT$1")
+   // Explicit duration set
+   keContactActions.setDisplay("TEXT$2", 5, 10)
+end
+```
+
+| Parameter                | Description                                                                                                                                                                      |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| text                     | Text shown on the display. Maximum 23 ASCII characters can be used. `~` == Σ, `$` == blank, `,` == comma                                                                         |
+| durationMin _(optional)_ | Defines the duration in seconds how long the text will displayed before another display command will be processed (internal MID metering relevant information may overrule this) |
+| durationMax _(optional)_ | Defines the duration in seconds how long the text will displayed if no additional display command follows.                                                                       |
+
 ## Example
 
 demo.Things:

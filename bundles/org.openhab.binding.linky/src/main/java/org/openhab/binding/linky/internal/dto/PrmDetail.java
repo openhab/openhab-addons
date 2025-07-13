@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.ArrayList;
  */
 public class PrmDetail {
     public record Adresse(String ligne2, String ligne3, String ligne4, String ligne5, String ligne6) {
+
     }
 
     public record DicEntry(String code, String libelle) {

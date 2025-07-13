@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -259,9 +259,6 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
     public boolean onPacketReceived(byte[] packet) {
         logger.trace("onPacketReceived() was called");
 
-        if (disposed) {
-            return false;
-        }
-        return true;
+        return !disposed;
     }
 }

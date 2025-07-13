@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.haassohnpelletstove.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link HaasSohnpelletstoveConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class HaasSohnpelletstoveConfiguration {
 
-    public @Nullable String hostIP = null;
-    public @Nullable String hostPIN = null;
+    public String hostIP = "";
+    public String hostPIN = "";
     public int refreshRate = 30;
 }
