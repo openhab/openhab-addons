@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class PriceCalculationException extends RuntimeException {
+public class PriceCalculationException extends Exception {
     private static final long serialVersionUID = 4330974498657720965L;
 
     public PriceCalculationException(String reason) {
