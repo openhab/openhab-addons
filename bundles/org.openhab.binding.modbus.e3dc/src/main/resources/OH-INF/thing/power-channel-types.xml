@@ -7,54 +7,90 @@
 		<item-type>Number:Power</item-type>
 		<label>PV Output</label>
 		<description>Photovoltaic Power Production</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-power-supply-channel">
 		<item-type>Number:Power</item-type>
 		<label>Battery Discharge</label>
 		<description>Battery discharges and provides Power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-power-consumption-channel">
 		<item-type>Number:Power</item-type>
 		<label>Battery Charge</label>
 		<description>Battery charges and consumes Power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="household-power-consumption-channel">
 		<item-type>Number:Power</item-type>
 		<label>Household Consumption</label>
 		<description>Household consuming Power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-power-consumption-channel">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Consumption</label>
 		<description>More Photovoltaic Power is produced than needed. Additional Power is consumed by Grid</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-power-supply-channel">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Supply</label>
 		<description>Grid Power is needed in order to satisfy your overall Power consumption</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="external-power-supply-channel">
 		<item-type>Number:Power</item-type>
 		<label>External Power Supply</label>
 		<description>Power produced by an external device which is attached to your E3DC device</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wallbox-power-consumption-channel">
 		<item-type>Number:Power</item-type>
 		<label>Wallbox Power Consumption</label>
 		<description>Power consumption of attached Wallboxes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wallbox-pv-power-consumption-channel">
 		<item-type>Number:Power</item-type>
 		<label>Wallbox PV Power Consumption</label>
 		<description>Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="autarky-channel">
@@ -73,18 +109,30 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery State Of Charge</label>
 		<description>Charge Level of your attached Battery in Percent</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-charged-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Charge</label>
 		<description>Charged energy of battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-uncharged-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Open Capacity</label>
 		<description>Open energy capacity of battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -330,6 +330,7 @@
 		<label>Entry Contact</label>
 		<description>Door/window contact open/closed</description>
 		<tags>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"></state>

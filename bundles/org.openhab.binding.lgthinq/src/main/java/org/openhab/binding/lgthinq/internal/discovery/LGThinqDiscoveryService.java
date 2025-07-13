@@ -153,7 +153,7 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), bridgeHandlerUID);
+        removeOlderResults(Instant.now(), bridgeHandlerUID);
         thingHandler.unregisterDiscoveryListener();
     }
 }

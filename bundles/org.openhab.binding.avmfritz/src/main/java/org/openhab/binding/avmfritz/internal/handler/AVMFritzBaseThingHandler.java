@@ -168,7 +168,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateDimmableLight(deviceModel.getLevelControlModel(), deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
                     updateSimpleOnOffUnit(deviceModel.getSimpleOnOffUnit());
-                } else if (HAN_FUN_HOST_THING_TYPE.equals(thing.getThingTypeUID())) {
+                } else if (HAN_FUN_HOST_THING_TYPE.equals(thing.getThingTypeUID())
+                        || SMART_ENERGY_250_THING_TYPE.equals(thing.getThingTypeUID())) {
                     updateBattery(deviceModel);
                 }
             }

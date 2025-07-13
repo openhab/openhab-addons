@@ -625,7 +625,7 @@
 		<label>Lock State</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<!-- Alexa.PowerLevelController -->

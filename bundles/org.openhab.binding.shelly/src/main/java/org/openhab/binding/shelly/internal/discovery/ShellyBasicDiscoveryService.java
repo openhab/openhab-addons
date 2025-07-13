@@ -64,7 +64,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ServiceRegistration<?> discoveryService;
 
     public ShellyBasicDiscoveryService(BundleContext bundleContext, ShellyThingTable thingTable) {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+        super(SUPPORTED_THING_TYPES, TIMEOUT);
         this.bundleContext = bundleContext;
         this.thingTable = thingTable;
     }
@@ -141,10 +141,9 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             }
 
             thingType = substringBeforeLast(name, "-");
-            profile = api.getDeviceProfile(thingType, devInfo);
-            api.close();
-            deviceName = profile.name;
             mode = devInfo.mode;
+            profile = api.getDeviceProfile(ShellyThingCreator.getThingTypeUID(name, model, mode), devInfo);
+            deviceName = profile.name;
             properties = ShellyBaseHandler.fillDeviceProperties(profile);
 
             // get thing type from device name

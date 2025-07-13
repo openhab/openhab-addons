@@ -133,6 +133,7 @@
 		<label>Contact</label>
 		<category>Contact</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -291,6 +292,7 @@
 		<description>Current blind level</description>
 		<category>Rollershutter</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>OpenLevel</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

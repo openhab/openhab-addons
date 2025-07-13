@@ -87,6 +87,7 @@
     <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.grundfosalpha</module>
     <module>org.openhab.binding.bluetooth.hdpowerview</module>
+    <module>org.openhab.binding.bluetooth.listener</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
@@ -131,6 +132,7 @@
     <module>org.openhab.binding.easee</module>
     <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
+    <module>org.openhab.binding.ecoflow</module>
     <module>org.openhab.binding.ecotouch</module>
     <module>org.openhab.binding.ecovacs</module>
     <module>org.openhab.binding.ecowatt</module>
@@ -318,6 +320,7 @@
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.omnilink</module>
+    <module>org.openhab.binding.ondilo</module>
     <module>org.openhab.binding.onebusaway</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onewire</module>
@@ -480,6 +483,7 @@
     <module>org.openhab.binding.yioremote</module>
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.binding.zoneminder</module>
+    <module>org.openhab.binding.zwavejs</module>
     <module>org.openhab.binding.zway</module>
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>
