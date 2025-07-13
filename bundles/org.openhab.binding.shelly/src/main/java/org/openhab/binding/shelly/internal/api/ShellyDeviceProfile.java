@@ -200,7 +200,8 @@ public class ShellyDeviceProfile {
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS) || THING_TYPE_SHELLYPLUSDIMMERUS.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSDIMMER10V.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSDIMMER.equals(thingTypeUID);
+                || THING_TYPE_SHELLYPLUSDIMMER10V.equals(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSDIMMER.equals(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = THING_TYPE_SHELLYDUO.equals(thingTypeUID) || THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)
                 || THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID);
