@@ -16,7 +16,7 @@
 
   <properties>
     <graalpy.version>24.2.1</graalpy.version>
-    <helperlib.version>v1.0.0-rc3</helperlib.version>
+    <helperlib.version>v1.0.0</helperlib.version>
   </properties>
 
   <dependencies>
