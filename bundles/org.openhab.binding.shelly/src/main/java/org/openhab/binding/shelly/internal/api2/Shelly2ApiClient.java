@@ -60,6 +60,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatu
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.ShellyDeviceConfigCB;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
@@ -234,6 +235,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateEmStatus(11, status, result.em11, channelUpdate);
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
+        updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
@@ -716,17 +718,24 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!profile.isDimmer || dc.light0 == null) {
+        if (!profile.isDimmer) {
             return;
         }
 
-        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+        fillDimmerSettings(0, profile.settings.dimmers, dc.light0);
+        fillDimmerSettings(1, profile.settings.dimmers, dc.light1);
+    }
+
+    protected void fillDimmerSettings(int id, @Nullable ArrayList<ShellySettingsDimmer> dimmers,
+            Shelly2GetConfigLight ls) {
         if (dimmers != null) {
-            ShellySettingsDimmer ds = dimmers.get(0);
-            ds.autoOn = dc.light0.autoOnDelay;
-            ds.autoOff = dc.light0.autoOffDelay;
-            ds.name = dc.light0.name;
-            dimmers.set(0, ds);
+            ShellySettingsDimmer ds = dimmers.get(id);
+            if (ds != null) {
+                ds.name = ls.name;
+                ds.autoOn = ls.autoOnDelay;
+                ds.autoOff = ls.autoOffDelay;
+                dimmers.set(id, ds);
+            }
         }
     }
 
