@@ -37,6 +37,7 @@ import org.openhab.binding.mideaac.internal.handler.EnergyResponse;
 import org.openhab.binding.mideaac.internal.handler.HumidityResponse;
 import org.openhab.binding.mideaac.internal.handler.Packet;
 import org.openhab.binding.mideaac.internal.handler.Response;
+import org.openhab.binding.mideaac.internal.handler.TemperatureResponse;
 import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
 import org.openhab.binding.mideaac.internal.security.Decryption8370Result;
 import org.openhab.binding.mideaac.internal.security.Security;
@@ -49,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * indoor AC unit evaporator.
  *
  * @author Jacek Dobrowolski - Initial Contribution
- * @author Bob Eckhoff - Revised logic to reconnect with security before each poll or command
+ * @author Bob Eckhoff - Revised logic to reconnect with security before each poll or command. Also added additional
+ *         command processing.
  * 
  *         This gets around the issue that any command needs to be within 30 seconds of the authorization
  *         in testing this only adds 50 ms, but allows Scheduled polls at longer intervals.
@@ -421,9 +423,9 @@ public class ConnectionManager {
 
     private void handleResponse(byte[] data, byte bodyType, @Nullable Callback callback) throws MideaException {
         logger.trace("Response bodyType: {}", bodyType);
-        logger.trace("Bytes in HEX, decoded and stripped without header: length: {}, data: {}", data.length,
+        logger.debug("Bytes in HEX, decoded and stripped without header: length: {}, data: {}", data.length,
                 Utils.bytesToHex(data));
-        logger.debug("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}", data.length,
+        logger.trace("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}", data.length,
                 Utils.bytesToBinary(data));
 
         // Validate the proper length
@@ -432,72 +434,93 @@ public class ConnectionManager {
             return;
         }
 
-        // Scan for error code
-        if (bodyType == (byte) 0x1E) {
-            logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
-            return;
-        }
+        switch (bodyType) {
+            case (byte) 0x1E:
+                logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
+                return;
 
-        // Handle the capabilities response
-        if (bodyType == (byte) 0xB5) {
-            try {
-                logger.debug("Capabilities response detected with bodyType 0xB5.");
-                CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
-                if (callback != null) {
-                    callback.updateChannels(capabilitiesResponse);
+            case (byte) 0xB5:
+                try {
+                    logger.debug("Capabilities response detected with bodyType 0xB5.");
+                    CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
+                    if (callback != null) {
+                        callback.updateChannels(capabilitiesResponse);
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Capability response exception: {}", ex.getMessage());
+                    throw new MideaException(ex);
                 }
-            } catch (Exception ex) {
-                logger.debug("Capability response exception: {}", ex.getMessage());
-                throw new MideaException(ex);
-            }
-            return;
-        }
+                return;
 
-        // Handle the Energy Response
-        if (bodyType == (byte) 0xC1) {
-            try {
-                logger.debug("Energy response detected with bodyType 0xC1.");
-                EnergyResponse energyUpdate = new EnergyResponse(data);
-                if (callback != null) {
-                    callback.updateChannels(energyUpdate);
+            case (byte) 0xC1:
+                try {
+                    logger.debug("Energy/Humidity response detected with bodyType 0xC1.");
+                    EnergyResponse energyUpdate = new EnergyResponse(data);
+                    // Separate Humidity from Energy
+                    if (callback != null) {
+                        if (data[3] == (byte) 0x45) {
+                            callback.updateHumidityFromEnergy(energyUpdate);
+                        } else {
+                            callback.updateChannels(energyUpdate);
+                        }
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Energy/Humidity response exception: {}", ex.getMessage());
+                    throw new MideaException(ex);
                 }
-            } catch (Exception ex) {
-                logger.debug("Energy response exception: {}", ex.getMessage());
-                throw new MideaException(ex);
-            }
-            return;
-        }
+                return;
 
-        // Handle notify2 message (bodyType 0xA0)
-        if (bodyType == (byte) 0xA0) {
-            try {
-                logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
-                HumidityResponse humidityResponse = new HumidityResponse(data);
-                if (callback != null) {
-                    callback.updateChannels(humidityResponse);
-                } else {
-                    logger.debug("Callback is null for unsolicited humidity response, channels not updated.");
+            case (byte) 0xA0:
+                try {
+                    logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
+                    HumidityResponse humidityResponse = new HumidityResponse(data);
+                    if (callback != null) {
+                        callback.updateChannels(humidityResponse);
+                    } else {
+                        logger.debug("Callback is null for unsolicited 0xA0 humidity response, channels not updated.");
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Unsolicited 0xA0 response exception: {}", ex.getMessage());
+                    throw new MideaException(ex);
                 }
-            } catch (Exception ex) {
-                logger.debug("Unsolicited response exception: {}", ex.getMessage());
-                throw new MideaException(ex);
-            }
-            return;
-        }
+                return;
 
-        if (bodyType != (byte) 0xC0) {
-            logger.warn("Unexpected response bodyType {}", bodyType);
-            return;
-        }
-        lastResponse = new Response(data, version);
-        try {
-            logger.trace("Data length is {}, version is {}, IP address is {}", data.length, version, ipAddress);
-            if (callback != null) {
-                callback.updateChannels(lastResponse);
-            }
-        } catch (Exception ex) {
-            logger.debug("Poll response exception: {}", ex.getMessage());
-            throw new MideaException(ex);
+            case (byte) 0xA1:
+                try {
+                    logger.debug("Response detected with bodyType 0xA1. Data length: {}", data.length);
+                    TemperatureResponse temperatureResponse = new TemperatureResponse(data);
+                    if (callback != null) {
+                        callback.updateChannels(temperatureResponse);
+                    } else {
+                        logger.debug(
+                                "Callback is null for unsolicited 0xA1 temperature response, channels not updated.");
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Unsolicited 0xA1 response exception: {}", ex.getMessage());
+                    throw new MideaException(ex);
+                }
+                return;
+
+            case (byte) 0xA5:
+                // A500000000 0000000000 0000000000 0000000000 0000005F13 FF00000000 0000236C7C
+                logger.debug("Not fully documented, possible filter runtime in minutes");
+                return;
+
+            case (byte) 0xC0:
+                lastResponse = new Response(data, version);
+                try {
+                    logger.trace("Data length is {}, version is {}, IP address is {}", data.length, version, ipAddress);
+                    if (callback != null) {
+                        callback.updateChannels(lastResponse);
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Poll response exception: {}", ex.getMessage());
+                    throw new MideaException(ex);
+                }
+                return;
+
+            default:
+                logger.warn("Unexpected response bodyType {}", bodyType);
         }
     }
 

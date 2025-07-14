@@ -51,28 +51,30 @@ No binding configuration is required.
 
 Following channels are available:
 
-| Channel                      | Type               | Description                                                                                            | Read only | Advanced |
-|------------------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
-| power                        | Switch             | Turn the AC on or off.                                                                                 |           |          |
-| target-temperature           | Number:Temperature | Target temperature.                                                                                    |           |          |
-| operational-mode             | String             | Operational modes: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                |           |          |
-| fan-speed                    | String             | Fan speeds: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.    |           |          |
-| swing-mode                   | String             | Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Not all modes supported by all units.                     |           |          |
-| eco-mode                     | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
-| turbo-mode                   | Switch             | Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. COOL and HEAT mode only. |           |          |
-| sleep-function               | Switch             | Sleep function ("Moon with a star" icon on IR Remote Controller).                                      |           |          |
-| indoor-temperature           | Number:Temperature | Indoor temperature measured in the room, where internal unit is installed.                             | Yes       |          |
-| outdoor-temperature          | Number:Temperature | Outdoor temperature by external unit. Some units do not report reading when off.                       | Yes       |          |
-| temperature-unit             | Switch             | Sets the LED display on the evaporator to Fahrenheit (true) or Celsius (false).                        |           | Yes      |
-| on-timer                     | String             | Sets the future time to turn on the AC.                                                                |           | Yes      |
-| off-timer                    | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
-| screen-display               | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
-| humidity                     | Number             | If device supports, the indoor humidity.                                                               | Yes       | Yes      |
-| kilowatt-hours               | Number             | If device supports, cumulative KWH usage                                                               | Yes       | Yes      |
-| amperes                      | Number             | If device supports, current amperage usage                                                             | Yes       | Yes      |
-| watts                        | Number             | If device supports, wattage                                                                            | Yes       | Yes      |
-| appliance-error              | Switch             | If device supports, appliance error                                                                    | Yes       | Yes      |
-| auxiliary-heat               | Switch             | If device supports, auxiliary heat                                                                     | Yes       | Yes      |
+| Channel              | Type               | Description                                                                                            | Read only | Advanced |
+|----------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
+| power                | Switch             | Turn the AC on or off.                                                                                 |           |          |
+| target-temperature   | Number:Temperature | Target temperature.                                                                                    |           |          |
+| operational-mode     | String             | Operational modes: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                |           |          |
+| fan-speed            | String             | Fan speeds: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.    |           |          |
+| swing-mode           | String             | Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Not all modes supported by all units.                     |           |          |
+| eco-mode             | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
+| turbo-mode           | Switch             | Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. COOL and HEAT mode only. |           |          |
+| sleep-function       | Switch             | Sleep function ("Moon with a star" icon on IR Remote Controller).                                      |           |          |
+| indoor-temperature   | Number:Temperature | Indoor temperature measured in the room, where internal unit is installed.                             | Yes       |          |
+| outdoor-temperature  | Number:Temperature | Outdoor temperature by external unit. Some units do not report reading when off.                       | Yes       |          |
+| temperature-unit     | Switch             | Sets the LED display on the evaporator to Fahrenheit (true) or Celsius (false).                        |           | Yes      |
+| on-timer             | String             | Sets the future time to turn on the AC.                                                                |           | Yes      |
+| off-timer            | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
+| screen-display       | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
+| maximum-humidity     | Number             | If device supports, allows setting the maximum humidity in DRY mode                                    |           | Yes
+| humidity             | Number             | If device supports, the indoor room humidity.                                                          | Yes       | Yes      |
+| kilowatt-hours       | Number             | If device supports, cumulative KWH usage                                                               | Yes       | Yes      |
+| amperes              | Number             | If device supports, current amperage usage                                                             | Yes       | Yes      |
+| watts                | Number             | If device supports, current wattage reading                                                            | Yes       | Yes      |
+| appliance-error      | Switch             | If device supports, appliance error notification                                                       | Yes       | Yes      |
+| filter-status        | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |
+| auxiliary-heat       | Switch             | If device supports, auxiliary heat (On or Off)                                                         | Yes       | Yes      |
 
 ## Examples
 
@@ -107,7 +109,7 @@ Switch temperature_unit "Fahrenheit or Celsius"                             { ch
 ### `demo.sitemap` Examples
 
 ```java
-sitemap midea label="Split AC"{
+sitemap midea label="Midea AC"{
     Frame label="AC Unit" {
         Text item=outdoor_temperature label="Outdoor Temperature [%.1f °F]"
         Text item=indoor_temperature label="Indoor Temperature [%.1f °F]"

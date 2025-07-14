@@ -59,9 +59,10 @@ public class MideaACBindingConstants {
     public static final String CHANNEL_TURBO_MODE = "turbo-mode";
     public static final String CHANNEL_INDOOR_TEMPERATURE = "indoor-temperature";
     public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
-    public static final String CHANNEL_TARGET_HUMIDITY = "target-humidity";
+    public static final String CHANNEL_MAXIMUM_HUMIDITY = "maximum-humidity";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_SCREEN_DISPLAY = "screen-display";
+    public static final String CHANNEL_FILTER_STATUS = "filter-status";
     public static final String CHANNEL_KILOWATT_HOURS = "kilowatt-hours";
     public static final String CHANNEL_AMPERES = "amperes";
     public static final String CHANNEL_WATTS = "watts";

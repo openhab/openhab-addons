@@ -28,12 +28,13 @@
 			<channel id="off-timer" typeId="off-timer"/>
 			<channel id="appliance-error" typeId="appliance-error"/>
 			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
-			<channel id="target-humidity" typeId="target-humidity"/>
+			<channel id="maximum-humidity" typeId="maximum-humidity"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="kilowatt-hours" typeId="kilowatt-hours"/>
 			<channel id="amperes" typeId="amperes"/>
 			<channel id="watts" typeId="watts"/>
 			<channel id="screen-display" typeId="screen-display"/>
+			<channel id="filter-status" typeId="filter-status"/>
 		</channels>
 
 		<representation-property>ipAddress</representation-property>
@@ -245,6 +246,12 @@
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="filter-status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Filter needs cleaning</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="on-timer" advanced="true">
 		<item-type>String</item-type>
 		<label>On Timer</label>
@@ -261,10 +268,10 @@
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="target-humidity" advanced="true">
+	<channel-type id="maximum-humidity" advanced="true">
 		<item-type>Number</item-type>
-		<label>Target Humidity</label>
-		<description>Set Target Humidity for Dry Mode (if supported).</description>
+		<label>Maximum Humidity</label>
+		<description>Set Maximum Humidity level for Dry Mode (if supported).</description>
 		<category>Humidity</category>
 		<state pattern="%d%%"/>
 	</channel-type>
