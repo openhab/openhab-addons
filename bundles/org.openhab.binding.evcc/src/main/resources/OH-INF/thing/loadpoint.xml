@@ -147,6 +147,13 @@
 	<channel-type id="loadpointChargerStatusReason">
 		<item-type>String</item-type>
 		<label>Charger status reason</label>
+		<state readOnly="true">
+			<options>
+				<option value="unknown">Unkown</option>
+				<option value="waitingforauthorization">Waiting for authorization</option>
+				<option value="disconnectrequired">Disconnect required</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="loadpointCharging">
 		<item-type>Switch</item-type>
@@ -334,13 +341,21 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<!--
-		<channel-type id="loadpointPhaseAction">
-		</channel-type>
-	-->
+	<channel-type id="loadpointPhaseAction">
+		<item-type>String</item-type>
+		<label>Phase scaling</label>
+		<description>Phase switching from 1 to 3 or 3 to 1</description>
+		<state>
+			<options>
+				<option value="scale1p">Switching to 1 phase</option>
+				<option value="scale3p">Switching to 3 phases</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="loadpointPhaseRemaining">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Phase remaining</label>
+		<label>Phase remaining timer</label>
+		<description>Seconds until phase switching will happen</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -458,7 +473,7 @@
 	</channel-type>
 	<channel-type id="loadpointVehicleSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Vehicle SoC</label>
+		<label>Vehicle API SoC limit</label>
 		<description>Current State of Charge of EV</description>
 		<category>BatteryLevel</category>
 		<tags>
@@ -491,18 +506,18 @@
 	</channel-type>
 
 	<!-- Heating relevant channels -->
-	<channel-type id="vehicleTemperature">
+	<channel-type id="loadpointEffectiveLimitTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current Temperature of the heating device</description>
+		<label>Effective Charging Limit Temperature</label>
+		<description>Effective Temperature until which the heating device will be charged</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="limitTemperature">
+	<channel-type id="loadpointLimitTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Charging Limit Temperature</label>
 		<description>Until which Temperature should the heating device be charged</description>
@@ -514,61 +529,15 @@
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="effectiveLimitTemperature">
+	<channel-type id="loadpointVehicleTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Effective Charging Limit Temperature</label>
-		<description>Effective Temperature until which the heating device will be charged</description>
+		<label>Temperature</label>
+		<description>Current Temperature of the heating device</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-
-	<!-- Backward compatibilty channels -->
-	<channel-type id="enabled">
-		<item-type>Switch</item-type>
-		<label>Charging Enabled</label>
-		<description>Charging enabled (mode not "off")</description>
-		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Enabled</option>
-				<option value="OFF">Disabled</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="phases">
-		<item-type>Number</item-type>
-		<label>Charging Enabled Phases</label>
-		<description>The maximum number of phases which can be used</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Info</tag>
-		</tags>
-		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="loadpointVehiclePresent">
-		<item-type>Switch</item-type>
-		<label>Vehicle Data Access</label>
-		<description>Whether evcc is able to get data from vehicle</description>
-		<category>Switch</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Data access</option>
-				<option value="OFF">No data access</option>
-			</options>
-		</state>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -51,18 +51,30 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (bridgeHandler == null) {
-            return;
-        }
-        endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + (index + 1);
-        Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
-        if (stateOpt.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
+        if (bridgeHandler != null) {
+            endpoint = bridgeHandler.getBaseURL() + "/loadpoints/" + (index + 1);
+            Optional<JsonObject> stateOpt = bridgeHandler.getCachedEvccState();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
 
-        JsonObject state = stateOpt.get().getAsJsonArray("loadpoints").get(index).getAsJsonObject();
-        commonInitialize(state);
+            JsonObject state = stateOpt.get().getAsJsonArray("loadpoints").get(index).getAsJsonObject();
+
+            // For backward compatibility add these elements if present
+            if (state.has("vehiclePresent")) {
+                state.add("connected", state.get("vehiclePresent"));
+            }
+            if (state.has("enabled")) {
+                state.add("charging", state.get("enabled"));
+            }
+            if (state.has("phases")) {
+                state.add("phasesConfigured", state.get("phases"));
+            }
+            commonInitialize(state);
+        } else {
+            return;
+        }
     }
 
     @Override

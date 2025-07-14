@@ -185,16 +185,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     private String getThingKey(String key) {
         Map<String, String> props = getThing().getProperties();
-
-        switch (props.get("type")) {
-            case "site":
-                return key;
-            case null:
-                logger.warn("Property type was not found for {}", getThing().getUID().getAsString());
-                return key;
-            default:
-                return props.get("type") + key.substring(0, 1).toUpperCase() + key.substring(1);
-        }
+        return props.get("type") + key.substring(0, 1).toUpperCase() + key.substring(1);
     }
 
     @Override
@@ -250,7 +241,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     @Nullable
                     JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
                     if (returnValue != null) {
-                        ; // TODO: check for error in response correct
+                        // Here we can check for correct response, in my Opinion it is not necessary
+                        ;
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
