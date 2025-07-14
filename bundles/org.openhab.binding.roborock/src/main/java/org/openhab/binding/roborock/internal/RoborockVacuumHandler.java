@@ -92,7 +92,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     @Nullable
     RoborockAccountHandler bridgeHandler;
     private final SchedulerTask initTask;
-    private final SchedulerTask reconnectTask;
     private final SchedulerTask pollTask;
     private String token = "";
     private @NonNullByDefault({}) Rooms[] homeRooms; // fixme should not be using nonnullbydefault
@@ -132,7 +131,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         super(thing);
         this.channelTypeRegistry = channelTypeRegistry;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
-        reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
         pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
     }
 
@@ -268,7 +266,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Token empty, can't login");
         }
         initTask.setNamePrefix(getThing().getUID().getId());
-        reconnectTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
         initTask.submit();
         updateStatus(ThingStatus.UNKNOWN);
@@ -307,23 +304,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
         }
 
-        connectToDevice();
-    }
-
-    private synchronized void teardown(boolean scheduleReconnection) {
-        pollTask.cancel();
-
-        reconnectTask.cancel();
-        initTask.cancel();
-
-        if (scheduleReconnection) {
-            SchedulerTask connectTask = reconnectTask;
-            connectTask.schedule(5);
-        }
-    }
-
-    private void connectToDevice() {
-        scheduleNextPoll(-1);
         boolean empty_byte_array = true;
         for (byte b : nonce) {
             if (b != 0) {
@@ -334,7 +314,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (empty_byte_array) {
             new java.security.SecureRandom().nextBytes(nonce);
         }
+        scheduleNextPoll(-1);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    private synchronized void teardown(boolean scheduleReconnection) {
+        pollTask.cancel();
+        initTask.cancel();
+
+        if (scheduleReconnection) {
+            SchedulerTask connectTask = initTask;
+            connectTask.schedule(5);
+        }
     }
 
     @Override
@@ -511,7 +502,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     }
                 }
             } else {
-                // handle battery updates (dps key is 122)
+                // handle live updates ie any one (or more of values of dps)
+                // "dps":{"121":8,"122":100,"123":104,"124":203,"125":75,"126":63,"127":50,"128":0,"133":1,"134":0}
                 if (JsonParser.parseString(response).isJsonObject()
                         && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()) {
                     JsonObject dpsJsonObject = JsonParser.parseString(response).getAsJsonObject().get("dps")
