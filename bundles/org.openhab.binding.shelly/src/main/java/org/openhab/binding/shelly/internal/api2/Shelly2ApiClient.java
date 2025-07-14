@@ -717,6 +717,28 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         throw new IllegalArgumentException("Update for invalid roller index");
     }
 
+    protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
+        if (!profile.isDimmer) {
+            return;
+        }
+
+        fillDimmerSettings(0, profile.settings.dimmers, dc.light0);
+        fillDimmerSettings(1, profile.settings.dimmers, dc.light1);
+    }
+
+    protected void fillDimmerSettings(int id, @Nullable ArrayList<ShellySettingsDimmer> dimmers,
+            Shelly2GetConfigLight ls) {
+        if (dimmers != null) {
+            ShellySettingsDimmer ds = dimmers.get(id);
+            if (ds != null) {
+                ds.name = ls.name;
+                ds.autoOn = ls.autoOnDelay;
+                ds.autoOff = ls.autoOffDelay;
+                dimmers.set(id, ds);
+            }
+        }
+    }
+
     protected void fillRgbwSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
         if (!profile.isRGBW2 || dc.rgbw0 == null) {
             return;
@@ -729,28 +751,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             ls.autoOff = dc.rgbw0.autoOffDelay;
             ls.name = dc.rgbw0.name;
             lights.set(0, ls);
-        }
-    }
-
-    protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!profile.isDimmer || dc.light0 == null) {
-            return;
-        }
-
-        fillDimmerSettings(profile.settings.dimmers, dc.light0);
-        fillDimmerSettings(profile.settings.dimmers, dc.light1);
-    }
-
-    protected void fillDimmerSettings(@Nullable List<ShellySettingsDimmer> dimmers,
-            @Nullable Shelly2GetConfigLight lc) {
-        if (dimmers != null && lc != null) {
-            ShellySettingsDimmer ds = dimmers.get(lc.id);
-            if (ds != null) {
-                ds.autoOn = lc.autoOnDelay;
-                ds.autoOff = lc.autoOffDelay;
-                ds.name = lc.name;
-                dimmers.set(lc.id, ds);
-            }
         }
     }
 
