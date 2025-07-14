@@ -412,8 +412,8 @@ public class ShellyDeviceProfile {
 
     public static boolean isGeneration2(ThingTypeUID thingTypeUID) {
         String thingTypeID = thingTypeUID.getId();
-        return thingTypeID.startsWith(SERVICE_NAME_SHELLYPLUS_PREFIX)
-                || thingTypeID.startsWith(SERVICE_NAME_SHELLYPRO_PREFIX) || thingTypeID.contains("mini")
+        return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
+                || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || thingTypeID.contains("mini")
                 || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSHTG3.equals(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);

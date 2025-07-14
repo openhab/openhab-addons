@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,8 @@ public class Climate extends AbstractComponent<Climate.Configuration> {
 
     private static final Map<String, String> SWING_MODE_LABELS = Map.of(SWING_MODE_ON,
             "@text/state.climate.swing-mode.on", SWING_MODE_OFF, "@text/state.climate.swing-mode.off");
+
+    private static final String PRESET_MODE_NONE = "none";
 
     public static class Configuration extends EntityConfiguration {
         private final boolean retain, optimistic;
@@ -431,8 +434,12 @@ public class Climate extends AbstractComponent<Climate.Configuration> {
                 config.getModeCommandTemplate(), config.getModeCommandTopic(), config.getModeStateTemplate(),
                 config.getModeStateTopic());
 
+        List<String> presetModes = new ArrayList<>(config.getPresetModes());
+        if (!presetModes.isEmpty()) {
+            presetModes.add(0, PRESET_MODE_NONE);
+        }
         buildOptionalChannel(PRESET_MODE_CH_ID, ComponentChannelType.STRING,
-                new TextValue(config.getPresetModes().toArray(new String[0])), "Preset", updateListener,
+                new TextValue(presetModes.toArray(new String[0])), "Preset", updateListener,
                 config.getPresetModeCommandTemplate(), config.getPresetModeCommandTopic(),
                 config.getPresetModeValueTemplate(), config.getPresetModeStateTopic());
 
