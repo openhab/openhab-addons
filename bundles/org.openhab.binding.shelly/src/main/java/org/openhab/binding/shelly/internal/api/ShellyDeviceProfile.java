@@ -217,7 +217,7 @@ public class ShellyDeviceProfile {
         boolean isGas = THING_TYPE_SHELLYGAS.equals(thingTypeUID);
         boolean isUNI = THING_TYPE_SHELLYUNI.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSUNI.equals(thingTypeUID);
         isHT = THING_TYPE_SHELLYHT.equals(thingTypeUID) || THING_TYPE_SHELLYPLUSHT.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSHTG3.equals(thingTypeUID) || THING_TYPE_SHELLYBLUHT.equals(thingTypeUID);
+                || THING_TYPE_SHELLYBLUHT.equals(thingTypeUID);
         isDW = THING_TYPE_SHELLYDOORWIN.equals(thingTypeUID) || THING_TYPE_SHELLYDOORWIN2.equals(thingTypeUID)
                 || THING_TYPE_SHELLYBLUDW.equals(thingTypeUID);
         isMotion = THING_TYPE_SHELLYMOTION.equals(thingTypeUID) || THING_TYPE_SHELLYBLUMOTION.equals(thingTypeUID);
@@ -228,8 +228,7 @@ public class ShellyDeviceProfile {
                 || THING_TYPE_SHELLYBLUBUTTON.equals(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID);
-        is3EM = THING_TYPE_SHELLY3EM.equals(thingTypeUID) || THING_TYPE_SHELLYPRO3EM.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSEM.equals(thingTypeUID) || THING_TYPE_SHELLYPLUS3EM63.equals(thingTypeUID);
+        is3EM = THING_TYPE_CATEGORY_3EM.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
@@ -414,8 +413,7 @@ public class ShellyDeviceProfile {
         String thingTypeID = thingTypeUID.getId();
         return thingTypeID.startsWith(SERVICE_NAME_SHELLYPLUS_PREFIX)
                 || thingTypeID.startsWith(SERVICE_NAME_SHELLYPRO_PREFIX) || thingTypeID.contains("mini")
-                || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSHTG3.equals(thingTypeUID) || isBluSeries(thingTypeUID)
+                || THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYBLUGW.equals(thingTypeUID);
     }
 
