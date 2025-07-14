@@ -191,6 +191,7 @@ public class AutomowerBindingConstants {
             "zoneDirtyType");
 
     public static final Map<Integer, String> ERROR = new HashMap<>() {
+        private static final long serialVersionUID = 1L;
         {
             put(0, "No message");
             put(1, "Outside working area");

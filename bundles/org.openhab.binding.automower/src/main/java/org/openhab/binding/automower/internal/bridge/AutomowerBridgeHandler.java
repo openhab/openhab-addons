@@ -15,6 +15,7 @@ package org.openhab.binding.automower.internal.bridge;
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_BRIDGE;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,15 +70,24 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final WebSocketClient webSocketClient;
     private boolean closing;
-    private final Map<String, AutomowerHandler> automowerHandlers;
+    private Map<String, AutomowerHandler> automowerHandlers = new HashMap<>();;
 
     public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
-            WebSocketClient webSocketClient, Map<String, AutomowerHandler> automowerHandlers) {
+            WebSocketClient webSocketClient) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         this.webSocketClient = webSocketClient;
-        this.automowerHandlers = automowerHandlers;
+    }
+
+    public void registerAutomowerHandler(String mowerId, AutomowerHandler handler) {
+        automowerHandlers.put(mowerId, handler);
+        logger.trace("Registered AutomowerHandler for mower with ID: {}", mowerId);
+    }
+
+    public void unregisterAutomowerHandler(String mowerId) {
+        automowerHandlers.remove(mowerId);
+        logger.trace("Unregistered AutomowerHandler for mower with ID: {}", mowerId);
     }
 
     public WebSocketClient getWebSocketClient() {
@@ -149,6 +159,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             bridge = null;
         }
 
+        WebSocketSession webSocketSession = this.webSocketSession;
         if (webSocketSession != null) {
             try {
                 webSocketSession.close();
@@ -244,8 +255,9 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     public void connectWebSocket(AutomowerWebSocketAdapter webSocketAdapter) {
         try {
-            if (this.bridge != null) {
-                String accessToken = this.bridge.authenticate().getAccessToken();
+            AutomowerBridge bridge = this.bridge;
+            if (bridge != null) {
+                String accessToken = bridge.authenticate().getAccessToken();
                 if (accessToken == null) {
                     logger.error("No OAuth2 access token available for WebSocket connection");
                     return;

@@ -13,9 +13,7 @@
 package org.openhab.binding.automower.internal;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,8 +41,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AutomowerHandlerFactory} is responsible for creating things and thing
@@ -64,8 +60,6 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable ServiceRegistration<?> automowerDiscoveryServiceRegistration;
     private final TimeZoneProvider timeZoneProvider;
     private final WebSocketClient webSocketClient;
-    private final Logger logger = LoggerFactory.getLogger(AutomowerHandlerFactory.class);
-    private Map<String, AutomowerHandler> automowerHandlers = new HashMap<>();
 
     @Activate
     public AutomowerHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
@@ -85,17 +79,13 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (AutomowerBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             AutomowerBridgeHandler handler = new AutomowerBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
-                    webSocketClient, automowerHandlers);
+                    webSocketClient);
             registerAutomowerDiscoveryService(handler);
             return handler;
         }
 
         if (AutomowerHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            AutomowerHandler handler = new AutomowerHandler(thing, timeZoneProvider);
-            String key = handler.getThing().getUID().getId();
-            automowerHandlers.put(key, handler);
-            logger.trace("Adding handler {} to map of handlers", key);
-            return handler;
+            return new AutomowerHandler(thing, timeZoneProvider);
         }
 
         return null;
@@ -104,13 +94,10 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof AutomowerBridgeHandler) {
+            ServiceRegistration<?> automowerDiscoveryServiceRegistration = this.automowerDiscoveryServiceRegistration;
             if (automowerDiscoveryServiceRegistration != null) {
                 automowerDiscoveryServiceRegistration.unregister();
             }
-        } else if (thingHandler instanceof AutomowerHandler) {
-            String key = thingHandler.getThing().getUID().getId();
-            logger.trace("Removing handler {} to map of handlers", key);
-            automowerHandlers.remove(key);
         }
     }
 

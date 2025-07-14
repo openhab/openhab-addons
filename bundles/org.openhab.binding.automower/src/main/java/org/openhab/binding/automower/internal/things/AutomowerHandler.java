@@ -122,7 +122,7 @@ public class AutomowerHandler extends BaseThingHandler {
         } else {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
-            if (groupId != null && channelId != null) {
+            if (groupId != null) {
                 if (GROUP_CALENDARTASK.startsWith(groupId)) {
                     String[] channelIDSplit = channelId.split("-", 2);
                     int index = Integer.parseInt(channelIDSplit[0]) - 1;
@@ -246,6 +246,12 @@ public class AutomowerHandler extends BaseThingHandler {
                         "@text/conf-error-no-mower-id");
             } else {
                 automowerId.set(configMowerId);
+                // Adding handler to map of handlers
+                AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+                if (automowerBridgeHandler != null) {
+                    automowerBridgeHandler.registerAutomowerHandler(configMowerId, this);
+                }
+
                 // initial poll to get the current state of the mower
                 poll();
                 // update messages once via polling of REST API and later event based via WebSocket only
@@ -299,6 +305,11 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
+        if (automowerBridgeHandler != null) {
+            automowerBridgeHandler.unregisterAutomowerHandler(this.getThing().getUID().getId());
+        }
+
         if (!automowerId.get().equals(NO_ID)) {
             automowerId.set(NO_ID);
         }

@@ -108,7 +108,7 @@ public class AutomowerWebSocketAdapter {
     @OnWebSocketMessage
     public void onMessage(String message) {
         try {
-            if (message != null && !message.isBlank()) {
+            if (!message.isBlank()) {
                 JsonObject event = JsonParser.parseString(message).getAsJsonObject();
                 if (event.has("id")) {
                     String id = event.get("id").getAsString();
