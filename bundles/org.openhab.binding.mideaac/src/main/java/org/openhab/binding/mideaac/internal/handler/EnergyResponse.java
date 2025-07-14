@@ -38,13 +38,30 @@ public class EnergyResponse {
         this.rawData = rawData;
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Total Kilowatt Hours: {}", getKilowattHours());
-            logger.debug("Current Amperes: {}", getAmperes());
-            logger.debug("Power Watts: {}", getWatts());
-            logger.debug("Total Kilowatt Hours BCD: {}", getKilowattHoursBCD());
-            logger.debug("Current Amperes BCD: {}", getAmperesBCD());
-            logger.debug("Power Watts BCD: {}", getWattsBCD());
+            if (isHumidityResponse()) {
+                logger.debug("Humidity from Poll: {}", getHumidity());
+            } else {
+                logger.debug("Total Kilowatt Hours: {}", getKilowattHours());
+                logger.debug("Current Amperes: {}", getAmperes());
+                logger.debug("Power Watts: {}", getWatts());
+                logger.debug("Total Kilowatt Hours BCD: {}", getKilowattHoursBCD());
+                logger.debug("Current Amperes BCD: {}", getAmperesBCD());
+                logger.debug("Power Watts BCD: {}", getWattsBCD());
+            }
         }
+    }
+
+    private boolean isHumidityResponse() {
+        return rawData.length > 3 && rawData[3] == (byte) 0x45;
+    }
+
+    /**
+     * Humidity reading if Byte[3] == (byte) 0x45
+     * 
+     * @return humidity
+     */
+    public int getHumidity() {
+        return rawData[4];
     }
 
     /**

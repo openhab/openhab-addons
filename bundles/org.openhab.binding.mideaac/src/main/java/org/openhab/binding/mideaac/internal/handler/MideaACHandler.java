@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jacek Dobrowolski - Initial contribution
  * @author Justan Oldman - Last Response added
- * @author Bob Eckhoff - Longer Polls and OH developer guidelines
+ * @author Bob Eckhoff - Longer Polls, OH developer guidelines added other messages
  * @author Leo Siepel - Refactored class, improved separation of concerns
  */
 @NonNullByDefault
@@ -104,8 +104,18 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
 
         @Override
+        public void updateHumidityFromEnergy(EnergyResponse energyUpdate) {
+            MideaACHandler.this.updateHumidityFromEnergy(energyUpdate);
+        }
+
+        @Override
         public void updateChannels(HumidityResponse humidityResponse) {
             MideaACHandler.this.updateChannels(humidityResponse);
+        }
+
+        @Override
+        public void updateChannels(TemperatureResponse temperatureResponse) {
+            MideaACHandler.this.updateChannels(temperatureResponse);
         }
     };
 
@@ -138,10 +148,14 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (command instanceof RefreshType) {
             try {
                 connectionManager.getStatus(callbackLambda);
-                // Read only Energy channels not updated with routine poll
+                // Read only Energy and Humidity channels not updated with routine poll
                 CommandSet energyUpdate = new CommandSet();
                 energyUpdate.energyPoll();
                 connectionManager.sendCommand(energyUpdate, this);
+                CommandSet humidityUpdate = new CommandSet();
+                humidityUpdate.humidityPoll();
+                connectionManager.sendCommand(humidityUpdate, this);
+
             } catch (MideaAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (MideaConnectionException | MideaException e) {
@@ -181,8 +195,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 connectionManager.sendCommand(CommandHelper.handleOnTimer(command, lastresponse), callbackLambda);
             } else if (channelUID.getId().equals(CHANNEL_OFF_TIMER)) {
                 connectionManager.sendCommand(CommandHelper.handleOffTimer(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_TARGET_HUMIDITY)) {
-                connectionManager.sendCommand(CommandHelper.handleTargetHumidity(command, lastresponse),
+            } else if (channelUID.getId().equals(CHANNEL_MAXIMUM_HUMIDITY)) {
+                connectionManager.sendCommand(CommandHelper.handleMaximumHumidity(command, lastresponse),
                         callbackLambda);
             }
         } catch (MideaConnectionException | MideaAuthenticationException e) {
@@ -375,7 +389,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateChannel(CHANNEL_SLEEP_FUNCTION, OnOffType.from(response.getSleepFunction()));
         updateChannel(CHANNEL_TURBO_MODE, OnOffType.from(response.getTurboMode()));
         updateChannel(CHANNEL_SCREEN_DISPLAY, OnOffType.from(response.getDisplayOn()));
-        updateChannel(CHANNEL_TARGET_HUMIDITY, new DecimalType(response.getTargetHumidity()));
+        updateChannel(CHANNEL_FILTER_STATUS, OnOffType.from(response.getFilterStatus()));
+        updateChannel(CHANNEL_MAXIMUM_HUMIDITY, new DecimalType(response.getMaximumHumidity()));
 
         QuantityType<Temperature> targetTemperature = new QuantityType<Temperature>(response.getTargetTemperature(),
                 SIUnits.CELSIUS);
@@ -463,10 +478,37 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
     }
 
-    // Handle Humidity response from room
+    // Handle Humidity from energy poll command (0xC1)
+    @Override
+    public void updateHumidityFromEnergy(EnergyResponse energyUpdate) {
+        updateChannel(CHANNEL_HUMIDITY, new DecimalType(energyUpdate.getHumidity()));
+    }
+
+    // Handle unsolicted Humidity response in room (0xA0)
     @Override
     public void updateChannels(HumidityResponse humidityResponse) {
         updateChannel(CHANNEL_HUMIDITY, new DecimalType(humidityResponse.getHumidity()));
+    }
+
+    // Handle unsolicted Temperature response in room (0xA1) Humidity only for now
+    @Override
+    public void updateChannels(TemperatureResponse temperatureResponse) {
+        updateChannel(CHANNEL_HUMIDITY, new DecimalType(temperatureResponse.getHumidity()));
+
+        // QuantityType<Temperature> outdoorTemperature = new
+        // QuantityType<Temperature>(temperatureResponse.getOutdoorTemperature(),
+        // SIUnits.CELSIUS);
+        // QuantityType<Temperature> indoorTemperature = new
+        // QuantityType<Temperature>(temperatureResponse.getIndoorTemperature(),
+        // SIUnits.CELSIUS);
+
+        // if (imperialUnits) {
+        // indoorTemperature = Objects.requireNonNull(indoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
+        // outdoorTemperature = Objects.requireNonNull(outdoorTemperature.toUnit(ImperialUnits.FAHRENHEIT));
+        // }
+
+        // updateChannel(CHANNEL_INDOOR_TEMPERATURE, indoorTemperature);
+        // updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
     }
 
     @Override

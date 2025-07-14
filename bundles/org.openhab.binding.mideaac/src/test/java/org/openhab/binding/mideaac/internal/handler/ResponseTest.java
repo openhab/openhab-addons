@@ -178,10 +178,18 @@ public class ResponseTest {
     }
 
     /**
+     * Filter Status Test
+     */
+    @Test
+    public void testFilterStatus() {
+        assertEquals(false, response.getFilterStatus());
+    }
+
+    /**
      * Humidity Test
      */
     @Test
     public void testGetHumidity() {
-        assertEquals(50, response.getTargetHumidity());
+        assertEquals(50, response.getMaximumHumidity());
     }
 }
