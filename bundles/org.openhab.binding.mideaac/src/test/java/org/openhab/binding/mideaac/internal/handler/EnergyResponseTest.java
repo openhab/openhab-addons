@@ -30,8 +30,18 @@ import org.junit.jupiter.api.Test;
 public class EnergyResponseTest {
     byte[] dataEnergy = HexFormat.of().parseHex("c1210144000005e00000000000000006000aeb000000487a5e");
     byte[] dataEnergy2 = HexFormat.of().parseHex("C1210144000246540000000000000000000000001953");
+    byte[] dataEnergy3 = HexFormat.of().parseHex("C1210145350000000000000000000000000000001953");
     EnergyResponse responseEnergy = new EnergyResponse(dataEnergy);
     EnergyResponse responseEnergy2 = new EnergyResponse(dataEnergy2);
+    EnergyResponse responseEnergy3 = new EnergyResponse(dataEnergy3);
+
+    /**
+     * Test Humidity response
+     */
+    @Test
+    public void testGetHumidity() {
+        assertEquals(53, responseEnergy3.getHumidity());
+    }
 
     /**
      * Test Energy Kilowatt Hours 3 tests

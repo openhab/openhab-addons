@@ -455,14 +455,14 @@ public class CommandHelper {
      * 
      * @param command Target Humidity
      */
-    public static CommandSet handleTargetHumidity(Command command, Response lastResponse) {
+    public static CommandSet handleMaximumHumidity(Command command, Response lastResponse) {
         CommandSet commandSet = CommandSet.fromResponse(lastResponse);
 
         if (command instanceof DecimalType decimalCommand) {
             int humidity = decimalCommand.intValue();
-            commandSet.setTargetHumidity(limitHumidityToRange(humidity));
+            commandSet.setMaximumHumidity(limitHumidityToRange(humidity));
         } else {
-            logger.debug("Unknown target humidity command: {}", command);
+            logger.debug("Unknown maximum humidity command: {}", command);
         }
 
         return commandSet;
