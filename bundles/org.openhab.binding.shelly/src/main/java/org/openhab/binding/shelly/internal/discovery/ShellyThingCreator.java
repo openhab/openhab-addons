@@ -256,7 +256,7 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID, "shellypro4pm");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
     public static final ThingTypeUID THING_TYPE_SHELLYPROEM50 = new ThingTypeUID(BINDING_ID, "shellyproem50");
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em3ct63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
 
     // Shelly Blu series
@@ -475,10 +475,11 @@ public class ShellyThingCreator {
             Map.entry("shellypro2pm-relay", THING_TYPE_SHELLYPRO2PM_RELAY),
             Map.entry("shellypro2pm-roller", THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry("shellypro2", THING_TYPE_SHELLYPRO2), //
-            Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
-            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
             Map.entry("shellypro3", THING_TYPE_SHELLYPRO3), //
-            Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM),
+            Map.entry("shellypro4pm", THING_TYPE_SHELLYPRO4PM), Map.entry("shellyproem50", THING_TYPE_SHELLYPROEM50), //
+            Map.entry("shellypro3em", THING_TYPE_SHELLYPRO3EM), //
+            Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400), //
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON), //
