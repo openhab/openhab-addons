@@ -28,7 +28,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
+import org.jupnp.controlpoint.ControlPoint;
+import org.jupnp.model.message.header.UDNHeader;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -77,6 +81,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
 
     protected UpnpIOService upnpIOService;
+    protected UpnpService upnpService;
 
     protected volatile @Nullable RemoteDevice device;
 
@@ -96,6 +101,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     protected final Object invokeActionLock = new Object();
 
+    protected @Nullable ScheduledFuture<?> keepAliveJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected final Object jobLock = new Object();
 
@@ -117,12 +123,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     protected UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
-    public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
+    public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
         super(thing);
 
         this.upnpIOService = upnpIOService;
+        this.upnpService = upnpService;
 
         this.bindingConfig = configuration;
 
@@ -147,6 +155,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public void dispose() {
         cancelPollingJob();
+        cancelKeepAliveJob();
         removeSubscriptions();
 
         UpnpControlUtil.playlistsUnsubscribe(this);
@@ -182,6 +191,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             job.cancel(true);
         }
         pollingJob = null;
+    }
+
+    private void cancelKeepAliveJob() {
+        ScheduledFuture<?> job = keepAliveJob;
+
+        if (job != null) {
+            job.cancel(true);
+        }
+        keepAliveJob = null;
     }
 
     /**
@@ -235,6 +253,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
+        cancelKeepAliveJob();
+        int maxAgeSeconds = device.getIdentity().getMaxAgeSeconds();
+        if (maxAgeSeconds > 0) {
+            keepAliveJob = upnpScheduler.scheduleWithFixedDelay(this::sendDeviceSearchRequest, maxAgeSeconds,
+                    maxAgeSeconds, TimeUnit.SECONDS);
+        }
     }
 
     protected void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
@@ -651,5 +675,19 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected @Nullable RemoteDevice getDevice() {
         return device;
+    }
+
+    /**
+     * Send a device search request to the UPnP remote device.
+     * 
+     * Some devices, such as LinkPlay based systems (WiiM, Arylic, etc.) loose their registrations over time. Sending a
+     * periodic search request will help keep the device registered.
+     */
+    protected void sendDeviceSearchRequest() {
+        ControlPoint controlPoint = upnpService.getControlPoint();
+        if (controlPoint != null) {
+            controlPoint.search(new UDNHeader(new UDN(getUDN())));
+            logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
+        }
     }
 }
