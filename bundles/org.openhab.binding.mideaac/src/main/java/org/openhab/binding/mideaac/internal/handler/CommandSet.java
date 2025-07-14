@@ -70,7 +70,7 @@ public class CommandSet extends CommandBase {
         commandSet.setSleepMode(response.getSleepFunction());
         commandSet.setOnTimer(response.getOnTimerData());
         commandSet.setOffTimer(response.getOffTimerData());
-        commandSet.setTargetHumidity(response.getTargetHumidity());
+        commandSet.setMaximumHumidity(response.getMaximumHumidity());
         return commandSet;
     }
 
@@ -482,11 +482,45 @@ public class CommandSet extends CommandBase {
     }
 
     /**
-     * Sets the Target Humidity for Dry Mode
+     * Humidity detail polling
+     * Response will be C1, not C0
      * 
-     * @param targetHumidity
      */
-    public void setTargetHumidity(int humidity) {
+    public void humidityPoll() {
+        modifyBytesForHumidityPoll();
+        removeExtraHumidityPollBytes();
+        logger.trace("Set Humidity Poll Bytes before encrypt {}", Utils.bytesToHex(data));
+    }
+
+    private void modifyBytesForHumidityPoll() {
+        data[0x01] = (byte) 0x20;
+        data[0x09] = (byte) 0x03;
+        data[0x0a] = (byte) 0x41;
+        data[0x0b] = (byte) 0x21;
+        data[0x0c] = (byte) 0x01;
+        data[0x0d] = (byte) 0x45;
+        data[0x0e] = (byte) 0x00;
+        data[0x0f] = (byte) 0x00;
+        data[0x10] = (byte) 0x00;
+        data[0x11] = (byte) 0x00;
+        data[0x12] = (byte) 0x00;
+        data[0x13] = (byte) 0x00;
+        data[0x14] = (byte) 0x00;
+    }
+
+    private void removeExtraHumidityPollBytes() {
+        byte[] newData = new byte[data.length - 3];
+        System.arraycopy(data, 0, newData, 0, newData.length);
+        data = newData;
+    }
+
+    /**
+     * Sets the Maximum Humidity for Dry Mode
+     * 
+     * @param humidity
+     */
+    public void setMaximumHumidity(int humidity) {
+        data[0x1D] &= ~(byte) 0xff;
         data[0x1D] |= humidity;
     }
 }

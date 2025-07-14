@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mideaac")
 public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
-    private static int discoveryTimeoutSeconds = 5;
+    private static int discoveryTimeoutSeconds = 10;
     private final int receiveJobTimeout = 20000;
     private final int udpPacketTimeout = receiveJobTimeout - 50;
     private final String mideaacNamePrefix = "MideaAC";

@@ -66,7 +66,6 @@ public class Response {
             logger.debug("Indoor Temperature: {}", getIndoorTemperature());
             logger.debug("Outdoor Temperature: {}", getOutdoorTemperature());
             logger.debug("LED Display: {}", getDisplayOn());
-            logger.debug("Target Humidity: {}", getTargetHumidity());
         }
 
         if (logger.isTraceEnabled()) {
@@ -74,6 +73,8 @@ public class Response {
             logger.trace("Appliance Error: {}", getApplianceError());
             logger.trace("Auxiliary Heat: {}", getAuxHeat());
             logger.trace("Fahrenheit: {}", getFahrenheit());
+            logger.trace("Maximum Humidity in Dry mode: {}", getMaximumHumidity());
+            logger.trace("Filter Notification: {}", getFilterStatus());
         }
     }
 
@@ -287,6 +288,16 @@ public class Response {
     }
 
     /**
+     * Returns Filter Status
+     * Documents show two possibles, hedged with both
+     * 
+     * @return Filter needs changing = true
+     */
+    public boolean getFilterStatus() {
+        return ((data[13] & (byte) 0x20) != 0) || ((data[13] & (byte) 0x40) != 0);
+    }
+
+    /**
      * Returns status of Device LEDs
      * This is not affected when the IR controller turns
      * them off
@@ -298,12 +309,12 @@ public class Response {
     }
 
     /**
-     * This appears to be the target humidity for Dry mode
+     * This returns the maximum humidity for Dry mode, if supported
+     * Possibly an add-on sensor is required in some cases
      * 
-     * 
-     * @return Target Humidity
+     * @return Maximum Humidity in Dry Mode
      */
-    public int getTargetHumidity() {
+    public int getMaximumHumidity() {
         return (data[19] & (byte) 0x7f);
     }
 }
