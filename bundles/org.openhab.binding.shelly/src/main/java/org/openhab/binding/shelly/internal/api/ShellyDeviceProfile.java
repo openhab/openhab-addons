@@ -228,8 +228,7 @@ public class ShellyDeviceProfile {
                 || THING_TYPE_SHELLYBLUBUTTON.equals(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = THING_TYPE_SHELLYPLUSWALLDISPLAY.equals(thingTypeUID);
-        is3EM = THING_TYPE_SHELLY3EM.equals(thingTypeUID) || THING_TYPE_SHELLYPRO3EM.equals(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSEM.equals(thingTypeUID) || THING_TYPE_SHELLYPLUS3EM63.equals(thingTypeUID);
+        is3EM = THING_TYPE_CATEGORY_3EM.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
