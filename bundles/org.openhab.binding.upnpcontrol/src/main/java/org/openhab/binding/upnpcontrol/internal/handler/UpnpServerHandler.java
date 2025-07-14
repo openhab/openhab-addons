@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -100,12 +101,13 @@ public class UpnpServerHandler extends UpnpHandler {
 
     protected @NonNullByDefault({}) UpnpControlServerConfiguration config;
 
-    public UpnpServerHandler(Thing thing, UpnpIOService upnpIOService,
+    public UpnpServerHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
             UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+        super(thing, upnpIOService, upnpService, configuration, upnpStateDescriptionProvider,
+                upnpCommandDescriptionProvider);
         this.upnpRenderers = upnpRenderers;
 
         // put root as highest level in parent map
