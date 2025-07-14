@@ -14,6 +14,11 @@
 		<item-type>Switch</item-type>
 		<label>Battery boost</label>
 		<description>Controls and indicates whether battery boost is active or not</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Activated</option>
@@ -33,6 +38,10 @@
 		<label>Charging Power</label>
 		<description>Current power of charging</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointChargeTotalImport">
@@ -40,6 +49,10 @@
 		<label>Charge total import</label>
 		<description>Total imported energy</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="loadpointChargeRemainingDuration">
@@ -61,6 +74,10 @@
 		<label>Charged Energy</label>
 		<description>Energy charged since plugged-in</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointChargerFeatureHeating">
@@ -68,6 +85,10 @@
 		<label>Charger Feature: Heating</label>
 		<description>'True' for heating device: State of Charge in Degree instead of Percent</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">True</option>
@@ -80,6 +101,10 @@
 		<label>Charger Feature: Integrated Device</label>
 		<description>'True' for integrated device: Operate without a "vehicle" (e.g. heat pump, eBike)</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">True</option>
@@ -92,6 +117,10 @@
 		<label>Charger Feature: Phase switching</label>
 		<description>'True' for charges that can switch between 1 and 3 phases</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">True</option>
@@ -104,6 +133,10 @@
 		<label>Charger Feature: 1 phase charging</label>
 		<description>'True' for chargers with only one phase</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">True</option>
@@ -120,6 +153,10 @@
 		<label>Charging State</label>
 		<description>Loadpoint is currently charging</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state pattern="%f %unit%" readOnly="true">
 			<options>
 				<option value="ON">Charging</option>
@@ -132,6 +169,10 @@
 		<label>Vehicle Connected</label>
 		<description>Whether vehicle is connected to loadpoint</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Connected</option>
@@ -220,6 +261,10 @@
 		<label>Charging Limit Energy</label>
 		<description>Amount of energy to charge the vehicle with</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state min="0" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -228,6 +273,10 @@
 		<label>Charging Limit SoC</label>
 		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -236,6 +285,10 @@
 		<label>Charging max Current</label>
 		<description>Maximum amperage per connected phase with which the car should be charged</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Current</tag>
+			<tag>Setpoint</tag>
+		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -244,6 +297,10 @@
 		<label>Charging min Current</label>
 		<description>Minimum amperage per connected phase with which the car should be charged</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -252,6 +309,10 @@
 		<label>Charging Mode</label>
 		<description>Charging mode: "off", "now", "minpv", "pv"</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="off">Off</option>
@@ -267,6 +328,10 @@
 		<label>Charging Current</label>
 		<description>Current amperage per connected phase while charging</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<!--
@@ -276,23 +341,36 @@
 	<channel-type id="loadpointPhaseRemaining">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Phase remaining</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointPhasesActive">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charging Active Phases</label>
 		<description>Current number of active phases while charging</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointPhasesConfigured">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Phases Configured</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointPlacActive">
 		<item-type>Switch</item-type>
 		<label>Plan activated</label>
 		<description>Indicates whether a plan has been activated or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Activated</option>
@@ -305,13 +383,17 @@
 		<item-type>String</item-type>
 		<label>Loadpoint Title</label>
 		<description>Title of loadpoint</description>
-		<category>PowerOutlet</category>
+		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointVehicleClimaterActive">
 		<item-type>Switch</item-type>
 		<label>Vehicle climater active</label>
 		<description>Indicates whether the climater is active or not</description>
+		<tags>
+			<tag>Airconditioning</tag>
+			<tag>Status</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Active</option>
@@ -323,7 +405,11 @@
 		<item-type>Switch</item-type>
 		<label>Vehicle detection active</label>
 		<description>Indicates whether the vehicle detection is active or not</description>
-		<state>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="readOnly">
 			<options>
 				<option value="ON">Active</option>
 				<option value="OFF">Inactive</option>
@@ -334,6 +420,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Current vehicle SoC limit</label>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -350,6 +440,9 @@
 		<label>Vehicle Odometer</label>
 		<description>Total distance travelled by EV</description>
 		<category>MoveControl</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointVehicleRange">
@@ -357,6 +450,10 @@
 		<label>Vehicle Range</label>
 		<description>Battery range for EV</description>
 		<category></category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointVehicleSoc">
@@ -364,6 +461,10 @@
 		<label>Vehicle SoC</label>
 		<description>Current State of Charge of EV</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointVehicleTitle">
@@ -377,6 +478,10 @@
 		<item-type>Switch</item-type>
 		<label>Vehicle welcome active</label>
 		<description>Indicates whether the charge performs a initial load or not when the vehicle gets connected</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Active</option>
@@ -391,6 +496,10 @@
 		<label>Temperature</label>
 		<description>Current Temperature of the heating device</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="limitTemperature">
@@ -398,6 +507,10 @@
 		<label>Charging Limit Temperature</label>
 		<description>Until which Temperature should the heating device be charged</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -406,6 +519,10 @@
 		<label>Effective Charging Limit Temperature</label>
 		<description>Effective Temperature until which the heating device will be charged</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -416,6 +533,10 @@
 		<label>Charging Enabled</label>
 		<description>Charging enabled (mode not "off")</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Enabled</option>
@@ -428,6 +549,9 @@
 		<label>Charging Enabled Phases</label>
 		<description>The maximum number of phases which can be used</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -436,6 +560,10 @@
 		<label>Vehicle Data Access</label>
 		<description>Whether evcc is able to get data from vehicle</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Data access</option>

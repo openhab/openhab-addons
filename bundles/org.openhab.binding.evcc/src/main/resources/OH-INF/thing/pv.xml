@@ -17,13 +17,17 @@
 		<label>PV Power</label>
 		<description>Current power of this photovoltaic system in Watt</description>
 		<category>Power</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f W" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pvTitle">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Name as shown in the UI</description>
-		<category>Setting</category>
+		<category>Text</category>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

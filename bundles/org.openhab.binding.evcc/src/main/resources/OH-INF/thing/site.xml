@@ -30,6 +30,10 @@
 		<label>Battery Discharge Control</label>
 		<description>Enable or disable battery discharge control</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="ON">Enabled</option>
@@ -42,6 +46,10 @@
 		<label>Battery Energy</label>
 		<description>Energy of (home) battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Energy</tag>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryGridChargeActive">
@@ -49,6 +57,10 @@
 		<label>Battery charging from Grid</label>
 		<description>Indicates whether the battery gets charged from the Grid</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Enabled</option>
@@ -60,6 +72,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charging Limit</label>
 		<description>Below this limit the charging from grid will start (currency or co2)</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryMode">
@@ -74,6 +89,10 @@
 		<label>Battery Power</label>
 		<description>Current power from battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Power</tag>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batterySoc">
@@ -81,6 +100,10 @@
 		<label>Battery SoC</label>
 		<description>Current State of Charge of battery</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="bufferSoc">
@@ -121,6 +144,10 @@
 		<label>Grid Power</label>
 		<description>Current power from grid (negative means feed-in)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="homePower">
@@ -128,6 +155,10 @@
 		<label>Home Power</label>
 		<description>Current power taken by home</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="prioritySoc">
@@ -157,6 +188,10 @@
 		<label>PV Power</label>
 		<description>Current power from photovoltaik</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="residualPower">
@@ -165,12 +200,20 @@
 		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
 		</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="smartCostAvailable">
 		<item-type>Switch</item-type>
 		<label>Smart cost available</label>
 		<description>Indicates whether smart costs are available or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Available</option>
@@ -188,6 +231,10 @@
 		<item-type>Switch</item-type>
 		<label>Smart feed in available</label>
 		<description>Indicates whether there is priority for smart feed in or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Available</option>
@@ -199,6 +246,10 @@
 		<item-type>Switch</item-type>
 		<label>Start up</label>
 		<description>Indicates wether start up is enabled or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="tariffCo2">

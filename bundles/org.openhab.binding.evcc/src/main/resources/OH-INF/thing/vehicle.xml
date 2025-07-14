@@ -15,6 +15,7 @@
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
 		<description>Title of vehicle</description>
+		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleMinSoc">
@@ -22,6 +23,10 @@
 		<label>Vehicle Min SoC</label>
 		<description>Minimum state of charge (SoC) a vehicle should have</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -30,6 +35,10 @@
 		<label>Vehicle Min Current</label>
 		<description>Minimum current thats need to provided to charge the vehicle</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="6" step="1" max="32" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -38,6 +47,10 @@
 		<label>Vehicle Max Current</label>
 		<description>Maximum allowed current thats can be provided to charge the vehicle</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="6" step="1" max="32" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleLimitSoc">
@@ -45,6 +58,10 @@
 		<label>Vehicle Charging Limit SoC</label>
 		<description>Until which state of charge (SoC) should the specific vehicle be charged</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -53,6 +70,10 @@
 		<label>Vehicle Capacity</label>
 		<description>Capacity of EV battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Info</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehiclePlanPrecondition">
@@ -63,6 +84,10 @@
 	<channel-type id="vehiclePlanSoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Planned SoC</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehiclePlanTime">

@@ -23,6 +23,10 @@
 		<label>Battery controllable</label>
 		<description>Indicates if the battery is controllable or not</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Controllable</option>
@@ -35,6 +39,10 @@
 		<label>Battery Power</label>
 		<description>Current power from battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batterySoc">
@@ -42,13 +50,17 @@
 		<label>Battery SoC</label>
 		<description>Current State of Charge of battery</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryTitle">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Name shown in the UI</description>
-		<category>Setting</category>
+		<category>Settings</category>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
