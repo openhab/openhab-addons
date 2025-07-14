@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -120,11 +121,14 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PRO2PM_2 = "SPSW-102PE16EU";
     public static final String SHELLYDT_PRO2PM_3 = "SPSW-202PE16EU";
     public static final String SHELLYDT_PRO3 = "SPSW-003XE16EU";
-    public static final String SHELLYDT_PRO3EM = "SPEM-003CEBEU";
-    public static final String SHELLYDT_PROEM50 = "SPEM-002CEBEU50";
     public static final String SHELLYDT_PRO4PM = "SPSW-004PE16EU";
     public static final String SHELLYDT_PRO4PM_2 = "SPSW-104PE16EU";
     public static final String SHELLYDT_4PRO = "SHPSW04P";
+    public static final String SHELLYDT_PROEM50 = "SPEM-002CEBEU50";
+    public static final String SHELLYDT_PRO3EM = "SPEM-003CEBEU";
+    public static final String SHELLYDT_PRO3EM_2 = "SPEM-003CEBEU120";
+    public static final String SHELLYDT_PRO3EM3CT63 = "SPEM-003CEBEU63";
+    public static final String SHELLYDT_PRO3EM400 = "SPEM-003CEBEU400";
 
     // Shelly Plus Mini Series
     public static final String SHELLYDT_MINI_1 = "SNSW-001X8EU";
@@ -249,9 +253,11 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_ROLLER = new ThingTypeUID(BINDING_ID,
             "shellypro2pm-roller");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3 = new ThingTypeUID(BINDING_ID, "shellypro3");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID, "shellypro4pm");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
     public static final ThingTypeUID THING_TYPE_SHELLYPROEM50 = new ThingTypeUID(BINDING_ID, "shellyproem50");
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID, "shellypro4pm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
 
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID, "shellyblubutton");
@@ -343,11 +349,14 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
-            Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
-            Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
             Map.entry(SHELLYDT_PRO4PM, THING_TYPE_SHELLYPRO4PM), //
             Map.entry(SHELLYDT_PRO4PM_2, THING_TYPE_SHELLYPRO4PM), //
             Map.entry(SHELLYDT_4PRO, THING_TYPE_SHELLYPRO4PM), //
+            Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
+            Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
+            Map.entry(SHELLYDT_PRO3EM_2, THING_TYPE_SHELLYPRO3EM), //
+            Map.entry(SHELLYDT_PRO3EM3CT63, THING_TYPE_SHELLYPRO3EM63), //
+            Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON),
@@ -385,6 +394,10 @@ public class ShellyThingCreator {
             Map.entry(SHELLYDT_PRO2PM, THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry(SHELLYDT_PRO2PM_2, THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry(SHELLYDT_PRO2PM_3, THING_TYPE_SHELLYPRO2PM_ROLLER));
+
+    public static final Set<ThingTypeUID> THING_TYPE_CATEGORY_3EM = Set.of( //
+            THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63, THING_TYPE_SHELLYPRO3EM,
+            THING_TYPE_SHELLYPROEM50, THING_TYPE_SHELLYPRO3EM63, THING_TYPE_SHELLYPRO3EM400);
 
     private static final Map<String, ThingTypeUID> THING_TYPE_BY_SERVICE_NAME = Map.ofEntries(
             // Shelly Gen1
