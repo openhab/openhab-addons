@@ -124,7 +124,7 @@ public class AutomowerBridge {
         MowerCommand mowerCommand = new MowerCommand();
         mowerCommand.setType(command.getCommand());
 
-        if ((commandDuration != null) || (commandWorkAreaId != null)) {
+        if (commandDuration != null || commandWorkAreaId != null) {
             MowerCommandAttributes attributes = new MowerCommandAttributes();
             if (commandDuration != null) {
                 attributes.setDuration(commandDuration);

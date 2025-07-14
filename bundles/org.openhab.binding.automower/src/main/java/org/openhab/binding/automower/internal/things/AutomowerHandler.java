@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -107,7 +106,6 @@ public class AutomowerHandler extends BaseThingHandler {
     private AtomicReference<String> automowerId = new AtomicReference<>(NO_ID);
     private @Nullable ZonedDateTime lastQueryTime = null;
 
-    private @Nullable ScheduledFuture<?> automowerPollingJob;
     private @Nullable Mower mowerState;
     private @Nullable MowerMessages mowerMessages;
 
@@ -124,7 +122,7 @@ public class AutomowerHandler extends BaseThingHandler {
         } else {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
-            if ((groupId != null) && (channelId != null)) {
+            if (groupId != null && channelId != null) {
                 if (GROUP_CALENDARTASK.startsWith(groupId)) {
                     String[] channelIDSplit = channelId.split("-", 2);
                     int index = Integer.parseInt(channelIDSplit[0]) - 1;
@@ -219,10 +217,6 @@ public class AutomowerHandler extends BaseThingHandler {
         return Optional.empty();
     }
 
-    private void refreshChannels(ChannelUID channelUID) {
-        updateAutomowerState();
-    }
-
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(AutomowerActions.class);
@@ -236,7 +230,7 @@ public class AutomowerHandler extends BaseThingHandler {
             final String configMowerId = currentConfig.getMowerId();
 
             final String configMowerZoneId = currentConfig.getMowerZoneId();
-            if ((configMowerZoneId != null) && !configMowerZoneId.isBlank()) {
+            if (configMowerZoneId != null && !configMowerZoneId.isBlank()) {
                 try {
                     mowerZoneId = ZoneId.of(configMowerZoneId);
                 } catch (DateTimeException e) {
@@ -306,27 +300,18 @@ public class AutomowerHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         if (!automowerId.get().equals(NO_ID)) {
-            stopAutomowerPolling();
             automowerId.set(NO_ID);
         }
     }
 
-    private void stopAutomowerPolling() {
-        if (automowerPollingJob != null) {
-            automowerPollingJob.cancel(true);
-            automowerPollingJob = null;
-        }
-    }
-
     private boolean isValidResult(@Nullable Mower mower) {
-        return ((mower != null && mower.getAttributes() != null) && (mower.getAttributes().getMetadata() != null)
-                && (mower.getAttributes().getBattery() != null) && (mower.getAttributes().getSystem() != null)
-                && (mower.getAttributes().getCalendar() != null)
-                && (mower.getAttributes().getCalendar().getTasks() != null)
-                && (mower.getAttributes().getCapabilities() != null) && (mower.getAttributes().getMower() != null)
-                && (mower.getAttributes().getPlanner() != null)
-                && (mower.getAttributes().getPlanner().getOverride() != null)
-                && (mower.getAttributes().getSettings() != null) && (mower.getAttributes().getStatistics() != null));
+        return (mower != null && mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
+                && mower.getAttributes().getBattery() != null && mower.getAttributes().getSystem() != null
+                && mower.getAttributes().getCalendar() != null && mower.getAttributes().getCalendar().getTasks() != null
+                && mower.getAttributes().getCapabilities() != null && mower.getAttributes().getMower() != null
+                && mower.getAttributes().getPlanner() != null
+                && mower.getAttributes().getPlanner().getOverride() != null
+                && mower.getAttributes().getSettings() != null && mower.getAttributes().getStatistics() != null);
     }
 
     private boolean isConnected(@Nullable Mower mower) {
@@ -366,7 +351,7 @@ public class AutomowerHandler extends BaseThingHandler {
     public void poll() {
         AutomowerBridge automowerBridge = getAutomowerBridge();
         AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
-        if ((automowerBridgeHandler != null) && (automowerBridge != null)) {
+        if (automowerBridgeHandler != null && automowerBridge != null) {
             automowerBridgeHandler.pollAutomowers(automowerBridge);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
@@ -432,7 +417,7 @@ public class AutomowerHandler extends BaseThingHandler {
             boolean[] monday, boolean[] tuesday, boolean[] wednesday, boolean[] thursday, boolean[] friday,
             boolean[] saturday, boolean[] sunday) {
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             List<CalendarTask> calendarTaskArray = new ArrayList<>();
 
             for (int i = 0; (i < start.length) && (i < duration.length) && (i < monday.length) && (i < tuesday.length)
@@ -486,7 +471,7 @@ public class AutomowerHandler extends BaseThingHandler {
         logger.debug("Sending CalendarTask: index '{}', param '{}', command '{}'", index, param, command.toString());
 
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             List<CalendarTask> calendarTasksFiltered;
             List<CalendarTask> calendarTasksAll = mower.getAttributes().getCalendar().getTasks();
             int indexFiltered = 0;
@@ -574,7 +559,7 @@ public class AutomowerHandler extends BaseThingHandler {
      */
     public void sendAutomowerStayOutZone(int index, boolean enable) {
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             StayOutZone stayOutZone = mower.getAttributes().getStayOutZones().getZones().get(index);
             sendAutomowerStayOutZone(stayOutZone.getId(), enable);
         }
@@ -589,7 +574,7 @@ public class AutomowerHandler extends BaseThingHandler {
     public void sendAutomowerStayOutZone(String zoneId, boolean enable) {
         logger.debug("Sending StayOutZone: zoneId {}, enable {}", zoneId, enable);
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             MowerStayOutZoneAttributes attributes = new MowerStayOutZoneAttributes();
             attributes.setEnable(enable);
             mower.getAttributes().getStayOutZones().getZones().stream().filter(zone -> zone.getId().equals(zoneId))
@@ -624,7 +609,7 @@ public class AutomowerHandler extends BaseThingHandler {
      */
     public void sendAutomowerWorkAreaEnable(int index, boolean enable) {
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             WorkArea workArea = mower.getAttributes().getWorkAreas().get(index);
             sendAutomowerWorkArea(workArea.getWorkAreaId(), enable, workArea.getCuttingHeight());
         }
@@ -639,7 +624,7 @@ public class AutomowerHandler extends BaseThingHandler {
      */
     public void sendAutomowerWorkAreaCuttingHeight(int index, byte cuttingHeight) {
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             WorkArea workArea = mower.getAttributes().getWorkAreas().get(index);
             sendAutomowerWorkArea(workArea.getWorkAreaId(), workArea.isEnabled(), cuttingHeight);
         }
@@ -655,7 +640,7 @@ public class AutomowerHandler extends BaseThingHandler {
     public void sendAutomowerWorkArea(long workAreaId, boolean enable, byte cuttingHeight) {
         logger.debug("Sending WorkArea: workAreaId {}, enable {}, cuttingHeight {}", workAreaId, enable, cuttingHeight);
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             MowerWorkAreaAttributes workAreaAttributes = new MowerWorkAreaAttributes();
             workAreaAttributes.setEnable(enable);
             workAreaAttributes.setCuttingHeight(cuttingHeight);
@@ -719,7 +704,7 @@ public class AutomowerHandler extends BaseThingHandler {
         logger.debug("Sending Settings: cuttingHeight {}, headlightMode {}", cuttingHeight,
                 ((headlightMode != null) ? headlightMode.toString() : "null"));
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             // Create a new Settings object and set the values
             // that are not null. This allows to only update the values that are changed.
             Settings settingsRequest = new Settings();
@@ -760,8 +745,8 @@ public class AutomowerHandler extends BaseThingHandler {
     public void sendAutomowerConfirmError() {
         logger.debug("Sending ConfirmError");
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower) && (mower.getAttributes().getCapabilities().canConfirmError())
-                && (mower.getAttributes().getMower().getIsErrorConfirmable())) {
+        if (mower != null && isValidResult(mower) && mower.getAttributes().getCapabilities().canConfirmError()
+                && mower.getAttributes().getMower().getIsErrorConfirmable()) {
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
@@ -786,7 +771,7 @@ public class AutomowerHandler extends BaseThingHandler {
     public void sendAutomowerResetCuttingBladeUsageTime() {
         logger.debug("Sending ResetCuttingBladeUsageTime");
         Mower mower = this.mowerState;
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             mower.getAttributes().getStatistics().setCuttingBladeUsageTime(0);
 
             String id = automowerId.get();
@@ -833,7 +818,7 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private synchronized void updateMowerChannelState(@Nullable Mower mower) {
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             Capabilities capabilities = mower.getAttributes().getCapabilities();
 
             /*
@@ -985,8 +970,8 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (workAreaId != null) {
                     updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(workAreaId));
                     WorkArea workArea = getWorkAreaById(mower, workAreaId);
-                    if ((workArea != null) && (workArea.getName() != null)) {
-                        if ((workAreaId.equals(0L)) && workArea.getName().isBlank()) {
+                    if (workArea != null && workArea.getName() != null) {
+                        if (workAreaId.equals(0L) && workArea.getName().isBlank()) {
                             updateState(CHANNEL_STATUS_WORK_AREA, new StringType("main area"));
                         } else {
                             updateState(CHANNEL_STATUS_WORK_AREA, new StringType(workArea.getName()));
@@ -1136,7 +1121,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             new DecimalType(calendarTasks.get(i).getWorkAreaId()));
                     WorkArea workArea = getWorkAreaById(mower, calendarTasks.get(i).getWorkAreaId());
                     if (workArea != null) {
-                        if ((calendarTasks.get(i).getWorkAreaId().equals(0L)) && workArea.getName().isBlank()) {
+                        if (calendarTasks.get(i).getWorkAreaId().equals(0L) && workArea.getName().isBlank()) {
                             updateIndexedState(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++),
                                     new StringType("main area"));
                         } else {
@@ -1182,7 +1167,7 @@ public class AutomowerHandler extends BaseThingHandler {
                         updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
                                 new DecimalType(workArea.getWorkAreaId()));
 
-                        if ((workArea.getWorkAreaId() == 0L) && workArea.getName().isBlank()) {
+                        if (workArea.getWorkAreaId() == 0L && workArea.getName().isBlank()) {
                             updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++),
                                     new StringType("main area"));
                         } else {
@@ -1203,7 +1188,7 @@ public class AutomowerHandler extends BaseThingHandler {
                         // lastTimeCompleted is in seconds, convert it to milliseconds
                         Long lastTimeCompleted = workArea.getLastTimeCompleted();
                         // If lastTimeCompleted is 0 it means the work area has never been completed
-                        if ((lastTimeCompleted != null) && (lastTimeCompleted != 0L)) {
+                        if (lastTimeCompleted != null && lastTimeCompleted != 0L) {
                             updateIndexedState(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j++), new DateTimeType(
                                     toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerZoneId)));
                         } else {
@@ -1234,7 +1219,7 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_MESSAGE_SEVERITY, new StringType(message.getSeverity()));
             Double latitude = message.getLatitude();
             Double longitude = message.getLongitude();
-            if ((latitude != null) && (longitude != null)) {
+            if (latitude != null && longitude != null) {
                 updateState(CHANNEL_MESSAGE_GPS_POSITION,
                         new PointType(new DecimalType(latitude), new DecimalType(longitude)));
             } else {
@@ -1244,7 +1229,7 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void initializeProperties(@Nullable Mower mower) {
-        if ((mower != null) && isValidResult(mower)) {
+        if (mower != null && isValidResult(mower)) {
             Map<String, String> properties = editProperties();
             properties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
 
@@ -1386,7 +1371,7 @@ public class AutomowerHandler extends BaseThingHandler {
         if (mower != null && (mowerMessages != null)) {
             try {
                 String type = event.has("type") ? event.get("type").getAsString() : null;
-                if ((type != null) && event.has("attributes") && event.get("attributes").isJsonObject()) {
+                if (type != null && event.has("attributes") && event.get("attributes").isJsonObject()) {
                     JsonObject attributes = event.getAsJsonObject("attributes");
                     Metadata metaData = mower.getAttributes().getMetadata();
                     long nowMs = ZonedDateTime.now(mowerZoneId).toInstant().toEpochMilli();

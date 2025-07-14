@@ -25,8 +25,7 @@
 			<parameter name="appSecret" type="text" required="true">
 				<label>Application Secret</label>
 				<description>The Application Secret is required to communicate with the Automower® Connect API. See "Application
-					Key"
-					for further details</description>
+					Key" for further details</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
 				<label>Polling Interval</label>
@@ -75,12 +74,11 @@
 			<parameter name="mowerId" type="text" required="true">
 				<label>Automower® Id</label>
 				<description>The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is
-					automatically
-					filled when the thing is discovered.</description>
+					automatically filled when the thing is discovered.</description>
 			</parameter>
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>
-				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone of the system</description>
+				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -435,7 +433,6 @@
 	<channel-type id="settingHeadlightModeType">
 		<item-type>String</item-type>
 		<label>Headlight Mode</label>
-		<description>Headlight Mode</description>
 	</channel-type>
 
 	<channel-type id="statCuttingBladeUsageTimeType">
