@@ -28,7 +28,7 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 
 Ondilo ICO takes measures every hour.
 Higher polling will not increase the update interval.
-The binding automatically adjusts the polling schedule to match the expected time of the next measure, which is typically 1 hour (plus 1.5 minutes buffer) after the previous measure.
+The binding automatically adjusts the polling schedule to match the expected time of the next measure, which is typically 1 hour (plus 3 minutes buffer) after the previous measure.
 
 The requests to the Ondilo Customer API are limited to the following per user quotas:
 
