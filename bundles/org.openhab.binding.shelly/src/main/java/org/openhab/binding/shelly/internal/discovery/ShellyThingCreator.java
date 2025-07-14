@@ -145,10 +145,12 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_BLUGW = "SNGW-BT01";
     public static final String SHELLYDT_BLUGWG3 = "S3GW-1DBT001";
 
+    // Thing Type ID prefixes
+    public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
+    public static final String THING_TYPE_SHELLYPRO_PREFIX = "shellypro";
+
     // Service name prefixes
     public static final String SERVICE_NAME_SHELLYBLU_PREFIX = "shellyblu";
-    public static final String SERVICE_NAME_SHELLYPLUS_PREFIX = "shellyplus";
-    public static final String SERVICE_NAME_SHELLYPRO_PREFIX = "shellypro";
 
     private static final String SERVICE_NAME_SHELLY2_PREFIX = "shellyswitch";
     private static final String SERVICE_NAME_SHELLY25_PREFIX = "shellyswitch25";
