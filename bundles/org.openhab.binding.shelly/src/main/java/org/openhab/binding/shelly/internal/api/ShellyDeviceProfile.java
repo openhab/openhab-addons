@@ -220,7 +220,6 @@ public class ShellyDeviceProfile {
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
-        isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
                 || isWall;
