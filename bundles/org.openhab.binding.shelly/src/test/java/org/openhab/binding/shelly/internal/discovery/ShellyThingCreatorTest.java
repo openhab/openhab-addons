@@ -227,6 +227,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_4PRO, "", THING_TYPE_SHELLYPRO4PM), //
                 Arguments.of(SHELLYDT_PROEM50, "", THING_TYPE_SHELLYPROEM50), //
                 Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
+                Arguments.of(SHELLYDT_PRO3EM3CT63, "", THING_TYPE_SHELLYPRO3EM63), //
+                Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
 
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON, "", THING_TYPE_SHELLYBLUBUTTON), //
