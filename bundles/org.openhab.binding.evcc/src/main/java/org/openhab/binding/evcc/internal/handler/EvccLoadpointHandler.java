@@ -105,11 +105,14 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void updateFromEvccState(JsonObject root) {
         root = root.getAsJsonArray("loadpoints").get(index).getAsJsonObject();
-
-        if (root.has("chargeCurrent")) {
-            // This is for backward compatibility with older EVCC versions
-            root.addProperty("offeredCurrent", root.get("chargeCurrent").getAsDouble());
-        }
         super.updateFromEvccState(root);
+    }
+
+    public void updateJSON(JsonObject state) {
+        if (state.has("chargeCurrent")) {
+            // This is for backward compatibility with older EVCC versions
+            state.addProperty("offeredCurrent", state.get("chargeCurrent").getAsDouble());
+            state.remove("chargeCurrent");
+        }
     }
 }

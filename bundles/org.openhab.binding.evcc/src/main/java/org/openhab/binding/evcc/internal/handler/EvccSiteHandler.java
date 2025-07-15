@@ -65,10 +65,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void updateFromEvccState(JsonObject root) {
         if (root.has("gridConfigured")) {
-            // If grid is configured, add gridPower to the root object
-            // This is a workaround to avoid modifying the original JSON structure
-            double gridPower = root.getAsJsonObject("grid").get("power").getAsDouble();
-            root.addProperty("gridPower", gridPower);
+            modifyJSON(root);
         }
         super.updateFromEvccState(root);
     }
@@ -88,9 +85,13 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
         JsonObject state = stateOpt.get();
         if (state.has("gridConfigured")) {
-            double gridPower = state.getAsJsonObject("grid").get("power").getAsDouble();
-            state.addProperty("gridPower", gridPower);
+            modifyJSON(state);
         }
         commonInitialize(state);
+    }
+
+    private void modifyJSON(JsonObject state) {
+        state.add("gridPower", state.getAsJsonObject("grid").get("power"));
+        state.remove("gridConfigured");
     }
 }

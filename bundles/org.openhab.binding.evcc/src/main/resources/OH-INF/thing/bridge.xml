@@ -9,7 +9,7 @@
 		<config-description>
 			<parameter name="schema" type="text">
 				<label>Protocol schema</label>
-				<description>The used protocol schema to connect to your evcc instance</description>
+				<description>The protocol schema that should be used to connect to your instance</description>
 				<default>http</default>
 				<options>
 					<option value="http">HTTP</option>

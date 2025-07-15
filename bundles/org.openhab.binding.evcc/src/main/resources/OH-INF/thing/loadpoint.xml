@@ -8,11 +8,11 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Loadpoint</label>
-		<description>Contains the loadpoint data</description>
+		<description>A loadpoint configured in your evcc instance</description>
 	</thing-type>
 	<channel-type id="loadpointBatteryBoost">
 		<item-type>Switch</item-type>
-		<label>Battery boost</label>
+		<label>Battery Boost</label>
 		<description>Controls and indicates whether battery boost is active or not</description>
 		<category>Switch</category>
 		<tags>
@@ -29,7 +29,7 @@
 	<channel-type id="loadpointChargeDuration">
 		<item-type>Number:Time</item-type>
 		<label>Charging Duration</label>
-		<description>Charging duration</description>
+		<description>Time passed since start of the charging</description>
 		<category>Time</category>
 		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
@@ -46,7 +46,7 @@
 	</channel-type>
 	<channel-type id="loadpointChargeTotalImport">
 		<item-type>Number:Energy</item-type>
-		<label>Charge total import</label>
+		<label>Charge Total Import</label>
 		<description>Total imported energy</description>
 		<category>Energy</category>
 		<tags>
@@ -83,7 +83,7 @@
 	<channel-type id="loadpointChargerFeatureHeating">
 		<item-type>Switch</item-type>
 		<label>Charger Feature: Heating</label>
-		<description>'True' for heating device: State of Charge in Degree instead of Percent</description>
+		<description>Indicates whether the loadpoint is configured for a heating device</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -99,7 +99,7 @@
 	<channel-type id="loadpointChargerFeatureIntegratedDevice">
 		<item-type>Switch</item-type>
 		<label>Charger Feature: Integrated Device</label>
-		<description>'True' for integrated device: Operate without a "vehicle" (e.g. heat pump, eBike)</description>
+		<description>Loadpoint has an integrated device and runs without a vehicle (e.g. heatpump, e-bike)</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -114,8 +114,8 @@
 	</channel-type>
 	<channel-type id="loadpointChargerPhases1p3p">
 		<item-type>Switch</item-type>
-		<label>Charger Feature: Phase switching</label>
-		<description>'True' for charges that can switch between 1 and 3 phases</description>
+		<label>Charger Feature: Phase Switching</label>
+		<description>Indicates that the loadpoint can switch between 1 and 3 phases</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -130,8 +130,8 @@
 	</channel-type>
 	<channel-type id="loadpointChargerSinglePhase">
 		<item-type>Switch</item-type>
-		<label>Charger Feature: 1 phase charging</label>
-		<description>'True' for chargers with only one phase</description>
+		<label>Charger Feature: 1 Phase Charging</label>
+		<description>Indicates that the charger can only charge with 1 phase</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -146,7 +146,7 @@
 	</channel-type>
 	<channel-type id="loadpointChargerStatusReason">
 		<item-type>String</item-type>
-		<label>Charger status reason</label>
+		<label>Charger Status Reason</label>
 		<state readOnly="true">
 			<options>
 				<option value="unknown">Unkown</option>
@@ -158,7 +158,7 @@
 	<channel-type id="loadpointCharging">
 		<item-type>Switch</item-type>
 		<label>Charging State</label>
-		<description>Loadpoint is currently charging</description>
+		<description>Indicates whether the loadpoint is charging or not</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Status</tag>
@@ -174,7 +174,7 @@
 	<channel-type id="loadpointConnected">
 		<item-type>Switch</item-type>
 		<label>Vehicle Connected</label>
-		<description>Whether vehicle is connected to loadpoint</description>
+		<description>Indicates wheter a vehicle is connected or not</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -190,56 +190,56 @@
 	<channel-type id="loadpointConnectedDuration">
 		<item-type>Number:Time</item-type>
 		<label>Vehicle Connected Duration</label>
-		<description>Duration the vehicle is connected to loadpoint</description>
+		<description>Duration the vehicle is connected to the loadpoint</description>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointDisableDelay">
 		<item-type>Number:Time</item-type>
 		<label>Disable delay</label>
-		<description>Delay in PV mode before stop charging</description>
+		<description>Delay in PV mode before stopping the charging if not enough power is available</description>
 		<category>Time</category>
 		<state pattern="%.0f s"></state>
 	</channel-type>
 	<channel-type id="loadpointDisableThreshold">
 		<item-type>Number:Power</item-type>
 		<label>Disable Threshold</label>
-		<description>Threshold befor the disable delay starts (negative values means feed in)</description>
+		<description>Threshold for the disable delay (negative values means feed in)</description>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="loadpointEffectiveLimitSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Effective Charging Limit</label>
-		<description>Effective state of charge (SoC) until which the vehicle will be charged</description>
+		<description>Effective state of charge the vehicle will be charged to</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointEffectiveMaxCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Effective charging max Current</label>
-		<description>Effective maximum amperage per connected phase with which the car should be charged</description>
+		<label>Effective Maximum Charge Current</label>
+		<description>Effective maximum amperage per connected phase that can be provided to the vehicle</description>
 		<category>Energy</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpointEffectiveMinCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Effective charging min Current</label>
-		<description>Effective minimum amperage per connected phase with which the car should be charged</description>
+		<label>Effective Minimum Charge Current</label>
+		<description>Effective minimum amperage per connected phase that will be provided to the vehicle</description>
 		<category>Energy</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="loadpointEffectivePlanId">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Effective plan id</label>
-		<description>Charging plan id which is currently active</description>
+		<label>Effective Plan ID</label>
+		<description>ID of the currently active charging plan</description>
 	</channel-type>
 	<channel-type id="loadpointEffectivePlanSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Effective Plan SoC</label>
-		<description>Charging plan state of charge (SoC) which is currently active</description>
+		<description>State of charge limit for the currently active charging plan</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -249,24 +249,41 @@
 		<label>Effective plan time</label>
 		</channel-type>
 	-->
+	<channel-type id="loadpointEffectivePriority">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Effective Priority</label>
+		<description>Effective priority of this loadpoint</description>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="loadpointEnableDelay">
 		<item-type>Number:Time</item-type>
-		<label>Enable delay</label>
-		<description>Delay in PV mode before start charging</description>
+		<label>Enable Delay</label>
+		<description>Delay in PV mode before starting the charging when enough power is available</description>
 		<category>Time</category>
 		<state pattern="%.0f s"></state>
 	</channel-type>
 	<channel-type id="loadpointEnableThreshold">
 		<item-type>Number:Power</item-type>
 		<label>Enable Threshold</label>
-		<description>Threshold before the enable delay starts (negative values means feed in)</description>
+		<description>Threshold for the enable delay</description>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
+	<channel-type id="loadpointEnabled">
+		<item-type>Switch</item-type>
+		<label>Loadpoint Enabled</label>
+		<description>Indicates whether the charger is locked or released</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Released</option>
+				<option value="OFF">Locked</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="loadpointLimitEnergy">
 		<item-type>Number:Energy</item-type>
-		<label>Charging Limit Energy</label>
-		<description>Amount of energy to charge the vehicle with</description>
+		<label>Energy Limit</label>
+		<description>Energy limit when charging the vehicle</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Control</tag>
@@ -277,8 +294,8 @@
 	</channel-type>
 	<channel-type id="loadpointLimitSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Charging Limit SoC</label>
-		<description>Until which state of charge (SoC) should the vehicle be charged</description>
+		<label>SoC Limit</label>
+		<description>State of charge limit when charging the vehicle</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Control</tag>
@@ -289,8 +306,8 @@
 	</channel-type>
 	<channel-type id="loadpointMaxCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Charging max Current</label>
-		<description>Maximum amperage per connected phase with which the car should be charged</description>
+		<label>Maximum Current</label>
+		<description>Maximum amperage per connected phase that can be provided to the vehicle</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Current</tag>
@@ -301,8 +318,8 @@
 	</channel-type>
 	<channel-type id="loadpointMinCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Charging min Current</label>
-		<description>Minimum amperage per connected phase with which the car should be charged</description>
+		<label>Minimum Current</label>
+		<description>Minimum amperage per connected phase that will be provided to the vehicle</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -313,9 +330,9 @@
 	</channel-type>
 	<channel-type id="loadpointMode">
 		<item-type>String</item-type>
-		<label>Charging Mode</label>
-		<description>Charging mode: "off", "now", "minpv", "pv"</description>
-		<category>Heating</category>
+		<label>Mode</label>
+		<description>Charging Mode</description>
+		<category>Settings</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
@@ -332,8 +349,8 @@
 	</channel-type>
 	<channel-type id="loadpointOfferedCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Charging Current</label>
-		<description>Current amperage per connected phase while charging</description>
+		<label>Offered Current</label>
+		<description>Current amperage per connected phase offered to the vehicle</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -343,8 +360,8 @@
 	</channel-type>
 	<channel-type id="loadpointPhaseAction">
 		<item-type>String</item-type>
-		<label>Phase scaling</label>
-		<description>Phase switching from 1 to 3 or 3 to 1</description>
+		<label>Phase Scaling</label>
+		<description>Indicates phase switching from 1 to 3 or 3 to 1 phases</description>
 		<state>
 			<options>
 				<option value="scale1p">Switching to 1 phase</option>
@@ -354,8 +371,8 @@
 	</channel-type>
 	<channel-type id="loadpointPhaseRemaining">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Phase remaining timer</label>
-		<description>Seconds until phase switching will happen</description>
+		<label>Phase Remaining Timer</label>
+		<description>Time until phase switching will occure</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -363,8 +380,8 @@
 	</channel-type>
 	<channel-type id="loadpointPhasesActive">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Charging Active Phases</label>
-		<description>Current number of active phases while charging</description>
+		<label>Active Phases</label>
+		<description>Current number of active phases</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -372,16 +389,17 @@
 	</channel-type>
 	<channel-type id="loadpointPhasesConfigured">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Phases Configured</label>
+		<label>Configured Phases</label>
+		<description>Number of configured phases</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
-	<channel-type id="loadpointPlacActive">
+	<channel-type id="loadpointPlanActive">
 		<item-type>Switch</item-type>
-		<label>Plan activated</label>
-		<description>Indicates whether a plan has been activated or not</description>
+		<label>Plan Activated</label>
+		<description>Indicates whether a plan is active or not</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Status</tag>
@@ -393,18 +411,69 @@
 			</options>
 		</state>
 	</channel-type>
-	<!-- TODO: Add Plan, pv, session, smartCost channels here -->
+	<!-- TODO: finalize channels
+		<channel-type id="loadpointPlanEnergy">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Plan Energy</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointPlanOverrun">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Plan Overrun</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointPlanPrecondition">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Plan Precondition</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointPriority">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Priority</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointPvAction">
+		<item-type>Hint for type: "inactive"</item-type>
+		<label>Loadpoint Pv Action</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointPvRemaining">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Pv Remaining</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointSessionEnergy">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Session Energy</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointSessionSolarPercentage">
+		<item-type>Hint for type: 0</item-type>
+		<label>Loadpoint Session Solar Percentage</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointSmartCostActive">
+		<item-type>Hint for type: false</item-type>
+		<label>Loadpoint Smart Cost Active</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+		<channel-type id="loadpointSmartFeedInPriorityActive">
+		<item-type>Hint for type: false</item-type>
+		<label>Loadpoint Smart Feed In Priority Active</label>
+		<description>Autogenerated placeholder</description>
+		</channel-type>
+	-->
 	<channel-type id="loadpointTitle">
 		<item-type>String</item-type>
-		<label>Loadpoint Title</label>
-		<description>Title of loadpoint</description>
+		<label>Title</label>
+		<description>Name of the loadpoint as displayed in the UI</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointVehicleClimaterActive">
 		<item-type>Switch</item-type>
-		<label>Vehicle climater active</label>
-		<description>Indicates whether the climater is active or not</description>
+		<label>Vehicle Climater Active</label>
+		<description>Indicates whether the climater is active or not for the connected vehicle</description>
 		<tags>
 			<tag>Airconditioning</tag>
 			<tag>Status</tag>
@@ -418,7 +487,7 @@
 	</channel-type>
 	<channel-type id="loadpointVehicleDetectionActive">
 		<item-type>Switch</item-type>
-		<label>Vehicle detection active</label>
+		<label>Vehicle Detection Active</label>
 		<description>Indicates whether the vehicle detection is active or not</description>
 		<tags>
 			<tag>Switch</tag>
@@ -433,7 +502,8 @@
 	</channel-type>
 	<channel-type id="loadpointVehicleLimitSoc">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Current vehicle SoC limit</label>
+		<label>Vehicle API SoC Limit</label>
+		<description>Current vehicle API state of charge limit</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -445,7 +515,8 @@
 	<channel-type id="loadpointVehicleName">
 		<item-type>String</item-type>
 		<label>Vehicle Name</label>
-		<description>The unique identifier of the EV used in the evcc configuration (containing no whitespaces nor special
+		<description>The unique identifier of the vehicle used in the evcc configuration (containing no whitespaces nor
+			special
 			characters)</description>
 		<category>Settings</category>
 		<state readOnly="true"/>
@@ -453,7 +524,7 @@
 	<channel-type id="loadpointVehicleOdometer">
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>Vehicle Odometer</label>
-		<description>Total distance travelled by EV</description>
+		<description>Total distance travelled by the vehicle</description>
 		<category>MoveControl</category>
 		<tags>
 			<tag>Status</tag>
@@ -463,7 +534,7 @@
 	<channel-type id="loadpointVehicleRange">
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>Vehicle Range</label>
-		<description>Battery range for EV</description>
+		<description>Current range of the vehicle</description>
 		<category></category>
 		<tags>
 			<tag>Status</tag>
@@ -473,8 +544,8 @@
 	</channel-type>
 	<channel-type id="loadpointVehicleSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Vehicle API SoC limit</label>
-		<description>Current State of Charge of EV</description>
+		<label>Vehicle API SoC</label>
+		<description>Current state of charge of the vehicle</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Status</tag>
@@ -485,14 +556,14 @@
 	<channel-type id="loadpointVehicleTitle">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
-		<description>The name of the vehicle showed in the UI</description>
+		<description>The name of the vehicle as displayed in the UI</description>
 		<category>Settings</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpointVehicleWelcomeActive">
 		<item-type>Switch</item-type>
-		<label>Vehicle welcome active</label>
-		<description>Indicates whether the charge performs a initial load or not when the vehicle gets connected</description>
+		<label>Vehicle Welcome Active</label>
+		<description>Indicates whether the charger performs an initial charge or not when the vehicle gets connected</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Status</tag>
@@ -519,8 +590,8 @@
 	</channel-type>
 	<channel-type id="loadpointLimitTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Charging Limit Temperature</label>
-		<description>Until which Temperature should the heating device be charged</description>
+		<label>Temperature Limit</label>
+		<description>Temperature to which the heating device is charged</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -532,7 +603,7 @@
 	<channel-type id="loadpointVehicleTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current Temperature of the heating device</description>
+		<description>Current temperature of the heating device</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>

@@ -9,19 +9,29 @@
 		</supported-bridge-type-refs>
 
 		<label>Vehicle</label>
-		<description>This thing contains the vehicle data</description>
+		<description>A vehicle configured in your evcc instance</description>
 	</thing-type>
-	<channel-type id="vehicleTitle">
+	<channel-type id="vehicleCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Vehicle Capacity</label>
+		<description>Capacity of vehicle battery</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Info</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehicleIcon">
 		<item-type>String</item-type>
-		<label>Vehicle Title</label>
-		<description>Title of vehicle</description>
-		<category>Text</category>
+		<label>Vehicle Icon</label>
+		<description>Used icon for this vehicle in the UI</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleMinSoc">
+	<channel-type id="vehicleLimitSoc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Vehicle Min SoC</label>
-		<description>Minimum state of charge (SoC) a vehicle should have</description>
+		<label>Vehicle Limit SoC</label>
+		<description>State of charge to which the vehicle is charged</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -29,6 +39,29 @@
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleMinSoc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Vehicle Min SoC</label>
+		<description>Minimum state of charge a vehicle should have (fast charging until this limit)</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleMaxCurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Vehicle Max Current</label>
+		<description>Maximum allowed current that can be provided to charge the vehicle</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="6" step="1" max="32" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleMinCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -42,48 +75,16 @@
 		<state min="6" step="1" max="32" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="vehicleMaxCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Vehicle Max Current</label>
-		<description>Maximum allowed current thats can be provided to charge the vehicle</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Current</tag>
-		</tags>
-		<state min="6" step="1" max="32" readOnly="true"/>
-	</channel-type>
-	<channel-type id="vehicleLimitSoc">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Vehicle Charging Limit SoC</label>
-		<description>Until which state of charge (SoC) should the specific vehicle be charged</description>
-		<category>BatteryLevel</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="vehicleCapacity">
-		<item-type>Number:Energy</item-type>
-		<label>Vehicle Capacity</label>
-		<description>Capacity of EV battery</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Info</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="vehiclePlanPrecondition">
-		<item-type>Number</item-type>
-		<label>Plan Precondition</label>
+		<item-type>Number:Time</item-type>
+		<label>Plan Precondition Duration</label>
+		<description>Plan Precondition Duration</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehiclePlanSoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Planned SoC</label>
+		<description>Planned state of charge to which the vehicle will be charged (can be greater than the Vehicle Limit SoC)</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Energy</tag>
@@ -92,7 +93,15 @@
 	</channel-type>
 	<channel-type id="vehiclePlanTime">
 		<item-type>DateTime</item-type>
-		<label>Plan date</label>
+		<label>Plan Datetime</label>
+		<description>Planned date and time when the chaging should be started</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="vehicleTitle">
+		<item-type>String</item-type>
+		<label>Vehicle Title</label>
+		<description>Name of the vehicle as diplayed in the UI</description>
+		<category>Text</category>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

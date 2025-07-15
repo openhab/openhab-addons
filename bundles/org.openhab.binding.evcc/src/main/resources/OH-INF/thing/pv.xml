@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Photovoltaik</label>
-		<description>Contains the pv data</description>
+		<description>A photovoltaic system configured in your evcc instance</description>
 	</thing-type>
 	<!-- Already declared in site.xml maybe evcc is going to change it in the future -->
 	<channel-type id="pvPower">
@@ -26,7 +26,7 @@
 	<channel-type id="pvTitle">
 		<item-type>String</item-type>
 		<label>Title</label>
-		<description>Name as shown in the UI</description>
+		<description>Name of the photovoltaic system as displayed in the UI</description>
 		<category>Text</category>
 		<state readOnly="true"></state>
 	</channel-type>

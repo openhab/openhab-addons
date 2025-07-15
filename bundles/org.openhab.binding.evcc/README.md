@@ -14,6 +14,9 @@ Furthermore, evcc calculates your money savings.
 This binding enables openHAB to retrieve status data from your evcc instance and to control the charging process.
 For more advanced features like calculated savings, you have to visit the web UI of evcc.
 
+This binding will create a file in your userdata folder, when it detects new datapoints in the response from evcc.
+This will help to add them to the binding make them available with the next version of the binding.
+
 ## Supported Things
 
 - `device`: A running evcc instance.
