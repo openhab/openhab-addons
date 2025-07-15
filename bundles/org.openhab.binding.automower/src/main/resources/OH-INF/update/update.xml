@@ -158,22 +158,22 @@
 			<remove-channel id="position50"/>
 
 			<!-- Commands -->
-			<update-channel id="start" groupIds="command">
+			<update-channel id="start" groupIds="commands">
 				<type>automower:start</type>
 			</update-channel>
-			<update-channel id="resume_schedule" groupIds="command">
+			<update-channel id="resume_schedule" groupIds="commands">
 				<type>automower:resumeSchedule</type>
 			</update-channel>
-			<update-channel id="pause" groupIds="command">
+			<update-channel id="pause" groupIds="commands">
 				<type>automower:pause</type>
 			</update-channel>
-			<update-channel id="park" groupIds="command">
+			<update-channel id="park" groupIds="commands">
 				<type>automower:park</type>
 			</update-channel>
-			<update-channel id="park_until_next_schedule" groupIds="command">
+			<update-channel id="park_until_next_schedule" groupIds="commands">
 				<type>automower:parkUntilNextSchedule</type>
 			</update-channel>
-			<update-channel id="park_until_further_notice" groupIds="command">
+			<update-channel id="park_until_further_notice" groupIds="commands">
 				<type>automower:parkUntilFurtherNotice</type>
 			</update-channel>
 		</instruction-set>
@@ -504,6 +504,24 @@
 			<add-channel id="start_in_work_area" groupIds="command">
 				<type>automower:startInWorkArea</type>
 			</add-channel>
+			<update-channel id="start" groupIds="command">
+				<type>automower:start</type>
+			</update-channel>
+			<update-channel id="resume_schedule" groupIds="command">
+				<type>automower:resumeSchedule</type>
+			</update-channel>
+			<update-channel id="pause" groupIds="command">
+				<type>automower:pause</type>
+			</update-channel>
+			<update-channel id="park" groupIds="command">
+				<type>automower:park</type>
+			</update-channel>
+			<update-channel id="park_until_next_schedule" groupIds="command">
+				<type>automower:parkUntilNextSchedule</type>
+			</update-channel>
+			<update-channel id="park_until_further_notice" groupIds="command">
+				<type>automower:parkUntilFurtherNotice</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
